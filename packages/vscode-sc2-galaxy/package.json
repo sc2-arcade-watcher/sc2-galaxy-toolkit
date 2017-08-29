@@ -1,0 +1,78 @@
+{
+  "name": "sc2galaxy",
+  "displayName": "StarCraft 2 Galaxy Script",
+  "description": "Language support for StarCraft 2 Galaxy Script",
+  "version": "0.0.1",
+  "publisher": "talvk",
+  "engines": {
+    "vscode": "^1.11.0"
+  },
+  "keywords": [
+    "sc2",
+    "starcraft",
+    "galaxy",
+    "galaxy script"
+  ],
+  "categories": [
+    "Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:galaxy"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "sc2galaxy.nectan.activate",
+        "title": "Galaxy: activate nectan indexing"
+      }
+    ],
+    "languages": [
+      {
+        "id": "galaxy",
+        "aliases": [
+          "SC2 Galaxy Script",
+          "galaxy"
+        ],
+        "extensions": [
+          ".galaxy"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "galaxy",
+        "scopeName": "source.galaxy",
+        "path": "./syntaxes/galaxy.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "galaxy",
+        "path": "./snippets/general.json"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "node ./node_modules/vscode/bin/test"
+  },
+  "dependencies": {
+    "fs": "0.0.2",
+    "noice-json-rpc": "^1.0.1",
+    "vscode-jsonrpc": "^3.2.0",
+    "vscode-uri": "^1.0.1",
+    "web-request": "^1.0.7",
+    "ws": "^2.3.1"
+  },
+  "devDependencies": {
+    "typescript": "^2.0.3",
+    "vscode": "^1.0.0",
+    "mocha": "^2.3.3",
+    "@types/node": "^6.0.40",
+    "@types/mocha": "^2.2.32"
+  }
+}

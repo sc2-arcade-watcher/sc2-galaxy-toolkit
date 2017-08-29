@@ -1,0 +1,102 @@
+{
+    "include": {
+        "prefix": "inc",
+        "body": [
+            "include \"$1\""
+        ],
+        "description": "include"
+    },
+    "for iterator": {
+        "prefix": "for",
+        "body": [
+            "for (${1:i} = ${2:0}; ${1:i} < ${3:1}; ${1:i} += 1) {",
+            "\t${4:// TODO:}",
+            "}"
+        ],
+        "description": "for i"
+    },
+    "for players": {
+        "prefix": "forp",
+        "body": [
+            "for (${1:i} = 1; ${1:i} <= PlayerGroupCount(${2:PlayerGroupActive()}); ${1:i} += 1) {",
+            "\t${3:tmp_player} = PlayerGroupPlayer(${2:PlayerGroupActive()}, ${1:i});",
+            "}"
+        ],
+        "description": "for i"
+    },
+    "for units": {
+        "prefix": "foru",
+        "body": [
+            "for (${1:i} = 1; ${1:i} <= UnitGroupCount(${2:group}, c_unitCountAll); ${1:i} += 1) {",
+            "\t${3:tmp_unit} = UnitGroupUnit(${2:group}, ${1:i});",
+            "}"
+        ],
+        "description": "for i"
+    },
+    "trigger complete": {
+        "prefix": "tgc",
+        "body": [
+            "bool ${1:name}(bool test_conds, bool run_actions)",
+            "{",
+            "\tif (test_conds) {",
+            "\t}",
+            "",
+            "\tif (!runActions) {",
+            "\t\treturn true;",
+            "\t}",
+            "",
+            "\t${2:// TODO:}",
+            "\treturn true;",
+            "}"
+        ],
+        "description": "trigger complete declaration"
+    },
+    "trigger simple": {
+        "prefix": "tgs",
+        "body": [
+            "bool ${1:name}(bool test_conds, bool run_actions)",
+            "{",
+            "\t${2:// TODO:}",
+            "\treturn true;",
+            "}"
+        ],
+        "description": "trigger simplistic declaration"
+    },
+    "todo": {
+        "prefix": "todo",
+        "body": [
+            "// TODO: $1"
+        ],
+        "description": "todo"
+    },
+    "its": {
+        "prefix": "its",
+        "body": [
+            "IntToString($1)"
+        ]
+    },
+    "itf": {
+        "prefix": "itf",
+        "body": [
+            "IntToFixed($1)"
+        ]
+    },
+    "fts": {
+        "prefix": "fts",
+        "body": [
+            "FixedToString($1, ${2:-1})"
+        ]
+    },
+    "fti": {
+        "prefix": "fti",
+        "body": [
+            "FixedToInt($1)"
+        ]
+    },
+    "stt": {
+        "prefix": "stt",
+        "body": [
+            "StringToText($1)"
+        ]
+    }
+}

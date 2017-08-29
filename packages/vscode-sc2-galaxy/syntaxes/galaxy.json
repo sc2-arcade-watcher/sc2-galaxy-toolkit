@@ -1,0 +1,565 @@
+{
+	"scopeName": "source.galaxy",
+	"name": "galaxy",
+	"fileTypes": [
+		"galaxy"
+	],
+	"foldingStartMarker": "(/\\*|\\{\\s*)",
+	"foldingStopMarker": "(\\*/|^\\s*\\})",
+	"patterns": [
+		{
+			"include": "#comments"
+		},
+		{
+			"match": "\\b(break|continue|else|for|if|return|while)\\b",
+			"name": "keyword.control.galaxy"
+		},
+		{
+			"include": "#storage_types"
+		},
+		{
+			"match": "\\b(const|static|native)\\b",
+			"name": "storage.modifier.galaxy"
+		},
+		{
+			"match": "\\b(null|true|false)\\b",
+			"name": "constant.language.galaxy"
+		},
+		{
+			"match": "\\b([A-Za-z0-9_]+_t)\\b",
+			"name": "support.type.posix-reserved.c"
+		},
+		{
+			"include": "#operators"
+		},
+		{
+			"include": "#numbers"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"begin": "^\\s*(include)\\b\\s*",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.directive.import.galaxy"
+				}
+			},
+			"end": "(?=(?://|/\\*))|(?<!\\\\)(?=\\n)",
+			"name": "meta.preprocessor.include.galaxy",
+			"patterns": [
+				{
+					"include": "#line_continuation_character"
+				},
+				{
+					"begin": "\"",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.string.begin.galaxy"
+						}
+					},
+					"end": "\"",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.string.end.galaxy"
+						}
+					},
+					"name": "string.quoted.double.include.galaxy"
+				}
+			]
+		},
+		{
+			"begin": "(structref|arrayref|funcref)",
+			"beginCaptures": {
+				"0": {
+					"name": "keyword.control.$0.galaxy"
+				}
+			},
+			"end": "(?!<[A-Za-z0-9_]+>)",
+			"name": "meta.symbol.reference.galaxy",
+			"patterns": [
+				{
+					"include": "#function-innards"
+				}
+			]
+		},
+		{
+			"match": "\\b(c_[A-Za-z0-9_]+)\\b",
+			"name": "constant.other.variable.native.galaxy"
+		},
+		{
+			"match": "\\b(gt_[A-Za-z0-9_]+)\\b",
+			"name": "support.type.global-trigger.galaxy"
+		},
+		{
+			"match": "\\b(gv_[A-Za-z0-9_]+)\\b",
+			"name": "support.type.global-variable.galaxy"
+		},
+		{
+			"include": "#block"
+		},
+		{
+			"include": "#parens"
+		},
+		{
+			"begin": "(?x)\n(?!(?:while|for|if|else|return|struct|typedef|structref|arrayref|funcref|abilcmd|actor|actorscope|aifilter|animfilter|bank|bool|byte|camerainfo|char|color|doodad|fixed|handle|int|marker|order|playergroup|point|region|revealer|sound|soundlink|string|text|timer|transmissionsource|trigger|unit|unitfilter|unitgroup|unitref|void|wave|waveinfo|wavetarget)\\s*\\()\n(?=\n  (?:[A-Za-z_][A-Za-z0-9_]*+)++\\s*\\(  # actual name\n  |\n  (?:(\\(\\)|\\[\\]))\\s*\\(\n)",
+			"end": "(?<=\\))(?!\\w)",
+			"name": "meta.function.galaxy",
+			"patterns": [
+				{
+					"include": "#function-innards"
+				}
+			]
+		},
+		{
+			"include": "#line_continuation_character"
+		},
+		{
+			"match": "(\\[)|(\\])",
+			"captures": {
+				"1": {
+					"name": "punctuation.definition.begin.bracket.square.galaxy"
+				},
+				"2": {
+					"name": "punctuation.definition.end.bracket.square.galaxy"
+				}
+			}
+		},
+		{
+			"match": ";",
+			"name": "punctuation.terminator.statement.galaxy"
+		},
+		{
+			"match": ",",
+			"name": "punctuation.separator.delimiter.galaxy"
+		}
+	],
+	"repository": {
+		"access": {
+			"captures": {
+				"1": {
+					"name": "punctuation.separator.dot-access.galaxy"
+				},
+				"2": {
+					"name": "variable.other.member.galaxy"
+				}
+			},
+			"match": "(\\.)\\s*(([a-zA-Z_][a-zA-Z_0-9]*)\\b(?!\\s*\\())?"
+		},
+		"block": {
+			"patterns": [
+				{
+					"begin": "{",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.section.block.begin.bracket.curly.galaxy"
+						}
+					},
+					"end": "}",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.section.block.end.bracket.curly.galaxy"
+						}
+					},
+					"name": "meta.block.galaxy",
+					"patterns": [
+						{
+							"include": "#block_innards"
+						}
+					]
+				}
+			]
+		},
+		"block_innards": {
+			"patterns": [
+				{
+					"include": "#access"
+				},
+				{
+					"include": "#c_function_call"
+				},
+				{
+					"captures": {
+						"1": {
+							"name": "variable.other.galaxy"
+						},
+						"2": {
+							"name": "punctuation.definition.parameters.galaxy"
+						}
+					},
+					"match": "(?x)\n(?:\n  (?:\n    (?=\\s)(?<!else|new|return)\n    (?<=\\w) \\s+  # or word + space before name\n  )\n)\n(\n  (?:[A-Za-z_][A-Za-z0-9_]*+ | :: )++   # actual name\n  |\n  (?:(?<=operator) (?:[-*&<>=+!]+ | \\(\\) | \\[\\]))\n)\n\\s*(\\() # opening bracket",
+					"name": "meta.initialization.galaxy"
+				},
+				{
+					"begin": "{",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.section.block.begin.bracket.curly.galaxy"
+						}
+					},
+					"end": "}",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.section.block.end.bracket.curly.galaxy"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#block_innards"
+						}
+					]
+				},
+				{
+					"include": "#parens-block"
+				},
+				{
+					"include": "$base"
+				}
+			]
+		},
+		"c_function_call": {
+			"begin": "(?x)\n(?!(?:while|for|if|else|return|structref|arrayref|funcref)\\s*\\()\n(?=\n(?:[A-Za-z_][A-Za-z0-9_]*+)++\\s*\\(  # actual name\n|\n(?:(?<=operator)(?:[-*&<>=+!]+|\\(\\)|\\[\\]))\\s*\\(\n)",
+			"end": "(?<=\\))(?!\\w)",
+			"name": "meta.function-call.galaxy",
+			"patterns": [
+				{
+					"include": "#function-call-innards"
+				}
+			]
+		},
+		"comments": {
+			"patterns": [
+				{
+					"begin": "(^[ \\t]+)?(?=//)",
+					"beginCaptures": {
+						"1": {
+							"name": "punctuation.whitespace.comment.leading.galaxy"
+						}
+					},
+					"end": "(?!\\G)",
+					"patterns": [
+						{
+							"begin": "//",
+							"beginCaptures": {
+								"0": {
+									"name": "punctuation.definition.comment.galaxy"
+								}
+							},
+							"end": "(?=\\n)",
+							"name": "comment.line.double-slash.galaxy",
+							"patterns": [
+								{
+									"include": "#line_continuation_character"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		"line_continuation_character": {
+			"patterns": [
+				{
+					"match": "(\\\\)\\n",
+					"captures": {
+						"1": {
+							"name": "constant.character.escape.line-continuation.galaxy"
+						}
+					}
+				}
+			]
+		},
+		"numbers": {
+			"patterns": [
+				{
+					"match": "\\b((0(x|X)[0-9a-fA-F]([0-9a-fA-F']*[0-9a-fA-F])?)|(0(b|B)[01]([01']*[01])?)|(([0-9]([0-9']*[0-9])?\\.?[0-9]*([0-9']*[0-9])?)|(\\.[0-9]([0-9']*[0-9])?))((e|E)(\\+|-)?[0-9]([0-9']*[0-9])?)?)\\b",
+					"name": "constant.numeric.galaxy"
+				}
+			]
+		},
+		"parens": {
+			"begin": "\\(",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.section.parens.begin.bracket.round.galaxy"
+				}
+			},
+			"end": "\\)",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.section.parens.end.bracket.round.galaxy"
+				}
+			},
+			"patterns": [
+				{
+					"include": "$base"
+				}
+			]
+		},
+		"parens-block": {
+			"begin": "\\(",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.section.parens.begin.bracket.round.galaxy"
+				}
+			},
+			"end": "\\)",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.section.parens.end.bracket.round.galaxy"
+				}
+			},
+			"patterns": [
+				{
+					"include": "#block_innards"
+				}
+			]
+		},
+		"operators": {
+			"patterns": [
+				{
+					"match": "%=|\\+=|-=|\\*=|(?<!\\()/=",
+					"name": "keyword.operator.assignment.compound.galaxy"
+				},
+				{
+					"match": "&=|\\^=|<<=|>>=|\\|=",
+					"name": "keyword.operator.assignment.compound.bitwise.galaxy"
+				},
+				{
+					"match": "<<|>>",
+					"name": "keyword.operator.bitwise.shift.galaxy"
+				},
+				{
+					"match": "!=|<=|>=|==|<|>",
+					"name": "keyword.operator.comparison.galaxy"
+				},
+				{
+					"match": "&&|!|\\|\\|",
+					"name": "keyword.operator.logical.galaxy"
+				},
+				{
+					"match": "&|\\||\\^|~",
+					"name": "keyword.operator.galaxy"
+				},
+				{
+					"match": "=",
+					"name": "keyword.operator.assignment.galaxy"
+				},
+				{
+					"match": "%|\\*|/|-|\\+",
+					"name": "keyword.operator.galaxy"
+				}
+			]
+		},
+		"strings": {
+			"patterns": [
+				{
+					"begin": "\"",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.string.begin.galaxy"
+						}
+					},
+					"end": "\"",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.string.end.galaxy"
+						}
+					},
+					"name": "string.quoted.double.galaxy",
+					"patterns": [
+						{
+							"include": "#string_escaped_char"
+						},
+						{
+							"include": "#string_placeholder"
+						},
+						{
+							"include": "#line_continuation_character"
+						}
+					]
+				},
+				{
+					"begin": "'",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.string.begin.galaxy"
+						}
+					},
+					"end": "'",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.string.end.galaxy"
+						}
+					},
+					"name": "string.quoted.single.galaxy",
+					"patterns": [
+						{
+							"include": "#string_escaped_char"
+						},
+						{
+							"include": "#line_continuation_character"
+						}
+					]
+				}
+			]
+		},
+		"string_escaped_char": {
+			"patterns": [
+				{
+					"match": "(?x)\\\\ (\n\\\\             |\n[abefnprtv'\"?]   |\n[0-3]\\d{,2}     |\n[4-7]\\d?        |\nx[a-fA-F0-9]{,2} |\nu[a-fA-F0-9]{,4} |\nU[a-fA-F0-9]{,8} )",
+					"name": "constant.character.escape.galaxy"
+				},
+				{
+					"match": "\\\\.",
+					"name": "invalid.illegal.unknown-escape.galaxy"
+				}
+			]
+		},
+		"string_placeholder": {
+			"patterns": [
+				{
+					"match": "(?x) %\n(\\d+\\$)?                           # field (argument #)\n[#0\\- +']*                          # flags\n[,;:_]?                              # separator character (AltiVec)\n((-?\\d+)|\\*(-?\\d+\\$)?)?          # minimum field width\n(\\.((-?\\d+)|\\*(-?\\d+\\$)?)?)?    # precision\n(hh|h|ll|l|j|t|z|q|L|vh|vl|v|hv|hl)? # length modifier\n[diouxXDOUeEfFgGaACcSspn%]           # conversion type",
+					"name": "constant.other.placeholder.galaxy"
+				},
+				{
+					"match": "(%)(?!\"\\s*(PRI|SCN))",
+					"captures": {
+						"1": {
+							"name": "invalid.illegal.placeholder.galaxy"
+						}
+					}
+				}
+			]
+		},
+		"storage_types": {
+			"patterns": [
+				{
+					"match": "\\b(abilcmd|actor|actorscope|aifilter|animfilter|bank|bool|byte|camerainfo|char|color|doodad|fixed|handle|int|marker|order|playergroup|point|region|revealer|sound|soundlink|string|text|timer|transmissionsource|trigger|unit|unitfilter|unitgroup|unitref|void|wave|waveinfo|wavetarget)\\b",
+					"name": "storage.type.galaxy"
+				},
+				{
+					"match": "\\b(struct|typedef)\\b",
+					"name": "storage.container.galaxy"
+				}
+			]
+		},
+		"function-innards": {
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#storage_types"
+				},
+				{
+					"include": "#operators"
+				},
+				{
+					"begin": "(?x)\n(?!(?:while|for|if|else|return|structref|arrayref|funcref)\\s*\\()\n(\n(?:[A-Za-z_][A-Za-z0-9_]*+|::)++  # actual name\n|\n(?:(?<=operator)(?:[-*&<>=+!]+|\\(\\)|\\[\\]))\n)\n\\s*(\\()",
+					"beginCaptures": {
+						"1": {
+							"name": "entity.name.function.galaxy"
+						},
+						"2": {
+							"name": "punctuation.section.parameters.begin.bracket.round.galaxy"
+						}
+					},
+					"end": "\\)",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.section.parameters.end.bracket.round.galaxy"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#function-innards"
+						}
+					]
+				},
+				{
+					"begin": "\\(",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.section.parens.begin.bracket.round.galaxy"
+						}
+					},
+					"end": "\\)",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.section.parens.end.bracket.round.galaxy"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#function-innards"
+						}
+					]
+				},
+				{
+					"include": "$base"
+				}
+			]
+		},
+		"function-call-innards": {
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#storage_types"
+				},
+				{
+					"include": "#access"
+				},
+				{
+					"include": "#operators"
+				},
+				{
+					"begin": "(?x)\n(?!(?:while|for|if|else|return|structref|arrayref|funcref)\\s*\\()\n(\n(?:[A-Za-z_][A-Za-z0-9_]*+|::)++  # actual name\n|\n(?:(?<=operator)(?:[-*&<>=+!]+|\\(\\)|\\[\\]))\n)\n\\s*(\\()",
+					"beginCaptures": {
+						"1": {
+							"name": "entity.name.function.galaxy"
+						},
+						"2": {
+							"name": "punctuation.section.arguments.begin.bracket.round.galaxy"
+						}
+					},
+					"end": "\\)",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.section.arguments.end.bracket.round.galaxy"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#function-call-innards"
+						}
+					]
+				},
+				{
+					"begin": "\\(",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.section.parens.begin.bracket.round.galaxy"
+						}
+					},
+					"end": "\\)",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.section.parens.end.bracket.round.galaxy"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#function-call-innards"
+						}
+					]
+				},
+				{
+					"include": "#block_innards"
+				}
+			]
+		}
+	}
+}
