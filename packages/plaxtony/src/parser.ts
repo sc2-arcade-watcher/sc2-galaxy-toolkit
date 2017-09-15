@@ -1,0 +1,899 @@
+import * as Types from './types';
+import { SyntaxKind, Node, NodeArray, MutableNodeArray } from './types';
+import { Scanner, tokenToString } from './scanner';
+import { getKindName, isModifierKind, isKeywordTypeKind, createFileDiagnostic, isLeftHandSideExpression } from './utils';
+
+const enum ParsingContext {
+    SourceElements,
+    BlockStatements,
+    StructMembers,
+    Parameters,
+    TypeArguments,
+    ArgumentExpressions,
+}
+
+
+export class Parser {
+    private scanner: Scanner;
+    private currentToken: SyntaxKind;
+    private parsingContext: ParsingContext = 0;
+    private parseDiagnostics: Types.Diagnostic[] = [];
+    private sourceFile: Types.SourceFile;
+
+    private token(): SyntaxKind {
+        return this.currentToken;
+    }
+
+    private nextToken(): SyntaxKind {
+        return this.currentToken = this.scanner.scan();
+    }
+
+    private parseErrorAtCurrentToken(message: string, arg0?: any): void {
+        const start = this.scanner.getTokenPos();
+        const length = this.scanner.getTextPos() - start;
+
+        this.parseErrorAtPosition(start, length, message, arg0);
+    }
+
+    private parseErrorAtPosition(start: number, length: number, message: string, arg0?: any): void {
+        const diag = createFileDiagnostic(
+            this.sourceFile,
+            start,
+            length,
+            <Types.DiagnosticMessage>{
+                code: 1001,
+                category: Types.DiagnosticCategory.Error,
+                message: message,
+            },
+            arg0
+        );
+        this.parseDiagnostics.push(diag);
+        throw new Error(`${diag.file!.fileName} [${diag.start}]: ${diag.messageText}`);
+
+        // Mark that we've encountered an error.  We'll set an appropriate bit on the next
+        // node we finish so that it can't be reused incrementally.
+        // parseErrorBeforeNextFinishedNode = true;
+    }
+
+    private speculationHelper<T>(callback: () => T, isLookAhead: boolean): T {
+        // Keep track of the state we'll need to rollback to if lookahead fails (or if the
+        // caller asked us to always reset our state).
+        const saveToken = this.currentToken;
+        // const saveParseDiagnosticsLength = parseDiagnostics.length;
+        // const saveParseErrorBeforeNextFinishedNode = parseErrorBeforeNextFinishedNode;
+
+        // Note: it is not actually necessary to save/restore the context flags here.  That's
+        // because the saving/restoring of these flags happens naturally through the recursive
+        // descent nature of our parser.  However, we still store this here just so we can
+        // assert that invariant holds.
+        // const saveContextFlags = contextFlags;
+
+        // If we're only looking ahead, then tell the scanner to only lookahead as well.
+        // Otherwise, if we're actually speculatively parsing, then tell the scanner to do the
+        // same.
+        const result = isLookAhead
+        ? this.scanner.lookAhead(callback)
+        : this.scanner.tryScan(callback);
+
+        // Debug.assert(saveContextFlags === contextFlags);
+
+        // If our callback returned something 'falsy' or we're just looking ahead,
+        // then unconditionally restore us to where we were.
+        if (!result || isLookAhead) {
+            this.currentToken = saveToken;
+            // parseDiagnostics.length = saveParseDiagnosticsLength;
+            // parseErrorBeforeNextFinishedNode = saveParseErrorBeforeNextFinishedNode;
+        }
+
+        return result;
+    }
+
+    private lookAhead<T>(callback: () => T): T {
+        return this.speculationHelper(callback, true);
+    }
+
+    private parseExpected(kind: SyntaxKind, diagnosticMessage?: string, shouldAdvance = true): boolean {
+        if (this.token() === kind) {
+            if (shouldAdvance) {
+                this.nextToken();
+            }
+            return true;
+        }
+
+        if (diagnosticMessage == null) {
+            diagnosticMessage = "Expected " + getKindName(kind) + ", found " + getKindName(this.currentToken);
+        }
+
+        this.parseErrorAtCurrentToken(diagnosticMessage);
+
+        return false;
+    }
+
+    private parseOptional(t: SyntaxKind): boolean {
+        if (this.token() === t) {
+            this.nextToken();
+            return true;
+        }
+        return false;
+    }
+
+    private parseTokenNode<T extends Node>(): T {
+        const node = <T>this.createNode(this.token());
+        this.nextToken();
+        return this.finishNode(node);
+    }
+
+    private createNode(kind: SyntaxKind, pos?: number): Node {
+        const node = <Node>{};
+        node.kind = kind;
+        node.pos = pos === undefined ? this.scanner.getStartPos() : pos;
+        node.end = node.pos;
+        return node;
+    }
+
+    private createNodeArray<T extends Node>(elements?: T[], pos?: number): MutableNodeArray<T> {
+        const array = <MutableNodeArray<T>>(elements || []);
+        if (pos === undefined) {
+            pos = this.scanner.getStartPos();
+        }
+        array.pos = pos;
+        array.end = pos;
+        return array;
+    }
+
+    private createMissingNode<T extends Node>(kind: T["kind"]): T {
+        this.parseErrorAtCurrentToken("missing node {0}", kind);
+
+        const result = this.createNode(SyntaxKind.Unknown);
+
+        return this.finishNode(result) as T;
+    }
+
+    private createMissingList<T extends Node>(): NodeArray<T> {
+        return this.createNodeArray<T>();
+    }
+
+    private finishNode<T extends Node>(node: T, end?: number): T {
+        node.end = end === undefined ? this.scanner.getStartPos() : end;
+        return node;
+    }
+
+    private isListTerminator(kind: ParsingContext): boolean {
+        if (this.token() === SyntaxKind.EndOfFileToken) {
+            // Being at the end of the file ends all lists.
+            return true;
+        }
+
+        switch (kind) {
+            case ParsingContext.SourceElements:
+                return false;
+            case ParsingContext.BlockStatements:
+            case ParsingContext.StructMembers:
+                return this.token() === SyntaxKind.CloseBraceToken;
+            case ParsingContext.ArgumentExpressions:
+            case ParsingContext.Parameters:
+                return this.token() === SyntaxKind.CloseParenToken;
+            case ParsingContext.TypeArguments:
+                return this.token() === SyntaxKind.GreaterThanToken;
+        }
+    }
+
+    private parsingContextErrors(context: ParsingContext): string {
+        switch (context) {
+            case ParsingContext.SourceElements:
+                return 'expected declaration';
+            case ParsingContext.BlockStatements:
+                return 'expected declaration or statement';
+            case ParsingContext.StructMembers:
+                return 'expected property declaration';
+            case ParsingContext.TypeArguments:
+                return 'expected type argumnt definition';
+            case ParsingContext.ArgumentExpressions:
+                return 'expected argumnt expression';
+            case ParsingContext.Parameters:
+                return 'expected parameter declaration';
+        }
+    }
+
+    private isListElement(parsingContext: ParsingContext, inErrorRecovery: boolean): boolean {
+        switch (parsingContext) {
+            case ParsingContext.SourceElements:
+                return this.isStartOfRootStatement();
+            case ParsingContext.BlockStatements:
+                return this.isStartOfStatement();
+            case ParsingContext.StructMembers:
+                return this.isStartOfVariableDeclaration();
+            case ParsingContext.TypeArguments:
+                return this.isStartOfTypeDefinition();
+            case ParsingContext.Parameters:
+                return this.isStartOfParameter();
+            case ParsingContext.ArgumentExpressions:
+                // TODO:
+                throw new Error();
+        }
+    }
+
+    private parseList<T extends Node>(kind: ParsingContext, parseElement: () => T): NodeArray<T> {
+        const saveParsingContext = this.parsingContext;
+        this.parsingContext |= 1 << kind;
+        const result = this.createNodeArray<T>();
+
+        while (!this.isListTerminator(kind)) {
+            if (this.isListElement(kind, false)) {
+                result.push(parseElement());
+
+                continue;
+            }
+
+            this.parseErrorAtCurrentToken(this.parsingContextErrors(kind));
+        }
+
+        result.end = this.scanner.getTokenPos();
+        this.parsingContext = saveParsingContext;
+        return result;
+    }
+
+    private parseBracketedList<T extends Node>(kind: ParsingContext, parseElement: () => T, open: SyntaxKind, close: SyntaxKind): NodeArray<T> {
+        if (this.parseExpected(open)) {
+            const result = this.parseDelimitedList(kind, parseElement);
+            this.parseExpected(close);
+            return result;
+        }
+
+        return this.createMissingList<T>();
+    }
+
+    private parseDelimitedList<T extends Node>(kind: ParsingContext, parseElement: () => T): NodeArray<T> {
+        const saveParsingContext = this.parsingContext;
+        this.parsingContext |= 1 << kind;
+        const result = this.createNodeArray<T>();
+
+        while (true) {
+            if (this.isListElement(kind, false)) {
+                const startPos = this.scanner.getStartPos();
+                result.push(parseElement());
+
+                if (this.parseOptional(SyntaxKind.CommaToken)) {
+                    // No need to check for a zero length node since we know we parsed a comma
+                    continue;
+                }
+
+                if (this.isListTerminator(kind)) {
+                    break;
+                }
+
+                // We didn't get a comma, and the list wasn't terminated, explicitly parse
+                // out a comma so we give a good error message.
+                this.parseExpected(SyntaxKind.CommaToken);
+
+                continue;
+            }
+
+            if (this.isListTerminator(kind)) {
+                break;
+            }
+
+            this.parseErrorAtCurrentToken(this.parsingContextErrors(kind));
+        }
+
+        result.end = this.scanner.getTokenPos();
+        this.parsingContext = saveParsingContext;
+        return result;
+    }
+
+    private isVariableDeclaration(): boolean {
+        if (this.token() === SyntaxKind.ConstKeyword) {
+            this.nextToken();
+        }
+
+        if (!isKeywordTypeKind(this.token()) && this.token() !== SyntaxKind.Identifier) {
+            return false;
+        }
+
+        this.parseTypeDefinition();
+
+        if (this.token() !== SyntaxKind.Identifier) {
+            return false;
+        }
+
+        this.nextToken();
+        if (this.token() !== SyntaxKind.EqualsToken && this.token() !== SyntaxKind.SemicolonToken) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private isFunctionDeclaration(): boolean {
+        while (this.token() === SyntaxKind.NativeKeyword || this.token() === SyntaxKind.StaticKeyword) {
+            this.nextToken();
+        }
+
+        if (!isKeywordTypeKind(this.token()) && this.token() !== SyntaxKind.Identifier) {
+            return false;
+        }
+
+        this.parseTypeDefinition();
+
+        if (this.token() !== SyntaxKind.Identifier) {
+            return false;
+        }
+
+        this.nextToken();
+        if (this.token() !== SyntaxKind.OpenParenToken) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private isStartOfExpression(): boolean {
+        if (this.isStartOfLeftHandSideExpression()) {
+            return true;
+        }
+
+        switch (this.token()) {
+            case SyntaxKind.PlusToken:
+            case SyntaxKind.MinusToken:
+            case SyntaxKind.TildeToken:
+            case SyntaxKind.ExclamationToken:
+            case SyntaxKind.PlusPlusToken:
+            case SyntaxKind.MinusMinusToken:
+                return true;
+            default:
+                // Error tolerance.  If we see the start of some binary operator, we consider
+                // that the start of an expression.  That way we'll parse out a missing identifier,
+                // give a good message about an identifier being missing, and then consume the
+                // rest of the binary expression.
+                if (this.isBinaryOperator()) {
+                    return true;
+                }
+
+                return this.token() === SyntaxKind.Identifier;
+        }
+    }
+
+    private isStartOfStatement(): boolean {
+        switch (this.token()) {
+            case SyntaxKind.SemicolonToken:
+            case SyntaxKind.OpenBraceToken:
+            case SyntaxKind.StructKeyword:
+            case SyntaxKind.IfKeyword:
+            case SyntaxKind.DoKeyword:
+            case SyntaxKind.WhileKeyword:
+            case SyntaxKind.ForKeyword:
+            case SyntaxKind.ContinueKeyword:
+            case SyntaxKind.BreakKeyword:
+            case SyntaxKind.ReturnKeyword:
+            case SyntaxKind.IncludeKeyword:
+                return true;
+
+            default:
+                if (this.isStartOfVariableDeclaration()) {
+                    return true;
+                }
+                return this.isStartOfExpression();
+        }
+    }
+
+    private isStartOfVariableDeclaration(): boolean {
+        return this.lookAhead(this.isVariableDeclaration.bind(this));
+    }
+
+    private isStartOfFunctionDeclaration(): boolean {
+        return this.lookAhead(this.isFunctionDeclaration.bind(this));
+    }
+
+    private isStartOfRootStatement(): boolean {
+        switch (this.token()) {
+            case SyntaxKind.SemicolonToken:
+            case SyntaxKind.StructKeyword:
+            case SyntaxKind.IncludeKeyword:
+                return true;
+        }
+
+        if (this.isStartOfVariableDeclaration() || this.isStartOfFunctionDeclaration()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private isStartOfTypeDefinition(): boolean {
+        return isKeywordTypeKind(this.token()) || this.token() === SyntaxKind.Identifier;
+    }
+
+    private isStartOfParameter(): boolean {
+        return this.isStartOfTypeDefinition();
+    }
+
+    private parseLiteral(kind: SyntaxKind): Types.Literal {
+        const node = <Types.Literal>this.createNode(kind);
+        this.parseExpected(kind, undefined, false);
+        node.text = this.scanner.getTokenValue();
+        this.nextToken();
+        return this.finishNode(node);
+    }
+
+    private parseInclude(): Types.IncludeStatement {
+        const node = <Types.IncludeStatement>this.createNode(SyntaxKind.IncludeStatement);
+        this.parseExpected(SyntaxKind.IncludeKeyword);
+        node.path = <Types.StringLiteral>this.parseLiteral(SyntaxKind.StringLiteral);
+        this.parseExpected(SyntaxKind.SemicolonToken);
+        return this.finishNode(node);
+    }
+
+    private parseIdentifier(diagnosticMessage?: string): Types.Identifier {
+        this.parseExpected(SyntaxKind.Identifier, diagnosticMessage, false);
+        const identifier = <Types.Identifier>this.createNode(SyntaxKind.Identifier);
+        identifier.name = this.scanner.getTokenValue();
+        this.nextToken();
+        return this.finishNode(identifier);
+    }
+
+    private parseTypeDefinition(): Types.TypeDefinition {
+        let type: Types.TypeDefinition;
+
+        if (this.token() === SyntaxKind.Identifier) {
+            type = <Types.TypeReferenceNode>this.createNode(SyntaxKind.TypeReference);
+            (<Types.TypeReferenceNode>type).name = this.parseIdentifier();
+        }
+        else if (isKeywordTypeKind(this.token())) {
+            type = <Types.KeywordTypeNode>this.createNode(SyntaxKind.KeywordTypeNode);
+            (<Types.KeywordTypeNode>type).keyword = this.parseTokenNode();
+        }
+        else {
+            throw new Error();
+        }
+
+        if (this.token() === SyntaxKind.LessThanToken) {
+            type.typeArguments = this.parseBracketedList(ParsingContext.TypeArguments, this.parseTypeDefinition.bind(this), SyntaxKind.LessThanToken, SyntaxKind.GreaterThanToken);
+        }
+        return this.finishNode(type);
+    }
+
+    private parseParameter(): Types.ParameterDeclaration {
+        const param = <Types.ParameterDeclaration>this.createNode(SyntaxKind.ParameterDeclaration);
+        param.type = this.parseTypeDefinition();
+        param.name = this.parseIdentifier();
+        return this.finishNode(param)
+    }
+
+    private parsePropertyDeclaration(): Types.PropertyDeclaration {
+        const property = <Types.PropertyDeclaration>this.createNode(SyntaxKind.PropertyDeclaration);
+        property.type = this.parseTypeDefinition();
+        property.name = this.parseIdentifier();
+        this.parseExpected(SyntaxKind.SemicolonToken);
+        return this.finishNode(property)
+    }
+
+    private parseStructDeclaration(): Types.StructDeclaration {
+        const node = <Types.StructDeclaration>this.createNode(SyntaxKind.StructDeclaration);
+        this.parseExpected(SyntaxKind.StructKeyword);
+        node.name = this.parseIdentifier();
+        this.parseExpected(SyntaxKind.OpenBraceToken);
+        node.members = this.parseList(ParsingContext.StructMembers, this.parsePropertyDeclaration.bind(this));
+        this.parseExpected(SyntaxKind.CloseBraceToken);
+        this.parseExpected(SyntaxKind.SemicolonToken);
+        return this.finishNode(node);
+    }
+
+    private parseModifiers(): Types.Modifier[] | undefined {
+        let mods = Array<Types.Modifier>();
+        return mods;
+    }
+
+    private parseFunctionDeclaration(): Types.FunctionDeclaration {
+        const func = <Types.FunctionDeclaration>this.createNode(SyntaxKind.FunctionDeclaration);
+        func.modifiers = this.parseModifiers();
+        func.type = this.parseTypeDefinition();
+        func.name = this.parseIdentifier();
+
+        func.parameters = this.parseBracketedList(ParsingContext.Parameters, this.parseParameter.bind(this), SyntaxKind.OpenParenToken, SyntaxKind.CloseParenToken);
+
+        if (this.token() === SyntaxKind.OpenBraceToken) {
+            func.body = this.parseBlock();
+        }
+        else {
+            this.parseExpected(SyntaxKind.SemicolonToken);
+        }
+        return this.finishNode(func);
+    }
+
+    private parseVariableDeclaration(): Types.VariableDeclaration {
+        const variable = <Types.VariableDeclaration>this.createNode(SyntaxKind.VariableDeclaration);
+        variable.modifiers = this.parseModifiers();
+        variable.type = this.parseTypeDefinition();
+        variable.name = this.parseIdentifier();
+        this.parseExpected(SyntaxKind.SemicolonToken);
+        return this.finishNode(variable);
+    }
+
+    private parseBlock(): Types.Block {
+        const node = <Types.Block>this.createNode(SyntaxKind.Block);
+        this.parseExpected(SyntaxKind.OpenBraceToken);
+        node.statements = this.parseList(ParsingContext.BlockStatements, this.parseStatement.bind(this));
+        this.parseExpected(SyntaxKind.CloseBraceToken);
+        return this.finishNode(node);
+    }
+
+    private parseLiteralNode(): Types.Literal {
+        const node = <Types.Literal>this.createNode(this.token());
+        node.text = this.scanner.getTokenValue();
+        this.nextToken();
+        return this.finishNode(node);
+    }
+
+    private isUpdateExpression(): boolean {
+        // This function is called inside parseUnaryExpression to decide
+        // whether to call parseSimpleUnaryExpression or call parseUpdateExpression directly
+        switch (this.token()) {
+            case SyntaxKind.PlusToken:
+            case SyntaxKind.MinusToken:
+            case SyntaxKind.TildeToken:
+            case SyntaxKind.ExclamationToken:
+                return false;
+            default:
+                return true;
+        }
+    }
+
+    private isStartOfLeftHandSideExpression(): boolean {
+        switch (this.token()) {
+            case SyntaxKind.NullKeyword:
+            case SyntaxKind.TrueKeyword:
+            case SyntaxKind.FalseKeyword:
+            case SyntaxKind.NumericLiteral:
+            case SyntaxKind.StringLiteral:
+            case SyntaxKind.OpenParenToken:
+            case SyntaxKind.Identifier:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private makeBinaryExpression(left: Types.Expression, operatorToken: Types.BinaryOperatorToken, right: Types.Expression): Types.BinaryExpression {
+        const node = <Types.BinaryExpression>this.createNode(SyntaxKind.BinaryExpression, left.pos);
+        node.left = left;
+        node.operatorToken = operatorToken;
+        node.right = right;
+        return this.finishNode(node);
+    }
+
+    private isBinaryOperator() {
+        return this.getBinaryOperatorPrecedence() > 0;
+    }
+
+    private getBinaryOperatorPrecedence(): number {
+        switch (this.token()) {
+            case SyntaxKind.BarBarToken:
+                return 1;
+            case SyntaxKind.AmpersandAmpersandToken:
+                return 2;
+            case SyntaxKind.BarToken:
+                return 3;
+            case SyntaxKind.CaretToken:
+                return 4;
+            case SyntaxKind.AmpersandToken:
+                return 5;
+            case SyntaxKind.EqualsEqualsToken:
+            case SyntaxKind.ExclamationEqualsToken:
+                return 6;
+            case SyntaxKind.LessThanToken:
+            case SyntaxKind.GreaterThanToken:
+            case SyntaxKind.LessThanEqualsToken:
+            case SyntaxKind.GreaterThanEqualsToken:
+                return 7;
+            case SyntaxKind.LessThanLessThanToken:
+            case SyntaxKind.GreaterThanGreaterThanToken:
+                return 8;
+            case SyntaxKind.PlusToken:
+            case SyntaxKind.MinusToken:
+                return 9;
+            case SyntaxKind.AsteriskToken:
+            case SyntaxKind.SlashToken:
+            case SyntaxKind.PercentToken:
+                return 10;
+        }
+
+        // -1 is lower than all other precedences.  Returning it will cause binary expression
+        // parsing to stop.
+        return -1;
+    }
+
+    private parsePrimaryExpression(): Types.PrimaryExpression {
+        switch (this.token()) {
+            case SyntaxKind.NumericLiteral:
+            case SyntaxKind.StringLiteral:
+                return this.parseLiteralNode();
+            case SyntaxKind.NullKeyword:
+            case SyntaxKind.TrueKeyword:
+            case SyntaxKind.FalseKeyword:
+                return this.parseTokenNode<Types.PrimaryExpression>();
+            // case SyntaxKind.OpenParenToken:
+            //     // TODO:
+            //     return this.parseParenthesizedExpression();
+        }
+
+        return this.parseIdentifier('expression expected');
+    }
+
+    private parseMemberExpressionOrHigher(): Types.MemberExpression {
+        const expression = this.parsePrimaryExpression();
+        return this.parseMemberExpressionRest(expression);
+    }
+
+    private parseMemberExpressionRest(expression: Types.LeftHandSideExpression): Types.MemberExpression {
+        // TODO:
+        // while (true) {
+        //     const dotToken = this.parseOptionalToken(SyntaxKind.DotToken);
+        //     if (dotToken) {
+        //         const propertyAccess = <PropertyAccessExpression>createNode(SyntaxKind.PropertyAccessExpression, expression.pos);
+        //         propertyAccess.expression = expression;
+        //         propertyAccess.name = parseRightSideOfDot(/*allowIdentifierNames*/ true);
+        //         expression = finishNode(propertyAccess);
+        //         continue;
+        //     }
+        // }
+        return <Types.MemberExpression>expression;
+    }
+
+    private parseCallExpressionRest(expression: Types.LeftHandSideExpression): Types.LeftHandSideExpression {
+        while (true) {
+            // TODO:
+            // expression = this.parseMemberExpressionRest(expression);
+            // if (this.token() === SyntaxKind.OpenParenToken) {
+            //     const callExpr = <CallExpression>createNode(SyntaxKind.CallExpression, expression.pos);
+            //     callExpr.expression = expression;
+            //     callExpr.arguments = this.parseArgumentList();
+            //     expression = this.finishNode(callExpr);
+            //     continue;
+            // }
+
+            return expression;
+        }
+    }
+
+    private parseLeftHandSideExpressionOrHigher(): Types.LeftHandSideExpression {
+        let expression: Types.MemberExpression;
+        expression = this.parseMemberExpressionOrHigher();
+        return this.parseCallExpressionRest(expression);
+    }
+
+    private parseUpdateExpression(): Types.UpdateExpression {
+        if (this.token() === SyntaxKind.PlusPlusToken || this.token() === SyntaxKind.MinusMinusToken) {
+            this.parseErrorAtCurrentToken('unary increment operators not supported');
+            const node = <Types.PrefixUnaryExpression>this.createNode(SyntaxKind.PrefixUnaryExpression);
+            node.operator = <Types.PrefixUnaryOperator>this.token();
+            this.nextToken();
+            node.operand = this.parseLeftHandSideExpressionOrHigher();
+            return this.finishNode(node);
+        }
+
+        const expression = this.parseLeftHandSideExpressionOrHigher();
+
+        if (!isLeftHandSideExpression(expression)) {
+            throw new Error('??');
+        }
+
+        if ((this.token() === SyntaxKind.PlusPlusToken || this.token() === SyntaxKind.MinusMinusToken)) {
+            this.parseErrorAtCurrentToken('unary increment operators not supported');
+            const node = <Types.PostfixUnaryExpression>this.createNode(SyntaxKind.PostfixUnaryExpression, expression.pos);
+            node.operand = expression;
+            node.operator = <Types.PostfixUnaryOperator>this.token();
+            this.nextToken();
+            return this.finishNode(node);
+        }
+
+        return expression;
+    }
+
+    private parsePrefixUnaryExpression() {
+        const node = <Types.PrefixUnaryExpression>this.createNode(SyntaxKind.PrefixUnaryExpression);
+        node.operator = <Types.PrefixUnaryOperator>this.token();
+        this.nextToken();
+        node.operand = this.parseSimpleUnaryExpression();
+
+        return this.finishNode(node);
+    }
+
+    private parseSimpleUnaryExpression(): Types.UnaryExpression {
+        switch (this.token()) {
+            case SyntaxKind.PlusToken:
+            case SyntaxKind.MinusToken:
+            case SyntaxKind.TildeToken:
+            case SyntaxKind.ExclamationToken:
+                return this.parsePrefixUnaryExpression();
+            default:
+                return this.parseUpdateExpression();
+        }
+    }
+
+    private parseUnaryExpressionOrHigher(): Types.UnaryExpression | Types.BinaryExpression {
+        /**
+         * UpdateExpression:
+         *     1) LeftHandSideExpression
+         *     2) LeftHandSideExpression++
+         *     3) LeftHandSideExpression--
+         *     4) ++UnaryExpression
+         *     5) --UnaryExpression
+         */
+        if (this.isUpdateExpression()) {
+            return this.parseUpdateExpression();
+        }
+
+        /**
+         * UnaryExpression:
+         *     1) UpdateExpression
+         *     2) + UpdateExpression
+         *     3) - UpdateExpression
+         *     4) ~ UpdateExpression
+         *     5) ! UpdateExpression
+         */
+        return this.parseSimpleUnaryExpression();
+    }
+
+    private parseBinaryExpressionOrHigher(precedence: number): Types.Expression {
+        const leftOperand = this.parseUnaryExpressionOrHigher();
+        return this.parseBinaryExpressionRest(precedence, leftOperand);
+    }
+
+    private parseBinaryExpressionRest(precedence: number, leftOperand: Types.Expression): Types.Expression {
+        while (true) {
+            const newPrecedence = this.getBinaryOperatorPrecedence();
+
+            // Check the precedence to see if we should "take" this operator
+            // - For left associative operator, consume the operator,
+            //   recursively call the function below, and parse binaryExpression as a rightOperand
+            //   of the caller if the new precedence of the operator is greater then or equal to the current precedence.
+            //   For example:
+            //      a - b - c;
+            //            ^token; leftOperand = b. Return b to the caller as a rightOperand
+            //      a * b - c
+            //            ^token; leftOperand = b. Return b to the caller as a rightOperand
+            //      a - b * c;
+            //            ^token; leftOperand = b. Return b * c to the caller as a rightOperand
+            const consumeCurrentOperator = newPrecedence > precedence;
+
+            if (!consumeCurrentOperator) {
+                break;
+            }
+
+            leftOperand = this.makeBinaryExpression(leftOperand, <Types.BinaryOperatorToken>this.parseTokenNode(), this.parseBinaryExpressionOrHigher(newPrecedence));
+        }
+
+        return leftOperand;
+    }
+
+    private parseAssignmentExpressionOrHigher(): Types.Expression {
+        return this.parseBinaryExpressionOrHigher(0);
+    }
+
+    private parseExpression(): Types.Expression {
+        return this.parseAssignmentExpressionOrHigher();
+    }
+
+    private parseReturnStatement(): Types.ReturnStatement {
+        const node = <Types.ReturnStatement>this.createNode(SyntaxKind.ReturnStatement);
+        this.parseExpected(SyntaxKind.ReturnKeyword);
+        if (this.token() !== SyntaxKind.SemicolonToken) {
+            node.expression = this.parseExpression();
+        }
+        this.parseExpected(SyntaxKind.SemicolonToken);
+        return this.finishNode(node);
+    }
+
+    private parseExpressionStatement(): Types.ExpressionStatement {
+        const node = <Types.ExpressionStatement>this.createNode(SyntaxKind.ExpressionStatement);
+        node.expression = this.parseExpression();
+        this.parseExpected(SyntaxKind.SemicolonToken);
+        return this.finishNode(node);
+    }
+
+    private parseEmptyStatement(): Types.EmptyStatement {
+        const node = <Types.EmptyStatement>this.createNode(SyntaxKind.EmptyStatement);
+        this.parseExpected(SyntaxKind.SemicolonToken);
+        return this.finishNode(node);
+    }
+
+    private parseStatement(): Types.Statement {
+        switch (this.token()) {
+            case SyntaxKind.SemicolonToken:
+                return this.parseEmptyStatement();
+
+            case SyntaxKind.IncludeKeyword:
+                return this.parseInclude();
+
+            case SyntaxKind.StructKeyword:
+                return this.parseStructDeclaration();
+
+            case SyntaxKind.ReturnKeyword:
+                return this.parseReturnStatement();
+
+            case SyntaxKind.Identifier:
+            case SyntaxKind.ConstKeyword:
+            case SyntaxKind.StaticKeyword:
+            case SyntaxKind.NativeKeyword:
+            case SyntaxKind.AbilcmdKeyword:
+            case SyntaxKind.ActorKeyword:
+            case SyntaxKind.ActorscopeKeyword:
+            case SyntaxKind.AifilterKeyword:
+            case SyntaxKind.AnimfilterKeyword:
+            case SyntaxKind.BankKeyword:
+            case SyntaxKind.BoolKeyword:
+            case SyntaxKind.ByteKeyword:
+            case SyntaxKind.CamerainfoKeyword:
+            case SyntaxKind.CharKeyword:
+            case SyntaxKind.ColorKeyword:
+            case SyntaxKind.DoodadKeyword:
+            case SyntaxKind.FixedKeyword:
+            case SyntaxKind.HandleKeyword:
+            case SyntaxKind.GenerichandleKeyword:
+            case SyntaxKind.EffecthistoryKeyword:
+            case SyntaxKind.IntKeyword:
+            case SyntaxKind.MarkerKeyword:
+            case SyntaxKind.OrderKeyword:
+            case SyntaxKind.PlayergroupKeyword:
+            case SyntaxKind.PointKeyword:
+            case SyntaxKind.RegionKeyword:
+            case SyntaxKind.RevealerKeyword:
+            case SyntaxKind.SoundKeyword:
+            case SyntaxKind.SoundlinkKeyword:
+            case SyntaxKind.StringKeyword:
+            case SyntaxKind.TextKeyword:
+            case SyntaxKind.TimerKeyword:
+            case SyntaxKind.TransmissionsourceKeyword:
+            case SyntaxKind.TriggerKeyword:
+            case SyntaxKind.UnitKeyword:
+            case SyntaxKind.UnitfilterKeyword:
+            case SyntaxKind.UnitgroupKeyword:
+            case SyntaxKind.UnitrefKeyword:
+            case SyntaxKind.VoidKeyword:
+            case SyntaxKind.WaveKeyword:
+            case SyntaxKind.WaveinfoKeyword:
+            case SyntaxKind.WavetargetKeyword:
+            case SyntaxKind.ArrayrefKeyword:
+            case SyntaxKind.StructrefKeyword:
+            case SyntaxKind.FuncrefKeyword:
+                if (this.isStartOfFunctionDeclaration()) {
+                    return this.parseFunctionDeclaration();
+                }
+                else if (this.isStartOfVariableDeclaration()) {
+                    return this.parseVariableDeclaration();
+                }
+                else if (this.isStartOfExpression()) {
+                    return this.parseExpression();
+                }
+                else {
+                    throw new Error();
+                }
+                break;
+
+            default:
+                return this.parseExpressionStatement();
+                // throw new Error("unexpected: " + getKindName(this.currentToken) + ": " + tokenToString(this.currentToken));
+        }
+    }
+
+    constructor() {
+        this.scanner = new Scanner()
+    }
+
+    public setText(text: string) {
+        this.scanner.setText(text);
+    }
+
+    public parseFile(fileName: string, text: string): Types.SourceFile {
+        this.scanner.setText(text);
+        this.sourceFile = <Types.SourceFile>this.createNode(SyntaxKind.SourceFile, 0);
+        this.sourceFile.fileName = fileName;
+
+        this.nextToken();
+        this.sourceFile.statements = this.parseList(ParsingContext.SourceElements, this.parseStatement.bind(this));
+
+        this.finishNode(this.sourceFile);
+
+        return this.sourceFile;
+    }
+}
