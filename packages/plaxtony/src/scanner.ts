@@ -154,6 +154,9 @@ export function isOctalDigit(ch: number): boolean {
 }
 
 export class Scanner {
+    private line: number;
+    private col: number;
+
     // Current position (end position of text of current token)
     private pos: number;
 
@@ -181,6 +184,8 @@ export class Scanner {
     }
 
     private speculationHelper<T>(callback: () => T, isLookahead: boolean): T {
+        const saveLine = this.line;
+        const saveCol = this.col;
         const savePos = this.pos;
         const saveStartPos = this.startPos;
         const saveTokenPos = this.tokenPos;
@@ -192,6 +197,8 @@ export class Scanner {
         // If our callback returned something 'falsy' or we're just looking ahead,
         // then unconditionally restore us to where we were.
         if (!result || isLookahead) {
+            this.line = saveLine;
+            this.col = saveCol;
             this.pos = savePos;
             this.startPos = saveStartPos;
             this.tokenPos = saveTokenPos;
@@ -401,6 +408,8 @@ export class Scanner {
         this.text = text;
         this.pos = 0;
         this.end = this.text.length;
+        this.line = 1;
+        this.col = 1;
     }
 
     scan(): SyntaxKind {
@@ -414,7 +423,6 @@ export class Scanner {
             let ch = this.text.charCodeAt(this.pos);
 
             switch (ch) {
-                case CharacterCodes.lineFeed:
                 case CharacterCodes.tab:
                 case CharacterCodes.verticalTab:
                 case CharacterCodes.formFeed:
@@ -438,6 +446,13 @@ export class Scanner {
                     this.tokenValue = this.scanString();
 
                     return this.token = SyntaxKind.StringLiteral;
+
+                case CharacterCodes.exclamation:
+                    if (this.text.charCodeAt(this.pos + 1) === CharacterCodes.equals) {
+                        return this.pos += 2, this.token = SyntaxKind.ExclamationEqualsToken;
+                    }
+                    this.pos++;
+                    return this.token = SyntaxKind.ExclamationToken;
 
                 case CharacterCodes.percent:
                     if (this.text.charCodeAt(this.pos + 1) === CharacterCodes.equals) {
@@ -594,6 +609,15 @@ export class Scanner {
                     this.pos++;
                     return this.token = SyntaxKind.EqualsToken;
                 case CharacterCodes.greaterThan:
+                    if (this.text.charCodeAt(this.pos + 1) === CharacterCodes.greaterThan) {
+                        if (this.text.charCodeAt(this.pos + 2) === CharacterCodes.equals) {
+                            return this.pos += 3, this.token = SyntaxKind.GreaterThanGreaterThanEqualsToken;
+                        }
+                        return this.pos += 2, this.token = SyntaxKind.GreaterThanGreaterThanToken;
+                    }
+                    if (this.text.charCodeAt(this.pos + 1) === CharacterCodes.equals) {
+                        return this.pos += 2, this.token = SyntaxKind.GreaterThanEqualsToken;
+                    }
                     this.pos++;
                     return this.token = SyntaxKind.GreaterThanToken;
 
@@ -636,15 +660,24 @@ export class Scanner {
                         return this.token = this.getIdentifierToken();
                     }
                     else if (isLineBreak(ch)) {
-                        // precedingLineBreak = true;
+                        this.col = this.pos;
+                        this.line++;
                         this.pos++;
                         continue;
                     }
-                    this.error("Diagnostics.Invalid_character");
+                    this.error(`encountered invalid character ${this.text.charAt(this.pos)}`);
                     this.pos++;
                     return this.token = SyntaxKind.Unknown;
             }
         }
+    }
+
+    public getLine(): number {
+        return this.line;
+    }
+
+    public getCol(): number {
+        return this.pos - this.col;
     }
 
     public getStartPos(): number {

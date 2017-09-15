@@ -260,8 +260,10 @@ export const enum SyntaxKind {
     Identifier,
     TypeReference,
     KeywordTypeNode,
+    ArrayType,
 
     ArrayLiteralExpression,
+    ElementAccessExpression,
     PropertyAccessExpression,
     CallExpression,
     PrefixUnaryExpression,
@@ -273,6 +275,13 @@ export const enum SyntaxKind {
     SourceFile,
     Block,
 
+    IfStatement,
+    DoStatement,
+    WhileStatement,
+    ForStatement,
+    BreakStatement,
+    ContinueStatement,
+
     IncludeStatement,
     ReturnStatement,
     ExpressionStatement,
@@ -283,10 +292,6 @@ export const enum SyntaxKind {
     FunctionDeclaration,
     ParameterDeclaration,
     PropertyDeclaration,
-
-    //
-    // FirstKeyword = StructKeyword,
-    // LastKeyword = FuncrefKeyword,
 }
 
 export type Modifier
@@ -398,6 +403,12 @@ export interface TypeReferenceNode extends TypeDefinition {
     name: Identifier;
 }
 
+export interface ArrayTypeNode extends TypeNode {
+    kind: SyntaxKind.ArrayType;
+    elementType: TypeNode;
+    size: Expression;
+}
+
 export interface Declaration extends Node {
     name?: Identifier;
     modifiers?: Modifier[];
@@ -454,7 +465,7 @@ export interface SourceFile extends Node {
 export interface Expression extends Node {
 }
 
-export interface ParenthesizedExpression extends Expression {
+export interface ParenthesizedExpression extends PrimaryExpression {
     kind: SyntaxKind.ParenthesizedExpression;
     expression: Expression;
 }
@@ -532,6 +543,63 @@ export interface PostfixUnaryExpression extends UnaryExpression {
     kind: SyntaxKind.PostfixUnaryExpression;
     operand: LeftHandSideExpression;
     operator: PostfixUnaryOperator;
+}
+
+export interface ElementAccessExpression extends MemberExpression {
+    kind: SyntaxKind.ElementAccessExpression;
+    expression: LeftHandSideExpression;
+    argumentExpression?: Expression;
+}
+
+export interface PropertyAccessExpression extends MemberExpression, NamedDeclaration {
+    kind: SyntaxKind.PropertyAccessExpression;
+    expression: LeftHandSideExpression;
+    name: Identifier;
+}
+
+export interface CallExpression extends LeftHandSideExpression, Declaration {
+    kind: SyntaxKind.CallExpression;
+    expression: LeftHandSideExpression;
+    typeArguments?: NodeArray<TypeNode>;
+    arguments: NodeArray<Expression>;
+}
+
+export interface BreakStatement extends Statement {
+    kind: SyntaxKind.BreakStatement;
+}
+
+export interface ContinueStatement extends Statement {
+    kind: SyntaxKind.ContinueStatement;
+}
+
+export type BreakOrContinueStatement = BreakStatement | ContinueStatement;
+
+export interface IfStatement extends Statement {
+    kind: SyntaxKind.IfStatement;
+    expression: Expression;
+    thenStatement: Statement;
+    elseStatement?: Statement;
+}
+
+export interface IterationStatement extends Statement {
+    statement: Statement;
+}
+
+export interface DoStatement extends IterationStatement {
+    kind: SyntaxKind.DoStatement;
+    expression: Expression;
+}
+
+export interface WhileStatement extends IterationStatement {
+    kind: SyntaxKind.WhileStatement;
+    expression: Expression;
+}
+
+export interface ForStatement extends IterationStatement {
+    kind: SyntaxKind.ForStatement;
+    initializer?: Expression;
+    condition?: Expression;
+    incrementor?: Expression;
 }
 
 //

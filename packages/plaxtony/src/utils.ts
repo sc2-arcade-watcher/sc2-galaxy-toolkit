@@ -1,5 +1,5 @@
-import { SyntaxKind } from './types';
 import * as Types from './types';
+import { SyntaxKind } from './types';
 
 export function formatStringFromArgs(text: string, args: { [index: number]: string; }, baseIndex?: number): string {
     baseIndex = baseIndex || 0;
@@ -94,11 +94,16 @@ export function isKeywordTypeKind(token: SyntaxKind): boolean {
     return false;
 }
 
+export function isAssignmentOperator(token: SyntaxKind): boolean {
+    return token >= SyntaxKind.EqualsToken && token <= SyntaxKind.CaretEqualsToken;
+}
+
 function isLeftHandSideExpressionKind(kind: SyntaxKind): boolean {
     return kind === SyntaxKind.PropertyAccessExpression
+        || kind === SyntaxKind.ElementAccessExpression
         || kind === SyntaxKind.CallExpression
-        || kind === SyntaxKind.ArrayLiteralExpression
         || kind === SyntaxKind.ParenthesizedExpression
+        || kind === SyntaxKind.ArrayLiteralExpression
         || kind === SyntaxKind.Identifier
         || kind === SyntaxKind.NumericLiteral
         || kind === SyntaxKind.StringLiteral
@@ -107,8 +112,7 @@ function isLeftHandSideExpressionKind(kind: SyntaxKind): boolean {
         || kind === SyntaxKind.TrueKeyword;
 }
 
-/* @internal */
-export function isLeftHandSideExpression(node: Types.Node): node is Types.LeftHandSideExpression {
+export function isLeftHandSideExpression(node: Types.Node): boolean {
     return isLeftHandSideExpressionKind(node.kind);
 }
 

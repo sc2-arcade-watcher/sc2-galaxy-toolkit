@@ -9,7 +9,7 @@ import * as fs from 'fs';
 describe('Parser', () => {
     let parser = new Parser();
 
-    parser.parseFile('', fs.readFileSync('tests/fixtures/parser/expr.galaxy', 'utf8'));
+    parser.parseFile('expr_complex.galaxy', fs.readFileSync('tests/fixtures/parser/expr_complex.galaxy', 'utf8'));
 
     for (let filename of fs.readdirSync('tests/fixtures/parser')) {
         let filepath = 'tests/fixtures/parser/' + filename;

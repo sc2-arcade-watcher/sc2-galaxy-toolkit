@@ -1,7 +1,7 @@
 import * as Types from './types';
 import { SyntaxKind, Node, NodeArray, MutableNodeArray } from './types';
 import { Scanner, tokenToString } from './scanner';
-import { getKindName, isModifierKind, isKeywordTypeKind, createFileDiagnostic, isLeftHandSideExpression } from './utils';
+import { getKindName, isModifierKind, isKeywordTypeKind, createFileDiagnostic, isLeftHandSideExpression, isAssignmentOperator } from './utils';
 
 const enum ParsingContext {
     SourceElements,
@@ -48,11 +48,8 @@ export class Parser {
             arg0
         );
         this.parseDiagnostics.push(diag);
-        throw new Error(`${diag.file!.fileName} [${diag.start}]: ${diag.messageText}`);
-
-        // Mark that we've encountered an error.  We'll set an appropriate bit on the next
-        // node we finish so that it can't be reused incrementally.
-        // parseErrorBeforeNextFinishedNode = true;
+        // throw new Error(`${diag.file!.fileName} [${diag.start}]: ${diag.messageText}`);
+        throw new Error(`${diag.file!.fileName} [${this.scanner.getLine()}:${this.scanner.getCol()}]: ${diag.messageText}`);
     }
 
     private speculationHelper<T>(callback: () => T, isLookAhead: boolean): T {
@@ -208,8 +205,7 @@ export class Parser {
             case ParsingContext.Parameters:
                 return this.isStartOfParameter();
             case ParsingContext.ArgumentExpressions:
-                // TODO:
-                throw new Error();
+                return this.isStartOfExpression();
         }
     }
 
@@ -282,7 +278,7 @@ export class Parser {
     }
 
     private isVariableDeclaration(): boolean {
-        if (this.token() === SyntaxKind.ConstKeyword) {
+        while (this.token() === SyntaxKind.ConstKeyword || this.token() === SyntaxKind.StaticKeyword) {
             this.nextToken();
         }
 
@@ -419,7 +415,6 @@ export class Parser {
         const node = <Types.IncludeStatement>this.createNode(SyntaxKind.IncludeStatement);
         this.parseExpected(SyntaxKind.IncludeKeyword);
         node.path = <Types.StringLiteral>this.parseLiteral(SyntaxKind.StringLiteral);
-        this.parseExpected(SyntaxKind.SemicolonToken);
         return this.finishNode(node);
     }
 
@@ -443,12 +438,22 @@ export class Parser {
             (<Types.KeywordTypeNode>type).keyword = this.parseTokenNode();
         }
         else {
-            throw new Error();
+            this.parseErrorAtCurrentToken('expected identifier or keyword');
+            type = this.createMissingNode(SyntaxKind.KeywordTypeNode);
         }
 
         if (this.token() === SyntaxKind.LessThanToken) {
             type.typeArguments = this.parseBracketedList(ParsingContext.TypeArguments, this.parseTypeDefinition.bind(this), SyntaxKind.LessThanToken, SyntaxKind.GreaterThanToken);
         }
+
+        while (this.parseOptional(SyntaxKind.OpenBracketToken)) {
+            let arrayType = <Types.ArrayTypeNode>this.createNode(SyntaxKind.ArrayType);
+            arrayType.size = this.parseExpression();
+            arrayType.elementType = type;
+            type = arrayType;
+            this.parseExpected(SyntaxKind.CloseBracketToken);
+        }
+
         return this.finishNode(type);
     }
 
@@ -478,8 +483,12 @@ export class Parser {
         return this.finishNode(node);
     }
 
-    private parseModifiers(): Types.Modifier[] | undefined {
-        let mods = Array<Types.Modifier>();
+    private parseModifiers(): MutableNodeArray<Types.Modifier> {
+        let mods = <MutableNodeArray<Types.Modifier>>this.createNodeArray();
+        while (isModifierKind(this.token())) {
+            mods.push(this.parseTokenNode());
+        }
+        mods.end = this.scanner.getTokenPos();
         return mods;
     }
 
@@ -505,6 +514,10 @@ export class Parser {
         variable.modifiers = this.parseModifiers();
         variable.type = this.parseTypeDefinition();
         variable.name = this.parseIdentifier();
+        if (this.token() === SyntaxKind.EqualsToken) {
+            this.parseExpected(SyntaxKind.EqualsToken);
+            variable.initializer = this.parseAssignmentExpressionOrHigher();
+        }
         this.parseExpected(SyntaxKind.SemicolonToken);
         return this.finishNode(variable);
     }
@@ -611,12 +624,19 @@ export class Parser {
             case SyntaxKind.TrueKeyword:
             case SyntaxKind.FalseKeyword:
                 return this.parseTokenNode<Types.PrimaryExpression>();
-            // case SyntaxKind.OpenParenToken:
-            //     // TODO:
-            //     return this.parseParenthesizedExpression();
+            case SyntaxKind.OpenParenToken:
+                return this.parseParenthesizedExpression();
         }
 
         return this.parseIdentifier('expression expected');
+    }
+
+    private parseParenthesizedExpression(): Types.ParenthesizedExpression {
+        const node = <Types.ParenthesizedExpression>this.createNode(SyntaxKind.ParenthesizedExpression);
+        this.parseExpected(SyntaxKind.OpenParenToken);
+        node.expression = this.parseExpression();
+        this.parseExpected(SyntaxKind.CloseParenToken);
+        return this.finishNode(node);
     }
 
     private parseMemberExpressionOrHigher(): Types.MemberExpression {
@@ -625,31 +645,41 @@ export class Parser {
     }
 
     private parseMemberExpressionRest(expression: Types.LeftHandSideExpression): Types.MemberExpression {
-        // TODO:
-        // while (true) {
-        //     const dotToken = this.parseOptionalToken(SyntaxKind.DotToken);
-        //     if (dotToken) {
-        //         const propertyAccess = <PropertyAccessExpression>createNode(SyntaxKind.PropertyAccessExpression, expression.pos);
-        //         propertyAccess.expression = expression;
-        //         propertyAccess.name = parseRightSideOfDot(/*allowIdentifierNames*/ true);
-        //         expression = finishNode(propertyAccess);
-        //         continue;
-        //     }
-        // }
-        return <Types.MemberExpression>expression;
+        while (true) {
+            if (this.parseOptional(SyntaxKind.DotToken)) {
+                const propertyAccess = <Types.PropertyAccessExpression>this.createNode(SyntaxKind.PropertyAccessExpression, expression.pos);
+                propertyAccess.expression = expression;
+                propertyAccess.name = this.parseIdentifier();
+                expression = this.finishNode(propertyAccess);
+                continue;
+            }
+
+            if (this.parseOptional(SyntaxKind.OpenBracketToken)) {
+                const indexedAccess = <Types.ElementAccessExpression>this.createNode(SyntaxKind.ElementAccessExpression, expression.pos);
+                indexedAccess.expression = expression;
+                indexedAccess.argumentExpression = this.parseExpression();
+                this.parseExpected(SyntaxKind.CloseBracketToken);
+                expression = this.finishNode(indexedAccess);
+                continue;
+            }
+
+            return <Types.MemberExpression>expression;
+        }
     }
 
     private parseCallExpressionRest(expression: Types.LeftHandSideExpression): Types.LeftHandSideExpression {
         while (true) {
-            // TODO:
-            // expression = this.parseMemberExpressionRest(expression);
-            // if (this.token() === SyntaxKind.OpenParenToken) {
-            //     const callExpr = <CallExpression>createNode(SyntaxKind.CallExpression, expression.pos);
-            //     callExpr.expression = expression;
-            //     callExpr.arguments = this.parseArgumentList();
-            //     expression = this.finishNode(callExpr);
-            //     continue;
-            // }
+            expression = this.parseMemberExpressionRest(expression);
+
+            if (this.token() === SyntaxKind.OpenParenToken) {
+                const callExpr = <Types.CallExpression>this.createNode(SyntaxKind.CallExpression, expression.pos);
+                callExpr.expression = expression;
+                this.parseExpected(SyntaxKind.OpenParenToken);
+                callExpr.arguments = this.parseDelimitedList(ParsingContext.ArgumentExpressions, this.parseAssignmentExpressionOrHigher.bind(this));
+                this.parseExpected(SyntaxKind.CloseParenToken);
+                expression = this.finishNode(callExpr);
+                continue;
+            }
 
             return expression;
         }
@@ -663,7 +693,7 @@ export class Parser {
 
     private parseUpdateExpression(): Types.UpdateExpression {
         if (this.token() === SyntaxKind.PlusPlusToken || this.token() === SyntaxKind.MinusMinusToken) {
-            this.parseErrorAtCurrentToken('unary increment operators not supported');
+            this.parseErrorAtCurrentToken('unary increment operators not allowed');
             const node = <Types.PrefixUnaryExpression>this.createNode(SyntaxKind.PrefixUnaryExpression);
             node.operator = <Types.PrefixUnaryOperator>this.token();
             this.nextToken();
@@ -674,7 +704,10 @@ export class Parser {
         const expression = this.parseLeftHandSideExpressionOrHigher();
 
         if (!isLeftHandSideExpression(expression)) {
-            throw new Error('??');
+            console.log(expression.kind);
+            console.log(SyntaxKind.ParenthesizedExpression);
+            console.log(expression.kind === SyntaxKind.ParenthesizedExpression);
+            throw new Error('isLeftHandSideExpression = false');
         }
 
         if ((this.token() === SyntaxKind.PlusPlusToken || this.token() === SyntaxKind.MinusMinusToken)) {
@@ -767,7 +800,15 @@ export class Parser {
     }
 
     private parseAssignmentExpressionOrHigher(): Types.Expression {
-        return this.parseBinaryExpressionOrHigher(0);
+        let expr = this.parseBinaryExpressionOrHigher(0);
+
+        if (isLeftHandSideExpression(expr) && isAssignmentOperator(this.token())) {
+            // multiple assigments in single statement is not allowed
+            // return this.makeBinaryExpression(expr, <Types.BinaryOperatorToken>this.parseTokenNode(), this.parseAssignmentExpressionOrHigher());
+            return this.makeBinaryExpression(expr, <Types.BinaryOperatorToken>this.parseTokenNode(), this.parseBinaryExpressionOrHigher(0));
+        }
+
+        return expr;
     }
 
     private parseExpression(): Types.Expression {
@@ -780,6 +821,14 @@ export class Parser {
         if (this.token() !== SyntaxKind.SemicolonToken) {
             node.expression = this.parseExpression();
         }
+        this.parseExpected(SyntaxKind.SemicolonToken);
+        return this.finishNode(node);
+    }
+
+    private parseBreakOrContinueStatement(kind: SyntaxKind): Types.BreakOrContinueStatement {
+        const node = <Types.BreakOrContinueStatement>this.createNode(kind);
+
+        this.parseExpected(kind === SyntaxKind.BreakStatement ? SyntaxKind.BreakKeyword : SyntaxKind.ContinueKeyword);
         this.parseExpected(SyntaxKind.SemicolonToken);
         return this.finishNode(node);
     }
@@ -797,6 +846,61 @@ export class Parser {
         return this.finishNode(node);
     }
 
+    private parseIfStatement(): Types.IfStatement {
+        const node = <Types.IfStatement>this.createNode(SyntaxKind.IfStatement);
+        this.parseExpected(SyntaxKind.IfKeyword);
+        this.parseExpected(SyntaxKind.OpenParenToken);
+        node.expression = this.parseExpression();
+        this.parseExpected(SyntaxKind.CloseParenToken);
+        node.thenStatement = this.parseBlock();
+        if (this.parseOptional(SyntaxKind.ElseKeyword)) {
+            node.elseStatement = this.token() === SyntaxKind.IfKeyword ? this.parseIfStatement() : this.parseBlock();
+        }
+        return this.finishNode(node);
+    }
+
+    private parseDoStatement(): Types.DoStatement {
+        const node = <Types.DoStatement>this.createNode(SyntaxKind.DoStatement);
+        this.parseExpected(SyntaxKind.DoKeyword);
+        node.statement = this.parseBlock();
+        this.parseExpected(SyntaxKind.WhileKeyword);
+        this.parseExpected(SyntaxKind.OpenParenToken);
+        node.expression = this.parseExpression();
+        this.parseExpected(SyntaxKind.CloseParenToken);
+        this.parseExpected(SyntaxKind.SemicolonToken);
+        return this.finishNode(node);
+    }
+
+    private parseWhileStatement(): Types.WhileStatement {
+        const node = <Types.WhileStatement>this.createNode(SyntaxKind.WhileStatement);
+        this.parseExpected(SyntaxKind.WhileKeyword);
+        this.parseExpected(SyntaxKind.OpenParenToken);
+        node.expression = this.parseExpression();
+        this.parseExpected(SyntaxKind.CloseParenToken);
+        node.statement = this.parseBlock();
+        return this.finishNode(node);
+    }
+
+    private parseForStatement(): Types.ForStatement {
+        const node = <Types.ForStatement>this.createNode(SyntaxKind.ForStatement);
+        this.parseExpected(SyntaxKind.ForKeyword);
+        this.parseExpected(SyntaxKind.OpenParenToken);
+        if (this.token() !== SyntaxKind.SemicolonToken && this.token() !== SyntaxKind.CloseParenToken) {
+            node.initializer = this.parseExpression();
+        }
+        this.parseExpected(SyntaxKind.SemicolonToken);
+        if (this.token() !== SyntaxKind.SemicolonToken && this.token() !== SyntaxKind.CloseParenToken) {
+            node.condition = this.parseExpression();
+        }
+        this.parseExpected(SyntaxKind.SemicolonToken);
+        if (this.token() !== SyntaxKind.CloseParenToken) {
+            node.incrementor = this.parseExpression();
+        }
+        this.parseExpected(SyntaxKind.CloseParenToken);
+        node.statement = this.parseBlock();
+        return this.finishNode(node);
+    }
+
     private parseStatement(): Types.Statement {
         switch (this.token()) {
             case SyntaxKind.SemicolonToken:
@@ -807,6 +911,24 @@ export class Parser {
 
             case SyntaxKind.StructKeyword:
                 return this.parseStructDeclaration();
+
+            case SyntaxKind.IfKeyword:
+                return this.parseIfStatement();
+
+            case SyntaxKind.DoKeyword:
+                return this.parseDoStatement();
+
+            case SyntaxKind.WhileKeyword:
+                return this.parseWhileStatement();
+
+            case SyntaxKind.ForKeyword:
+                return this.parseForStatement();
+
+            case SyntaxKind.ContinueKeyword:
+                return this.parseBreakOrContinueStatement(SyntaxKind.ContinueStatement);
+
+            case SyntaxKind.BreakKeyword:
+                return this.parseBreakOrContinueStatement(SyntaxKind.BreakStatement);
 
             case SyntaxKind.ReturnKeyword:
                 return this.parseReturnStatement();
@@ -862,13 +984,7 @@ export class Parser {
                 else if (this.isStartOfVariableDeclaration()) {
                     return this.parseVariableDeclaration();
                 }
-                else if (this.isStartOfExpression()) {
-                    return this.parseExpression();
-                }
-                else {
-                    throw new Error();
-                }
-                break;
+                return this.parseExpressionStatement();
 
             default:
                 return this.parseExpressionStatement();
