@@ -4,12 +4,13 @@
   "description": "Language support for StarCraft 2 Galaxy Script",
   "version": "0.0.1",
   "publisher": "talv",
+  "license": "ISC",
   "engines": {
-    "vscode": "^1.11.0"
+    "vscode": "^1.16.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Talv/vscode-sc2-galaxy"
+    "url": "https://github.com/Talv/vscode-sc2-galaxy.git"
   },
   "keywords": [
     "sc2",
@@ -25,12 +26,23 @@
   ],
   "main": "./out/src/extension",
   "contributes": {
-    "commands": [
-      {
-        "command": "sc2galaxy.nectan.activate",
-        "title": "Galaxy: activate nectan indexing"
+    "configuration": {
+      "type": "object",
+      "title": "sc2galaxy",
+      "properties": {
+        "sc2galaxy.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "verbose",
+          "description": "Traces the communication between VSCode and the Plaxtony language server."
+        }
       }
-    ],
+    },
     "languages": [
       {
         "id": "galaxy",
@@ -66,17 +78,14 @@
   },
   "dependencies": {
     "fs": "0.0.2",
-    "noice-json-rpc": "^1.0.1",
-    "vscode-jsonrpc": "^3.2.0",
-    "vscode-uri": "^1.0.1",
-    "web-request": "^1.0.7",
-    "ws": "^2.3.1"
+    "plaxtony": "^1.0.0",
+    "vscode-languageclient": "^3.4.2"
   },
   "devDependencies": {
-    "typescript": "^2.0.3",
-    "vscode": "^1.0.0",
-    "mocha": "^2.3.3",
+    "@types/mocha": "^2.2.32",
     "@types/node": "^6.0.40",
-    "@types/mocha": "^2.2.32"
+    "mocha": "^2.3.3",
+    "typescript": "^2.0.3",
+    "vscode": "^1.1.5"
   }
 }
