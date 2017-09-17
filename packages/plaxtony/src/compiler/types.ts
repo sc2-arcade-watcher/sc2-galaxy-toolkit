@@ -344,6 +344,18 @@ export type KeywordType
     | SyntaxKind.FuncrefKeyword
 ;
 
+export interface Symbol {
+    escapedName: string;                    // Name of symbol
+    declarations?: Declaration[];           // Declarations associated with this symbol
+    valueDeclaration?: Declaration;         // First value declaration of the symbol
+    members?: SymbolTable;                  // members
+    /* @internal */ parent?: Symbol;        // Parent symbol
+    /* @internal */ isReferenced?: boolean; // True if the symbol is referenced elsewhere
+    /* @internal */ isAssigned?: boolean;   // True if the symbol is a parameter with assignments
+}
+
+export type SymbolTable = Map<string, Symbol>;
+
 export interface TextRange {
     pos: number;
     end: number;
@@ -356,6 +368,7 @@ export interface Token<TKind extends SyntaxKind> extends Node {
 export interface Node extends TextRange {
     // token: Token;
     kind: SyntaxKind;
+    parent?: Node;
 }
 
 export interface NodeArray<T extends Node> extends ReadonlyArray<T>, TextRange {
@@ -410,8 +423,9 @@ export interface ArrayTypeNode extends TypeNode {
 }
 
 export interface Declaration extends Node {
-    name?: Identifier;
-    modifiers?: Modifier[];
+    // name?: Identifier;
+    modifiers?: NodeArray<Modifier>;
+    /* @internal */ symbol?: Symbol; // Symbol declared by node (initialized by binding)
 }
 
 export interface NamedDeclaration extends Declaration {
@@ -436,7 +450,7 @@ export interface VariableDeclaration extends NamedDeclaration {
 
 export interface StructDeclaration extends NamedDeclaration {
     kind: SyntaxKind.StructDeclaration;
-    members: NodeArray<Declaration>;
+    members: NodeArray<PropertyDeclaration>;
 }
 
 export interface PropertyDeclaration extends NamedDeclaration {
@@ -446,8 +460,8 @@ export interface PropertyDeclaration extends NamedDeclaration {
 }
 
 export interface FunctionDeclaration extends SignatureDeclaration, NamedDeclaration {
-    name: Identifier;
     kind: SyntaxKind.FunctionDeclaration;
+    name: Identifier;
     body?: Block;
 }
 
@@ -456,10 +470,13 @@ export interface ReturnStatement extends Statement {
     expression?: Expression;
 }
 
-export interface SourceFile extends Node {
+export interface SourceFile extends Declaration {
     kind: SyntaxKind.SourceFile;
     fileName: string;
     statements: NodeArray<Statement>;
+    /* @internal */ parseDiagnostics: Diagnostic[]; // File-level diagnostics reported by the parser
+    /* @internal */ bindDiagnostics: Diagnostic[]; // File-level diagnostics reported by the binder.
+    /* @internal */ additionalSyntacticDiagnostics: Diagnostic[]; // Stores additional file-level diagnostics reported by the program
 }
 
 export interface Expression extends Node {
@@ -620,9 +637,11 @@ export interface DiagnosticMessage {
 }
 
 export interface Diagnostic {
-    file: SourceFile | undefined;
-    start: number | undefined;
-    length: number | undefined;
+    file?: SourceFile;
+    line?: number;
+    col?: number;
+    start?: number;
+    length?: number;
     messageText: string;
     category: DiagnosticCategory;
     code: number;

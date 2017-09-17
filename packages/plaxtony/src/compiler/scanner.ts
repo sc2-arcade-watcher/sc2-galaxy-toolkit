@@ -1,4 +1,8 @@
-import { CharacterCodes, SyntaxKind, Token } from './types';
+import { CharacterCodes, SyntaxKind, Token, DiagnosticMessage, DiagnosticCategory } from './types';
+
+export interface ErrorCallback {
+    (message: DiagnosticMessage, length: number): void;
+}
 
 const textToTokenTable: ReadonlyMap<string, SyntaxKind> = new Map([
     ["include", SyntaxKind.IncludeKeyword],
@@ -139,10 +143,11 @@ export function isIdentifierPart(ch: number): boolean {
 }
 
 export function isLineBreak(ch: number): boolean {
-    return ch === CharacterCodes.lineFeed ||
-        ch === CharacterCodes.carriageReturn ||
-        ch === CharacterCodes.lineSeparator ||
-        ch === CharacterCodes.paragraphSeparator;
+    return ch === CharacterCodes.lineFeed
+        || ch === CharacterCodes.carriageReturn
+        || ch === CharacterCodes.lineSeparator
+        || ch === CharacterCodes.paragraphSeparator
+    ;
 }
 
 export function isDigit(ch: number): boolean {
@@ -178,9 +183,20 @@ export class Scanner {
     // private tokenIsUnterminated: boolean;
     // private numericLiteralFlags: NumericLiteralFlags;
 
+    private onError?: ErrorCallback;
+
+    constructor(onError?: ErrorCallback) {
+        this.onError = onError;
+    }
+
     private error(msg: string): void {
-        // console.error(msg)
-        throw new Error(msg);
+        if (this.onError) {
+            this.onError(<DiagnosticMessage>{
+                category: DiagnosticCategory.Error,
+                code: 0,
+                message: msg,
+            }, 0);
+        }
     }
 
     private speculationHelper<T>(callback: () => T, isLookahead: boolean): T {
@@ -520,7 +536,6 @@ export class Scanner {
                                 break;
                             }
                             this.pos++;
-
                         }
 
                         continue;
@@ -660,8 +675,10 @@ export class Scanner {
                         return this.token = this.getIdentifierToken();
                     }
                     else if (isLineBreak(ch)) {
-                        this.col = this.pos;
-                        this.line++;
+                        if (ch === CharacterCodes.lineFeed) {
+                            this.col = this.pos;
+                            this.line++;
+                        }
                         this.pos++;
                         continue;
                     }

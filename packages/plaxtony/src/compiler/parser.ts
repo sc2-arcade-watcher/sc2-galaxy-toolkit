@@ -1,7 +1,7 @@
 import * as Types from './types';
 import { SyntaxKind, Node, NodeArray, MutableNodeArray } from './types';
 import { Scanner, tokenToString } from './scanner';
-import { getKindName, isModifierKind, isKeywordTypeKind, createFileDiagnostic, isLeftHandSideExpression, isAssignmentOperator } from './utils';
+import { getKindName, isModifierKind, isKeywordTypeKind, createFileDiagnostic, isLeftHandSideExpression, isAssignmentOperator, fixupParentReferences } from './utils';
 
 const enum ParsingContext {
     SourceElements,
@@ -12,12 +12,10 @@ const enum ParsingContext {
     ArgumentExpressions,
 }
 
-
 export class Parser {
     private scanner: Scanner;
     private currentToken: SyntaxKind;
     private parsingContext: ParsingContext = 0;
-    private parseDiagnostics: Types.Diagnostic[] = [];
     private sourceFile: Types.SourceFile;
 
     private token(): SyntaxKind {
@@ -47,9 +45,12 @@ export class Parser {
             },
             arg0
         );
-        this.parseDiagnostics.push(diag);
+        // TODO: line & col should not be here
+        diag.line = this.scanner.getLine();
+        diag.col = this.scanner.getCol();
+        this.sourceFile.parseDiagnostics.push(diag);
         // throw new Error(`${diag.file!.fileName} [${diag.start}]: ${diag.messageText}`);
-        throw new Error(`${diag.file!.fileName} [${this.scanner.getLine()}:${this.scanner.getCol()}]: ${diag.messageText}`);
+        // throw new Error(`${diag.file!.fileName} [${this.scanner.getLine()}:${this.scanner.getCol()}]: ${diag.messageText}`);
     }
 
     private speculationHelper<T>(callback: () => T, isLookAhead: boolean): T {
@@ -222,6 +223,10 @@ export class Parser {
             }
 
             this.parseErrorAtCurrentToken(this.parsingContextErrors(kind));
+            this.nextToken();
+            if (kind !== ParsingContext.SourceElements) {
+                break;
+            }
         }
 
         result.end = this.scanner.getTokenPos();
@@ -483,8 +488,8 @@ export class Parser {
         return this.finishNode(node);
     }
 
-    private parseModifiers(): MutableNodeArray<Types.Modifier> {
-        let mods = <MutableNodeArray<Types.Modifier>>this.createNodeArray();
+    private parseModifiers(): NodeArray<Types.Modifier> {
+        let mods = this.createNodeArray<Types.Modifier>();
         while (isModifierKind(this.token())) {
             mods.push(this.parseTokenNode());
         }
@@ -993,7 +998,9 @@ export class Parser {
     }
 
     constructor() {
-        this.scanner = new Scanner()
+        this.scanner = new Scanner((message: Types.DiagnosticMessage) => {
+            this.parseErrorAtCurrentToken(message.message);
+        });
     }
 
     public setText(text: string) {
@@ -1003,12 +1010,17 @@ export class Parser {
     public parseFile(fileName: string, text: string): Types.SourceFile {
         this.scanner.setText(text);
         this.sourceFile = <Types.SourceFile>this.createNode(SyntaxKind.SourceFile, 0);
+        this.sourceFile.parseDiagnostics = [];
+        this.sourceFile.bindDiagnostics = [];
+        this.sourceFile.additionalSyntacticDiagnostics = [];
         this.sourceFile.fileName = fileName;
 
         this.nextToken();
         this.sourceFile.statements = this.parseList(ParsingContext.SourceElements, this.parseStatement.bind(this));
 
         this.finishNode(this.sourceFile);
+
+        fixupParentReferences(this.sourceFile);
 
         return this.sourceFile;
     }
