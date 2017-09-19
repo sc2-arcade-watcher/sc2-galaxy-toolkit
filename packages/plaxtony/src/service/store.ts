@@ -5,22 +5,7 @@ import { bindSourceFile } from '../compiler/binder';
 import { TextDocument } from 'vscode-languageserver';
 import * as path from 'path';
 import * as fs from 'fs';
-
-// function indexSourceFile(sourceFile: SourceFile) {
-//     function registerDefinition(node: Types.NamedDeclaration) {
-//         console.log(node.name);
-//     }
-
-//     function visitNode(node: Node) {
-//         if (node.kind === SyntaxKind.VariableDeclaration) {
-//             registerDefinition(<Types.NamedDeclaration>node);
-//         }
-
-//         forEachChild(node, child => visitNode(child));
-//     }
-
-//     visitNode(sourceFile);
-// }
+import * as glob from 'glob';
 
 export function createTextDocument(uri: string, text: string): TextDocument {
     return <TextDocument>{
@@ -39,6 +24,22 @@ export function createTextDocumentFromFs(filepath: string): TextDocument {
 export class IndexedDocument {
     textDocument: TextDocument;
     sourceNode: SourceFile;
+}
+
+export class Workspace {
+    // private documents: Map<string, IndexedDocument>;
+    private workspacePath: string;
+    private store: Store;
+
+    constructor(workspacePath: string, store: Store) {
+        this.workspacePath = path.join(path.resolve(workspacePath), '**/*.galaxy');
+        this.store = store;
+
+        // TODO: filewatch
+        for (let filepath of glob.sync(this.workspacePath)) {
+            this.store.updateDocument(createTextDocumentFromFs(filepath));
+        }
+    }
 }
 
 export class Store {

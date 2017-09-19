@@ -126,6 +126,8 @@ export class Parser {
         node.kind = kind;
         node.pos = pos === undefined ? this.scanner.getStartPos() : pos;
         node.end = node.pos;
+        node.line = this.scanner.getLine();
+        node.char = this.scanner.getCol();
         return node;
     }
 

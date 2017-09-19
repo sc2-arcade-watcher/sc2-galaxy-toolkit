@@ -1,11 +1,20 @@
 import {
     IPCMessageReader, IPCMessageWriter, createConnection, IConnection, TextDocuments, TextDocument,
     Diagnostic, DiagnosticSeverity, InitializeResult, TextDocumentPositionParams, CompletionItem,
-    CompletionItemKind
+    CompletionItemKind, SymbolInformation, DocumentSymbolParams, SymbolKind, Range, WorkspaceSymbolParams
 } from 'vscode-languageserver';
 import * as Types from '../compiler/types';
+import { findAncestor } from '../compiler/utils';
 import { Store } from './store';
 import { DiagnosticsProvider } from './diagnostics';
+import { NavigationProvider } from './navigation';
+
+function getNodeRange(node: Types.Node): Range {
+    return {
+        start: { line: node.line - 1, character: node.char - 1 },
+        end: { line: node.line - 1, character: node.char - 1 }
+    };
+}
 
 function translateDiagnostics(origDiagnostics: Types.Diagnostic[]): Diagnostic[] {
     let lspDiagnostics: Diagnostic[] = [];
@@ -25,6 +34,44 @@ function translateDiagnostics(origDiagnostics: Types.Diagnostic[]): Diagnostic[]
     return lspDiagnostics;
 }
 
+function translateNodeKind(node: Types.Node): SymbolKind {
+    switch (node.kind) {
+        case Types.SyntaxKind.VariableDeclaration:
+            const variable = <Types.VariableDeclaration>node;
+            const isConstant = variable.modifiers.some((value: Types.Modifier): boolean => {
+                return value.kind === Types.SyntaxKind.ConstKeyword;
+            });
+            return isConstant ? SymbolKind.Constant : SymbolKind.Variable;
+        case Types.SyntaxKind.FunctionDeclaration:
+            return SymbolKind.Function;
+        case Types.SyntaxKind.StructDeclaration:
+            return SymbolKind.Class;
+        default:
+            return SymbolKind.Field;
+    }
+}
+
+function translateDeclaratons(origDeclarations: Types.NamedDeclaration[]): SymbolInformation[] {
+    const symbols: SymbolInformation[] = [];
+    let kind: SymbolKind;
+
+    for (let node of origDeclarations) {
+        const sourceFile = <Types.SourceFile>findAncestor(node, (element: Types.Node): boolean => {
+            return element.kind === Types.SyntaxKind.SourceFile;
+        })
+        symbols.push({
+            kind: translateNodeKind(node),
+            name: node.name.name,
+            location: {
+                uri: sourceFile.fileName,
+                range: getNodeRange(node)
+            },
+        });
+    }
+
+    return symbols;
+}
+
 export function createServer(): IConnection {
     let connection: IConnection = createConnection(new IPCMessageReader(process), new IPCMessageWriter(process));
 
@@ -37,6 +84,8 @@ export function createServer(): IConnection {
         return {
             capabilities: {
                 textDocumentSync: documents.syncKind,
+                documentSymbolProvider: true,
+                workspaceSymbolProvider: true,
                 completionProvider: {
                     resolveProvider: true
                 }
@@ -46,6 +95,7 @@ export function createServer(): IConnection {
 
     let store = new Store();
     let diagnosticsProvider = new DiagnosticsProvider(store);
+    let navigationProvider = new NavigationProvider(store);
 
     documents.onDidChangeContent((e) => {
         connection.console.log('update ' + e.document.uri);
@@ -135,6 +185,14 @@ export function createServer(): IConnection {
                 item.documentation = 'JavaScript documentation'
         }
         return item;
+    });
+
+    connection.onDocumentSymbol((params: DocumentSymbolParams): SymbolInformation[] => {
+        return translateDeclaratons(navigationProvider.getDocumentSymbols(params.textDocument.uri));
+    });
+
+    connection.onWorkspaceSymbol((params: WorkspaceSymbolParams): SymbolInformation[] => {
+        return translateDeclaratons(navigationProvider.getWorkspaceSymbols());
     });
 
     /*

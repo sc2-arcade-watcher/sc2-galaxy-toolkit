@@ -357,6 +357,8 @@ export interface Symbol {
 export type SymbolTable = Map<string, Symbol>;
 
 export interface TextRange {
+    line: number;
+    char: number;
     pos: number;
     end: number;
 }
