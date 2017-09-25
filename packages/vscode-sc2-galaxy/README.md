@@ -2,7 +2,7 @@
 
 Visual Studio Code extension providing language support for StarCraft 2 Galaxy Script.
 
-Utilizies [plaxtony](https://github.com/Talv/plaxtony) for AST processing.
+Utilizes [plaxtony](https://github.com/Talv/plaxtony) for AST processing.
 
 ## Features
 
@@ -14,9 +14,9 @@ Utilizies [plaxtony](https://github.com/Talv/plaxtony) for AST processing.
     - [ ] Type checking (referencing undefined symbols, type missmatch etc.).
     - [ ] Reporting about unused symbols
 - Providers:
-    - [ ] Code completions.
+    - [x] Code completions. (Partly implemented - won't resolve preceding expression to provide context based completions).
     - [ ] Signature help. In case of *natives*, descriptions from Trigger module will be given.
-    - [ ] Document and workspace symbols navigation.
+    - [x] Document and workspace symbols navigation.
     - [ ] Symbols show definitions.
     - [ ] Symbols show references.
 
