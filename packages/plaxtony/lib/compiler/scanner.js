@@ -164,21 +164,25 @@ class Scanner {
     }
     speculationHelper(callback, isLookahead) {
         const saveLine = this.line;
-        const saveCol = this.col;
+        const saveCol = this.char;
         const savePos = this.pos;
         const saveStartPos = this.startPos;
         const saveTokenPos = this.tokenPos;
         const saveToken = this.token;
         const saveTokenValue = this.tokenValue;
+        const saveLineMapLength = this.lineMap.length;
         const result = callback();
         if (!result || isLookahead) {
             this.line = saveLine;
-            this.col = saveCol;
+            this.char = saveCol;
             this.pos = savePos;
             this.startPos = saveStartPos;
             this.tokenPos = saveTokenPos;
             this.token = saveToken;
             this.tokenValue = saveTokenValue;
+            if (this.lineMap.length !== saveLineMapLength) {
+                this.lineMap = this.lineMap.slice(0, saveLineMapLength);
+            }
         }
         return result;
     }
@@ -355,21 +359,22 @@ class Scanner {
                 return token;
             }
         }
-        return 108;
+        return 107;
     }
     setText(text) {
         this.text = text;
         this.pos = 0;
         this.end = this.text.length;
-        this.line = 1;
-        this.col = 1;
+        this.line = 0;
+        this.char = 0;
+        this.lineMap = [0];
     }
     scan() {
         this.startPos = this.pos;
         while (true) {
             this.tokenPos = this.pos;
             if (this.pos >= this.end) {
-                return 107;
+                return 108;
             }
             let ch = this.text.charCodeAt(this.pos);
             switch (ch) {
@@ -588,10 +593,13 @@ class Scanner {
                     }
                     else if (isLineBreak(ch)) {
                         if (ch === 10) {
-                            this.col = this.pos;
+                            this.char = this.pos;
                             this.line++;
                         }
                         this.pos++;
+                        if (ch === 10) {
+                            this.lineMap.push(this.pos);
+                        }
                         continue;
                     }
                     this.error(`encountered invalid character ${this.text.charAt(this.pos)}`);
@@ -603,8 +611,8 @@ class Scanner {
     getLine() {
         return this.line;
     }
-    getCol() {
-        return this.pos - this.col;
+    getChar() {
+        return this.pos - this.char;
     }
     getStartPos() {
         return this.startPos;
@@ -617,6 +625,9 @@ class Scanner {
     }
     getTokenValue() {
         return this.tokenValue;
+    }
+    getLineMap() {
+        return this.lineMap;
     }
 }
 exports.Scanner = Scanner;

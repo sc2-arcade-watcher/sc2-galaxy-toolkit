@@ -37,16 +37,24 @@ class Parser {
             message: message,
         }, arg0);
         diag.line = this.scanner.getLine();
-        diag.col = this.scanner.getCol();
+        diag.col = this.scanner.getChar();
         this.sourceFile.parseDiagnostics.push(diag);
     }
     speculationHelper(callback, isLookAhead) {
         const saveToken = this.currentToken;
+        const saveSyntaxTokensLength = this.syntaxTokens.length;
+        const saveSyntaxTokensCurrentLength = this.syntaxTokens[this.syntaxTokens.length - 1].length;
         const result = isLookAhead
             ? this.scanner.lookAhead(callback)
             : this.scanner.tryScan(callback);
         if (!result || isLookAhead) {
             this.currentToken = saveToken;
+            if (this.syntaxTokens.length > saveSyntaxTokensLength) {
+                this.syntaxTokens = this.syntaxTokens.slice(0, saveSyntaxTokensLength);
+            }
+            if (this.syntaxTokens[this.syntaxTokens.length - 1].length > saveSyntaxTokensCurrentLength) {
+                this.syntaxTokens[this.syntaxTokens.length - 1] = this.syntaxTokens[this.syntaxTokens.length - 1].slice(0, saveSyntaxTokensCurrentLength);
+            }
         }
         return result;
     }
@@ -56,7 +64,7 @@ class Parser {
     parseExpected(kind, diagnosticMessage, shouldAdvance = true) {
         if (this.token() === kind) {
             if (shouldAdvance) {
-                this.nextToken();
+                this.syntaxTokens[this.syntaxTokens.length - 1].push(this.parseTokenNode());
             }
             return true;
         }
@@ -68,21 +76,26 @@ class Parser {
     }
     parseOptional(t) {
         if (this.token() === t) {
-            this.nextToken();
+            this.syntaxTokens[this.syntaxTokens.length - 1].push(this.parseTokenNode());
             return true;
         }
         return false;
     }
     parseTokenNode() {
-        const node = this.createNode(this.token());
+        const node = this.createNode(this.token(), undefined, false);
         this.nextToken();
-        return this.finishNode(node);
+        return this.finishNode(node, undefined, false);
     }
-    createNode(kind, pos) {
+    createNode(kind, pos, assignSyntaxTokens = true) {
         const node = {};
         node.kind = kind;
         node.pos = pos === undefined ? this.scanner.getStartPos() : pos;
         node.end = node.pos;
+        node.line = this.scanner.getLine();
+        node.char = this.scanner.getChar();
+        if (assignSyntaxTokens) {
+            this.syntaxTokens.push([]);
+        }
         return node;
     }
     createNodeArray(elements, pos) {
@@ -102,12 +115,18 @@ class Parser {
     createMissingList() {
         return this.createNodeArray();
     }
-    finishNode(node, end) {
+    finishNode(node, end, assignSyntaxTokens = true) {
         node.end = end === undefined ? this.scanner.getStartPos() : end;
+        if (assignSyntaxTokens) {
+            node.syntaxTokens = this.syntaxTokens.pop();
+            for (const token of node.syntaxTokens) {
+                token.parent = node;
+            }
+        }
         return node;
     }
     isListTerminator(kind) {
-        if (this.token() === 107) {
+        if (this.token() === 108) {
             return true;
         }
         switch (kind) {
@@ -212,11 +231,11 @@ class Parser {
         while (this.token() === 52 || this.token() === 51) {
             this.nextToken();
         }
-        if (!utils_1.isKeywordTypeKind(this.token()) && this.token() !== 108) {
+        if (!utils_1.isKeywordTypeKind(this.token()) && this.token() !== 107) {
             return false;
         }
         this.parseTypeDefinition();
-        if (this.token() !== 108) {
+        if (this.token() !== 107) {
             return false;
         }
         this.nextToken();
@@ -229,11 +248,11 @@ class Parser {
         while (this.token() === 53 || this.token() === 51) {
             this.nextToken();
         }
-        if (!utils_1.isKeywordTypeKind(this.token()) && this.token() !== 108) {
+        if (!utils_1.isKeywordTypeKind(this.token()) && this.token() !== 107) {
             return false;
         }
         this.parseTypeDefinition();
-        if (this.token() !== 108) {
+        if (this.token() !== 107) {
             return false;
         }
         this.nextToken();
@@ -258,7 +277,7 @@ class Parser {
                 if (this.isBinaryOperator()) {
                     return true;
                 }
-                return this.token() === 108;
+                return this.token() === 107;
         }
     }
     isStartOfStatement() {
@@ -301,7 +320,7 @@ class Parser {
         return false;
     }
     isStartOfTypeDefinition() {
-        return utils_1.isKeywordTypeKind(this.token()) || this.token() === 108;
+        return utils_1.isKeywordTypeKind(this.token()) || this.token() === 107;
     }
     isStartOfParameter() {
         return this.isStartOfTypeDefinition();
@@ -320,15 +339,15 @@ class Parser {
         return this.finishNode(node);
     }
     parseIdentifier(diagnosticMessage) {
-        this.parseExpected(108, diagnosticMessage, false);
-        const identifier = this.createNode(108);
+        this.parseExpected(107, diagnosticMessage, false);
+        const identifier = this.createNode(107);
         identifier.name = this.scanner.getTokenValue();
         this.nextToken();
         return this.finishNode(identifier);
     }
     parseTypeDefinition() {
         let type;
-        if (this.token() === 108) {
+        if (this.token() === 107) {
             type = this.createNode(109);
             type.name = this.parseIdentifier();
         }
@@ -441,7 +460,7 @@ class Parser {
             case 1:
             case 2:
             case 5:
-            case 108:
+            case 107:
                 return true;
             default:
                 return false;
@@ -729,7 +748,7 @@ class Parser {
                 return this.parseBreakOrContinueStatement(127);
             case 56:
                 return this.parseReturnStatement();
-            case 108:
+            case 107:
             case 52:
             case 51:
             case 53:
@@ -790,6 +809,7 @@ class Parser {
     }
     parseFile(fileName, text) {
         this.scanner.setText(text);
+        this.syntaxTokens = [];
         this.sourceFile = this.createNode(121, 0);
         this.sourceFile.parseDiagnostics = [];
         this.sourceFile.bindDiagnostics = [];
@@ -798,6 +818,7 @@ class Parser {
         this.nextToken();
         this.sourceFile.statements = this.parseList(0, this.parseStatement.bind(this));
         this.finishNode(this.sourceFile);
+        this.sourceFile.lineMap = this.scanner.getLineMap();
         utils_1.fixupParentReferences(this.sourceFile);
         return this.sourceFile;
     }

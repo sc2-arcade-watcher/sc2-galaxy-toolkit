@@ -4,6 +4,7 @@ export declare class Parser {
     private currentToken;
     private parsingContext;
     private sourceFile;
+    private syntaxTokens;
     private token();
     private nextToken();
     private parseErrorAtCurrentToken(message, arg0?);
@@ -13,11 +14,11 @@ export declare class Parser {
     private parseExpected(kind, diagnosticMessage?, shouldAdvance?);
     private parseOptional(t);
     private parseTokenNode<T>();
-    private createNode(kind, pos?);
+    private createNode(kind, pos?, assignSyntaxTokens?);
     private createNodeArray<T>(elements?, pos?);
     private createMissingNode<T>(kind);
     private createMissingList<T>();
-    private finishNode<T>(node, end?);
+    private finishNode<T>(node, end?, assignSyntaxTokens?);
     private isListTerminator(kind);
     private parsingContextErrors(context);
     private isListElement(parsingContext, inErrorRecovery);

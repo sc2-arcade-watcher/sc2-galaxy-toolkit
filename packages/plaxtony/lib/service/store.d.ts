@@ -6,6 +6,11 @@ export declare class IndexedDocument {
     textDocument: TextDocument;
     sourceNode: SourceFile;
 }
+export declare class Workspace {
+    private workspacePath;
+    private store;
+    constructor(workspacePath: string, store: Store);
+}
 export declare class Store {
     documents: Map<string, SourceFile>;
     constructor();

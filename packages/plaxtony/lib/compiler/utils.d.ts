@@ -4,6 +4,7 @@ export declare function formatStringFromArgs(text: string, args: {
     [index: number]: string;
 }, baseIndex?: number): string;
 export declare function createFileDiagnostic(file: Types.SourceFile, start: number, length: number, message: Types.DiagnosticMessage, ...args: (string | number)[]): Types.Diagnostic;
+export declare function isToken(n: Node): boolean;
 export declare function isModifierKind(token: SyntaxKind): boolean;
 export declare function isKeywordTypeKind(token: SyntaxKind): boolean;
 export declare function isAssignmentOperator(token: SyntaxKind): boolean;

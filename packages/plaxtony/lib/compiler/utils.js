@@ -22,6 +22,10 @@ function createFileDiagnostic(file, start, length, message) {
     };
 }
 exports.createFileDiagnostic = createFileDiagnostic;
+function isToken(n) {
+    return n.kind >= 1 && n.kind <= 107;
+}
+exports.isToken = isToken;
 function isModifierKind(token) {
     switch (token) {
         case 52:
@@ -90,7 +94,7 @@ function isLeftHandSideExpressionKind(kind) {
         || kind === 115
         || kind === 120
         || kind === 112
-        || kind === 108
+        || kind === 107
         || kind === 1
         || kind === 2
         || kind === 63
@@ -167,7 +171,6 @@ exports.findAncestor = findAncestor;
 function fixupParentReferences(rootNode) {
     let parent = rootNode;
     forEachChild(rootNode, visitNode);
-    return;
     function visitNode(n) {
         if (n.parent !== parent) {
             n.parent = parent;
@@ -215,6 +218,16 @@ function forEachChild(node, cbNode, cbNodes) {
                 visitNode(cbNode, node.name) ||
                 visitNodes(cbNode, cbNodes, node.parameters) ||
                 visitNode(cbNode, node.body);
+        case 133:
+            return visitNodes(cbNode, cbNodes, node.modifiers) ||
+                visitNode(cbNode, node.name) ||
+                visitNodes(cbNode, cbNodes, node.members);
+        case 136:
+            return visitNodes(cbNode, cbNodes, node.modifiers) ||
+                visitNode(cbNode, node.name) ||
+                visitNode(cbNode, node.type);
+        case 122:
+            return visitNodes(cbNode, cbNodes, node.statements);
         case 121:
             return visitNodes(cbNode, cbNodes, node.statements);
     }

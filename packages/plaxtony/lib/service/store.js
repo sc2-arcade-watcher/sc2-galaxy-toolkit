@@ -4,6 +4,7 @@ const parser_1 = require("../compiler/parser");
 const binder_1 = require("../compiler/binder");
 const path = require("path");
 const fs = require("fs");
+const glob = require("glob");
 function createTextDocument(uri, text) {
     return {
         uri: uri,
@@ -21,6 +22,16 @@ exports.createTextDocumentFromFs = createTextDocumentFromFs;
 class IndexedDocument {
 }
 exports.IndexedDocument = IndexedDocument;
+class Workspace {
+    constructor(workspacePath, store) {
+        this.workspacePath = path.join(path.resolve(workspacePath), '**/*.galaxy');
+        this.store = store;
+        for (let filepath of glob.sync(this.workspacePath)) {
+            this.store.updateDocument(createTextDocumentFromFs(filepath));
+        }
+    }
+}
+exports.Workspace = Workspace;
 class Store {
     constructor() {
         this.documents = new Map();

@@ -11,7 +11,7 @@ export declare function isDigit(ch: number): boolean;
 export declare function isOctalDigit(ch: number): boolean;
 export declare class Scanner {
     private line;
-    private col;
+    private char;
     private pos;
     private end;
     private startPos;
@@ -20,6 +20,7 @@ export declare class Scanner {
     private token;
     private tokenValue;
     private onError?;
+    private lineMap;
     constructor(onError?: ErrorCallback);
     private error(msg);
     private speculationHelper<T>(callback, isLookahead);
@@ -35,9 +36,10 @@ export declare class Scanner {
     setText(text: string): void;
     scan(): SyntaxKind;
     getLine(): number;
-    getCol(): number;
+    getChar(): number;
     getStartPos(): number;
     getTokenPos(): number;
     getTextPos(): number;
     getTokenValue(): string;
+    getLineMap(): number[];
 }

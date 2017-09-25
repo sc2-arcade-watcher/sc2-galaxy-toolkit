@@ -232,8 +232,8 @@ export declare const enum SyntaxKind {
     ArrayrefKeyword = 104,
     StructrefKeyword = 105,
     FuncrefKeyword = 106,
-    EndOfFileToken = 107,
-    Identifier = 108,
+    Identifier = 107,
+    EndOfFileToken = 108,
     TypeReference = 109,
     KeywordTypeNode = 110,
     ArrayType = 111,
@@ -264,11 +264,15 @@ export declare const enum SyntaxKind {
     ParameterDeclaration = 136,
     PropertyDeclaration = 137,
 }
+export declare const enum SyntaxKindMarker {
+    FirstToken = 1,
+    LastToken = 107,
+}
 export declare type Modifier = Token<SyntaxKind.ConstKeyword> | Token<SyntaxKind.NativeKeyword> | Token<SyntaxKind.StaticKeyword>;
 export declare type KeywordType = SyntaxKind.AbilcmdKeyword | SyntaxKind.ActorKeyword | SyntaxKind.ActorscopeKeyword | SyntaxKind.AifilterKeyword | SyntaxKind.AnimfilterKeyword | SyntaxKind.BankKeyword | SyntaxKind.BoolKeyword | SyntaxKind.ByteKeyword | SyntaxKind.CamerainfoKeyword | SyntaxKind.CharKeyword | SyntaxKind.ColorKeyword | SyntaxKind.DoodadKeyword | SyntaxKind.FixedKeyword | SyntaxKind.HandleKeyword | SyntaxKind.GenerichandleKeyword | SyntaxKind.EffecthistoryKeyword | SyntaxKind.IntKeyword | SyntaxKind.MarkerKeyword | SyntaxKind.OrderKeyword | SyntaxKind.PlayergroupKeyword | SyntaxKind.PointKeyword | SyntaxKind.RegionKeyword | SyntaxKind.RevealerKeyword | SyntaxKind.SoundKeyword | SyntaxKind.SoundlinkKeyword | SyntaxKind.StringKeyword | SyntaxKind.TextKeyword | SyntaxKind.TimerKeyword | SyntaxKind.TransmissionsourceKeyword | SyntaxKind.TriggerKeyword | SyntaxKind.UnitKeyword | SyntaxKind.UnitfilterKeyword | SyntaxKind.UnitgroupKeyword | SyntaxKind.UnitrefKeyword | SyntaxKind.VoidKeyword | SyntaxKind.WaveKeyword | SyntaxKind.WaveinfoKeyword | SyntaxKind.WavetargetKeyword | SyntaxKind.ArrayrefKeyword | SyntaxKind.StructrefKeyword | SyntaxKind.FuncrefKeyword;
 export interface Symbol {
     escapedName: string;
-    declarations?: Declaration[];
+    declarations: Declaration[];
     valueDeclaration?: Declaration;
     members?: SymbolTable;
     parent?: Symbol;
@@ -277,6 +281,8 @@ export interface Symbol {
 }
 export declare type SymbolTable = Map<string, Symbol>;
 export interface TextRange {
+    line: number;
+    char: number;
     pos: number;
     end: number;
 }
@@ -286,6 +292,7 @@ export interface Token<TKind extends SyntaxKind> extends Node {
 export interface Node extends TextRange {
     kind: SyntaxKind;
     parent?: Node;
+    syntaxTokens: Node[];
 }
 export interface NodeArray<T extends Node> extends ReadonlyArray<T>, TextRange {
 }
@@ -367,6 +374,7 @@ export interface SourceFile extends Declaration {
     kind: SyntaxKind.SourceFile;
     fileName: string;
     statements: NodeArray<Statement>;
+    lineMap: number[];
     parseDiagnostics: Diagnostic[];
     bindDiagnostics: Diagnostic[];
     additionalSyntacticDiagnostics: Diagnostic[];

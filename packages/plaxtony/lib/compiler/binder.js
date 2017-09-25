@@ -9,10 +9,15 @@ function bindSourceFile(sourceFile) {
         switch (node.kind) {
             case 121:
             case 134:
+            case 135:
+            case 133:
+            case 136:
                 addDeclaration(node);
                 break;
         }
-        currentContainer = node;
+        if (node.kind === 121 || node.kind === 135 || node.kind === 133) {
+            currentContainer = node;
+        }
         utils_1.forEachChild(node, child => bind(child));
         currentContainer = parentContainer;
     }
@@ -40,11 +45,11 @@ function bindSourceFile(sourceFile) {
                 members: new Map(),
                 parent: undefined,
             };
-            node.symbol = symbol;
             if (currentContainer !== undefined) {
                 currentContainer.symbol.members.set(name, symbol);
             }
         }
+        node.symbol = symbol;
         symbol.declarations.push(node);
         return symbol;
     }

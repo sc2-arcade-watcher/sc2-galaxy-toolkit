@@ -236,8 +236,8 @@ var SyntaxKind;
     SyntaxKind[SyntaxKind["ArrayrefKeyword"] = 104] = "ArrayrefKeyword";
     SyntaxKind[SyntaxKind["StructrefKeyword"] = 105] = "StructrefKeyword";
     SyntaxKind[SyntaxKind["FuncrefKeyword"] = 106] = "FuncrefKeyword";
-    SyntaxKind[SyntaxKind["EndOfFileToken"] = 107] = "EndOfFileToken";
-    SyntaxKind[SyntaxKind["Identifier"] = 108] = "Identifier";
+    SyntaxKind[SyntaxKind["Identifier"] = 107] = "Identifier";
+    SyntaxKind[SyntaxKind["EndOfFileToken"] = 108] = "EndOfFileToken";
     SyntaxKind[SyntaxKind["TypeReference"] = 109] = "TypeReference";
     SyntaxKind[SyntaxKind["KeywordTypeNode"] = 110] = "KeywordTypeNode";
     SyntaxKind[SyntaxKind["ArrayType"] = 111] = "ArrayType";
@@ -268,6 +268,12 @@ var SyntaxKind;
     SyntaxKind[SyntaxKind["ParameterDeclaration"] = 136] = "ParameterDeclaration";
     SyntaxKind[SyntaxKind["PropertyDeclaration"] = 137] = "PropertyDeclaration";
 })(SyntaxKind = exports.SyntaxKind || (exports.SyntaxKind = {}));
+var SyntaxKindMarker;
+(function (SyntaxKindMarker) {
+    SyntaxKindMarker[SyntaxKindMarker["FirstToken"] = 1] = "FirstToken";
+    SyntaxKindMarker[SyntaxKindMarker["LastToken"] = 107] = "LastToken";
+})(SyntaxKindMarker = exports.SyntaxKindMarker || (exports.SyntaxKindMarker = {}));
+;
 var DiagnosticCategory;
 (function (DiagnosticCategory) {
     DiagnosticCategory[DiagnosticCategory["Warning"] = 0] = "Warning";
