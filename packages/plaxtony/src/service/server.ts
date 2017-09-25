@@ -6,8 +6,10 @@ import {
 import * as Types from '../compiler/types';
 import { findAncestor } from '../compiler/utils';
 import { Store } from './store';
+import { getPositionOfLineAndCharacter } from './utils';
 import { DiagnosticsProvider } from './diagnostics';
 import { NavigationProvider } from './navigation';
+import { CompletionsProvider } from './completions';
 
 function getNodeRange(node: Types.Node): Range {
     return {
@@ -27,7 +29,6 @@ function translateDiagnostics(origDiagnostics: Types.Diagnostic[]): Diagnostic[]
                 end: { line: dg.line - 1, character: dg.col - 1 }
             },
             message: dg.messageText,
-            source: 'ex'
         });
     }
 
@@ -87,7 +88,7 @@ export function createServer(): IConnection {
                 documentSymbolProvider: true,
                 workspaceSymbolProvider: true,
                 completionProvider: {
-                    resolveProvider: true
+                    triggerCharacters: ['.'],
                 }
             }
         }
@@ -96,6 +97,7 @@ export function createServer(): IConnection {
     let store = new Store();
     let diagnosticsProvider = new DiagnosticsProvider(store);
     let navigationProvider = new NavigationProvider(store);
+    const completionsProvider = new CompletionsProvider(store);
 
     documents.onDidChangeContent((e) => {
         connection.console.log('update ' + e.document.uri);
@@ -132,59 +134,16 @@ export function createServer(): IConnection {
         // documents.all().forEach(validateTextDocument);
     });
 
-    function validateTextDocument(textDocument: TextDocument): void {
-        let diagnostics: Diagnostic[] = [];
-        let lines = textDocument.getText().split(/\r?\n/g);
-        for (var i = 0; i < lines.length; i++) {
-            let line = lines[i];
-            let index = line.indexOf('typescript');
-            if (index >= 0) {
-                diagnostics.push({
-                    severity: DiagnosticSeverity.Warning,
-                    range: {
-                        start: { line: i, character: index },
-                        end: { line: i, character: index + 10 }
-                    },
-                    message: `${line.substr(index, 10)} should be spelled TypeScript`,
-                    source: 'ex'
-                });
-            }
-        }
-        connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
-    }
-
     connection.onDidChangeWatchedFiles((_change) => {
         connection.console.log('We recevied an file change event');
     });
 
 
-    // This handler provides the initial list of the completion items.
-    connection.onCompletion((_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-        return [
-            {
-                label: 'TypeScript',
-                kind: CompletionItemKind.Text,
-                data: 1
-            },
-            {
-                label: 'JavaScript',
-                kind: CompletionItemKind.Text,
-                data: 2
-            }
-        ]
-    });
-
-    // This handler resolve additional information for the item selected in
-    // the completion list.
-    connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
-        if (item.data === 1) {
-            item.detail = 'TypeScript details',
-                item.documentation = 'TypeScript documentation'
-        } else if (item.data === 2) {
-            item.detail = 'JavaScript details',
-                item.documentation = 'JavaScript documentation'
-        }
-        return item;
+    connection.onCompletion((params: TextDocumentPositionParams): CompletionItem[] => {
+        return completionsProvider.getCompletionsAt(
+            params.textDocument.uri,
+            getPositionOfLineAndCharacter(store.documents.get(params.textDocument.uri), params.position.line, params.position.character)
+        );
     });
 
     connection.onDocumentSymbol((params: DocumentSymbolParams): SymbolInformation[] => {

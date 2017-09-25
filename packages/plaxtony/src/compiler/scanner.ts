@@ -160,7 +160,7 @@ export function isOctalDigit(ch: number): boolean {
 
 export class Scanner {
     private line: number;
-    private col: number;
+    private char: number;
 
     // Current position (end position of text of current token)
     private pos: number;
@@ -184,6 +184,7 @@ export class Scanner {
     // private numericLiteralFlags: NumericLiteralFlags;
 
     private onError?: ErrorCallback;
+    private lineMap: number[];
 
     constructor(onError?: ErrorCallback) {
         this.onError = onError;
@@ -201,12 +202,13 @@ export class Scanner {
 
     private speculationHelper<T>(callback: () => T, isLookahead: boolean): T {
         const saveLine = this.line;
-        const saveCol = this.col;
+        const saveCol = this.char;
         const savePos = this.pos;
         const saveStartPos = this.startPos;
         const saveTokenPos = this.tokenPos;
         const saveToken = this.token;
         const saveTokenValue = this.tokenValue;
+        const saveLineMapLength = this.lineMap.length;
         // const savePrecedingLineBreak = this.precedingLineBreak;
         const result = callback();
 
@@ -214,12 +216,15 @@ export class Scanner {
         // then unconditionally restore us to where we were.
         if (!result || isLookahead) {
             this.line = saveLine;
-            this.col = saveCol;
+            this.char = saveCol;
             this.pos = savePos;
             this.startPos = saveStartPos;
             this.tokenPos = saveTokenPos;
             this.token = saveToken;
             this.tokenValue = saveTokenValue;
+            if (this.lineMap.length !== saveLineMapLength) {
+                this.lineMap = this.lineMap.slice(0, saveLineMapLength);
+            }
             // this.precedingLineBreak = savePrecedingLineBreak;
         }
         return result;
@@ -424,8 +429,9 @@ export class Scanner {
         this.text = text;
         this.pos = 0;
         this.end = this.text.length;
-        this.line = 1;
-        this.col = 1;
+        this.line = 0;
+        this.char = 0;
+        this.lineMap = [0];
     }
 
     scan(): SyntaxKind {
@@ -676,10 +682,13 @@ export class Scanner {
                     }
                     else if (isLineBreak(ch)) {
                         if (ch === CharacterCodes.lineFeed) {
-                            this.col = this.pos;
+                            this.char = this.pos;
                             this.line++;
                         }
                         this.pos++;
+                        if (ch === CharacterCodes.lineFeed) {
+                            this.lineMap.push(this.pos);
+                        }
                         continue;
                     }
                     this.error(`encountered invalid character ${this.text.charAt(this.pos)}`);
@@ -693,8 +702,8 @@ export class Scanner {
         return this.line;
     }
 
-    public getCol(): number {
-        return this.pos - this.col;
+    public getChar(): number {
+        return this.pos - this.char;
     }
 
     public getStartPos(): number {
@@ -711,5 +720,9 @@ export class Scanner {
 
     public getTokenValue(): string {
         return this.tokenValue;
+    }
+
+    public getLineMap(): number[] {
+       return this.lineMap;
     }
 }

@@ -254,10 +254,12 @@ export const enum SyntaxKind {
     StructrefKeyword,
     FuncrefKeyword,
 
+    //
+    Identifier,
+
     EndOfFileToken,
 
     // Elements
-    Identifier,
     TypeReference,
     KeywordTypeNode,
     ArrayType,
@@ -293,6 +295,11 @@ export const enum SyntaxKind {
     ParameterDeclaration,
     PropertyDeclaration,
 }
+
+export const enum SyntaxKindMarker {
+    FirstToken = SyntaxKind.NumericLiteral,
+    LastToken = SyntaxKind.Identifier,
+};
 
 export type Modifier
     = Token<SyntaxKind.ConstKeyword>
@@ -346,7 +353,7 @@ export type KeywordType
 
 export interface Symbol {
     escapedName: string;                    // Name of symbol
-    declarations?: Declaration[];           // Declarations associated with this symbol
+    declarations: Declaration[];            // Declarations associated with this symbol
     valueDeclaration?: Declaration;         // First value declaration of the symbol
     members?: SymbolTable;                  // members
     /* @internal */ parent?: Symbol;        // Parent symbol
@@ -371,6 +378,7 @@ export interface Node extends TextRange {
     // token: Token;
     kind: SyntaxKind;
     parent?: Node;
+    syntaxTokens: Node[];
 }
 
 export interface NodeArray<T extends Node> extends ReadonlyArray<T>, TextRange {
@@ -476,6 +484,7 @@ export interface SourceFile extends Declaration {
     kind: SyntaxKind.SourceFile;
     fileName: string;
     statements: NodeArray<Statement>;
+    lineMap: number[];
     /* @internal */ parseDiagnostics: Diagnostic[]; // File-level diagnostics reported by the parser
     /* @internal */ bindDiagnostics: Diagnostic[]; // File-level diagnostics reported by the binder.
     /* @internal */ additionalSyntacticDiagnostics: Diagnostic[]; // Stores additional file-level diagnostics reported by the program

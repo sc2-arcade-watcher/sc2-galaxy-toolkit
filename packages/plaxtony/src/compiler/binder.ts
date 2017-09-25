@@ -14,11 +14,16 @@ export function bindSourceFile(sourceFile: SourceFile) {
         switch (node.kind) {
             case SyntaxKind.SourceFile:
             case SyntaxKind.VariableDeclaration:
+            case SyntaxKind.FunctionDeclaration:
+            case SyntaxKind.StructDeclaration:
+            case SyntaxKind.ParameterDeclaration:
                 addDeclaration(<Types.Declaration>node);
                 break;
         }
 
-        currentContainer = node;
+        if (node.kind === SyntaxKind.SourceFile || node.kind === SyntaxKind.FunctionDeclaration || node.kind === SyntaxKind.StructDeclaration) {
+            currentContainer = node;
+        }
         forEachChild(node, child => bind(child));
         currentContainer = parentContainer;
     }
@@ -60,12 +65,12 @@ export function bindSourceFile(sourceFile: SourceFile) {
                 members: new Map<string, Symbol>(),
                 parent: undefined,
             };
-            node.symbol = symbol;
             if (currentContainer !== undefined) {
                 currentContainer.symbol.members.set(name, symbol);
             }
         }
 
+        node.symbol = symbol;
         symbol.declarations.push(node);
 
         return symbol;

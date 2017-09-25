@@ -17,6 +17,7 @@ export class Parser {
     private currentToken: SyntaxKind;
     private parsingContext: ParsingContext = 0;
     private sourceFile: Types.SourceFile;
+    private syntaxTokens: Types.Node[][];
 
     private token(): SyntaxKind {
         return this.currentToken;
@@ -47,7 +48,7 @@ export class Parser {
         );
         // TODO: line & col should not be here
         diag.line = this.scanner.getLine();
-        diag.col = this.scanner.getCol();
+        diag.col = this.scanner.getChar();
         this.sourceFile.parseDiagnostics.push(diag);
         // throw new Error(`${diag.file!.fileName} [${diag.start}]: ${diag.messageText}`);
         // throw new Error(`${diag.file!.fileName} [${this.scanner.getLine()}:${this.scanner.getCol()}]: ${diag.messageText}`);
@@ -57,6 +58,8 @@ export class Parser {
         // Keep track of the state we'll need to rollback to if lookahead fails (or if the
         // caller asked us to always reset our state).
         const saveToken = this.currentToken;
+        const saveSyntaxTokensLength = this.syntaxTokens.length;
+        const saveSyntaxTokensCurrentLength = this.syntaxTokens[this.syntaxTokens.length - 1].length;
         // const saveParseDiagnosticsLength = parseDiagnostics.length;
         // const saveParseErrorBeforeNextFinishedNode = parseErrorBeforeNextFinishedNode;
 
@@ -79,6 +82,12 @@ export class Parser {
         // then unconditionally restore us to where we were.
         if (!result || isLookAhead) {
             this.currentToken = saveToken;
+            if (this.syntaxTokens.length > saveSyntaxTokensLength) {
+                this.syntaxTokens = this.syntaxTokens.slice(0, saveSyntaxTokensLength);
+            }
+            if (this.syntaxTokens[this.syntaxTokens.length - 1].length > saveSyntaxTokensCurrentLength) {
+                this.syntaxTokens[this.syntaxTokens.length - 1] = this.syntaxTokens[this.syntaxTokens.length - 1].slice(0, saveSyntaxTokensCurrentLength);
+            }
             // parseDiagnostics.length = saveParseDiagnosticsLength;
             // parseErrorBeforeNextFinishedNode = saveParseErrorBeforeNextFinishedNode;
         }
@@ -93,7 +102,7 @@ export class Parser {
     private parseExpected(kind: SyntaxKind, diagnosticMessage?: string, shouldAdvance = true): boolean {
         if (this.token() === kind) {
             if (shouldAdvance) {
-                this.nextToken();
+                this.syntaxTokens[this.syntaxTokens.length - 1].push(this.parseTokenNode());
             }
             return true;
         }
@@ -109,25 +118,29 @@ export class Parser {
 
     private parseOptional(t: SyntaxKind): boolean {
         if (this.token() === t) {
-            this.nextToken();
+            this.syntaxTokens[this.syntaxTokens.length - 1].push(this.parseTokenNode());
             return true;
         }
         return false;
     }
 
     private parseTokenNode<T extends Node>(): T {
-        const node = <T>this.createNode(this.token());
+        const node = <T>this.createNode(this.token(), undefined, false);
         this.nextToken();
-        return this.finishNode(node);
+        return this.finishNode(node, undefined, false);
     }
 
-    private createNode(kind: SyntaxKind, pos?: number): Node {
+    private createNode(kind: SyntaxKind, pos?: number, assignSyntaxTokens: boolean = true): Node {
         const node = <Node>{};
         node.kind = kind;
         node.pos = pos === undefined ? this.scanner.getStartPos() : pos;
         node.end = node.pos;
         node.line = this.scanner.getLine();
-        node.char = this.scanner.getCol();
+        node.char = this.scanner.getChar();
+
+        if (assignSyntaxTokens) {
+            this.syntaxTokens.push([]);
+        }
         return node;
     }
 
@@ -153,8 +166,14 @@ export class Parser {
         return this.createNodeArray<T>();
     }
 
-    private finishNode<T extends Node>(node: T, end?: number): T {
+    private finishNode<T extends Node>(node: T, end?: number, assignSyntaxTokens: boolean = true): T {
         node.end = end === undefined ? this.scanner.getStartPos() : end;
+        if (assignSyntaxTokens) {
+            node.syntaxTokens = this.syntaxTokens.pop();
+            for (const token of node.syntaxTokens) {
+                token.parent = node;
+            }
+        }
         return node;
     }
 
@@ -1011,6 +1030,8 @@ export class Parser {
 
     public parseFile(fileName: string, text: string): Types.SourceFile {
         this.scanner.setText(text);
+        this.syntaxTokens = [];
+
         this.sourceFile = <Types.SourceFile>this.createNode(SyntaxKind.SourceFile, 0);
         this.sourceFile.parseDiagnostics = [];
         this.sourceFile.bindDiagnostics = [];
@@ -1021,6 +1042,7 @@ export class Parser {
         this.sourceFile.statements = this.parseList(ParsingContext.SourceElements, this.parseStatement.bind(this));
 
         this.finishNode(this.sourceFile);
+        this.sourceFile.lineMap = this.scanner.getLineMap();
 
         fixupParentReferences(this.sourceFile);
 

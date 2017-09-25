@@ -1,5 +1,5 @@
 import * as Types from './types';
-import { SyntaxKind, Node, NodeArray } from './types';
+import { SyntaxKind, SyntaxKindMarker, Node, NodeArray } from './types';
 
 export function formatStringFromArgs(text: string, args: { [index: number]: string; }, baseIndex?: number): string {
     baseIndex = baseIndex || 0;
@@ -34,6 +34,14 @@ export function createFileDiagnostic(file: Types.SourceFile, start: number, leng
         category: message.category,
         code: message.code,
     };
+}
+
+/**
+ * True if node is of some token syntax kind.
+ * For example, this is true for an IfKeyword but not for an IfStatement.
+ */
+export function isToken(n: Node): boolean {
+    return <number>n.kind >= SyntaxKindMarker.FirstToken && <number>n.kind <= SyntaxKindMarker.LastToken;
 }
 
 export function isModifierKind(token: SyntaxKind): boolean {
@@ -259,7 +267,6 @@ export function findAncestor(node: Node, callback: (element: Node) => boolean | 
 export function fixupParentReferences(rootNode: Node) {
     let parent: Node = rootNode;
     forEachChild(rootNode, visitNode);
-    return;
 
     function visitNode(n: Node): void {
         // walk down setting parents that differ from the parent we think it should be.  This
@@ -327,6 +334,14 @@ export function forEachChild<T>(node: Node, cbNode: (node: Node) => T | undefine
                 visitNode(cbNode, (<Types.FunctionDeclaration>node).name) ||
                 visitNodes(cbNode, cbNodes, (<Types.FunctionDeclaration>node).parameters) ||
                 visitNode(cbNode, (<Types.FunctionDeclaration>node).body);
+        case SyntaxKind.StructDeclaration:
+            return visitNodes(cbNode, cbNodes, (<Types.StructDeclaration>node).modifiers) ||
+                visitNode(cbNode, (<Types.StructDeclaration>node).name) ||
+                visitNodes(cbNode, cbNodes, (<Types.StructDeclaration>node).members);
+        case SyntaxKind.ParameterDeclaration:
+            return visitNodes(cbNode, cbNodes, (<Types.ParameterDeclaration>node).modifiers) ||
+                visitNode(cbNode, (<Types.ParameterDeclaration>node).name) ||
+                visitNode(cbNode, (<Types.ParameterDeclaration>node).type);
         // case SyntaxKind.TypeReference:
         //     return visitNode(cbNode, (<Types.TypeReferenceNode>node).typeName) ||
         //         visitNodes(cbNode, cbNodes, (<Types.TypeReferenceNode>node).typeArguments);
@@ -389,9 +404,8 @@ export function forEachChild<T>(node: Node, cbNode: (node: Node) => T | undefine
         //         visitNode(cbNode, (<Types.ConditionalExpression>node).whenFalse);
         // case SyntaxKind.SpreadElement:
         //     return visitNode(cbNode, (<Types.SpreadElement>node).expression);
-        // case SyntaxKind.Block:
-        // case SyntaxKind.ModuleBlock:
-        //     return visitNodes(cbNode, cbNodes, (<Types.Block>node).statements);
+        case SyntaxKind.Block:
+            return visitNodes(cbNode, cbNodes, (<Types.Block>node).statements);
         case SyntaxKind.SourceFile:
             return visitNodes(cbNode, cbNodes, (<Types.SourceFile>node).statements);
         // case SyntaxKind.VariableStatement:
