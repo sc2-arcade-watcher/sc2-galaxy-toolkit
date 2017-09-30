@@ -296,6 +296,7 @@ export class Parser {
             }
 
             this.parseErrorAtCurrentToken(this.parsingContextErrors(kind));
+            this.nextToken();
         }
 
         result.end = this.scanner.getTokenPos();
