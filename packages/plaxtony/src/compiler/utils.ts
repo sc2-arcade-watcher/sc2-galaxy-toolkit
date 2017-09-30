@@ -357,11 +357,10 @@ export function forEachChild<T>(node: Node, cbNode: (node: Node) => T | undefine
         // case SyntaxKind.ElementAccessExpression:
         //     return visitNode(cbNode, (<Types.ElementAccessExpression>node).expression) ||
         //         visitNode(cbNode, (<Types.ElementAccessExpression>node).argumentExpression);
-        // case SyntaxKind.CallExpression:
-        // case SyntaxKind.NewExpression:
-        //     return visitNode(cbNode, (<Types.CallExpression>node).expression) ||
-        //         visitNodes(cbNode, cbNodes, (<Types.CallExpression>node).typeArguments) ||
-        //         visitNodes(cbNode, cbNodes, (<Types.CallExpression>node).arguments);
+        case SyntaxKind.CallExpression:
+            return visitNode(cbNode, (<Types.CallExpression>node).expression) ||
+                visitNodes(cbNode, cbNodes, (<Types.CallExpression>node).typeArguments) ||
+                visitNodes(cbNode, cbNodes, (<Types.CallExpression>node).arguments);
         // case SyntaxKind.TaggedTemplateExpression:
         //     return visitNode(cbNode, (<Types.TaggedTemplateExpression>node).tag) ||
         //         visitNode(cbNode, (<Types.TaggedTemplateExpression>node).template);
@@ -414,8 +413,8 @@ export function forEachChild<T>(node: Node, cbNode: (node: Node) => T | undefine
         //         visitNode(cbNode, (<Types.VariableStatement>node).declarationList);
         // case SyntaxKind.VariableDeclarationList:
         //     return visitNodes(cbNode, cbNodes, (<Types.VariableDeclarationList>node).declarations);
-        // case SyntaxKind.ExpressionStatement:
-        //     return visitNode(cbNode, (<Types.ExpressionStatement>node).expression);
+        case SyntaxKind.ExpressionStatement:
+            return visitNode(cbNode, (<Types.ExpressionStatement>node).expression);
         // case SyntaxKind.IfStatement:
         //     return visitNode(cbNode, (<Types.IfStatement>node).expression) ||
         //         visitNode(cbNode, (<Types.IfStatement>node).thenStatement) ||

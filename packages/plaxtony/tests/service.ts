@@ -2,6 +2,7 @@ import { Store, Workspace, createTextDocumentFromFs } from '../src/service/store
 import { DiagnosticsProvider } from '../src/service/diagnostics';
 import { NavigationProvider } from '../src/service/navigation';
 import { CompletionsProvider } from '../src/service/completions';
+import { SignaturesProvider } from '../src/service/signatures';
 import { getPositionOfLineAndCharacter, findPrecedingToken } from '../src/service/utils';
 import * as Types from '../src/compiler/types';
 import { assert } from 'chai';
@@ -89,6 +90,23 @@ describe('Service', () => {
 
         it('should provide localy declared symbols', () => {
             assert.lengthOf(completions.getCompletionsAt(document.uri, 51), 8);
+        });
+    });
+
+    describe('Signatures', () => {
+        const fixturesPath = 'tests/fixtures/service';
+        const store = new Store();
+        const signaturesProvider = new SignaturesProvider(store);
+        const document = createTextDocumentFromFs(path.join(fixturesPath, 'call.galaxy'));
+        store.updateDocument(document);
+        store.updateDocument(createTextDocumentFromFs(path.join(fixturesPath, 'navigation', 'funcs.galaxy')));
+
+        it('should provide signature help for global functions', () => {
+            assert.lengthOf(signaturesProvider.getSignatureAt(document.uri, 28).signatures, 1);
+        });
+
+        it('should identify active parameter', () => {
+            assert.equal(signaturesProvider.getSignatureAt(document.uri, 30).activeParameter, 1);
         });
     });
 });

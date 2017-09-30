@@ -1,7 +1,8 @@
 import {
     IPCMessageReader, IPCMessageWriter, createConnection, IConnection, TextDocuments, TextDocument,
     Diagnostic, DiagnosticSeverity, InitializeResult, TextDocumentPositionParams, CompletionItem,
-    CompletionItemKind, SymbolInformation, DocumentSymbolParams, SymbolKind, Range, WorkspaceSymbolParams
+    CompletionItemKind, SymbolInformation, DocumentSymbolParams, SymbolKind, Range, WorkspaceSymbolParams,
+    SignatureHelp
 } from 'vscode-languageserver';
 import * as Types from '../compiler/types';
 import { findAncestor } from '../compiler/utils';
@@ -10,6 +11,7 @@ import { getPositionOfLineAndCharacter } from './utils';
 import { DiagnosticsProvider } from './diagnostics';
 import { NavigationProvider } from './navigation';
 import { CompletionsProvider } from './completions';
+import { SignaturesProvider } from './signatures';
 
 function getNodeRange(node: Types.Node): Range {
     return {
@@ -89,7 +91,10 @@ export function createServer(): IConnection {
                 workspaceSymbolProvider: true,
                 completionProvider: {
                     triggerCharacters: ['.'],
-                }
+                },
+                signatureHelpProvider: {
+                    triggerCharacters: ['(', ','],
+                },
             }
         }
     });
@@ -98,6 +103,7 @@ export function createServer(): IConnection {
     let diagnosticsProvider = new DiagnosticsProvider(store);
     let navigationProvider = new NavigationProvider(store);
     const completionsProvider = new CompletionsProvider(store);
+    const signaturesProvider = new SignaturesProvider(store);
 
     documents.onDidChangeContent((e) => {
         connection.console.log('update ' + e.document.uri);
@@ -152,6 +158,13 @@ export function createServer(): IConnection {
 
     connection.onWorkspaceSymbol((params: WorkspaceSymbolParams): SymbolInformation[] => {
         return translateDeclaratons(navigationProvider.getWorkspaceSymbols());
+    });
+
+    connection.onSignatureHelp((params: TextDocumentPositionParams): SignatureHelp => {
+        return signaturesProvider.getSignatureAt(
+            params.textDocument.uri,
+            getPositionOfLineAndCharacter(store.documents.get(params.textDocument.uri), params.position.line, params.position.character)
+        );
     });
 
     /*
