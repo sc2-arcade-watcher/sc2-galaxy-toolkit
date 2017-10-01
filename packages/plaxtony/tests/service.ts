@@ -1,25 +1,19 @@
-import { Store, Workspace, createTextDocumentFromFs } from '../src/service/store';
+import { Store, Workspace } from '../src/service/store';
 import { DiagnosticsProvider } from '../src/service/diagnostics';
 import { NavigationProvider } from '../src/service/navigation';
 import { CompletionsProvider } from '../src/service/completions';
 import { SignaturesProvider } from '../src/service/signatures';
 import { getPositionOfLineAndCharacter, findPrecedingToken } from '../src/service/utils';
 import * as Types from '../src/compiler/types';
+import { mockupSourceFile, mockupTextDocument, mockupStore } from './helpers';
 import { assert } from 'chai';
 import * as path from 'path';
 import 'mocha';
 
-function mockupSourceFile(filepath: string) {
-    const store = new Store();
-    const document = createTextDocumentFromFs(filepath);
-    store.updateDocument(document);
-    return store.documents.get(document.uri);
-}
 
 describe('Service', () => {
     describe('Utils', () => {
-        const fixturesPath = 'tests/fixtures/service/navigation';
-        const sourceFile = mockupSourceFile(path.join(fixturesPath, 'declarations.galaxy'));
+        const sourceFile = mockupSourceFile(path.join('service', 'navigation', 'declarations.galaxy'));
 
         it('getPositionOfLineAndCharacter', () => {
             assert.equal(getPositionOfLineAndCharacter(sourceFile, 0, 0), 0);
@@ -38,14 +32,13 @@ describe('Service', () => {
 
     describe('Diagnostics', () => {
         const store = new Store();
-        const fixturesPath = 'tests/fixtures/service';
 
         it('should report about parse errors', () => {
             const diagnosticsProvider = new DiagnosticsProvider(store);
-            const document = createTextDocumentFromFs(path.join(fixturesPath, 'diagnostics_parse_error.galaxy'));
+            const document = mockupTextDocument(path.join('service', 'diagnostics_parse_error.galaxy'));
             store.updateDocument(document);
             diagnosticsProvider.subscribe(document.uri);
-            const diagnostics = diagnosticsProvider.diagnose();
+            const diagnostics = diagnosticsProvider.diagnose(document.uri);
             assert(diagnostics.length === 1);
             assert.equal(diagnostics[0].messageText, 'Expected SemicolonToken, found CloseBraceToken');
         });
@@ -57,7 +50,7 @@ describe('Service', () => {
         it('should provide symbols navigation per document', () => {
             const store = new Store();
             const navigation = new NavigationProvider(store);
-            const document = createTextDocumentFromFs(path.join(fixturesPath, 'declarations.galaxy'));
+            const document = mockupTextDocument('service', 'navigation', 'declarations.galaxy');
             store.updateDocument(document);
             const symbolDeclarations = navigation.getDocumentSymbols(document.uri);
             assert.lengthOf(symbolDeclarations, 4);
@@ -77,12 +70,12 @@ describe('Service', () => {
     });
 
     describe('Completions', () => {
-        const fixturesPath = 'tests/fixtures/service/navigation';
-        const store = new Store();
+        const document = mockupTextDocument('service', 'navigation', 'funcs.galaxy');
+        const store = mockupStore(
+            document,
+            mockupTextDocument('service', 'navigation', 'declarations.galaxy')
+        );
         const completions = new CompletionsProvider(store);
-        const document = createTextDocumentFromFs(path.join(fixturesPath, 'funcs.galaxy'));
-        store.updateDocument(document);
-        store.updateDocument(createTextDocumentFromFs(path.join(fixturesPath, 'declarations.galaxy')));
 
         it('should provide globaly declared symbols', () => {
             assert.lengthOf(completions.getCompletionsAt(document.uri, 0), 5);
@@ -94,12 +87,12 @@ describe('Service', () => {
     });
 
     describe('Signatures', () => {
-        const fixturesPath = 'tests/fixtures/service';
-        const store = new Store();
+        const document = mockupTextDocument('service', 'call.galaxy');
+        const store = mockupStore(
+            document,
+            mockupTextDocument('service', 'navigation', 'funcs.galaxy')
+        );
         const signaturesProvider = new SignaturesProvider(store);
-        const document = createTextDocumentFromFs(path.join(fixturesPath, 'call.galaxy'));
-        store.updateDocument(document);
-        store.updateDocument(createTextDocumentFromFs(path.join(fixturesPath, 'navigation', 'funcs.galaxy')));
 
         it('should provide signature help for global functions', () => {
             assert.lengthOf(signaturesProvider.getSignatureAt(document.uri, 28).signatures, 1);
