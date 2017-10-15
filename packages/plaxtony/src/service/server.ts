@@ -6,7 +6,7 @@ import {
 } from 'vscode-languageserver';
 import * as Types from '../compiler/types';
 import { findAncestor } from '../compiler/utils';
-import { Store } from './store';
+import { Store, Workspace } from './store';
 import { getPositionOfLineAndCharacter } from './utils';
 import { DiagnosticsProvider } from './diagnostics';
 import { NavigationProvider } from './navigation';
@@ -15,8 +15,8 @@ import { SignaturesProvider } from './signatures';
 
 function getNodeRange(node: Types.Node): Range {
     return {
-        start: { line: node.line - 1, character: node.char - 1 },
-        end: { line: node.line - 1, character: node.char - 1 }
+        start: { line: node.line, character: node.char },
+        end: { line: node.line, character: node.char }
     };
 }
 
@@ -27,8 +27,8 @@ function translateDiagnostics(origDiagnostics: Types.Diagnostic[]): Diagnostic[]
         lspDiagnostics.push({
             severity: DiagnosticSeverity.Error,
             range: {
-                start: { line: dg.line - 1, character: dg.col - 1 },
-                end: { line: dg.line - 1, character: dg.col - 1 }
+                start: { line: dg.line, character: dg.col },
+                end: { line: dg.line, character: dg.col }
             },
             message: dg.messageText,
         });
@@ -81,9 +81,14 @@ export function createServer(): IConnection {
     let documents: TextDocuments = new TextDocuments();
     documents.listen(connection);
 
-    let workspaceRoot: string;
+    let store = new Store();
+    let diagnosticsProvider = new DiagnosticsProvider(store);
+    let navigationProvider = new NavigationProvider(store);
+    const completionsProvider = new CompletionsProvider(store);
+    const signaturesProvider = new SignaturesProvider(store);
+
     connection.onInitialize((params): InitializeResult => {
-        workspaceRoot = params.rootPath;
+        new Workspace(params.rootPath, store);
         return {
             capabilities: {
                 textDocumentSync: documents.syncKind,
@@ -99,21 +104,13 @@ export function createServer(): IConnection {
         }
     });
 
-    let store = new Store();
-    let diagnosticsProvider = new DiagnosticsProvider(store);
-    let navigationProvider = new NavigationProvider(store);
-    const completionsProvider = new CompletionsProvider(store);
-    const signaturesProvider = new SignaturesProvider(store);
-
     documents.onDidChangeContent((e) => {
-        connection.console.log('update ' + e.document.uri);
+        connection.console.log('processing ' + e.document.uri);
         store.updateDocument(e.document);
-        connection.console.log('preparing diagnostics');
         connection.sendDiagnostics({
             uri: e.document.uri,
-            diagnostics: translateDiagnostics(diagnosticsProvider.diagnose()),
+            diagnostics: translateDiagnostics(diagnosticsProvider.diagnose(e.document.uri)),
         });
-        connection.console.log('done');
         // connection.console.log('onDidChangeContent');
         // validateTextDocument(e.document);
     });

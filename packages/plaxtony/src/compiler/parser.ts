@@ -138,6 +138,10 @@ export class Parser {
         node.line = this.scanner.getLine();
         node.char = this.scanner.getChar();
 
+        if (process.env.PLAXTONY_DEBUG) {
+            (<any>node).kindName = getKindName(node.kind);
+        }
+
         if (assignSyntaxTokens) {
             this.syntaxTokens.push([]);
         }

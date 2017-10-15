@@ -106,7 +106,7 @@ export function isAssignmentOperator(token: SyntaxKind): boolean {
     return token >= SyntaxKind.EqualsToken && token <= SyntaxKind.CaretEqualsToken;
 }
 
-function isLeftHandSideExpressionKind(kind: SyntaxKind): boolean {
+export function isLeftHandSideExpressionKind(kind: SyntaxKind): boolean {
     return kind === SyntaxKind.PropertyAccessExpression
         || kind === SyntaxKind.ElementAccessExpression
         || kind === SyntaxKind.CallExpression
@@ -118,6 +118,30 @@ function isLeftHandSideExpressionKind(kind: SyntaxKind): boolean {
         || kind === SyntaxKind.FalseKeyword
         || kind === SyntaxKind.NullKeyword
         || kind === SyntaxKind.TrueKeyword;
+}
+
+export function isContainerKind(kind: SyntaxKind): boolean {
+    return kind === SyntaxKind.SourceFile
+        || kind === SyntaxKind.FunctionDeclaration
+        || kind === SyntaxKind.StructDeclaration
+    ;
+}
+
+export function isNamedDeclarationKind(kind: SyntaxKind): boolean {
+    return kind === SyntaxKind.SourceFile
+        || kind === SyntaxKind.VariableDeclaration
+        || kind === SyntaxKind.FunctionDeclaration
+        || kind === SyntaxKind.StructDeclaration
+        || kind === SyntaxKind.PropertyDeclaration
+        || kind === SyntaxKind.PropertyAccessExpression
+        || kind === SyntaxKind.ParameterDeclaration
+    ;
+}
+
+export function isDeclarationKind(kind: SyntaxKind): boolean {
+    return isNamedDeclarationKind(kind)
+        || kind === SyntaxKind.CallExpression
+    ;
 }
 
 export function isLeftHandSideExpression(node: Types.Node): boolean {
@@ -351,56 +375,32 @@ export function forEachChild<T>(node: Node, cbNode: (node: Node) => T | undefine
         //     return visitNodes(cbNode, cbNodes, (<Types.ArrayLiteralExpression>node).elements);
         // case SyntaxKind.ObjectLiteralExpression:
         //     return visitNodes(cbNode, cbNodes, (<Types.ObjectLiteralExpression>node).properties);
-        // case SyntaxKind.PropertyAccessExpression:
-        //     return visitNode(cbNode, (<Types.PropertyAccessExpression>node).expression) ||
-        //         visitNode(cbNode, (<Types.PropertyAccessExpression>node).name);
-        // case SyntaxKind.ElementAccessExpression:
-        //     return visitNode(cbNode, (<Types.ElementAccessExpression>node).expression) ||
-        //         visitNode(cbNode, (<Types.ElementAccessExpression>node).argumentExpression);
+        case SyntaxKind.PropertyAccessExpression:
+            return visitNode(cbNode, (<Types.PropertyAccessExpression>node).expression) ||
+                visitNode(cbNode, (<Types.PropertyAccessExpression>node).name);
+        case SyntaxKind.ElementAccessExpression:
+            return visitNode(cbNode, (<Types.ElementAccessExpression>node).expression) ||
+                visitNode(cbNode, (<Types.ElementAccessExpression>node).argumentExpression);
         case SyntaxKind.CallExpression:
             return visitNode(cbNode, (<Types.CallExpression>node).expression) ||
                 visitNodes(cbNode, cbNodes, (<Types.CallExpression>node).typeArguments) ||
                 visitNodes(cbNode, cbNodes, (<Types.CallExpression>node).arguments);
-        // case SyntaxKind.TaggedTemplateExpression:
-        //     return visitNode(cbNode, (<Types.TaggedTemplateExpression>node).tag) ||
-        //         visitNode(cbNode, (<Types.TaggedTemplateExpression>node).template);
-        // case SyntaxKind.TypeAssertionExpression:
-        //     return visitNode(cbNode, (<Types.TypeAssertion>node).type) ||
-        //         visitNode(cbNode, (<Types.TypeAssertion>node).expression);
         // case SyntaxKind.ParenthesizedExpression:
         //     return visitNode(cbNode, (<Types.ParenthesizedExpression>node).expression);
-        // case SyntaxKind.DeleteExpression:
-        //     return visitNode(cbNode, (<Types.DeleteExpression>node).expression);
         // case SyntaxKind.TypeOfExpression:
         //     return visitNode(cbNode, (<Types.TypeOfExpression>node).expression);
         // case SyntaxKind.VoidExpression:
         //     return visitNode(cbNode, (<Types.VoidExpression>node).expression);
-        // case SyntaxKind.PrefixUnaryExpression:
-        //     return visitNode(cbNode, (<Types.PrefixUnaryExpression>node).operand);
-        // case SyntaxKind.YieldExpression:
-        //     return visitNode(cbNode, (<Types.YieldExpression>node).asteriskToken) ||
-        //         visitNode(cbNode, (<Types.YieldExpression>node).expression);
-        // case SyntaxKind.AwaitExpression:
-        //     return visitNode(cbNode, (<Types.AwaitExpression>node).expression);
-        // case SyntaxKind.PostfixUnaryExpression:
-        //     return visitNode(cbNode, (<Types.PostfixUnaryExpression>node).operand);
-        // case SyntaxKind.BinaryExpression:
-        //     return visitNode(cbNode, (<Types.BinaryExpression>node).left) ||
-        //         visitNode(cbNode, (<Types.BinaryExpression>node).operatorToken) ||
-        //         visitNode(cbNode, (<Types.BinaryExpression>node).right);
-        // case SyntaxKind.AsExpression:
-        //     return visitNode(cbNode, (<Types.AsExpression>node).expression) ||
-        //         visitNode(cbNode, (<Types.AsExpression>node).type);
+        case SyntaxKind.PrefixUnaryExpression:
+            return visitNode(cbNode, (<Types.PrefixUnaryExpression>node).operand);
+        case SyntaxKind.PostfixUnaryExpression:
+            return visitNode(cbNode, (<Types.PostfixUnaryExpression>node).operand);
+        case SyntaxKind.BinaryExpression:
+            return visitNode(cbNode, (<Types.BinaryExpression>node).left) ||
+                visitNode(cbNode, (<Types.BinaryExpression>node).operatorToken) ||
+                visitNode(cbNode, (<Types.BinaryExpression>node).right);
         // case SyntaxKind.NonNullExpression:
         //     return visitNode(cbNode, (<Types.NonNullExpression>node).expression);
-        // case SyntaxKind.MetaProperty:
-        //     return visitNode(cbNode, (<Types.MetaProperty>node).name);
-        // case SyntaxKind.ConditionalExpression:
-        //     return visitNode(cbNode, (<Types.ConditionalExpression>node).condition) ||
-        //         visitNode(cbNode, (<Types.ConditionalExpression>node).questionToken) ||
-        //         visitNode(cbNode, (<Types.ConditionalExpression>node).whenTrue) ||
-        //         visitNode(cbNode, (<Types.ConditionalExpression>node).colonToken) ||
-        //         visitNode(cbNode, (<Types.ConditionalExpression>node).whenFalse);
         // case SyntaxKind.SpreadElement:
         //     return visitNode(cbNode, (<Types.SpreadElement>node).expression);
         case SyntaxKind.Block:

@@ -356,6 +356,7 @@ export interface Symbol {
     declarations: Declaration[];            // Declarations associated with this symbol
     valueDeclaration?: Declaration;         // First value declaration of the symbol
     members?: SymbolTable;                  // members
+    target?: Symbol;                        // Resolved (non-alias) target of an alias
     /* @internal */ parent?: Symbol;        // Parent symbol
     /* @internal */ isReferenced?: boolean; // True if the symbol is referenced elsewhere
     /* @internal */ isAssigned?: boolean;   // True if the symbol is a parameter with assignments
@@ -410,6 +411,7 @@ export interface IncludeStatement extends Statement {
 }
 
 export interface TypeNode extends Node {
+    symbol?: Symbol; // Symbol associated with type (if any)
 }
 
 export interface TypeDefinition extends Node {
@@ -514,9 +516,10 @@ export interface StringLiteral extends Literal {
     kind: SyntaxKind.StringLiteral;
 }
 
-export interface Identifier extends Expression {
+export interface Identifier extends PrimaryExpression {
     kind: SyntaxKind.Identifier;
     name: string;
+    resolvedSymbol?: Symbol;
 }
 
 export type PrefixUnaryOperator
@@ -577,6 +580,10 @@ export interface ElementAccessExpression extends MemberExpression {
     kind: SyntaxKind.ElementAccessExpression;
     expression: LeftHandSideExpression;
     argumentExpression?: Expression;
+}
+
+export interface SymbolLink {
+    symbolLink: Symbol;
 }
 
 export interface PropertyAccessExpression extends MemberExpression, NamedDeclaration {

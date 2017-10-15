@@ -15,11 +15,12 @@ export class DiagnosticsProvider {
     public subscribe(uri: string) {
     }
 
-    public diagnose(): Diagnostic[] {
+    public diagnose(uri: string): Diagnostic[] {
         let diagnostics: Diagnostic[] = [];
-        for (let doc of this.store.documents.values()) {
-            diagnostics = diagnostics.concat(doc.parseDiagnostics);
-        }
+        // for (let doc of this.store.documents.values()) {
+        //     diagnostics = diagnostics.concat(doc.parseDiagnostics);
+        // }
+        diagnostics = this.store.documents.get(uri).parseDiagnostics;
         return diagnostics;
     }
 }
