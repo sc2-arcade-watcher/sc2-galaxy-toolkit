@@ -472,8 +472,9 @@ export class Parser {
             baseType = this.createMissingNode(SyntaxKind.Identifier);
         }
 
-        while (this.parseOptional(SyntaxKind.OpenBracketToken)) {
+        while (this.token() === SyntaxKind.OpenBracketToken) {
             let arrayType = <Types.ArrayTypeNode>this.createNode(SyntaxKind.ArrayType);
+            this.parseExpected(SyntaxKind.OpenBracketToken)
             arrayType.size = this.parseExpression();
             arrayType.elementType = baseType;
             this.parseExpected(SyntaxKind.CloseBracketToken);
@@ -682,16 +683,18 @@ export class Parser {
 
     private parseMemberExpressionRest(expression: Types.LeftHandSideExpression): Types.MemberExpression {
         while (true) {
-            if (this.parseOptional(SyntaxKind.DotToken)) {
+            if (this.token() === SyntaxKind.DotToken) {
                 const propertyAccess = <Types.PropertyAccessExpression>this.createNode(SyntaxKind.PropertyAccessExpression, expression.pos);
+                this.parseExpected(SyntaxKind.DotToken);
                 propertyAccess.expression = expression;
                 propertyAccess.name = this.parseIdentifier();
                 expression = this.finishNode(propertyAccess);
                 continue;
             }
 
-            if (this.parseOptional(SyntaxKind.OpenBracketToken)) {
+            if (this.token() === SyntaxKind.OpenBracketToken) {
                 const indexedAccess = <Types.ElementAccessExpression>this.createNode(SyntaxKind.ElementAccessExpression, expression.pos);
+                this.parseExpected(SyntaxKind.OpenBracketToken);
                 indexedAccess.expression = expression;
                 indexedAccess.argumentExpression = this.parseExpression();
                 this.parseExpected(SyntaxKind.CloseBracketToken);
