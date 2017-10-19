@@ -1,3 +1,4 @@
+import * as lsp from 'vscode-languageserver';
 import {
     IPCMessageReader, IPCMessageWriter, createConnection, IConnection, TextDocuments, TextDocument,
     Diagnostic, DiagnosticSeverity, InitializeResult, TextDocumentPositionParams, CompletionItem,
@@ -75,23 +76,82 @@ function translateDeclaratons(origDeclarations: Types.NamedDeclaration[]): Symbo
     return symbols;
 }
 
-export function createServer(): IConnection {
-    let connection: IConnection = createConnection(new IPCMessageReader(process), new IPCMessageWriter(process));
+var formatElapsed = function(start: [number, number], end: [number, number]): string {
+    const diff = process.hrtime(start);
+    var elapsed = diff[1] / 1000000; // divide by a million to get nano to milli
+    let out = '';
+    if (diff[0] > 0) {
+        out += diff[0] + "s ";
+    }
+    out += elapsed.toFixed(3) + "ms";
+    return out;
+}
 
-    let documents: TextDocuments = new TextDocuments();
-    documents.listen(connection);
+function wrapRequest(name?: string) {
+    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+        const method = (<Function>descriptor.value);
+        name = name ? name : propertyKey;
+        descriptor.value = function() {
+            const server = <Server>this;
+            server.log(`Processing request '${name}'`);
+            var start = process.hrtime();
+            const ret = method.bind(this)(...arguments);
+            server.log(`Done! It took ${formatElapsed(start, process.hrtime())}`);
+            if (ret && ret[Symbol.iterator]) {
+                server.log(`Results: ${ret.length}`);
+            }
+            return ret;
+        }
+    }
+}
 
-    let store = new Store();
-    let diagnosticsProvider = new DiagnosticsProvider(store);
-    let navigationProvider = new NavigationProvider(store);
-    const completionsProvider = new CompletionsProvider(store);
-    const signaturesProvider = new SignaturesProvider(store);
+class Server {
+    private connection: lsp.IConnection;
+    private store: Store;
+    private diagnosticsProvider: DiagnosticsProvider;
+    private navigationProvider: NavigationProvider;
+    private completionsProvider: CompletionsProvider;
+    private signaturesProvider: SignaturesProvider;
+    private documents: lsp.TextDocuments;
 
-    connection.onInitialize((params): InitializeResult => {
-        new Workspace(params.rootPath, store);
+    constructor() {
+        this.documents = new lsp.TextDocuments();
+        this.store = new Store();
+        this.diagnosticsProvider = new DiagnosticsProvider(this.store);
+        this.navigationProvider = new NavigationProvider(this.store);
+        this.completionsProvider = new CompletionsProvider(this.store);
+        this.signaturesProvider = new SignaturesProvider(this.store);
+    }
+
+    public createConnection(connection?: lsp.IConnection): lsp.IConnection {
+        this.connection = connection ? connection : createConnection(new lsp.IPCMessageReader(process), new lsp.IPCMessageWriter(process));
+        this.documents.listen(this.connection);
+        this.documents.onDidChangeContent(this.onDidChangeContent.bind(this));
+        this.documents.onDidOpen(this.onDidOpen.bind(this));
+        this.documents.onDidClose(this.onDidClose.bind(this));
+
+        this.connection.onInitialize(this.onInitialize.bind(this));
+        this.connection.onDidChangeConfiguration(this.onDidChangeConfiguration.bind(this));
+        this.connection.onCompletion(this.onCompletion.bind(this));
+        this.connection.onDocumentSymbol(this.onDocumentSymbol.bind(this));
+        this.connection.onWorkspaceSymbol(this.onWorkspaceSymbol.bind(this));
+        this.connection.onSignatureHelp(this.onSignatureHelp.bind(this));
+
+        return this.connection;
+    }
+
+    public log(msg: string) {
+        this.connection.console.log(msg);
+    }
+
+    @wrapRequest()
+    private onInitialize(params: lsp.InitializeParams): lsp.InitializeResult {
+        if (params.rootPath) {
+            new Workspace(params.rootPath, this.store);
+        }
         return {
             capabilities: {
-                textDocumentSync: documents.syncKind,
+                textDocumentSync: this.documents.syncKind,
                 documentSymbolProvider: true,
                 workspaceSymbolProvider: true,
                 completionProvider: {
@@ -102,87 +162,73 @@ export function createServer(): IConnection {
                 },
             }
         }
-    });
-
-    documents.onDidChangeContent((e) => {
-        connection.console.log('processing ' + e.document.uri);
-        store.updateDocument(e.document);
-        connection.sendDiagnostics({
-            uri: e.document.uri,
-            diagnostics: translateDiagnostics(diagnosticsProvider.diagnose(e.document.uri)),
-        });
-        // connection.console.log('onDidChangeContent');
-        // validateTextDocument(e.document);
-    });
-
-    documents.onDidOpen((e) => {
-        // store.addDocument(e.document);
-        connection.console.log('open ' + e.document.uri);
-    });
-
-    interface Settings {
-        plaxtony: ExampleSettings;
     }
 
-    interface ExampleSettings {
-        // maxNumberOfProblems: number;
-    }
+    @wrapRequest()
+    private onDidChangeConfiguration() {
+        // interface Settings {
+        //     plaxtony: ExampleSettings;
+        // }
 
-    // let maxNumberOfProblems: number;
+        // interface ExampleSettings {
+        //     // maxNumberOfProblems: number;
+        // }
 
-    connection.onDidChangeConfiguration((change) => {
-        let settings = <Settings>change.settings;
+        // let maxNumberOfProblems: number;
+
+        // let settings = <Settings>change.settings;
         // maxNumberOfProblems = settings.plaxtony.maxNumberOfProblems || 100;
         // Revalidate any open text documents
         // documents.all().forEach(validateTextDocument);
-    });
+    }
 
-    connection.onDidChangeWatchedFiles((_change) => {
-        connection.console.log('We recevied an file change event');
-    });
+    @wrapRequest()
+    private onDidChangeContent(ev: lsp.TextDocumentChangeEvent) {
+        // this.connection.console.log('processing ' + ev.document.uri);
+        this.store.updateDocument(ev.document);
+        this.connection.sendDiagnostics({
+            uri: ev.document.uri,
+            diagnostics: translateDiagnostics(this.diagnosticsProvider.diagnose(ev.document.uri)),
+        });
+        // connection.console.log('onDidChangeContent');
+        // validateTextDocument(e.document);
+    }
 
+    @wrapRequest()
+    private onDidOpen(ev: lsp.TextDocumentChangeEvent) {
+    }
 
-    connection.onCompletion((params: TextDocumentPositionParams): CompletionItem[] => {
-        return completionsProvider.getCompletionsAt(
+    @wrapRequest()
+    private onDidClose(ev: lsp.TextDocumentChangeEvent) {
+    }
+
+    @wrapRequest()
+    private onCompletion(params: TextDocumentPositionParams): CompletionItem[] {
+        return this.completionsProvider.getCompletionsAt(
             params.textDocument.uri,
-            getPositionOfLineAndCharacter(store.documents.get(params.textDocument.uri), params.position.line, params.position.character)
+            getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character)
         );
-    });
+    }
 
-    connection.onDocumentSymbol((params: DocumentSymbolParams): SymbolInformation[] => {
-        return translateDeclaratons(navigationProvider.getDocumentSymbols(params.textDocument.uri));
-    });
+    @wrapRequest()
+    private onDocumentSymbol(params: DocumentSymbolParams): SymbolInformation[] {
+        return translateDeclaratons(this.navigationProvider.getDocumentSymbols(params.textDocument.uri));
+    }
 
-    connection.onWorkspaceSymbol((params: WorkspaceSymbolParams): SymbolInformation[] => {
-        return translateDeclaratons(navigationProvider.getWorkspaceSymbols());
-    });
+    @wrapRequest()
+    private onWorkspaceSymbol(params: WorkspaceSymbolParams): SymbolInformation[] {
+        return translateDeclaratons(this.navigationProvider.getWorkspaceSymbols());
+    }
 
-    connection.onSignatureHelp((params: TextDocumentPositionParams): SignatureHelp => {
-        return signaturesProvider.getSignatureAt(
+    @wrapRequest()
+    private onSignatureHelp(params: TextDocumentPositionParams): SignatureHelp {
+        return this.signaturesProvider.getSignatureAt(
             params.textDocument.uri,
-            getPositionOfLineAndCharacter(store.documents.get(params.textDocument.uri), params.position.line, params.position.character)
+            getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character)
         );
-    });
+    }
+}
 
-    /*
-    connection.onDidOpenTextDocument((params) => {
-        // A text document got opened in VSCode.
-        // params.uri uniquely identifies the document. For documents store on disk this is a file URI.
-        // params.text the initial full content of the document.
-        connection.console.log(`${params.textDocument.uri} opened.`);
-    });
-    connection.onDidChangeTextDocument((params) => {
-        // The content of a text document did change in VSCode.
-        // params.uri uniquely identifies the document.
-        // params.contentChanges describe the content changes to the document.
-        connection.console.log(`${params.textDocument.uri} changed: ${JSON.stringify(params.contentChanges)}`);
-    });
-    connection.onDidCloseTextDocument((params) => {
-        // A text document got closed in VSCode.
-        // params.uri uniquely identifies the document.
-        connection.console.log(`${params.textDocument.uri} closed.`);
-    });
-    */
-
-    return connection;
+export function createServer(): lsp.IConnection {
+    return (new Server()).createConnection();
 }
