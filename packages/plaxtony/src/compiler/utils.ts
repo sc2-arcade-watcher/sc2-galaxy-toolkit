@@ -437,6 +437,9 @@ export function forEachChild<T>(node: Node, cbNode: (node: Node) => T | undefine
             return visitNodes(cbNode, cbNodes, (<Types.ParameterDeclaration>node).modifiers) ||
                 visitNode(cbNode, (<Types.ParameterDeclaration>node).name) ||
                 visitNode(cbNode, (<Types.ParameterDeclaration>node).type);
+        case SyntaxKind.ArrayType:
+            return visitNode(cbNode, (<Types.ArrayTypeNode>node).elementType) ||
+                visitNode(cbNode, (<Types.ArrayTypeNode>node).size);
         // case SyntaxKind.TypeReference:
         //     return visitNode(cbNode, (<Types.TypeReferenceNode>node).typeName) ||
         //         visitNodes(cbNode, cbNodes, (<Types.TypeReferenceNode>node).typeArguments);

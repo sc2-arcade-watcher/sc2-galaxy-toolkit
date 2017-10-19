@@ -393,20 +393,23 @@ export type SymbolTable = Map<string, Symbol>;
 export const enum TypeFlags {
     Any                     = 1 << 0,
     String                  = 1 << 1,
-    Number                  = 1 << 2,
-    Boolean                 = 1 << 3,
-    Enum                    = 1 << 4,
-    StringLiteral           = 1 << 5,
-    NumberLiteral           = 1 << 6,
-    BooleanLiteral          = 1 << 7,
+    Integer                 = 1 << 2,
+    Fixed                   = 1 << 3,
+    Boolean                 = 1 << 4,
+    Enum                    = 1 << 5,
+    StringLiteral           = 1 << 6,
+    NumberLiteral           = 1 << 7,
+    BooleanLiteral          = 1 << 8,
     Void                    = 1 << 10,
     Null                    = 1 << 11,
-    Struct                    = 1 << 12,
-    Complex                    = 1 << 13,
+    Struct                  = 1 << 12,
+    Array                   = 1 << 13,
+    Complex                 = 1 << 14,
 
     /* @internal */
     Nullable = Null,
     Literal = StringLiteral | NumberLiteral | BooleanLiteral,
+    Numeric = Integer | Fixed,
 }
 
 export interface Type {
@@ -435,6 +438,14 @@ export interface NumberLiteralType extends LiteralType {
 }
 
 export interface StructType extends Type {
+}
+
+export interface ArrayType extends Type {
+    elementType: Type;
+}
+
+export interface ComplexType extends Type {
+    kind: SyntaxKind;
 }
 
 export const enum NodeCheckFlags {

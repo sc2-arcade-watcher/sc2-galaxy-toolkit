@@ -56,6 +56,18 @@ function createStructType(symbol?: gt.Symbol): gt.StructType {
     return type;
 }
 
+function createArrayType(elementType: gt.Type): gt.ArrayType {
+    const type = <gt.ArrayType>createType(gt.TypeFlags.Array);
+    type.elementType = elementType;
+    return type;
+}
+
+function createComplexType(kind: gt.SyntaxKind): gt.ComplexType {
+    const type = <gt.ComplexType>createType(gt.TypeFlags.Complex);
+    type.kind = kind;
+    return type;
+}
+
 function createSymbol(flags: gt.SymbolFlags, name: string): gt.Symbol {
     const symbol = <gt.Symbol>{
         flags: flags,
@@ -67,11 +79,15 @@ function createSymbol(flags: gt.SymbolFlags, name: string): gt.Symbol {
 const unknownType = createIntrinsicType(gt.TypeFlags.Any, "unknown");
 const nullType = createIntrinsicType(gt.TypeFlags.Null, "null");
 const stringType = createIntrinsicType(gt.TypeFlags.String, "string");
-const numberType = createIntrinsicType(gt.TypeFlags.Number, "number");
+const integerType = createIntrinsicType(gt.TypeFlags.Integer, "integer");
+const fixedType = createIntrinsicType(gt.TypeFlags.Fixed, "fixed");
 const trueType = createIntrinsicType(gt.TypeFlags.BooleanLiteral, "true");
 const falseType = createIntrinsicType(gt.TypeFlags.BooleanLiteral, "false");
 // const booleanType = createBooleanType([trueType, falseType]);
 const voidType = createIntrinsicType(gt.TypeFlags.Void, "void");
+
+const complexTypes: gt.ComplexType[] = [];
+complexTypes[gt.SyntaxKind.UnitKeyword] = createComplexType(gt.SyntaxKind.UnitKeyword);
 
 const undefinedSymbol = createSymbol(gt.SymbolFlags.None, "undefined")
 
@@ -86,6 +102,14 @@ export class TypeChecker {
     private getNodeLinks(node: gt.Node): gt.NodeLinks {
         const nodeId = getNodeId(node);
         return this.nodeLinks[nodeId] || (this.nodeLinks[nodeId] = { flags: 0 });
+    }
+
+    private getTypeFromArrayTypeNode(node: gt.ArrayTypeNode): gt.Type {
+        const links = this.getNodeLinks(node);
+        if (!links.resolvedType) {
+            links.resolvedType = createArrayType(this.getTypeFromTypeNode(node.elementType));
+        }
+        return links.resolvedType;
     }
 
     private getPropertyOfType(type: gt.Type, name: string): gt.Symbol | undefined {
@@ -114,20 +138,23 @@ export class TypeChecker {
             case gt.SyntaxKind.StringKeyword:
                 return stringType;
             case gt.SyntaxKind.IntKeyword:
+                return integerType;
             case gt.SyntaxKind.FixedKeyword:
-                return numberType;
+                return fixedType;
             // case gt.SyntaxKind.BooleanKeyword:
             //     return booleanType;
             case gt.SyntaxKind.VoidKeyword:
                 return voidType;
             case gt.SyntaxKind.NullKeyword:
                 return nullType;
+            case gt.SyntaxKind.UnitKeyword:
+                return complexTypes[node.kind];
             // case gt.SyntaxKind.LiteralType:
             //     return getTypeFromLiteralTypeNode(<LiteralTypeNode>node);
             // case gt.SyntaxKind.TypeReference:
             //     return getTypeFromTypeReference(<TypeReferenceNode>node);
-            // case gt.SyntaxKind.ArrayType:
-            //     return getTypeFromArrayTypeNode(<ArrayTypeNode>node);
+            case gt.SyntaxKind.ArrayType:
+                return this.getTypeFromArrayTypeNode(<gt.ArrayTypeNode>node);
             // case gt.SyntaxKind.IndexedAccessType:
             //     return getTypeFromIndexedAccessTypeNode(<IndexedAccessTypeNode>node);
             case gt.SyntaxKind.Identifier:
@@ -222,8 +249,8 @@ export class TypeChecker {
             //     return checkObjectLiteral(<ObjectLiteralExpression>node, checkMode);
             case gt.SyntaxKind.PropertyAccessExpression:
                 return this.checkPropertyAccessExpression(<gt.PropertyAccessExpression>node);
-            // case gt.SyntaxKind.ElementAccessExpression:
-            //     return checkIndexedAccess(<ElementAccessExpression>node);
+            case gt.SyntaxKind.ElementAccessExpression:
+                return this.checkIndexedAccess(<gt.ElementAccessExpression>node);
             // case gt.SyntaxKind.CallExpression:
             //     if ((<CallExpression>node).expression.kind === gt.SyntaxKind.ImportKeyword) {
             //         return checkImportCallExpression(<ImportCall>node);
@@ -268,6 +295,18 @@ export class TypeChecker {
             // return t.flags & (gt.TypeFlags.Nullable | gt.TypeFlags.Never) ? unknownType : t;
         }
         return type;
+    }
+
+    private checkIndexedAccess(node: gt.ElementAccessExpression): gt.Type {
+        const objectType = this.checkNonNullExpression(node.expression);
+        const indexType = this.checkExpression(node.argumentExpression);
+        // TODO: check if index is number
+
+        if (objectType.flags & gt.TypeFlags.Array) {
+            return (<gt.ArrayType>objectType).elementType;
+        }
+
+        return unknownType;
     }
 
     private checkPropertyAccessExpression(node: gt.PropertyAccessExpression): gt.Type {

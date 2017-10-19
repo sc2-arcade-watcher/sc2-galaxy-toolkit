@@ -1,0 +1,25 @@
+struct stats_t {
+    int kills;
+};
+
+struct hero_t {
+    unit munit;
+};
+
+struct player_t {
+    string name;
+    stats_t stats;
+    hero_t[10] heroes;
+};
+
+player_t single_player;
+player_t[2] multiple_players;
+
+void main()
+{
+    single_player.name = "Raynor";
+    single_player.stats.kills = 0;
+
+    multiple_players[0].name = "Kerigan";
+    multiple_players[1].heroes[2].munit = null;
+}

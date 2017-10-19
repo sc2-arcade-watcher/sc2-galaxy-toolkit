@@ -451,8 +451,8 @@ export class Parser {
     }
 
     private parseIdentifier(diagnosticMessage?: string): Types.Identifier {
-        this.parseExpected(SyntaxKind.Identifier, diagnosticMessage, false);
         const identifier = <Types.Identifier>this.createNode(SyntaxKind.Identifier);
+        this.parseExpected(SyntaxKind.Identifier, diagnosticMessage, false);
         identifier.name = this.scanner.getTokenValue();
         this.nextToken();
         return this.finishNode(identifier);
