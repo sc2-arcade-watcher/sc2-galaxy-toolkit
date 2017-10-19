@@ -220,8 +220,8 @@ export class TypeChecker {
             //     return checkArrayLiteral(<ArrayLiteralExpression>node, checkMode);
             // case gt.SyntaxKind.ObjectLiteralExpression:
             //     return checkObjectLiteral(<ObjectLiteralExpression>node, checkMode);
-            // case gt.SyntaxKind.PropertyAccessExpression:
-            //     return checkPropertyAccessExpression(<PropertyAccessExpression>node);
+            case gt.SyntaxKind.PropertyAccessExpression:
+                return this.checkPropertyAccessExpression(<gt.PropertyAccessExpression>node);
             // case gt.SyntaxKind.ElementAccessExpression:
             //     return checkIndexedAccess(<ElementAccessExpression>node);
             // case gt.SyntaxKind.CallExpression:

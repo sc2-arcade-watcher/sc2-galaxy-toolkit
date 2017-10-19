@@ -39,7 +39,8 @@ describe('Compiler', () => {
             const store = mockupStore(document);
             const sourceFile = store.documents.get(document.uri);
             const checker = new TypeChecker(store);
-            const token = findPrecedingToken(getPositionOfLineAndCharacter(sourceFile, 14, 20), sourceFile);
+            const token = findPrecedingToken(getPositionOfLineAndCharacter(sourceFile, 13, 16), sourceFile);
+            // TODO: check for dot token struct.|
             // console.log(checker.getSymbolAtLocation(token));
             // checker.computeSymbolTargets(sourceFile);
             console.log(checker.getTypeOfNode(token));
