@@ -1,4 +1,4 @@
-import { SourceFile } from './../src/compiler/types';
+import { SourceFile, Diagnostic } from './../src/compiler/types';
 import { Parser } from '../src/compiler/parser';
 import { TextDocument } from 'vscode-languageserver';
 import { Store, createTextDocumentFromFs } from '../src/service/store';
@@ -34,4 +34,14 @@ export function mockupStore(...documents: TextDocument[]) {
         store.updateDocument(doc);
     }
     return store;
+}
+
+function printDiagnostics(diagnostics: Diagnostic[]): string {
+    const r = <string[]>[];
+    for (const diag of diagnostics) {
+        console.log(diag);
+
+        r.push(diag.toString());
+    }
+    return r.join('\n');
 }

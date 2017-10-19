@@ -211,24 +211,26 @@ export const enum SyntaxKind {
     NullKeyword,
     TypedefKeyword,
 
-    // Native types
+    // Basic types
+    BoolKeyword,
+    ByteKeyword,
+    CharKeyword,
+    IntKeyword,
+    FixedKeyword,
+    StringKeyword,
+    // Native complex types
     AbilcmdKeyword,
     ActorKeyword,
     ActorscopeKeyword,
     AifilterKeyword,
     AnimfilterKeyword,
     BankKeyword,
-    BoolKeyword,
-    ByteKeyword,
     CamerainfoKeyword,
-    CharKeyword,
     ColorKeyword,
     DoodadKeyword,
-    FixedKeyword,
     HandleKeyword,
     GenerichandleKeyword,
     EffecthistoryKeyword,
-    IntKeyword,
     MarkerKeyword,
     OrderKeyword,
     PlayergroupKeyword,
@@ -237,7 +239,6 @@ export const enum SyntaxKind {
     RevealerKeyword,
     SoundKeyword,
     SoundlinkKeyword,
-    StringKeyword,
     TextKeyword,
     TimerKeyword,
     TransmissionsourceKeyword,
@@ -250,6 +251,7 @@ export const enum SyntaxKind {
     WaveKeyword,
     WaveinfoKeyword,
     WavetargetKeyword,
+    // Ref types
     ArrayrefKeyword,
     StructrefKeyword,
     FuncrefKeyword,
@@ -261,7 +263,7 @@ export const enum SyntaxKind {
 
     // Elements
     TypeReference,
-    KeywordTypeNode,
+    MappedType,
     ArrayType,
 
     ArrayLiteralExpression,
@@ -299,6 +301,15 @@ export const enum SyntaxKind {
 export const enum SyntaxKindMarker {
     FirstToken = SyntaxKind.NumericLiteral,
     LastToken = SyntaxKind.Identifier,
+
+    FirstKeyword = SyntaxKind.IncludeKeyword,
+    LastKeyword = SyntaxKind.FuncrefKeyword,
+
+    FirstComplexType = SyntaxKind.AbilcmdKeyword,
+    LastComplexType = SyntaxKind.WavetargetKeyword,
+
+    FirstTypeNode = SyntaxKind.TypeReference,
+    LastTypeNode = SyntaxKind.ArrayType,
 };
 
 export type Modifier
@@ -351,7 +362,22 @@ export type KeywordType
     | SyntaxKind.FuncrefKeyword
 ;
 
+export const enum SymbolFlags {
+    None                    = 0,
+    FunctionScopedVariable  = 1 << 1,   // Variable (var) or parameter
+    GlobalVariable          = 1 << 2,   // A block-scoped variable (let or const)
+    Property                = 1 << 3,   // Property
+    Function                = 1 << 4,   // Function
+    Struct                  = 1 << 5,   // Class
+    Signature               = 1 << 17,  // Call, construct, or index signature
+    TypeParameter           = 1 << 18,  // Type parameter
+
+    Variable = FunctionScopedVariable | GlobalVariable,
+}
+
 export interface Symbol {
+    id?: number;
+    flags: SymbolFlags;                     // Symbol flags
     escapedName: string;                    // Name of symbol
     declarations: Declaration[];            // Declarations associated with this symbol
     valueDeclaration?: Declaration;         // First value declaration of the symbol
@@ -363,6 +389,65 @@ export interface Symbol {
 }
 
 export type SymbolTable = Map<string, Symbol>;
+
+export const enum TypeFlags {
+    Any                     = 1 << 0,
+    String                  = 1 << 1,
+    Number                  = 1 << 2,
+    Boolean                 = 1 << 3,
+    Enum                    = 1 << 4,
+    StringLiteral           = 1 << 5,
+    NumberLiteral           = 1 << 6,
+    BooleanLiteral          = 1 << 7,
+    Void                    = 1 << 10,
+    Null                    = 1 << 11,
+    Struct                    = 1 << 12,
+    Complex                    = 1 << 13,
+
+    /* @internal */
+    Nullable = Null,
+    Literal = StringLiteral | NumberLiteral | BooleanLiteral,
+}
+
+export interface Type {
+    flags: TypeFlags;                // Flags
+    symbol?: Symbol;                 // Symbol associated with type (if any)
+}
+
+export interface IntrinsicType extends Type {
+    intrinsicName: string;        // Name of intrinsic type
+}
+
+// String literal types (TypeFlags.StringLiteral)
+// Numeric literal types (TypeFlags.NumberLiteral)
+export interface LiteralType extends Type {
+    value: string | number;     // Value of literal
+    freshType?: LiteralType;    // Fresh version of type
+    regularType?: LiteralType;  // Regular version of type
+}
+
+export interface StringLiteralType extends LiteralType {
+    value: string;
+}
+
+export interface NumberLiteralType extends LiteralType {
+    value: number;
+}
+
+export interface StructType extends Type {
+}
+
+export const enum NodeCheckFlags {
+    TypeChecked                         = 1 << 0,  // Node has been type checked
+    ContextChecked                      = 1 << 1,  // Contextual types have been assigned
+}
+
+/* @internal */
+export interface NodeLinks {
+    flags?: NodeCheckFlags;           // Set of flags specific to Node
+    resolvedType?: Type;              // Cached type of type node
+    resolvedSymbol?: Symbol;          // Cached name resolution result
+}
 
 export interface TextRange {
     line: number;
@@ -377,6 +462,7 @@ export interface Token<TKind extends SyntaxKind> extends Node {
 
 export interface Node extends TextRange {
     // token: Token;
+    id?: number;
     kind: SyntaxKind;
     parent?: Node;
     syntaxTokens: Node[];
@@ -414,16 +500,10 @@ export interface TypeNode extends Node {
     symbol?: Symbol; // Symbol associated with type (if any)
 }
 
-export interface TypeDefinition extends Node {
-    typeArguments?: NodeArray<TypeNode>;
+export interface TypeNode extends Node {
 }
 
-export interface KeywordTypeNode extends TypeDefinition {
-    kind: SyntaxKind.KeywordTypeNode;
-    keyword: Token<KeywordType>;
-}
-
-export interface TypeReferenceNode extends TypeDefinition {
+export interface TypeReferenceNode extends TypeNode {
     kind: SyntaxKind.TypeReference;
     name: Identifier;
 }
@@ -432,6 +512,12 @@ export interface ArrayTypeNode extends TypeNode {
     kind: SyntaxKind.ArrayType;
     elementType: TypeNode;
     size: Expression;
+}
+
+export interface MappedType extends TypeNode {
+    kind: SyntaxKind.MappedType;
+    returnType: TypeNode;
+    typeArguments?: NodeArray<TypeNode>;
 }
 
 export interface Declaration extends Node {
@@ -467,13 +553,11 @@ export interface StructDeclaration extends NamedDeclaration {
 
 export interface PropertyDeclaration extends NamedDeclaration {
     kind: SyntaxKind.PropertyDeclaration;
-    name: Identifier;
     type: TypeNode;
 }
 
 export interface FunctionDeclaration extends SignatureDeclaration, NamedDeclaration {
     kind: SyntaxKind.FunctionDeclaration;
-    name: Identifier;
     body?: Block;
 }
 
@@ -521,6 +605,8 @@ export interface Identifier extends PrimaryExpression {
     name: string;
     resolvedSymbol?: Symbol;
 }
+
+export type EntityNameExpression = Identifier | PropertyAccessExpression | ParenthesizedExpression;
 
 export type PrefixUnaryOperator
     = SyntaxKind.MinusToken
@@ -656,12 +742,15 @@ export interface DiagnosticMessage {
 
 export interface Diagnostic {
     file?: SourceFile;
-    line?: number;
-    col?: number;
     start?: number;
     length?: number;
     messageText: string;
     category: DiagnosticCategory;
     code: number;
     source?: string;
+
+    line?: number;
+    col?: number;
+
+    toString(): string;
 }

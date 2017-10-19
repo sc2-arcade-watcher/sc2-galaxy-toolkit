@@ -1,41 +1,6 @@
 import * as Types from './types';
 import { SyntaxKind, SyntaxKindMarker, Node, NodeArray } from './types';
 
-export function formatStringFromArgs(text: string, args: { [index: number]: string; }, baseIndex?: number): string {
-    baseIndex = baseIndex || 0;
-
-    return text.replace(/{(\d+)}/g, (_match, index?) => args[+index + baseIndex!]);
-}
-
-export function createFileDiagnostic(file: Types.SourceFile, start: number, length: number, message: Types.DiagnosticMessage, ...args: (string | number)[]): Types.Diagnostic;
-export function createFileDiagnostic(file: Types.SourceFile, start: number, length: number, message: Types.DiagnosticMessage): Types.Diagnostic {
-    const end = start + length;
-
-    // Debug.assert(start >= 0, "start must be non-negative, is " + start);
-    // Debug.assert(length >= 0, "length must be non-negative, is " + length);
-
-    // if (file) {
-    //     Debug.assert(start <= file.text.length, `start must be within the bounds of the file. ${start} > ${file.text.length}`);
-    //     Debug.assert(end <= file.text.length, `end must be the bounds of the file. ${end} > ${file.text.length}`);
-    // }
-
-    let text = message.message;
-
-    if (arguments.length > 4) {
-        text = formatStringFromArgs(text, arguments, 4);
-    }
-
-    return {
-        file,
-        start,
-        length,
-
-        messageText: text,
-        category: message.category,
-        code: message.code,
-    };
-}
-
 /**
  * True if node is of some token syntax kind.
  * For example, this is true for an IfKeyword but not for an IfStatement.
@@ -102,6 +67,16 @@ export function isKeywordTypeKind(token: SyntaxKind): boolean {
     return false;
 }
 
+export function isReferenceKeywordKind(token: SyntaxKind): boolean {
+    switch (token) {
+        case SyntaxKind.ArrayrefKeyword:
+        case SyntaxKind.StructrefKeyword:
+        case SyntaxKind.FuncrefKeyword:
+            return true;
+    }
+    return false;
+}
+
 export function isAssignmentOperator(token: SyntaxKind): boolean {
     return token >= SyntaxKind.EqualsToken && token <= SyntaxKind.CaretEqualsToken;
 }
@@ -146,6 +121,102 @@ export function isDeclarationKind(kind: SyntaxKind): boolean {
 
 export function isLeftHandSideExpression(node: Types.Node): boolean {
     return isLeftHandSideExpressionKind(node.kind);
+}
+
+export function isPartOfExpression(node: Node): boolean {
+    switch (node.kind) {
+        case SyntaxKind.NullKeyword:
+        case SyntaxKind.TrueKeyword:
+        case SyntaxKind.FalseKeyword:
+        case SyntaxKind.ArrayLiteralExpression:
+        case SyntaxKind.PropertyAccessExpression:
+        case SyntaxKind.ElementAccessExpression:
+        case SyntaxKind.CallExpression:
+        case SyntaxKind.TypeAssertionExpression:
+        case SyntaxKind.ParenthesizedExpression:
+        case SyntaxKind.PrefixUnaryExpression:
+        case SyntaxKind.PostfixUnaryExpression:
+        case SyntaxKind.BinaryExpression:
+        case SyntaxKind.Identifier:
+            return true;
+        case SyntaxKind.NumericLiteral:
+        case SyntaxKind.StringLiteral:
+            const parent = node.parent;
+            switch (parent.kind) {
+                case SyntaxKind.VariableDeclaration:
+                case SyntaxKind.PropertyDeclaration:
+                case SyntaxKind.ExpressionStatement:
+                case SyntaxKind.IfStatement:
+                case SyntaxKind.DoStatement:
+                case SyntaxKind.WhileStatement:
+                case SyntaxKind.ReturnStatement:
+                case SyntaxKind.ForStatement:
+                    const forStatement = <Types.ForStatement>parent;
+                    return (forStatement.initializer === node) ||
+                        forStatement.condition === node ||
+                        forStatement.incrementor === node;
+                default:
+                    if (isPartOfExpression(parent)) {
+                        return true;
+                    }
+            }
+    }
+    return false;
+}
+
+export function isPartOfTypeNode(node: Node): boolean {
+        if (SyntaxKindMarker.FirstTypeNode <= <number>node.kind && <number>node.kind <= SyntaxKindMarker.LastTypeNode) {
+            return true;
+        }
+
+        switch (node.kind) {
+            case SyntaxKind.IntKeyword:
+            case SyntaxKind.FixedKeyword:
+            case SyntaxKind.StringKeyword:
+            case SyntaxKind.BoolKeyword:
+            case SyntaxKind.VoidKeyword:
+                return true;
+
+            // Identifiers and qualified names may be type nodes, depending on their context. Climb
+            // above them to find the lowest container
+            case SyntaxKind.Identifier:
+                // If the identifier is the RHS of a qualified name, then it's a type iff its parent is.
+                if (node.parent.kind === SyntaxKind.PropertyAccessExpression && (<Types.PropertyAccessExpression>node.parent).name === node) {
+                    node = node.parent;
+                }
+                // At this point, node is either a qualified name or an identifier
+                // Debug.assert(node.kind === SyntaxKind.Identifier || node.kind === SyntaxKind.QualifiedName || node.kind === SyntaxKind.PropertyAccessExpression,
+                //     "'node' was expected to be a qualified name, identifier or property access in 'isPartOfTypeNode'.");
+                // falls through
+            case SyntaxKind.PropertyAccessExpression:
+                const parent = node.parent;
+                // Do not recursively call isPartOfTypeNode on the parent. In the example:
+                //
+                //     let a: A.B.C;
+                //
+                // Calling isPartOfTypeNode would consider the qualified name A.B a type node.
+                // Only C and A.B.C are type nodes.
+                if (SyntaxKindMarker.FirstTypeNode <= <number>parent.kind && <number>parent.kind <= SyntaxKindMarker.LastTypeNode) {
+                    return true;
+                }
+                switch (parent.kind) {
+                    case SyntaxKind.PropertyDeclaration:
+                    case SyntaxKind.ParameterDeclaration:
+                    case SyntaxKind.VariableDeclaration:
+                        return node === (<Types.VariableDeclaration>parent).type;
+                    case SyntaxKind.FunctionDeclaration:
+                        return node === (<Types.FunctionDeclaration>parent).type;
+                    // TODO:
+                    // case SyntaxKind.CallExpression:
+                    //     return (<Types.CallExpression>parent).typeArguments && indexOf((<Types.CallExpression>parent).typeArguments, node) >= 0;
+                }
+        }
+
+        return false;
+    }
+
+export function isRightSideOfPropertyAccess(node: Node) {
+    return (node.parent.kind === SyntaxKind.PropertyAccessExpression && (<Types.PropertyAccessExpression>node.parent).name === node);
 }
 
 function isNodeOrArray(a: any): boolean {

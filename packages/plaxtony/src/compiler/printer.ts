@@ -65,13 +65,6 @@ export class Printer {
                 break;
             }
 
-            case gt.SyntaxKind.KeywordTypeNode:
-            {
-                const keyword = <gt.KeywordTypeNode>node;
-                this.write(tokenToString(keyword.keyword.kind));
-                break;
-            }
-
             case gt.SyntaxKind.Identifier:
             {
                 const identifier = <gt.Identifier>node;
@@ -89,6 +82,11 @@ export class Printer {
 
             default:
             {
+                if (gt.SyntaxKindMarker.FirstKeyword <= <number>node.kind && <number>node.kind <= gt.SyntaxKindMarker.LastKeyword) {
+                    this.write(tokenToString(node.kind));
+                    break;
+                }
+
                 throw new Error(`unhandled node '${getKindName(node.kind)}'`);
             }
         }

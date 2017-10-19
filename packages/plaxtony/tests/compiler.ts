@@ -1,4 +1,4 @@
-import { SourceFile } from './../src/compiler/types';
+import { SourceFile, Diagnostic } from './../src/compiler/types';
 import { Parser } from '../src/compiler/parser';
 import { bindSourceFile } from '../src/compiler/binder';
 import { TypeChecker } from '../src/compiler/checker';
@@ -39,9 +39,10 @@ describe('Compiler', () => {
             const store = mockupStore(document);
             const sourceFile = store.documents.get(document.uri);
             const checker = new TypeChecker(store);
-            // const token = findPrecedingToken(getPositionOfLineAndCharacter(sourceFile, 8, 11), sourceFile);
+            const token = findPrecedingToken(getPositionOfLineAndCharacter(sourceFile, 14, 20), sourceFile);
             // console.log(checker.getSymbolAtLocation(token));
-            checker.computeSymbolTargets(sourceFile);
+            // checker.computeSymbolTargets(sourceFile);
+            console.log(checker.getTypeOfNode(token));
         });
     });
 });

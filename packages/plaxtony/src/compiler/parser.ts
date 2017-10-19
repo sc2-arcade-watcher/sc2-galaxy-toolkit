@@ -1,7 +1,8 @@
 import * as Types from './types';
 import { SyntaxKind, Node, NodeArray, MutableNodeArray } from './types';
 import { Scanner, tokenToString } from './scanner';
-import { getKindName, isModifierKind, isKeywordTypeKind, createFileDiagnostic, isLeftHandSideExpression, isAssignmentOperator, fixupParentReferences } from './utils';
+import { getKindName, isModifierKind, isKeywordTypeKind, isLeftHandSideExpression, isAssignmentOperator, fixupParentReferences, isReferenceKeywordKind } from './utils';
+import { createFileDiagnostic } from './diagnostics';
 
 const enum ParsingContext {
     SourceElements,
@@ -457,35 +458,39 @@ export class Parser {
         return this.finishNode(identifier);
     }
 
-    private parseTypeDefinition(): Types.TypeDefinition {
-        let type: Types.TypeDefinition;
+    private parseTypeDefinition(): Types.TypeNode {
+        let baseType: Types.TypeNode;
 
         if (this.token() === SyntaxKind.Identifier) {
-            type = <Types.TypeReferenceNode>this.createNode(SyntaxKind.TypeReference);
-            (<Types.TypeReferenceNode>type).name = this.parseIdentifier();
+            baseType = this.parseIdentifier();
         }
         else if (isKeywordTypeKind(this.token())) {
-            type = <Types.KeywordTypeNode>this.createNode(SyntaxKind.KeywordTypeNode);
-            (<Types.KeywordTypeNode>type).keyword = this.parseTokenNode();
+            baseType = this.parseTokenNode();
         }
         else {
             this.parseErrorAtCurrentToken('expected identifier or keyword');
-            type = this.createMissingNode(SyntaxKind.KeywordTypeNode);
-        }
-
-        if (this.token() === SyntaxKind.LessThanToken) {
-            type.typeArguments = this.parseBracketedList(ParsingContext.TypeArguments, this.parseTypeDefinition.bind(this), SyntaxKind.LessThanToken, SyntaxKind.GreaterThanToken);
+            baseType = this.createMissingNode(SyntaxKind.Identifier);
         }
 
         while (this.parseOptional(SyntaxKind.OpenBracketToken)) {
             let arrayType = <Types.ArrayTypeNode>this.createNode(SyntaxKind.ArrayType);
             arrayType.size = this.parseExpression();
-            arrayType.elementType = type;
-            type = arrayType;
+            arrayType.elementType = baseType;
             this.parseExpected(SyntaxKind.CloseBracketToken);
+            baseType = this.finishNode(arrayType)
         }
 
-        return this.finishNode(type);
+        if (isReferenceKeywordKind(baseType.kind)) {
+
+            if (this.token() === SyntaxKind.LessThanToken) {
+                const mappedType = <Types.MappedType>this.createNode(SyntaxKind.MappedType);
+                mappedType.returnType = baseType;
+                mappedType.typeArguments = this.parseBracketedList(ParsingContext.TypeArguments, this.parseTypeDefinition.bind(this), SyntaxKind.LessThanToken, SyntaxKind.GreaterThanToken);
+                baseType = this.finishNode(mappedType)
+            }
+        }
+
+        return baseType;
     }
 
     private parseParameter(): Types.ParameterDeclaration {

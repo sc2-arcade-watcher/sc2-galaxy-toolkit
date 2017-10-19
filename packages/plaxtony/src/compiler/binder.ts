@@ -119,6 +119,25 @@ export function bindSourceFile(sourceFile: SourceFile) {
                 parent: undefined,
             };
 
+            switch (node.kind) {
+                // TODO: param
+                case gt.SyntaxKind.VariableDeclaration:
+                    nodeSymbol.flags = (
+                        (parentSymbol && parentSymbol.declarations[0].kind == gt.SyntaxKind.SourceFile) ?
+                        gt.SymbolFlags.GlobalVariable : gt.SymbolFlags.FunctionScopedVariable
+                    );
+                    break;
+                case gt.SyntaxKind.FunctionDeclaration:
+                    nodeSymbol.flags = gt.SymbolFlags.Function;
+                    break;
+                case gt.SyntaxKind.StructDeclaration:
+                    nodeSymbol.flags = gt.SymbolFlags.Struct;
+                    break;
+                case gt.SyntaxKind.PropertyDeclaration:
+                    nodeSymbol.flags = gt.SymbolFlags.Property;
+                    break;
+            }
+
             if (parentSymbol) {
                 parentSymbol.members.set(name, nodeSymbol);
             }
