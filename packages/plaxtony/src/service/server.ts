@@ -1,10 +1,4 @@
 import * as lsp from 'vscode-languageserver';
-import {
-    IPCMessageReader, IPCMessageWriter, createConnection, IConnection, TextDocuments, TextDocument,
-    Diagnostic, DiagnosticSeverity, InitializeResult, TextDocumentPositionParams, CompletionItem,
-    CompletionItemKind, SymbolInformation, DocumentSymbolParams, SymbolKind, Range, WorkspaceSymbolParams,
-    SignatureHelp
-} from 'vscode-languageserver';
 import * as Types from '../compiler/types';
 import { findAncestor } from '../compiler/utils';
 import { Store, Workspace } from './store';
@@ -14,19 +8,19 @@ import { NavigationProvider } from './navigation';
 import { CompletionsProvider } from './completions';
 import { SignaturesProvider } from './signatures';
 
-function getNodeRange(node: Types.Node): Range {
+function getNodeRange(node: Types.Node): lsp.Range {
     return {
         start: { line: node.line, character: node.char },
         end: { line: node.line, character: node.char }
     };
 }
 
-function translateDiagnostics(origDiagnostics: Types.Diagnostic[]): Diagnostic[] {
-    let lspDiagnostics: Diagnostic[] = [];
+function translateDiagnostics(origDiagnostics: Types.Diagnostic[]): lsp.Diagnostic[] {
+    let lspDiagnostics: lsp.Diagnostic[] = [];
 
     for (let dg of origDiagnostics) {
         lspDiagnostics.push({
-            severity: DiagnosticSeverity.Error,
+            severity: lsp.DiagnosticSeverity.Error,
             range: {
                 start: { line: dg.line, character: dg.col },
                 end: { line: dg.line, character: dg.col }
@@ -38,26 +32,26 @@ function translateDiagnostics(origDiagnostics: Types.Diagnostic[]): Diagnostic[]
     return lspDiagnostics;
 }
 
-function translateNodeKind(node: Types.Node): SymbolKind {
+function translateNodeKind(node: Types.Node): lsp.SymbolKind {
     switch (node.kind) {
         case Types.SyntaxKind.VariableDeclaration:
             const variable = <Types.VariableDeclaration>node;
             const isConstant = variable.modifiers.some((value: Types.Modifier): boolean => {
                 return value.kind === Types.SyntaxKind.ConstKeyword;
             });
-            return isConstant ? SymbolKind.Constant : SymbolKind.Variable;
+            return isConstant ? lsp.SymbolKind.Constant : lsp.SymbolKind.Variable;
         case Types.SyntaxKind.FunctionDeclaration:
-            return SymbolKind.Function;
+            return lsp.SymbolKind.Function;
         case Types.SyntaxKind.StructDeclaration:
-            return SymbolKind.Class;
+            return lsp.SymbolKind.Class;
         default:
-            return SymbolKind.Field;
+            return lsp.SymbolKind.Field;
     }
 }
 
-function translateDeclaratons(origDeclarations: Types.NamedDeclaration[]): SymbolInformation[] {
-    const symbols: SymbolInformation[] = [];
-    let kind: SymbolKind;
+function translateDeclaratons(origDeclarations: Types.NamedDeclaration[]): lsp.SymbolInformation[] {
+    const symbols: lsp.SymbolInformation[] = [];
+    let kind: lsp.SymbolKind;
 
     for (let node of origDeclarations) {
         const sourceFile = <Types.SourceFile>findAncestor(node, (element: Types.Node): boolean => {
@@ -87,19 +81,36 @@ var formatElapsed = function(start: [number, number], end: [number, number]): st
     return out;
 }
 
-function wrapRequest(name?: string) {
+function wrapRequest(msg?: string, showArg?: boolean, singleLine?: boolean) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         const method = (<Function>descriptor.value);
-        name = name ? name : propertyKey;
-        descriptor.value = function() {
+        descriptor.value = function(...args: any[]) {
             const server = <Server>this;
-            server.log(`Processing request '${name}'`);
+            let log = [];
+            args = args.map((value) => {
+                if (!value) { return; }
+                if (value['document']) {
+                    return value.document.uri;
+                }
+                else {
+                    return value.toString();
+                }
+            });
+            if (msg) {
+                log.push(`${msg}: ${args.toLocaleString()}`);
+            }
+            else {
+                log.push(`### Processing '${propertyKey}'`);
+            }
+
             var start = process.hrtime();
             const ret = method.bind(this)(...arguments);
-            server.log(`Done! It took ${formatElapsed(start, process.hrtime())}`);
+            log.push(formatElapsed(start, process.hrtime()));
+
             if (ret && ret[Symbol.iterator]) {
-                server.log(`Results: ${ret.length}`);
+                log.push(`results: ${ret.length}`)
             }
+            server.log(log.join(' | '))
             return ret;
         }
     }
@@ -113,10 +124,12 @@ class Server {
     private completionsProvider: CompletionsProvider;
     private signaturesProvider: SignaturesProvider;
     private documents: lsp.TextDocuments;
+    private workspaces: Workspace[];
 
     constructor() {
         this.documents = new lsp.TextDocuments();
         this.store = new Store();
+        this.workspaces = [];
         this.diagnosticsProvider = new DiagnosticsProvider(this.store);
         this.navigationProvider = new NavigationProvider(this.store);
         this.completionsProvider = new CompletionsProvider(this.store);
@@ -124,7 +137,7 @@ class Server {
     }
 
     public createConnection(connection?: lsp.IConnection): lsp.IConnection {
-        this.connection = connection ? connection : createConnection(new lsp.IPCMessageReader(process), new lsp.IPCMessageWriter(process));
+        this.connection = connection ? connection : lsp.createConnection(new lsp.IPCMessageReader(process), new lsp.IPCMessageWriter(process));
         this.documents.listen(this.connection);
         this.documents.onDidChangeContent(this.onDidChangeContent.bind(this));
         this.documents.onDidOpen(this.onDidOpen.bind(this));
@@ -147,7 +160,10 @@ class Server {
     @wrapRequest()
     private onInitialize(params: lsp.InitializeParams): lsp.InitializeResult {
         if (params.rootPath) {
-            new Workspace(params.rootPath, this.store);
+            const ws = new Workspace(params.rootPath, this.store);
+            ws.onDidOpen(this.onDidFindInWorkspace.bind(this));
+            this.workspaces.push(ws);
+            ws.watch();
         }
         return {
             capabilities: {
@@ -184,14 +200,16 @@ class Server {
 
     @wrapRequest()
     private onDidChangeContent(ev: lsp.TextDocumentChangeEvent) {
-        // this.connection.console.log('processing ' + ev.document.uri);
         this.store.updateDocument(ev.document);
-        this.connection.sendDiagnostics({
-            uri: ev.document.uri,
-            diagnostics: translateDiagnostics(this.diagnosticsProvider.diagnose(ev.document.uri)),
-        });
-        // connection.console.log('onDidChangeContent');
-        // validateTextDocument(e.document);
+        if (this.documents.keys().indexOf(ev.document.uri)) {
+            this.connection.sendDiagnostics({
+                uri: ev.document.uri,
+                diagnostics: translateDiagnostics(this.diagnosticsProvider.diagnose(ev.document.uri)),
+            });
+        }
+    }
+
+    private onProvideDiagnostics() {
     }
 
     @wrapRequest()
@@ -202,8 +220,13 @@ class Server {
     private onDidClose(ev: lsp.TextDocumentChangeEvent) {
     }
 
+    @wrapRequest('Indexing: ', true, true)
+    private onDidFindInWorkspace(ev: lsp.TextDocumentChangeEvent) {
+        this.store.updateDocument(ev.document);
+    }
+
     @wrapRequest()
-    private onCompletion(params: TextDocumentPositionParams): CompletionItem[] {
+    private onCompletion(params: lsp.TextDocumentPositionParams): lsp.CompletionItem[] {
         return this.completionsProvider.getCompletionsAt(
             params.textDocument.uri,
             getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character)
@@ -211,17 +234,17 @@ class Server {
     }
 
     @wrapRequest()
-    private onDocumentSymbol(params: DocumentSymbolParams): SymbolInformation[] {
+    private onDocumentSymbol(params: lsp.DocumentSymbolParams): lsp.SymbolInformation[] {
         return translateDeclaratons(this.navigationProvider.getDocumentSymbols(params.textDocument.uri));
     }
 
     @wrapRequest()
-    private onWorkspaceSymbol(params: WorkspaceSymbolParams): SymbolInformation[] {
+    private onWorkspaceSymbol(params: lsp.WorkspaceSymbolParams): lsp.SymbolInformation[] {
         return translateDeclaratons(this.navigationProvider.getWorkspaceSymbols());
     }
 
     @wrapRequest()
-    private onSignatureHelp(params: TextDocumentPositionParams): SignatureHelp {
+    private onSignatureHelp(params: lsp.TextDocumentPositionParams): lsp.SignatureHelp {
         return this.signaturesProvider.getSignatureAt(
             params.textDocument.uri,
             getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character)
