@@ -134,7 +134,7 @@ export class Parser {
     private createNode(kind: SyntaxKind, pos?: number, assignSyntaxTokens: boolean = true): Node {
         const node = <Node>{};
         node.kind = kind;
-        node.pos = pos === undefined ? this.scanner.getStartPos() : pos;
+        node.pos = pos === undefined ? this.scanner.getTokenPos() : pos;
         node.end = node.pos;
         node.line = this.scanner.getLine();
         node.char = this.scanner.getChar();
@@ -152,7 +152,7 @@ export class Parser {
     private createNodeArray<T extends Node>(elements?: T[], pos?: number): MutableNodeArray<T> {
         const array = <MutableNodeArray<T>>(elements || []);
         if (pos === undefined) {
-            pos = this.scanner.getStartPos();
+            pos = this.scanner.getTokenPos();
         }
         array.pos = pos;
         array.end = pos;
@@ -277,7 +277,7 @@ export class Parser {
 
         while (true) {
             if (this.isListElement(kind, false)) {
-                const startPos = this.scanner.getStartPos();
+                const startPos = this.scanner.getTokenPos();
                 result.push(parseElement());
 
                 if (this.parseOptional(SyntaxKind.CommaToken)) {
