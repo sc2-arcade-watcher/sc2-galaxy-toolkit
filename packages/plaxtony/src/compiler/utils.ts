@@ -466,12 +466,8 @@ export function forEachChild<T>(node: Node, cbNode: (node: Node) => T | undefine
             return visitNode(cbNode, (<Types.CallExpression>node).expression) ||
                 visitNodes(cbNode, cbNodes, (<Types.CallExpression>node).typeArguments) ||
                 visitNodes(cbNode, cbNodes, (<Types.CallExpression>node).arguments);
-        // case SyntaxKind.ParenthesizedExpression:
-        //     return visitNode(cbNode, (<Types.ParenthesizedExpression>node).expression);
-        // case SyntaxKind.TypeOfExpression:
-        //     return visitNode(cbNode, (<Types.TypeOfExpression>node).expression);
-        // case SyntaxKind.VoidExpression:
-        //     return visitNode(cbNode, (<Types.VoidExpression>node).expression);
+        case SyntaxKind.ParenthesizedExpression:
+            return visitNode(cbNode, (<Types.ParenthesizedExpression>node).expression);
         case SyntaxKind.PrefixUnaryExpression:
             return visitNode(cbNode, (<Types.PrefixUnaryExpression>node).operand);
         case SyntaxKind.PostfixUnaryExpression:
@@ -480,163 +476,32 @@ export function forEachChild<T>(node: Node, cbNode: (node: Node) => T | undefine
             return visitNode(cbNode, (<Types.BinaryExpression>node).left) ||
                 visitNode(cbNode, (<Types.BinaryExpression>node).operatorToken) ||
                 visitNode(cbNode, (<Types.BinaryExpression>node).right);
-        // case SyntaxKind.NonNullExpression:
-        //     return visitNode(cbNode, (<Types.NonNullExpression>node).expression);
-        // case SyntaxKind.SpreadElement:
-        //     return visitNode(cbNode, (<Types.SpreadElement>node).expression);
         case SyntaxKind.Block:
             return visitNodes(cbNode, cbNodes, (<Types.Block>node).statements);
         case SyntaxKind.SourceFile:
             return visitNodes(cbNode, cbNodes, (<Types.SourceFile>node).statements);
-        // case SyntaxKind.VariableStatement:
-        //     return visitNodes(cbNode, cbNodes, node.decorators) ||
-        //         visitNodes(cbNode, cbNodes, node.modifiers) ||
-        //         visitNode(cbNode, (<Types.VariableStatement>node).declarationList);
-        // case SyntaxKind.VariableDeclarationList:
-        //     return visitNodes(cbNode, cbNodes, (<Types.VariableDeclarationList>node).declarations);
         case SyntaxKind.ExpressionStatement:
             return visitNode(cbNode, (<Types.ExpressionStatement>node).expression);
-        // case SyntaxKind.IfStatement:
-        //     return visitNode(cbNode, (<Types.IfStatement>node).expression) ||
-        //         visitNode(cbNode, (<Types.IfStatement>node).thenStatement) ||
-        //         visitNode(cbNode, (<Types.IfStatement>node).elseStatement);
-        // case SyntaxKind.DoStatement:
-        //     return visitNode(cbNode, (<Types.DoStatement>node).statement) ||
-        //         visitNode(cbNode, (<Types.DoStatement>node).expression);
-        // case SyntaxKind.WhileStatement:
-        //     return visitNode(cbNode, (<Types.WhileStatement>node).expression) ||
-        //         visitNode(cbNode, (<Types.WhileStatement>node).statement);
-        // case SyntaxKind.ForStatement:
-        //     return visitNode(cbNode, (<Types.ForStatement>node).initializer) ||
-        //         visitNode(cbNode, (<Types.ForStatement>node).condition) ||
-        //         visitNode(cbNode, (<Types.ForStatement>node).incrementor) ||
-        //         visitNode(cbNode, (<Types.ForStatement>node).statement);
-        // case SyntaxKind.ForInStatement:
-        //     return visitNode(cbNode, (<Types.ForInStatement>node).initializer) ||
-        //         visitNode(cbNode, (<Types.ForInStatement>node).expression) ||
-        //         visitNode(cbNode, (<Types.ForInStatement>node).statement);
-        // case SyntaxKind.ForOfStatement:
-        //     return visitNode(cbNode, (<Types.ForOfStatement>node).awaitModifier) ||
-        //         visitNode(cbNode, (<Types.ForOfStatement>node).initializer) ||
-        //         visitNode(cbNode, (<Types.ForOfStatement>node).expression) ||
-        //         visitNode(cbNode, (<Types.ForOfStatement>node).statement);
-        // case SyntaxKind.ContinueStatement:
-        // case SyntaxKind.BreakStatement:
-        //     return visitNode(cbNode, (<Types.BreakOrContinueStatement>node).label);
-        // case SyntaxKind.ReturnStatement:
-        //     return visitNode(cbNode, (<Types.ReturnStatement>node).expression);
-        // case SyntaxKind.WithStatement:
-        //     return visitNode(cbNode, (<Types.WithStatement>node).expression) ||
-        //         visitNode(cbNode, (<Types.WithStatement>node).statement);
-        // case SyntaxKind.SwitchStatement:
-        //     return visitNode(cbNode, (<Types.SwitchStatement>node).expression) ||
-        //         visitNode(cbNode, (<Types.SwitchStatement>node).caseBlock);
-        // case SyntaxKind.CaseBlock:
-        //     return visitNodes(cbNode, cbNodes, (<Types.CaseBlock>node).clauses);
-        // case SyntaxKind.CaseClause:
-        //     return visitNode(cbNode, (<Types.CaseClause>node).expression) ||
-        //         visitNodes(cbNode, cbNodes, (<Types.CaseClause>node).statements);
-        // case SyntaxKind.DefaultClause:
-        //     return visitNodes(cbNode, cbNodes, (<Types.DefaultClause>node).statements);
-        // case SyntaxKind.LabeledStatement:
-        //     return visitNode(cbNode, (<Types.LabeledStatement>node).label) ||
-        //         visitNode(cbNode, (<Types.LabeledStatement>node).statement);
-        // case SyntaxKind.ThrowStatement:
-        //     return visitNode(cbNode, (<Types.ThrowStatement>node).expression);
-        // case SyntaxKind.TryStatement:
-        //     return visitNode(cbNode, (<Types.TryStatement>node).tryBlock) ||
-        //         visitNode(cbNode, (<Types.TryStatement>node).catchClause) ||
-        //         visitNode(cbNode, (<Types.TryStatement>node).finallyBlock);
-        // case SyntaxKind.CatchClause:
-        //     return visitNode(cbNode, (<Types.CatchClause>node).variableDeclaration) ||
-        //         visitNode(cbNode, (<Types.CatchClause>node).block);
-        // case SyntaxKind.Decorator:
-        //     return visitNode(cbNode, (<Types.Decorator>node).expression);
-        // case SyntaxKind.ClassDeclaration:
-        // case SyntaxKind.ClassExpression:
-        //     return visitNodes(cbNode, cbNodes, node.decorators) ||
-        //         visitNodes(cbNode, cbNodes, node.modifiers) ||
-        //         visitNode(cbNode, (<Types.ClassLikeDeclaration>node).name) ||
-        //         visitNodes(cbNode, cbNodes, (<Types.ClassLikeDeclaration>node).typeParameters) ||
-        //         visitNodes(cbNode, cbNodes, (<Types.ClassLikeDeclaration>node).heritageClauses) ||
-        //         visitNodes(cbNode, cbNodes, (<Types.ClassLikeDeclaration>node).members);
-        // case SyntaxKind.InterfaceDeclaration:
-        //     return visitNodes(cbNode, cbNodes, node.decorators) ||
-        //         visitNodes(cbNode, cbNodes, node.modifiers) ||
-        //         visitNode(cbNode, (<Types.InterfaceDeclaration>node).name) ||
-        //         visitNodes(cbNode, cbNodes, (<Types.InterfaceDeclaration>node).typeParameters) ||
-        //         visitNodes(cbNode, cbNodes, (<Types.ClassDeclaration>node).heritageClauses) ||
-        //         visitNodes(cbNode, cbNodes, (<Types.InterfaceDeclaration>node).members);
-        // case SyntaxKind.TypeAliasDeclaration:
-        //     return visitNodes(cbNode, cbNodes, node.decorators) ||
-        //         visitNodes(cbNode, cbNodes, node.modifiers) ||
-        //         visitNode(cbNode, (<Types.TypeAliasDeclaration>node).name) ||
-        //         visitNodes(cbNode, cbNodes, (<Types.TypeAliasDeclaration>node).typeParameters) ||
-        //         visitNode(cbNode, (<Types.TypeAliasDeclaration>node).type);
-        // case SyntaxKind.EnumDeclaration:
-        //     return visitNodes(cbNode, cbNodes, node.decorators) ||
-        //         visitNodes(cbNode, cbNodes, node.modifiers) ||
-        //         visitNode(cbNode, (<Types.EnumDeclaration>node).name) ||
-        //         visitNodes(cbNode, cbNodes, (<Types.EnumDeclaration>node).members);
-        // case SyntaxKind.EnumMember:
-        //     return visitNode(cbNode, (<Types.EnumMember>node).name) ||
-        //         visitNode(cbNode, (<Types.EnumMember>node).initializer);
-        // case SyntaxKind.ModuleDeclaration:
-        //     return visitNodes(cbNode, cbNodes, node.decorators) ||
-        //         visitNodes(cbNode, cbNodes, node.modifiers) ||
-        //         visitNode(cbNode, (<Types.ModuleDeclaration>node).name) ||
-        //         visitNode(cbNode, (<Types.ModuleDeclaration>node).body);
-        // case SyntaxKind.ImportEqualsDeclaration:
-        //     return visitNodes(cbNode, cbNodes, node.decorators) ||
-        //         visitNodes(cbNode, cbNodes, node.modifiers) ||
-        //         visitNode(cbNode, (<Types.ImportEqualsDeclaration>node).name) ||
-        //         visitNode(cbNode, (<Types.ImportEqualsDeclaration>node).moduleReference);
-        // case SyntaxKind.ImportDeclaration:
-        //     return visitNodes(cbNode, cbNodes, node.decorators) ||
-        //         visitNodes(cbNode, cbNodes, node.modifiers) ||
-        //         visitNode(cbNode, (<Types.ImportDeclaration>node).importClause) ||
-        //         visitNode(cbNode, (<Types.ImportDeclaration>node).moduleSpecifier);
-        // case SyntaxKind.ImportClause:
-        //     return visitNode(cbNode, (<Types.ImportClause>node).name) ||
-        //         visitNode(cbNode, (<Types.ImportClause>node).namedBindings);
-        // case SyntaxKind.NamespaceExportDeclaration:
-        //     return visitNode(cbNode, (<Types.NamespaceExportDeclaration>node).name);
-
-        // case SyntaxKind.NamespaceImport:
-        //     return visitNode(cbNode, (<Types.NamespaceImport>node).name);
-        // case SyntaxKind.NamedImports:
-        // case SyntaxKind.NamedExports:
-        //     return visitNodes(cbNode, cbNodes, (<Types.NamedImportsOrExports>node).elements);
-        // case SyntaxKind.ExportDeclaration:
-        //     return visitNodes(cbNode, cbNodes, node.decorators) ||
-        //         visitNodes(cbNode, cbNodes, node.modifiers) ||
-        //         visitNode(cbNode, (<Types.ExportDeclaration>node).exportClause) ||
-        //         visitNode(cbNode, (<Types.ExportDeclaration>node).moduleSpecifier);
-        // case SyntaxKind.ImportSpecifier:
-        // case SyntaxKind.ExportSpecifier:
-        //     return visitNode(cbNode, (<Types.ImportOrExportSpecifier>node).propertyName) ||
-        //         visitNode(cbNode, (<Types.ImportOrExportSpecifier>node).name);
-        // case SyntaxKind.ExportAssignment:
-        //     return visitNodes(cbNode, cbNodes, node.decorators) ||
-        //         visitNodes(cbNode, cbNodes, node.modifiers) ||
-        //         visitNode(cbNode, (<Types.ExportAssignment>node).expression);
-        // case SyntaxKind.TemplateExpression:
-        //     return visitNode(cbNode, (<Types.TemplateExpression>node).head) || visitNodes(cbNode, cbNodes, (<Types.TemplateExpression>node).templateSpans);
-        // case SyntaxKind.TemplateSpan:
-        //     return visitNode(cbNode, (<Types.TemplateSpan>node).expression) || visitNode(cbNode, (<Types.TemplateSpan>node).literal);
-        // case SyntaxKind.ComputedPropertyName:
-        //     return visitNode(cbNode, (<Types.ComputedPropertyName>node).expression);
-        // case SyntaxKind.HeritageClause:
-        //     return visitNodes(cbNode, cbNodes, (<Types.HeritageClause>node).types);
-        // case SyntaxKind.ExpressionWithTypeArguments:
-        //     return visitNode(cbNode, (<Types.ExpressionWithTypeArguments>node).expression) ||
-        //         visitNodes(cbNode, cbNodes, (<Types.ExpressionWithTypeArguments>node).typeArguments);
-        // case SyntaxKind.ExternalModuleReference:
-        //     return visitNode(cbNode, (<Types.ExternalModuleReference>node).expression);
-        // case SyntaxKind.MissingDeclaration:
-        //     return visitNodes(cbNode, cbNodes, node.decorators);
-        // case SyntaxKind.CommaListExpression:
-        //     return visitNodes(cbNode, cbNodes, (<Types.CommaListExpression>node).elements);
+        case SyntaxKind.IfStatement:
+            return visitNode(cbNode, (<Types.IfStatement>node).expression) ||
+                visitNode(cbNode, (<Types.IfStatement>node).thenStatement) ||
+                visitNode(cbNode, (<Types.IfStatement>node).elseStatement);
+        case SyntaxKind.DoStatement:
+            return visitNode(cbNode, (<Types.DoStatement>node).statement) ||
+                visitNode(cbNode, (<Types.DoStatement>node).expression);
+        case SyntaxKind.WhileStatement:
+            return visitNode(cbNode, (<Types.WhileStatement>node).expression) ||
+                visitNode(cbNode, (<Types.WhileStatement>node).statement);
+        case SyntaxKind.ForStatement:
+            return visitNode(cbNode, (<Types.ForStatement>node).initializer) ||
+                visitNode(cbNode, (<Types.ForStatement>node).condition) ||
+                visitNode(cbNode, (<Types.ForStatement>node).incrementor) ||
+                visitNode(cbNode, (<Types.ForStatement>node).statement);
+        case SyntaxKind.ContinueStatement:
+        case SyntaxKind.BreakStatement:
+            break;
+        case SyntaxKind.ReturnStatement:
+            return visitNode(cbNode, (<Types.ReturnStatement>node).expression);
     }
 }
 
