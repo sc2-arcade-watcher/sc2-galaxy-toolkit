@@ -359,6 +359,13 @@ export function findAncestor(node: Node, callback: (element: Node) => boolean | 
     return undefined;
 }
 
+export function getSourceFileOfNode(node: Node): Types.SourceFile {
+    while (node && node.kind !== SyntaxKind.SourceFile) {
+        node = node.parent;
+    }
+    return <Types.SourceFile>node;
+}
+
 export function fixupParentReferences(rootNode: Node) {
     let parent: Node = rootNode;
     forEachChild(rootNode, visitNode);

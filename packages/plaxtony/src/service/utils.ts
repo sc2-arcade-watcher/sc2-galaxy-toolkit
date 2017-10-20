@@ -1,15 +1,16 @@
-import * as Types from '../compiler/types';
-import { isToken, forEachChild } from '../compiler/utils';
+import * as gt from '../compiler/types';
+import { isToken, forEachChild, getSourceFileOfNode } from '../compiler/utils';
+import * as lsp from 'vscode-languageserver';
 
-export function getNodeChildren(node: Types.Node): Types.Node[] {
-    let children: Types.Node[] = [];
+export function getNodeChildren(node: gt.Node): gt.Node[] {
+    let children: gt.Node[] = [];
 
-    forEachChild(node, (child: Types.Node) => {
+    forEachChild(node, (child: gt.Node) => {
         children.push(child);
     })
 
     children = children.concat(node.syntaxTokens);
-    children = children.sort((a: Types.Node, b: Types.Node): number => {
+    children = children.sort((a: gt.Node, b: gt.Node): number => {
         if (a.pos === b.pos) {
             return 0;
         }
@@ -19,18 +20,18 @@ export function getNodeChildren(node: Types.Node): Types.Node[] {
     return children;
 }
 
-export function getNodeTokens(node: Types.Node): Types.Node[] {
+export function getNodeTokens(node: gt.Node): gt.Node[] {
     return node.syntaxTokens;
 }
 
-export function nodeHasTokens(node: Types.Node): boolean {
+export function nodeHasTokens(node: gt.Node): boolean {
     return node.end - node.pos > 0;
 }
 
-export function findPrecedingToken(position: number, sourceFile: Types.SourceFile, startNode?: Types.Node): Types.Node | undefined {
+export function findPrecedingToken(position: number, sourceFile: gt.SourceFile, startNode?: gt.Node): gt.Node | undefined {
     return find(startNode || sourceFile);
 
-    function findRightmostToken(n: Types.Node): Types.Node {
+    function findRightmostToken(n: gt.Node): gt.Node {
         if (isToken(n)) {
             return n;
         }
@@ -41,7 +42,7 @@ export function findPrecedingToken(position: number, sourceFile: Types.SourceFil
 
     }
 
-    function find(n: Types.Node): Types.Node {
+    function find(n: gt.Node): gt.Node {
         if (isToken(n)) {
             return n;
         }
@@ -82,7 +83,7 @@ export function findPrecedingToken(position: number, sourceFile: Types.SourceFil
     }
 
     /// finds last node that is considered as candidate for search (isCandidate(node) === true) starting from 'exclusiveStartPosition'
-    function findRightmostChildNodeWithTokens(children: Types.Node[], exclusiveStartPosition: number): Types.Node {
+    function findRightmostChildNodeWithTokens(children: gt.Node[], exclusiveStartPosition: number): gt.Node {
         for (let i = exclusiveStartPosition - 1; i >= 0; i--) {
             if (nodeHasTokens(children[i])) {
                 return children[i];
@@ -92,52 +93,69 @@ export function findPrecedingToken(position: number, sourceFile: Types.SourceFil
 }
 
 /**
+ * The token on the left of the position is the token that strictly includes the position
+ * or sits to the left of the cursor if it is on a boundary. For example
+ *
+ *   fo|o               -> will return foo
+ *   foo <comment> |bar -> will return foo
+ *
+ */
+// export function findTokenOnLeftOfPosition(file: gt.SourceFile, position: number): gt.Node {
+// }
+
+/**
  * Returns the token if position is in [start, end).
  * If position === end, returns the preceding token if includeItemAtEndPosition(previousToken) === true
  */
-export function getTouchingToken(sourceFile: Types.SourceFile, position: number, includePrecedingTokenAtEndPosition?: (n: Types.Node) => boolean): Types.Node {
-    return getTokenAtPositionWorker(sourceFile, position, false, includePrecedingTokenAtEndPosition, false);
-}
+// export function getTouchingToken(sourceFile: gt.SourceFile, position: number, includePrecedingTokenAtEndPosition?: (n: gt.Node) => boolean): gt.Node {
+//     return getTokenAtPositionWorker(sourceFile, position, includePrecedingTokenAtEndPosition, false);
+// }
 
-/** Returns a token if position is in [start-of-leading-trivia, end) */
-export function getTokenAtPosition(sourceFile: Types.SourceFile, position: number, includeEndPosition?: boolean): Types.Node {
-    return getTokenAtPositionWorker(sourceFile, position, true, undefined, includeEndPosition);
+export function getTokenAtPosition(position: number, sourceFile: gt.SourceFile, includeEndPosition?: boolean): gt.Node {
+    return getTokenAtPositionWorker(position, sourceFile, undefined, includeEndPosition);
 }
 
 /** Get the token whose text contains the position */
-function getTokenAtPositionWorker(sourceFile: Types.SourceFile, position: number, allowPositionInLeadingTrivia: boolean, includePrecedingTokenAtEndPosition: (n: Types.Node) => boolean, includeEndPosition: boolean): Types.Node {
-    let current: Types.Node = sourceFile;
-    outer: while (true) {
-        if (isToken(current)) {
-            // exit early
-            return current;
-        }
+function getTokenAtPositionWorker(position: number, sourceFile: gt.SourceFile, includePrecedingTokenAtEndPosition: (n: gt.Node) => boolean, includeEndPosition: boolean): gt.Node | undefined {
+    return find(sourceFile);
+    // TODO: includePrecedingTokenAtEndPosition ?
+    function find(n: gt.Node): gt.Node {
+        const children = getNodeChildren(n);
+        for (let i = 0; i < children.length; i++) {
+            const child = children[i];
 
-        // find the child that contains 'position'
-        for (const child of getNodeTokens(current)) {
-            const start = child.pos;
-            if (start > position) {
-                // If this child begins after position, then all subsequent children will as well.
+            if (child.pos > position) {
                 break;
             }
 
-            const end = child.end;
-            if (position < end || (position === end && (child.kind === Types.SyntaxKind.EndOfFileToken || includeEndPosition))) {
-                current = child;
-                continue outer;
-            }
-            else if (includePrecedingTokenAtEndPosition && end === position) {
-                const previousToken = findPrecedingToken(position, sourceFile, child);
-                if (previousToken && includePrecedingTokenAtEndPosition(previousToken)) {
-                    return previousToken;
+            if (isToken(child)) {
+                if (child.end > position) {
+                    return child;
                 }
+                continue;
+            }
+            if (nodeHasTokens(child) && child.end >= position) {
+                return find(child);
             }
         }
-
-        return current;
     }
 }
 
-export function getPositionOfLineAndCharacter(sourceFile: Types.SourceFile, line: number, character: number): number {
+export function getPositionOfLineAndCharacter(sourceFile: gt.SourceFile, line: number, character: number): number {
     return sourceFile.lineMap[line] + character;
+}
+
+export function getLineAndCharacterOfPosition(sourceFile: gt.SourceFile, pos: number): lsp.Position {
+    let loc = {line: 0, character: 0};
+    for (var i = 0; i < sourceFile.lineMap.length; i++) {
+        if (sourceFile.lineMap[i] <= pos) {
+            loc = {
+                line: i,
+                character: pos - sourceFile.lineMap[i],
+            }
+            continue;
+        }
+        break;
+    }
+    return loc;
 }

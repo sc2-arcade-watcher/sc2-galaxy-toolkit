@@ -7,6 +7,7 @@ import { DiagnosticsProvider } from './diagnostics';
 import { NavigationProvider } from './navigation';
 import { CompletionsProvider } from './completions';
 import { SignaturesProvider } from './signatures';
+import { DefinitionProvider } from './definitions';
 
 function getNodeRange(node: Types.Node): lsp.Range {
     return {
@@ -123,6 +124,7 @@ class Server {
     private navigationProvider: NavigationProvider;
     private completionsProvider: CompletionsProvider;
     private signaturesProvider: SignaturesProvider;
+    private definitionsProvider: DefinitionProvider;
     private documents: lsp.TextDocuments;
     private workspaces: Workspace[];
 
@@ -134,6 +136,7 @@ class Server {
         this.navigationProvider = new NavigationProvider(this.store);
         this.completionsProvider = new CompletionsProvider(this.store);
         this.signaturesProvider = new SignaturesProvider(this.store);
+        this.definitionsProvider = new DefinitionProvider(this.store);
     }
 
     public createConnection(connection?: lsp.IConnection): lsp.IConnection {
@@ -149,6 +152,7 @@ class Server {
         this.connection.onDocumentSymbol(this.onDocumentSymbol.bind(this));
         this.connection.onWorkspaceSymbol(this.onWorkspaceSymbol.bind(this));
         this.connection.onSignatureHelp(this.onSignatureHelp.bind(this));
+        this.connection.onDefinition(this.onDefinition.bind(this));
 
         return this.connection;
     }
@@ -176,6 +180,7 @@ class Server {
                 signatureHelpProvider: {
                     triggerCharacters: ['(', ','],
                 },
+                definitionProvider: true
             }
         }
     }
@@ -248,6 +253,15 @@ class Server {
         return this.signaturesProvider.getSignatureAt(
             params.textDocument.uri,
             getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character)
+        );
+    }
+
+    @wrapRequest()
+    private onDefinition(params: lsp.TextDocumentPositionParams): lsp.Definition {
+        return this.definitionsProvider.getDefinitionAt(
+            params.textDocument.uri,
+            getPositionOfLineAndCharacter(
+                this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character)
         );
     }
 }

@@ -1,5 +1,5 @@
 import * as gt from './types';
-import { isDeclarationKind, forEachChild, isPartOfExpression, isRightSideOfPropertyAccess } from './utils';
+import { isDeclarationKind, forEachChild, isPartOfExpression, isRightSideOfPropertyAccess, findAncestor } from './utils';
 import { Store } from '../service/store';
 
 let nextSymbolId = 1;
@@ -89,7 +89,7 @@ const voidType = createIntrinsicType(gt.TypeFlags.Void, "void");
 const complexTypes: gt.ComplexType[] = [];
 complexTypes[gt.SyntaxKind.UnitKeyword] = createComplexType(gt.SyntaxKind.UnitKeyword);
 
-const undefinedSymbol = createSymbol(gt.SymbolFlags.None, "undefined")
+// const undefinedSymbol = createSymbol(gt.SymbolFlags.None, "undefined")
 
 export class TypeChecker {
     private store: Store;
@@ -330,8 +330,15 @@ export class TypeChecker {
         return propType;
     }
 
-    private resolveName(location: gt.Node | undefined, name: string, nameNotFoundMessage: string): gt.Symbol {
-        // TODO: locals
+    private resolveName(location: gt.Node | undefined, name: string, nameNotFoundMessage: string): gt.Symbol | undefined {
+        if (location) {
+            const currentContext = <gt.FunctionDeclaration>findAncestor(location, (element: gt.Node): boolean => {
+                return element.kind === gt.SyntaxKind.FunctionDeclaration;
+            })
+            if (currentContext && currentContext.symbol.members.has(name)) {
+                return currentContext.symbol.members.get(name);
+            }
+        }
 
         for (const document of this.store.documents.values()) {
             const symbol = document.symbol.members.get(name);
@@ -340,7 +347,7 @@ export class TypeChecker {
             }
         }
 
-        return undefinedSymbol;
+        return undefined;
     }
 
     private resolveEntityName(entityName: gt.EntityNameExpression, meaning: gt.SymbolFlags, ignoreErrors?: boolean, location?: gt.Node): gt.Symbol | undefined {
@@ -409,12 +416,12 @@ export class TypeChecker {
         // if (isDeclarationKind(entityName.parent.kind)) {
         //     return (<gt.Declaration>entityName.parent).symbol;
         // }
+        // TODO: ^
         let type: gt.Type;
 
         if (isRightSideOfPropertyAccess(entityName)) {
             entityName = <gt.PropertyAccessExpression>entityName.parent;
         }
-        // TODO: ^
 
         if (isPartOfExpression(entityName)) {
             if (entityName.kind === gt.SyntaxKind.Identifier) {
@@ -430,13 +437,13 @@ export class TypeChecker {
             }
         }
 
-        return undefined;
+        throw new Error('how did we get here?');
     }
 
     // public getRootSymbols(symbol: Symbol): Symbol[] {
     // }
 
-    private getSymbolAtLocation(node: gt.Node): gt.Symbol | undefined {
+    public getSymbolAtLocation(node: gt.Node): gt.Symbol | undefined {
         switch (node.kind) {
             case gt.SyntaxKind.Identifier:
             case gt.SyntaxKind.PropertyAccessExpression:
