@@ -25,7 +25,22 @@
     "build": "tsc",
     "build:watch": "tsc --watch",
     "test": "mocha --opts mocha.opts",
-    "test:watch": "mocha --opts mocha.opts --watch"
+    "test:watch": "mocha --opts mocha.opts --watch",
+    "test:coverage": "nyc mocha --opts mocha.opts"
+  },
+  "nyc": {
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "all": true
   },
   "dependencies": {
     "glob": "^7.1.2",
@@ -38,6 +53,8 @@
     "@types/node": "^8.0.25",
     "chai": "^4.1.0",
     "mocha": "^3.4.2",
+    "nyc": "^11.2.1",
+    "source-map-support": "^0.5.0",
     "ts-node": "^3.3.0"
   }
 }
