@@ -94,9 +94,11 @@ describe('Service', () => {
 
     describe('Signatures', () => {
         const document = mockupTextDocument('service', 'call.galaxy');
+        const docSignature = mockupTextDocument('service', 'signature', 'signature.galaxy');
         const store = mockupStore(
             document,
-            mockupTextDocument('service', 'navigation', 'funcs.galaxy')
+            mockupTextDocument('service', 'navigation', 'funcs.galaxy'),
+            docSignature
         );
         const signaturesProvider = new SignaturesProvider(store);
 
@@ -105,7 +107,30 @@ describe('Service', () => {
         });
 
         it('should identify active parameter', () => {
-            assert.equal(signaturesProvider.getSignatureAt(document.uri, 30).activeParameter, 1);
+            assert.equal(signaturesProvider.getSignatureAt(document.uri, 29).activeParameter, 0, 'no whitespace 1');
+            assert.equal(signaturesProvider.getSignatureAt(document.uri, 30).activeParameter, 1, 'no whitespace 2');
+
+            assert.equal(signaturesProvider.getSignatureAt(document.uri, 49).activeParameter, 0, 'no whitespace 0 - sec');
+            assert.equal(signaturesProvider.getSignatureAt(document.uri, 50).activeParameter, 1, 'right after comma token, before whitespace');
+            assert.equal(signaturesProvider.getSignatureAt(document.uri, 51).activeParameter, 1, 'after whitespace and comma');
+
+            // assert.equal(signaturesProvider.getSignatureAt(document.uri, 74).activeParameter, null, 'after comma for not existing parameter');
+        });
+
+        it('should properly identify bounds in nested calls', () => {
+            let signature: lsp.SignatureHelp;
+
+            signature = signaturesProvider.getSignatureAt(docSignature.uri, 115)
+            assert.lengthOf(signature.signatures, 1);
+            assert.equal(signature.signatures[0].label, 'string name_me(int id);');
+
+            signature = signaturesProvider.getSignatureAt(docSignature.uri, 116)
+            assert.lengthOf(signature.signatures, 1);
+            assert.equal(signature.signatures[0].label, 'int randomize();');
+
+            signature = signaturesProvider.getSignatureAt(docSignature.uri, 117)
+            assert.lengthOf(signature.signatures, 1);
+            assert.equal(signature.signatures[0].label, 'string name_me(int id);');
         });
     });
 

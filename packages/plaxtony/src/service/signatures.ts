@@ -1,3 +1,4 @@
+import * as gt from '../compiler/types';
 import { SyntaxKind, Symbol, Node, SourceFile, CallExpression, Identifier, FunctionDeclaration, Expression } from '../compiler/types';
 import { findAncestor } from '../compiler/utils';
 import { Printer } from '../compiler/printer';
@@ -15,9 +16,21 @@ export class SignaturesProvider {
 
     private evaluateActiveParameter(callExpr: CallExpression, position: number): number | null {
         let activeParam: number | null = null;
+        let prevArg: gt.Node;
 
-        callExpr.arguments.some((argument: Expression, index: number) => {
-            if (argument.pos <= position && argument.end >= position) {
+        callExpr.arguments.some((argument: Expression, index: number, args) => {
+            if (argument.pos <= position) {
+                activeParam = index;
+                prevArg = argument;
+
+                // exit early when confirmed it is in bounds
+                // in other case keep going to acomodate whitespaces
+                if (argument.end >= position) {
+                    return true;
+                }
+            }
+            // offset is before bounds of next param node, yet we got here - we must be in whitespace
+            else if (prevArg) {
                 activeParam = index;
                 return true;
             }
@@ -31,8 +44,21 @@ export class SignaturesProvider {
     public getSignatureAt(uri: string, position: number): lsp.SignatureHelp {
         const currentDocument = this.store.documents.get(uri);
         const currentToken = findPrecedingToken(position, currentDocument);
-        const callNode = <CallExpression>findAncestor(currentToken, (element: Node): boolean => {
-            return element.kind === SyntaxKind.CallExpression;
+        let node: Node = currentToken.parent;
+
+        // we don't want to provide signature for left side of CallExpression
+        if (currentToken.parent.kind === gt.SyntaxKind.CallExpression && (<gt.CallExpression>currentToken.parent).expression === currentToken) {
+            node = currentToken.parent.parent;
+        }
+        const callNode = <CallExpression>findAncestor(node, (element: Node): boolean => {
+            if (element.kind !== SyntaxKind.CallExpression) {
+                return false;
+            }
+            // skip if goes over range - we must've hit CloseParenToken
+            if (element.end <= position) {
+                return false;
+            }
+            return true;
         })
 
         if (!callNode) {
@@ -72,6 +98,12 @@ export class SignaturesProvider {
 
             signatureHelp.activeSignature = 0;
             signatureHelp.activeParameter = this.evaluateActiveParameter(callNode, position);
+
+            // not really a valid signature parameter right there
+            // if (signatureHelp.activeParameter && (signatureHelp.activeParameter + 1) > signatureInfo.parameters.length) {
+            //     signatureHelp.activeParameter = null;
+            // }
+
             signatureHelp.signatures.push(signatureInfo);
             break;
         }
