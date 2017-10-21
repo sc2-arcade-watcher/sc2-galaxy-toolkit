@@ -195,11 +195,16 @@ export class Library {
             xml.parseString(fs.readFileSync(filename, 'utf8'), (err, result) => {
                 if (err) {
                     reject(err);
-                    return;
                 }
-
-                this.parseTree(result.TriggerData);
-                resolve(true);
+                else {
+                    try {
+                        this.parseTree(result.TriggerData);
+                        resolve(true);
+                    }
+                    catch (err) {
+                        reject(err);
+                    }
+                }
             });
         });
     }

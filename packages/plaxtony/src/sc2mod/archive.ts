@@ -9,7 +9,6 @@ export function findSC2Archives(directory: string) {
         glob(path.join(directory, '**/*.+(SC2Mod|SC2Map|SC2Campaign)'), {nocase: true} , (err, matches) => {
             if (err) {
                 reject(err);
-                return;
             }
             else {
                 resolve(matches.filter((value) => {
@@ -25,7 +24,6 @@ function findSC2File(directory: string, pattern: string) {
         glob(path.join(directory, '**/' + pattern), {nocase: true, nodir: true} , (err, matches) => {
             if (err) {
                 reject(err);
-                return;
             }
             else {
                 resolve(matches);
@@ -43,7 +41,8 @@ export class SC2Archive {
     public async openFromDirectory(directory: string) {
         this.directory = path.resolve(directory);
 
-        for (const filename of await findSC2File(this.directory, '+(*.TriggerLib|*.SC2Lib|Triggers)')) {
+        // TODO: support Triggers
+        for (const filename of await findSC2File(this.directory, '+(*.TriggerLib|*.SC2Lib)')) {
             this.trigLibs.addFromFile(filename);
         }
 
