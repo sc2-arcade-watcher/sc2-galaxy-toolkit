@@ -84,7 +84,9 @@ export class Printer {
             {
                 const type = <gt.ArrayTypeNode>node;
                 this.emitNode(type.elementType);
+                this.write('[');
                 this.emitNode(type.size);
+                this.write(']');
                 break;
             }
 

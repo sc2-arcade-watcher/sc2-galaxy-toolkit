@@ -229,7 +229,7 @@ export class Server {
     @wrapRequest()
     private onDidChangeContent(ev: lsp.TextDocumentChangeEvent) {
         this.store.updateDocument(ev.document);
-        if (this.documents.keys().indexOf(ev.document.uri)) {
+        if (this.documents.keys().indexOf(ev.document.uri) !== undefined) {
             this.connection.sendDiagnostics({
                 uri: ev.document.uri,
                 diagnostics: translateDiagnostics(this.diagnosticsProvider.diagnose(ev.document.uri)),

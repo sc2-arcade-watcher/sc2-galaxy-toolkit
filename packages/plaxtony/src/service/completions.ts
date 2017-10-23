@@ -1,6 +1,8 @@
+import * as gt from '../compiler/types';
 import { SyntaxKind, Symbol, Node, SourceFile, FunctionDeclaration, NamedDeclaration, VariableDeclaration } from '../compiler/types';
+import { TypeChecker } from '../compiler/checker';
 import { AbstractProvider } from './provider';
-import { findAncestor } from '../compiler/utils';
+import { findAncestor, isToken } from '../compiler/utils';
 import { getTokenAtPosition, findPrecedingToken } from './utils';
 import { Printer } from '../compiler/printer';
 import * as vs from 'vscode-languageserver';
@@ -36,6 +38,10 @@ export class CompletionsProvider extends AbstractProvider {
                     item.kind = vs.CompletionItemKind.Variable;
                     item.detail = this.printer.printNode((<VariableDeclaration>node).type);
                     break;
+                case SyntaxKind.PropertyDeclaration:
+                    item.kind = vs.CompletionItemKind.Property;
+                    item.detail = this.printer.printNode((<VariableDeclaration>node).type);
+                    break;
                 default:
                     item.kind = vs.CompletionItemKind.Text;
                     break;
@@ -51,12 +57,29 @@ export class CompletionsProvider extends AbstractProvider {
         let completions = <vs.CompletionItem[]> [];
 
         const currentDocument = this.store.documents.get(uri);
-        const currentToken = findPrecedingToken(position, currentDocument);
-        const currentContext = <FunctionDeclaration>findAncestor(currentToken, (element: Node): boolean => {
-            return element.kind === SyntaxKind.FunctionDeclaration;
-        })
-        if (currentContext) {
-            completions = completions.concat(this.getFromSymbol(currentContext.symbol));
+        let currentToken = findPrecedingToken(position, currentDocument);
+
+        if (currentToken) {
+            const checker = new TypeChecker(this.store);
+
+            if (currentToken.kind === gt.SyntaxKind.DotToken || currentToken.kind === gt.SyntaxKind.Identifier) {
+                if (currentToken.parent.kind === gt.SyntaxKind.PropertyAccessExpression) {
+                    currentToken = (<gt.PropertyAccessExpression>currentToken.parent).expression;
+                    const type = checker.getTypeOfNode(currentToken);
+                    if (type.flags & gt.TypeFlags.Struct) {
+                        return this.getFromSymbol(type.symbol);
+                    }
+                }
+            }
+        }
+
+        if (currentToken) {
+            const currentContext = <FunctionDeclaration>findAncestor(currentToken, (element: Node): boolean => {
+                return element.kind === SyntaxKind.FunctionDeclaration;
+            })
+            if (currentContext) {
+                completions = completions.concat(this.getFromSymbol(currentContext.symbol));
+            }
         }
 
         for (const document of this.store.documents.values()) {

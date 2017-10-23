@@ -73,18 +73,51 @@ describe('Service', () => {
 
     describe('Completions', () => {
         const document = mockupTextDocument('service', 'navigation', 'funcs.galaxy');
+        const documentStruct = mockupTextDocument('service', 'completion', 'struct.galaxy');
         const store = mockupStore(
             document,
-            mockupTextDocument('service', 'navigation', 'declarations.galaxy')
+            mockupTextDocument('service', 'navigation', 'declarations.galaxy'),
+            documentStruct
         );
-        const completions = createProvider(CompletionsProvider, store);
+        const completionsProvider = createProvider(CompletionsProvider, store);
+
+        function getCompletionsAt(doc: lsp.TextDocument, line: number, char: number) {
+            return completionsProvider.getCompletionsAt(
+                doc.uri,
+                getPositionOfLineAndCharacter(store.documents.get(documentStruct.uri), line, char)
+            );
+        }
 
         it('should provide globaly declared symbols', () => {
-            assert.lengthOf(completions.getCompletionsAt(document.uri, 0), 5);
+            assert.lengthOf(completionsProvider.getCompletionsAt(document.uri, 0), 8);
         });
 
         it('should provide localy declared symbols', () => {
-            assert.lengthOf(completions.getCompletionsAt(document.uri, 51), 8);
+            assert.lengthOf(completionsProvider.getCompletionsAt(document.uri, 51), 11);
+        });
+
+        it('should provide struct scoped symbols', () => {
+            let items: lsp.CompletionItem[];
+
+            items = getCompletionsAt(documentStruct, 14, 9);
+            assert.lengthOf(items, 3);
+            items = getCompletionsAt(documentStruct, 14, 10);
+            assert.lengthOf(items, 3);
+
+            items = getCompletionsAt(documentStruct, 15, 13);
+            assert.lengthOf(items, 1);
+            items = getCompletionsAt(documentStruct, 15, 14);
+            assert.lengthOf(items, 1);
+            items = getCompletionsAt(documentStruct, 15, 12);
+            assert.lengthOf(items, 3);
+
+            items = getCompletionsAt(documentStruct, 16, 21);
+            assert.lengthOf(items, 1);
+            assert.equal(items[0].label, 'submember');
+            assert.equal(items[0].kind, lsp.CompletionItemKind.Property);
+
+            items = getCompletionsAt(documentStruct, 17, 18);
+            assert.notEqual(items.length, 1);
         });
     });
 
@@ -254,7 +287,7 @@ describe('Service', () => {
                     },
                     end: {
                         line: 2,
-                        character: 1,
+                        character: 2,
                     },
                 },
             }, 'struct decl member: container_t::sub');
