@@ -4,6 +4,7 @@ import * as path from 'path';
 import { mockupStoreFromDirectory, mockupStoreFromS2Workspace } from './helpers';
 import * as gt from '../src/compiler/types';
 import { findSC2Archives, SC2Archive } from '../src/sc2mod/archive';
+import { createProvider } from '../src/service/provider';
 import { SignaturesProvider } from '../src/service/signatures';
 import Uri from 'vscode-uri';
 
@@ -46,7 +47,7 @@ describe('SC2Data', function () {
         assert.isDefined(natives);
         assert.equal(store.getArchiveOfSourceFile(natives), archive);
 
-        const signaturesProvider = new SignaturesProvider(store);
+        const signaturesProvider = createProvider(SignaturesProvider, store);
         const sigInfo = signaturesProvider.getSignatureOfFunction(natives.symbol.members.get('DialogControlSetPropertyAsString'));
 
         assert.isDefined(sigInfo.documentation.indexOf('Set Dialog Item String Value'));

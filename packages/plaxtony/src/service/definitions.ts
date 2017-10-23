@@ -1,17 +1,11 @@
 import * as gt from '../compiler/types';
 import { TypeChecker } from '../compiler/checker';
-import { Store } from './store';
+import { AbstractProvider } from './provider';
 import { findAncestor, getSourceFileOfNode } from '../compiler/utils';
 import { getTokenAtPosition, findPrecedingToken, getLineAndCharacterOfPosition } from './utils';
 import * as lsp from 'vscode-languageserver';
 
-export class DefinitionProvider {
-    private store: Store;
-
-    public constructor(store: Store) {
-        this.store = store;
-    }
-
+export class DefinitionProvider extends AbstractProvider {
     public getDefinitionAt(uri: string, position: number): lsp.Definition {
         // let completions = <lsp.CompletionItem[]> [];
 

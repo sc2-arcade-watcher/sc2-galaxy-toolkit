@@ -2,18 +2,13 @@ import * as gt from '../compiler/types';
 import { SyntaxKind, Symbol, Node, SourceFile, CallExpression, Identifier, FunctionDeclaration, Expression } from '../compiler/types';
 import { findAncestor, getSourceFileOfNode } from '../compiler/utils';
 import { Printer } from '../compiler/printer';
-import { Store } from './store';
+import { AbstractProvider } from './provider';
 import { getTokenAtPosition, findPrecedingToken } from './utils';
 import * as lsp from 'vscode-languageserver';
 import * as trig from '../sc2mod/trigger'
 
-export class SignaturesProvider {
-    private store: Store;
+export class SignaturesProvider extends AbstractProvider {
     private printer: Printer = new Printer();
-
-    public constructor(store: Store) {
-        this.store = store;
-    }
 
     private evaluateActiveParameter(callExpr: CallExpression, position: number): number | null {
         let activeParam: number | null = null;

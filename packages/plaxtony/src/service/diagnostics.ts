@@ -1,16 +1,10 @@
-import { Store } from './store';
+import { AbstractProvider } from './provider';
 import { Diagnostic } from '../compiler/types';
 
 export type DiagnosticsCallback = (a: string) => void;
 
-export class DiagnosticsProvider {
-    private store: Store;
+export class DiagnosticsProvider extends AbstractProvider {
     private reporter?: DiagnosticsCallback;
-
-    public constructor(store: Store, reporter?: DiagnosticsCallback) {
-        this.store = store;
-        this.reporter = reporter;
-    }
 
     public subscribe(uri: string) {
     }
@@ -21,6 +15,7 @@ export class DiagnosticsProvider {
         //     diagnostics = diagnostics.concat(doc.parseDiagnostics);
         // }
         diagnostics = this.store.documents.get(uri).parseDiagnostics;
+        this.console.info(`${uri}: parse errors = ${diagnostics.length}`);
         return diagnostics;
     }
 }

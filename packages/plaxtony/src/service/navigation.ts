@@ -1,6 +1,6 @@
 import { SourceFile, NamedDeclaration, Node, SyntaxKind } from '../compiler/types';
 import { forEachChild } from '../compiler/utils';
-import { Store } from './store';
+import { AbstractProvider } from './provider';
 
 function collectDeclarations(sourceFile: SourceFile): NamedDeclaration[] {
     let declarations: NamedDeclaration[] = [];
@@ -28,13 +28,7 @@ function collectDeclarations(sourceFile: SourceFile): NamedDeclaration[] {
     return declarations;
 }
 
-export class NavigationProvider {
-    private store: Store;
-
-    public constructor(store: Store) {
-        this.store = store;
-    }
-
+export class NavigationProvider extends AbstractProvider {
     public getDocumentSymbols(uri: string): NamedDeclaration[] {
         return collectDeclarations(this.store.documents.get(uri));
     }

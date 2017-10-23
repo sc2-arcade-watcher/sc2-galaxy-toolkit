@@ -1,4 +1,5 @@
 import { Store, Workspace } from '../src/service/store';
+import { createProvider } from '../src/service/provider';
 import { DiagnosticsProvider } from '../src/service/diagnostics';
 import { NavigationProvider } from '../src/service/navigation';
 import { CompletionsProvider } from '../src/service/completions';
@@ -36,7 +37,7 @@ describe('Service', () => {
         const store = new Store();
 
         it('should report about parse errors', () => {
-            const diagnosticsProvider = new DiagnosticsProvider(store);
+            const diagnosticsProvider = createProvider(DiagnosticsProvider, store);
             const document = mockupTextDocument(path.join('service', 'diagnostics_parse_error.galaxy'));
             store.updateDocument(document);
             diagnosticsProvider.subscribe(document.uri);
@@ -51,7 +52,7 @@ describe('Service', () => {
 
         it('should provide symbols navigation per document', () => {
             const store = new Store();
-            const navigation = new NavigationProvider(store);
+            const navigation = createProvider(NavigationProvider, store);
             const document = mockupTextDocument('service', 'navigation', 'declarations.galaxy');
             store.updateDocument(document);
             const symbolDeclarations = navigation.getDocumentSymbols(document.uri);
@@ -64,7 +65,7 @@ describe('Service', () => {
 
         it('should provide symbols navigation per workspace', async () => {
             const store = await mockupStoreFromDirectory(fixturesPath);
-            const navigation = new NavigationProvider(store);
+            const navigation = createProvider(NavigationProvider, store);
             const symbolDeclarations = navigation.getWorkspaceSymbols();
             assert.lengthOf(symbolDeclarations, 6);
         });
@@ -76,7 +77,7 @@ describe('Service', () => {
             document,
             mockupTextDocument('service', 'navigation', 'declarations.galaxy')
         );
-        const completions = new CompletionsProvider(store);
+        const completions = createProvider(CompletionsProvider, store);
 
         it('should provide globaly declared symbols', () => {
             assert.lengthOf(completions.getCompletionsAt(document.uri, 0), 5);
@@ -95,7 +96,7 @@ describe('Service', () => {
             mockupTextDocument('service', 'navigation', 'funcs.galaxy'),
             docSignature
         );
-        const signaturesProvider = new SignaturesProvider(store);
+        const signaturesProvider = createProvider(SignaturesProvider, store);
 
         it('should provide signature help for global functions', () => {
             assert.lengthOf(signaturesProvider.getSignatureAt(document.uri, 28).signatures, 1);
@@ -137,7 +138,7 @@ describe('Service', () => {
             refsDoc
         );
 
-        const definitions = new DefinitionProvider(store);
+        const definitions = createProvider(DefinitionProvider, store);
 
         function getDef(document: lsp.TextDocument, line: number, character: number) {
             return definitions.getDefinitionAt(document.uri, getPositionOfLineAndCharacter(store.documents.get(document.uri), line, character));

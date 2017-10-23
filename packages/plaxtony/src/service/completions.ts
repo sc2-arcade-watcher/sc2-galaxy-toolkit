@@ -1,12 +1,12 @@
 import { SyntaxKind, Symbol, Node, SourceFile, FunctionDeclaration, NamedDeclaration, VariableDeclaration } from '../compiler/types';
-import { Store } from './store';
+import { AbstractProvider } from './provider';
 import { findAncestor } from '../compiler/utils';
 import { getTokenAtPosition, findPrecedingToken } from './utils';
 import { Printer } from '../compiler/printer';
 import * as vs from 'vscode-languageserver';
+import { getDocumentationOfSymbol } from './s2meta';
 
-export class CompletionsProvider {
-    private store: Store;
+export class CompletionsProvider extends AbstractProvider {
     private printer: Printer = new Printer();
 
     private getFromSymbol(parentSymbol: Symbol): vs.CompletionItem[] {
@@ -47,10 +47,6 @@ export class CompletionsProvider {
         return completions;
     }
 
-    public constructor(store: Store) {
-        this.store = store;
-    }
-
     public getCompletionsAt(uri: string, position: number): vs.CompletionItem[] {
         let completions = <vs.CompletionItem[]> [];
 
@@ -68,5 +64,16 @@ export class CompletionsProvider {
         }
 
         return completions;
+    }
+
+    public resolveCompletion(completion: vs.CompletionItem): vs.CompletionItem {
+        for (const sourceFile of this.store.documents.values()) {
+            const symbol = sourceFile.symbol.members.get(completion.label);
+            if (symbol) {
+                completion.documentation = getDocumentationOfSymbol(this.store, symbol);
+                break;
+            }
+        }
+        return completion;
     }
 }

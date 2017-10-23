@@ -3,12 +3,12 @@ import * as Types from '../compiler/types';
 import { findAncestor } from '../compiler/utils';
 import { Store, Workspace, S2Workspace } from './store';
 import { getPositionOfLineAndCharacter } from './utils';
+import { AbstractProvider, LoggerConsole, createProvider } from './provider';
 import { DiagnosticsProvider } from './diagnostics';
 import { NavigationProvider } from './navigation';
 import { CompletionsProvider } from './completions';
 import { SignaturesProvider } from './signatures';
 import { DefinitionProvider } from './definitions';
-import { S2MetadataProvider } from './s2meta';
 
 function getNodeRange(node: Types.Node): lsp.Range {
     return {
@@ -120,30 +120,28 @@ function wrapRequest(msg?: string, showArg?: boolean, singleLine?: boolean) {
 
 export class Server {
     private connection: lsp.IConnection;
-    private store: Store;
+    private store: Store = new Store();
     private diagnosticsProvider: DiagnosticsProvider;
     private navigationProvider: NavigationProvider;
     private completionsProvider: CompletionsProvider;
     private signaturesProvider: SignaturesProvider;
     private definitionsProvider: DefinitionProvider;
-    private s2metadataProvider: S2MetadataProvider;
-    private documents: lsp.TextDocuments;
-    private workspaces: Workspace[];
+    private documents = new lsp.TextDocuments();
+    private workspaces: Workspace[] = [];
 
-    constructor() {
-        this.documents = new lsp.TextDocuments();
-        this.store = new Store();
-        this.workspaces = [];
-        this.diagnosticsProvider = new DiagnosticsProvider(this.store);
-        this.navigationProvider = new NavigationProvider(this.store);
-        this.completionsProvider = new CompletionsProvider(this.store);
-        this.signaturesProvider = new SignaturesProvider(this.store);
-        this.definitionsProvider = new DefinitionProvider(this.store);
-        this.s2metadataProvider = new S2MetadataProvider(this.store);
+    private createProvider<T extends AbstractProvider>(cls: new () => T): T {
+        return createProvider(cls, this.store, this.connection.console);
     }
 
     public createConnection(connection?: lsp.IConnection): lsp.IConnection {
         this.connection = connection ? connection : lsp.createConnection(new lsp.IPCMessageReader(process), new lsp.IPCMessageWriter(process));
+
+        this.diagnosticsProvider = this.createProvider(DiagnosticsProvider);
+        this.navigationProvider = this.createProvider(NavigationProvider);
+        this.completionsProvider = this.createProvider(CompletionsProvider);
+        this.signaturesProvider = this.createProvider(SignaturesProvider);
+        this.definitionsProvider = this.createProvider(DefinitionProvider);
+
         this.documents.listen(this.connection);
         this.documents.onDidChangeContent(this.onDidChangeContent.bind(this));
         this.documents.onDidOpen(this.onDidOpen.bind(this));
@@ -265,14 +263,7 @@ export class Server {
 
     @wrapRequest()
     private onCompletionResolve(params: lsp.CompletionItem): lsp.CompletionItem {
-        for (const sourceFile of this.store.documents.values()) {
-            const symbol = sourceFile.symbol.members.get(params.label);
-            if (symbol) {
-                params.documentation = this.s2metadataProvider.getDocumentationOfSymbol(symbol);
-                break;
-            }
-        }
-        return params;
+        return this.completionsProvider.resolveCompletion(params);
     }
 
     @wrapRequest()
