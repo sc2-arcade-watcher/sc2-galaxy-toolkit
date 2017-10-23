@@ -4,6 +4,10 @@ import * as path from 'path'
 import * as trig from './trigger';
 import { LocalizationFile } from './localization';
 
+export function isSC2Archive(directory: string) {
+    return /\.(SC2Mod|SC2Map|SC2Campaign)$/i.exec(path.basename(directory));
+}
+
 export function findSC2Archives(directory: string) {
     return new Promise<string[]>((resolve, reject) => {
         glob(path.join(directory, '**/*.+(SC2Mod|SC2Map|SC2Campaign)'), {nocase: true} , (err, matches) => {

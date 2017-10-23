@@ -1,7 +1,7 @@
 import { SourceFile, Diagnostic } from './../src/compiler/types';
 import { Parser } from '../src/compiler/parser';
 import { TextDocument } from 'vscode-languageserver';
-import { Store, Workspace, createTextDocumentFromFs } from '../src/service/store';
+import { Store, Workspace, S2Workspace, createTextDocumentFromFs } from '../src/service/store';
 import * as path from 'path';
 
 const fixturesPath = 'tests/fixtures';
@@ -40,7 +40,7 @@ export function mockupStoreFromDirectory(directory: string) {
     return new Promise<Store>((resolve, reject) => {
         try {
             const store = new Store();
-            const ws = new Workspace(directory, store);
+            const ws = new Workspace(directory);
             ws.onDidOpen((ev) => {
                 store.updateDocument(ev.document);
             });
@@ -53,6 +53,19 @@ export function mockupStoreFromDirectory(directory: string) {
             reject(err);
         }
     });
+}
+
+export async function mockupStoreFromS2Workspace(directory: string) {
+    const store = new Store();
+    const ws = new S2Workspace(directory);
+    ws.onDidOpen((ev) => {
+        store.updateDocument(ev.document);
+    });
+    ws.onDidOpenS2Archive((ev) => {
+        store.updateArchive(ev.archive);
+    });
+    await ws.watch();
+    return store;
 }
 
 function printDiagnostics(diagnostics: Diagnostic[]): string {

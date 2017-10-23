@@ -1,11 +1,15 @@
-import * as Types from '../compiler/types';
+import * as gt from '../compiler/types';
 import { SyntaxKind, SourceFile, Node, Symbol, SymbolTable } from '../compiler/types';
+import { getSourceFileOfNode } from '../compiler/utils';
 import { Parser } from '../compiler/parser';
 import { bindSourceFile } from '../compiler/binder';
+import { findSC2Archives, isSC2Archive, SC2Archive } from '../sc2mod/archive';
+import { Element } from '../sc2mod/trigger';
 import * as lsp from 'vscode-languageserver';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as glob from 'glob';
+import Uri from 'vscode-uri';
 
 export function createTextDocument(uri: string, text: string): lsp.TextDocument {
     return <lsp.TextDocument>{
@@ -26,17 +30,19 @@ export class IndexedDocument {
     sourceNode: SourceFile;
 }
 
-export class Workspace {
-    // private documents: Map<string, IndexedDocument>;
-    private workspacePath: string;
-    private store: Store;
-    private _onDidStart: lsp.Emitter<string>;
-    private _onDidEnd: lsp.Emitter<number>;
-    private _onDidOpen: lsp.Emitter<lsp.TextDocumentChangeEvent>;
+export interface S2ArchiveChangeEvent {
+    localPath: string;
+    archive: SC2Archive;
+};
 
-    constructor(workspacePath: string, store: Store) {
-        this.workspacePath = path.join(path.resolve(workspacePath), '**/*.galaxy');
-        this.store = store;
+export class Workspace {
+    protected workspacePath: string;
+    protected _onDidStart: lsp.Emitter<string>;
+    protected _onDidEnd: lsp.Emitter<number>;
+    protected _onDidOpen: lsp.Emitter<lsp.TextDocumentChangeEvent>;
+
+    constructor(workspacePath: string) {
+        this.workspacePath = workspacePath;
 
         this._onDidStart = new lsp.Emitter<string>();
         this._onDidEnd = new lsp.Emitter<number>();
@@ -46,7 +52,7 @@ export class Workspace {
     public watch() {
         // TODO: filewatch
         this._onDidStart.fire(this.workspacePath);
-        const files = glob.sync(this.workspacePath);
+        const files = glob.sync(path.join(path.resolve(this.workspacePath), '**/*.galaxy'));
         for (let filepath of files) {
             // this.store.updateDocument(createTextDocumentFromFs(filepath));
             this._onDidOpen.fire({document: createTextDocumentFromFs(filepath)})
@@ -67,13 +73,53 @@ export class Workspace {
     }
 }
 
+export class S2Workspace extends Workspace {
+    protected _onDidOpenS2Archive: lsp.Emitter<S2ArchiveChangeEvent>;
+
+    constructor(workspacePath: string) {
+        super(workspacePath);
+        this._onDidOpenS2Archive = new lsp.Emitter<S2ArchiveChangeEvent>();
+    }
+
+    public async watch() {
+        this._onDidStart.fire(this.workspacePath);
+
+        const files = glob.sync(path.join(path.resolve(this.workspacePath), '**/*.galaxy'));
+        for (let filepath of files) {
+            this._onDidOpen.fire({document: createTextDocumentFromFs(filepath)})
+        }
+
+        if (isSC2Archive(this.workspacePath)) {
+            const modpath = path.resolve(this.workspacePath);
+            const archive = new SC2Archive();
+            await archive.openFromDirectory(modpath);
+            this._onDidOpenS2Archive.fire({
+                localPath: '',
+                archive: archive
+            });
+        }
+
+        for (let modpath of await findSC2Archives(path.resolve(this.workspacePath))) {
+            const archive = new SC2Archive();
+            await archive.openFromDirectory(modpath);
+            this._onDidOpenS2Archive.fire({
+                localPath: '',
+                archive: archive
+            });
+        }
+
+        this._onDidEnd.fire(files.length);
+    }
+
+    public get onDidOpenS2Archive(): lsp.Event<S2ArchiveChangeEvent> {
+        return this._onDidOpenS2Archive.event;
+    }
+}
+
 export class Store {
     // private documents: Store;
-    public documents: Map<string, SourceFile>;
-
-    constructor() {
-        this.documents = new Map<string, SourceFile>();
-    }
+    public documents = new Map<string, SourceFile>();
+    public s2archives = new Map<string, SC2Archive>();
 
     public initialize() {
     }
@@ -83,5 +129,27 @@ export class Store {
         let sourceFile = p.parseFile(document.uri, document.getText());
         bindSourceFile(sourceFile);
         this.documents.set(document.uri, sourceFile);
+    }
+
+    public updateArchive(archive: SC2Archive) {
+        this.s2archives.set(archive.directory, archive);
+    }
+
+    public getArchiveOfSourceFile(sourceFile: SourceFile): SC2Archive | undefined {
+        for (const archive of this.s2archives.values()) {
+            const filePath = Uri.parse(sourceFile.fileName).fsPath;
+            if (filePath.indexOf(archive.directory) === 0) {
+                return archive;
+            }
+        }
+    }
+
+    public getSymbolMetadata(symbol: gt.Symbol): Element | undefined {
+        const sourceFile = getSourceFileOfNode(symbol.declarations[0]);
+        const archive = this.getArchiveOfSourceFile(sourceFile);
+        if (!archive) {
+            return undefined;
+        }
+        return archive.trigLibs.findElementByName(symbol.escapedName);
     }
 }

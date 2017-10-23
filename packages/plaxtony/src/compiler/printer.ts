@@ -1,6 +1,6 @@
 import * as gt from './types';
 import { tokenToString } from './scanner';
-import { getKindName} from './utils';
+import { getKindName, isToken} from './utils';
 
 export class Printer {
     output: string[];
@@ -80,9 +80,38 @@ export class Printer {
                 break;
             }
 
+            case gt.SyntaxKind.ArrayType:
+            {
+                const type = <gt.ArrayTypeNode>node;
+                this.emitNode(type.elementType);
+                this.emitNode(type.size);
+                break;
+            }
+
+            case gt.SyntaxKind.MappedType:
+            {
+                const type = <gt.MappedType>node;
+                this.emitNode(type.returnType);
+                this.write('<');
+                this.emitNodeList(type.typeArguments, ',', ' ');
+                this.write('>');
+                break;
+            }
+
+            case gt.SyntaxKind.BinaryExpression:
+            {
+                const expr = <gt.BinaryExpression>node;
+                this.emitNode(expr.left);
+                this.write(' ');
+                this.emitNode(expr.operatorToken);
+                this.write(' ');
+                this.emitNode(expr.right);
+                break;
+            }
+
             default:
             {
-                if (gt.SyntaxKindMarker.FirstKeyword <= <number>node.kind && <number>node.kind <= gt.SyntaxKindMarker.LastKeyword) {
+                if (isToken(node)) {
                     this.write(tokenToString(node.kind));
                     break;
                 }

@@ -6,7 +6,7 @@ import { SignaturesProvider } from '../src/service/signatures';
 import { DefinitionProvider } from '../src/service/definitions';
 import { getPositionOfLineAndCharacter, findPrecedingToken } from '../src/service/utils';
 import * as gt from '../src/compiler/types';
-import { mockupSourceFile, mockupTextDocument, mockupStore } from './helpers';
+import { mockupSourceFile, mockupTextDocument, mockupStore, mockupStoreFromDirectory } from './helpers';
 import * as lsp from 'vscode-languageserver';
 import { assert } from 'chai';
 import * as path from 'path';
@@ -62,14 +62,9 @@ describe('Service', () => {
             assert.equal(symbolDeclarations[3].name.name, 'main');
         });
 
-        it('should provide symbols navigation per workspace', () => {
-            const store = new Store();
+        it('should provide symbols navigation per workspace', async () => {
+            const store = await mockupStoreFromDirectory(fixturesPath);
             const navigation = new NavigationProvider(store);
-            const workspace = new Workspace(fixturesPath, store);
-            workspace.onDidOpen((ev) => {
-                store.updateDocument(ev.document);
-            })
-            workspace.watch();
             const symbolDeclarations = navigation.getWorkspaceSymbols();
             assert.lengthOf(symbolDeclarations, 6);
         });

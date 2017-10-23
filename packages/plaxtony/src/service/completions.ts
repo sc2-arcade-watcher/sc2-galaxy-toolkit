@@ -1,11 +1,13 @@
-import { SyntaxKind, Symbol, Node, SourceFile, FunctionDeclaration, NamedDeclaration } from '../compiler/types';
+import { SyntaxKind, Symbol, Node, SourceFile, FunctionDeclaration, NamedDeclaration, VariableDeclaration } from '../compiler/types';
 import { Store } from './store';
 import { findAncestor } from '../compiler/utils';
 import { getTokenAtPosition, findPrecedingToken } from './utils';
+import { Printer } from '../compiler/printer';
 import * as vs from 'vscode-languageserver';
 
 export class CompletionsProvider {
     private store: Store;
+    private printer: Printer = new Printer();
 
     private getFromSymbol(parentSymbol: Symbol): vs.CompletionItem[] {
         const completions = <vs.CompletionItem[]> [];
@@ -27,10 +29,12 @@ export class CompletionsProvider {
                     break;
                 case SyntaxKind.FunctionDeclaration:
                     item.kind = vs.CompletionItemKind.Function;
+                    item.detail = this.printer.printNode((<FunctionDeclaration>node).type);
                     break;
                 case SyntaxKind.VariableDeclaration:
                 case SyntaxKind.ParameterDeclaration:
                     item.kind = vs.CompletionItemKind.Variable;
+                    item.detail = this.printer.printNode((<VariableDeclaration>node).type);
                     break;
                 default:
                     item.kind = vs.CompletionItemKind.Text;

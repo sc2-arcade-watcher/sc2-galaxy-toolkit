@@ -65,6 +65,10 @@ describe('SC2Mod', () => {
             assert.isDefined(el)
         });
 
+        it('element IDs should scoped per type', () => {
+            assert.notEqual(trigContainer.findElementById('ParamDef/00000102'), trigContainer.findElementById('Param/00000102'))
+        }),
+
         context('FunctionDef', () => {
             let el: trig.FunctionDef;
             let params: trig.ParamDef[];

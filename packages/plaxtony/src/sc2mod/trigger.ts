@@ -18,7 +18,7 @@ export class ElementReference<T extends Element> {
     }
 
     public resolve(): T | undefined {
-        return this.container.findElementById(this.id, this.library) as T;
+        return this.container.findElementById(this.type + '/' + this.id, this.library) as T;
     }
 }
 
@@ -96,7 +96,7 @@ export class Library {
     private addElement(identifier: string, el: Element) {
         el.libId = this.id;
         el.id = identifier;
-        this.elements.set(identifier, el);
+        this.elements.set(el.constructor.name + '/' + identifier, el);
         if (el.name) {
             this.nameMap.set(el.name, el);
         }
@@ -213,8 +213,8 @@ export class Library {
         return this.nameMap.get(name);
     }
 
-    public findElementById(id: string): Element | undefined {
-        return this.elements.get(id);
+    public findElementById<T extends Element>(id: string): T | undefined {
+        return this.elements.get(id) as T;
     }
 
     public getId() {
@@ -248,14 +248,14 @@ export class LibraryContainer extends Map<string, Library> {
         return undefined;
     }
 
-    public findElementById(elementId: string, libraryId?: string): Element | undefined {
+    public findElementById<T extends Element>(elementId: string, libraryId?: string): T | undefined {
         if (libraryId) {
             if (this.has(libraryId)) {
-                this.get(libraryId).findElementById(elementId);
+                return this.get(libraryId).findElementById(elementId) as T;
             }
         }
         for (const lib of this.values()) {
-            const el = lib.findElementById(elementId);
+            const el = lib.findElementById(elementId) as T;
             if (el) {
                 return el;
             }

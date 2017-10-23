@@ -1,10 +1,11 @@
 import * as gt from '../compiler/types';
 import { SyntaxKind, Symbol, Node, SourceFile, CallExpression, Identifier, FunctionDeclaration, Expression } from '../compiler/types';
-import { findAncestor } from '../compiler/utils';
+import { findAncestor, getSourceFileOfNode } from '../compiler/utils';
 import { Printer } from '../compiler/printer';
 import { Store } from './store';
 import { getTokenAtPosition, findPrecedingToken } from './utils';
 import * as lsp from 'vscode-languageserver';
+import * as trig from '../sc2mod/trigger'
 
 export class SignaturesProvider {
     private store: Store;
@@ -39,6 +40,68 @@ export class SignaturesProvider {
         });
 
         return activeParam;
+    }
+
+    public getSignatureOfFunction(functionSymbol: gt.Symbol): lsp.SignatureInformation {
+        const functionDeclaration = <FunctionDeclaration>functionSymbol.declarations[0];
+
+        const signatureInfo = <lsp.SignatureInformation>{
+            label: this.printer.printNode(Object.assign({}, functionDeclaration, {body: null})).trim(),
+            documentation: '',
+            parameters: [],
+        };
+
+        // metadata
+        const s2archive = this.store.getArchiveOfSourceFile(getSourceFileOfNode(functionDeclaration));
+        const funcEl = <trig.FunctionDef>this.store.getSymbolMetadata(functionSymbol);
+        if (s2archive && funcEl) {
+            for (const prop of ['Name', 'Hint']) {
+                const textKey = funcEl.textKey(prop);
+                if (s2archive.trigStrings.has(textKey)) {
+                    if (signatureInfo.documentation.length) {
+                        signatureInfo.documentation += '\n\n';
+                    }
+                    if (prop === 'Name') {
+                        signatureInfo.documentation += '### ' + s2archive.trigStrings.get(textKey);
+                    }
+                    else {
+                        signatureInfo.documentation += s2archive.trigStrings.get(textKey);
+                    }
+                }
+            }
+        }
+
+        for (const [index, paramDeclaration] of functionDeclaration.parameters.entries()) {
+            const paramInfo = <lsp.ParameterInformation>{
+                label: this.printer.printNode(paramDeclaration),
+                documentation: '',
+            };
+
+            if (funcEl) {
+                const paramEl = <trig.ParamDef>funcEl.getParameters()[index];
+                if (paramEl) {
+                    const textKey = paramEl.textKey('Name');
+                    if (s2archive.trigStrings.has(textKey)) {
+                        paramInfo.documentation += '#### ' + s2archive.trigStrings.get(textKey) + ` - *${paramEl.type.type}*` + '\n';
+                    }
+
+                    if (paramEl.type.type === 'preset') {
+                        paramInfo.documentation += '---\n';
+                        // #### Presets:\n
+                        const preset = paramEl.type.typeElement.resolve();
+                        for (const presetValueRef of preset.values) {
+                            const presetValue = presetValueRef.resolve();
+                            const locName = s2archive.trigStrings.get(presetValue.textKey('Name'));
+                            paramInfo.documentation += `- \`${presetValue.value}\` - **${locName}**\n`;
+                        }
+                    }
+                }
+            }
+
+            signatureInfo.parameters.push(paramInfo);
+        }
+
+        return signatureInfo;
     }
 
     public getSignatureAt(uri: string, position: number): lsp.SignatureHelp {
@@ -81,20 +144,8 @@ export class SignaturesProvider {
             if (!functionSymbol) {
                 continue;
             }
-            const functionDeclaration = <FunctionDeclaration>functionSymbol.declarations[0];
 
-            const signatureInfo = <lsp.SignatureInformation>{
-                label: this.printer.printNode(Object.assign({}, functionDeclaration, {body: null})).trim(),
-                documentation: '',
-                parameters: [],
-            };
-
-            for (const paramDeclaration of functionDeclaration.parameters) {
-                signatureInfo.parameters.push({
-                    label: this.printer.printNode(paramDeclaration),
-                    documentation: '',
-                });
-            }
+            const signatureInfo = this.getSignatureOfFunction(functionSymbol);
 
             signatureHelp.activeSignature = 0;
             signatureHelp.activeParameter = this.evaluateActiveParameter(callNode, position);

@@ -1,13 +1,14 @@
 import * as lsp from 'vscode-languageserver';
 import * as Types from '../compiler/types';
 import { findAncestor } from '../compiler/utils';
-import { Store, Workspace } from './store';
+import { Store, Workspace, S2Workspace } from './store';
 import { getPositionOfLineAndCharacter } from './utils';
 import { DiagnosticsProvider } from './diagnostics';
 import { NavigationProvider } from './navigation';
 import { CompletionsProvider } from './completions';
 import { SignaturesProvider } from './signatures';
 import { DefinitionProvider } from './definitions';
+import { S2MetadataProvider } from './s2meta';
 
 function getNodeRange(node: Types.Node): lsp.Range {
     return {
@@ -117,7 +118,7 @@ function wrapRequest(msg?: string, showArg?: boolean, singleLine?: boolean) {
     }
 }
 
-class Server {
+export class Server {
     private connection: lsp.IConnection;
     private store: Store;
     private diagnosticsProvider: DiagnosticsProvider;
@@ -125,6 +126,7 @@ class Server {
     private completionsProvider: CompletionsProvider;
     private signaturesProvider: SignaturesProvider;
     private definitionsProvider: DefinitionProvider;
+    private s2metadataProvider: S2MetadataProvider;
     private documents: lsp.TextDocuments;
     private workspaces: Workspace[];
 
@@ -137,6 +139,7 @@ class Server {
         this.completionsProvider = new CompletionsProvider(this.store);
         this.signaturesProvider = new SignaturesProvider(this.store);
         this.definitionsProvider = new DefinitionProvider(this.store);
+        this.s2metadataProvider = new S2MetadataProvider(this.store);
     }
 
     public createConnection(connection?: lsp.IConnection): lsp.IConnection {
@@ -149,6 +152,7 @@ class Server {
         this.connection.onInitialize(this.onInitialize.bind(this));
         this.connection.onDidChangeConfiguration(this.onDidChangeConfiguration.bind(this));
         this.connection.onCompletion(this.onCompletion.bind(this));
+        this.connection.onCompletionResolve(this.onCompletionResolve.bind(this));
         this.connection.onDocumentSymbol(this.onDocumentSymbol.bind(this));
         this.connection.onWorkspaceSymbol(this.onWorkspaceSymbol.bind(this));
         this.connection.onSignatureHelp(this.onSignatureHelp.bind(this));
@@ -163,8 +167,28 @@ class Server {
 
     @wrapRequest()
     private onInitialize(params: lsp.InitializeParams): lsp.InitializeResult {
+        if (params.initializationOptions.sources) {
+            for (const s2path of <string[]>params.initializationOptions.sources) {
+                this.log('Indexing s2 sources: ' + s2path)
+                const ws = new S2Workspace(s2path);
+                ws.onDidOpen(this.onDidFindInWorkspace.bind(this));
+                // ws.onDidOpen((ev) => {
+                //     this.log('Indexing archive galaxy: ' + ev.document.uri);
+                //     // this.store.updateArchive(ev.archive);
+                // });
+                ws.onDidOpenS2Archive((ev) => {
+                    this.log('Indexed archive: ' + ev.archive.directory);
+                    this.store.updateArchive(ev.archive);
+                });
+                ws.watch().then(() => {
+                    this.log('ready');
+                }, (err) => {
+                    this.log('e: ' + err);
+                });
+            }
+        }
         if (params.rootPath) {
-            const ws = new Workspace(params.rootPath, this.store);
+            const ws = new Workspace(params.rootPath);
             ws.onDidOpen(this.onDidFindInWorkspace.bind(this));
             this.workspaces.push(ws);
             ws.watch();
@@ -176,6 +200,7 @@ class Server {
                 workspaceSymbolProvider: true,
                 completionProvider: {
                     triggerCharacters: ['.'],
+                    resolveProvider: true,
                 },
                 signatureHelpProvider: {
                     triggerCharacters: ['(', ','],
@@ -186,7 +211,7 @@ class Server {
     }
 
     @wrapRequest()
-    private onDidChangeConfiguration() {
+    private onDidChangeConfiguration(ev: lsp.DidChangeConfigurationParams) {
         // interface Settings {
         //     plaxtony: ExampleSettings;
         // }
@@ -236,6 +261,18 @@ class Server {
             params.textDocument.uri,
             getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character)
         );
+    }
+
+    @wrapRequest()
+    private onCompletionResolve(params: lsp.CompletionItem): lsp.CompletionItem {
+        for (const sourceFile of this.store.documents.values()) {
+            const symbol = sourceFile.symbol.members.get(params.label);
+            if (symbol) {
+                params.documentation = this.s2metadataProvider.getDocumentationOfSymbol(symbol);
+                break;
+            }
+        }
+        return params;
     }
 
     @wrapRequest()
