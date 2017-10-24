@@ -298,14 +298,22 @@ export class TypeChecker {
     }
 
     private checkForStatement(node: gt.ForStatement) {
-        this.checkExpression(node.initializer);
-        this.checkExpression(node.condition);
-        this.checkExpression(node.incrementor);
+        if (node.initializer) {
+            this.checkExpression(node.initializer);
+        }
+        if (node.condition) {
+            this.checkExpression(node.condition);
+        }
+        if (node.incrementor) {
+            this.checkExpression(node.incrementor);
+        }
         this.checkSourceElement(node.statement);
     }
 
     private checkWhileStatement(node: gt.WhileStatement) {
-        this.checkExpression(node.expression);
+        if (node.expression) {
+            this.checkExpression(node.expression);
+        }
         this.checkSourceElement(node.statement);
     }
 
