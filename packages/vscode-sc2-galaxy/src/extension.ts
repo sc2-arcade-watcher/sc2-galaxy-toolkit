@@ -12,16 +12,22 @@ export function activate(context: ExtensionContext) {
         debug: { module: serverModule, transport: TransportKind.ipc, options: debugOptions }
     };
 
-    let clientOptions: LanguageClientOptions = {
+    const clientOptions: LanguageClientOptions = {
         documentSelector: [{scheme: 'file', language: 'galaxy'}],
         synchronize: {
             configurationSection: 'plaxtony',
             // Notify the server about file changes in the workspace
             // fileEvents: workspace.createFileSystemWatcher('**/.galaxy')
+        },
+        initializationOptions: {
+            sources: [
+                context.asAbsolutePath(path.join('sc2-data-trigger', 'mods', 'core.sc2mod'))
+            ]
         }
     };
 
-    let disposable = new LanguageClient('plaxtony', 'Plaxtony Language Server', serverOptions, clientOptions).start();
+    const client = new LanguageClient('plaxtony', 'Plaxtony Language Server', serverOptions, clientOptions);
+    let disposable = client.start();
 
     context.subscriptions.push(disposable);
 }

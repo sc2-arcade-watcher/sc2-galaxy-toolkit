@@ -1,3 +1,5 @@
-import { createServer } from 'plaxtony/lib/service/server';
+import * as path from 'path';
+import { Server } from 'plaxtony/lib/service/server';
 
-createServer().listen();
+const server = new Server();
+server.createConnection().listen();
