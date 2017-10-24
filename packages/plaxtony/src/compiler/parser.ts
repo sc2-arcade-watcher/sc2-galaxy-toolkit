@@ -29,8 +29,8 @@ export class Parser {
     }
 
     private parseErrorAtCurrentToken(message: string, arg0?: any): void {
-        const start = this.scanner.getTokenPos();
-        const length = this.scanner.getTextPos() - start;
+        const start = this.scanner.getStartPos();
+        const length = this.scanner.getTokenPos() - start;
 
         this.parseErrorAtPosition(start, length, message, arg0);
     }
@@ -248,8 +248,9 @@ export class Parser {
                 continue;
             }
 
-            this.parseErrorAtCurrentToken(this.parsingContextErrors(kind));
+            const start = this.scanner.getStartPos();
             this.nextToken();
+            this.parseErrorAtPosition(start, this.scanner.getTokenPos() - start, this.parsingContextErrors(kind));
             if (kind !== ParsingContext.SourceElements) {
                 break;
             }
@@ -482,9 +483,8 @@ export class Parser {
         }
 
         if (isReferenceKeywordKind(baseType.kind)) {
-
             if (this.token() === SyntaxKind.LessThanToken) {
-                const mappedType = <Types.MappedType>this.createNode(SyntaxKind.MappedType);
+                const mappedType = <Types.MappedTypeNode>this.createNode(SyntaxKind.MappedType);
                 mappedType.returnType = baseType;
                 mappedType.typeArguments = this.parseBracketedList(ParsingContext.TypeArguments, this.parseTypeDefinition.bind(this), SyntaxKind.LessThanToken, SyntaxKind.GreaterThanToken);
                 baseType = this.finishNode(mappedType)

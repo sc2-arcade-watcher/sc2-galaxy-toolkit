@@ -2,7 +2,7 @@ import * as lsp from 'vscode-languageserver';
 import * as Types from '../compiler/types';
 import { findAncestor } from '../compiler/utils';
 import { Store, Workspace, S2Workspace } from './store';
-import { getPositionOfLineAndCharacter } from './utils';
+import { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition } from './utils';
 import { AbstractProvider, LoggerConsole, createProvider } from './provider';
 import { DiagnosticsProvider } from './diagnostics';
 import { NavigationProvider } from './navigation';
@@ -17,15 +17,15 @@ function getNodeRange(node: Types.Node): lsp.Range {
     };
 }
 
-function translateDiagnostics(origDiagnostics: Types.Diagnostic[]): lsp.Diagnostic[] {
+function translateDiagnostics(sourceFile: Types.SourceFile, origDiagnostics: Types.Diagnostic[]): lsp.Diagnostic[] {
     let lspDiagnostics: lsp.Diagnostic[] = [];
 
     for (let dg of origDiagnostics) {
         lspDiagnostics.push({
             severity: lsp.DiagnosticSeverity.Error,
             range: {
-                start: { line: dg.line, character: dg.col },
-                end: { line: dg.line, character: dg.col }
+                start: getLineAndCharacterOfPosition(sourceFile, dg.start),
+                end: getLineAndCharacterOfPosition(sourceFile, dg.start + dg.length)
             },
             message: dg.messageText,
         });
@@ -232,7 +232,7 @@ export class Server {
         if (this.documents.keys().indexOf(ev.document.uri) !== undefined) {
             this.connection.sendDiagnostics({
                 uri: ev.document.uri,
-                diagnostics: translateDiagnostics(this.diagnosticsProvider.diagnose(ev.document.uri)),
+                diagnostics: translateDiagnostics(this.store.documents.get(ev.document.uri), this.diagnosticsProvider.diagnose(ev.document.uri)),
             });
         }
     }

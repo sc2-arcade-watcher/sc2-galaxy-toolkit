@@ -403,8 +403,9 @@ export const enum TypeFlags {
     Void                    = 1 << 10,
     Null                    = 1 << 11,
     Struct                  = 1 << 12,
-    Array                   = 1 << 13,
-    Complex                 = 1 << 14,
+    Function                = 1 << 13,
+    Array                   = 1 << 14,
+    Complex                 = 1 << 15,
 
     /* @internal */
     Nullable = Null,
@@ -438,6 +439,9 @@ export interface NumberLiteralType extends LiteralType {
 }
 
 export interface StructType extends Type {
+}
+
+export interface FunctionType extends Type {
 }
 
 export interface ArrayType extends Type {
@@ -525,7 +529,7 @@ export interface ArrayTypeNode extends TypeNode {
     size: Expression;
 }
 
-export interface MappedType extends TypeNode {
+export interface MappedTypeNode extends TypeNode {
     kind: SyntaxKind.MappedType;
     returnType: TypeNode;
     typeArguments?: NodeArray<TypeNode>;

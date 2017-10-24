@@ -42,7 +42,7 @@ describe('Service', () => {
             store.updateDocument(document);
             diagnosticsProvider.subscribe(document.uri);
             const diagnostics = diagnosticsProvider.diagnose(document.uri);
-            assert(diagnostics.length === 1);
+            assert.lengthOf(diagnostics, 1);
             assert.equal(diagnostics[0].messageText, 'Expected SemicolonToken, found CloseBraceToken');
         });
     });

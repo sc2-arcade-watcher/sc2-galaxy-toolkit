@@ -1,5 +1,6 @@
 import { AbstractProvider } from './provider';
 import { Diagnostic } from '../compiler/types';
+import { TypeChecker } from '../compiler/checker';
 
 export type DiagnosticsCallback = (a: string) => void;
 
@@ -11,11 +12,19 @@ export class DiagnosticsProvider extends AbstractProvider {
 
     public diagnose(uri: string): Diagnostic[] {
         let diagnostics: Diagnostic[] = [];
-        // for (let doc of this.store.documents.values()) {
-        //     diagnostics = diagnostics.concat(doc.parseDiagnostics);
-        // }
-        diagnostics = this.store.documents.get(uri).parseDiagnostics;
-        this.console.info(`${uri}: parse errors = ${diagnostics.length}`);
+        const sourceFile = this.store.documents.get(uri);
+
+        this.console.info(`${uri}`);
+
+        const parseDiag = sourceFile.parseDiagnostics;
+        this.console.info(`parse diagnostics = ${parseDiag.length}`);
+        diagnostics = diagnostics.concat(parseDiag);
+
+        const checker = new TypeChecker(this.store);
+        const checkerDiag = checker.checkSourceFile(sourceFile);
+        this.console.info(`type checker diagnostics = ${checkerDiag.length}`);
+        diagnostics = diagnostics.concat(checkerDiag);
+
         return diagnostics;
     }
 }

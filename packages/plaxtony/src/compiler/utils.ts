@@ -505,3 +505,14 @@ export function forEachChild<T>(node: Node, cbNode: (node: Node) => T | undefine
     }
 }
 
+export function createDiagnosticForNode(node: Types.Node, category: Types.DiagnosticCategory, msg: string): Types.Diagnostic {
+    return <Types.Diagnostic>{
+        file: getSourceFileOfNode(node),
+        category: category,
+        start: node.pos,
+        length: node.end - node.pos,
+        line: node.line,
+        col: node.char,
+        messageText: msg,
+    };
+}

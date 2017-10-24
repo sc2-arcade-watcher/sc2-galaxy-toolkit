@@ -1,5 +1,5 @@
 import * as gt from './types';
-import { isDeclarationKind, forEachChild, isPartOfExpression, isRightSideOfPropertyAccess, findAncestor } from './utils';
+import { isDeclarationKind, forEachChild, isPartOfExpression, isRightSideOfPropertyAccess, findAncestor, createDiagnosticForNode } from './utils';
 import { Store } from '../service/store';
 
 let nextSymbolId = 1;
@@ -56,6 +56,12 @@ function createStructType(symbol?: gt.Symbol): gt.StructType {
     return type;
 }
 
+function createFunctionType(symbol?: gt.Symbol): gt.FunctionType {
+    const type = <gt.FunctionType>createType(gt.TypeFlags.Function);
+    type.symbol = symbol;
+    return type;
+}
+
 function createArrayType(elementType: gt.Type): gt.ArrayType {
     const type = <gt.ArrayType>createType(gt.TypeFlags.Array);
     type.elementType = elementType;
@@ -94,9 +100,14 @@ complexTypes[gt.SyntaxKind.UnitKeyword] = createComplexType(gt.SyntaxKind.UnitKe
 export class TypeChecker {
     private store: Store;
     private nodeLinks: gt.NodeLinks[] = [];
+    private diagnostics: gt.Diagnostic[] = [];
 
     constructor(store: Store) {
         this.store = store;
+    }
+
+    private report(location: gt.Node, msg: string, category: gt.DiagnosticCategory = gt.DiagnosticCategory.Error): void {
+        this.diagnostics.push(createDiagnosticForNode(location, category, msg));
     }
 
     private getNodeLinks(node: gt.Node): gt.NodeLinks {
@@ -169,14 +180,18 @@ export class TypeChecker {
         if (symbol.flags & (gt.SymbolFlags.Variable | gt.SymbolFlags.Property)) {
             return this.getTypeOfVariableOrParameterOrProperty(symbol);
         }
-        // if (symbol.flags & (gt.SymbolFlags.Function)) {
-        //     return this.getTypeOfFuncClassEnumModule(symbol);
-        // }
+        else if (symbol.flags & (gt.SymbolFlags.Function)) {
+            return this.getTypeOfFunction(symbol);
+        }
         return unknownType;
     }
 
     private getTypeOfVariableOrParameterOrProperty(symbol: gt.Symbol): gt.Type {
         return this.getTypeFromTypeNode((<gt.VariableDeclaration>symbol.declarations[0]).type);
+    }
+
+    private getTypeOfFunction(symbol: gt.Symbol): gt.Type {
+        return createFunctionType(symbol);
     }
 
     public getTypeOfNode(node: gt.Node): gt.Type {
@@ -212,6 +227,119 @@ export class TypeChecker {
         return this.checkExpression(node);
     }
 
+    public checkSourceFile(sourceFile: gt.SourceFile) {
+        this.diagnostics = [];
+        for (const statement of sourceFile.statements) {
+            this.checkSourceElement(statement);
+        }
+        return this.diagnostics;
+    }
+
+    private checkSourceElement(node: gt.Node) {
+        switch (node.kind) {
+            case gt.SyntaxKind.Block:
+                return this.checkBlock(<gt.Block>node);
+            case gt.SyntaxKind.FunctionDeclaration:
+                return this.checkFunction(<gt.FunctionDeclaration>node);
+            case gt.SyntaxKind.VariableDeclaration:
+            case gt.SyntaxKind.PropertyDeclaration:
+                return this.checkVariableDeclaration(<gt.VariableDeclaration>node);
+            case gt.SyntaxKind.StructDeclaration:
+                return this.checkStructDeclaration(<gt.StructDeclaration>node);
+            case gt.SyntaxKind.ExpressionStatement:
+                return this.checkExpressionStatement(<gt.ExpressionStatement>node);
+            case gt.SyntaxKind.IfStatement:
+                return this.checkIfStatement(<gt.IfStatement>node);
+            case gt.SyntaxKind.ForStatement:
+                return this.checkForStatement(<gt.ForStatement>node);
+            case gt.SyntaxKind.WhileStatement:
+            case gt.SyntaxKind.DoStatement:
+                return this.checkWhileStatement(<gt.WhileStatement>node);
+            case gt.SyntaxKind.BreakStatement:
+            case gt.SyntaxKind.ContinueStatement:
+                return this.checkBreakOrContinueStatement(<gt.BreakOrContinueStatement>node);
+            case gt.SyntaxKind.ReturnStatement:
+                return this.checkReturnStatement(<gt.ReturnStatement>node);
+            case gt.SyntaxKind.MappedType:
+                return this.checkMappedType(<gt.MappedTypeNode>node);
+            case gt.SyntaxKind.ArrayType:
+                return this.checkArrayType(<gt.ArrayTypeNode>node);
+        }
+    }
+
+    private checkFunction(node: gt.FunctionDeclaration) {
+        this.checkSourceElement(node.type);
+
+        node.parameters.forEach(this.checkSourceElement.bind(this));
+
+        if (node.body) {
+            this.checkSourceElement(node.body);
+        }
+    }
+
+    private checkVariableDeclaration(node: gt.VariableDeclaration) {
+        this.checkSourceElement(node.type);
+
+        if (node.initializer) {
+            this.checkExpression(node.initializer);
+        }
+    }
+
+    private checkStructDeclaration(node: gt.StructDeclaration) {
+        node.members.forEach(this.checkSourceElement.bind(this));
+    }
+
+    private checkIfStatement(node: gt.IfStatement) {
+        this.checkExpression(node.expression);
+        this.checkSourceElement(node.thenStatement);
+        if (node.elseStatement) {
+            this.checkSourceElement(node.elseStatement);
+        }
+    }
+
+    private checkForStatement(node: gt.ForStatement) {
+        this.checkExpression(node.initializer);
+        this.checkExpression(node.condition);
+        this.checkExpression(node.incrementor);
+        this.checkSourceElement(node.statement);
+    }
+
+    private checkWhileStatement(node: gt.WhileStatement) {
+        this.checkExpression(node.expression);
+        this.checkSourceElement(node.statement);
+    }
+
+    private checkBreakOrContinueStatement(node: gt.BreakOrContinueStatement) {
+        // TODO: report when used outside of loop
+    }
+
+    private checkReturnStatement(node: gt.ReturnStatement) {
+        if (node.expression) {
+            this.checkExpression(node.expression);
+        }
+        // TODO: report when used with expr on void func
+    }
+
+    private checkArrayType(node: gt.ArrayTypeNode) {
+        this.checkExpression(node.size);
+        this.checkSourceElement(node.elementType);
+    }
+
+    private checkMappedType(node: gt.MappedTypeNode) {
+        this.checkExpression(node.returnType);
+        if (node.typeArguments) {
+            node.typeArguments.forEach(this.checkSourceElement.bind(this));
+        }
+    }
+
+    private checkBlock(node: gt.Block) {
+        node.statements.forEach(this.checkSourceElement.bind(this));
+    }
+
+    private checkExpressionStatement(node: gt.ExpressionStatement) {
+        this.checkExpression(node.expression);
+    }
+
     private checkExpression(node: gt.Expression, checkMode?: CheckMode): gt.Type {
         let type: gt.Type;
         const uninstantiatedType = this.checkExpressionWorker(<gt.Expression>node, checkMode);
@@ -226,10 +354,6 @@ export class TypeChecker {
         switch (node.kind) {
             case gt.SyntaxKind.Identifier:
                 return this.checkIdentifier(<gt.Identifier>node);
-            // case gt.SyntaxKind.ThisKeyword:
-            //     return checkThisExpression(node);
-            // case gt.SyntaxKind.SuperKeyword:
-            //     return checkSuperExpression(node);
             // case gt.SyntaxKind.NullKeyword:
             //     return nullWideningType;
             // case gt.SyntaxKind.StringLiteral:
@@ -237,49 +361,69 @@ export class TypeChecker {
             // case gt.SyntaxKind.TrueKeyword:
             // case gt.SyntaxKind.FalseKeyword:
             //     return checkLiteralExpression(node);
-            // case gt.SyntaxKind.TemplateExpression:
-            //     return checkTemplateExpression(<TemplateExpression>node);
-            // case gt.SyntaxKind.NoSubstitutionTemplateLiteral:
-            //     return stringType;
-            // case gt.SyntaxKind.RegularExpressionLiteral:
-            //     return globalRegExpType;
-            // case gt.SyntaxKind.ArrayLiteralExpression:
-            //     return checkArrayLiteral(<ArrayLiteralExpression>node, checkMode);
-            // case gt.SyntaxKind.ObjectLiteralExpression:
-            //     return checkObjectLiteral(<ObjectLiteralExpression>node, checkMode);
             case gt.SyntaxKind.PropertyAccessExpression:
                 return this.checkPropertyAccessExpression(<gt.PropertyAccessExpression>node);
             case gt.SyntaxKind.ElementAccessExpression:
                 return this.checkIndexedAccess(<gt.ElementAccessExpression>node);
-            // case gt.SyntaxKind.CallExpression:
-            //     if ((<CallExpression>node).expression.kind === gt.SyntaxKind.ImportKeyword) {
-            //         return checkImportCallExpression(<ImportCall>node);
-            //     }
-            //     return checkCallExpression(<CallExpression>node);
-            // case gt.SyntaxKind.ParenthesizedExpression:
-            //     return checkParenthesizedExpression(<ParenthesizedExpression>node, checkMode);
-            // case gt.SyntaxKind.VoidExpression:
-            //     return checkVoidExpression(<VoidExpression>node);
-            // case gt.SyntaxKind.PrefixUnaryExpression:
-            //     return checkPrefixUnaryExpression(<PrefixUnaryExpression>node);
-            // case gt.SyntaxKind.PostfixUnaryExpression:
-            //     return checkPostfixUnaryExpression(<PostfixUnaryExpression>node);
-            // case gt.SyntaxKind.BinaryExpression:
-            //     return checkBinaryExpression(<BinaryExpression>node, checkMode);
-            // case gt.SyntaxKind.ConditionalExpression:
-            //     return checkConditionalExpression(<ConditionalExpression>node, checkMode);
+            case gt.SyntaxKind.CallExpression:
+                return this.checkCallExpression(<gt.CallExpression>node);
+            case gt.SyntaxKind.ParenthesizedExpression:
+                return this.checkParenthesizedExpression(<gt.ParenthesizedExpression>node, checkMode);
+            case gt.SyntaxKind.PrefixUnaryExpression:
+                return this.checkPrefixUnaryExpression(<gt.PrefixUnaryExpression>node);
+            case gt.SyntaxKind.PostfixUnaryExpression:
+                return this.checkPostfixUnaryExpression(<gt.PostfixUnaryExpression>node);
+            case gt.SyntaxKind.BinaryExpression:
+                return this.checkBinaryExpression(<gt.BinaryExpression>node, checkMode);
             // case gt.SyntaxKind.OmittedExpression:
             //     return undefinedWideningType;
         }
         return unknownType;
     }
 
+    private checkBinaryExpression(node: gt.BinaryExpression, checkMode?: CheckMode) {
+        const leftType = this.checkExpression(node.left);
+        const rightType = this.checkExpression(node.right);
+
+        return leftType;
+    }
+
+    private checkParenthesizedExpression(node: gt.ParenthesizedExpression, checkMode?: CheckMode) {
+        return this.checkExpression(node.expression);
+    }
+
+    private checkPrefixUnaryExpression(node: gt.PrefixUnaryExpression, checkMode?: CheckMode) {
+        return this.checkExpression(node.operand);
+    }
+
+    private checkPostfixUnaryExpression(node: gt.PostfixUnaryExpression, checkMode?: CheckMode) {
+        return this.checkExpression(node.operand);
+    }
+
     private checkIdentifier(node: gt.Identifier): gt.Type {
         const symbol = this.getSymbolOfEntityNameOrPropertyAccessExpression(node);
         if (!symbol) {
+            this.report(node, 'undeclared symbol');
             return unknownType;
         }
         return this.getTypeOfSymbol(symbol);
+    }
+
+    private checkCallExpression(node: gt.CallExpression): gt.Type {
+        const leftType = this.checkExpression(node.expression);
+        if (leftType != unknownType) {
+            if (leftType.flags & gt.TypeFlags.Function) {
+                const func = <gt.FunctionDeclaration>leftType.symbol.declarations[0];
+                if (node.arguments.length !== func.parameters.length) {
+                    this.report(node, `expected ${func.parameters.length} arguments, got ${node.arguments.length}`);
+                }
+            }
+            else {
+                this.report(node, 'not calllable');
+            }
+        }
+        node.arguments.forEach(this.checkExpression.bind(this))
+        return leftType;
     }
 
     private checkNonNullExpression(node: gt.Expression): gt.Type {
@@ -314,12 +458,9 @@ export class TypeChecker {
         const left = node.expression;
         const right = node.name;
 
-
         const prop = this.getPropertyOfType(type, node.name.name);
         if (!prop) {
-            //  if (right.escapedText && !checkAndReportErrorForExtendingInterface(node)) {
-            //     reportNonexistentProperty(right, type.flags & TypeFlags.TypeParameter && (type as TypeParameter).isThisType ? apparentType : type);
-            // }
+            this.report(node.name, 'undeclared property');
             return unknownType;
         }
 
@@ -452,76 +593,5 @@ export class TypeChecker {
         // if (node.kind === gt.SyntaxKind.Identifier) {
         //     return (<gt.Identifier>node).
         // }
-    }
-
-    // getTypeAtLocation(node: Node): Type;
-    // getTypeFromTypeNode(node: TypeNode): Type;
-    // signatureToString(signature: Signature, enclosingDeclaration?: Node, flags?: TypeFormatFlags, kind?: SignatureKind): string;
-    // typeToString(type: Type, enclosingDeclaration?: Node, flags?: TypeFormatFlags): string;
-    // symbolToString(symbol: Symbol, enclosingDeclaration?: Node, meaning?: SymbolFlags): string;
-
-    public computeSymbolTargets(rootNode: gt.Node) {
-        let selectionElements: gt.Node[] = [];
-        let selectionDepth = 0;
-        let resolvedSelection = false;
-        let selectedScope = null;
-        const self = this;
-
-        function resolveIdentifierSymbol(identifier: gt.Identifier) {
-            console.log('resolved', identifier.name, 'to', selectionElements[selectionElements.length - 1 - selectionDepth]);
-        }
-
-        function visitNode(node: gt.Node) {
-            switch (node.kind) {
-                case gt.SyntaxKind.PropertyAccessExpression: {
-                    const propertyAccess = <gt.PropertyAccessExpression> node;
-
-                    if (
-                        propertyAccess.expression.kind !== gt.SyntaxKind.PropertyAccessExpression &&
-                        propertyAccess.expression.kind !== gt.SyntaxKind.Identifier
-                    ) {
-                        self.computeSymbolTargets((<gt.ElementAccessExpression>propertyAccess.expression).argumentExpression);
-                    }
-
-                    selectionElements.push(propertyAccess.name);
-
-                    if (propertyAccess.expression.kind === gt.SyntaxKind.Identifier) {
-                        selectionElements.push(propertyAccess.expression);
-                        // console.log('final', selectionScopes.length);
-                        // console.log('::: ', selectionScopes);
-                        // selectionScopes = [];
-                        // resolvedSelection = true;
-                    }
-                    // if (resolvedSelection) {
-                    //     console.log('resolved');
-                    // }
-                    visitNode(propertyAccess.expression);
-
-                    if (propertyAccess.expression.kind === gt.SyntaxKind.Identifier) {
-                        resolveIdentifierSymbol(<gt.Identifier>(propertyAccess.expression));
-                        ++selectionDepth;
-                    }
-                    resolveIdentifierSymbol(propertyAccess.name);
-                    ++selectionDepth;
-
-                    return true;
-                }
-
-                case gt.SyntaxKind.Identifier: {
-                    // console.log('ident: ', (<gt.Identifier>node).name);
-                    // console.log(selectionScopes.length);
-                    // if (scopes.length) {
-                    //     console.log('::: ', scopes);
-                    //     scopes = [];
-                    // }
-                    break;
-                }
-            }
-
-            forEachChild(node, visitNode);
-        }
-
-        visitNode(rootNode);
-        // forEachChild(rootNode, child => visitNode(child));
     }
 }

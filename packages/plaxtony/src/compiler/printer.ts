@@ -92,7 +92,7 @@ export class Printer {
 
             case gt.SyntaxKind.MappedType:
             {
-                const type = <gt.MappedType>node;
+                const type = <gt.MappedTypeNode>node;
                 this.emitNode(type.returnType);
                 this.write('<');
                 this.emitNodeList(type.typeArguments, ',', ' ');
