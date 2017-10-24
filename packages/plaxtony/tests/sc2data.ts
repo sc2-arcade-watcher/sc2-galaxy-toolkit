@@ -31,7 +31,7 @@ describe('SC2Data', function () {
     // })
 
     it('core.sc2mod', async () => {
-        const modpath = path.join(resourcesPath, 'mods', 'core.sc2mod');
+        const modpath = path.resolve(path.join(resourcesPath, 'mods', 'core.sc2mod'));
         const store = await mockupStoreFromS2Workspace(modpath);
 
         assert.include(dirs, modpath);

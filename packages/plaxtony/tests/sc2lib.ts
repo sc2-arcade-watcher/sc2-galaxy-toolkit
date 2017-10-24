@@ -17,13 +17,13 @@ describe('SC2Mod', () => {
 
         it('should find SC2 archives within directory', () => {
             assert.lengthOf(archives, 20);
-            assert.include(archives, path.join(resourcesPath, 'mods', 'core.sc2mod'));
+            assert.include(archives, path.resolve(path.join(resourcesPath, 'mods', 'core.sc2mod')));
         })
 
         context('open archive', () => {
             const s2archive = new SC2Archive();
             before(async () => {
-                await s2archive.openFromDirectory(path.join(resourcesPath, 'mods', 'core.sc2mod'));
+                await s2archive.openFromDirectory(path.resolve(path.join(resourcesPath, 'mods', 'core.sc2mod')));
             });
 
             it('trigger libraries', () => {

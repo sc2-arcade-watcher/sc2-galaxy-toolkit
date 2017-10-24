@@ -22,7 +22,7 @@ export function createTextDocument(uri: string, text: string): lsp.TextDocument 
 
 export function createTextDocumentFromFs(filepath: string): lsp.TextDocument {
     filepath = path.resolve(filepath);
-    return createTextDocument(`file://${filepath}`, fs.readFileSync(filepath, 'utf8'));
+    return createTextDocument(Uri.file(filepath).toString(), fs.readFileSync(filepath, 'utf8'));
 }
 
 export class IndexedDocument {
