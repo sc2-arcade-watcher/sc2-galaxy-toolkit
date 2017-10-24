@@ -1,27 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Types = require("./types");
-function formatStringFromArgs(text, args, baseIndex) {
-    baseIndex = baseIndex || 0;
-    return text.replace(/{(\d+)}/g, (_match, index) => args[+index + baseIndex]);
-}
-exports.formatStringFromArgs = formatStringFromArgs;
-function createFileDiagnostic(file, start, length, message) {
-    const end = start + length;
-    let text = message.message;
-    if (arguments.length > 4) {
-        text = formatStringFromArgs(text, arguments, 4);
-    }
-    return {
-        file,
-        start,
-        length,
-        messageText: text,
-        category: message.category,
-        code: message.code,
-    };
-}
-exports.createFileDiagnostic = createFileDiagnostic;
 function isToken(n) {
     return n.kind >= 1 && n.kind <= 107;
 }
@@ -38,24 +17,23 @@ function isModifierKind(token) {
 exports.isModifierKind = isModifierKind;
 function isKeywordTypeKind(token) {
     switch (token) {
-        case 66:
-        case 67:
-        case 68:
-        case 69:
-        case 70:
-        case 71:
         case 72:
         case 73:
         case 74:
         case 75:
         case 76:
         case 77:
+        case 66:
+        case 67:
         case 78:
+        case 68:
         case 79:
         case 80:
+        case 70:
         case 81:
         case 82:
         case 83:
+        case 69:
         case 84:
         case 85:
         case 86:
@@ -64,6 +42,7 @@ function isKeywordTypeKind(token) {
         case 89:
         case 90:
         case 91:
+        case 71:
         case 92:
         case 93:
         case 94:
@@ -84,6 +63,16 @@ function isKeywordTypeKind(token) {
     return false;
 }
 exports.isKeywordTypeKind = isKeywordTypeKind;
+function isReferenceKeywordKind(token) {
+    switch (token) {
+        case 104:
+        case 105:
+        case 106:
+            return true;
+    }
+    return false;
+}
+exports.isReferenceKeywordKind = isReferenceKeywordKind;
 function isAssignmentOperator(token) {
     return token >= 38 && token <= 48;
 }
@@ -101,10 +90,109 @@ function isLeftHandSideExpressionKind(kind) {
         || kind === 64
         || kind === 62;
 }
+exports.isLeftHandSideExpressionKind = isLeftHandSideExpressionKind;
+function isContainerKind(kind) {
+    return kind === 121
+        || kind === 135
+        || kind === 133;
+}
+exports.isContainerKind = isContainerKind;
+function isNamedDeclarationKind(kind) {
+    return kind === 121
+        || kind === 134
+        || kind === 135
+        || kind === 133
+        || kind === 137
+        || kind === 114
+        || kind === 136;
+}
+exports.isNamedDeclarationKind = isNamedDeclarationKind;
+function isDeclarationKind(kind) {
+    return isNamedDeclarationKind(kind)
+        || kind === 115;
+}
+exports.isDeclarationKind = isDeclarationKind;
 function isLeftHandSideExpression(node) {
     return isLeftHandSideExpressionKind(node.kind);
 }
 exports.isLeftHandSideExpression = isLeftHandSideExpression;
+function isPartOfExpression(node) {
+    switch (node.kind) {
+        case 64:
+        case 62:
+        case 63:
+        case 112:
+        case 114:
+        case 113:
+        case 115:
+        case 119:
+        case 120:
+        case 116:
+        case 117:
+        case 118:
+        case 107:
+            return true;
+        case 1:
+        case 2:
+            const parent = node.parent;
+            switch (parent.kind) {
+                case 134:
+                case 137:
+                case 131:
+                case 123:
+                case 124:
+                case 125:
+                case 130:
+                case 126:
+                    const forStatement = parent;
+                    return (forStatement.initializer === node) ||
+                        forStatement.condition === node ||
+                        forStatement.incrementor === node;
+                default:
+                    if (isPartOfExpression(parent)) {
+                        return true;
+                    }
+            }
+    }
+    return false;
+}
+exports.isPartOfExpression = isPartOfExpression;
+function isPartOfTypeNode(node) {
+    if (109 <= node.kind && node.kind <= 111) {
+        return true;
+    }
+    switch (node.kind) {
+        case 69:
+        case 70:
+        case 71:
+        case 66:
+        case 100:
+            return true;
+        case 107:
+            if (node.parent.kind === 114 && node.parent.name === node) {
+                node = node.parent;
+            }
+        case 114:
+            const parent = node.parent;
+            if (109 <= parent.kind && parent.kind <= 111) {
+                return true;
+            }
+            switch (parent.kind) {
+                case 137:
+                case 136:
+                case 134:
+                    return node === parent.type;
+                case 135:
+                    return node === parent.type;
+            }
+    }
+    return false;
+}
+exports.isPartOfTypeNode = isPartOfTypeNode;
+function isRightSideOfPropertyAccess(node) {
+    return (node.parent.kind === 114 && node.parent.name === node);
+}
+exports.isRightSideOfPropertyAccess = isRightSideOfPropertyAccess;
 function isNodeOrArray(a) {
     return a !== undefined && a.kind !== undefined;
 }
@@ -168,6 +256,13 @@ function findAncestor(node, callback) {
     return undefined;
 }
 exports.findAncestor = findAncestor;
+function getSourceFileOfNode(node) {
+    while (node && node.kind !== 121) {
+        node = node.parent;
+    }
+    return node;
+}
+exports.getSourceFileOfNode = getSourceFileOfNode;
 function fixupParentReferences(rootNode) {
     let parent = rootNode;
     forEachChild(rootNode, visitNode);
@@ -226,10 +321,68 @@ function forEachChild(node, cbNode, cbNodes) {
             return visitNodes(cbNode, cbNodes, node.modifiers) ||
                 visitNode(cbNode, node.name) ||
                 visitNode(cbNode, node.type);
+        case 111:
+            return visitNode(cbNode, node.elementType) ||
+                visitNode(cbNode, node.size);
+        case 114:
+            return visitNode(cbNode, node.expression) ||
+                visitNode(cbNode, node.name);
+        case 113:
+            return visitNode(cbNode, node.expression) ||
+                visitNode(cbNode, node.argumentExpression);
+        case 115:
+            return visitNode(cbNode, node.expression) ||
+                visitNodes(cbNode, cbNodes, node.typeArguments) ||
+                visitNodes(cbNode, cbNodes, node.arguments);
+        case 120:
+            return visitNode(cbNode, node.expression);
+        case 116:
+            return visitNode(cbNode, node.operand);
+        case 117:
+            return visitNode(cbNode, node.operand);
+        case 118:
+            return visitNode(cbNode, node.left) ||
+                visitNode(cbNode, node.operatorToken) ||
+                visitNode(cbNode, node.right);
         case 122:
             return visitNodes(cbNode, cbNodes, node.statements);
         case 121:
             return visitNodes(cbNode, cbNodes, node.statements);
+        case 131:
+            return visitNode(cbNode, node.expression);
+        case 123:
+            return visitNode(cbNode, node.expression) ||
+                visitNode(cbNode, node.thenStatement) ||
+                visitNode(cbNode, node.elseStatement);
+        case 124:
+            return visitNode(cbNode, node.statement) ||
+                visitNode(cbNode, node.expression);
+        case 125:
+            return visitNode(cbNode, node.expression) ||
+                visitNode(cbNode, node.statement);
+        case 126:
+            return visitNode(cbNode, node.initializer) ||
+                visitNode(cbNode, node.condition) ||
+                visitNode(cbNode, node.incrementor) ||
+                visitNode(cbNode, node.statement);
+        case 128:
+        case 127:
+            break;
+        case 130:
+            return visitNode(cbNode, node.expression);
     }
 }
 exports.forEachChild = forEachChild;
+function createDiagnosticForNode(node, category, msg) {
+    return {
+        file: getSourceFileOfNode(node),
+        category: category,
+        start: node.pos,
+        length: node.end - node.pos,
+        line: node.line,
+        col: node.char,
+        messageText: msg,
+    };
+}
+exports.createDiagnosticForNode = createDiagnosticForNode;
+//# sourceMappingURL=utils.js.map

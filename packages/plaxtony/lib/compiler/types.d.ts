@@ -191,32 +191,32 @@ export declare const enum SyntaxKind {
     FalseKeyword = 63,
     NullKeyword = 64,
     TypedefKeyword = 65,
-    AbilcmdKeyword = 66,
-    ActorKeyword = 67,
-    ActorscopeKeyword = 68,
-    AifilterKeyword = 69,
-    AnimfilterKeyword = 70,
-    BankKeyword = 71,
-    BoolKeyword = 72,
-    ByteKeyword = 73,
-    CamerainfoKeyword = 74,
-    CharKeyword = 75,
-    ColorKeyword = 76,
-    DoodadKeyword = 77,
-    FixedKeyword = 78,
-    HandleKeyword = 79,
-    GenerichandleKeyword = 80,
-    EffecthistoryKeyword = 81,
-    IntKeyword = 82,
-    MarkerKeyword = 83,
-    OrderKeyword = 84,
-    PlayergroupKeyword = 85,
-    PointKeyword = 86,
-    RegionKeyword = 87,
-    RevealerKeyword = 88,
-    SoundKeyword = 89,
-    SoundlinkKeyword = 90,
-    StringKeyword = 91,
+    BoolKeyword = 66,
+    ByteKeyword = 67,
+    CharKeyword = 68,
+    IntKeyword = 69,
+    FixedKeyword = 70,
+    StringKeyword = 71,
+    AbilcmdKeyword = 72,
+    ActorKeyword = 73,
+    ActorscopeKeyword = 74,
+    AifilterKeyword = 75,
+    AnimfilterKeyword = 76,
+    BankKeyword = 77,
+    CamerainfoKeyword = 78,
+    ColorKeyword = 79,
+    DoodadKeyword = 80,
+    HandleKeyword = 81,
+    GenerichandleKeyword = 82,
+    EffecthistoryKeyword = 83,
+    MarkerKeyword = 84,
+    OrderKeyword = 85,
+    PlayergroupKeyword = 86,
+    PointKeyword = 87,
+    RegionKeyword = 88,
+    RevealerKeyword = 89,
+    SoundKeyword = 90,
+    SoundlinkKeyword = 91,
     TextKeyword = 92,
     TimerKeyword = 93,
     TransmissionsourceKeyword = 94,
@@ -235,7 +235,7 @@ export declare const enum SyntaxKind {
     Identifier = 107,
     EndOfFileToken = 108,
     TypeReference = 109,
-    KeywordTypeNode = 110,
+    MappedType = 110,
     ArrayType = 111,
     ArrayLiteralExpression = 112,
     ElementAccessExpression = 113,
@@ -267,19 +267,96 @@ export declare const enum SyntaxKind {
 export declare const enum SyntaxKindMarker {
     FirstToken = 1,
     LastToken = 107,
+    FirstKeyword = 49,
+    LastKeyword = 106,
+    FirstComplexType = 72,
+    LastComplexType = 103,
+    FirstTypeNode = 109,
+    LastTypeNode = 111,
 }
 export declare type Modifier = Token<SyntaxKind.ConstKeyword> | Token<SyntaxKind.NativeKeyword> | Token<SyntaxKind.StaticKeyword>;
 export declare type KeywordType = SyntaxKind.AbilcmdKeyword | SyntaxKind.ActorKeyword | SyntaxKind.ActorscopeKeyword | SyntaxKind.AifilterKeyword | SyntaxKind.AnimfilterKeyword | SyntaxKind.BankKeyword | SyntaxKind.BoolKeyword | SyntaxKind.ByteKeyword | SyntaxKind.CamerainfoKeyword | SyntaxKind.CharKeyword | SyntaxKind.ColorKeyword | SyntaxKind.DoodadKeyword | SyntaxKind.FixedKeyword | SyntaxKind.HandleKeyword | SyntaxKind.GenerichandleKeyword | SyntaxKind.EffecthistoryKeyword | SyntaxKind.IntKeyword | SyntaxKind.MarkerKeyword | SyntaxKind.OrderKeyword | SyntaxKind.PlayergroupKeyword | SyntaxKind.PointKeyword | SyntaxKind.RegionKeyword | SyntaxKind.RevealerKeyword | SyntaxKind.SoundKeyword | SyntaxKind.SoundlinkKeyword | SyntaxKind.StringKeyword | SyntaxKind.TextKeyword | SyntaxKind.TimerKeyword | SyntaxKind.TransmissionsourceKeyword | SyntaxKind.TriggerKeyword | SyntaxKind.UnitKeyword | SyntaxKind.UnitfilterKeyword | SyntaxKind.UnitgroupKeyword | SyntaxKind.UnitrefKeyword | SyntaxKind.VoidKeyword | SyntaxKind.WaveKeyword | SyntaxKind.WaveinfoKeyword | SyntaxKind.WavetargetKeyword | SyntaxKind.ArrayrefKeyword | SyntaxKind.StructrefKeyword | SyntaxKind.FuncrefKeyword;
+export declare const enum SymbolFlags {
+    None = 0,
+    FunctionScopedVariable = 2,
+    GlobalVariable = 4,
+    Property = 8,
+    Function = 16,
+    Struct = 32,
+    Signature = 131072,
+    TypeParameter = 262144,
+    Variable = 6,
+}
 export interface Symbol {
+    id?: number;
+    flags: SymbolFlags;
     escapedName: string;
     declarations: Declaration[];
     valueDeclaration?: Declaration;
     members?: SymbolTable;
+    target?: Symbol;
     parent?: Symbol;
     isReferenced?: boolean;
     isAssigned?: boolean;
 }
 export declare type SymbolTable = Map<string, Symbol>;
+export declare const enum TypeFlags {
+    Any = 1,
+    String = 2,
+    Integer = 4,
+    Fixed = 8,
+    Boolean = 16,
+    Enum = 32,
+    StringLiteral = 64,
+    NumberLiteral = 128,
+    BooleanLiteral = 256,
+    Void = 1024,
+    Null = 2048,
+    Struct = 4096,
+    Function = 8192,
+    Array = 16384,
+    Complex = 32768,
+    Nullable = 2048,
+    Literal = 448,
+    Numeric = 12,
+}
+export interface Type {
+    flags: TypeFlags;
+    symbol?: Symbol;
+}
+export interface IntrinsicType extends Type {
+    intrinsicName: string;
+}
+export interface LiteralType extends Type {
+    value: string | number;
+    freshType?: LiteralType;
+    regularType?: LiteralType;
+}
+export interface StringLiteralType extends LiteralType {
+    value: string;
+}
+export interface NumberLiteralType extends LiteralType {
+    value: number;
+}
+export interface StructType extends Type {
+}
+export interface FunctionType extends Type {
+}
+export interface ArrayType extends Type {
+    elementType: Type;
+}
+export interface ComplexType extends Type {
+    kind: SyntaxKind;
+}
+export declare const enum NodeCheckFlags {
+    TypeChecked = 1,
+    ContextChecked = 2,
+}
+export interface NodeLinks {
+    flags?: NodeCheckFlags;
+    resolvedType?: Type;
+    resolvedSymbol?: Symbol;
+}
 export interface TextRange {
     line: number;
     char: number;
@@ -290,6 +367,7 @@ export interface Token<TKind extends SyntaxKind> extends Node {
     kind: TKind;
 }
 export interface Node extends TextRange {
+    id?: number;
     kind: SyntaxKind;
     parent?: Node;
     syntaxTokens: Node[];
@@ -315,15 +393,11 @@ export interface IncludeStatement extends Statement {
     path: StringLiteral;
 }
 export interface TypeNode extends Node {
+    symbol?: Symbol;
 }
-export interface TypeDefinition extends Node {
-    typeArguments?: NodeArray<TypeNode>;
+export interface TypeNode extends Node {
 }
-export interface KeywordTypeNode extends TypeDefinition {
-    kind: SyntaxKind.KeywordTypeNode;
-    keyword: Token<KeywordType>;
-}
-export interface TypeReferenceNode extends TypeDefinition {
+export interface TypeReferenceNode extends TypeNode {
     kind: SyntaxKind.TypeReference;
     name: Identifier;
 }
@@ -331,6 +405,11 @@ export interface ArrayTypeNode extends TypeNode {
     kind: SyntaxKind.ArrayType;
     elementType: TypeNode;
     size: Expression;
+}
+export interface MappedTypeNode extends TypeNode {
+    kind: SyntaxKind.MappedType;
+    returnType: TypeNode;
+    typeArguments?: NodeArray<TypeNode>;
 }
 export interface Declaration extends Node {
     modifiers?: NodeArray<Modifier>;
@@ -358,12 +437,10 @@ export interface StructDeclaration extends NamedDeclaration {
 }
 export interface PropertyDeclaration extends NamedDeclaration {
     kind: SyntaxKind.PropertyDeclaration;
-    name: Identifier;
     type: TypeNode;
 }
 export interface FunctionDeclaration extends SignatureDeclaration, NamedDeclaration {
     kind: SyntaxKind.FunctionDeclaration;
-    name: Identifier;
     body?: Block;
 }
 export interface ReturnStatement extends Statement {
@@ -397,10 +474,12 @@ export interface BooleanLiteral extends Literal {
 export interface StringLiteral extends Literal {
     kind: SyntaxKind.StringLiteral;
 }
-export interface Identifier extends Expression {
+export interface Identifier extends PrimaryExpression {
     kind: SyntaxKind.Identifier;
     name: string;
+    resolvedSymbol?: Symbol;
 }
+export declare type EntityNameExpression = Identifier | PropertyAccessExpression | ParenthesizedExpression;
 export declare type PrefixUnaryOperator = SyntaxKind.MinusToken | SyntaxKind.PlusToken | SyntaxKind.TildeToken | SyntaxKind.ExclamationToken | SyntaxKind.MinusMinusToken | SyntaxKind.PlusPlusToken;
 export declare type PostfixUnaryOperator = SyntaxKind.PlusPlusToken | SyntaxKind.MinusMinusToken;
 export declare type BinaryOperator = PrefixUnaryOperator;
@@ -435,6 +514,9 @@ export interface ElementAccessExpression extends MemberExpression {
     kind: SyntaxKind.ElementAccessExpression;
     expression: LeftHandSideExpression;
     argumentExpression?: Expression;
+}
+export interface SymbolLink {
+    symbolLink: Symbol;
 }
 export interface PropertyAccessExpression extends MemberExpression, NamedDeclaration {
     kind: SyntaxKind.PropertyAccessExpression;
@@ -489,12 +571,13 @@ export interface DiagnosticMessage {
 }
 export interface Diagnostic {
     file?: SourceFile;
-    line?: number;
-    col?: number;
     start?: number;
     length?: number;
     messageText: string;
     category: DiagnosticCategory;
     code: number;
     source?: string;
+    line?: number;
+    col?: number;
+    toString(): string;
 }

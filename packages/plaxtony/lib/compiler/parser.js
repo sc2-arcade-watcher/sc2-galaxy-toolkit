@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Types = require("./types");
 const scanner_1 = require("./scanner");
 const utils_1 = require("./utils");
+const diagnostics_1 = require("./diagnostics");
 var ParsingContext;
 (function (ParsingContext) {
     ParsingContext[ParsingContext["SourceElements"] = 0] = "SourceElements";
@@ -26,12 +27,12 @@ class Parser {
         return this.currentToken = this.scanner.scan();
     }
     parseErrorAtCurrentToken(message, arg0) {
-        const start = this.scanner.getTokenPos();
-        const length = this.scanner.getTextPos() - start;
+        const start = this.scanner.getStartPos();
+        const length = this.scanner.getTokenPos() - start;
         this.parseErrorAtPosition(start, length, message, arg0);
     }
     parseErrorAtPosition(start, length, message, arg0) {
-        const diag = utils_1.createFileDiagnostic(this.sourceFile, start, length, {
+        const diag = diagnostics_1.createFileDiagnostic(this.sourceFile, start, length, {
             code: 1001,
             category: Types.DiagnosticCategory.Error,
             message: message,
@@ -89,10 +90,13 @@ class Parser {
     createNode(kind, pos, assignSyntaxTokens = true) {
         const node = {};
         node.kind = kind;
-        node.pos = pos === undefined ? this.scanner.getStartPos() : pos;
+        node.pos = pos === undefined ? this.scanner.getTokenPos() : pos;
         node.end = node.pos;
         node.line = this.scanner.getLine();
         node.char = this.scanner.getChar();
+        if (process.env.PLAXTONY_DEBUG) {
+            node.kindName = utils_1.getKindName(node.kind);
+        }
         if (assignSyntaxTokens) {
             this.syntaxTokens.push([]);
         }
@@ -101,7 +105,7 @@ class Parser {
     createNodeArray(elements, pos) {
         const array = (elements || []);
         if (pos === undefined) {
-            pos = this.scanner.getStartPos();
+            pos = this.scanner.getTokenPos();
         }
         array.pos = pos;
         array.end = pos;
@@ -183,8 +187,9 @@ class Parser {
                 result.push(parseElement());
                 continue;
             }
-            this.parseErrorAtCurrentToken(this.parsingContextErrors(kind));
+            const start = this.scanner.getStartPos();
             this.nextToken();
+            this.parseErrorAtPosition(start, this.scanner.getTokenPos() - start, this.parsingContextErrors(kind));
             if (kind !== 0) {
                 break;
             }
@@ -207,7 +212,7 @@ class Parser {
         const result = this.createNodeArray();
         while (true) {
             if (this.isListElement(kind, false)) {
-                const startPos = this.scanner.getStartPos();
+                const startPos = this.scanner.getTokenPos();
                 result.push(parseElement());
                 if (this.parseOptional(11)) {
                     continue;
@@ -222,6 +227,7 @@ class Parser {
                 break;
             }
             this.parseErrorAtCurrentToken(this.parsingContextErrors(kind));
+            this.nextToken();
         }
         result.end = this.scanner.getTokenPos();
         this.parsingContext = saveParsingContext;
@@ -339,37 +345,41 @@ class Parser {
         return this.finishNode(node);
     }
     parseIdentifier(diagnosticMessage) {
-        this.parseExpected(107, diagnosticMessage, false);
         const identifier = this.createNode(107);
+        this.parseExpected(107, diagnosticMessage, false);
         identifier.name = this.scanner.getTokenValue();
         this.nextToken();
         return this.finishNode(identifier);
     }
     parseTypeDefinition() {
-        let type;
+        let baseType;
         if (this.token() === 107) {
-            type = this.createNode(109);
-            type.name = this.parseIdentifier();
+            baseType = this.parseIdentifier();
         }
         else if (utils_1.isKeywordTypeKind(this.token())) {
-            type = this.createNode(110);
-            type.keyword = this.parseTokenNode();
+            baseType = this.parseTokenNode();
         }
         else {
             this.parseErrorAtCurrentToken('expected identifier or keyword');
-            type = this.createMissingNode(110);
+            baseType = this.createMissingNode(107);
         }
-        if (this.token() === 12) {
-            type.typeArguments = this.parseBracketedList(4, this.parseTypeDefinition.bind(this), 12, 13);
-        }
-        while (this.parseOptional(7)) {
+        while (this.token() === 7) {
             let arrayType = this.createNode(111);
+            this.parseExpected(7);
             arrayType.size = this.parseExpression();
-            arrayType.elementType = type;
-            type = arrayType;
+            arrayType.elementType = baseType;
             this.parseExpected(8);
+            baseType = this.finishNode(arrayType);
         }
-        return this.finishNode(type);
+        if (utils_1.isReferenceKeywordKind(baseType.kind)) {
+            if (this.token() === 12) {
+                const mappedType = this.createNode(110);
+                mappedType.returnType = baseType;
+                mappedType.typeArguments = this.parseBracketedList(4, this.parseTypeDefinition.bind(this), 12, 13);
+                baseType = this.finishNode(mappedType);
+            }
+        }
+        return baseType;
     }
     parseParameter() {
         const param = this.createNode(136);
@@ -536,15 +546,17 @@ class Parser {
     }
     parseMemberExpressionRest(expression) {
         while (true) {
-            if (this.parseOptional(9)) {
+            if (this.token() === 9) {
                 const propertyAccess = this.createNode(114, expression.pos);
+                this.parseExpected(9);
                 propertyAccess.expression = expression;
                 propertyAccess.name = this.parseIdentifier();
                 expression = this.finishNode(propertyAccess);
                 continue;
             }
-            if (this.parseOptional(7)) {
+            if (this.token() === 7) {
                 const indexedAccess = this.createNode(113, expression.pos);
+                this.parseExpected(7);
                 indexedAccess.expression = expression;
                 indexedAccess.argumentExpression = this.parseExpression();
                 this.parseExpected(8);
@@ -752,24 +764,23 @@ class Parser {
             case 52:
             case 51:
             case 53:
-            case 66:
-            case 67:
-            case 68:
-            case 69:
-            case 70:
-            case 71:
             case 72:
             case 73:
             case 74:
             case 75:
             case 76:
             case 77:
+            case 66:
+            case 67:
             case 78:
+            case 68:
             case 79:
             case 80:
+            case 70:
             case 81:
             case 82:
             case 83:
+            case 69:
             case 84:
             case 85:
             case 86:
@@ -778,6 +789,7 @@ class Parser {
             case 89:
             case 90:
             case 91:
+            case 71:
             case 92:
             case 93:
             case 94:
@@ -824,3 +836,4 @@ class Parser {
     }
 }
 exports.Parser = Parser;
+//# sourceMappingURL=parser.js.map

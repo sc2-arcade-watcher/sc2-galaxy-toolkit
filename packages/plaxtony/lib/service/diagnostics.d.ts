@@ -1,10 +1,8 @@
-import { Store } from './store';
+import { AbstractProvider } from './provider';
 import { Diagnostic } from '../compiler/types';
 export declare type DiagnosticsCallback = (a: string) => void;
-export declare class DiagnosticsProvider {
-    private store;
+export declare class DiagnosticsProvider extends AbstractProvider {
     private reporter?;
-    constructor(store: Store, reporter?: DiagnosticsCallback);
     subscribe(uri: string): void;
-    diagnose(): Diagnostic[];
+    diagnose(uri: string): Diagnostic[];
 }

@@ -1,17 +1,23 @@
 import * as Types from './types';
 import { SyntaxKind, Node, NodeArray } from './types';
-export declare function formatStringFromArgs(text: string, args: {
-    [index: number]: string;
-}, baseIndex?: number): string;
-export declare function createFileDiagnostic(file: Types.SourceFile, start: number, length: number, message: Types.DiagnosticMessage, ...args: (string | number)[]): Types.Diagnostic;
 export declare function isToken(n: Node): boolean;
 export declare function isModifierKind(token: SyntaxKind): boolean;
 export declare function isKeywordTypeKind(token: SyntaxKind): boolean;
+export declare function isReferenceKeywordKind(token: SyntaxKind): boolean;
 export declare function isAssignmentOperator(token: SyntaxKind): boolean;
+export declare function isLeftHandSideExpressionKind(kind: SyntaxKind): boolean;
+export declare function isContainerKind(kind: SyntaxKind): boolean;
+export declare function isNamedDeclarationKind(kind: SyntaxKind): boolean;
+export declare function isDeclarationKind(kind: SyntaxKind): boolean;
 export declare function isLeftHandSideExpression(node: Types.Node): boolean;
+export declare function isPartOfExpression(node: Node): boolean;
+export declare function isPartOfTypeNode(node: Node): boolean;
+export declare function isRightSideOfPropertyAccess(node: Node): boolean;
 export declare function getKindName(k: number | string): string;
 export declare function sourceFileToJSON(file: Types.Node): string;
 export declare function findAncestor<T extends Node>(node: Node, callback: (element: Node) => element is T): T | undefined;
 export declare function findAncestor(node: Node, callback: (element: Node) => boolean | "quit"): Node | undefined;
+export declare function getSourceFileOfNode(node: Node): Types.SourceFile;
 export declare function fixupParentReferences(rootNode: Node): void;
 export declare function forEachChild<T>(node: Node, cbNode: (node: Node) => T | undefined, cbNodes?: (nodes: NodeArray<Node>) => T | undefined): T | undefined;
+export declare function createDiagnosticForNode(node: Types.Node, category: Types.DiagnosticCategory, msg: string): Types.Diagnostic;

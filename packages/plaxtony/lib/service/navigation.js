@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../compiler/utils");
+const provider_1 = require("./provider");
 function collectDeclarations(sourceFile) {
     let declarations = [];
     function registerDeclaration(node) {
@@ -19,10 +20,7 @@ function collectDeclarations(sourceFile) {
     visitNode(sourceFile);
     return declarations;
 }
-class NavigationProvider {
-    constructor(store) {
-        this.store = store;
-    }
+class NavigationProvider extends provider_1.AbstractProvider {
     getDocumentSymbols(uri) {
         return collectDeclarations(this.store.documents.get(uri));
     }
@@ -35,3 +33,4 @@ class NavigationProvider {
     }
 }
 exports.NavigationProvider = NavigationProvider;
+//# sourceMappingURL=navigation.js.map

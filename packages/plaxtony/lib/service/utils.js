@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Types = require("../compiler/types");
 const utils_1 = require("../compiler/utils");
 function getNodeChildren(node) {
     let children = [];
@@ -68,41 +67,48 @@ function findPrecedingToken(position, sourceFile, startNode) {
     }
 }
 exports.findPrecedingToken = findPrecedingToken;
-function getTouchingToken(sourceFile, position, includePrecedingTokenAtEndPosition) {
-    return getTokenAtPositionWorker(sourceFile, position, false, includePrecedingTokenAtEndPosition, false);
-}
-exports.getTouchingToken = getTouchingToken;
-function getTokenAtPosition(sourceFile, position, includeEndPosition) {
-    return getTokenAtPositionWorker(sourceFile, position, true, undefined, includeEndPosition);
+function getTokenAtPosition(position, sourceFile, includeEndPosition) {
+    return getTokenAtPositionWorker(position, sourceFile, undefined, includeEndPosition);
 }
 exports.getTokenAtPosition = getTokenAtPosition;
-function getTokenAtPositionWorker(sourceFile, position, allowPositionInLeadingTrivia, includePrecedingTokenAtEndPosition, includeEndPosition) {
-    let current = sourceFile;
-    outer: while (true) {
-        if (utils_1.isToken(current)) {
-            return current;
-        }
-        for (const child of getNodeTokens(current)) {
-            const start = child.pos;
-            if (start > position) {
+function getTokenAtPositionWorker(position, sourceFile, includePrecedingTokenAtEndPosition, includeEndPosition) {
+    return find(sourceFile);
+    function find(n) {
+        const children = getNodeChildren(n);
+        for (let i = 0; i < children.length; i++) {
+            const child = children[i];
+            if (child.pos > position) {
                 break;
             }
-            const end = child.end;
-            if (position < end || (position === end && (child.kind === 108 || includeEndPosition))) {
-                current = child;
-                continue outer;
-            }
-            else if (includePrecedingTokenAtEndPosition && end === position) {
-                const previousToken = findPrecedingToken(position, sourceFile, child);
-                if (previousToken && includePrecedingTokenAtEndPosition(previousToken)) {
-                    return previousToken;
+            if (utils_1.isToken(child)) {
+                if (child.end > position) {
+                    return child;
                 }
+                continue;
+            }
+            if (nodeHasTokens(child) && child.end >= position) {
+                return find(child);
             }
         }
-        return current;
     }
 }
 function getPositionOfLineAndCharacter(sourceFile, line, character) {
     return sourceFile.lineMap[line] + character;
 }
 exports.getPositionOfLineAndCharacter = getPositionOfLineAndCharacter;
+function getLineAndCharacterOfPosition(sourceFile, pos) {
+    let loc = { line: 0, character: 0 };
+    for (var i = 0; i < sourceFile.lineMap.length; i++) {
+        if (sourceFile.lineMap[i] <= pos) {
+            loc = {
+                line: i,
+                character: pos - sourceFile.lineMap[i],
+            };
+            continue;
+        }
+        break;
+    }
+    return loc;
+}
+exports.getLineAndCharacterOfPosition = getLineAndCharacterOfPosition;
+//# sourceMappingURL=utils.js.map
