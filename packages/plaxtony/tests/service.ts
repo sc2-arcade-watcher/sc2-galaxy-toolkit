@@ -143,7 +143,7 @@ describe('Service', () => {
             assert.equal(signaturesProvider.getSignatureAt(document.uri, 50).activeParameter, 1, 'right after comma token, before whitespace');
             assert.equal(signaturesProvider.getSignatureAt(document.uri, 51).activeParameter, 1, 'after whitespace and comma');
 
-            // assert.equal(signaturesProvider.getSignatureAt(document.uri, 74).activeParameter, null, 'after comma for not existing parameter');
+            assert.equal(signaturesProvider.getSignatureAt(document.uri, 71).activeParameter, 1, 'after comma empty param');
         });
 
         it('should properly identify bounds in nested calls', () => {

@@ -24,6 +24,11 @@ export class SignaturesProvider extends AbstractProvider {
                 if (argument.end >= position) {
                     return true;
                 }
+
+                // offset is after last existing arg, it means the current argument wasn't yet parsed
+                if (index === args.length - 1 && position > args[index].end) {
+                    activeParam++;
+                }
             }
             // offset is before bounds of next param node, yet we got here - we must be in whitespace
             else if (prevArg) {
@@ -31,7 +36,7 @@ export class SignaturesProvider extends AbstractProvider {
                 return true;
             }
 
-            return false;
+            return;
         });
 
         return activeParam;
