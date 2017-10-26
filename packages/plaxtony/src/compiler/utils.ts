@@ -464,14 +464,15 @@ export function forEachChild<T>(node: Node, cbNode: (node: Node) => T | undefine
                 visitNode(cbNode, (<Types.ElementAccessExpression>node).argumentExpression);
         case SyntaxKind.CallExpression:
             return visitNode(cbNode, (<Types.CallExpression>node).expression) ||
-                visitNodes(cbNode, cbNodes, (<Types.CallExpression>node).typeArguments) ||
                 visitNodes(cbNode, cbNodes, (<Types.CallExpression>node).arguments);
         case SyntaxKind.ParenthesizedExpression:
             return visitNode(cbNode, (<Types.ParenthesizedExpression>node).expression);
         case SyntaxKind.PrefixUnaryExpression:
-            return visitNode(cbNode, (<Types.PrefixUnaryExpression>node).operand);
+            return visitNode(cbNode, (<Types.PrefixUnaryExpression>node).operator) ||
+                visitNode(cbNode, (<Types.PrefixUnaryExpression>node).operand);
         case SyntaxKind.PostfixUnaryExpression:
-            return visitNode(cbNode, (<Types.PostfixUnaryExpression>node).operand);
+            return visitNode(cbNode, (<Types.PostfixUnaryExpression>node).operand) ||
+                visitNode(cbNode, (<Types.PostfixUnaryExpression>node).operator);
         case SyntaxKind.BinaryExpression:
             return visitNode(cbNode, (<Types.BinaryExpression>node).left) ||
                 visitNode(cbNode, (<Types.BinaryExpression>node).operatorToken) ||

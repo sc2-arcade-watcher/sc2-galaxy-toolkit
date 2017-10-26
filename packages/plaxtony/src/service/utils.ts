@@ -92,31 +92,12 @@ export function findPrecedingToken(position: number, sourceFile: gt.SourceFile, 
     }
 }
 
-/**
- * The token on the left of the position is the token that strictly includes the position
- * or sits to the left of the cursor if it is on a boundary. For example
- *
- *   fo|o               -> will return foo
- *   foo <comment> |bar -> will return foo
- *
- */
-// export function findTokenOnLeftOfPosition(file: gt.SourceFile, position: number): gt.Node {
-// }
-
-/**
- * Returns the token if position is in [start, end).
- * If position === end, returns the preceding token if includeItemAtEndPosition(previousToken) === true
- */
-// export function getTouchingToken(sourceFile: gt.SourceFile, position: number, includePrecedingTokenAtEndPosition?: (n: gt.Node) => boolean): gt.Node {
-//     return getTokenAtPositionWorker(sourceFile, position, includePrecedingTokenAtEndPosition, false);
-// }
-
-export function getTokenAtPosition(position: number, sourceFile: gt.SourceFile, includeEndPosition?: boolean): gt.Node {
-    return getTokenAtPositionWorker(position, sourceFile, undefined, includeEndPosition);
+export function getTokenAtPosition(position: number, sourceFile: gt.SourceFile, preferFollowing?: boolean): gt.Node {
+    return getTokenAtPositionWorker(position, sourceFile, undefined, preferFollowing);
 }
 
 /** Get the token whose text contains the position */
-function getTokenAtPositionWorker(position: number, sourceFile: gt.SourceFile, includePrecedingTokenAtEndPosition: (n: gt.Node) => boolean, includeEndPosition: boolean): gt.Node | undefined {
+function getTokenAtPositionWorker(position: number, sourceFile: gt.SourceFile, includePrecedingTokenAtEndPosition: (n: gt.Node) => boolean, preferFollowing: boolean): gt.Node | undefined {
     return find(sourceFile);
     // TODO: includePrecedingTokenAtEndPosition ?
     function find(n: gt.Node): gt.Node {
@@ -125,19 +106,38 @@ function getTokenAtPositionWorker(position: number, sourceFile: gt.SourceFile, i
             const child = children[i];
 
             if (child.pos > position) {
-                break;
+                const candidate = findRightmostChildNodeWithTokens(children, preferFollowing ? i : i - 1);
+                return candidate && findRightmostToken(candidate);
             }
-
-            if (isToken(child)) {
-                if (child.end > position) {
+            else if (position < child.end) {
+                if (isToken(child)) {
                     return child;
                 }
-                continue;
-            }
-            if (nodeHasTokens(child) && child.end >= position) {
-                return find(child);
+                if (nodeHasTokens(child)) {
+                    return find(child);
+                }
             }
         }
+
+        throw new Error('how did we get here?');
+    }
+
+    function findRightmostChildNodeWithTokens(children: gt.Node[], exclusiveStartPosition: number): gt.Node {
+        for (let i = exclusiveStartPosition; i >= 0; i--) {
+            if (nodeHasTokens(children[i]) && position < children[i].end) {
+                return children[i];
+            }
+        }
+    }
+
+    function findRightmostToken(n: gt.Node): gt.Node {
+        if (isToken(n)) {
+            return n;
+        }
+
+        const children = getNodeChildren(n);
+        const candidate = findRightmostChildNodeWithTokens(children, children.length - 1);
+        return candidate && findRightmostToken(candidate);
     }
 }
 

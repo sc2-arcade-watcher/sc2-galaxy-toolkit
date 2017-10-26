@@ -2,7 +2,7 @@ import * as gt from '../compiler/types';
 import { TypeChecker } from '../compiler/checker';
 import { AbstractProvider } from './provider';
 import { findAncestor, getSourceFileOfNode } from '../compiler/utils';
-import { getTokenAtPosition, findPrecedingToken, getLineAndCharacterOfPosition } from './utils';
+import { getTokenAtPosition, getLineAndCharacterOfPosition } from './utils';
 import * as lsp from 'vscode-languageserver';
 
 export class DefinitionProvider extends AbstractProvider {

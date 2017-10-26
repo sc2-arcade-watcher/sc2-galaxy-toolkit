@@ -3,7 +3,7 @@ import { SyntaxKind, Symbol, Node, SourceFile, CallExpression, Identifier, Funct
 import { findAncestor, getSourceFileOfNode } from '../compiler/utils';
 import { Printer } from '../compiler/printer';
 import { AbstractProvider } from './provider';
-import { getTokenAtPosition, findPrecedingToken } from './utils';
+import { getTokenAtPosition } from './utils';
 import * as lsp from 'vscode-languageserver';
 import * as trig from '../sc2mod/trigger'
 
@@ -105,16 +105,34 @@ export class SignaturesProvider extends AbstractProvider {
     }
 
     public getSignatureAt(uri: string, position: number): lsp.SignatureHelp {
+        const signatureHelp = <lsp.SignatureHelp>{
+            signatures: [],
+            activeSignature: null,
+            activeParameter: null,
+        };
         const currentDocument = this.store.documents.get(uri);
-        const currentToken = findPrecedingToken(position, currentDocument);
+        const currentToken = getTokenAtPosition(position, currentDocument, true);
         let node: Node = currentToken.parent;
 
-        // we don't want to provide signature for left side of CallExpression
-        if (currentToken.parent.kind === gt.SyntaxKind.CallExpression && (<gt.CallExpression>currentToken.parent).expression === currentToken) {
-            node = currentToken.parent.parent;
+        if (!currentToken) {
+            return signatureHelp;
         }
+
+        // we don't want to provide signature for left side of CallExpression
+        // if (currentToken.parent.kind === gt.SyntaxKind.CallExpression &&
+        //     (
+        //         (<gt.CallExpression>currentToken.parent).expression === currentToken ||
+        //         currentToken.parent.syntaxTokens.indexOf(currentToken) === 0 // only OpenParenToken
+        //     )
+        // ) {
+        //     node = currentToken.parent.parent;
+        // }
         const callNode = <CallExpression>findAncestor(node, (element: Node): boolean => {
             if (element.kind !== SyntaxKind.CallExpression) {
+                return false;
+            }
+            // we don't want to provide signature for left side of CallExpression
+            if ((<CallExpression>element).arguments.pos > position) {
                 return false;
             }
             // skip if goes over range - we must've hit CloseParenToken
@@ -125,19 +143,14 @@ export class SignaturesProvider extends AbstractProvider {
         })
 
         if (!callNode) {
-            return null;
+            return signatureHelp;
         }
 
         if (callNode.expression.kind !== SyntaxKind.Identifier) {
-            return null;
+            return signatureHelp;
         }
 
         const callIdentifier = (<Identifier>(callNode.expression));
-        const signatureHelp = <lsp.SignatureHelp>{
-            signatures: [],
-            activeSignature: null,
-            activeParameter: null,
-        };
 
         for (const document of this.store.documents.values()) {
             const functionSymbol = document.symbol.members.get(callIdentifier.name);

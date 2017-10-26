@@ -130,6 +130,7 @@ describe('Service', () => {
             docSignature
         );
         const signaturesProvider = createProvider(SignaturesProvider, store);
+        let signature: lsp.SignatureHelp;
 
         it('should provide signature help for global functions', () => {
             assert.lengthOf(signaturesProvider.getSignatureAt(document.uri, 28).signatures, 1);
@@ -147,8 +148,6 @@ describe('Service', () => {
         });
 
         it('should properly identify bounds in nested calls', () => {
-            let signature: lsp.SignatureHelp;
-
             signature = signaturesProvider.getSignatureAt(docSignature.uri, 115)
             assert.lengthOf(signature.signatures, 1);
             assert.equal(signature.signatures[0].label, 'string name_me(int id);');
@@ -160,6 +159,25 @@ describe('Service', () => {
             signature = signaturesProvider.getSignatureAt(docSignature.uri, 117)
             assert.lengthOf(signature.signatures, 1);
             assert.equal(signature.signatures[0].label, 'string name_me(int id);');
+        });
+
+        context('should provide signature help when cursor at: ', () => {
+            it('end of binary expr, before ")"', () => {
+                assert.lengthOf(signaturesProvider.getSignatureAt(docSignature.uri, 137).signatures, 1);
+            })
+            it('begining of prefix expr, after "("', () => {
+                assert.lengthOf(signaturesProvider.getSignatureAt(docSignature.uri, 152).signatures, 1);
+            });
+            it('whitespace, inbetween "(" and ")"', () => {
+                assert.lengthOf(signaturesProvider.getSignatureAt(docSignature.uri, 172).signatures, 1);
+                assert.lengthOf(signaturesProvider.getSignatureAt(docSignature.uri, 171).signatures, 1);
+            });
+            it('whitespace, inbetween "," and prefixed expr of numeric literal', () => {
+                assert.lengthOf(signaturesProvider.getSignatureAt(docSignature.uri, 189).signatures, 1);
+            })
+            it('prefixed expr of numeric literal, inbetween operand and literal', () => {
+                assert.lengthOf(signaturesProvider.getSignatureAt(docSignature.uri, 195).signatures, 1);
+            })
         });
     });
 

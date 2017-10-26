@@ -152,7 +152,7 @@ export class Parser {
     private createNodeArray<T extends Node>(elements?: T[], pos?: number): MutableNodeArray<T> {
         const array = <MutableNodeArray<T>>(elements || []);
         if (pos === undefined) {
-            pos = this.scanner.getTokenPos();
+            pos = this.scanner.getStartPos();
         }
         array.pos = pos;
         array.end = pos;
@@ -436,7 +436,10 @@ export class Parser {
         return this.isStartOfTypeDefinition();
     }
 
-    private parseLiteral(kind: SyntaxKind): Types.Literal {
+    private parseLiteral(kind?: SyntaxKind): Types.Literal {
+        if (!kind) {
+            kind = this.token();
+        }
         const node = <Types.Literal>this.createNode(kind);
         this.parseExpected(kind, undefined, false);
         node.text = this.scanner.getTokenValue();
@@ -474,7 +477,7 @@ export class Parser {
         }
 
         while (this.token() === SyntaxKind.OpenBracketToken) {
-            let arrayType = <Types.ArrayTypeNode>this.createNode(SyntaxKind.ArrayType);
+            let arrayType = <Types.ArrayTypeNode>this.createNode(SyntaxKind.ArrayType, baseType.pos);
             this.parseExpected(SyntaxKind.OpenBracketToken)
             arrayType.size = this.parseExpression();
             arrayType.elementType = baseType;
@@ -484,7 +487,7 @@ export class Parser {
 
         if (isReferenceKeywordKind(baseType.kind)) {
             if (this.token() === SyntaxKind.LessThanToken) {
-                const mappedType = <Types.MappedTypeNode>this.createNode(SyntaxKind.MappedType);
+                const mappedType = <Types.MappedTypeNode>this.createNode(SyntaxKind.MappedType, baseType.pos);
                 mappedType.returnType = baseType;
                 mappedType.typeArguments = this.parseBracketedList(ParsingContext.TypeArguments, this.parseTypeDefinition.bind(this), SyntaxKind.LessThanToken, SyntaxKind.GreaterThanToken);
                 baseType = this.finishNode(mappedType)
@@ -564,13 +567,6 @@ export class Parser {
         this.parseExpected(SyntaxKind.OpenBraceToken);
         node.statements = this.parseList(ParsingContext.BlockStatements, this.parseStatement.bind(this));
         this.parseExpected(SyntaxKind.CloseBraceToken);
-        return this.finishNode(node);
-    }
-
-    private parseLiteralNode(): Types.Literal {
-        const node = <Types.Literal>this.createNode(this.token());
-        node.text = this.scanner.getTokenValue();
-        this.nextToken();
         return this.finishNode(node);
     }
 
@@ -656,7 +652,7 @@ export class Parser {
         switch (this.token()) {
             case SyntaxKind.NumericLiteral:
             case SyntaxKind.StringLiteral:
-                return this.parseLiteralNode();
+                return this.parseLiteral();
             case SyntaxKind.NullKeyword:
             case SyntaxKind.TrueKeyword:
             case SyntaxKind.FalseKeyword:
@@ -734,8 +730,7 @@ export class Parser {
         if (this.token() === SyntaxKind.PlusPlusToken || this.token() === SyntaxKind.MinusMinusToken) {
             this.parseErrorAtCurrentToken('unary increment operators not allowed');
             const node = <Types.PrefixUnaryExpression>this.createNode(SyntaxKind.PrefixUnaryExpression);
-            node.operator = <Types.PrefixUnaryOperator>this.token();
-            this.nextToken();
+            node.operator = this.parseTokenNode();
             node.operand = this.parseLeftHandSideExpressionOrHigher();
             return this.finishNode(node);
         }
@@ -753,8 +748,7 @@ export class Parser {
             this.parseErrorAtCurrentToken('unary increment operators not supported');
             const node = <Types.PostfixUnaryExpression>this.createNode(SyntaxKind.PostfixUnaryExpression, expression.pos);
             node.operand = expression;
-            node.operator = <Types.PostfixUnaryOperator>this.token();
-            this.nextToken();
+            node.operator = this.parseTokenNode();
             return this.finishNode(node);
         }
 
@@ -763,8 +757,7 @@ export class Parser {
 
     private parsePrefixUnaryExpression() {
         const node = <Types.PrefixUnaryExpression>this.createNode(SyntaxKind.PrefixUnaryExpression);
-        node.operator = <Types.PrefixUnaryOperator>this.token();
-        this.nextToken();
+        node.operator = this.parseTokenNode();
         node.operand = this.parseSimpleUnaryExpression();
 
         return this.finishNode(node);

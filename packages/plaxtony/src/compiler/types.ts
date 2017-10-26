@@ -667,14 +667,14 @@ export interface BinaryExpression extends Expression  {
 
 export interface PrefixUnaryExpression extends UnaryExpression {
     kind: SyntaxKind.PrefixUnaryExpression;
-    operator: PrefixUnaryOperator;
+    operator: Token<PrefixUnaryOperator>;
     operand: UnaryExpression;
 }
 
 export interface PostfixUnaryExpression extends UnaryExpression {
     kind: SyntaxKind.PostfixUnaryExpression;
     operand: LeftHandSideExpression;
-    operator: PostfixUnaryOperator;
+    operator: Token<PostfixUnaryOperator>;
 }
 
 export interface ElementAccessExpression extends MemberExpression {
@@ -696,7 +696,6 @@ export interface PropertyAccessExpression extends MemberExpression, NamedDeclara
 export interface CallExpression extends LeftHandSideExpression, Declaration {
     kind: SyntaxKind.CallExpression;
     expression: LeftHandSideExpression;
-    typeArguments?: NodeArray<TypeNode>;
     arguments: NodeArray<Expression>;
 }
 
