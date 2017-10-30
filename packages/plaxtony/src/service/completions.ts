@@ -2,7 +2,8 @@ import * as gt from '../compiler/types';
 import { SyntaxKind, Symbol, Node, SourceFile, FunctionDeclaration, NamedDeclaration, VariableDeclaration } from '../compiler/types';
 import { TypeChecker } from '../compiler/checker';
 import { AbstractProvider } from './provider';
-import { findAncestor, isToken } from '../compiler/utils';
+import { tokenToString } from '../compiler/scanner';
+import { findAncestor, isToken, isPartOfExpression } from '../compiler/utils';
 import { getTokenAtPosition, findPrecedingToken } from './utils';
 import { Printer } from '../compiler/printer';
 import * as vs from 'vscode-languageserver';
@@ -57,8 +58,8 @@ export class CompletionsProvider extends AbstractProvider {
         let currentToken = findPrecedingToken(position, currentDocument);
 
         if (currentToken) {
+            // properties
             const checker = new TypeChecker(this.store);
-
             if (currentToken.kind === gt.SyntaxKind.DotToken || currentToken.kind === gt.SyntaxKind.Identifier) {
                 if (currentToken.parent.kind === gt.SyntaxKind.PropertyAccessExpression) {
                     currentToken = (<gt.PropertyAccessExpression>currentToken.parent).expression;
@@ -68,9 +69,8 @@ export class CompletionsProvider extends AbstractProvider {
                     }
                 }
             }
-        }
 
-        if (currentToken) {
+            // local variables
             const currentContext = <FunctionDeclaration>findAncestor(currentToken, (element: Node): boolean => {
                 return element.kind === SyntaxKind.FunctionDeclaration;
             })
@@ -79,6 +79,23 @@ export class CompletionsProvider extends AbstractProvider {
             }
         }
 
+        // keyword types
+        if (!currentToken || !isPartOfExpression(currentToken)) {
+            for (let i = gt.SyntaxKindMarker.FirstBasicType; i <= gt.SyntaxKindMarker.LastBasicType; i++) {
+                completions.push({
+                    label: tokenToString(<any>i),
+                    kind: vs.CompletionItemKind.Keyword
+                });
+            }
+            for (let i = gt.SyntaxKindMarker.FirstComplexType; i <= gt.SyntaxKindMarker.LastComplexType; i++) {
+                completions.push({
+                    label: tokenToString(<any>i),
+                    kind: vs.CompletionItemKind.Keyword
+                });
+            }
+        }
+
+        // global symbols
         for (const document of this.store.documents.values()) {
             completions = completions.concat(this.getFromSymbol(document.symbol));
         }

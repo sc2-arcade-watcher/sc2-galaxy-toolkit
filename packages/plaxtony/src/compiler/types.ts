@@ -305,6 +305,9 @@ export const enum SyntaxKindMarker {
     FirstKeyword = SyntaxKind.IncludeKeyword,
     LastKeyword = SyntaxKind.FuncrefKeyword,
 
+    FirstBasicType = SyntaxKind.BoolKeyword,
+    LastBasicType = SyntaxKind.StringKeyword,
+
     FirstComplexType = SyntaxKind.AbilcmdKeyword,
     LastComplexType = SyntaxKind.WavetargetKeyword,
 

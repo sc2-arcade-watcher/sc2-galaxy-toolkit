@@ -89,11 +89,19 @@ describe('Service', () => {
         }
 
         it('should provide globaly declared symbols', () => {
-            assert.lengthOf(completionsProvider.getCompletionsAt(document.uri, 0), 8);
+            const completions = completionsProvider.getCompletionsAt(document.uri, 0);
+            assert.isAbove(completions.length, 0);
+            assert.isDefined(completions.find((item) => {
+                return item.label === 'decl_var_string';
+            }));
         });
 
         it('should provide localy declared symbols', () => {
-            assert.lengthOf(completionsProvider.getCompletionsAt(document.uri, 51), 11);
+            const completions = completionsProvider.getCompletionsAt(document.uri, 51);
+            assert.isAbove(completions.length, 0);
+            assert.isDefined(completions.find((item) => {
+                return item.label === 'local';
+            }));
         });
 
         it('should provide struct scoped symbols', () => {
