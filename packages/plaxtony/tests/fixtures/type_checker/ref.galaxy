@@ -1,0 +1,12 @@
+struct st_t {
+    int num;
+};
+
+st_t st;
+
+void test_structref(structref<st> lp_ref)
+{
+    structref<st> lv_ref = st;
+    lv_ref.num = 1;
+    lp_ref.num = 2;
+}

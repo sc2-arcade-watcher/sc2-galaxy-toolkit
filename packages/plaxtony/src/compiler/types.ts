@@ -404,13 +404,18 @@ export const enum TypeFlags {
     Null                    = 1 << 11,
     Struct                  = 1 << 12,
     Function                = 1 << 13,
-    Array                   = 1 << 14,
-    Complex                 = 1 << 15,
+    Complex                 = 1 << 14,
+    Array                   = 1 << 15,
+    Mapped                  = 1 << 16,
+    Funcref                 = 1 << 17,
+    Arrayref                = 1 << 18,
+    Structref               = 1 << 19,
 
     /* @internal */
     Nullable = Null,
     Literal = StringLiteral | NumberLiteral | BooleanLiteral,
     Numeric = Integer | Fixed,
+    Reference = Funcref | Arrayref | Structref,
 }
 
 export interface Type {
@@ -446,6 +451,11 @@ export interface FunctionType extends Type {
 
 export interface ArrayType extends Type {
     elementType: Type;
+}
+
+export interface MappedType extends Type {
+    returnType: Type;
+    referencedType: Type;
 }
 
 export interface ComplexType extends Type {

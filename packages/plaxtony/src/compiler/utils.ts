@@ -447,6 +447,9 @@ export function forEachChild<T>(node: Node, cbNode: (node: Node) => T | undefine
         case SyntaxKind.ArrayType:
             return visitNode(cbNode, (<Types.ArrayTypeNode>node).elementType) ||
                 visitNode(cbNode, (<Types.ArrayTypeNode>node).size);
+        case SyntaxKind.MappedType:
+            return visitNode(cbNode, (<Types.MappedTypeNode>node).returnType) ||
+                visitNodes(cbNode, cbNodes, (<Types.MappedTypeNode>node).typeArguments);
         // case SyntaxKind.TypeReference:
         //     return visitNode(cbNode, (<Types.TypeReferenceNode>node).typeName) ||
         //         visitNodes(cbNode, cbNodes, (<Types.TypeReferenceNode>node).typeArguments);

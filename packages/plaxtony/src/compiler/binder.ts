@@ -122,6 +122,7 @@ export function bindSourceFile(sourceFile: SourceFile) {
             switch (node.kind) {
                 // TODO: param
                 case gt.SyntaxKind.VariableDeclaration:
+                case gt.SyntaxKind.ParameterDeclaration:
                     nodeSymbol.flags = (
                         (parentSymbol && parentSymbol.declarations[0].kind == gt.SyntaxKind.SourceFile) ?
                         gt.SymbolFlags.GlobalVariable : gt.SymbolFlags.FunctionScopedVariable

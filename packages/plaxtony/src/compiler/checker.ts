@@ -68,6 +68,13 @@ function createArrayType(elementType: gt.Type): gt.ArrayType {
     return type;
 }
 
+function createMappedType(returnType: gt.Type, referencedType: gt.Type): gt.MappedType {
+    const type = <gt.MappedType>createType(gt.TypeFlags.Mapped);
+    type.returnType = returnType;
+    type.referencedType = referencedType;
+    return type;
+}
+
 function createComplexType(kind: gt.SyntaxKind): gt.ComplexType {
     const type = <gt.ComplexType>createType(gt.TypeFlags.Complex);
     type.kind = kind;
@@ -91,6 +98,9 @@ const trueType = createIntrinsicType(gt.TypeFlags.BooleanLiteral, "true");
 const falseType = createIntrinsicType(gt.TypeFlags.BooleanLiteral, "false");
 // const booleanType = createBooleanType([trueType, falseType]);
 const voidType = createIntrinsicType(gt.TypeFlags.Void, "void");
+const funcrefType = createIntrinsicType(gt.TypeFlags.Funcref, "funcref");
+const arrayrefType = createIntrinsicType(gt.TypeFlags.Arrayref, "arrayref");
+const structrefType = createIntrinsicType(gt.TypeFlags.Structref, "structref");
 
 const complexTypes: gt.ComplexType[] = [];
 complexTypes[gt.SyntaxKind.UnitKeyword] = createComplexType(gt.SyntaxKind.UnitKeyword);
@@ -123,7 +133,21 @@ export class TypeChecker {
         return links.resolvedType;
     }
 
+    private getTypeFromMappedTypeNode(node: gt.MappedTypeNode): gt.Type {
+        const links = this.getNodeLinks(node);
+        if (!links.resolvedType) {
+            links.resolvedType = createMappedType(
+                this.getTypeFromTypeNode(node.returnType),
+                this.getTypeFromTypeNode(node.typeArguments[0])
+            );
+        }
+        return links.resolvedType;
+    }
+
     private getPropertyOfType(type: gt.Type, name: string): gt.Symbol | undefined {
+        if (type.flags & gt.TypeFlags.Mapped && (<gt.MappedType>type).returnType.flags & gt.TypeFlags.Structref) {
+            type = (<gt.MappedType>type).referencedType;
+        }
         if (type.flags & gt.TypeFlags.Struct) {
             if (type.symbol.members.has(name)) {
                 return type.symbol.members.get(name);
@@ -139,6 +163,9 @@ export class TypeChecker {
     private getDeclaredTypeOfSymbol(symbol: gt.Symbol): gt.Type {
         if (symbol.flags & (gt.SymbolFlags.Struct)) {
             return this.getDeclaredTypeOfStruct(symbol);
+        }
+        else if (symbol.flags & (gt.SymbolFlags.Variable)) {
+            return this.getTypeOfSymbol(symbol);
         }
         // TODO: resolve typedefs
         return unknownType;
@@ -158,6 +185,12 @@ export class TypeChecker {
                 return voidType;
             case gt.SyntaxKind.NullKeyword:
                 return nullType;
+            case gt.SyntaxKind.FuncrefKeyword:
+                return funcrefType;
+            case gt.SyntaxKind.ArrayrefKeyword:
+                return arrayrefType;
+            case gt.SyntaxKind.StructrefKeyword:
+                return structrefType;
             case gt.SyntaxKind.UnitKeyword:
                 return complexTypes[node.kind];
             // case gt.SyntaxKind.LiteralType:
@@ -166,6 +199,8 @@ export class TypeChecker {
             //     return getTypeFromTypeReference(<TypeReferenceNode>node);
             case gt.SyntaxKind.ArrayType:
                 return this.getTypeFromArrayTypeNode(<gt.ArrayTypeNode>node);
+            case gt.SyntaxKind.MappedType:
+                return this.getTypeFromMappedTypeNode(<gt.MappedTypeNode>node);
             // case gt.SyntaxKind.IndexedAccessType:
             //     return getTypeFromIndexedAccessTypeNode(<IndexedAccessTypeNode>node);
             case gt.SyntaxKind.Identifier:
