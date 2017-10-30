@@ -31,16 +31,13 @@ export class CompletionsProvider extends AbstractProvider {
                     break;
                 case SyntaxKind.FunctionDeclaration:
                     item.kind = vs.CompletionItemKind.Function;
-                    item.detail = this.printer.printNode((<FunctionDeclaration>node).type);
                     break;
                 case SyntaxKind.VariableDeclaration:
                 case SyntaxKind.ParameterDeclaration:
                     item.kind = vs.CompletionItemKind.Variable;
-                    item.detail = this.printer.printNode((<VariableDeclaration>node).type);
                     break;
                 case SyntaxKind.PropertyDeclaration:
                     item.kind = vs.CompletionItemKind.Property;
-                    item.detail = this.printer.printNode((<VariableDeclaration>node).type);
                     break;
                 default:
                     item.kind = vs.CompletionItemKind.Text;
@@ -94,6 +91,20 @@ export class CompletionsProvider extends AbstractProvider {
             const symbol = sourceFile.symbol.members.get(completion.label);
             if (symbol) {
                 completion.documentation = getDocumentationOfSymbol(this.store, symbol);
+
+                let node = symbol.declarations[0];
+
+                switch (node.kind) {
+                    case SyntaxKind.FunctionDeclaration:
+                        node = Object.create(node);
+                        (<gt.FunctionDeclaration>node).body = null;
+                    case SyntaxKind.VariableDeclaration:
+                    case SyntaxKind.ParameterDeclaration:
+                    case SyntaxKind.PropertyDeclaration:
+                        completion.detail = this.printer.printNode(node);
+                        break;
+                }
+
                 break;
             }
         }

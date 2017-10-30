@@ -52,6 +52,41 @@ export class Printer {
                 break;
             }
 
+            case gt.SyntaxKind.StructDeclaration:
+            {
+                const struct = <gt.StructDeclaration>node;
+                this.write('struct ');
+                this.emitNode(struct.name);
+                this.write(' {');
+                this.newLine();
+                this.emitNodeList(struct.members, '', '\n');
+                this.write('}');
+                this.newLine();
+                break;
+            }
+
+            case gt.SyntaxKind.VariableDeclaration:
+            case gt.SyntaxKind.PropertyDeclaration:
+            {
+                const variable = <gt.VariableDeclaration>node;
+                if (variable.modifiers && variable.modifiers.length > 0) {
+                    this.emitNodeList(variable.modifiers, ' ');
+                    this.write(' ');
+                }
+                this.emitNode(variable.type);
+                this.write(' ');
+                this.emitNode(variable.name);
+                if (variable.kind === gt.SyntaxKind.VariableDeclaration && variable.initializer) {
+                    // TODO: expression printing
+                    // this.whitespace(' ');
+                    // this.write('=');
+                    // this.whitespace(' ');
+                    // this.emitNode(variable.initializer);
+                }
+                this.write(';');
+                break;
+            }
+
             case gt.SyntaxKind.ParameterDeclaration:
             {
                 const param = <gt.ParameterDeclaration>node;
