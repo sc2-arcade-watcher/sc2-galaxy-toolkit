@@ -117,16 +117,27 @@ export class S2Workspace extends Workspace {
 }
 
 export class Store {
-    // private documents: Store;
+    private parser = new Parser();
     public documents = new Map<string, SourceFile>();
     public s2archives = new Map<string, SC2Archive>();
+
+    private purgeFileSymbolDeclarations(sourceFile: SourceFile) {
+        for (const [key, symbol] of sourceFile.symbol.members.entries()) {
+            symbol.declarations = symbol.declarations.filter((decl) => {
+                return getSourceFileOfNode(decl) !== sourceFile;
+            });
+        }
+    }
 
     public initialize() {
     }
 
     public updateDocument(document: lsp.TextDocument) {
-        let p = new Parser();
-        let sourceFile = p.parseFile(document.uri, document.getText());
+        if (this.documents.has(document.uri)) {
+            this.purgeFileSymbolDeclarations(this.documents.get(document.uri));
+            this.documents.delete(document.uri);
+        }
+        let sourceFile = this.parser.parseFile(document.uri, document.getText());
         bindSourceFile(sourceFile, this);
         this.documents.set(document.uri, sourceFile);
     }
