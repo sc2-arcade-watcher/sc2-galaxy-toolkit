@@ -1,7 +1,7 @@
 import * as gt from '../compiler/types';
 import { TypeChecker } from '../compiler/checker';
 import { AbstractProvider } from './provider';
-import { findAncestor, getSourceFileOfNode } from '../compiler/utils';
+import { findAncestor, getSourceFileOfNode, isNamedDeclarationKind } from '../compiler/utils';
 import { getTokenAtPosition, getLineAndCharacterOfPosition } from './utils';
 import * as lsp from 'vscode-languageserver';
 
@@ -26,6 +26,9 @@ export class DefinitionProvider extends AbstractProvider {
         }
 
         for (let item of symbol.declarations) {
+            if (isNamedDeclarationKind(item.kind)) {
+                item = (<gt.NamedDeclaration>item).name;
+            }
             const sourceFile = getSourceFileOfNode(item);
             definitions.push(<lsp.Location>{
                 uri: getSourceFileOfNode(item).fileName,

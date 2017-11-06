@@ -221,7 +221,7 @@ describe('Service', () => {
                 range: {
                     start: {
                         line: 0,
-                        character: 10,
+                        character: 16,
                     },
                     end: {
                         line: 0,
@@ -237,11 +237,11 @@ describe('Service', () => {
                 range: {
                     start: {
                         line: 7,
-                        character: 4,
+                        character: 9,
                     },
                     end: {
                         line: 7,
-                        character: 15,
+                        character: 14,
                     },
                 },
             }, 'local variable: unit local');
@@ -253,11 +253,11 @@ describe('Service', () => {
                 range: {
                     start: {
                         line: 0,
-                        character: 0,
+                        character: 5,
                     },
                     end: {
-                        line: 3,
-                        character: 1,
+                        line: 0,
+                        character: 9,
                     },
                 },
             }, 'function call: call');
@@ -273,11 +273,11 @@ describe('Service', () => {
                 range: {
                     start: {
                         line: 9,
-                        character: 0,
+                        character: 4,
                     },
                     end: {
                         line: 9,
-                        character: 10,
+                        character: 9,
                     },
                 },
             }, 'global variable: aglob');
@@ -289,11 +289,11 @@ describe('Service', () => {
                 range: {
                     start: {
                         line: 1,
-                        character: 4,
+                        character: 11,
                     },
                     end: {
                         line: 1,
-                        character: 21,
+                        character: 20,
                     },
                 },
             }, 'struct property access: submemeber');
@@ -309,11 +309,11 @@ describe('Service', () => {
                 range: {
                     start: {
                         line: 0,
-                        character: 0,
+                        character: 7,
                     },
                     end: {
-                        line: 2,
-                        character: 2,
+                        line: 0,
+                        character: 21,
                     },
                 },
             }, 'struct decl member: container_t::sub');
