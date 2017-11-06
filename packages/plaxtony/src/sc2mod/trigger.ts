@@ -5,6 +5,7 @@ export const enum ElementFlag {
     Native = 1 << 1,
     FuncAction = 1 << 2,
     FuncCall = 1 << 3,
+    Event = 1 << 4,
 }
 
 export class ElementReference<T extends Element> {
@@ -123,8 +124,7 @@ export class Library {
                     func.flags |= item.FlagNative ? ElementFlag.Native : 0;
                     func.flags |= item.FlagAction ? ElementFlag.FuncAction : 0;
                     func.flags |= item.FlagCall ? ElementFlag.FuncCall : 0;
-
-                    // TODO: FlagEvent; when set trig parameter is not present in schema
+                    func.flags |= item.FlagEvent ? ElementFlag.Event : 0;
 
                     if (item.Parameter) {
                         for (const param of item.Parameter) {

@@ -78,21 +78,24 @@ export class SignaturesProvider extends AbstractProvider {
             };
 
             if (funcEl) {
-                const paramEl = <trig.ParamDef>funcEl.getParameters()[index];
-                if (paramEl) {
-                    const textKey = paramEl.textKey('Name');
-                    if (s2archive.trigStrings.has(textKey)) {
-                        paramInfo.documentation += '#### ' + s2archive.trigStrings.get(textKey) + ` - *${paramEl.type.type}*` + '\n';
-                    }
+                const realIndex = index + (funcEl.flags & trig.ElementFlag.Event ? -1 : 0);
+                if (realIndex >= 0) {
+                    const paramEl = <trig.ParamDef>funcEl.getParameters()[realIndex];
+                    if (paramEl) {
+                        const textKey = paramEl.textKey('Name');
+                        if (s2archive.trigStrings.has(textKey)) {
+                            paramInfo.documentation += '#### ' + s2archive.trigStrings.get(textKey) + ` - *${paramEl.type.type}*` + '\n';
+                        }
 
-                    if (paramEl.type.type === 'preset') {
-                        paramInfo.documentation += '---\n';
-                        // #### Presets:\n
-                        const preset = paramEl.type.typeElement.resolve();
-                        for (const presetValueRef of preset.values) {
-                            const presetValue = presetValueRef.resolve();
-                            const locName = s2archive.trigStrings.get(presetValue.textKey('Name'));
-                            paramInfo.documentation += `- \`${presetValue.value}\` - **${locName}**\n`;
+                        if (paramEl.type.type === 'preset') {
+                            paramInfo.documentation += '---\n';
+                            // #### Presets:\n
+                            const preset = paramEl.type.typeElement.resolve();
+                            for (const presetValueRef of preset.values) {
+                                const presetValue = presetValueRef.resolve();
+                                const locName = s2archive.trigStrings.get(presetValue.textKey('Name'));
+                                paramInfo.documentation += `- \`${presetValue.value}\` - **${locName}**\n`;
+                            }
                         }
                     }
                 }
