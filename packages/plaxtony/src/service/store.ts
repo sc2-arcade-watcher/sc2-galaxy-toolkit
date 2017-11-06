@@ -2,7 +2,7 @@ import * as gt from '../compiler/types';
 import { SyntaxKind, SourceFile, Node, Symbol, SymbolTable } from '../compiler/types';
 import { getSourceFileOfNode } from '../compiler/utils';
 import { Parser } from '../compiler/parser';
-import { bindSourceFile } from '../compiler/binder';
+import { bindSourceFile, unbindSourceFile } from '../compiler/binder';
 import { findSC2Archives, isSC2Archive, SC2Archive } from '../sc2mod/archive';
 import { Element } from '../sc2mod/trigger';
 import * as lsp from 'vscode-languageserver';
@@ -121,20 +121,12 @@ export class Store {
     public documents = new Map<string, SourceFile>();
     public s2archives = new Map<string, SC2Archive>();
 
-    private purgeFileSymbolDeclarations(sourceFile: SourceFile) {
-        for (const [key, symbol] of sourceFile.symbol.members.entries()) {
-            symbol.declarations = symbol.declarations.filter((decl) => {
-                return getSourceFileOfNode(decl) !== sourceFile;
-            });
-        }
-    }
-
     public initialize() {
     }
 
     public updateDocument(document: lsp.TextDocument) {
         if (this.documents.has(document.uri)) {
-            this.purgeFileSymbolDeclarations(this.documents.get(document.uri));
+            unbindSourceFile(this.documents.get(document.uri), this);
             this.documents.delete(document.uri);
         }
         let sourceFile = this.parser.parseFile(document.uri, document.getText());

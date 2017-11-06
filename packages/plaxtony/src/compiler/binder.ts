@@ -1,7 +1,7 @@
 import { Parser } from './parser';
 import * as gt from './types';
 import { SyntaxKind, SourceFile, Node, Symbol, SymbolTable, NamedDeclaration } from './types';
-import { forEachChild, isNamedDeclarationKind, isDeclarationKind, isContainerKind } from './utils';
+import { forEachChild, isNamedDeclarationKind, isDeclarationKind, isContainerKind, getSourceFileOfNode } from './utils';
 import { Store } from '../service/store';
 
 export function bindSourceFile(sourceFile: SourceFile, store: Store) {
@@ -162,4 +162,17 @@ export function bindSourceFile(sourceFile: SourceFile, store: Store) {
 
         return nodeSymbol;
     }
+}
+
+export function unbindSourceFile(sourceFile: SourceFile, store: Store) {
+    function unbindSymbol(parentSymbol: Symbol) {
+        for (const symbol of parentSymbol.members.values()) {
+            symbol.declarations = symbol.declarations.filter((decl) => {
+                return getSourceFileOfNode(decl) !== sourceFile;
+            });
+            unbindSymbol(symbol);
+        }
+    }
+
+    unbindSymbol(sourceFile.symbol);
 }
