@@ -273,7 +273,7 @@ export class Server {
 
     @wrapRequest()
     private onWorkspaceSymbol(params: lsp.WorkspaceSymbolParams): lsp.SymbolInformation[] {
-        return translateDeclaratons(this.navigationProvider.getWorkspaceSymbols());
+        return translateDeclaratons(this.navigationProvider.getWorkspaceSymbols(params.query));
     }
 
     @wrapRequest()

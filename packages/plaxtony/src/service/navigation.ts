@@ -1,5 +1,6 @@
 import { SourceFile, NamedDeclaration, Node, SyntaxKind } from '../compiler/types';
 import { forEachChild } from '../compiler/utils';
+import { fuzzysearch } from './utils';
 import { AbstractProvider } from './provider';
 
 function collectDeclarations(sourceFile: SourceFile): NamedDeclaration[] {
@@ -33,11 +34,20 @@ export class NavigationProvider extends AbstractProvider {
         return collectDeclarations(this.store.documents.get(uri));
     }
 
-    public getWorkspaceSymbols(): NamedDeclaration[] {
+    public getWorkspaceSymbols(query?: string): NamedDeclaration[] {
         let declarations: NamedDeclaration[] = [];
-        for (let document of this.store.documents.values()) {
-            declarations = declarations.concat(collectDeclarations(document));
+
+        outer: for (const document of this.store.documents.values()) {
+            for (const decl of collectDeclarations(document)) {
+                if (!query || fuzzysearch(query, decl.name.name)) {
+                    declarations.push(decl);
+                    if (declarations.length >= 1000) {
+                        break outer;
+                    }
+                }
+            }
         }
+
         return declarations;
     }
 }
