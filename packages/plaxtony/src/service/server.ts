@@ -237,15 +237,16 @@ export class Server {
         }
     }
 
-    private onProvideDiagnostics() {
-    }
-
     @wrapRequest()
     private onDidOpen(ev: lsp.TextDocumentChangeEvent) {
     }
 
     @wrapRequest()
     private onDidClose(ev: lsp.TextDocumentChangeEvent) {
+        this.connection.sendDiagnostics({
+            uri: ev.document.uri,
+            diagnostics: [],
+        })
     }
 
     @wrapRequest('Indexing: ', true, true)
