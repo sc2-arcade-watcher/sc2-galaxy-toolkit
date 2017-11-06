@@ -2,8 +2,9 @@ import { Parser } from './parser';
 import * as gt from './types';
 import { SyntaxKind, SourceFile, Node, Symbol, SymbolTable, NamedDeclaration } from './types';
 import { forEachChild, isNamedDeclarationKind, isDeclarationKind, isContainerKind } from './utils';
+import { Store } from '../service/store';
 
-export function bindSourceFile(sourceFile: SourceFile) {
+export function bindSourceFile(sourceFile: SourceFile, store: Store) {
     let currentScope: gt.Declaration;
     let currentContainer: gt.NamedDeclaration;
 
@@ -24,7 +25,8 @@ export function bindSourceFile(sourceFile: SourceFile) {
                 case SyntaxKind.CallExpression:
                 case SyntaxKind.PropertyAccessExpression:
                 {
-                    declareSymbol(<gt.Declaration>node, null);
+                    // TODO: to be reomved?
+                    // declareSymbol(<gt.Declaration>node, null);
                     break;
                 }
 
@@ -109,34 +111,38 @@ export function bindSourceFile(sourceFile: SourceFile) {
             nodeSymbol = parentSymbol.members.get(name);
         }
         else {
-            nodeSymbol = <Symbol>{
-                escapedName: name,
-                declarations: [],
-                valueDeclaration: undefined,
-                isAssigned: false,
-                isReferenced: false,
-                members: new Map<string, Symbol>(),
-                parent: undefined,
-            };
+            if (parentSymbol && parentSymbol.declarations[0].kind === gt.SyntaxKind.SourceFile) {
+                nodeSymbol = store.resolveGlobalSymbol(name);
+            }
+            if (!nodeSymbol) {
+                nodeSymbol = <Symbol>{
+                    escapedName: name,
+                    declarations: [],
+                    valueDeclaration: undefined,
+                    isAssigned: false,
+                    isReferenced: false,
+                    members: new Map<string, Symbol>(),
+                    parent: undefined,
+                };
 
-            switch (node.kind) {
-                // TODO: param
-                case gt.SyntaxKind.VariableDeclaration:
-                case gt.SyntaxKind.ParameterDeclaration:
-                    nodeSymbol.flags = (
-                        (parentSymbol && parentSymbol.declarations[0].kind == gt.SyntaxKind.SourceFile) ?
-                        gt.SymbolFlags.GlobalVariable : gt.SymbolFlags.FunctionScopedVariable
-                    );
-                    break;
-                case gt.SyntaxKind.FunctionDeclaration:
-                    nodeSymbol.flags = gt.SymbolFlags.Function;
-                    break;
-                case gt.SyntaxKind.StructDeclaration:
-                    nodeSymbol.flags = gt.SymbolFlags.Struct;
-                    break;
-                case gt.SyntaxKind.PropertyDeclaration:
-                    nodeSymbol.flags = gt.SymbolFlags.Property;
-                    break;
+                switch (node.kind) {
+                    case gt.SyntaxKind.VariableDeclaration:
+                    case gt.SyntaxKind.ParameterDeclaration:
+                        nodeSymbol.flags = (
+                            (parentSymbol && parentSymbol.declarations[0].kind == gt.SyntaxKind.SourceFile) ?
+                            gt.SymbolFlags.GlobalVariable : gt.SymbolFlags.FunctionScopedVariable
+                        );
+                        break;
+                    case gt.SyntaxKind.FunctionDeclaration:
+                        nodeSymbol.flags = gt.SymbolFlags.Function;
+                        break;
+                    case gt.SyntaxKind.StructDeclaration:
+                        nodeSymbol.flags = gt.SymbolFlags.Struct;
+                        break;
+                    case gt.SyntaxKind.PropertyDeclaration:
+                        nodeSymbol.flags = gt.SymbolFlags.Property;
+                        break;
+                }
             }
 
             if (parentSymbol) {
@@ -146,6 +152,13 @@ export function bindSourceFile(sourceFile: SourceFile) {
 
         node.symbol = nodeSymbol;
         nodeSymbol.declarations.push(node);
+
+        if (!node.symbol.valueDeclaration && (
+            (node.kind === gt.SyntaxKind.FunctionDeclaration && (<gt.FunctionDeclaration>node).body) ||
+            (node.kind === gt.SyntaxKind.VariableDeclaration && (<gt.VariableDeclaration>node).initializer)
+        )) {
+            node.symbol.valueDeclaration = node;
+        }
 
         return nodeSymbol;
     }

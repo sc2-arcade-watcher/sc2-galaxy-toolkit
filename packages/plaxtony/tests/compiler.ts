@@ -23,10 +23,13 @@ describe('Compiler', () => {
         }
     });
 
-    // describe('Binder', () => {
-    //     it('', () => {
-    //         const sourceFile = mockupSourceFile('type_checker', 'type1.galaxy');
-    //         bindSourceFile(sourceFile);
-    //     });
-    // });
+    describe('Store', () => {
+        it('merge global symbols', () => {
+            const store = mockupStore(
+                mockupTextDocument('service', 'navigation', 'funcs.galaxy'),
+                mockupTextDocument('service', 'navigation', 'funcs_dupl.galaxy')
+            );
+            assert.lengthOf(store.resolveGlobalSymbol('something').declarations, 3);
+        });
+    });
 });

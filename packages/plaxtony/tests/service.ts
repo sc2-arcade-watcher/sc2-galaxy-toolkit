@@ -67,7 +67,7 @@ describe('Service', () => {
             const store = await mockupStoreFromDirectory(fixturesPath);
             const navigation = createProvider(NavigationProvider, store);
             const symbolDeclarations = navigation.getWorkspaceSymbols();
-            assert.lengthOf(symbolDeclarations, 6);
+            assert.lengthOf(symbolDeclarations, 7);
         });
     });
 

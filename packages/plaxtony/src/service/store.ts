@@ -127,12 +127,20 @@ export class Store {
     public updateDocument(document: lsp.TextDocument) {
         let p = new Parser();
         let sourceFile = p.parseFile(document.uri, document.getText());
-        bindSourceFile(sourceFile);
+        bindSourceFile(sourceFile, this);
         this.documents.set(document.uri, sourceFile);
     }
 
     public updateArchive(archive: SC2Archive) {
         this.s2archives.set(archive.directory, archive);
+    }
+
+    public resolveGlobalSymbol(name: string): gt.Symbol | undefined {
+        for (const doc of this.documents.values()) {
+            if (doc.symbol.members.has(name)) {
+                return doc.symbol.members.get(name);
+            }
+        }
     }
 
     public getArchiveOfSourceFile(sourceFile: SourceFile): SC2Archive | undefined {
