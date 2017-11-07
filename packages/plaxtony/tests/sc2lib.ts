@@ -114,6 +114,20 @@ describe('SC2Mod', () => {
                 })
             });
         });
+
+        it('find PresetValue by str', () => {
+            const presetValue = trigContainer.findPresetValueByStr('c_unitCountAll');
+            assert.isDefined(presetValue);
+            assert.equal(presetValue.name, 'All');
+        });
+
+        it('find Preset by PresetValue', () => {
+            const presetValue = trigContainer.findPresetValueByStr('c_unitCountAll');
+            assert.isDefined(presetValue);
+            const preset = trigContainer.findPresetByValue(presetValue);
+            assert.isDefined(preset);
+            assert.equal(preset.name, 'UnitCountType');
+        });
     });
 
     describe('Localization', () => {

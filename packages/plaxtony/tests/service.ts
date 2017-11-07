@@ -5,6 +5,7 @@ import { NavigationProvider } from '../src/service/navigation';
 import { CompletionsProvider } from '../src/service/completions';
 import { SignaturesProvider } from '../src/service/signatures';
 import { DefinitionProvider } from '../src/service/definitions';
+import { HoverProvider } from '../src/service/hover';
 import { getPositionOfLineAndCharacter, findPrecedingToken } from '../src/service/utils';
 import * as gt from '../src/compiler/types';
 import { mockupSourceFile, mockupTextDocument, mockupStore, mockupStoreFromDirectory } from './helpers';
@@ -317,6 +318,69 @@ describe('Service', () => {
                     },
                 },
             }, 'struct decl member: container_t::sub');
+        });
+    });
+
+    describe('Hover', () => {
+        const hoverDoc = mockupTextDocument('service', 'hover', 'hover.galaxy');
+        const store = mockupStore(hoverDoc);
+
+        const hoverProvider = createProvider(HoverProvider, store);
+
+        it('parameter', () => {
+            const info = hoverProvider.getHoverAt({textDocument: hoverDoc, position: {line: 8, character: 4}});
+            assert.isDefined(info);
+            const contents = <string[]>info.contents;
+            assert.isAtLeast(contents.length, 1)
+            assert.equal(contents[0], '```galaxy\nint a\n```');
+            // assert.isAtLeast(contents.length, 2)
+            // assert.equal(contents[1], 'parameter of *print_num*');
+        });
+
+        it('local var', () => {
+            const info = hoverProvider.getHoverAt({textDocument: hoverDoc, position: {line: 9, character: 4}});
+            assert.isDefined(info);
+            const contents = <string[]>info.contents;
+            assert.isAtLeast(contents.length, 1)
+            assert.equal(contents[0], '```galaxy\nstring b\n```');
+            // assert.isAtLeast(contents.length, 2)
+            // assert.equal(contents[1], 'local variable');
+        });
+
+        it('global constant', () => {
+            const info = hoverProvider.getHoverAt({textDocument: hoverDoc, position: {line: 17, character: 14}});
+            assert.isDefined(info);
+            const contents = <string[]>info.contents;
+            assert.isAtLeast(contents.length, 1)
+            assert.equal(contents[0], '```galaxy\nconst int c_test = 0\n```');
+            // assert.isAtLeast(contents.length, 2)
+            // assert.equal(contents[1], 'global constant');
+        });
+
+        it('function', () => {
+            const info = hoverProvider.getHoverAt({textDocument: hoverDoc, position: {line: 17, character: 4}});
+            assert.isDefined(info);
+            const contents = <string[]>info.contents;
+            assert.isAtLeast(contents.length, 1)
+            assert.equal(contents[0], '```galaxy\nvoid print_num(int a)\n```');
+        });
+
+        it('struct property', () => {
+            const info = hoverProvider.getHoverAt({textDocument: hoverDoc, position: {line: 18, character: 9}});
+            assert.isDefined(info);
+            const contents = <string[]>info.contents;
+            assert.isAtLeast(contents.length, 1)
+            assert.equal(contents[0], '```galaxy\nint a\n```');
+            assert.isAtLeast(contents.length, 2)
+            assert.equal(contents[1], 'property of `info_t`');
+        });
+
+        it('struct', () => {
+            const info = hoverProvider.getHoverAt({textDocument: hoverDoc, position: {line: 0, character: 7}});
+            assert.isDefined(info);
+            const contents = <string[]>info.contents;
+            assert.isAtLeast(contents.length, 1)
+            assert.equal(contents[0], '```galaxy\nstruct info_t {\n\tint a;\n}\n```');
         });
     });
 });

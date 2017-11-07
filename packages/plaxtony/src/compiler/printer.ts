@@ -5,17 +5,32 @@ import { getKindName, isToken} from './utils';
 export class Printer {
     output: string[];
     indent: number;
+    emptyLine: boolean = true;
 
     private write(text: string) {
+        if (this.emptyLine) {
+            this.output.push('\t'.repeat(this.indent));
+            this.emptyLine = false;
+        }
         this.output.push(text);
     }
 
     private whitespace(text: string = ' ') {
-        this.output.push(text);
+        if (this.emptyLine) {
+            this.output.push('\t'.repeat(this.indent));
+            this.emptyLine = false;
+        }
+        if (text === '\n') {
+            this.newLine();
+        }
+        else {
+            this.output.push(text);
+        }
     }
 
     private newLine() {
         this.output.push('\n');
+        this.emptyLine = true;
     }
 
     private increaseIndent() {
@@ -59,8 +74,10 @@ export class Printer {
                 this.emitNode(struct.name);
                 this.write(' {');
                 this.newLine();
-                this.emitNodeList(struct.members, '', '\n');
-                this.write('}');
+                this.increaseIndent();
+                this.emitNodeList(struct.members, '', '\n', true);
+                this.decreaseIndent();
+                this.write('};');
                 this.newLine();
                 break;
             }
@@ -77,11 +94,10 @@ export class Printer {
                 this.write(' ');
                 this.emitNode(variable.name);
                 if (variable.kind === gt.SyntaxKind.VariableDeclaration && variable.initializer) {
-                    // TODO: expression printing
-                    // this.whitespace(' ');
-                    // this.write('=');
-                    // this.whitespace(' ');
-                    // this.emitNode(variable.initializer);
+                    this.whitespace(' ');
+                    this.write('=');
+                    this.whitespace(' ');
+                    this.emitNode(variable.initializer);
                 }
                 this.write(';');
                 break;
@@ -139,10 +155,19 @@ export class Printer {
             {
                 const expr = <gt.BinaryExpression>node;
                 this.emitNode(expr.left);
-                this.write(' ');
+                this.whitespace(' ');
                 this.emitNode(expr.operatorToken);
-                this.write(' ');
+                this.whitespace(' ');
                 this.emitNode(expr.right);
+                break;
+            }
+
+            case gt.SyntaxKind.ParenthesizedExpression:
+            {
+                const expr = <gt.ParenthesizedExpression>node;
+                this.write('(');
+                this.emitNode(expr.expression);
+                this.write(')');
                 break;
             }
 
@@ -158,10 +183,10 @@ export class Printer {
         }
     }
 
-    private emitNodeList(nodesList: ReadonlyArray<gt.Node>, textSeparator: string = undefined, whitespaceSeparator: string = undefined) {
+    private emitNodeList(nodesList: ReadonlyArray<gt.Node>, textSeparator: string = undefined, whitespaceSeparator: string = undefined, includeSeparatorAtEnd: boolean = false) {
         nodesList.forEach((node: gt.Node, index: number) => {
             this.emitNode(node);
-            if (nodesList.length !== (index + 1)) {
+            if (includeSeparatorAtEnd || nodesList.length !== (index + 1)) {
                 if (textSeparator) {
                     this.write(textSeparator);
                 }

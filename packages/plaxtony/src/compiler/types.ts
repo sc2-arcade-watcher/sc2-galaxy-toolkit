@@ -367,15 +367,17 @@ export type KeywordType
 
 export const enum SymbolFlags {
     None                    = 0,
-    FunctionScopedVariable  = 1 << 1,   // Variable (var) or parameter
-    GlobalVariable          = 1 << 2,   // A block-scoped variable (let or const)
-    Property                = 1 << 3,   // Property
-    Function                = 1 << 4,   // Function
-    Struct                  = 1 << 5,   // Class
-    Signature               = 1 << 17,  // Call, construct, or index signature
-    TypeParameter           = 1 << 18,  // Type parameter
+    LocalVariable           = 1 << 1,  // Variable (var) or parameter
+    FunctionParameter       = 1 << 2,  // A block-scoped variable (let or const)
+    GlobalVariable          = 1 << 3,  // A block-scoped variable (let or const)
+    Property                = 1 << 4,  // Property
+    Function                = 1 << 5,  // Function
+    Struct                  = 1 << 6,  // Class
+    Signature               = 1 << 17, // Call, construct, or index signature
+    TypeParameter           = 1 << 18, // Type parameter
 
-    Variable = FunctionScopedVariable | GlobalVariable,
+    Variable = LocalVariable | FunctionParameter | GlobalVariable,
+    FunctionScopedVariable = LocalVariable | FunctionParameter,
 }
 
 export interface Symbol {

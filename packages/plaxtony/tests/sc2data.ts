@@ -6,6 +6,7 @@ import * as gt from '../src/compiler/types';
 import { findSC2Archives, SC2Archive } from '../src/sc2mod/archive';
 import { createProvider } from '../src/service/provider';
 import { SignaturesProvider } from '../src/service/signatures';
+import { getDocumentationOfSymbol } from '../src/service/s2meta';
 import Uri from 'vscode-uri';
 
 const resourcesPath = path.join('tests', 'fixtures', 'sc2-data-trigger');
@@ -53,5 +54,8 @@ describe('SC2Data', function () {
         assert.isDefined(sigInfo.documentation.indexOf('Set Dialog Item String Value'));
         assert.equal(sigInfo.parameters[0].documentation, '#### Dialog Item - *control*\n');
         assert.isDefined(sigInfo.parameters[1].documentation.indexOf('c_triggerControlPropertyText'));
+
+        const presetDoc = getDocumentationOfSymbol(store, natives.symbol.members.get('c_unitCountAll'));
+        assert.equal(presetDoc, '**Any**\n\nPreset of **Unit Count Type**');
     });
 });

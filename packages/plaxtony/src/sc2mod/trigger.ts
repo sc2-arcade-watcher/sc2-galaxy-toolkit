@@ -213,6 +213,29 @@ export class Library {
         return this.nameMap.get(name);
     }
 
+    public findPresetValueByStr(value: string): PresetValue | undefined {
+        for (const el of this.elements.values()) {
+            if (!(el instanceof PresetValue)) continue;
+            if (el.value && el.value == value) {
+                return el;
+            }
+        }
+        return null;
+    }
+
+    public findPresetByValue(value: PresetValue): Preset | undefined {
+        for (const el of this.elements.values()) {
+            if (!(el instanceof Preset)) continue;
+            const belongsTo = el.values.find((localVal) => {
+                return value.id === localVal.id;
+            });
+            if (belongsTo) {
+                return el;
+            }
+        }
+        return null;
+    }
+
     public findElementById<T extends Element>(id: string): T | undefined {
         return this.elements.get(id) as T;
     }
@@ -256,6 +279,36 @@ export class LibraryContainer extends Map<string, Library> {
         }
         for (const lib of this.values()) {
             const el = lib.findElementById(elementId) as T;
+            if (el) {
+                return el;
+            }
+        }
+        return undefined;
+    }
+
+    public findPresetValueByStr(value: string, libraryId?: string): PresetValue | undefined {
+        if (libraryId) {
+            if (this.has(libraryId)) {
+                return this.get(libraryId).findPresetValueByStr(value);
+            }
+        }
+        for (const lib of this.values()) {
+            const el = lib.findPresetValueByStr(value);
+            if (el) {
+                return el;
+            }
+        }
+        return undefined;
+    }
+
+    public findPresetByValue(value: PresetValue, libraryId?: string): Preset | undefined {
+        if (libraryId) {
+            if (this.has(libraryId)) {
+                return this.get(libraryId).findPresetByValue(value);
+            }
+        }
+        for (const lib of this.values()) {
+            const el = lib.findPresetByValue(value);
             if (el) {
                 return el;
             }

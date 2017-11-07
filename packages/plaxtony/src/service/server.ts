@@ -9,6 +9,7 @@ import { NavigationProvider } from './navigation';
 import { CompletionsProvider } from './completions';
 import { SignaturesProvider } from './signatures';
 import { DefinitionProvider } from './definitions';
+import { HoverProvider } from './hover';
 
 function getNodeRange(node: Types.Node): lsp.Range {
     return {
@@ -126,6 +127,7 @@ export class Server {
     private completionsProvider: CompletionsProvider;
     private signaturesProvider: SignaturesProvider;
     private definitionsProvider: DefinitionProvider;
+    private hoverProvider: HoverProvider;
     private documents = new lsp.TextDocuments();
     private workspaces: Workspace[] = [];
 
@@ -141,6 +143,7 @@ export class Server {
         this.completionsProvider = this.createProvider(CompletionsProvider);
         this.signaturesProvider = this.createProvider(SignaturesProvider);
         this.definitionsProvider = this.createProvider(DefinitionProvider);
+        this.hoverProvider = this.createProvider(HoverProvider);
 
         this.documents.listen(this.connection);
         this.documents.onDidChangeContent(this.onDidChangeContent.bind(this));
@@ -155,6 +158,7 @@ export class Server {
         this.connection.onWorkspaceSymbol(this.onWorkspaceSymbol.bind(this));
         this.connection.onSignatureHelp(this.onSignatureHelp.bind(this));
         this.connection.onDefinition(this.onDefinition.bind(this));
+        this.connection.onHover(this.onHover.bind(this));
 
         return this.connection;
     }
@@ -203,7 +207,8 @@ export class Server {
                 signatureHelpProvider: {
                     triggerCharacters: ['(', ','],
                 },
-                definitionProvider: true
+                definitionProvider: true,
+                hoverProvider: true
             }
         }
     }
@@ -292,6 +297,11 @@ export class Server {
             getPositionOfLineAndCharacter(
                 this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character)
         );
+    }
+
+    @wrapRequest()
+    private onHover(params: lsp.TextDocumentPositionParams): lsp.Hover {
+        return this.hoverProvider.getHoverAt(params);
     }
 }
 

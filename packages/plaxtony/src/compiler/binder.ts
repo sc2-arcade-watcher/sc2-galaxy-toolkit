@@ -122,15 +122,17 @@ export function bindSourceFile(sourceFile: SourceFile, store: Store) {
                     isAssigned: false,
                     isReferenced: false,
                     members: new Map<string, Symbol>(),
-                    parent: undefined,
+                    parent: parentSymbol,
                 };
 
                 switch (node.kind) {
-                    case gt.SyntaxKind.VariableDeclaration:
                     case gt.SyntaxKind.ParameterDeclaration:
+                        nodeSymbol.flags = gt.SymbolFlags.FunctionParameter;
+                        break;
+                    case gt.SyntaxKind.VariableDeclaration:
                         nodeSymbol.flags = (
                             (parentSymbol && parentSymbol.declarations[0].kind == gt.SyntaxKind.SourceFile) ?
-                            gt.SymbolFlags.GlobalVariable : gt.SymbolFlags.FunctionScopedVariable
+                            gt.SymbolFlags.GlobalVariable : gt.SymbolFlags.LocalVariable
                         );
                         break;
                     case gt.SyntaxKind.FunctionDeclaration:

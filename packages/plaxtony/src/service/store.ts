@@ -161,6 +161,17 @@ export class Store {
         if (!archive) {
             return undefined;
         }
-        return archive.trigLibs.findElementByName(symbol.escapedName);
+        if (symbol.flags & gt.SymbolFlags.GlobalVariable) {
+            const variable = <gt.VariableDeclaration>symbol.declarations[0];
+            const isConstant = variable.modifiers.find((modifier) => {
+                return modifier.kind === gt.SyntaxKind.ConstKeyword;
+            })
+            if (isConstant) {
+                return archive.trigLibs.findPresetValueByStr(variable.name.name);
+            }
+        }
+        else {
+            return archive.trigLibs.findElementByName(symbol.escapedName);
+        }
     }
 }
