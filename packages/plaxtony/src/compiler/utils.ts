@@ -108,14 +108,14 @@ export function isNamedDeclarationKind(kind: SyntaxKind): boolean {
         || kind === SyntaxKind.FunctionDeclaration
         || kind === SyntaxKind.StructDeclaration
         || kind === SyntaxKind.PropertyDeclaration
-        || kind === SyntaxKind.PropertyAccessExpression
+        // || kind === SyntaxKind.PropertyAccessExpression
         || kind === SyntaxKind.ParameterDeclaration
     ;
 }
 
 export function isDeclarationKind(kind: SyntaxKind): boolean {
     return isNamedDeclarationKind(kind)
-        || kind === SyntaxKind.CallExpression
+        // || kind === SyntaxKind.CallExpression
     ;
 }
 

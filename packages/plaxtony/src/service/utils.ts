@@ -36,7 +36,7 @@ export function findPrecedingToken(position: number, sourceFile: gt.SourceFile, 
             return n;
         }
 
-        const children = getNodeTokens(n);
+        const children = getNodeChildren(n);
         const candidate = findRightmostChildNodeWithTokens(children, /*exclusiveStartPosition*/ children.length);
         return candidate && findRightmostToken(candidate);
 

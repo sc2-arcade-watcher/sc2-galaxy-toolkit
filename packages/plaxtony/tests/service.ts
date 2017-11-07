@@ -75,17 +75,19 @@ describe('Service', () => {
     describe('Completions', () => {
         const document = mockupTextDocument('service', 'navigation', 'funcs.galaxy');
         const documentStruct = mockupTextDocument('service', 'completion', 'struct.galaxy');
+        const documentCompletions = mockupTextDocument('service', 'completion', 'completion.galaxy');
         const store = mockupStore(
             document,
             mockupTextDocument('service', 'navigation', 'declarations.galaxy'),
-            documentStruct
+            documentStruct,
+            documentCompletions,
         );
         const completionsProvider = createProvider(CompletionsProvider, store);
 
         function getCompletionsAt(doc: lsp.TextDocument, line: number, char: number) {
             return completionsProvider.getCompletionsAt(
                 doc.uri,
-                getPositionOfLineAndCharacter(store.documents.get(documentStruct.uri), line, char)
+                getPositionOfLineAndCharacter(store.documents.get(doc.uri), line, char)
             );
         }
 
@@ -127,6 +129,16 @@ describe('Service', () => {
 
             items = getCompletionsAt(documentStruct, 17, 18);
             assert.notEqual(items.length, 1);
+        });
+
+        it('string', () => {
+            const completions = getCompletionsAt(documentCompletions, 2, 12);
+            assert.equal(completions.length, 0);
+        });
+
+        it('filter suggestions basing on preceding indentifier', () => {
+            const completions = getCompletionsAt(documentCompletions, 3, 9);
+            assert.equal(completions.length, 1);
         });
     });
 
