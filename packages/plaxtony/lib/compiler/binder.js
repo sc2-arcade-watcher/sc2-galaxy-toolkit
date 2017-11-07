@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const gt = require("./types");
 const utils_1 = require("./utils");
-function bindSourceFile(sourceFile) {
+function bindSourceFile(sourceFile, store) {
     let currentScope;
     let currentContainer;
     bind(sourceFile);
@@ -11,15 +11,16 @@ function bindSourceFile(sourceFile) {
         let parentContainer = currentContainer;
         if (utils_1.isDeclarationKind(node.kind)) {
             switch (node.kind) {
-                case 121:
+                case 121 /* SourceFile */:
                     {
                         declareSymbol(node, null);
                         break;
                     }
-                case 115:
-                case 114:
+                case 115 /* CallExpression */:
+                case 114 /* PropertyAccessExpression */:
                     {
-                        declareSymbol(node, null);
+                        // TODO: to be reomved?
+                        // declareSymbol(<gt.Declaration>node, null);
                         break;
                     }
                 default:
@@ -29,6 +30,7 @@ function bindSourceFile(sourceFile) {
                     }
             }
         }
+        // if (node.kind === SyntaxKind.SourceFile || node.kind === SyntaxKind.FunctionDeclaration || node.kind === SyntaxKind.StructDeclaration) {
         if (utils_1.isContainerKind(node.kind)) {
             currentContainer = node;
         }
@@ -41,38 +43,48 @@ function bindSourceFile(sourceFile) {
     }
     function getDeclarationName(node) {
         switch (node.kind) {
-            case 121:
+            case 121 /* SourceFile */:
                 {
                     return node.fileName;
                     break;
                 }
-            case 134:
-            case 135:
-            case 133:
-            case 136:
-            case 137:
+            case 134 /* VariableDeclaration */:
+            case 135 /* FunctionDeclaration */:
+            case 133 /* StructDeclaration */:
+            case 136 /* ParameterDeclaration */:
+            case 137 /* PropertyDeclaration */:
                 {
                     return node.name.name;
                     break;
                 }
-            case 114:
+            case 114 /* PropertyAccessExpression */:
                 {
                     return '__prop__' + node.name.name;
                     break;
                 }
-            case 115:
+            case 115 /* CallExpression */:
                 {
                     const call = node;
-                    if (call.expression.kind === 107) {
+                    if (call.expression.kind === 107 /* Identifier */) {
                         return call.expression.name;
                     }
                     else {
+                        // TODO: properly named call expressions such as: st.member_fns[12]();
                         return '__()';
                     }
                     break;
                 }
         }
     }
+    // function createSymbolTable(symbols?: ReadonlyArray<Symbol>): SymbolTable {
+    //     const result = new Map<string, Symbol>() as SymbolTable;
+    //     if (symbols) {
+    //         for (const symbol of symbols) {
+    //             result.set(symbol.escapedName, symbol);
+    //         }
+    //     }
+    //     return result;
+    // }
     function declareSymbol(node, parentSymbol) {
         let scopedSymbolTable;
         let nodeSymbol;
@@ -82,29 +94,37 @@ function bindSourceFile(sourceFile) {
             nodeSymbol = parentSymbol.members.get(name);
         }
         else {
-            nodeSymbol = {
-                escapedName: name,
-                declarations: [],
-                valueDeclaration: undefined,
-                isAssigned: false,
-                isReferenced: false,
-                members: new Map(),
-                parent: undefined,
-            };
-            switch (node.kind) {
-                case 134:
-                    nodeSymbol.flags = ((parentSymbol && parentSymbol.declarations[0].kind == 121) ?
-                        4 : 2);
-                    break;
-                case 135:
-                    nodeSymbol.flags = 16;
-                    break;
-                case 133:
-                    nodeSymbol.flags = 32;
-                    break;
-                case 137:
-                    nodeSymbol.flags = 8;
-                    break;
+            if (parentSymbol && parentSymbol.declarations[0].kind === 121 /* SourceFile */) {
+                nodeSymbol = store.resolveGlobalSymbol(name);
+            }
+            if (!nodeSymbol) {
+                nodeSymbol = {
+                    escapedName: name,
+                    declarations: [],
+                    valueDeclaration: undefined,
+                    isAssigned: false,
+                    isReferenced: false,
+                    members: new Map(),
+                    parent: parentSymbol,
+                };
+                switch (node.kind) {
+                    case 136 /* ParameterDeclaration */:
+                        nodeSymbol.flags = 4 /* FunctionParameter */;
+                        break;
+                    case 134 /* VariableDeclaration */:
+                        nodeSymbol.flags = ((parentSymbol && parentSymbol.declarations[0].kind == 121 /* SourceFile */) ?
+                            8 /* GlobalVariable */ : 2 /* LocalVariable */);
+                        break;
+                    case 135 /* FunctionDeclaration */:
+                        nodeSymbol.flags = 32 /* Function */;
+                        break;
+                    case 133 /* StructDeclaration */:
+                        nodeSymbol.flags = 64 /* Struct */;
+                        break;
+                    case 137 /* PropertyDeclaration */:
+                        nodeSymbol.flags = 16 /* Property */;
+                        break;
+                }
             }
             if (parentSymbol) {
                 parentSymbol.members.set(name, nodeSymbol);
@@ -112,8 +132,29 @@ function bindSourceFile(sourceFile) {
         }
         node.symbol = nodeSymbol;
         nodeSymbol.declarations.push(node);
+        if (!node.symbol.valueDeclaration && ((node.kind === 135 /* FunctionDeclaration */ && node.body) ||
+            (node.kind === 134 /* VariableDeclaration */ && node.initializer))) {
+            node.symbol.valueDeclaration = node;
+        }
         return nodeSymbol;
     }
 }
 exports.bindSourceFile = bindSourceFile;
+function unbindSourceFile(sourceFile, store) {
+    function unbindSymbol(parentSymbol) {
+        for (const symbol of parentSymbol.members.values()) {
+            symbol.declarations = symbol.declarations.filter((decl) => {
+                return utils_1.getSourceFileOfNode(decl) !== sourceFile;
+            });
+            if (symbol.declarations.length) {
+                unbindSymbol(symbol);
+            }
+            else {
+                parentSymbol.members.delete(symbol.escapedName);
+            }
+        }
+    }
+    unbindSymbol(sourceFile.symbol);
+}
+exports.unbindSourceFile = unbindSourceFile;
 //# sourceMappingURL=binder.js.map

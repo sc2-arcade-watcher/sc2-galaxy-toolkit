@@ -7,9 +7,10 @@ const utils_1 = require("../compiler/utils");
 const utils_2 = require("./utils");
 class DefinitionProvider extends provider_1.AbstractProvider {
     getDefinitionAt(uri, position) {
+        // let completions = <lsp.CompletionItem[]> [];
         const currentDocument = this.store.documents.get(uri);
         const currentToken = utils_2.getTokenAtPosition(position, currentDocument);
-        if (!currentToken || currentToken.kind !== 107) {
+        if (!currentToken || currentToken.kind !== 107 /* Identifier */) {
             return [];
         }
         const definitions = [];
@@ -19,6 +20,9 @@ class DefinitionProvider extends provider_1.AbstractProvider {
             return [];
         }
         for (let item of symbol.declarations) {
+            if (utils_1.isNamedDeclarationKind(item.kind)) {
+                item = item.name;
+            }
             const sourceFile = utils_1.getSourceFileOfNode(item);
             definitions.push({
                 uri: utils_1.getSourceFileOfNode(item).fileName,

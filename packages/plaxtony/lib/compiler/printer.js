@@ -4,14 +4,32 @@ const gt = require("./types");
 const scanner_1 = require("./scanner");
 const utils_1 = require("./utils");
 class Printer {
+    constructor() {
+        this.emptyLine = true;
+        this.reset();
+    }
     write(text) {
+        if (this.emptyLine) {
+            this.output.push('\t'.repeat(this.indent));
+            this.emptyLine = false;
+        }
         this.output.push(text);
     }
     whitespace(text = ' ') {
-        this.output.push(text);
+        if (this.emptyLine) {
+            this.output.push('\t'.repeat(this.indent));
+            this.emptyLine = false;
+        }
+        if (text === '\n') {
+            this.newLine();
+        }
+        else {
+            this.output.push(text);
+        }
     }
     newLine() {
         this.output.push('\n');
+        this.emptyLine = true;
     }
     increaseIndent() {
         ++this.indent;
@@ -21,7 +39,7 @@ class Printer {
     }
     emitNode(node) {
         switch (node.kind) {
-            case 135:
+            case 135 /* FunctionDeclaration */:
                 {
                     const func = node;
                     if (func.modifiers && func.modifiers.length > 0) {
@@ -44,7 +62,41 @@ class Printer {
                     this.newLine();
                     break;
                 }
-            case 136:
+            case 133 /* StructDeclaration */:
+                {
+                    const struct = node;
+                    this.write('struct ');
+                    this.emitNode(struct.name);
+                    this.write(' {');
+                    this.newLine();
+                    this.increaseIndent();
+                    this.emitNodeList(struct.members, '', '\n', true);
+                    this.decreaseIndent();
+                    this.write('};');
+                    this.newLine();
+                    break;
+                }
+            case 134 /* VariableDeclaration */:
+            case 137 /* PropertyDeclaration */:
+                {
+                    const variable = node;
+                    if (variable.modifiers && variable.modifiers.length > 0) {
+                        this.emitNodeList(variable.modifiers, ' ');
+                        this.write(' ');
+                    }
+                    this.emitNode(variable.type);
+                    this.write(' ');
+                    this.emitNode(variable.name);
+                    if (variable.kind === 134 /* VariableDeclaration */ && variable.initializer) {
+                        this.whitespace(' ');
+                        this.write('=');
+                        this.whitespace(' ');
+                        this.emitNode(variable.initializer);
+                    }
+                    this.write(';');
+                    break;
+                }
+            case 136 /* ParameterDeclaration */:
                 {
                     const param = node;
                     if (param.modifiers && param.modifiers.length > 0) {
@@ -56,20 +108,20 @@ class Printer {
                     this.emitNode(param.name);
                     break;
                 }
-            case 107:
+            case 107 /* Identifier */:
                 {
                     const identifier = node;
                     this.write(identifier.name);
                     break;
                 }
-            case 1:
-            case 2:
+            case 1 /* NumericLiteral */:
+            case 2 /* StringLiteral */:
                 {
                     const literal = node;
                     this.write(literal.text);
                     break;
                 }
-            case 111:
+            case 111 /* ArrayType */:
                 {
                     const type = node;
                     this.emitNode(type.elementType);
@@ -78,7 +130,7 @@ class Printer {
                     this.write(']');
                     break;
                 }
-            case 110:
+            case 110 /* MappedType */:
                 {
                     const type = node;
                     this.emitNode(type.returnType);
@@ -87,14 +139,22 @@ class Printer {
                     this.write('>');
                     break;
                 }
-            case 118:
+            case 118 /* BinaryExpression */:
                 {
                     const expr = node;
                     this.emitNode(expr.left);
-                    this.write(' ');
+                    this.whitespace(' ');
                     this.emitNode(expr.operatorToken);
-                    this.write(' ');
+                    this.whitespace(' ');
                     this.emitNode(expr.right);
+                    break;
+                }
+            case 120 /* ParenthesizedExpression */:
+                {
+                    const expr = node;
+                    this.write('(');
+                    this.emitNode(expr.expression);
+                    this.write(')');
                     break;
                 }
             default:
@@ -107,10 +167,10 @@ class Printer {
                 }
         }
     }
-    emitNodeList(nodesList, textSeparator = undefined, whitespaceSeparator = undefined) {
+    emitNodeList(nodesList, textSeparator = undefined, whitespaceSeparator = undefined, includeSeparatorAtEnd = false) {
         nodesList.forEach((node, index) => {
             this.emitNode(node);
-            if (nodesList.length !== (index + 1)) {
+            if (includeSeparatorAtEnd || nodesList.length !== (index + 1)) {
                 if (textSeparator) {
                     this.write(textSeparator);
                 }
@@ -136,9 +196,6 @@ class Printer {
     printFile(sourceFile) {
         this.newLine();
         return this.flush();
-    }
-    constructor() {
-        this.reset();
     }
 }
 exports.Printer = Printer;

@@ -2,6 +2,7 @@ export declare const enum ElementFlag {
     Native = 2,
     FuncAction = 4,
     FuncCall = 8,
+    Event = 16,
 }
 export declare class ElementReference<T extends Element> {
     private container;
@@ -52,6 +53,8 @@ export declare class Library {
     constructor(container: LibraryContainer);
     fromFile(filename: string): Promise<boolean>;
     findElementByName(name: string): Element | undefined;
+    findPresetValueByStr(value: string): PresetValue | undefined;
+    findPresetByValue(value: PresetValue): Preset | undefined;
     findElementById<T extends Element>(id: string): T | undefined;
     getId(): string;
 }
@@ -59,4 +62,6 @@ export declare class LibraryContainer extends Map<string, Library> {
     addFromFile(filename: string): Promise<Library | null>;
     findElementByName(name: string): Element | undefined;
     findElementById<T extends Element>(elementId: string, libraryId?: string): T | undefined;
+    findPresetValueByStr(value: string, libraryId?: string): PresetValue | undefined;
+    findPresetByValue(value: PresetValue, libraryId?: string): Preset | undefined;
 }

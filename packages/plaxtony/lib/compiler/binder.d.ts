@@ -1,2 +1,4 @@
 import { SourceFile } from './types';
-export declare function bindSourceFile(sourceFile: SourceFile): void;
+import { Store } from '../service/store';
+export declare function bindSourceFile(sourceFile: SourceFile, store: Store): void;
+export declare function unbindSourceFile(sourceFile: SourceFile, store: Store): void;

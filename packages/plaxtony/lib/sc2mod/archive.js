@@ -47,14 +47,18 @@ function findSC2File(directory, pattern) {
 class SC2Archive {
     constructor() {
         this.trigLibs = new trig.LibraryContainer();
+        // trigStrings = new Map<string, LocalizationFile>();
         this.trigStrings = new localization_1.LocalizationFile();
     }
     openFromDirectory(directory) {
         return __awaiter(this, void 0, void 0, function* () {
             this.directory = path.resolve(directory);
+            // TODO: support Triggers
             for (const filename of yield findSC2File(this.directory, '+(*.TriggerLib|*.SC2Lib)')) {
                 this.trigLibs.addFromFile(filename);
             }
+            // for (const filename of await findSC2File(this.directory, '*.sc2data/LocalizedData/TriggerStrings.txt')) {
+            // }
             const filenames = yield findSC2File(this.directory, path.join('TriggerStrings.txt'));
             if (filenames.length) {
                 this.trigStrings.readFromFile(filenames[0]);

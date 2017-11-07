@@ -269,6 +269,8 @@ export declare const enum SyntaxKindMarker {
     LastToken = 107,
     FirstKeyword = 49,
     LastKeyword = 106,
+    FirstBasicType = 66,
+    LastBasicType = 71,
     FirstComplexType = 72,
     LastComplexType = 103,
     FirstTypeNode = 109,
@@ -278,14 +280,16 @@ export declare type Modifier = Token<SyntaxKind.ConstKeyword> | Token<SyntaxKind
 export declare type KeywordType = SyntaxKind.AbilcmdKeyword | SyntaxKind.ActorKeyword | SyntaxKind.ActorscopeKeyword | SyntaxKind.AifilterKeyword | SyntaxKind.AnimfilterKeyword | SyntaxKind.BankKeyword | SyntaxKind.BoolKeyword | SyntaxKind.ByteKeyword | SyntaxKind.CamerainfoKeyword | SyntaxKind.CharKeyword | SyntaxKind.ColorKeyword | SyntaxKind.DoodadKeyword | SyntaxKind.FixedKeyword | SyntaxKind.HandleKeyword | SyntaxKind.GenerichandleKeyword | SyntaxKind.EffecthistoryKeyword | SyntaxKind.IntKeyword | SyntaxKind.MarkerKeyword | SyntaxKind.OrderKeyword | SyntaxKind.PlayergroupKeyword | SyntaxKind.PointKeyword | SyntaxKind.RegionKeyword | SyntaxKind.RevealerKeyword | SyntaxKind.SoundKeyword | SyntaxKind.SoundlinkKeyword | SyntaxKind.StringKeyword | SyntaxKind.TextKeyword | SyntaxKind.TimerKeyword | SyntaxKind.TransmissionsourceKeyword | SyntaxKind.TriggerKeyword | SyntaxKind.UnitKeyword | SyntaxKind.UnitfilterKeyword | SyntaxKind.UnitgroupKeyword | SyntaxKind.UnitrefKeyword | SyntaxKind.VoidKeyword | SyntaxKind.WaveKeyword | SyntaxKind.WaveinfoKeyword | SyntaxKind.WavetargetKeyword | SyntaxKind.ArrayrefKeyword | SyntaxKind.StructrefKeyword | SyntaxKind.FuncrefKeyword;
 export declare const enum SymbolFlags {
     None = 0,
-    FunctionScopedVariable = 2,
-    GlobalVariable = 4,
-    Property = 8,
-    Function = 16,
-    Struct = 32,
+    LocalVariable = 2,
+    FunctionParameter = 4,
+    GlobalVariable = 8,
+    Property = 16,
+    Function = 32,
+    Struct = 64,
     Signature = 131072,
     TypeParameter = 262144,
-    Variable = 6,
+    Variable = 14,
+    FunctionScopedVariable = 6,
 }
 export interface Symbol {
     id?: number;
@@ -314,11 +318,16 @@ export declare const enum TypeFlags {
     Null = 2048,
     Struct = 4096,
     Function = 8192,
-    Array = 16384,
-    Complex = 32768,
+    Complex = 16384,
+    Array = 32768,
+    Mapped = 65536,
+    Funcref = 131072,
+    Arrayref = 262144,
+    Structref = 524288,
     Nullable = 2048,
     Literal = 448,
     Numeric = 12,
+    Reference = 917504,
 }
 export interface Type {
     flags: TypeFlags;
@@ -344,6 +353,10 @@ export interface FunctionType extends Type {
 }
 export interface ArrayType extends Type {
     elementType: Type;
+}
+export interface MappedType extends Type {
+    returnType: Type;
+    referencedType: Type;
 }
 export interface ComplexType extends Type {
     kind: SyntaxKind;
@@ -502,13 +515,13 @@ export interface BinaryExpression extends Expression {
 }
 export interface PrefixUnaryExpression extends UnaryExpression {
     kind: SyntaxKind.PrefixUnaryExpression;
-    operator: PrefixUnaryOperator;
+    operator: Token<PrefixUnaryOperator>;
     operand: UnaryExpression;
 }
 export interface PostfixUnaryExpression extends UnaryExpression {
     kind: SyntaxKind.PostfixUnaryExpression;
     operand: LeftHandSideExpression;
-    operator: PostfixUnaryOperator;
+    operator: Token<PostfixUnaryOperator>;
 }
 export interface ElementAccessExpression extends MemberExpression {
     kind: SyntaxKind.ElementAccessExpression;
@@ -526,7 +539,6 @@ export interface PropertyAccessExpression extends MemberExpression, NamedDeclara
 export interface CallExpression extends LeftHandSideExpression, Declaration {
     kind: SyntaxKind.CallExpression;
     expression: LeftHandSideExpression;
-    typeArguments?: NodeArray<TypeNode>;
     arguments: NodeArray<Expression>;
 }
 export interface BreakStatement extends Statement {

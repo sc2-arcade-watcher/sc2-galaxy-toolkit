@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/* @internal */
 var CharacterCodes;
 (function (CharacterCodes) {
     CharacterCodes[CharacterCodes["nullCharacter"] = 0] = "nullCharacter";
@@ -9,6 +10,7 @@ var CharacterCodes;
     CharacterCodes[CharacterCodes["lineSeparator"] = 8232] = "lineSeparator";
     CharacterCodes[CharacterCodes["paragraphSeparator"] = 8233] = "paragraphSeparator";
     CharacterCodes[CharacterCodes["nextLine"] = 133] = "nextLine";
+    // Unicode 3.0 space characters
     CharacterCodes[CharacterCodes["space"] = 32] = "space";
     CharacterCodes[CharacterCodes["nonBreakingSpace"] = 160] = "nonBreakingSpace";
     CharacterCodes[CharacterCodes["enQuad"] = 8192] = "enQuad";
@@ -130,8 +132,10 @@ var CharacterCodes;
 var SyntaxKind;
 (function (SyntaxKind) {
     SyntaxKind[SyntaxKind["Unknown"] = 0] = "Unknown";
+    // Literals
     SyntaxKind[SyntaxKind["NumericLiteral"] = 1] = "NumericLiteral";
     SyntaxKind[SyntaxKind["StringLiteral"] = 2] = "StringLiteral";
+    // Punctuation
     SyntaxKind[SyntaxKind["OpenBraceToken"] = 3] = "OpenBraceToken";
     SyntaxKind[SyntaxKind["CloseBraceToken"] = 4] = "CloseBraceToken";
     SyntaxKind[SyntaxKind["OpenParenToken"] = 5] = "OpenParenToken";
@@ -167,6 +171,7 @@ var SyntaxKind;
     SyntaxKind[SyntaxKind["QuestionToken"] = 35] = "QuestionToken";
     SyntaxKind[SyntaxKind["ColonToken"] = 36] = "ColonToken";
     SyntaxKind[SyntaxKind["AtToken"] = 37] = "AtToken";
+    // Assignments
     SyntaxKind[SyntaxKind["EqualsToken"] = 38] = "EqualsToken";
     SyntaxKind[SyntaxKind["PlusEqualsToken"] = 39] = "PlusEqualsToken";
     SyntaxKind[SyntaxKind["MinusEqualsToken"] = 40] = "MinusEqualsToken";
@@ -178,6 +183,7 @@ var SyntaxKind;
     SyntaxKind[SyntaxKind["AmpersandEqualsToken"] = 46] = "AmpersandEqualsToken";
     SyntaxKind[SyntaxKind["BarEqualsToken"] = 47] = "BarEqualsToken";
     SyntaxKind[SyntaxKind["CaretEqualsToken"] = 48] = "CaretEqualsToken";
+    // Reserved words
     SyntaxKind[SyntaxKind["IncludeKeyword"] = 49] = "IncludeKeyword";
     SyntaxKind[SyntaxKind["StructKeyword"] = 50] = "StructKeyword";
     SyntaxKind[SyntaxKind["StaticKeyword"] = 51] = "StaticKeyword";
@@ -195,12 +201,14 @@ var SyntaxKind;
     SyntaxKind[SyntaxKind["FalseKeyword"] = 63] = "FalseKeyword";
     SyntaxKind[SyntaxKind["NullKeyword"] = 64] = "NullKeyword";
     SyntaxKind[SyntaxKind["TypedefKeyword"] = 65] = "TypedefKeyword";
+    // Basic types
     SyntaxKind[SyntaxKind["BoolKeyword"] = 66] = "BoolKeyword";
     SyntaxKind[SyntaxKind["ByteKeyword"] = 67] = "ByteKeyword";
     SyntaxKind[SyntaxKind["CharKeyword"] = 68] = "CharKeyword";
     SyntaxKind[SyntaxKind["IntKeyword"] = 69] = "IntKeyword";
     SyntaxKind[SyntaxKind["FixedKeyword"] = 70] = "FixedKeyword";
     SyntaxKind[SyntaxKind["StringKeyword"] = 71] = "StringKeyword";
+    // Native complex types
     SyntaxKind[SyntaxKind["AbilcmdKeyword"] = 72] = "AbilcmdKeyword";
     SyntaxKind[SyntaxKind["ActorKeyword"] = 73] = "ActorKeyword";
     SyntaxKind[SyntaxKind["ActorscopeKeyword"] = 74] = "ActorscopeKeyword";
@@ -233,11 +241,14 @@ var SyntaxKind;
     SyntaxKind[SyntaxKind["WaveKeyword"] = 101] = "WaveKeyword";
     SyntaxKind[SyntaxKind["WaveinfoKeyword"] = 102] = "WaveinfoKeyword";
     SyntaxKind[SyntaxKind["WavetargetKeyword"] = 103] = "WavetargetKeyword";
+    // Ref types
     SyntaxKind[SyntaxKind["ArrayrefKeyword"] = 104] = "ArrayrefKeyword";
     SyntaxKind[SyntaxKind["StructrefKeyword"] = 105] = "StructrefKeyword";
     SyntaxKind[SyntaxKind["FuncrefKeyword"] = 106] = "FuncrefKeyword";
+    //
     SyntaxKind[SyntaxKind["Identifier"] = 107] = "Identifier";
     SyntaxKind[SyntaxKind["EndOfFileToken"] = 108] = "EndOfFileToken";
+    // Elements
     SyntaxKind[SyntaxKind["TypeReference"] = 109] = "TypeReference";
     SyntaxKind[SyntaxKind["MappedType"] = 110] = "MappedType";
     SyntaxKind[SyntaxKind["ArrayType"] = 111] = "ArrayType";
@@ -274,6 +285,8 @@ var SyntaxKindMarker;
     SyntaxKindMarker[SyntaxKindMarker["LastToken"] = 107] = "LastToken";
     SyntaxKindMarker[SyntaxKindMarker["FirstKeyword"] = 49] = "FirstKeyword";
     SyntaxKindMarker[SyntaxKindMarker["LastKeyword"] = 106] = "LastKeyword";
+    SyntaxKindMarker[SyntaxKindMarker["FirstBasicType"] = 66] = "FirstBasicType";
+    SyntaxKindMarker[SyntaxKindMarker["LastBasicType"] = 71] = "LastBasicType";
     SyntaxKindMarker[SyntaxKindMarker["FirstComplexType"] = 72] = "FirstComplexType";
     SyntaxKindMarker[SyntaxKindMarker["LastComplexType"] = 103] = "LastComplexType";
     SyntaxKindMarker[SyntaxKindMarker["FirstTypeNode"] = 109] = "FirstTypeNode";
@@ -283,14 +296,16 @@ var SyntaxKindMarker;
 var SymbolFlags;
 (function (SymbolFlags) {
     SymbolFlags[SymbolFlags["None"] = 0] = "None";
-    SymbolFlags[SymbolFlags["FunctionScopedVariable"] = 2] = "FunctionScopedVariable";
-    SymbolFlags[SymbolFlags["GlobalVariable"] = 4] = "GlobalVariable";
-    SymbolFlags[SymbolFlags["Property"] = 8] = "Property";
-    SymbolFlags[SymbolFlags["Function"] = 16] = "Function";
-    SymbolFlags[SymbolFlags["Struct"] = 32] = "Struct";
+    SymbolFlags[SymbolFlags["LocalVariable"] = 2] = "LocalVariable";
+    SymbolFlags[SymbolFlags["FunctionParameter"] = 4] = "FunctionParameter";
+    SymbolFlags[SymbolFlags["GlobalVariable"] = 8] = "GlobalVariable";
+    SymbolFlags[SymbolFlags["Property"] = 16] = "Property";
+    SymbolFlags[SymbolFlags["Function"] = 32] = "Function";
+    SymbolFlags[SymbolFlags["Struct"] = 64] = "Struct";
     SymbolFlags[SymbolFlags["Signature"] = 131072] = "Signature";
     SymbolFlags[SymbolFlags["TypeParameter"] = 262144] = "TypeParameter";
-    SymbolFlags[SymbolFlags["Variable"] = 6] = "Variable";
+    SymbolFlags[SymbolFlags["Variable"] = 14] = "Variable";
+    SymbolFlags[SymbolFlags["FunctionScopedVariable"] = 6] = "FunctionScopedVariable";
 })(SymbolFlags = exports.SymbolFlags || (exports.SymbolFlags = {}));
 var TypeFlags;
 (function (TypeFlags) {
@@ -307,17 +322,26 @@ var TypeFlags;
     TypeFlags[TypeFlags["Null"] = 2048] = "Null";
     TypeFlags[TypeFlags["Struct"] = 4096] = "Struct";
     TypeFlags[TypeFlags["Function"] = 8192] = "Function";
-    TypeFlags[TypeFlags["Array"] = 16384] = "Array";
-    TypeFlags[TypeFlags["Complex"] = 32768] = "Complex";
+    TypeFlags[TypeFlags["Complex"] = 16384] = "Complex";
+    TypeFlags[TypeFlags["Array"] = 32768] = "Array";
+    TypeFlags[TypeFlags["Mapped"] = 65536] = "Mapped";
+    TypeFlags[TypeFlags["Funcref"] = 131072] = "Funcref";
+    TypeFlags[TypeFlags["Arrayref"] = 262144] = "Arrayref";
+    TypeFlags[TypeFlags["Structref"] = 524288] = "Structref";
+    /* @internal */
     TypeFlags[TypeFlags["Nullable"] = 2048] = "Nullable";
     TypeFlags[TypeFlags["Literal"] = 448] = "Literal";
     TypeFlags[TypeFlags["Numeric"] = 12] = "Numeric";
+    TypeFlags[TypeFlags["Reference"] = 917504] = "Reference";
 })(TypeFlags = exports.TypeFlags || (exports.TypeFlags = {}));
 var NodeCheckFlags;
 (function (NodeCheckFlags) {
     NodeCheckFlags[NodeCheckFlags["TypeChecked"] = 1] = "TypeChecked";
     NodeCheckFlags[NodeCheckFlags["ContextChecked"] = 2] = "ContextChecked";
 })(NodeCheckFlags = exports.NodeCheckFlags || (exports.NodeCheckFlags = {}));
+//
+// Diagnostics
+//
 var DiagnosticCategory;
 (function (DiagnosticCategory) {
     DiagnosticCategory[DiagnosticCategory["Warning"] = 0] = "Warning";

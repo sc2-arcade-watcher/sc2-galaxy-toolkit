@@ -6,6 +6,7 @@ class LocalizationFile extends Map {
     readFromFile(filename) {
         let text = fs.readFileSync(filename, 'utf8');
         text.charCodeAt;
+        // remove UTF8 BOM
         text = text.replace(/^\uFEFF/, '');
         let result;
         while (result = fileRe.exec(text)) {

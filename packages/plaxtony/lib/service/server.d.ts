@@ -7,6 +7,7 @@ export declare class Server {
     private completionsProvider;
     private signaturesProvider;
     private definitionsProvider;
+    private hoverProvider;
     private documents;
     private workspaces;
     private createProvider<T>(cls);
@@ -15,7 +16,6 @@ export declare class Server {
     private onInitialize(params);
     private onDidChangeConfiguration(ev);
     private onDidChangeContent(ev);
-    private onProvideDiagnostics();
     private onDidOpen(ev);
     private onDidClose(ev);
     private onDidFindInWorkspace(ev);
@@ -25,5 +25,6 @@ export declare class Server {
     private onWorkspaceSymbol(params);
     private onSignatureHelp(params);
     private onDefinition(params);
+    private onHover(params);
 }
 export declare function createServer(): lsp.IConnection;

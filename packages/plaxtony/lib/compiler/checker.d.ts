@@ -10,6 +10,7 @@ export declare class TypeChecker {
     private report(location, msg, category?);
     private getNodeLinks(node);
     private getTypeFromArrayTypeNode(node);
+    private getTypeFromMappedTypeNode(node);
     private getPropertyOfType(type, name);
     private getDeclaredTypeOfStruct(symbol);
     private getDeclaredTypeOfSymbol(symbol);

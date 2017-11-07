@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const gt = require("../compiler/types");
 const utils_1 = require("../compiler/utils");
 const printer_1 = require("../compiler/printer");
 const provider_1 = require("./provider");
 const utils_2 = require("./utils");
+const trig = require("../sc2mod/trigger");
 class SignaturesProvider extends provider_1.AbstractProvider {
     constructor() {
         super(...arguments);
@@ -17,9 +17,12 @@ class SignaturesProvider extends provider_1.AbstractProvider {
             if (argument.pos <= position) {
                 activeParam = index;
                 prevArg = argument;
+                // exit early when confirmed it is in bounds
+                // in other case keep going to acomodate whitespaces
                 if (argument.end >= position) {
                     return true;
                 }
+                // offset is after last existing arg, it means the current argument wasn't yet parsed
                 if (index === args.length - 1 && position > args[index].end) {
                     activeParam++;
                 }
@@ -39,6 +42,7 @@ class SignaturesProvider extends provider_1.AbstractProvider {
             documentation: '',
             parameters: [],
         };
+        // metadata
         const s2archive = this.store.getArchiveOfSourceFile(utils_1.getSourceFileOfNode(functionDeclaration));
         const funcEl = this.store.getSymbolMetadata(functionSymbol);
         if (s2archive && funcEl) {
@@ -63,19 +67,23 @@ class SignaturesProvider extends provider_1.AbstractProvider {
                 documentation: '',
             };
             if (funcEl) {
-                const paramEl = funcEl.getParameters()[index];
-                if (paramEl) {
-                    const textKey = paramEl.textKey('Name');
-                    if (s2archive.trigStrings.has(textKey)) {
-                        paramInfo.documentation += '#### ' + s2archive.trigStrings.get(textKey) + ` - *${paramEl.type.type}*` + '\n';
-                    }
-                    if (paramEl.type.type === 'preset') {
-                        paramInfo.documentation += '---\n';
-                        const preset = paramEl.type.typeElement.resolve();
-                        for (const presetValueRef of preset.values) {
-                            const presetValue = presetValueRef.resolve();
-                            const locName = s2archive.trigStrings.get(presetValue.textKey('Name'));
-                            paramInfo.documentation += `- \`${presetValue.value}\` - **${locName}**\n`;
+                const realIndex = index + (funcEl.flags & 16 /* Event */ ? -1 : 0);
+                if (realIndex >= 0) {
+                    const paramEl = funcEl.getParameters()[realIndex];
+                    if (paramEl) {
+                        const textKey = paramEl.textKey('Name');
+                        if (s2archive.trigStrings.has(textKey)) {
+                            paramInfo.documentation += '#### ' + s2archive.trigStrings.get(textKey) + ` - *${paramEl.type.type}*` + '\n';
+                        }
+                        if (paramEl.type.type === 'preset') {
+                            paramInfo.documentation += '---\n';
+                            // #### Presets:\n
+                            const preset = paramEl.type.typeElement.resolve();
+                            for (const presetValueRef of preset.values) {
+                                const presetValue = presetValueRef.resolve();
+                                const locName = s2archive.trigStrings.get(presetValue.textKey('Name'));
+                                paramInfo.documentation += `- \`${presetValue.value}\` - **${locName}**\n`;
+                            }
                         }
                     }
                 }
@@ -85,33 +93,47 @@ class SignaturesProvider extends provider_1.AbstractProvider {
         return signatureInfo;
     }
     getSignatureAt(uri, position) {
+        const signatureHelp = {
+            signatures: [],
+            activeSignature: null,
+            activeParameter: null,
+        };
         const currentDocument = this.store.documents.get(uri);
-        const currentToken = utils_2.findPrecedingToken(position, currentDocument);
+        const currentToken = utils_2.getTokenAtPosition(position, currentDocument, true);
         let node = currentToken.parent;
-        if (currentToken.parent.kind === 115 && currentToken.parent.expression === currentToken) {
-            node = currentToken.parent.parent;
+        if (!currentToken) {
+            return signatureHelp;
         }
+        // we don't want to provide signature for left side of CallExpression
+        // if (currentToken.parent.kind === gt.SyntaxKind.CallExpression &&
+        //     (
+        //         (<gt.CallExpression>currentToken.parent).expression === currentToken ||
+        //         currentToken.parent.syntaxTokens.indexOf(currentToken) === 0 // only OpenParenToken
+        //     )
+        // ) {
+        //     node = currentToken.parent.parent;
+        // }
         const callNode = utils_1.findAncestor(node, (element) => {
-            if (element.kind !== 115) {
+            if (element.kind !== 115 /* CallExpression */) {
                 return false;
             }
+            // we don't want to provide signature for left side of CallExpression
+            if (element.arguments.pos > position) {
+                return false;
+            }
+            // skip if goes over range - we must've hit CloseParenToken
             if (element.end <= position) {
                 return false;
             }
             return true;
         });
         if (!callNode) {
-            return null;
+            return signatureHelp;
         }
-        if (callNode.expression.kind !== 107) {
-            return null;
+        if (callNode.expression.kind !== 107 /* Identifier */) {
+            return signatureHelp;
         }
         const callIdentifier = (callNode.expression);
-        const signatureHelp = {
-            signatures: [],
-            activeSignature: null,
-            activeParameter: null,
-        };
         for (const document of this.store.documents.values()) {
             const functionSymbol = document.symbol.members.get(callIdentifier.name);
             if (!functionSymbol) {
@@ -120,6 +142,10 @@ class SignaturesProvider extends provider_1.AbstractProvider {
             const signatureInfo = this.getSignatureOfFunction(functionSymbol);
             signatureHelp.activeSignature = 0;
             signatureHelp.activeParameter = this.evaluateActiveParameter(callNode, position);
+            // not really a valid signature parameter right there
+            // if (signatureHelp.activeParameter && (signatureHelp.activeParameter + 1) > signatureInfo.parameters.length) {
+            //     signatureHelp.activeParameter = null;
+            // }
             signatureHelp.signatures.push(signatureInfo);
             break;
         }

@@ -34,7 +34,7 @@ export declare class Parser {
     private isStartOfRootStatement();
     private isStartOfTypeDefinition();
     private isStartOfParameter();
-    private parseLiteral(kind);
+    private parseLiteral(kind?);
     private parseInclude();
     private parseIdentifier(diagnosticMessage?);
     private parseTypeDefinition();
@@ -45,7 +45,6 @@ export declare class Parser {
     private parseFunctionDeclaration();
     private parseVariableDeclaration();
     private parseBlock();
-    private parseLiteralNode();
     private isUpdateExpression();
     private isStartOfLeftHandSideExpression();
     private makeBinaryExpression(left, operatorToken, right);

@@ -15,6 +15,7 @@ var ElementFlag;
     ElementFlag[ElementFlag["Native"] = 2] = "Native";
     ElementFlag[ElementFlag["FuncAction"] = 4] = "FuncAction";
     ElementFlag[ElementFlag["FuncCall"] = 8] = "FuncCall";
+    ElementFlag[ElementFlag["Event"] = 16] = "Event";
 })(ElementFlag = exports.ElementFlag || (exports.ElementFlag = {}));
 class ElementReference {
     constructor(container) {
@@ -30,7 +31,7 @@ class ParameterType {
 exports.ParameterType = ParameterType;
 class Element {
     toString() {
-        if (this.flags & 2) {
+        if (this.flags & 2 /* Native */) {
             return this.name ? this.name : this.id;
         }
         else {
@@ -109,9 +110,10 @@ class Library {
                 case 'FunctionDef':
                     {
                         const func = el = new FunctionDef();
-                        func.flags |= item.FlagNative ? 2 : 0;
-                        func.flags |= item.FlagAction ? 4 : 0;
-                        func.flags |= item.FlagCall ? 8 : 0;
+                        func.flags |= item.FlagNative ? 2 /* Native */ : 0;
+                        func.flags |= item.FlagAction ? 4 /* FuncAction */ : 0;
+                        func.flags |= item.FlagCall ? 8 /* FuncCall */ : 0;
+                        func.flags |= item.FlagEvent ? 16 /* Event */ : 0;
                         if (item.Parameter) {
                             for (const param of item.Parameter) {
                                 func.parameters.push(this.parseReference(param));
@@ -144,6 +146,9 @@ class Library {
                                 preset.values.push(this.parseReference(val));
                             }
                         }
+                        // item.$.PresetCustom
+                        // item.$.PresetGenConstVar
+                        // item.$.PresetAsBits
                         break;
                     }
                 case 'PresetValue':
@@ -186,6 +191,29 @@ class Library {
     findElementByName(name) {
         return this.nameMap.get(name);
     }
+    findPresetValueByStr(value) {
+        for (const el of this.elements.values()) {
+            if (!(el instanceof PresetValue))
+                continue;
+            if (el.value && el.value == value) {
+                return el;
+            }
+        }
+        return null;
+    }
+    findPresetByValue(value) {
+        for (const el of this.elements.values()) {
+            if (!(el instanceof Preset))
+                continue;
+            const belongsTo = el.values.find((localVal) => {
+                return value.id === localVal.id;
+            });
+            if (belongsTo) {
+                return el;
+            }
+        }
+        return null;
+    }
     findElementById(id) {
         return this.elements.get(id);
     }
@@ -226,6 +254,34 @@ class LibraryContainer extends Map {
         }
         for (const lib of this.values()) {
             const el = lib.findElementById(elementId);
+            if (el) {
+                return el;
+            }
+        }
+        return undefined;
+    }
+    findPresetValueByStr(value, libraryId) {
+        if (libraryId) {
+            if (this.has(libraryId)) {
+                return this.get(libraryId).findPresetValueByStr(value);
+            }
+        }
+        for (const lib of this.values()) {
+            const el = lib.findPresetValueByStr(value);
+            if (el) {
+                return el;
+            }
+        }
+        return undefined;
+    }
+    findPresetByValue(value, libraryId) {
+        if (libraryId) {
+            if (this.has(libraryId)) {
+                return this.get(libraryId).findPresetByValue(value);
+            }
+        }
+        for (const lib of this.values()) {
+            const el = lib.findPresetByValue(value);
             if (el) {
                 return el;
             }

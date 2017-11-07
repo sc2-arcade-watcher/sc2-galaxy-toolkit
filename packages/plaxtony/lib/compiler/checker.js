@@ -39,23 +39,35 @@ function createIntrinsicType(kind, intrinsicName) {
     type.intrinsicName = intrinsicName;
     return type;
 }
+// function createBooleanType(trueFalseTypes: Type[]): IntrinsicType & UnionType {
+//     const type = <IntrinsicType & UnionType>getUnionType(trueFalseTypes);
+//     type.flags |= gt.TypeFlags.Boolean;
+//     type.intrinsicName = "boolean";
+//     return type;
+// }
 function createStructType(symbol) {
-    const type = createType(4096);
+    const type = createType(4096 /* Struct */);
     type.symbol = symbol;
     return type;
 }
 function createFunctionType(symbol) {
-    const type = createType(8192);
+    const type = createType(8192 /* Function */);
     type.symbol = symbol;
     return type;
 }
 function createArrayType(elementType) {
-    const type = createType(16384);
+    const type = createType(32768 /* Array */);
     type.elementType = elementType;
     return type;
 }
+function createMappedType(returnType, referencedType) {
+    const type = createType(65536 /* Mapped */);
+    type.returnType = returnType;
+    type.referencedType = referencedType;
+    return type;
+}
 function createComplexType(kind) {
-    const type = createType(32768);
+    const type = createType(16384 /* Complex */);
     type.kind = kind;
     return type;
 }
@@ -66,16 +78,21 @@ function createSymbol(flags, name) {
     };
     return symbol;
 }
-const unknownType = createIntrinsicType(1, "unknown");
-const nullType = createIntrinsicType(2048, "null");
-const stringType = createIntrinsicType(2, "string");
-const integerType = createIntrinsicType(4, "integer");
-const fixedType = createIntrinsicType(8, "fixed");
-const trueType = createIntrinsicType(256, "true");
-const falseType = createIntrinsicType(256, "false");
-const voidType = createIntrinsicType(1024, "void");
+const unknownType = createIntrinsicType(1 /* Any */, "unknown");
+const nullType = createIntrinsicType(2048 /* Null */, "null");
+const stringType = createIntrinsicType(2 /* String */, "string");
+const integerType = createIntrinsicType(4 /* Integer */, "integer");
+const fixedType = createIntrinsicType(8 /* Fixed */, "fixed");
+const trueType = createIntrinsicType(256 /* BooleanLiteral */, "true");
+const falseType = createIntrinsicType(256 /* BooleanLiteral */, "false");
+// const booleanType = createBooleanType([trueType, falseType]);
+const voidType = createIntrinsicType(1024 /* Void */, "void");
+const funcrefType = createIntrinsicType(131072 /* Funcref */, "funcref");
+const arrayrefType = createIntrinsicType(262144 /* Arrayref */, "arrayref");
+const structrefType = createIntrinsicType(524288 /* Structref */, "structref");
 const complexTypes = [];
-complexTypes[96] = createComplexType(96);
+complexTypes[96 /* UnitKeyword */] = createComplexType(96 /* UnitKeyword */);
+// const undefinedSymbol = createSymbol(gt.SymbolFlags.None, "undefined")
 class TypeChecker {
     constructor(store) {
         this.nodeLinks = [];
@@ -96,8 +113,18 @@ class TypeChecker {
         }
         return links.resolvedType;
     }
+    getTypeFromMappedTypeNode(node) {
+        const links = this.getNodeLinks(node);
+        if (!links.resolvedType) {
+            links.resolvedType = createMappedType(this.getTypeFromTypeNode(node.returnType), this.getTypeFromTypeNode(node.typeArguments[0]));
+        }
+        return links.resolvedType;
+    }
     getPropertyOfType(type, name) {
-        if (type.flags & 4096) {
+        if (type.flags & 65536 /* Mapped */ && type.returnType.flags & 524288 /* Structref */) {
+            type = type.referencedType;
+        }
+        if (type.flags & 4096 /* Struct */) {
             if (type.symbol.members.has(name)) {
                 return type.symbol.members.get(name);
             }
@@ -108,28 +135,48 @@ class TypeChecker {
         return createStructType(symbol);
     }
     getDeclaredTypeOfSymbol(symbol) {
-        if (symbol.flags & (32)) {
+        if (symbol.flags & (64 /* Struct */)) {
             return this.getDeclaredTypeOfStruct(symbol);
         }
+        else if (symbol.flags & (14 /* Variable */)) {
+            return this.getTypeOfSymbol(symbol);
+        }
+        // TODO: resolve typedefs
         return unknownType;
     }
     getTypeFromTypeNode(node) {
         switch (node.kind) {
-            case 71:
+            case 71 /* StringKeyword */:
                 return stringType;
-            case 69:
+            case 69 /* IntKeyword */:
                 return integerType;
-            case 70:
+            case 70 /* FixedKeyword */:
                 return fixedType;
-            case 100:
+            // case gt.SyntaxKind.BooleanKeyword:
+            //     return booleanType;
+            case 100 /* VoidKeyword */:
                 return voidType;
-            case 64:
+            case 64 /* NullKeyword */:
                 return nullType;
-            case 96:
+            case 106 /* FuncrefKeyword */:
+                return funcrefType;
+            case 104 /* ArrayrefKeyword */:
+                return arrayrefType;
+            case 105 /* StructrefKeyword */:
+                return structrefType;
+            case 96 /* UnitKeyword */:
                 return complexTypes[node.kind];
-            case 111:
+            // case gt.SyntaxKind.LiteralType:
+            //     return getTypeFromLiteralTypeNode(<LiteralTypeNode>node);
+            // case gt.SyntaxKind.TypeReference:
+            //     return getTypeFromTypeReference(<TypeReferenceNode>node);
+            case 111 /* ArrayType */:
                 return this.getTypeFromArrayTypeNode(node);
-            case 107:
+            case 110 /* MappedType */:
+                return this.getTypeFromMappedTypeNode(node);
+            // case gt.SyntaxKind.IndexedAccessType:
+            //     return getTypeFromIndexedAccessTypeNode(<IndexedAccessTypeNode>node);
+            case 107 /* Identifier */:
                 const symbol = this.getSymbolAtLocation(node);
                 return symbol && this.getDeclaredTypeOfSymbol(symbol);
             default:
@@ -137,10 +184,10 @@ class TypeChecker {
         }
     }
     getTypeOfSymbol(symbol) {
-        if (symbol.flags & (6 | 8)) {
+        if (symbol.flags & (14 /* Variable */ | 16 /* Property */)) {
             return this.getTypeOfVariableOrParameterOrProperty(symbol);
         }
-        else if (symbol.flags & (16)) {
+        else if (symbol.flags & (32 /* Function */)) {
             return this.getTypeOfFunction(symbol);
         }
         return unknownType;
@@ -152,15 +199,30 @@ class TypeChecker {
         return createFunctionType(symbol);
     }
     getTypeOfNode(node) {
+        // if (isPartOfTypeNode(node)) {
+        //     return this.getTypeFromTypeNode(<TypeNode>node);
+        // }
         if (utils_1.isPartOfExpression(node)) {
             return this.getRegularTypeOfExpression(node);
         }
         return unknownType;
     }
     getRegularTypeOfExpression(expr) {
+        // if (isRightSideOfQualifiedNameOrPropertyAccess(expr)) {
+        //     expr = <Expression>expr.parent;
+        // }
+        // return this.getRegularTypeOfLiteralType(this.getTypeOfExpression(expr));
+        // TODO: ^
         return this.getTypeOfExpression(expr);
     }
     getTypeOfExpression(node, cache) {
+        // if (node.kind === gt.CallExpression) {
+        //     const funcType = checkNonNullExpression((<CallExpression>node).expression);
+        //     const signature = getSingleCallSignature(funcType);
+        //     if (signature && !signature.typeParameters) {
+        //         return getReturnTypeOfSignature(signature);
+        //     }
+        // }
         return this.checkExpression(node);
     }
     checkSourceFile(sourceFile) {
@@ -172,32 +234,32 @@ class TypeChecker {
     }
     checkSourceElement(node) {
         switch (node.kind) {
-            case 122:
+            case 122 /* Block */:
                 return this.checkBlock(node);
-            case 135:
+            case 135 /* FunctionDeclaration */:
                 return this.checkFunction(node);
-            case 134:
-            case 137:
+            case 134 /* VariableDeclaration */:
+            case 137 /* PropertyDeclaration */:
                 return this.checkVariableDeclaration(node);
-            case 133:
+            case 133 /* StructDeclaration */:
                 return this.checkStructDeclaration(node);
-            case 131:
+            case 131 /* ExpressionStatement */:
                 return this.checkExpressionStatement(node);
-            case 123:
+            case 123 /* IfStatement */:
                 return this.checkIfStatement(node);
-            case 126:
+            case 126 /* ForStatement */:
                 return this.checkForStatement(node);
-            case 125:
-            case 124:
+            case 125 /* WhileStatement */:
+            case 124 /* DoStatement */:
                 return this.checkWhileStatement(node);
-            case 127:
-            case 128:
+            case 127 /* BreakStatement */:
+            case 128 /* ContinueStatement */:
                 return this.checkBreakOrContinueStatement(node);
-            case 130:
+            case 130 /* ReturnStatement */:
                 return this.checkReturnStatement(node);
-            case 110:
+            case 110 /* MappedType */:
                 return this.checkMappedType(node);
-            case 111:
+            case 111 /* ArrayType */:
                 return this.checkArrayType(node);
         }
     }
@@ -243,11 +305,13 @@ class TypeChecker {
         this.checkSourceElement(node.statement);
     }
     checkBreakOrContinueStatement(node) {
+        // TODO: report when used outside of loop
     }
     checkReturnStatement(node) {
         if (node.expression) {
             this.checkExpression(node.expression);
         }
+        // TODO: report when used with expr on void func
     }
     checkArrayType(node) {
         this.checkExpression(node.size);
@@ -268,25 +332,35 @@ class TypeChecker {
     checkExpression(node, checkMode) {
         let type;
         const uninstantiatedType = this.checkExpressionWorker(node, checkMode);
+        // type = this.instantiateTypeWithSingleGenericCallSignature(<gt.Expression>node, uninstantiatedType, checkMode);
+        // return type;
+        // TODO: ^
         return uninstantiatedType;
     }
     checkExpressionWorker(node, checkMode) {
         switch (node.kind) {
-            case 107:
+            case 107 /* Identifier */:
                 return this.checkIdentifier(node);
-            case 114:
+            // case gt.SyntaxKind.NullKeyword:
+            //     return nullWideningType;
+            // case gt.SyntaxKind.StringLiteral:
+            // case gt.SyntaxKind.NumericLiteral:
+            // case gt.SyntaxKind.TrueKeyword:
+            // case gt.SyntaxKind.FalseKeyword:
+            //     return checkLiteralExpression(node);
+            case 114 /* PropertyAccessExpression */:
                 return this.checkPropertyAccessExpression(node);
-            case 113:
+            case 113 /* ElementAccessExpression */:
                 return this.checkIndexedAccess(node);
-            case 115:
+            case 115 /* CallExpression */:
                 return this.checkCallExpression(node);
-            case 120:
+            case 120 /* ParenthesizedExpression */:
                 return this.checkParenthesizedExpression(node, checkMode);
-            case 116:
+            case 116 /* PrefixUnaryExpression */:
                 return this.checkPrefixUnaryExpression(node);
-            case 117:
+            case 117 /* PostfixUnaryExpression */:
                 return this.checkPostfixUnaryExpression(node);
-            case 118:
+            case 118 /* BinaryExpression */:
                 return this.checkBinaryExpression(node, checkMode);
         }
         return unknownType;
@@ -316,7 +390,7 @@ class TypeChecker {
     checkCallExpression(node) {
         const leftType = this.checkExpression(node.expression);
         if (leftType != unknownType) {
-            if (leftType.flags & 8192) {
+            if (leftType.flags & 8192 /* Function */) {
                 const func = leftType.symbol.declarations[0];
                 if (node.arguments.length !== func.parameters.length) {
                     this.report(node, `expected ${func.parameters.length} arguments, got ${node.arguments.length}`);
@@ -333,15 +407,20 @@ class TypeChecker {
         return this.checkNonNullType(this.checkExpression(node), node);
     }
     checkNonNullType(type, errorNode) {
-        const kind = type.flags & 2048;
+        const kind = type.flags & 2048 /* Nullable */;
         if (kind) {
+            // TODO:
+            // this.error(errorNode, 'cannot be null');
+            // const t = getNonNullableType(type);
+            // return t.flags & (gt.TypeFlags.Nullable | gt.TypeFlags.Never) ? unknownType : t;
         }
         return type;
     }
     checkIndexedAccess(node) {
         const objectType = this.checkNonNullExpression(node.expression);
         const indexType = this.checkExpression(node.argumentExpression);
-        if (objectType.flags & 16384) {
+        // TODO: check if index is number
+        if (objectType.flags & 32768 /* Array */) {
             return objectType.elementType;
         }
         return unknownType;
@@ -362,7 +441,7 @@ class TypeChecker {
     resolveName(location, name, nameNotFoundMessage) {
         if (location) {
             const currentContext = utils_1.findAncestor(location, (element) => {
-                return element.kind === 135;
+                return element.kind === 135 /* FunctionDeclaration */;
             });
             if (currentContext && currentContext.symbol.members.has(name)) {
                 return currentContext.symbol.members.get(name);
@@ -377,25 +456,77 @@ class TypeChecker {
         return undefined;
     }
     resolveEntityName(entityName, meaning, ignoreErrors, location) {
+        // if (nodeIsMissing(entityName)) {
+        //     return undefined;
+        // }
+        // TODO: ^
         let symbol;
-        if (entityName.kind === 107) {
+        if (entityName.kind === 107 /* Identifier */) {
             symbol = this.resolveName(location || entityName, entityName.name, ignoreErrors ? undefined : 'symbol referenced but not declared');
             if (!symbol) {
                 return undefined;
             }
         }
+        // else if (name.kind === SyntaxKind.QualifiedName || name.kind === SyntaxKind.PropertyAccessExpression) {
+        //     let left: EntityNameOrEntityNameExpression;
+        //     if (name.kind === SyntaxKind.QualifiedName) {
+        //         left = (<QualifiedName>name).left;
+        //     }
+        //     else if (name.kind === SyntaxKind.PropertyAccessExpression &&
+        //         (name.expression.kind === SyntaxKind.ParenthesizedExpression || isEntityNameExpression(name.expression))) {
+        //         left = name.expression;
+        //     }
+        //     else {
+        //         // If the expression in property-access expression is not entity-name or parenthsizedExpression (e.g. it is a call expression), it won't be able to successfully resolve the name.
+        //         // This is the case when we are trying to do any language service operation in heritage clauses. By return undefined, the getSymbolOfEntityNameOrPropertyAccessExpression
+        //         // will attempt to checkPropertyAccessExpression to resolve symbol.
+        //         // i.e class C extends foo()./*do language service operation here*/B {}
+        //         return undefined;
+        //     }
+        //     const right = name.kind === SyntaxKind.QualifiedName ? name.right : name.name;
+        //     const namespace = resolveEntityName(left, SymbolFlags.Namespace, ignoreErrors, /*dontResolveAlias*/ false, location);
+        //     if (!namespace || nodeIsMissing(right)) {
+        //         return undefined;
+        //     }
+        //     else if (namespace === unknownSymbol) {
+        //         return namespace;
+        //     }
+        //     symbol = getSymbol(getExportsOfSymbol(namespace), right.escapedText, meaning);
+        //     if (!symbol) {
+        //         if (!ignoreErrors) {
+        //             error(right, Diagnostics.Namespace_0_has_no_exported_member_1, getFullyQualifiedName(namespace), declarationNameToString(right));
+        //         }
+        //         return undefined;
+        //     }
+        // }
+        // else if (name.kind === gt.SyntaxKind.ParenthesizedExpression) {
+        //     // TODO:
+        //     return undefined;
+        // }
         return symbol;
     }
+    // private resolvePropertySymbol(node: gt.PropertyAccessExpression): gt.Symbol | undefined {
+    //     if (node.expression.kind === gt.SyntaxKind.Identifier) {
+    //         return this.resolveName(<gt.Identifier>node.expression);
+    //     }
+    //     else if (node.expression.kind === gt.SyntaxKind.PropertyAccessExpression) {
+    //         return this.resolvePropertySymbol(<gt.PropertyAccessExpression>node.expression);
+    //     }
+    // }
     getSymbolOfEntityNameOrPropertyAccessExpression(entityName) {
+        // if (isDeclarationKind(entityName.parent.kind)) {
+        //     return (<gt.Declaration>entityName.parent).symbol;
+        // }
+        // TODO: ^
         let type;
         if (utils_1.isRightSideOfPropertyAccess(entityName)) {
             entityName = entityName.parent;
         }
         if (utils_1.isPartOfExpression(entityName)) {
-            if (entityName.kind === 107) {
+            if (entityName.kind === 107 /* Identifier */) {
                 return this.resolveEntityName(entityName, null, false);
             }
-            else if (entityName.kind === 114) {
+            else if (entityName.kind === 114 /* PropertyAccessExpression */) {
                 const links = this.getNodeLinks(entityName);
                 if (links.resolvedSymbol) {
                     return links.resolvedSymbol;
@@ -406,12 +537,17 @@ class TypeChecker {
         }
         throw new Error('how did we get here?');
     }
+    // public getRootSymbols(symbol: Symbol): Symbol[] {
+    // }
     getSymbolAtLocation(node) {
         switch (node.kind) {
-            case 107:
-            case 114:
+            case 107 /* Identifier */:
+            case 114 /* PropertyAccessExpression */:
                 return this.getSymbolOfEntityNameOrPropertyAccessExpression(node);
         }
+        // if (node.kind === gt.SyntaxKind.Identifier) {
+        //     return (<gt.Identifier>node).
+        // }
     }
 }
 exports.TypeChecker = TypeChecker;

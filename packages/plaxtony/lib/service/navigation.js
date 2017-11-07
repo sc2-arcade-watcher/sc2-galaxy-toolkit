@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../compiler/utils");
+const utils_2 = require("./utils");
 const provider_1 = require("./provider");
 function collectDeclarations(sourceFile) {
     let declarations = [];
@@ -8,12 +9,12 @@ function collectDeclarations(sourceFile) {
         declarations.push(node);
     }
     function visitNode(node) {
-        if (node.kind === 134 ||
-            node.kind === 135 ||
-            node.kind === 133) {
+        if (node.kind === 134 /* VariableDeclaration */ ||
+            node.kind === 135 /* FunctionDeclaration */ ||
+            node.kind === 133 /* StructDeclaration */) {
             registerDeclaration(node);
         }
-        if (node.kind === 121) {
+        if (node.kind === 121 /* SourceFile */) {
             utils_1.forEachChild(node, child => visitNode(child));
         }
     }
@@ -24,10 +25,17 @@ class NavigationProvider extends provider_1.AbstractProvider {
     getDocumentSymbols(uri) {
         return collectDeclarations(this.store.documents.get(uri));
     }
-    getWorkspaceSymbols() {
+    getWorkspaceSymbols(query) {
         let declarations = [];
-        for (let document of this.store.documents.values()) {
-            declarations = declarations.concat(collectDeclarations(document));
+        outer: for (const document of this.store.documents.values()) {
+            for (const decl of collectDeclarations(document)) {
+                if (!query || utils_2.fuzzysearch(query, decl.name.name)) {
+                    declarations.push(decl);
+                    if (declarations.length >= 1000) {
+                        break outer;
+                    }
+                }
+            }
         }
         return declarations;
     }

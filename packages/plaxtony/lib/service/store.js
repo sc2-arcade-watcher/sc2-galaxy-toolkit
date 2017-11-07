@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const gt = require("../compiler/types");
 const utils_1 = require("../compiler/utils");
 const parser_1 = require("../compiler/parser");
 const binder_1 = require("../compiler/binder");
@@ -43,9 +44,11 @@ class Workspace {
         this._onDidOpen = new lsp.Emitter();
     }
     watch() {
+        // TODO: filewatch
         this._onDidStart.fire(this.workspacePath);
         const files = glob.sync(path.join(path.resolve(this.workspacePath), '**/*.galaxy'));
         for (let filepath of files) {
+            // this.store.updateDocument(createTextDocumentFromFs(filepath));
             this._onDidOpen.fire({ document: createTextDocumentFromFs(filepath) });
         }
         this._onDidEnd.fire(files.length);
@@ -100,19 +103,30 @@ class S2Workspace extends Workspace {
 exports.S2Workspace = S2Workspace;
 class Store {
     constructor() {
+        this.parser = new parser_1.Parser();
         this.documents = new Map();
         this.s2archives = new Map();
     }
     initialize() {
     }
     updateDocument(document) {
-        let p = new parser_1.Parser();
-        let sourceFile = p.parseFile(document.uri, document.getText());
-        binder_1.bindSourceFile(sourceFile);
+        if (this.documents.has(document.uri)) {
+            binder_1.unbindSourceFile(this.documents.get(document.uri), this);
+            this.documents.delete(document.uri);
+        }
+        let sourceFile = this.parser.parseFile(document.uri, document.getText());
+        binder_1.bindSourceFile(sourceFile, this);
         this.documents.set(document.uri, sourceFile);
     }
     updateArchive(archive) {
         this.s2archives.set(archive.directory, archive);
+    }
+    resolveGlobalSymbol(name) {
+        for (const doc of this.documents.values()) {
+            if (doc.symbol.members.has(name)) {
+                return doc.symbol.members.get(name);
+            }
+        }
     }
     getArchiveOfSourceFile(sourceFile) {
         for (const archive of this.s2archives.values()) {
@@ -128,7 +142,18 @@ class Store {
         if (!archive) {
             return undefined;
         }
-        return archive.trigLibs.findElementByName(symbol.escapedName);
+        if (symbol.flags & 8 /* GlobalVariable */) {
+            const variable = symbol.declarations[0];
+            const isConstant = variable.modifiers.find((modifier) => {
+                return modifier.kind === 52 /* ConstKeyword */;
+            });
+            if (isConstant) {
+                return archive.trigLibs.findPresetValueByStr(variable.name.name);
+            }
+        }
+        else {
+            return archive.trigLibs.findElementByName(symbol.escapedName);
+        }
     }
 }
 exports.Store = Store;
