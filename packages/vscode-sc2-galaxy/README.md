@@ -18,7 +18,7 @@
     - [x] Signature help for functions.
     - [x] Document and workspace symbols navigation.
     - [x] Symbols show definitions (goto *click*).
-    - [ ] Symbols hover info.
+    - [x] Symbols hover info.
     - [ ] Symbols show references.
 
 Parser is meant to be error tolerant - when parse error occurs it will try to recover and continue processing rest of the code.
@@ -26,7 +26,7 @@ Parser is meant to be error tolerant - when parse error occurs it will try to re
 Extension is also capable of parsing *Trigger Libraries* from *SC2Mod* archives in order to provide extended documentation.\
 Currently it does that only for *Native library*. Although it is planned to load all libraries defined within dependencies of currently opened map/mod, by reading its *DocumentHeader*.
 
-Following language statements are not yet propertly supported: `typedef`, `structref`, `arrayref`.
+Following language statements are not yet properly supported: `typedef`, `funcref`, `arrayref` (`structref` works).
 
 *Notice: This extension is just a wrapper around [plaxtony](https://github.com/Talv/plaxtony) - this library does all the heavy work.*
 
@@ -64,7 +64,7 @@ To avoid copy-pasting code into **Custom script element** within trigger editor,
 
 This will expose your map files to be accessed through the filesystem, then simply open map directory within **VS Code editor**.
 
-It's also advised to not write your code directly to `MapScript.galaxy` as it might be easly overriden by **Trigger module** of **SC2 Editor**. The better way is to create a **Custom script elemen** and include your scripts in there.
+It's also advised to not write your code directly to `MapScript.galaxy` as it might be easly overridden by **Trigger module** of **SC2 Editor**. The better way is to create a **Custom script element** and include your scripts in there.
 
 Scripts can be saved in any directory within the map, even root directory. No manual file re-importing in **SC2 Editor** is required. Your scripts will be read on demand - always up to date.
 
