@@ -172,7 +172,12 @@ export function unbindSourceFile(sourceFile: SourceFile, store: Store) {
             symbol.declarations = symbol.declarations.filter((decl) => {
                 return getSourceFileOfNode(decl) !== sourceFile;
             });
-            unbindSymbol(symbol);
+            if (symbol.declarations.length) {
+                unbindSymbol(symbol);
+            }
+            else {
+                parentSymbol.members.delete(symbol.escapedName);
+            }
         }
     }
 
