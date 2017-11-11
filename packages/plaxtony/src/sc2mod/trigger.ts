@@ -98,9 +98,6 @@ export class Library {
         el.libId = this.id;
         el.id = identifier;
         this.elements.set(el.constructor.name + '/' + identifier, el);
-        if (el.name) {
-            this.nameMap.set(el.name, el);
-        }
     }
 
     private parseReference<T extends Element>(data: any): ElementReference<T> {
@@ -180,6 +177,10 @@ export class Library {
 
             if (item.Identifier) {
                 el.name = item.Identifier[0];
+
+                if (el instanceof FunctionDef) {
+                    this.nameMap.set(el.name, el);
+                }
             }
 
             this.addElement(item.$.Id, el);
