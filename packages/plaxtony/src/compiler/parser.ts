@@ -276,16 +276,19 @@ export class Parser {
         this.parsingContext |= 1 << kind;
         const result = this.createNodeArray<T>();
 
+        let commaStart = -1; // Meaning the previous token was not a comma
         while (true) {
             if (this.isListElement(kind, false)) {
                 const startPos = this.scanner.getTokenPos();
                 result.push(parseElement());
+                commaStart = this.scanner.getTokenPos();
 
                 if (this.parseOptional(SyntaxKind.CommaToken)) {
                     // No need to check for a zero length node since we know we parsed a comma
                     continue;
                 }
 
+                commaStart = -1; // Back to the state where the last token was not a comma
                 if (this.isListTerminator(kind)) {
                     break;
                 }
@@ -303,6 +306,10 @@ export class Parser {
 
             this.parseErrorAtCurrentToken(this.parsingContextErrors(kind));
             this.nextToken();
+        }
+
+        if (commaStart >= 0) {
+            this.parseErrorAtPosition(commaStart, 1, 'trailing comma');
         }
 
         result.end = this.scanner.getTokenPos();
