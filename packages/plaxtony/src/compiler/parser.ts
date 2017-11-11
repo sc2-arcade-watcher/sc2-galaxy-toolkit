@@ -442,7 +442,8 @@ export class Parser {
         }
         const node = <Types.Literal>this.createNode(kind);
         this.parseExpected(kind, undefined, false);
-        node.text = this.scanner.getTokenValue();
+        node.value = this.scanner.getTokenValue();
+        node.text = this.scanner.getTokenText();
         this.nextToken();
         return this.finishNode(node);
     }

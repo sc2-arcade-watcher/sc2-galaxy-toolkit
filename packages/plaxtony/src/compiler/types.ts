@@ -615,15 +615,8 @@ export interface ParenthesizedExpression extends PrimaryExpression {
 }
 
 export interface Literal extends Expression {
-    text: string;
-}
-
-export interface NullLiteral extends Literal {
-    kind: SyntaxKind.NullKeyword;
-}
-
-export interface BooleanLiteral extends Literal {
-    kind: SyntaxKind.TrueKeyword | SyntaxKind.FalseKeyword;
+    value?: string;
+    text?: string;
 }
 
 export interface StringLiteral extends Literal {
@@ -695,7 +688,7 @@ export interface PostfixUnaryExpression extends UnaryExpression {
 export interface ElementAccessExpression extends MemberExpression {
     kind: SyntaxKind.ElementAccessExpression;
     expression: LeftHandSideExpression;
-    argumentExpression?: Expression;
+    argumentExpression: Expression;
 }
 
 export interface SymbolLink {

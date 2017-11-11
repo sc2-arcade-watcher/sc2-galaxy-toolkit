@@ -439,6 +439,7 @@ export class Scanner {
 
         while (true) {
             this.tokenPos = this.pos;
+            this.tokenValue = null;
             if (this.pos >= this.end) {
                 return SyntaxKind.EndOfFileToken;
             }
@@ -714,12 +715,12 @@ export class Scanner {
         return this.tokenPos;
     }
 
-    public getTextPos(): number {
-        return this.end;
-    }
-
     public getTokenValue(): string {
         return this.tokenValue;
+    }
+
+    public getTokenText(): string {
+        return this.text.substring(this.tokenPos, this.pos);
     }
 
     public getLineMap(): number[] {

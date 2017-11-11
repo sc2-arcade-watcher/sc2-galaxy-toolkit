@@ -162,12 +162,57 @@ export class Printer {
                 break;
             }
 
+            case gt.SyntaxKind.PrefixUnaryExpression:
+            {
+                const expr = <gt.PrefixUnaryExpression>node;
+                this.emitNode(expr.operator);
+                this.emitNode(expr.operand);
+                break;
+            }
+
+            case gt.SyntaxKind.PostfixUnaryExpression:
+            {
+                const expr = <gt.PostfixUnaryExpression>node;
+                this.emitNode(expr.operand);
+                this.emitNode(expr.operator);
+                break;
+            }
+
             case gt.SyntaxKind.ParenthesizedExpression:
             {
                 const expr = <gt.ParenthesizedExpression>node;
                 this.write('(');
                 this.emitNode(expr.expression);
                 this.write(')');
+                break;
+            }
+
+            case gt.SyntaxKind.CallExpression:
+            {
+                const expr = <gt.CallExpression>node;
+                this.emitNode(expr.expression);
+                this.write('(');
+                this.emitNodeList(expr.arguments, ',', ' ');
+                this.write(')');
+                break;
+            }
+
+            case gt.SyntaxKind.ElementAccessExpression:
+            {
+                const expr = <gt.ElementAccessExpression>node;
+                this.emitNode(expr.expression);
+                this.write('[');
+                this.emitNode(expr.argumentExpression);
+                this.write(']');
+                break;
+            }
+
+            case gt.SyntaxKind.PropertyAccessExpression:
+            {
+                const expr = <gt.PropertyAccessExpression>node;
+                this.emitNode(expr.expression);
+                this.write('.');
+                this.emitNode(expr.name);
                 break;
             }
 
