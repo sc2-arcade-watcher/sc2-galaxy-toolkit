@@ -86,7 +86,7 @@ export class CompletionsProvider extends AbstractProvider {
             if (currentToken.kind === gt.SyntaxKind.DotToken || currentToken.kind === gt.SyntaxKind.Identifier) {
                 if (currentToken.parent.kind === gt.SyntaxKind.PropertyAccessExpression) {
                     currentToken = (<gt.PropertyAccessExpression>currentToken.parent).expression;
-                    const type = checker.getTypeOfNode(currentToken);
+                    const type = checker.getTypeOfNode(currentToken, true);
                     if (type.flags & gt.TypeFlags.Struct) {
                         return this.buildFromSymbolMembers(type.symbol);
                     }

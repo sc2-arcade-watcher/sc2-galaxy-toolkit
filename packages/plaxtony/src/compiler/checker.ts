@@ -144,10 +144,15 @@ export class TypeChecker {
         return links.resolvedType;
     }
 
-    private getPropertyOfType(type: gt.Type, name: string): gt.Symbol | undefined {
+    private resolveMappedReference(type: gt.Type) {
         if (type.flags & gt.TypeFlags.Mapped && (<gt.MappedType>type).returnType.flags & gt.TypeFlags.Structref) {
             type = (<gt.MappedType>type).referencedType;
         }
+        return type;
+    }
+
+    private getPropertyOfType(type: gt.Type, name: string): gt.Symbol | undefined {
+        type = this.resolveMappedReference(type);
         if (type.flags & gt.TypeFlags.Struct) {
             if (type.symbol.members.has(name)) {
                 return type.symbol.members.get(name);
@@ -229,13 +234,17 @@ export class TypeChecker {
         return createFunctionType(symbol);
     }
 
-    public getTypeOfNode(node: gt.Node): gt.Type {
+    public getTypeOfNode(node: gt.Node, followRef: boolean = false): gt.Type {
         // if (isPartOfTypeNode(node)) {
         //     return this.getTypeFromTypeNode(<TypeNode>node);
         // }
 
         if (isPartOfExpression(node)) {
-            return this.getRegularTypeOfExpression(<gt.Expression>node);
+            let type = this.getRegularTypeOfExpression(<gt.Expression>node);
+            if (followRef) {
+                type = this.resolveMappedReference(type);
+            }
+            return type;
         }
 
         return unknownType;
@@ -503,7 +512,7 @@ export class TypeChecker {
 
         const prop = this.getPropertyOfType(type, node.name.name);
         if (!prop) {
-            this.report(node.name, 'undeclared property');
+            this.report(node.name, 'undeclared or unacessible property');
             return unknownType;
         }
 
