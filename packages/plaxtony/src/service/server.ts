@@ -113,7 +113,13 @@ function wrapRequest(msg?: string, showArg?: boolean, singleLine?: boolean) {
             }
 
             var start = process.hrtime();
-            const ret = method.bind(this)(...arguments);
+            let ret;
+            try {
+                ret = method.bind(this)(...arguments);
+            }
+            catch (e) {
+                server.connection.console.error('[' + (<Error>e).name + '] ' + (<Error>e).message + '\n' + (<Error>e).stack);
+            }
             log.push(formatElapsed(start, process.hrtime()));
 
             if (ret && ret[Symbol.iterator]) {
@@ -126,7 +132,7 @@ function wrapRequest(msg?: string, showArg?: boolean, singleLine?: boolean) {
 }
 
 export class Server {
-    private connection: lsp.IConnection;
+    public connection: lsp.IConnection;
     private store: Store = new Store();
     private diagnosticsProvider: DiagnosticsProvider;
     private navigationProvider: NavigationProvider;
