@@ -425,6 +425,7 @@ export class Parser {
             case SyntaxKind.SemicolonToken:
             case SyntaxKind.StructKeyword:
             case SyntaxKind.IncludeKeyword:
+            case SyntaxKind.TypedefKeyword:
                 return true;
         }
 
@@ -855,6 +856,14 @@ export class Parser {
         return this.parseAssignmentExpressionOrHigher();
     }
 
+    private parseTypedefStatement(): Types.TypedefStatement {
+        const node = <Types.TypedefStatement>this.createNode(SyntaxKind.TypedefStatement);
+        this.parseExpected(SyntaxKind.TypedefKeyword);
+        node.type = this.parseTypeDefinition();
+        node.name = this.parseIdentifier();
+        return this.finishNode(node);
+    }
+
     private parseReturnStatement(): Types.ReturnStatement {
         const node = <Types.ReturnStatement>this.createNode(SyntaxKind.ReturnStatement);
         this.parseExpected(SyntaxKind.ReturnKeyword);
@@ -972,6 +981,9 @@ export class Parser {
 
             case SyntaxKind.ReturnKeyword:
                 return this.parseReturnStatement();
+
+            case SyntaxKind.TypedefKeyword:
+                return this.parseTypedefStatement();
 
             case SyntaxKind.Identifier:
             case SyntaxKind.ConstKeyword:

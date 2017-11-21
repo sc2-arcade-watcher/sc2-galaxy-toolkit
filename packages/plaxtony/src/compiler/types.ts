@@ -287,6 +287,7 @@ export const enum SyntaxKind {
     BreakStatement,
     ContinueStatement,
 
+    TypedefStatement,
     IncludeStatement,
     ReturnStatement,
     ExpressionStatement,
@@ -526,6 +527,12 @@ export interface Block extends Statement {
 export interface IncludeStatement extends Statement {
     kind: SyntaxKind.IncludeStatement;
     path: StringLiteral;
+}
+
+export interface TypedefStatement extends Statement {
+    kind: SyntaxKind.TypedefStatement;
+    type: TypeNode;
+    name: Identifier;
 }
 
 export interface TypeNode extends Node {
