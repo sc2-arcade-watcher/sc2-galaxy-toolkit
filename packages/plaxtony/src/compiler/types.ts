@@ -225,6 +225,7 @@ export const enum SyntaxKind {
     AifilterKeyword,
     AnimfilterKeyword,
     BankKeyword,
+    BitmaskKeyword,
     CamerainfoKeyword,
     ColorKeyword,
     DoodadKeyword,
@@ -328,6 +329,7 @@ export type KeywordType
     | SyntaxKind.AifilterKeyword
     | SyntaxKind.AnimfilterKeyword
     | SyntaxKind.BankKeyword
+    | SyntaxKind.BitmaskKeyword
     | SyntaxKind.BoolKeyword
     | SyntaxKind.ByteKeyword
     | SyntaxKind.CamerainfoKeyword

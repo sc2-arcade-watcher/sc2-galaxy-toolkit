@@ -983,6 +983,7 @@ export class Parser {
             case SyntaxKind.AifilterKeyword:
             case SyntaxKind.AnimfilterKeyword:
             case SyntaxKind.BankKeyword:
+            case SyntaxKind.BitmaskKeyword:
             case SyntaxKind.BoolKeyword:
             case SyntaxKind.ByteKeyword:
             case SyntaxKind.CamerainfoKeyword:

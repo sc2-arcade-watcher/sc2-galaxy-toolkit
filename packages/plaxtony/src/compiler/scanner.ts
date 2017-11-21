@@ -29,6 +29,7 @@ const textToTokenTable: ReadonlyMap<string, SyntaxKind> = new Map([
     ["animfilter", SyntaxKind.AnimfilterKeyword],
     ["bank", SyntaxKind.BankKeyword],
     ["bool", SyntaxKind.BoolKeyword],
+    ["bitmask", SyntaxKind.BitmaskKeyword],
     ["byte", SyntaxKind.ByteKeyword],
     ["camerainfo", SyntaxKind.CamerainfoKeyword],
     ["char", SyntaxKind.CharKeyword],

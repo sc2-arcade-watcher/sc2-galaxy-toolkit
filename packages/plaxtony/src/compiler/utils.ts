@@ -27,6 +27,7 @@ export function isKeywordTypeKind(token: SyntaxKind): boolean {
         case SyntaxKind.AifilterKeyword:
         case SyntaxKind.AnimfilterKeyword:
         case SyntaxKind.BankKeyword:
+        case SyntaxKind.BitmaskKeyword:
         case SyntaxKind.BoolKeyword:
         case SyntaxKind.ByteKeyword:
         case SyntaxKind.CamerainfoKeyword:
