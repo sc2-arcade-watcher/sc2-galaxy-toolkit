@@ -507,6 +507,8 @@ export function forEachChild<T>(node: Node, cbNode: (node: Node) => T | undefine
             break;
         case SyntaxKind.ReturnStatement:
             return visitNode(cbNode, (<Types.ReturnStatement>node).expression);
+        case SyntaxKind.IncludeStatement:
+            return visitNode(cbNode, (<Types.IncludeStatement>node).path);
     }
 }
 

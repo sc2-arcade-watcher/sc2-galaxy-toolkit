@@ -524,7 +524,7 @@ export interface Block extends Statement {
 }
 
 export interface IncludeStatement extends Statement {
-    kind: SyntaxKind.IncludeKeyword;
+    kind: SyntaxKind.IncludeStatement;
     path: StringLiteral;
 }
 
