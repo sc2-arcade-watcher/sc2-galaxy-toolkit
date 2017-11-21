@@ -1,7 +1,9 @@
 import * as lsp from 'vscode-languageserver';
 import * as Types from '../compiler/types';
+import * as util from 'util';
+import * as path from 'path';
 import { findAncestor } from '../compiler/utils';
-import { Store, Workspace, S2Workspace } from './store';
+import { Store, WorkspaceWatcher, S2WorkspaceWatcher, findWorkspaceArchive, S2WorkspaceChangeEvent, createTextDocumentFromFs } from './store';
 import { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition } from './utils';
 import { AbstractProvider, LoggerConsole, createProvider } from './provider';
 import { DiagnosticsProvider } from './diagnostics';
@@ -10,6 +12,7 @@ import { CompletionsProvider } from './completions';
 import { SignaturesProvider } from './signatures';
 import { DefinitionProvider } from './definitions';
 import { HoverProvider } from './hover';
+import { SC2Archive, SC2Workspace, resolveArchiveDirectory, openArchiveWorkspace } from '../sc2mod/archive';
 
 function getNodeRange(node: Types.Node): lsp.Range {
     return {
@@ -90,17 +93,20 @@ function wrapRequest(msg?: string, showArg?: boolean, singleLine?: boolean) {
         descriptor.value = function(...args: any[]) {
             const server = <Server>this;
             let log = [];
-            args = args.map((value) => {
-                if (!value) { return; }
-                if (value['document']) {
-                    return value.document.uri;
-                }
-                else {
-                    return value.toString();
-                }
-            });
+            // args = args.map((value) => {
+            //     if (!value) { return; }
+            //     if (value['document']) {
+            //         return value.document.uri;
+            //     }
+            //     else if (value['name']) {
+            //         return value.name;
+            //     }
+            //     else {
+            //         return value.toString();
+            //     }
+            // });
             if (msg) {
-                log.push(`${msg}: ${args.toLocaleString()}`);
+                log.push(`${msg}: ${util.inspect(args, true, 2)}`);
             }
             else {
                 log.push(`### Processing '${propertyKey}'`);
@@ -129,7 +135,7 @@ export class Server {
     private definitionsProvider: DefinitionProvider;
     private hoverProvider: HoverProvider;
     private documents = new lsp.TextDocuments();
-    private workspaces: Workspace[] = [];
+    private workspaceWatcher: WorkspaceWatcher;
 
     private createProvider<T extends AbstractProvider>(cls: new () => T): T {
         return createProvider(cls, this.store, this.connection.console);
@@ -167,34 +173,44 @@ export class Server {
         this.connection.console.log(msg);
     }
 
-    @wrapRequest()
-    private onInitialize(params: lsp.InitializeParams): lsp.InitializeResult {
-        if (params.initializationOptions.sources) {
-            for (const s2path of <string[]>params.initializationOptions.sources) {
-                this.log('Indexing s2 sources: ' + s2path)
-                const ws = new S2Workspace(s2path);
-                ws.onDidOpen(this.onDidFindInWorkspace.bind(this));
-                // ws.onDidOpen((ev) => {
-                //     this.log('Indexing archive galaxy: ' + ev.document.uri);
-                //     // this.store.updateArchive(ev.archive);
-                // });
-                ws.onDidOpenS2Archive((ev) => {
-                    this.log('Indexed archive: ' + ev.archive.directory);
-                    this.store.updateArchive(ev.archive);
-                });
-                ws.watch().then(() => {
-                    this.log('ready');
-                }, (err) => {
-                    this.log('e: ' + err);
-                });
+    private async reindex(rootPath: string, modSources: string[]) {
+        let archivePath: string;
+        let workspace: SC2Workspace;
+        if (rootPath) {
+            archivePath = await findWorkspaceArchive(rootPath);
+        }
+
+        if (archivePath) {
+            this.workspaceWatcher = new WorkspaceWatcher(archivePath);
+            workspace = await openArchiveWorkspace(new SC2Archive(path.basename(archivePath), archivePath), modSources);
+        }
+        else if (rootPath) {
+            this.workspaceWatcher = new WorkspaceWatcher(rootPath);
+        }
+
+        if (!workspace) {
+            workspace = new SC2Workspace(null, [new SC2Archive(null, resolveArchiveDirectory('mods/core.sc2mod', modSources))]);
+        }
+
+        this.log('Indexing s2workspace: ' + archivePath);
+        await this.store.updateS2Workspace(workspace);
+        for (const modArchive of workspace.dependencies) {
+            for (const extSrc of await modArchive.findFiles('*.galaxy')) {
+                this.onDidFindInWorkspace({document: createTextDocumentFromFs(path.join(modArchive.directory, extSrc))});
             }
         }
-        if (params.rootPath) {
-            const ws = new Workspace(params.rootPath);
-            ws.onDidOpen(this.onDidFindInWorkspace.bind(this));
-            this.workspaces.push(ws);
-            ws.watch();
+
+        if (this.workspaceWatcher) {
+            this.workspaceWatcher.onDidOpen(this.onDidFindInWorkspace.bind(this));
+            // workspace.onDidOpenS2Archive(this.onDidFindS2Workspace.bind(this));
+            await this.workspaceWatcher.watch();
         }
+    }
+
+    @wrapRequest()
+    private async onInitialize(params: lsp.InitializeParams): Promise<lsp.InitializeResult> {
+        await this.reindex(params.rootPath, params.initializationOptions.sources)
+        this.log('ready');
         return {
             capabilities: {
                 textDocumentSync: this.documents.syncKind,
@@ -258,6 +274,13 @@ export class Server {
     private onDidFindInWorkspace(ev: lsp.TextDocumentChangeEvent) {
         this.store.updateDocument(ev.document);
     }
+
+    // @wrapRequest('Indexing workspace ', true, true)
+    // private async onDidFindS2Workspace(ev: S2WorkspaceChangeEvent) {
+    //     this.log('Updating archives');
+    //     await this.store.updateS2Workspace(ev.workspace);
+    //     this.log('Archives: ' + util.inspect(ev.workspace.allArchives, false, 1));
+    // }
 
     @wrapRequest()
     private onCompletion(params: lsp.TextDocumentPositionParams): lsp.CompletionItem[] {

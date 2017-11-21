@@ -4,8 +4,9 @@ import { findAncestor, getSourceFileOfNode } from '../compiler/utils';
 import { Printer } from '../compiler/printer';
 import { AbstractProvider } from './provider';
 import { getTokenAtPosition } from './utils';
+import { getDocumentationOfSymbol } from './s2meta';
 import * as lsp from 'vscode-languageserver';
-import * as trig from '../sc2mod/trigger'
+// import * as trig from '../sc2mod/trigger'
 
 export class SignaturesProvider extends AbstractProvider {
     private printer: Printer = new Printer();
@@ -45,62 +46,30 @@ export class SignaturesProvider extends AbstractProvider {
     public getSignatureOfFunction(functionSymbol: gt.Symbol): lsp.SignatureInformation {
         const functionDeclaration = <FunctionDeclaration>functionSymbol.declarations[0];
 
+        let code = this.printer.printNode(Object.assign({}, functionDeclaration, {body: null})).trim();
+        // strip ;
+        if (code.substr(code.length - 1, 1) === ';') {
+            code = code.substr(0, code.length - 1);
+        }
+
         const signatureInfo = <lsp.SignatureInformation>{
-            label: this.printer.printNode(Object.assign({}, functionDeclaration, {body: null})).trim(),
+            label: code,
             documentation: '',
             parameters: [],
         };
 
-        // metadata
-        const s2archive = this.store.getArchiveOfSourceFile(getSourceFileOfNode(functionDeclaration));
-        const funcEl = <trig.FunctionDef>this.store.getSymbolMetadata(functionSymbol);
-        if (s2archive && funcEl) {
-            for (const prop of ['Name', 'Hint']) {
-                const textKey = funcEl.textKey(prop);
-                if (s2archive.trigStrings.has(textKey)) {
-                    if (signatureInfo.documentation.length) {
-                        signatureInfo.documentation += '\n\n';
-                    }
-                    if (prop === 'Name') {
-                        signatureInfo.documentation += '### ' + s2archive.trigStrings.get(textKey);
-                    }
-                    else {
-                        signatureInfo.documentation += s2archive.trigStrings.get(textKey);
-                    }
-                }
-            }
-        }
+        signatureInfo.documentation = getDocumentationOfSymbol(this.store, functionSymbol);
+
+        const argsDoc = this.store.s2metadata ? this.store.s2metadata.getFunctionArgumentsDoc(functionSymbol.escapedName) : null;
 
         for (const [index, paramDeclaration] of functionDeclaration.parameters.entries()) {
             const paramInfo = <lsp.ParameterInformation>{
                 label: this.printer.printNode(paramDeclaration),
-                documentation: '',
+                documentation: null,
             };
-
-            if (funcEl) {
-                const realIndex = index + (funcEl.flags & trig.ElementFlag.Event ? -1 : 0);
-                if (realIndex >= 0) {
-                    const paramEl = <trig.ParamDef>funcEl.getParameters()[realIndex];
-                    if (paramEl) {
-                        const textKey = paramEl.textKey('Name');
-                        if (s2archive.trigStrings.has(textKey)) {
-                            paramInfo.documentation += '#### ' + s2archive.trigStrings.get(textKey) + ` - *${paramEl.type.type}*` + '\n';
-                        }
-
-                        if (paramEl.type.type === 'preset') {
-                            paramInfo.documentation += '---\n';
-                            // #### Presets:\n
-                            const preset = paramEl.type.typeElement.resolve();
-                            for (const presetValueRef of preset.values) {
-                                const presetValue = presetValueRef.resolve();
-                                const locName = s2archive.trigStrings.get(presetValue.textKey('Name'));
-                                paramInfo.documentation += `- \`${presetValue.value}\` - **${locName}**\n`;
-                            }
-                        }
-                    }
-                }
+            if (argsDoc && argsDoc[index]) {
+                paramInfo.documentation = argsDoc[index];
             }
-
             signatureInfo.parameters.push(paramInfo);
         }
 

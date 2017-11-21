@@ -1,0 +1,169 @@
+//==================================================================================================
+// 
+// Generated Map Script
+// 
+// Name:   Just Another StarCraft II Map
+// 
+//==================================================================================================
+include "TriggerLibs/NativeLib"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Loops Legacy
+//--------------------------------------------------------------------------------------------------
+// Function Declarations
+
+//--------------------------------------------------------------------------------------------------
+// Library: Loops Legacy
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libloop_InitLibraries () {
+    libNtve_InitVariables();
+}
+
+// Functions
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libloop_InitLib_completed = false;
+
+void libloop_InitLib () {
+    if (libloop_InitLib_completed) {
+        return;
+    }
+
+    libloop_InitLib_completed = true;
+
+    libloop_InitLibraries();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+void InitLibs () {
+    libNtve_InitLib();
+    libloop_InitLib();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Global Variables
+//--------------------------------------------------------------------------------------------------
+int gv_untitledVariable001;
+
+void InitGlobals () {
+}
+
+//--------------------------------------------------------------------------------------------------
+// Global Function Declarations
+//--------------------------------------------------------------------------------------------------
+void gf_Action1 ();
+void gf_action_custom_name ();
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Variables
+//--------------------------------------------------------------------------------------------------
+trigger gt_run;
+trigger gt_run2;
+
+//--------------------------------------------------------------------------------------------------
+// Global Functions
+//--------------------------------------------------------------------------------------------------
+void gf_Action1 () {
+    // Automatic Variable Declarations
+}
+
+void gf_action_custom_name () {
+    // Automatic Variable Declarations
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: run
+//--------------------------------------------------------------------------------------------------
+bool gt_run_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    playergroup auto24CF51ED_g;
+    int auto24CF51ED_var;
+    unitgroup auto59F6A933_g;
+    int auto59F6A933_u;
+    unit auto59F6A933_var;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto24CF51ED_g = PlayerGroupAll();
+    auto24CF51ED_var = -1;
+    while (true) {
+        auto24CF51ED_var = PlayerGroupNextPlayer(auto24CF51ED_g, auto24CF51ED_var);
+        if (auto24CF51ED_var < 0) { break; }
+    }
+    auto59F6A933_g = UnitLastCreatedGroup();
+    auto59F6A933_u = UnitGroupCount(auto59F6A933_g, c_unitCountAll);
+    for (;; auto59F6A933_u -= 1) {
+        auto59F6A933_var = UnitGroupUnitFromEnd(auto59F6A933_g, auto59F6A933_u);
+        if (auto59F6A933_var == null) { break; }
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_run_Init () {
+    gt_run = TriggerCreate("gt_run_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: run2
+//--------------------------------------------------------------------------------------------------
+bool gt_run2_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_p;
+    unit lv_u;
+
+    // Automatic Variable Declarations
+    playergroup auto81F8E082_g;
+    unitgroup auto82BA2AD7_g;
+    int auto82BA2AD7_u;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto81F8E082_g = PlayerGroupAll();
+    lv_p = -1;
+    while (true) {
+        lv_p = PlayerGroupNextPlayer(auto81F8E082_g, lv_p);
+        if (lv_p < 0) { break; }
+    }
+    auto82BA2AD7_g = UnitLastCreatedGroup();
+    auto82BA2AD7_u = UnitGroupCount(auto82BA2AD7_g, c_unitCountAll);
+    for (;; auto82BA2AD7_u -= 1) {
+        lv_u = UnitGroupUnitFromEnd(auto82BA2AD7_g, auto82BA2AD7_u);
+        if (lv_u == null) { break; }
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_run2_Init () {
+    gt_run2 = TriggerCreate("gt_run2_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Initialization
+//--------------------------------------------------------------------------------------------------
+void InitTriggers () {
+    gt_run_Init();
+    gt_run2_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Map Initialization
+//--------------------------------------------------------------------------------------------------
+void InitMap () {
+    InitLibs();
+    InitGlobals();
+    InitTriggers();
+}

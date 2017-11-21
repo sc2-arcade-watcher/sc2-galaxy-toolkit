@@ -6,20 +6,43 @@ export const enum ElementFlag {
     FuncAction = 1 << 2,
     FuncCall = 1 << 3,
     Event = 1 << 4,
+    Template = 1 << 5,
+    PresetGenConstVar = 1 << 6,
+    PresetCustom = 1 << 7,
 }
 
 export class ElementReference<T extends Element> {
-    private container: LibraryContainer;
+    private store: TriggerStore;
     id: string;
-    type: string;
-    library: string;
+    type: typeof Element;
+    // type: { new(): T };
+    // type: string;
+    library?: string;
 
-    public constructor(container: LibraryContainer) {
-        this.container = container;
+    public constructor(container: TriggerStore, type: { new(): T }) {
+        // this.type = type;
+        this.store = container;
+    }
+
+    public link() {
+        return this.type.name + '/' + this.id;
+    }
+
+    public globalLink() {
+        let link = this.link();
+        if (this.library) {
+            link = this.library + '/' + link;
+        }
+        return link;
     }
 
     public resolve(): T | undefined {
-        return this.container.findElementById(this.type + '/' + this.id, this.library) as T;
+        if (this.library) {
+            const lib = this.store.getLibraries().get(this.library);
+            return lib.findElementById(this.link(), null) as T;
+        }
+        return this.store.findElementById(this.link(), null) as T;
+        // return this.container.findElementById(this.id, this.type) as T;
     }
 }
 
@@ -31,10 +54,14 @@ export class ParameterType {
 
 export abstract class Element {
     static prefix?: string;
-    libId: string;
+    libId?: string;
     id: string;
     name?: string;
     flags: ElementFlag;
+
+    public link() {
+        return (this.libId ? this.libId + '/' : '') + (this.constructor.name + '/') + this.id;
+    }
 
     public toString() {
         if (this.flags & ElementFlag.Native) {
@@ -42,7 +69,9 @@ export abstract class Element {
         }
         else {
             const parts: string[] = [];
-            parts.push('lib' + this.libId);
+            if (this.libId) {
+                parts.push('lib' + this.libId);
+            }
             const prefix = (<any>this.constructor).prefix;
             if (prefix) {
                 parts.push(prefix);
@@ -56,7 +85,12 @@ export abstract class Element {
         const parts: string[] = [];
         parts.push(this.constructor.name);
         parts.push(kind);
-        parts.push(['lib', this.libId, this.id].join('_'));
+        if (this.libId) {
+            parts.push(['lib', this.libId, this.id].join('_'));
+        }
+        else {
+            parts.push(this.id);
+        }
         return parts.join('/');
     }
 }
@@ -86,128 +120,36 @@ export class PresetValue extends Element {
     value?: string;
 }
 
-const prefixRE = /^lib([^_]+)_([^_]+)_(.+)$/;
+export class Param extends Element {
+    valueType: string;
+    parameterDef?: ElementReference<ParamDef>
+    value?: string;
+    valueId?: number;
+    scriptCode?: string;
+}
 
-export class Library {
-    private container: LibraryContainer;
-    private id: string;
-    private elements: Map<string, Element> = new Map();
-    private nameMap: Map<string, Element> = new Map();
+const ElementClasses = {
+    ParamDef,
+    FunctionDef,
+    Preset,
+    PresetValue,
+    Param,
+};
 
-    private addElement(identifier: string, el: Element) {
-        el.libId = this.id;
+// export class TriggerExplorer {
+//     protected containers: ElementContainer;
+// }
+
+export abstract class ElementContainer {
+    protected elements: Map<string, Element> = new Map();
+    protected nameMap: Map<string, Element> = new Map();
+
+    public addElement(identifier: string, el: Element) {
         el.id = identifier;
-        this.elements.set(el.constructor.name + '/' + identifier, el);
-    }
-
-    private parseReference<T extends Element>(data: any): ElementReference<T> {
-        const ref = new ElementReference<T>(this.container);
-        ref.id = data.$.Id;
-        ref.library = data.$.Library;
-        ref.type = data.$.Type;
-        return ref;
-    }
-
-    private parseTree(data: any) {
-        this.id = data.Standard[0].$.Id;
-        for (const item of data.Element) {
-            let el: Element;
-
-            switch (item.$.Type) {
-                case 'FunctionDef':
-                {
-                    const func = el = new FunctionDef();
-
-                    func.flags |= item.FlagNative ? ElementFlag.Native : 0;
-                    func.flags |= item.FlagAction ? ElementFlag.FuncAction : 0;
-                    func.flags |= item.FlagCall ? ElementFlag.FuncCall : 0;
-                    func.flags |= item.FlagEvent ? ElementFlag.Event : 0;
-
-                    if (item.Parameter) {
-                        for (const param of item.Parameter) {
-                            func.parameters.push(this.parseReference(param));
-                        }
-                    }
-
-                    if (item.ReturnType) {
-                        func.returnType = item.ReturnType[0].Type[0].$.Value;
-                    }
-                    break;
-                }
-                case 'ParamDef':
-                {
-                    const param = el = new ParamDef();
-                    param.type = new ParameterType();
-                    param.type.type = item.ParameterType[0].Type[0].$.Value;
-                    if (param.type.type === 'gamelink') {
-                        param.type.gameType = item.ParameterType[0].GameType[0].$.Value;
-                    }
-                    if (param.type.type === 'preset') {
-                        param.type.typeElement = this.parseReference(item.ParameterType[0].TypeElement[0]);
-                    }
-                    break;
-                }
-                case 'Preset':
-                {
-                    const preset = el = new Preset();
-                    preset.baseType = item.BaseType[0].$.Value;
-                    if (item.Item) {
-                        for (const val of item.Item) {
-                            preset.values.push(this.parseReference(val));
-                        }
-                    }
-                    // item.$.PresetCustom
-                    // item.$.PresetGenConstVar
-                    // item.$.PresetAsBits
-                    break;
-                }
-                case 'PresetValue':
-                {
-                    const presetValue = el = new PresetValue();
-                    if (item.Value) {
-                        presetValue.value = item.Value[0];
-                    }
-                    break;
-                }
-                default:
-                {
-                    continue;
-                }
-            }
-
-            if (item.Identifier) {
-                el.name = item.Identifier[0];
-
-                if (el instanceof FunctionDef) {
-                    this.nameMap.set(el.name, el);
-                }
-            }
-
-            this.addElement(item.$.Id, el);
+        if (el instanceof FunctionDef) {
+            this.nameMap.set(el.name, el);
         }
-    }
-
-    constructor(container: LibraryContainer) {
-        this.container = container;
-    }
-
-    public fromFile(filename: string): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            xml.parseString(fs.readFileSync(filename, 'utf8'), (err, result) => {
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    try {
-                        this.parseTree(result.TriggerData);
-                        resolve(true);
-                    }
-                    catch (err) {
-                        reject(err);
-                    }
-                }
-            });
-        });
+        this.elements.set(el.constructor.name + '/' + el.id, el);
     }
 
     public findElementByName(name: string): Element | undefined {
@@ -237,8 +179,29 @@ export class Library {
         return null;
     }
 
-    public findElementById<T extends Element>(id: string): T | undefined {
+    public findElementById<T extends Element>(id: string, type?: { new(): T ;}): T | undefined {
+        if (type && type.name !== 'Element') {
+            id = type.name + '/' + id;
+        }
         return this.elements.get(id) as T;
+    }
+
+    public getElements() {
+        return <ReadonlyMap<string, Element>>this.elements;
+    }
+}
+
+export class Library extends ElementContainer {
+    protected id: string;
+
+    constructor(id: string) {
+        super();
+        this.id = id;
+    }
+
+    public addElement(identifier: string, el: Element) {
+        el.libId = this.id;
+        super.addElement(identifier, el);
     }
 
     public getId() {
@@ -246,74 +209,191 @@ export class Library {
     }
 }
 
-export class LibraryContainer extends Map<string, Library> {
-    public async addFromFile(filename: string): Promise<Library|null> {
-        const lib = new Library(this);
-        if (await lib.fromFile(filename)) {
-            this.set(lib.getId(), lib);
-            return lib;
+export type LibraryContainer = Map<string, Library>;
+
+export class TriggerStore extends ElementContainer {
+    protected libraries: LibraryContainer = new Map<string, Library>();
+    protected unresolvedReferences = new Map<string, ElementReference<Element>[]>();
+
+    public addElementReference(ref: ElementReference<Element>) {
+        const link = ref.globalLink();
+
+        if (this.unresolvedReferences.has(link)) {
+            const refList = this.unresolvedReferences.get(link);
+            refList.push(ref);
         }
-        return null;
+        else {
+            this.unresolvedReferences.set(link, [ref]);
+        }
     }
 
-    public findElementByName(name: string): Element | undefined {
-        const prefix = prefixRE.exec(name);
-        if (prefix) {
-            return this.get(prefix[1]).findElementByName(prefix[3]);
-        }
-
-        for (const lib of this.values()) {
-            const el = lib.findElementByName(name);
-            if (el) {
-                return el;
-            }
-        }
-
-        return undefined;
+    public addLibrary(library: Library) {
+        this.libraries.set(library.getId(), library);
     }
 
-    public findElementById<T extends Element>(elementId: string, libraryId?: string): T | undefined {
-        if (libraryId) {
-            if (this.has(libraryId)) {
-                return this.get(libraryId).findElementById(elementId) as T;
-            }
+    // public findElementById<T extends Element>(elementId: string, libraryId?: string): T | undefined {
+    //     if (libraryId) {
+    //         return this.libraries.get(libraryId).findElementById(elementId) as T;
+    //     }
+    //     return super.findElementById(elementId) as T;
+    // }
+
+    public getLibraries() {
+        return <ReadonlyMap<string, Library>>this.libraries;
+    }
+}
+
+export class XMLReader {
+    protected store: TriggerStore;
+
+    private parseReference<T extends Element>(data: any, type: { new(): T }): ElementReference<T> {
+        const ref = new ElementReference<T>(this.store, type);
+        ref.id = data.$.Id;
+        if (data.$.Library) {
+            ref.library = data.$.Library;
         }
-        for (const lib of this.values()) {
-            const el = lib.findElementById(elementId) as T;
-            if (el) {
-                return el;
-            }
-        }
-        return undefined;
+        ref.type = (ElementClasses as any)[type.name];
+
+        this.store.addElementReference(ref);
+
+        return ref;
     }
 
-    public findPresetValueByStr(value: string, libraryId?: string): PresetValue | undefined {
-        if (libraryId) {
-            if (this.has(libraryId)) {
-                return this.get(libraryId).findPresetValueByStr(value);
+    private parseElement(item: any): Element {
+        let el: Element;
+
+        switch (item.$.Type) {
+            case 'FunctionDef':
+            {
+                const func = el = new FunctionDef();
+
+                func.flags |= item.FlagNative ? ElementFlag.Native : 0;
+                func.flags |= item.FlagAction ? ElementFlag.FuncAction : 0;
+                func.flags |= item.FlagCall ? ElementFlag.FuncCall : 0;
+                func.flags |= item.FlagEvent ? ElementFlag.Event : 0;
+                func.flags |= item.Template ? ElementFlag.Template : 0;
+
+                if (item.Parameter) {
+                    for (const param of item.Parameter) {
+                        func.parameters.push(this.parseReference(param, ParamDef));
+                    }
+                }
+
+                if (item.ReturnType) {
+                    func.returnType = item.ReturnType[0].Type[0].$.Value;
+                }
+                break;
+            }
+            case 'ParamDef':
+            {
+                const param = el = new ParamDef();
+                param.type = new ParameterType();
+                param.type.type = item.ParameterType[0].Type[0].$.Value;
+                if (param.type.type === 'gamelink') {
+                    param.type.gameType = item.ParameterType[0].GameType[0].$.Value;
+                }
+                if (param.type.type === 'preset') {
+                    param.type.typeElement = this.parseReference(item.ParameterType[0].TypeElement[0], Preset);
+                }
+                break;
+            }
+            case 'Preset':
+            {
+                const preset = el = new Preset();
+                preset.flags |= item.PresetGenConstVar ? ElementFlag.PresetGenConstVar : 0;
+                preset.flags |= item.PresetCustom ? ElementFlag.PresetCustom : 0;
+                preset.baseType = item.BaseType[0].$.Value;
+                if (item.Item) {
+                    for (const val of item.Item) {
+                        if (val.$.Type !== 'PresetValue') continue;
+                        preset.values.push(this.parseReference(val, PresetValue));
+                    }
+                }
+                // item.$.PresetCustom
+                // item.$.PresetGenConstVar
+                // item.$.PresetAsBits
+                break;
+            }
+            case 'PresetValue':
+            {
+                const presetValue = el = new PresetValue();
+                if (item.Value) {
+                    presetValue.value = item.Value[0];
+                }
+                break;
+            }
+            default:
+            {
+                return null;
             }
         }
-        for (const lib of this.values()) {
-            const el = lib.findPresetValueByStr(value);
-            if (el) {
-                return el;
-            }
+
+        if (item.Identifier) {
+            el.name = item.Identifier[0];
         }
-        return undefined;
+
+        return el;
     }
 
-    public findPresetByValue(value: PresetValue, libraryId?: string): Preset | undefined {
-        if (libraryId) {
-            if (this.has(libraryId)) {
-                return this.get(libraryId).findPresetByValue(value);
-            }
-        }
-        for (const lib of this.values()) {
-            const el = lib.findPresetByValue(value);
+    private parseTree(data: any, container: ElementContainer) {
+        if (!data.Element) return;
+        for (const item of data.Element) {
+            const el = this.parseElement(item);
             if (el) {
-                return el;
+                container.addElement(item.$.Id, el);
             }
         }
-        return undefined;
+    }
+
+    private parseLibrary(id: string, data: any): Library {
+        const lib = new Library(id);
+        this.parseTree(data, lib);
+        return lib;
+    }
+
+    constructor(container: TriggerStore) {
+        this.store = container;
+    }
+
+    protected loadXML(content: string) {
+        return new Promise<any>((resolve, reject) => {
+            xml.parseString(content, (err, result) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    try {
+                        resolve(result.TriggerData);
+                    }
+                    catch (err) {
+                        reject(err);
+                    }
+                }
+            });
+        });
+    }
+
+    public async loadLibrary(content: string): Promise<Library> {
+        const data = await this.loadXML(content);
+        const lib = this.parseLibrary(data.Standard[0].$.Id, data);
+        this.store.addLibrary(lib);
+        return lib;
+    }
+
+    public async load(content: string, onlyLibraries: boolean = false): Promise<TriggerStore> {
+        const data = await this.loadXML(content);
+
+        if (data.Library) {
+            for (const item of data.Library) {
+                const lib = this.parseLibrary(item.$.Id, item);
+                this.store.addLibrary(lib);
+            }
+        }
+
+        if (!onlyLibraries) {
+            this.parseTree(data, this.store);
+        }
+
+        return this.store;
     }
 }

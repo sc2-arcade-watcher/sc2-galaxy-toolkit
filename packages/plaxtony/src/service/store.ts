@@ -2,8 +2,9 @@ import * as gt from '../compiler/types';
 import { SyntaxKind, SourceFile, Node, Symbol, SymbolTable } from '../compiler/types';
 import { getSourceFileOfNode } from '../compiler/utils';
 import { Parser } from '../compiler/parser';
+import { S2WorkspaceMetadata } from './s2meta';
 import { bindSourceFile, unbindSourceFile } from '../compiler/binder';
-import { findSC2Archives, isSC2Archive, SC2Archive } from '../sc2mod/archive';
+import { findSC2ArchiveDirectories, isSC2Archive, SC2Archive, SC2Workspace, openArchiveWorkspace } from '../sc2mod/archive';
 import { Element } from '../sc2mod/trigger';
 import * as lsp from 'vscode-languageserver';
 import * as path from 'path';
@@ -30,42 +31,31 @@ export class IndexedDocument {
     sourceNode: SourceFile;
 }
 
-export interface S2ArchiveChangeEvent {
-    localPath: string;
-    archive: SC2Archive;
+export interface S2WorkspaceChangeEvent {
+    src: string;
+    workspace: SC2Workspace;
 };
 
-export class Workspace {
-    protected workspacePath: string;
-    protected _onDidStart: lsp.Emitter<string>;
-    protected _onDidEnd: lsp.Emitter<number>;
+export class WorkspaceWatcher {
+    public workspacePath: string;
     protected _onDidOpen: lsp.Emitter<lsp.TextDocumentChangeEvent>;
 
     constructor(workspacePath: string) {
         this.workspacePath = workspacePath;
 
-        this._onDidStart = new lsp.Emitter<string>();
-        this._onDidEnd = new lsp.Emitter<number>();
         this._onDidOpen = new lsp.Emitter<lsp.TextDocumentChangeEvent>();
     }
 
-    public watch() {
+    protected watchFiles() {
         // TODO: filewatch
-        this._onDidStart.fire(this.workspacePath);
         const files = glob.sync(path.join(path.resolve(this.workspacePath), '**/*.galaxy'));
         for (let filepath of files) {
-            // this.store.updateDocument(createTextDocumentFromFs(filepath));
             this._onDidOpen.fire({document: createTextDocumentFromFs(filepath)})
         }
-        this._onDidEnd.fire(files.length);
     }
 
-    public get onDidStart(): lsp.Event<string> {
-        return this._onDidStart.event;
-    }
-
-    public get onDidEnd(): lsp.Event<number> {
-        return this._onDidEnd.event;
+    public watch() {
+        this.watchFiles();
     }
 
     public get onDidOpen(): lsp.Event<lsp.TextDocumentChangeEvent> {
@@ -73,56 +63,82 @@ export class Workspace {
     }
 }
 
-export class S2Workspace extends Workspace {
-    protected _onDidOpenS2Archive: lsp.Emitter<S2ArchiveChangeEvent>;
+export class S2WorkspaceWatcher extends WorkspaceWatcher {
+    protected _onDidOpenS2Workspace: lsp.Emitter<S2WorkspaceChangeEvent>;
+    protected modSources: string[] = [];
 
-    constructor(workspacePath: string) {
+    constructor(workspacePath: string, modSources: string[]) {
         super(workspacePath);
-        this._onDidOpenS2Archive = new lsp.Emitter<S2ArchiveChangeEvent>();
+        this.modSources = modSources;
+        this._onDidOpenS2Workspace = new lsp.Emitter<S2WorkspaceChangeEvent>();
     }
+
+    public get onDidOpenS2Archive(): lsp.Event<S2WorkspaceChangeEvent> {
+        return this._onDidOpenS2Workspace.event;
+    }
+
+    // public setSources(sources: string[]) {
+    //     this.modSources = sources;
+    // }
 
     public async watch() {
-        this._onDidStart.fire(this.workspacePath);
+        super.watch();
+        const rootArchive = new SC2Archive(path.basename(this.workspacePath), this.workspacePath);
+        const workspace = await openArchiveWorkspace(rootArchive, this.modSources);
 
-        const files = glob.sync(path.join(path.resolve(this.workspacePath), '**/*.galaxy'));
-        for (let filepath of files) {
-            this._onDidOpen.fire({document: createTextDocumentFromFs(filepath)})
+        for (const modArchive of workspace.dependencies) {
+            for (const extSrc of await modArchive.findFiles('*.galaxy')) {
+                this._onDidOpen.fire({document: createTextDocumentFromFs(path.join(modArchive.directory, extSrc))})
+            }
         }
 
-        if (isSC2Archive(this.workspacePath)) {
-            const modpath = path.resolve(this.workspacePath);
-            const archive = new SC2Archive();
-            await archive.openFromDirectory(modpath);
-            this._onDidOpenS2Archive.fire({
-                localPath: '',
-                archive: archive
-            });
-        }
-
-        for (let modpath of await findSC2Archives(path.resolve(this.workspacePath))) {
-            const archive = new SC2Archive();
-            await archive.openFromDirectory(modpath);
-            this._onDidOpenS2Archive.fire({
-                localPath: '',
-                archive: archive
-            });
-        }
-
-        this._onDidEnd.fire(files.length);
+        this._onDidOpenS2Workspace.fire({
+            src: this.workspacePath,
+            workspace: workspace,
+        });
     }
+}
 
-    public get onDidOpenS2Archive(): lsp.Event<S2ArchiveChangeEvent> {
-        return this._onDidOpenS2Archive.event;
+// export async function resolveWorkspaces(dir: string, modSources: string[]) {
+//     const watchers: WorkspaceWatcher[] = [];
+//     dir = path.resolve(dir);
+//     const archives = await findSC2ArchiveDirectories(dir);
+//     if (archives.length) {
+//         for (const archive of archives) {
+//             watchers.push(new S2WorkspaceWatcher(archive, modSources));
+//         }
+//     }
+//     else {
+//         watchers.push(new WorkspaceWatcher(dir))
+//     }
+//     return watchers;
+// }
+
+export async function findWorkspaceArchive(rootPath: string) {
+    if (isSC2Archive(rootPath)) {
+        return rootPath;
     }
+    const archives = await findSC2ArchiveDirectories(rootPath);
+    if (archives.length > 0) {
+        const map = archives.find((dir) => {
+            return path.extname(dir).toLowerCase() === 'sc2map';
+        });
+        if (map) {
+            return map;
+        }
+        else {
+            return archives[0];
+        }
+    }
+    return null;
 }
 
 export class Store {
     private parser = new Parser();
     public documents = new Map<string, SourceFile>();
-    public s2archives = new Map<string, SC2Archive>();
-
-    public initialize() {
-    }
+    public s2workspace: SC2Workspace;
+    public s2metadata: S2WorkspaceMetadata;
+    // protected watchers = new Map<string, WorkspaceWatcher>();
 
     public updateDocument(document: lsp.TextDocument) {
         if (this.documents.has(document.uri)) {
@@ -134,8 +150,10 @@ export class Store {
         this.documents.set(document.uri, sourceFile);
     }
 
-    public updateArchive(archive: SC2Archive) {
-        this.s2archives.set(archive.directory, archive);
+    public async updateS2Workspace(workspace: SC2Workspace) {
+        this.s2workspace = workspace;
+        this.s2metadata = new S2WorkspaceMetadata(this.s2workspace);
+        await this.s2metadata.build();
     }
 
     public resolveGlobalSymbol(name: string): gt.Symbol | undefined {
@@ -143,35 +161,6 @@ export class Store {
             if (doc.symbol.members.has(name)) {
                 return doc.symbol.members.get(name);
             }
-        }
-    }
-
-    public getArchiveOfSourceFile(sourceFile: SourceFile): SC2Archive | undefined {
-        for (const archive of this.s2archives.values()) {
-            const filePath = Uri.parse(sourceFile.fileName).fsPath;
-            if (filePath.indexOf(archive.directory) === 0) {
-                return archive;
-            }
-        }
-    }
-
-    public getSymbolMetadata(symbol: gt.Symbol): Element | undefined {
-        const sourceFile = getSourceFileOfNode(symbol.declarations[0]);
-        const archive = this.getArchiveOfSourceFile(sourceFile);
-        if (!archive) {
-            return undefined;
-        }
-        if (symbol.flags & gt.SymbolFlags.GlobalVariable) {
-            const variable = <gt.VariableDeclaration>symbol.declarations[0];
-            const isConstant = variable.modifiers.find((modifier) => {
-                return modifier.kind === gt.SyntaxKind.ConstKeyword;
-            })
-            if (isConstant) {
-                return archive.trigLibs.findPresetValueByStr(variable.name.name);
-            }
-        }
-        else {
-            return archive.trigLibs.findElementByName(symbol.escapedName);
         }
     }
 }

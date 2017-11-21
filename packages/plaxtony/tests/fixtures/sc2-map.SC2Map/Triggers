@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TriggerData>
+    <Library Id="loop">
+        <Root>
+            <Item Type="Category" Library="loop" Id="C7DA882A"/>
+            <Item Type="Category" Library="loop" Id="1A13E77C"/>
+            <Item Type="Category" Library="loop" Id="C99865E1"/>
+        </Root>
+        <Element Type="Category" Id="C7DA882A">
+            <Item Type="FunctionDef" Library="loop" Id="9DE705AA"/>
+            <Item Type="FunctionDef" Library="loop" Id="D02F7ACF"/>
+            <Item Type="FunctionDef" Library="loop" Id="119A6AF8"/>
+            <Item Type="FunctionDef" Library="loop" Id="66474248"/>
+        </Element>
+        <Element Type="FunctionDef" Id="9DE705AA">
+            <Identifier>PickEachInteger</Identifier>
+            <Label Type="Label" Library="Ntve" Id="00000002"/>
+            <FlagAction/>
+            <FlagSubFunctions/>
+            <FlagAllowBreak/>
+            <Parameter Type="ParamDef" Library="loop" Id="E8C2EA0E"/>
+            <Parameter Type="ParamDef" Library="loop" Id="28E710F2"/>
+            <SubFunctionType Type="SubFuncType" Library="loop" Id="7C4B9D16"/>
+            <ScriptCode>
+                IntLoopBegin(#PARAM(s), #PARAM(e));
+                for ( ; !IntLoopDone() ; IntLoopStep() ) {
+                    #SUBFUNCS(actions)
+                }
+                IntLoopEnd();
+            </ScriptCode>
+        </Element>
+        <Element Type="ParamDef" Id="E8C2EA0E">
+            <Identifier>s</Identifier>
+            <ParameterType>
+                <Type Value="int"/>
+            </ParameterType>
+            <Default Type="Param" Library="loop" Id="6E7F4CC7"/>
+        </Element>
+        <Element Type="Param" Id="6E7F4CC7">
+            <Value>1</Value>
+            <ValueType Type="int"/>
+        </Element>
+        <Element Type="ParamDef" Id="28E710F2">
+            <Identifier>e</Identifier>
+            <ParameterType>
+                <Type Value="int"/>
+            </ParameterType>
+            <Default Type="Param" Library="loop" Id="159D0D4A"/>
+        </Element>
+        <Element Type="Param" Id="159D0D4A">
+            <Value>10</Value>
+            <ValueType Type="int"/>
+        </Element>
+        <Element Type="SubFuncType" Id="7C4B9D16">
+            <Identifier>actions</Identifier>
+            <Action/>
+        </Element>
+        <Element Type="FunctionDef" Id="D02F7ACF">
+            <Identifier>IntLoopCurrent</Identifier>
+            <Label Type="Label" Library="Ntve" Id="00000002"/>
+            <FlagCall/>
+            <FlagNative/>
+            <ReturnType>
+                <Type Value="int"/>
+            </ReturnType>
+        </Element>
+        <Element Type="FunctionDef" Id="119A6AF8">
+            <Identifier>ForEachInteger2</Identifier>
+            <Label Type="Label" Library="Ntve" Id="00000002"/>
+            <FlagAction/>
+            <FlagSubFunctions/>
+            <FlagAllowBreak/>
+            <Parameter Type="ParamDef" Library="loop" Id="AB8608EE"/>
+            <Parameter Type="ParamDef" Library="loop" Id="831502CC"/>
+            <Parameter Type="ParamDef" Library="loop" Id="1B5A5B98"/>
+            <Parameter Type="ParamDef" Library="loop" Id="938EF5BD"/>
+            <SubFunctionType Type="SubFuncType" Library="loop" Id="CDB3AEAE"/>
+            <ScriptCode>
+                #AUTOVAR(ae,fixed) = #PARAM(e);
+                #AUTOVAR(ai,fixed) = #PARAM(increment);
+                #PARAM(var) = #PARAM(s);
+                for ( ; ( (#AUTOVAR(ai) &gt;= 0 &amp;&amp; #PARAM(var) &lt;= #AUTOVAR(ae)) || (#AUTOVAR(ai) &lt;= 0 &amp;&amp; #PARAM(var) &gt;= #AUTOVAR(ae)) ) ; #PARAM(var) += #AUTOVAR(ai) ) {
+                    #SUBFUNCS(actions)
+                }
+            </ScriptCode>
+        </Element>
+        <Element Type="ParamDef" Id="AB8608EE">
+            <Identifier>var</Identifier>
+            <ParameterType>
+                <Type Value="anyvariable"/>
+                <VariableType Value="fixed"/>
+            </ParameterType>
+            <ParamFlagMatchConst/>
+        </Element>
+        <Element Type="ParamDef" Id="831502CC">
+            <Identifier>s</Identifier>
+            <ParameterType>
+                <Type Value="fixed"/>
+            </ParameterType>
+            <Default Type="Param" Library="loop" Id="255B403B"/>
+        </Element>
+        <Element Type="Param" Id="255B403B">
+            <Value>1.0</Value>
+            <ValueType Type="fixed"/>
+        </Element>
+        <Element Type="ParamDef" Id="1B5A5B98">
+            <Identifier>e</Identifier>
+            <ParameterType>
+                <Type Value="fixed"/>
+            </ParameterType>
+            <Default Type="Param" Library="loop" Id="79F9D0C1"/>
+        </Element>
+        <Element Type="Param" Id="79F9D0C1">
+            <Value>10.0</Value>
+            <ValueType Type="fixed"/>
+        </Element>
+        <Element Type="ParamDef" Id="938EF5BD">
+            <Identifier>increment</Identifier>
+            <ParameterType>
+                <Type Value="fixed"/>
+            </ParameterType>
+            <Default Type="Param" Library="loop" Id="B1210F18"/>
+        </Element>
+        <Element Type="Param" Id="B1210F18">
+            <Value>1.0</Value>
+            <ValueType Type="fixed"/>
+        </Element>
+        <Element Type="SubFuncType" Id="CDB3AEAE">
+            <Identifier>actions</Identifier>
+            <Action/>
+        </Element>
+        <Element Type="FunctionDef" Id="66474248">
+            <Identifier>ForEachInteger</Identifier>
+            <Label Type="Label" Library="Ntve" Id="00000002"/>
+            <FlagAction/>
+            <FlagSubFunctions/>
+            <FlagAllowBreak/>
+            <Parameter Type="ParamDef" Library="loop" Id="8CB41668"/>
+            <Parameter Type="ParamDef" Library="loop" Id="F13E2CDE"/>
+            <Parameter Type="ParamDef" Library="loop" Id="C25E6187"/>
+            <Parameter Type="ParamDef" Library="loop" Id="F3144A4A"/>
+            <SubFunctionType Type="SubFuncType" Library="loop" Id="DAF49931"/>
+            <ScriptCode>
+                #AUTOVAR(ae) = #PARAM(e);
+                #AUTOVAR(ai) = #PARAM(increment);
+                #PARAM(var) = #PARAM(s);
+                for ( ; ( (#AUTOVAR(ai) &gt;= 0 &amp;&amp; #PARAM(var) &lt;= #AUTOVAR(ae)) || (#AUTOVAR(ai) &lt;= 0 &amp;&amp; #PARAM(var) &gt;= #AUTOVAR(ae)) ) ; #PARAM(var) += #AUTOVAR(ai) ) {
+                    #SUBFUNCS(actions)
+                }
+            </ScriptCode>
+        </Element>
+        <Element Type="ParamDef" Id="8CB41668">
+            <Identifier>var</Identifier>
+            <ParameterType>
+                <Type Value="anyvariable"/>
+                <VariableType Value="int"/>
+            </ParameterType>
+            <ParamFlagMatchConst/>
+        </Element>
+        <Element Type="ParamDef" Id="F13E2CDE">
+            <Identifier>s</Identifier>
+            <ParameterType>
+                <Type Value="int"/>
+            </ParameterType>
+            <Default Type="Param" Library="loop" Id="777D3D26"/>
+        </Element>
+        <Element Type="Param" Id="777D3D26">
+            <Value>1</Value>
+            <ValueType Type="int"/>
+        </Element>
+        <Element Type="ParamDef" Id="C25E6187">
+            <Identifier>e</Identifier>
+            <ParameterType>
+                <Type Value="int"/>
+            </ParameterType>
+            <Default Type="Param" Library="loop" Id="1B913C60"/>
+        </Element>
+        <Element Type="Param" Id="1B913C60">
+            <Value>10</Value>
+            <ValueType Type="int"/>
+        </Element>
+        <Element Type="ParamDef" Id="F3144A4A">
+            <Identifier>increment</Identifier>
+            <ParameterType>
+                <Type Value="int"/>
+            </ParameterType>
+            <Default Type="Param" Library="loop" Id="64BDC6CD"/>
+        </Element>
+        <Element Type="Param" Id="64BDC6CD">
+            <Value>1</Value>
+            <ValueType Type="int"/>
+        </Element>
+        <Element Type="SubFuncType" Id="DAF49931">
+            <Identifier>actions</Identifier>
+            <Action/>
+        </Element>
+        <Element Type="Category" Id="1A13E77C">
+            <Item Type="FunctionDef" Library="loop" Id="B525B112"/>
+            <Item Type="FunctionDef" Library="loop" Id="5084725D"/>
+            <Item Type="FunctionDef" Library="loop" Id="8570CA61"/>
+        </Element>
+        <Element Type="FunctionDef" Id="B525B112">
+            <Identifier>ForEachPlayerInGroup</Identifier>
+            <Label Type="Label" Library="Ntve" Id="00000011"/>
+            <FlagAction/>
+            <FlagSubFunctions/>
+            <FlagAllowBreak/>
+            <Parameter Type="ParamDef" Library="loop" Id="857209C7"/>
+            <Parameter Type="ParamDef" Library="loop" Id="A4B226A9"/>
+            <SubFunctionType Type="SubFuncType" Library="loop" Id="DF50D5F0"/>
+            <ScriptCode>
+                #AUTOVAR(g, playergroup) = #PARAM(group); 
+                #AUTOVAR(p) = 1;
+                for ( ; #AUTOVAR(p) &lt;= PlayerGroupCount(#AUTOVAR(g)) ; #AUTOVAR(p) += BoolToInt(#PARAM(var) == PlayerGroupPlayer(#AUTOVAR(g), #AUTOVAR(p))) ) {
+                    #PARAM(var) = PlayerGroupPlayer(#AUTOVAR(g), #AUTOVAR(p));
+                    #SUBFUNCS(actions)
+                }
+            </ScriptCode>
+        </Element>
+        <Element Type="ParamDef" Id="857209C7">
+            <Identifier>var</Identifier>
+            <ParameterType>
+                <Type Value="anyvariable"/>
+                <VariableType Value="int"/>
+            </ParameterType>
+        </Element>
+        <Element Type="ParamDef" Id="A4B226A9">
+            <Identifier>group</Identifier>
+            <ParameterType>
+                <Type Value="playergroup"/>
+            </ParameterType>
+            <Default Type="Param" Library="loop" Id="B4237C3C"/>
+        </Element>
+        <Element Type="Param" Id="B4237C3C">
+            <FunctionCall Type="FunctionCall" Library="loop" Id="8C1516A3"/>
+        </Element>
+        <Element Type="FunctionCall" Id="8C1516A3">
+            <FunctionDef Type="FunctionDef" Library="Ntve" Id="00000192"/>
+        </Element>
+        <Element Type="SubFuncType" Id="DF50D5F0">
+            <Identifier>actions</Identifier>
+            <Action/>
+        </Element>
+        <Element Type="FunctionDef" Id="5084725D">
+            <Identifier>PickEachPlayerInGroup</Identifier>
+            <Label Type="Label" Library="Ntve" Id="00000011"/>
+            <FlagAction/>
+            <FlagSubFunctions/>
+            <FlagAllowBreak/>
+            <Parameter Type="ParamDef" Library="loop" Id="42AB3EFD"/>
+            <SubFunctionType Type="SubFuncType" Library="loop" Id="DEA91B62"/>
+            <ScriptCode>
+                PlayerGroupLoopBegin(#PARAM(group));
+                for ( ; !PlayerGroupLoopDone() ; PlayerGroupLoopStep() ) {
+                    #SUBFUNCS(actions)
+                }
+                PlayerGroupLoopEnd();
+            </ScriptCode>
+        </Element>
+        <Element Type="ParamDef" Id="42AB3EFD">
+            <Identifier>group</Identifier>
+            <ParameterType>
+                <Type Value="playergroup"/>
+            </ParameterType>
+            <Default Type="Param" Library="loop" Id="F4D458E8"/>
+        </Element>
+        <Element Type="Param" Id="F4D458E8">
+            <FunctionCall Type="FunctionCall" Library="loop" Id="04FEA699"/>
+        </Element>
+        <Element Type="FunctionCall" Id="04FEA699">
+            <FunctionDef Type="FunctionDef" Library="Ntve" Id="00000192"/>
+        </Element>
+        <Element Type="SubFuncType" Id="DEA91B62">
+            <Identifier>actions</Identifier>
+            <Action/>
+        </Element>
+        <Element Type="FunctionDef" Id="8570CA61">
+            <Identifier>PlayerGroupLoopCurrent</Identifier>
+            <Label Type="Label" Library="Ntve" Id="00000011"/>
+            <FlagCall/>
+            <FlagNative/>
+            <ReturnType>
+                <Type Value="int"/>
+            </ReturnType>
+        </Element>
+        <Element Type="Category" Id="C99865E1">
+            <Item Type="FunctionDef" Library="loop" Id="C4DC760C"/>
+            <Item Type="FunctionDef" Library="loop" Id="00000327"/>
+            <Item Type="FunctionDef" Library="loop" Id="19CE733E"/>
+        </Element>
+        <Element Type="FunctionDef" Id="C4DC760C">
+            <Identifier>PickEachUnitInGroup</Identifier>
+            <Label Type="Label" Library="Ntve" Id="00000013"/>
+            <FlagAction/>
+            <FlagSubFunctions/>
+            <FlagAllowBreak/>
+            <Parameter Type="ParamDef" Library="loop" Id="F96B466D"/>
+            <SubFunctionType Type="SubFuncType" Library="loop" Id="9441B8B5"/>
+            <ScriptCode>
+                UnitGroupLoopBegin(#PARAM(group));
+                for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
+                    #SUBFUNCS(actions)
+                }
+                UnitGroupLoopEnd();
+            </ScriptCode>
+        </Element>
+        <Element Type="ParamDef" Id="F96B466D">
+            <Identifier>group</Identifier>
+            <ParameterType>
+                <Type Value="unitgroup"/>
+            </ParameterType>
+            <Default Type="Param" Library="loop" Id="DA9ADFC2"/>
+        </Element>
+        <Element Type="Param" Id="DA9ADFC2">
+            <FunctionCall Type="FunctionCall" Library="loop" Id="C5C6409E"/>
+        </Element>
+        <Element Type="FunctionCall" Id="C5C6409E">
+            <FunctionDef Type="FunctionDef" Library="Ntve" Id="00000141"/>
+        </Element>
+        <Element Type="SubFuncType" Id="9441B8B5">
+            <Identifier>actions</Identifier>
+            <Action/>
+        </Element>
+        <Element Type="FunctionDef" Id="00000327">
+            <Identifier>ForEachUnitInGroup</Identifier>
+            <Label Type="Label" Library="Ntve" Id="00000013"/>
+            <FlagAction/>
+            <FlagSubFunctions/>
+            <FlagAllowBreak/>
+            <Parameter Type="ParamDef" Library="loop" Id="00000617"/>
+            <Parameter Type="ParamDef" Library="loop" Id="00000618"/>
+            <SubFunctionType Type="SubFuncType" Library="loop" Id="00000007"/>
+            <ScriptCode>
+                #AUTOVAR(g, unitgroup) = #PARAM(group);
+                #AUTOVAR(u) = 1;
+                for ( ; #AUTOVAR(u) &lt;= UnitGroupCount(#AUTOVAR(g), c_unitCountAll) ; #AUTOVAR(u) += BoolToInt(#PARAM(var) == UnitGroupUnit(#AUTOVAR(g), #AUTOVAR(u))) ) {
+                    #PARAM(var) = UnitGroupUnit(#AUTOVAR(g), #AUTOVAR(u));
+                    #SUBFUNCS(actions)
+                }
+            </ScriptCode>
+        </Element>
+        <Element Type="ParamDef" Id="00000617">
+            <Identifier>var</Identifier>
+            <ParameterType>
+                <Type Value="anyvariable"/>
+                <VariableType Value="unit"/>
+            </ParameterType>
+        </Element>
+        <Element Type="ParamDef" Id="00000618">
+            <Identifier>group</Identifier>
+            <ParameterType>
+                <Type Value="unitgroup"/>
+            </ParameterType>
+            <Default Type="Param" Library="loop" Id="00000492"/>
+        </Element>
+        <Element Type="Param" Id="00000492">
+            <FunctionCall Type="FunctionCall" Library="loop" Id="00000149"/>
+        </Element>
+        <Element Type="FunctionCall" Id="00000149">
+            <FunctionDef Type="FunctionDef" Library="Ntve" Id="00000141"/>
+        </Element>
+        <Element Type="SubFuncType" Id="00000007">
+            <Identifier>actions</Identifier>
+            <Action/>
+        </Element>
+        <Element Type="FunctionDef" Id="19CE733E">
+            <Identifier>UnitGroupLoopCurrent</Identifier>
+            <Label Type="Label" Library="Ntve" Id="00000013"/>
+            <FlagCall/>
+            <FlagNative/>
+            <ReturnType>
+                <Type Value="unit"/>
+            </ReturnType>
+        </Element>
+    </Library>
+    <Root>
+        <Item Type="FunctionDef" Id="BF1FA304"/>
+        <Item Type="FunctionDef" Id="9F554C5A"/>
+        <Item Type="Variable" Id="EC0C1EE3"/>
+        <Item Type="Trigger" Id="70D6CCC0"/>
+        <Item Type="Trigger" Id="FEA759F3"/>
+    </Root>
+    <Element Type="FunctionDef" Id="BF1FA304">
+        <FlagAction/>
+    </Element>
+    <Element Type="FunctionDef" Id="9F554C5A">
+        <Identifier>action_custom_name</Identifier>
+        <FlagAction/>
+    </Element>
+    <Element Type="Variable" Id="EC0C1EE3">
+        <VariableType>
+            <Type Value="int"/>
+        </VariableType>
+        <Value Type="Param" Id="CD0800AF"/>
+    </Element>
+    <Element Type="Param" Id="CD0800AF">
+        <Value>0</Value>
+        <ValueType Type="int"/>
+    </Element>
+    <Element Type="Trigger" Id="70D6CCC0">
+        <Action Type="FunctionCall" Id="24CF51ED"/>
+        <Action Type="FunctionCall" Id="59F6A933"/>
+    </Element>
+    <Element Type="FunctionCall" Id="24CF51ED">
+        <FunctionDef Type="FunctionDef" Library="Ntve" Id="5084725D"/>
+        <Parameter Type="Param" Id="0023CA6A"/>
+    </Element>
+    <Element Type="Param" Id="0023CA6A">
+        <ParameterDef Type="ParamDef" Library="Ntve" Id="42AB3EFD"/>
+        <FunctionCall Type="FunctionCall" Id="FBD6E4AA"/>
+    </Element>
+    <Element Type="FunctionCall" Id="FBD6E4AA">
+        <FunctionDef Type="FunctionDef" Library="Ntve" Id="00000192"/>
+    </Element>
+    <Element Type="FunctionCall" Id="59F6A933">
+        <FunctionDef Type="FunctionDef" Library="Ntve" Id="C4DC760C"/>
+        <Parameter Type="Param" Id="199F5DF0"/>
+    </Element>
+    <Element Type="Param" Id="199F5DF0">
+        <ParameterDef Type="ParamDef" Library="Ntve" Id="F96B466D"/>
+        <FunctionCall Type="FunctionCall" Id="A68059BE"/>
+    </Element>
+    <Element Type="FunctionCall" Id="A68059BE">
+        <FunctionDef Type="FunctionDef" Library="Ntve" Id="00000141"/>
+    </Element>
+    <Element Type="Trigger" Id="FEA759F3">
+        <Variable Type="Variable" Id="83E78E4C"/>
+        <Variable Type="Variable" Id="7772E4C7"/>
+        <Action Type="FunctionCall" Id="81F8E082"/>
+        <Action Type="FunctionCall" Id="82BA2AD7"/>
+    </Element>
+    <Element Type="Variable" Id="83E78E4C">
+        <VariableType>
+            <Type Value="int"/>
+        </VariableType>
+        <Value Type="Param" Id="D809B32C"/>
+    </Element>
+    <Element Type="Param" Id="D809B32C">
+        <Value>0</Value>
+        <ValueType Type="int"/>
+    </Element>
+    <Element Type="Variable" Id="7772E4C7">
+        <VariableType>
+            <Type Value="unit"/>
+        </VariableType>
+        <Value Type="Param" Id="13D0C0D3"/>
+    </Element>
+    <Element Type="Param" Id="13D0C0D3">
+        <Preset Type="PresetValue" Library="Ntve" Id="D6EA4D09"/>
+    </Element>
+    <Element Type="FunctionCall" Id="81F8E082">
+        <FunctionDef Type="FunctionDef" Library="Ntve" Id="B525B112"/>
+        <Parameter Type="Param" Id="6E308A19"/>
+        <Parameter Type="Param" Id="7B7A8980"/>
+    </Element>
+    <Element Type="Param" Id="6E308A19">
+        <ParameterDef Type="ParamDef" Library="Ntve" Id="A4B226A9"/>
+        <FunctionCall Type="FunctionCall" Id="C17F9BA0"/>
+    </Element>
+    <Element Type="FunctionCall" Id="C17F9BA0">
+        <FunctionDef Type="FunctionDef" Library="Ntve" Id="00000192"/>
+    </Element>
+    <Element Type="Param" Id="7B7A8980">
+        <ParameterDef Type="ParamDef" Library="Ntve" Id="857209C7"/>
+        <Variable Type="Variable" Id="83E78E4C"/>
+    </Element>
+    <Element Type="FunctionCall" Id="82BA2AD7">
+        <FunctionDef Type="FunctionDef" Library="Ntve" Id="00000327"/>
+        <Parameter Type="Param" Id="6A1A29FB"/>
+        <Parameter Type="Param" Id="53C70459"/>
+    </Element>
+    <Element Type="Param" Id="6A1A29FB">
+        <ParameterDef Type="ParamDef" Library="Ntve" Id="00000618"/>
+        <FunctionCall Type="FunctionCall" Id="057DB170"/>
+    </Element>
+    <Element Type="FunctionCall" Id="057DB170">
+        <FunctionDef Type="FunctionDef" Library="Ntve" Id="00000141"/>
+    </Element>
+    <Element Type="Param" Id="53C70459">
+        <ParameterDef Type="ParamDef" Library="Ntve" Id="00000617"/>
+        <Variable Type="Variable" Id="7772E4C7"/>
+    </Element>
+</TriggerData>

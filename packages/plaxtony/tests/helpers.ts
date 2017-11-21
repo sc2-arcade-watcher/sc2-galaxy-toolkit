@@ -1,7 +1,8 @@
 import { SourceFile, Diagnostic } from './../src/compiler/types';
 import { Parser } from '../src/compiler/parser';
 import { TextDocument } from 'vscode-languageserver';
-import { Store, Workspace, S2Workspace, createTextDocumentFromFs } from '../src/service/store';
+import { Store, WorkspaceWatcher, S2WorkspaceWatcher, createTextDocumentFromFs } from '../src/service/store';
+import { SC2Workspace } from '../src/sc2mod/archive'
 import * as path from 'path';
 
 const fixturesPath = 'tests/fixtures';
@@ -40,14 +41,12 @@ export function mockupStoreFromDirectory(directory: string) {
     return new Promise<Store>((resolve, reject) => {
         try {
             const store = new Store();
-            const ws = new Workspace(directory);
+            const ws = new WorkspaceWatcher(directory);
             ws.onDidOpen((ev) => {
                 store.updateDocument(ev.document);
             });
-            ws.onDidEnd((ev) => {
-                resolve(store);
-            });
             ws.watch();
+            resolve(store);
         }
         catch (err) {
             reject(err);
@@ -55,16 +54,20 @@ export function mockupStoreFromDirectory(directory: string) {
     });
 }
 
-export async function mockupStoreFromS2Workspace(directory: string) {
+export async function mockupStoreFromS2Workspace(directory: string, modSources: string[]) {
     const store = new Store();
-    const ws = new S2Workspace(directory);
+    const ws = new S2WorkspaceWatcher(directory, modSources);
+    const workspaces: SC2Workspace[] = [];
     ws.onDidOpen((ev) => {
         store.updateDocument(ev.document);
     });
     ws.onDidOpenS2Archive((ev) => {
-        store.updateArchive(ev.archive);
+        workspaces.push(ev.workspace);
     });
     await ws.watch();
+    for (const ws of workspaces) {
+        await store.updateS2Workspace(ws);
+    }
     return store;
 }
 

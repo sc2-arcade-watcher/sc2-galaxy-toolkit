@@ -1,72 +1,96 @@
 import 'mocha';
 import * as path from 'path';
+import * as fs from 'fs';
 import { assert } from 'chai';
-import { findSC2Archives, SC2Archive } from '../src/sc2mod/archive';
+import { findSC2ArchiveDirectories, SC2Archive, SC2Workspace, openArchiveWorkspace } from '../src/sc2mod/archive';
 import * as trig from '../src/sc2mod/trigger';
 import * as loc from '../src/sc2mod/localization';
 
 const resourcesPath = path.join('tests', 'fixtures', 'sc2-data-trigger');
 
 describe('SC2Mod', () => {
-    describe('Archive', () => {
+    describe('General', () => {
         let archives: string[];
 
         before(async () => {
-            archives = await findSC2Archives(resourcesPath);
+            archives = await findSC2ArchiveDirectories(resourcesPath);
         });
 
         it('should find SC2 archives within directory', () => {
             assert.lengthOf(archives, 20);
             assert.include(archives, path.resolve(path.join(resourcesPath, 'mods', 'core.sc2mod')));
         })
+    });
 
-        context('open archive', () => {
-            const s2archive = new SC2Archive();
-            before(async () => {
-                await s2archive.openFromDirectory(path.resolve(path.join(resourcesPath, 'mods', 'core.sc2mod')));
-            });
+    context('Archive', () => {
+        let s2archive: SC2Archive;
 
-            it('trigger libraries', () => {
-                assert.equal(s2archive.trigLibs.size, 1);
-            });
+        before(async () => {
+            s2archive = new SC2Archive('mods/core.sc2mod', path.resolve(path.join(resourcesPath, 'mods', 'core.sc2mod')));
+        });
 
-            it('trigger strings', () => {
-                assert.isAtLeast(s2archive.trigStrings.size, 1);
-            });
+        it('dependency list', async () => {
+            const list = await s2archive.getDependencyList();
+            assert.equal(list.length, 0);
+        });
+    });
 
-            it('provide text strings for trigger elements', () => {
-                function getTextOfElement(elName: string, kind: string) {
-                    return s2archive.trigStrings.get(
-                        s2archive.trigLibs.findElementByName(elName).textKey(kind)
-                    );
-                }
-                assert.equal(getTextOfElement('UnitGetHeight', 'Name'), 'Height Of Unit');
-                assert.equal(getTextOfElement('UnitGetHeight', 'Hint'), 'Returns the height of the specified unit.');
-                assert.equal(getTextOfElement('UnitGetHeight', 'Grammar'), 'Height of ~u~');
-            });
+    context('Workspace', () => {
+        let s2work: SC2Workspace;
+
+        before(async () => {
+            const sources = [
+                path.resolve(path.join(resourcesPath)),
+            ];
+            const dir = path.resolve(path.join('tests', 'fixtures', 'sc2-map.SC2Map'));
+            const rootArchive = new SC2Archive(path.basename(dir), dir);
+            s2work = await openArchiveWorkspace(rootArchive, sources);
+        });
+
+        it('load triggers', async () => {
+            await s2work.trigComponent.load();
+            const trigStore = s2work.trigComponent.getStore();
+            assert.equal(trigStore.getLibraries().size, 3);
+            assert.isTrue(trigStore.getLibraries().has('Ntve'));
+            assert.isTrue(trigStore.getLibraries().has('Lbty'));
+        });
+
+        it('load localization', async () => {
+            await s2work.locComponent.load();
+            assert.equal(s2work.locComponent.triggers.text('Library/Name/Ntve'), 'Built-In');
+        });
+
+        it('localization text for trigger elements', async () => {
+            await s2work.trigComponent.load();
+            await s2work.locComponent.load();
+            const el = <trig.FunctionDef>s2work.trigComponent.getStore().findElementById('BF1FA304', trig.FunctionDef)
+            assert.equal(s2work.locComponent.triggers.text('Name', el), 'Action1');
         });
     });
 
     describe('TriggerLib', () => {
-        const trigContainer = new trig.LibraryContainer();
+        const trigStore = new trig.TriggerStore();
+        let ntveLib: trig.Library;
 
         before(async () => {
-            await trigContainer.addFromFile(path.join(resourcesPath, 'mods', 'core.sc2mod/base.sc2data/TriggerLibs/NativeLib.TriggerLib'));
+            const reader = new trig.XMLReader(trigStore);
+            ntveLib = await reader.loadLibrary(fs.readFileSync(path.join(resourcesPath, 'mods', 'core.sc2mod/base.sc2data/TriggerLibs/NativeLib.TriggerLib'), 'utf8'));
         });
 
 
         it('should find native elements by name', () => {
-            const el = trigContainer.findElementByName('UnitGetHeight');
+            const el = ntveLib.findElementByName('UnitGetHeight');
             assert.isDefined(el)
         });
 
         it('should find non native elements by its full prefixed name', () => {
-            const el = trigContainer.findElementByName('libNtve_gf_DifficultyValueInt');
+            // const el = ntveLib.findElementByName('libNtve_gf_DifficultyValueInt');
+            const el = ntveLib.findElementByName('DifficultyValueInt');
             assert.isDefined(el)
         });
 
         it('element IDs should scoped per type', () => {
-            assert.notEqual(trigContainer.findElementById('ParamDef/00000102'), trigContainer.findElementById('Param/00000102'))
+            assert.notEqual(<any>(ntveLib.findElementById('00000102', trig.ParamDef)), <any>(ntveLib.findElementById('00000102', trig.Param)))
         }),
 
         context('FunctionDef', () => {
@@ -74,7 +98,7 @@ describe('SC2Mod', () => {
             let params: trig.ParamDef[];
 
             before(() => {
-                el = trigContainer.findElementByName('UnitCreate') as trig.FunctionDef;
+                el = ntveLib.findElementByName('UnitCreate') as trig.FunctionDef;
                 assert.isDefined(el)
                 params = el.getParameters();
                 assert.isDefined(params)
@@ -116,15 +140,15 @@ describe('SC2Mod', () => {
         });
 
         it('find PresetValue by str', () => {
-            const presetValue = trigContainer.findPresetValueByStr('c_unitCountAll');
+            const presetValue = ntveLib.findPresetValueByStr('c_unitCountAll');
             assert.isDefined(presetValue);
             assert.equal(presetValue.name, 'All');
         });
 
         it('find Preset by PresetValue', () => {
-            const presetValue = trigContainer.findPresetValueByStr('c_unitCountAll');
+            const presetValue = ntveLib.findPresetValueByStr('c_unitCountAll');
             assert.isDefined(presetValue);
-            const preset = trigContainer.findPresetByValue(presetValue);
+            const preset = ntveLib.findPresetByValue(presetValue);
             assert.isDefined(preset);
             assert.equal(preset.name, 'UnitCountType');
         });

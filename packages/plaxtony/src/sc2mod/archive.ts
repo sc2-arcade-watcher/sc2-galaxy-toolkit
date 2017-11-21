@@ -1,15 +1,20 @@
 import * as fs from 'fs'
 import * as glob from 'glob'
 import * as path from 'path'
+import * as xml from 'xml2js';
 import * as trig from './trigger';
-import { LocalizationFile } from './localization';
+import * as loc from './localization';
 
 export function isSC2Archive(directory: string) {
     return /\.(SC2Mod|SC2Map|SC2Campaign)$/i.exec(path.basename(directory));
 }
 
-export function findSC2Archives(directory: string) {
+export function findSC2ArchiveDirectories(directory: string) {
     return new Promise<string[]>((resolve, reject) => {
+        if (isSC2Archive(directory)) {
+            resolve([path.resolve(directory)]);
+            return;
+        }
         glob(path.join(directory, '**/*.+(SC2Mod|SC2Map|SC2Campaign)'), {nocase: true, realpath: true} , (err, matches) => {
             if (err) {
                 reject(err);
@@ -36,26 +41,249 @@ function findSC2File(directory: string, pattern: string) {
     });
 }
 
-export class SC2Archive {
-    trigLibs = new trig.LibraryContainer();
-    // trigStrings = new Map<string, LocalizationFile>();
-    trigStrings = new LocalizationFile();
-    directory: string;
+export abstract class Component {
+    protected workspace: SC2Workspace;
+    protected waitPromise: Promise<boolean>;
+    protected waitQueue: (ready: boolean) => void;
+    protected ready: boolean = false;
 
-    public async openFromDirectory(directory: string) {
-        this.directory = path.resolve(directory);
+    constructor(workspace: SC2Workspace) {
+        this.workspace = workspace;
+    }
 
-        // TODO: support Triggers
-        for (const filename of await findSC2File(this.directory, '+(*.TriggerLib|*.SC2Lib)')) {
-            this.trigLibs.addFromFile(filename);
+    public load() {
+        this.ready = false;
+        // this.waitQueue = (ready: boolean) => {
+        // }
+        this.waitPromise = new Promise<boolean>(async (resolve, reject) => {
+            try {
+                this.ready = await this.loadData();
+                resolve(this.ready);
+            }
+            catch (e) {
+                e.message = '[' + this.constructor.name + '/load] ' + e.message;
+                reject(e);
+            }
+        });
+        return Promise.resolve(this.waitPromise);
+    }
+
+    abstract async loadData(): Promise<boolean>;
+
+    public isReady(): boolean {
+        return this.ready;
+    }
+
+    public sync(): Promise<boolean> {
+        if (!this.waitPromise) {
+            return Promise.race([this.load()]);
+            // return this.ready;
+        }
+        if (this.isReady()) {
+            return Promise.resolve(true);
+        }
+        return Promise.race([this.waitPromise]);
+    }
+}
+
+export class TriggerComponent extends Component {
+    protected store = new trig.TriggerStore();
+    // protected libraries: trig.Library;
+
+    public async loadData() {
+        const trigReader = new trig.XMLReader(this.store);
+
+        for (const archive of this.workspace.allArchives) {
+            for (const filename of await archive.findFiles('+(*.TriggerLib|*.SC2Lib)')) {
+                this.store.addLibrary(await trigReader.loadLibrary(await archive.readFile(filename)));
+            }
+            if (await archive.hasFile('Triggers')) {
+                await trigReader.load(await archive.readFile('Triggers'), this.workspace.rootArchive !== archive);
+            }
         }
 
+        return true;
+    }
+
+    public getStore() {
+        return this.store;
+    }
+}
+
+export class LocalizationComponent extends Component {
+    triggers = new loc.LocalizationTriggers();
+
+    public async loadData() {
         // for (const filename of await findSC2File(this.directory, '*.sc2data/LocalizedData/TriggerStrings.txt')) {
         // }
 
-        const filenames = await findSC2File(this.directory, path.join('TriggerStrings.txt'));
-        if (filenames.length) {
-            this.trigStrings.readFromFile(filenames[0]);
+        for (const archive of this.workspace.allArchives) {
+            const filenames = await archive.findFiles('TriggerStrings.txt');
+            if (filenames.length) {
+                const locFile = new loc.LocalizationFile();
+                locFile.read(await archive.readFile(filenames[0]));
+                this.triggers.merge(locFile);
+            }
         }
+
+        return true;
+    }
+}
+
+// export class SC2ArchiveAgregator {
+//     protected archives: SC2Archive[] = [];
+//     protected triggers = new trig.TriggerStore();
+
+//     public getLocalizedName(key: string): string {
+//         for (const archive of this.archives) {
+//             const value = archive.trigStrings.get(key);
+//             if (value) {
+//                 return value;
+//             }
+//         }
+//         return key;
+//     }
+// }
+
+export interface ArchiveLink {
+    name: string;
+    src: string;
+}
+
+export function resolveArchiveDirectory(name: string, sources: string[]) {
+    for (const src of sources) {
+        const results = glob.sync(path.join(src, name), {nocase: true, realpath: true});
+
+        if (results.length) {
+            return results[0];
+        }
+    }
+}
+
+export async function resolveArchiveDependencyList(archive: SC2Archive, sources: string[], list: ArchiveLink[] = []) {
+    for (const entry of await archive.getDependencyList()) {
+        if (list.findIndex((item) => item.name === entry) !== -1) {
+            continue;
+        }
+        const link = <ArchiveLink>{
+            name: entry,
+        };
+
+        const dir = resolveArchiveDirectory(entry, sources);
+        if (!dir) {
+            throw new Error('coldn\'t resolve "' + entry + '"');
+        }
+        link.src = dir;
+        list.push(link);
+        await resolveArchiveDependencyList(new SC2Archive(entry, dir), sources, list);
+    }
+    return list;
+}
+
+export async function openArchiveWorkspace(archive: SC2Archive, sources: string[]) {
+    const dependencyArchives: SC2Archive[] = [];
+    const list = await resolveArchiveDependencyList(archive, sources);
+
+    for (const link of list) {
+        dependencyArchives.push(new SC2Archive(link.name, link.src));
+    }
+
+    return new SC2Workspace(archive, dependencyArchives);
+}
+
+export class SC2Archive {
+    // triggers = new trig.TriggerStore();
+    // trigStrings = new Map<string, LocalizationFile>();
+    // trigStrings = new LocalizationFile();
+    name: string;
+    directory: string;
+
+    constructor(name: string, directory: string) {
+        this.name = name.toLowerCase();
+        // this.directory = directory;
+        this.directory = path.resolve(directory);
+    }
+
+    public async findFiles(pattern: string) {
+        const dirs = await findSC2File(this.directory, pattern);
+        return dirs.map((item) => {
+            return item.substr(this.directory.length + 1);
+        });
+    }
+
+    public async hasFile(filename: string) {
+        return new Promise<boolean>((resolve) => {
+            fs.exists(path.join(this.directory, filename), (result) => {
+                resolve(result);
+            })
+        });
+    }
+
+    public async readFile(filename: string) {
+        return new Promise<string>((resolve, reject) => {
+            fs.readFile(path.join(this.directory, filename), 'utf8', (err, result) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(result);
+                }
+            });
+        });
+    }
+
+    public async getDependencyList() {
+        const list: string[] = [];
+
+        if (this.name !== 'mods/core.sc2mod') {
+            list.push('mods/core.sc2mod');
+        }
+
+        if (await this.hasFile('DocumentInfo')) {
+            const content = await this.readFile('DocumentInfo');
+            const data: any = await new Promise((resolve, reject) => {
+                xml.parseString(content, (err, result) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        try {
+                            resolve(result);
+                        }
+                        catch (err) {
+                            reject(err);
+                        }
+                    }
+                });
+            });
+
+            let depValue: string;
+            for (depValue of data.DocInfo.Dependencies[0].Value) {
+                list.push(depValue.substr(depValue.indexOf('file:') + 5).replace('\\', '/'));
+            }
+        }
+        return list;
+    }
+}
+
+export class SC2Workspace {
+    rootArchive?: SC2Archive;
+    allArchives: SC2Archive[] = [];
+    dependencies: SC2Archive[] = [];
+    trigComponent: TriggerComponent = new TriggerComponent(this);
+    locComponent: LocalizationComponent = new LocalizationComponent(this);
+
+    constructor(rootArchive?: SC2Archive, dependencies: SC2Archive[] = []) {
+        this.rootArchive = rootArchive;
+        this.dependencies = dependencies;
+        this.allArchives = this.allArchives.concat(this.dependencies);
+        if (rootArchive) {
+            this.allArchives.push(rootArchive);
+        }
+    }
+
+    public async loadComponents() {
+        await this.trigComponent.load();
+        await this.locComponent.load();
     }
 }
