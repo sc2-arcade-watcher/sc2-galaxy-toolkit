@@ -116,6 +116,17 @@ export class Printer {
                 break;
             }
 
+            case gt.SyntaxKind.TypedefDeclaration:
+            {
+                const typedef = <gt.TypedefDeclaration>node;
+                this.write('typedef ');
+                this.emitNode(typedef.type);
+                this.write(' ');
+                this.emitNode(typedef.name);
+                this.write(';');
+                break;
+            }
+
             case gt.SyntaxKind.Identifier:
             {
                 const identifier = <gt.Identifier>node;

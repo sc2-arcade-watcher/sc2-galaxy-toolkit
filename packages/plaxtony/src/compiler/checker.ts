@@ -62,6 +62,12 @@ function createFunctionType(symbol?: gt.Symbol): gt.FunctionType {
     return type;
 }
 
+function createTypedefType(referencedType: gt.Type): gt.TypedefType {
+    const type = <gt.TypedefType>createType(gt.TypeFlags.Typedef);
+    type.referencedType = referencedType;
+    return type;
+}
+
 function createArrayType(elementType: gt.Type): gt.ArrayType {
     const type = <gt.ArrayType>createType(gt.TypeFlags.Array);
     type.elementType = elementType;
@@ -145,7 +151,10 @@ export class TypeChecker {
     }
 
     private resolveMappedReference(type: gt.Type) {
-        if (type.flags & gt.TypeFlags.Mapped && (<gt.MappedType>type).returnType.flags & gt.TypeFlags.Structref) {
+        if (type.flags & gt.TypeFlags.Mapped && (
+            (<gt.MappedType>type).returnType.flags & gt.TypeFlags.Structref ||
+            (<gt.MappedType>type).returnType.flags & gt.TypeFlags.Funcref
+        )) {
             type = (<gt.MappedType>type).referencedType;
         }
         return type;
@@ -172,7 +181,13 @@ export class TypeChecker {
         else if (symbol.flags & (gt.SymbolFlags.Variable)) {
             return this.getTypeOfSymbol(symbol);
         }
-        // TODO: resolve typedefs
+        else if (symbol.flags & (gt.SymbolFlags.Function)) {
+            // should we introduce SignatureType that describes fn declaration and return it instead?
+            return this.getTypeOfFunction(symbol);
+        }
+        else if (symbol.flags & (gt.SymbolFlags.Typedef)) {
+            return this.getTypeFromTypeNode((<gt.TypedefDeclaration>symbol.declarations[0]).type);
+        }
         return unknownType;
     }
 
@@ -223,6 +238,9 @@ export class TypeChecker {
         else if (symbol.flags & (gt.SymbolFlags.Function)) {
             return this.getTypeOfFunction(symbol);
         }
+        else if (symbol.flags & (gt.SymbolFlags.Typedef)) {
+            return this.getTypeOfTypedef(symbol);
+        }
         return unknownType;
     }
 
@@ -232,6 +250,11 @@ export class TypeChecker {
 
     private getTypeOfFunction(symbol: gt.Symbol): gt.Type {
         return createFunctionType(symbol);
+    }
+
+    private getTypeOfTypedef(symbol: gt.Symbol): gt.Type {
+        const refType = this.getTypeFromTypeNode((<gt.TypedefDeclaration>symbol.declarations[0]).type);
+        return createTypedefType(refType);
     }
 
     public getTypeOfNode(node: gt.Node, followRef: boolean = false): gt.Type {
@@ -464,8 +487,12 @@ export class TypeChecker {
     private checkCallExpression(node: gt.CallExpression): gt.Type {
         const leftType = this.checkExpression(node.expression);
         if (leftType != unknownType) {
-            if (leftType.flags & gt.TypeFlags.Function) {
-                const func = <gt.FunctionDeclaration>leftType.symbol.declarations[0];
+            let fnType: gt.FunctionType = leftType;
+            if (fnType.flags & gt.TypeFlags.Mapped) {
+                fnType = this.resolveMappedReference(fnType);
+            }
+            if (fnType.flags & gt.TypeFlags.Function) {
+                const func = <gt.FunctionDeclaration>fnType.symbol.declarations[0];
                 if (node.arguments.length !== func.parameters.length) {
                     this.report(node, `expected ${func.parameters.length} arguments, got ${node.arguments.length}`);
                 }

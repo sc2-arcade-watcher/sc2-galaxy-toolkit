@@ -856,8 +856,8 @@ export class Parser {
         return this.parseAssignmentExpressionOrHigher();
     }
 
-    private parseTypedefStatement(): Types.TypedefStatement {
-        const node = <Types.TypedefStatement>this.createNode(SyntaxKind.TypedefStatement);
+    private parseTypedefDeclaration(): Types.TypedefDeclaration {
+        const node = <Types.TypedefDeclaration>this.createNode(SyntaxKind.TypedefDeclaration);
         this.parseExpected(SyntaxKind.TypedefKeyword);
         node.type = this.parseTypeDefinition();
         node.name = this.parseIdentifier();
@@ -983,7 +983,7 @@ export class Parser {
                 return this.parseReturnStatement();
 
             case SyntaxKind.TypedefKeyword:
-                return this.parseTypedefStatement();
+                return this.parseTypedefDeclaration();
 
             case SyntaxKind.Identifier:
             case SyntaxKind.ConstKeyword:

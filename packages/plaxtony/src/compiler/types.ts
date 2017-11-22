@@ -287,7 +287,6 @@ export const enum SyntaxKind {
     BreakStatement,
     ContinueStatement,
 
-    TypedefStatement,
     IncludeStatement,
     ReturnStatement,
     ExpressionStatement,
@@ -298,6 +297,7 @@ export const enum SyntaxKind {
     FunctionDeclaration,
     ParameterDeclaration,
     PropertyDeclaration,
+    TypedefDeclaration,
 }
 
 export const enum SyntaxKindMarker {
@@ -370,14 +370,13 @@ export type KeywordType
 
 export const enum SymbolFlags {
     None                    = 0,
-    LocalVariable           = 1 << 1,  // Variable (var) or parameter
-    FunctionParameter       = 1 << 2,  // A block-scoped variable (let or const)
-    GlobalVariable          = 1 << 3,  // A block-scoped variable (let or const)
-    Property                = 1 << 4,  // Property
-    Function                = 1 << 5,  // Function
-    Struct                  = 1 << 6,  // Class
-    Signature               = 1 << 17, // Call, construct, or index signature
-    TypeParameter           = 1 << 18, // Type parameter
+    LocalVariable           = 1 << 1,
+    FunctionParameter       = 1 << 2,
+    GlobalVariable          = 1 << 3,
+    Property                = 1 << 4,
+    Function                = 1 << 5,
+    Struct                  = 1 << 6,
+    Typedef                 = 1 << 7,
 
     Variable = LocalVariable | FunctionParameter | GlobalVariable,
     FunctionScopedVariable = LocalVariable | FunctionParameter,
@@ -418,6 +417,7 @@ export const enum TypeFlags {
     Funcref                 = 1 << 17,
     Arrayref                = 1 << 18,
     Structref               = 1 << 19,
+    Typedef                 = 1 << 20,
 
     /* @internal */
     Nullable = Null,
@@ -455,6 +455,11 @@ export interface StructType extends Type {
 }
 
 export interface FunctionType extends Type {
+}
+
+export interface TypedefType extends Type {
+    // aliasOf: Type;
+    referencedType: Type;
 }
 
 export interface ArrayType extends Type {
@@ -529,12 +534,6 @@ export interface IncludeStatement extends Statement {
     path: StringLiteral;
 }
 
-export interface TypedefStatement extends Statement {
-    kind: SyntaxKind.TypedefStatement;
-    type: TypeNode;
-    name: Identifier;
-}
-
 export interface TypeNode extends Node {
     symbol?: Symbol; // Symbol associated with type (if any)
 }
@@ -598,6 +597,11 @@ export interface PropertyDeclaration extends NamedDeclaration {
 export interface FunctionDeclaration extends SignatureDeclaration, NamedDeclaration {
     kind: SyntaxKind.FunctionDeclaration;
     body?: Block;
+}
+
+export interface TypedefDeclaration extends NamedDeclaration {
+    kind: SyntaxKind.TypedefDeclaration;
+    type: TypeNode;
 }
 
 export interface ReturnStatement extends Statement {

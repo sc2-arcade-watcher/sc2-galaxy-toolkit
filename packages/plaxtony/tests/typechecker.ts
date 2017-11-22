@@ -16,10 +16,60 @@ function getNodeTypeAt(checker: TypeChecker, sourceFile: gt.SourceFile, line: nu
     return checker.getTypeOfNode(token)
 }
 
-describe('TypeChecker', () => {
-    describe('Resolve type', () => {
+describe('Typechecker', () => {
+    describe('Resolve', () => {
         const store = mockupStore();
         const checker = new TypeChecker(store);
+
+        context('typedef', () => {
+            let type: gt.Type;
+            let sourceFile: gt.SourceFile;
+
+            before(() => {
+                const document = mockupTextDocument('type_checker', 'typedef.galaxy');
+                store.updateDocument(document);
+                sourceFile = store.documents.get(document.uri);
+            })
+
+            it('scalar' ,() => {
+                type = getNodeTypeAt(checker, sourceFile, 11, 5);
+                assert.isOk(type.flags & gt.TypeFlags.Typedef);
+                type = getNodeTypeAt(checker, sourceFile, 11, 12);
+                assert.isOk(type.flags & gt.TypeFlags.Complex);
+            });
+
+            it('struct' ,() => {
+                type = getNodeTypeAt(checker, sourceFile, 12, 6);
+                assert.isOk(type.flags & gt.TypeFlags.Typedef);
+                type = getNodeTypeAt(checker, sourceFile, 12, 13);
+                assert.isOk(type.flags & gt.TypeFlags.Struct);
+            });
+
+            it('struct deep' ,() => {
+                type = getNodeTypeAt(checker, sourceFile, 13, 6);
+                assert.isOk(type.flags & gt.TypeFlags.Typedef);
+                type = getNodeTypeAt(checker, sourceFile, 13, 18);
+                assert.isOk(type.flags & gt.TypeFlags.Struct);
+                assert.equal((<gt.StructType>type).symbol.escapedName, 'obj_t');
+            });
+
+            it('struct deep property' ,() => {
+                type = getNodeTypeAt(checker, sourceFile, 15, 15);
+                assert.isOk(type.flags & gt.TypeFlags.Integer);
+            });
+
+            it('funcref' ,() => {
+                type = getNodeTypeAt(checker, sourceFile, 29, 6);
+                assert.isOk(type.flags & gt.TypeFlags.Mapped);
+                assert.isOk((<gt.MappedType>type).returnType.flags & gt.TypeFlags.Funcref);
+                assert.equal((<gt.MappedType>type).referencedType.symbol.escapedName, 'fprototype');
+            });
+
+            it('code validation' ,() => {
+                const diag = checker.checkSourceFile(sourceFile);
+                assert.equal(diag.length, 0);
+            });
+        });
 
         it('struct property', () => {
             let type: gt.Type;

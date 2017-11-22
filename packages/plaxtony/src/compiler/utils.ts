@@ -111,6 +111,7 @@ export function isNamedDeclarationKind(kind: SyntaxKind): boolean {
         || kind === SyntaxKind.PropertyDeclaration
         // || kind === SyntaxKind.PropertyAccessExpression
         || kind === SyntaxKind.ParameterDeclaration
+        || kind === SyntaxKind.TypedefDeclaration
     ;
 }
 
@@ -445,6 +446,9 @@ export function forEachChild<T>(node: Node, cbNode: (node: Node) => T | undefine
             return visitNodes(cbNode, cbNodes, (<Types.ParameterDeclaration>node).modifiers) ||
                 visitNode(cbNode, (<Types.ParameterDeclaration>node).name) ||
                 visitNode(cbNode, (<Types.ParameterDeclaration>node).type);
+        case SyntaxKind.TypedefDeclaration:
+            return visitNode(cbNode, (<Types.TypedefDeclaration>node).type) ||
+                visitNode(cbNode, (<Types.TypedefDeclaration>node).name);
         case SyntaxKind.ArrayType:
             return visitNode(cbNode, (<Types.ArrayTypeNode>node).elementType) ||
                 visitNode(cbNode, (<Types.ArrayTypeNode>node).size);

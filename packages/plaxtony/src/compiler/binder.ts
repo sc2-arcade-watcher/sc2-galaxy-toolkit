@@ -64,6 +64,7 @@ export function bindSourceFile(sourceFile: SourceFile, store: Store) {
             case SyntaxKind.StructDeclaration:
             case SyntaxKind.ParameterDeclaration:
             case SyntaxKind.PropertyDeclaration:
+            case SyntaxKind.TypedefDeclaration:
             {
                 return (<gt.NamedDeclaration>node).name.name;
                 break;
@@ -143,6 +144,9 @@ export function bindSourceFile(sourceFile: SourceFile, store: Store) {
                         break;
                     case gt.SyntaxKind.PropertyDeclaration:
                         nodeSymbol.flags = gt.SymbolFlags.Property;
+                        break;
+                    case gt.SyntaxKind.TypedefDeclaration:
+                        nodeSymbol.flags = gt.SymbolFlags.Typedef;
                         break;
                 }
             }
