@@ -126,6 +126,7 @@ describe('Service', () => {
             assert.lengthOf(items, 1);
             assert.equal(items[0].label, 'submember');
             assert.equal(items[0].kind, lsp.CompletionItemKind.Property);
+            assert.equal(completionsProvider.resolveCompletion(items[0]).detail, 'string submember;');
 
             items = getCompletionsAt(documentStruct, 17, 18);
             assert.notEqual(items.length, 1);

@@ -51,6 +51,9 @@ export class CompletionsProvider extends AbstractProvider {
         for (const symbol of parentSymbol.members.values()) {
             if (!query || fuzzysearch(query, symbol.escapedName)) {
                 const item = this.buildFromSymbolDecl(symbol);
+                item.data = {
+                    parentSymbol: parentSymbol.escapedName,
+                };
                 if (item) {
                     completions.push(item);
                 }
@@ -140,25 +143,39 @@ export class CompletionsProvider extends AbstractProvider {
     }
 
     public resolveCompletion(completion: vs.CompletionItem): vs.CompletionItem {
+        let symbol: gt.Symbol;
+        let parentSymbolName: string;
+
+        if (completion.data && completion.data.parentSymbol) {
+            parentSymbolName = (<string>completion.data.parentSymbol);
+        }
         for (const sourceFile of this.store.documents.values()) {
-            const symbol = sourceFile.symbol.members.get(completion.label);
-            if (symbol) {
-                completion.documentation = getDocumentationOfSymbol(this.store, symbol);
+            if (parentSymbolName) {
+                symbol = sourceFile.symbol.members.get(parentSymbolName);
+                if (!symbol) continue;
+            }
+            else {
+                symbol = sourceFile.symbol;
+            }
+            symbol = symbol.members.get(completion.label);
+            if (symbol) break;
+        }
 
-                let node = symbol.declarations[0];
+        if (symbol) {
+            completion.documentation = getDocumentationOfSymbol(this.store, symbol);
 
-                switch (node.kind) {
-                    case SyntaxKind.FunctionDeclaration:
+            let node = symbol.declarations[0];
+
+            switch (node.kind) {
+                case SyntaxKind.FunctionDeclaration:
                     node = Object.create(node);
                     (<gt.FunctionDeclaration>node).body = null;
-                    case SyntaxKind.VariableDeclaration:
-                    case SyntaxKind.ParameterDeclaration:
-                    case SyntaxKind.PropertyDeclaration:
+                    // pass through
+                case SyntaxKind.VariableDeclaration:
+                case SyntaxKind.ParameterDeclaration:
+                case SyntaxKind.PropertyDeclaration:
                     completion.detail = this.printer.printNode(node);
                     break;
-                }
-
-                break;
             }
         }
         return completion;
