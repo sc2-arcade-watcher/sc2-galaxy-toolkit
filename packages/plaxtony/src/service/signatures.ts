@@ -1,12 +1,12 @@
 import * as gt from '../compiler/types';
+import * as lsp from 'vscode-languageserver';
 import { SyntaxKind, Symbol, Node, SourceFile, CallExpression, Identifier, FunctionDeclaration, Expression } from '../compiler/types';
 import { findAncestor, getSourceFileOfNode } from '../compiler/utils';
 import { Printer } from '../compiler/printer';
+import { TypeChecker } from '../compiler/checker';
 import { AbstractProvider } from './provider';
 import { getTokenAtPosition } from './utils';
 import { getDocumentationOfSymbol } from './s2meta';
-import * as lsp from 'vscode-languageserver';
-// import * as trig from '../sc2mod/trigger'
 
 export class SignaturesProvider extends AbstractProvider {
     private printer: Printer = new Printer();
@@ -87,18 +87,9 @@ export class SignaturesProvider extends AbstractProvider {
         let node: Node = currentToken.parent;
 
         if (!currentToken) {
-            return signatureHelp;
+            return null;
         }
 
-        // we don't want to provide signature for left side of CallExpression
-        // if (currentToken.parent.kind === gt.SyntaxKind.CallExpression &&
-        //     (
-        //         (<gt.CallExpression>currentToken.parent).expression === currentToken ||
-        //         currentToken.parent.syntaxTokens.indexOf(currentToken) === 0 // only OpenParenToken
-        //     )
-        // ) {
-        //     node = currentToken.parent.parent;
-        // }
         const callNode = <CallExpression>findAncestor(node, (element: Node): boolean => {
             if (element.kind !== SyntaxKind.CallExpression) {
                 return false;
@@ -115,33 +106,18 @@ export class SignaturesProvider extends AbstractProvider {
         })
 
         if (!callNode) {
-            return signatureHelp;
+            return null;
         }
 
-        if (callNode.expression.kind !== SyntaxKind.Identifier) {
-            return signatureHelp;
-        }
+        const checker = new TypeChecker(this.store);
+        const type = checker.getTypeOfNode(callNode.expression, true);
 
-        const callIdentifier = (<Identifier>(callNode.expression));
-
-        for (const document of this.store.documents.values()) {
-            const functionSymbol = document.symbol.members.get(callIdentifier.name);
-            if (!functionSymbol) {
-                continue;
-            }
-
-            const signatureInfo = this.getSignatureOfFunction(functionSymbol);
+        if (type.flags & gt.TypeFlags.Function) {
+            const signatureInfo = this.getSignatureOfFunction((<gt.FunctionType>type).symbol);
 
             signatureHelp.activeSignature = 0;
             signatureHelp.activeParameter = this.evaluateActiveParameter(callNode, position);
-
-            // not really a valid signature parameter right there
-            // if (signatureHelp.activeParameter && (signatureHelp.activeParameter + 1) > signatureInfo.parameters.length) {
-            //     signatureHelp.activeParameter = null;
-            // }
-
             signatureHelp.signatures.push(signatureInfo);
-            break;
         }
 
         return signatureHelp;

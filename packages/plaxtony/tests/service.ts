@@ -145,11 +145,14 @@ describe('Service', () => {
     describe('Signatures', () => {
         const document = mockupTextDocument('service', 'call.galaxy');
         const docSignature = mockupTextDocument('service', 'signature', 'signature.galaxy');
+        const docFnref = mockupTextDocument('service', 'signature', 'funcref.galaxy');
         const store = mockupStore(
             document,
             mockupTextDocument('service', 'navigation', 'funcs.galaxy'),
-            docSignature
+            docSignature,
+            docFnref
         );
+        const srcFnref = store.documents.get(docFnref.uri);
         const signaturesProvider = createProvider(SignaturesProvider, store);
         let signature: lsp.SignatureHelp;
 
@@ -199,6 +202,22 @@ describe('Service', () => {
             it('prefixed expr of numeric literal, inbetween operand and literal', () => {
                 assert.lengthOf(signaturesProvider.getSignatureAt(docSignature.uri, 195).signatures, 1);
             })
+        });
+
+        it('funcref', () => {
+            signature = signaturesProvider.getSignatureAt(docFnref.uri, getPositionOfLineAndCharacter(srcFnref, 13, 9));
+            assert.isDefined(signature);
+            assert.equal(signature.signatures[0].label, 'void fprototype(int a, string b)');
+        });
+
+        it('funcref in struct', () => {
+            signature = signaturesProvider.getSignatureAt(docFnref.uri, getPositionOfLineAndCharacter(srcFnref, 14, 16));
+            assert.isDefined(signature);
+        });
+
+        it('funcref in structref', () => {
+            signature = signaturesProvider.getSignatureAt(docFnref.uri, getPositionOfLineAndCharacter(srcFnref, 15, 16));
+            assert.isDefined(signature);
         });
     });
 
