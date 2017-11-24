@@ -132,15 +132,17 @@ export function tokenToString(t: SyntaxKind): string | undefined {
 }
 
 export function isIdentifierStart(ch: number): boolean {
-    return ch >= CharacterCodes.A && ch <= CharacterCodes.Z || ch >= CharacterCodes.a && ch <= CharacterCodes.z ||
-        ch === CharacterCodes._ ||
-        ch > CharacterCodes.maxAsciiCharacter;
+    return (ch >= CharacterCodes.A && ch <= CharacterCodes.Z)
+        || (ch >= CharacterCodes.a && ch <= CharacterCodes.z)
+        || (ch === CharacterCodes._);
 }
 
 export function isIdentifierPart(ch: number): boolean {
-    return ch >= CharacterCodes.A && ch <= CharacterCodes.Z || ch >= CharacterCodes.a && ch <= CharacterCodes.z ||
-        ch >= CharacterCodes._0 && ch <= CharacterCodes._9 || ch === CharacterCodes._ ||
-        ch > CharacterCodes.maxAsciiCharacter;
+    return (ch >= CharacterCodes.A && ch <= CharacterCodes.Z)
+        || (ch >= CharacterCodes.a && ch <= CharacterCodes.z)
+        || (ch >= CharacterCodes._0 && ch <= CharacterCodes._9)
+        || (ch === CharacterCodes._)
+    ;
 }
 
 export function isLineBreak(ch: number): boolean {
@@ -334,6 +336,9 @@ export class Scanner {
                 break;
             }
             const ch = this.text.charCodeAt(this.pos);
+            if (ch > CharacterCodes.maxAsciiCharacter) {
+                this.error('multibyte characters not allowed');
+            }
             if (ch === quote) {
                 result += this.text.substring(start, this.pos);
                 this.pos++;
