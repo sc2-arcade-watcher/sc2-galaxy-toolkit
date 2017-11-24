@@ -1,7 +1,7 @@
 import { CharacterCodes, SyntaxKind, Token, DiagnosticMessage, DiagnosticCategory } from './types';
 
 export interface ErrorCallback {
-    (message: DiagnosticMessage, length: number): void;
+    (message: DiagnosticMessage, pos: number, length: number): void;
 }
 
 const textToTokenTable: ReadonlyMap<string, SyntaxKind> = new Map([
@@ -199,7 +199,7 @@ export class Scanner {
                 category: DiagnosticCategory.Error,
                 code: 0,
                 message: msg,
-            }, 0);
+            }, this.pos, 1);
         }
     }
 
@@ -698,7 +698,7 @@ export class Scanner {
                         }
                         continue;
                     }
-                    this.error(`encountered invalid character ${this.text.charAt(this.pos)}`);
+                    this.error('encountered invalid character');
                     this.pos++;
                     return this.token = SyntaxKind.Unknown;
             }

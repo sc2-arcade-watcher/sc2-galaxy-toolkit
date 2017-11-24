@@ -61,7 +61,7 @@ export class Parser {
         const saveToken = this.currentToken;
         const saveSyntaxTokensLength = this.syntaxTokens.length;
         const saveSyntaxTokensCurrentLength = this.syntaxTokens[this.syntaxTokens.length - 1].length;
-        // const saveParseDiagnosticsLength = parseDiagnostics.length;
+        const saveParseDiagnosticsLength = this.sourceFile.parseDiagnostics.length;
         // const saveParseErrorBeforeNextFinishedNode = parseErrorBeforeNextFinishedNode;
 
         // Note: it is not actually necessary to save/restore the context flags here.  That's
@@ -89,7 +89,7 @@ export class Parser {
             if (this.syntaxTokens[this.syntaxTokens.length - 1].length > saveSyntaxTokensCurrentLength) {
                 this.syntaxTokens[this.syntaxTokens.length - 1] = this.syntaxTokens[this.syntaxTokens.length - 1].slice(0, saveSyntaxTokensCurrentLength);
             }
-            // parseDiagnostics.length = saveParseDiagnosticsLength;
+            this.sourceFile.parseDiagnostics.length = saveParseDiagnosticsLength;
             // parseErrorBeforeNextFinishedNode = saveParseErrorBeforeNextFinishedNode;
         }
 
@@ -1046,8 +1046,8 @@ export class Parser {
     }
 
     constructor() {
-        this.scanner = new Scanner((message: Types.DiagnosticMessage) => {
-            this.parseErrorAtCurrentToken(message.message);
+        this.scanner = new Scanner((message: Types.DiagnosticMessage, pos: number, length: number) => {
+            this.parseErrorAtPosition(pos, length, message.message);
         });
     }
 

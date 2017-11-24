@@ -107,6 +107,9 @@ export function bindSourceFile(sourceFile: SourceFile, store: Store) {
         let name: string;
 
         name = getDeclarationName(node);
+        if (!name) {
+            name = '__anonymous';
+        }
 
         if (parentSymbol && parentSymbol.members.has(name)) {
             nodeSymbol = parentSymbol.members.get(name);

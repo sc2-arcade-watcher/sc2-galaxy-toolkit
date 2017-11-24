@@ -26,20 +26,23 @@ export class CompletionsProvider extends AbstractProvider {
         switch (node.kind) {
             case SyntaxKind.StructDeclaration:
                 item.kind = vs.CompletionItemKind.Class;
-            break;
+                break;
             case SyntaxKind.FunctionDeclaration:
                 item.kind = vs.CompletionItemKind.Function;
-            break;
+                break;
             case SyntaxKind.VariableDeclaration:
             case SyntaxKind.ParameterDeclaration:
                 item.kind = vs.CompletionItemKind.Variable;
-            break;
+                break;
             case SyntaxKind.PropertyDeclaration:
                 item.kind = vs.CompletionItemKind.Property;
-            break;
+                break;
+            case SyntaxKind.TypedefDeclaration:
+                item.kind = vs.CompletionItemKind.Interface;
+                break;
             default:
                 item.kind = vs.CompletionItemKind.Text;
-            break;
+                break;
         }
 
         return item;
@@ -85,14 +88,15 @@ export class CompletionsProvider extends AbstractProvider {
 
         if (currentToken) {
             // properties
-            const checker = new TypeChecker(this.store);
-            if (currentToken.kind === gt.SyntaxKind.DotToken || currentToken.kind === gt.SyntaxKind.Identifier) {
-                if (currentToken.parent.kind === gt.SyntaxKind.PropertyAccessExpression) {
-                    currentToken = (<gt.PropertyAccessExpression>currentToken.parent).expression;
-                    const type = checker.getTypeOfNode(currentToken, true);
-                    if (type.flags & gt.TypeFlags.Struct) {
-                        return this.buildFromSymbolMembers(type.symbol);
-                    }
+            if (
+                (currentToken.kind === gt.SyntaxKind.DotToken || currentToken.kind === gt.SyntaxKind.Identifier) &&
+                (currentToken.parent.kind === gt.SyntaxKind.PropertyAccessExpression && (<gt.PropertyAccessExpression>currentToken.parent).expression !== currentToken)
+            ) {
+                const checker = new TypeChecker(this.store);
+                currentToken = (<gt.PropertyAccessExpression>currentToken.parent).expression;
+                const type = checker.getTypeOfNode(currentToken, true);
+                if (type.flags & gt.TypeFlags.Struct) {
+                    return this.buildFromSymbolMembers(type.symbol);
                 }
             }
 
@@ -174,6 +178,7 @@ export class CompletionsProvider extends AbstractProvider {
                 case SyntaxKind.VariableDeclaration:
                 case SyntaxKind.ParameterDeclaration:
                 case SyntaxKind.PropertyDeclaration:
+                case SyntaxKind.TypedefDeclaration:
                     completion.detail = this.printer.printNode(node);
                     break;
             }

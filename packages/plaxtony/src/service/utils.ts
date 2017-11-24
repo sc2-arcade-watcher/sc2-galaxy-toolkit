@@ -119,7 +119,8 @@ function getTokenAtPositionWorker(position: number, sourceFile: gt.SourceFile, i
             }
         }
 
-        throw new Error(`failed to find token at position ${position} in ${sourceFile.fileName}`);
+        // supress error to ignore missing nodes and whitespace/comments
+        // throw new Error(`failed to find token at position ${position} in ${sourceFile.fileName}`);
     }
 
     function findRightmostChildNodeWithTokens(children: gt.Node[], exclusiveStartPosition: number): gt.Node {

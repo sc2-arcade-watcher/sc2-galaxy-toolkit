@@ -84,11 +84,11 @@ export class SignaturesProvider extends AbstractProvider {
         };
         const currentDocument = this.store.documents.get(uri);
         const currentToken = getTokenAtPosition(position, currentDocument, true);
-        let node: Node = currentToken.parent;
 
         if (!currentToken) {
             return null;
         }
+        let node: Node = currentToken.parent;
 
         const callNode = <CallExpression>findAncestor(node, (element: Node): boolean => {
             if (element.kind !== SyntaxKind.CallExpression) {
