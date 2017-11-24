@@ -11,6 +11,7 @@ export declare class TypeChecker {
     private getNodeLinks(node);
     private getTypeFromArrayTypeNode(node);
     private getTypeFromMappedTypeNode(node);
+    private resolveMappedReference(type);
     private getPropertyOfType(type, name);
     private getDeclaredTypeOfStruct(symbol);
     private getDeclaredTypeOfSymbol(symbol);
@@ -18,7 +19,8 @@ export declare class TypeChecker {
     private getTypeOfSymbol(symbol);
     private getTypeOfVariableOrParameterOrProperty(symbol);
     private getTypeOfFunction(symbol);
-    getTypeOfNode(node: gt.Node): gt.Type;
+    private getTypeOfTypedef(symbol);
+    getTypeOfNode(node: gt.Node, followRef?: boolean): gt.Type;
     private getRegularTypeOfExpression(expr);
     private getTypeOfExpression(node, cache?);
     checkSourceFile(sourceFile: gt.SourceFile): gt.Diagnostic[];

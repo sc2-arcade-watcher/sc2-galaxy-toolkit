@@ -64,6 +64,7 @@ export declare class Parser {
     private parseBinaryExpressionRest(precedence, leftOperand);
     private parseAssignmentExpressionOrHigher();
     private parseExpression();
+    private parseTypedefDeclaration();
     private parseReturnStatement();
     private parseBreakOrContinueStatement(kind);
     private parseExpressionStatement();

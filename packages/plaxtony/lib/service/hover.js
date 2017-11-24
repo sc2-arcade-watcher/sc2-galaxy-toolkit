@@ -15,7 +15,7 @@ class HoverProvider extends provider_1.AbstractProvider {
         const sourceFile = this.store.documents.get(params.textDocument.uri);
         const position = utils_1.getPositionOfLineAndCharacter(sourceFile, params.position.line, params.position.character);
         const currentToken = utils_1.getTokenAtPosition(position, sourceFile);
-        if (!currentToken || currentToken.kind !== 107 /* Identifier */) {
+        if (!currentToken || currentToken.kind !== 108 /* Identifier */) {
             return null;
         }
         const checker = new checker_1.TypeChecker(this.store);
@@ -25,7 +25,7 @@ class HoverProvider extends provider_1.AbstractProvider {
         }
         const content = [];
         let decl = symbol.declarations[0];
-        if (decl.kind === 135 /* FunctionDeclaration */) {
+        if (decl.kind === 136 /* FunctionDeclaration */) {
             decl = Object.assign({}, decl, { body: null });
         }
         let code = this.printer.printNode(decl).trim();

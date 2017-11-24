@@ -55,6 +55,11 @@ function createFunctionType(symbol) {
     type.symbol = symbol;
     return type;
 }
+function createTypedefType(referencedType) {
+    const type = createType(1048576 /* Typedef */);
+    type.referencedType = referencedType;
+    return type;
+}
 function createArrayType(elementType) {
     const type = createType(32768 /* Array */);
     type.elementType = elementType;
@@ -91,7 +96,7 @@ const funcrefType = createIntrinsicType(131072 /* Funcref */, "funcref");
 const arrayrefType = createIntrinsicType(262144 /* Arrayref */, "arrayref");
 const structrefType = createIntrinsicType(524288 /* Structref */, "structref");
 const complexTypes = [];
-complexTypes[96 /* UnitKeyword */] = createComplexType(96 /* UnitKeyword */);
+complexTypes[97 /* UnitKeyword */] = createComplexType(97 /* UnitKeyword */);
 // const undefinedSymbol = createSymbol(gt.SymbolFlags.None, "undefined")
 class TypeChecker {
     constructor(store) {
@@ -120,11 +125,16 @@ class TypeChecker {
         }
         return links.resolvedType;
     }
-    getPropertyOfType(type, name) {
-        if (type.flags & 65536 /* Mapped */ && type.returnType.flags & 524288 /* Structref */) {
+    resolveMappedReference(type) {
+        if (type.flags & 65536 /* Mapped */ && (type.returnType.flags & 524288 /* Structref */ ||
+            type.returnType.flags & 131072 /* Funcref */)) {
             type = type.referencedType;
         }
-        if (type.flags & 4096 /* Struct */) {
+        return type;
+    }
+    getPropertyOfType(type, name) {
+        type = this.resolveMappedReference(type);
+        if (type && type.flags & 4096 /* Struct */) {
             if (type.symbol.members.has(name)) {
                 return type.symbol.members.get(name);
             }
@@ -141,7 +151,13 @@ class TypeChecker {
         else if (symbol.flags & (14 /* Variable */)) {
             return this.getTypeOfSymbol(symbol);
         }
-        // TODO: resolve typedefs
+        else if (symbol.flags & (32 /* Function */)) {
+            // should we introduce SignatureType that describes fn declaration and return it instead?
+            return this.getTypeOfFunction(symbol);
+        }
+        else if (symbol.flags & (128 /* Typedef */)) {
+            return this.getTypeFromTypeNode(symbol.declarations[0].type);
+        }
         return unknownType;
     }
     getTypeFromTypeNode(node) {
@@ -154,29 +170,29 @@ class TypeChecker {
                 return fixedType;
             // case gt.SyntaxKind.BooleanKeyword:
             //     return booleanType;
-            case 100 /* VoidKeyword */:
+            case 101 /* VoidKeyword */:
                 return voidType;
             case 64 /* NullKeyword */:
                 return nullType;
-            case 106 /* FuncrefKeyword */:
+            case 107 /* FuncrefKeyword */:
                 return funcrefType;
-            case 104 /* ArrayrefKeyword */:
+            case 105 /* ArrayrefKeyword */:
                 return arrayrefType;
-            case 105 /* StructrefKeyword */:
+            case 106 /* StructrefKeyword */:
                 return structrefType;
-            case 96 /* UnitKeyword */:
+            case 97 /* UnitKeyword */:
                 return complexTypes[node.kind];
             // case gt.SyntaxKind.LiteralType:
             //     return getTypeFromLiteralTypeNode(<LiteralTypeNode>node);
             // case gt.SyntaxKind.TypeReference:
             //     return getTypeFromTypeReference(<TypeReferenceNode>node);
-            case 111 /* ArrayType */:
+            case 112 /* ArrayType */:
                 return this.getTypeFromArrayTypeNode(node);
-            case 110 /* MappedType */:
+            case 111 /* MappedType */:
                 return this.getTypeFromMappedTypeNode(node);
             // case gt.SyntaxKind.IndexedAccessType:
             //     return getTypeFromIndexedAccessTypeNode(<IndexedAccessTypeNode>node);
-            case 107 /* Identifier */:
+            case 108 /* Identifier */:
                 const symbol = this.getSymbolAtLocation(node);
                 return symbol && this.getDeclaredTypeOfSymbol(symbol);
             default:
@@ -190,6 +206,9 @@ class TypeChecker {
         else if (symbol.flags & (32 /* Function */)) {
             return this.getTypeOfFunction(symbol);
         }
+        else if (symbol.flags & (128 /* Typedef */)) {
+            return this.getTypeOfTypedef(symbol);
+        }
         return unknownType;
     }
     getTypeOfVariableOrParameterOrProperty(symbol) {
@@ -198,12 +217,20 @@ class TypeChecker {
     getTypeOfFunction(symbol) {
         return createFunctionType(symbol);
     }
-    getTypeOfNode(node) {
+    getTypeOfTypedef(symbol) {
+        const refType = this.getTypeFromTypeNode(symbol.declarations[0].type);
+        return createTypedefType(refType);
+    }
+    getTypeOfNode(node, followRef = false) {
         // if (isPartOfTypeNode(node)) {
         //     return this.getTypeFromTypeNode(<TypeNode>node);
         // }
         if (utils_1.isPartOfExpression(node)) {
-            return this.getRegularTypeOfExpression(node);
+            let type = this.getRegularTypeOfExpression(node);
+            if (followRef) {
+                type = this.resolveMappedReference(type);
+            }
+            return type;
         }
         return unknownType;
     }
@@ -234,32 +261,32 @@ class TypeChecker {
     }
     checkSourceElement(node) {
         switch (node.kind) {
-            case 122 /* Block */:
+            case 123 /* Block */:
                 return this.checkBlock(node);
-            case 135 /* FunctionDeclaration */:
+            case 136 /* FunctionDeclaration */:
                 return this.checkFunction(node);
-            case 134 /* VariableDeclaration */:
-            case 137 /* PropertyDeclaration */:
+            case 135 /* VariableDeclaration */:
+            case 138 /* PropertyDeclaration */:
                 return this.checkVariableDeclaration(node);
-            case 133 /* StructDeclaration */:
+            case 134 /* StructDeclaration */:
                 return this.checkStructDeclaration(node);
-            case 131 /* ExpressionStatement */:
+            case 132 /* ExpressionStatement */:
                 return this.checkExpressionStatement(node);
-            case 123 /* IfStatement */:
+            case 124 /* IfStatement */:
                 return this.checkIfStatement(node);
-            case 126 /* ForStatement */:
+            case 127 /* ForStatement */:
                 return this.checkForStatement(node);
-            case 125 /* WhileStatement */:
-            case 124 /* DoStatement */:
+            case 126 /* WhileStatement */:
+            case 125 /* DoStatement */:
                 return this.checkWhileStatement(node);
-            case 127 /* BreakStatement */:
-            case 128 /* ContinueStatement */:
+            case 128 /* BreakStatement */:
+            case 129 /* ContinueStatement */:
                 return this.checkBreakOrContinueStatement(node);
-            case 130 /* ReturnStatement */:
+            case 131 /* ReturnStatement */:
                 return this.checkReturnStatement(node);
-            case 110 /* MappedType */:
+            case 111 /* MappedType */:
                 return this.checkMappedType(node);
-            case 111 /* ArrayType */:
+            case 112 /* ArrayType */:
                 return this.checkArrayType(node);
         }
     }
@@ -339,7 +366,7 @@ class TypeChecker {
     }
     checkExpressionWorker(node, checkMode) {
         switch (node.kind) {
-            case 107 /* Identifier */:
+            case 108 /* Identifier */:
                 return this.checkIdentifier(node);
             // case gt.SyntaxKind.NullKeyword:
             //     return nullWideningType;
@@ -348,19 +375,19 @@ class TypeChecker {
             // case gt.SyntaxKind.TrueKeyword:
             // case gt.SyntaxKind.FalseKeyword:
             //     return checkLiteralExpression(node);
-            case 114 /* PropertyAccessExpression */:
+            case 115 /* PropertyAccessExpression */:
                 return this.checkPropertyAccessExpression(node);
-            case 113 /* ElementAccessExpression */:
+            case 114 /* ElementAccessExpression */:
                 return this.checkIndexedAccess(node);
-            case 115 /* CallExpression */:
+            case 116 /* CallExpression */:
                 return this.checkCallExpression(node);
-            case 120 /* ParenthesizedExpression */:
+            case 121 /* ParenthesizedExpression */:
                 return this.checkParenthesizedExpression(node, checkMode);
-            case 116 /* PrefixUnaryExpression */:
+            case 117 /* PrefixUnaryExpression */:
                 return this.checkPrefixUnaryExpression(node);
-            case 117 /* PostfixUnaryExpression */:
+            case 118 /* PostfixUnaryExpression */:
                 return this.checkPostfixUnaryExpression(node);
-            case 118 /* BinaryExpression */:
+            case 119 /* BinaryExpression */:
                 return this.checkBinaryExpression(node, checkMode);
         }
         return unknownType;
@@ -390,8 +417,12 @@ class TypeChecker {
     checkCallExpression(node) {
         const leftType = this.checkExpression(node.expression);
         if (leftType != unknownType) {
-            if (leftType.flags & 8192 /* Function */) {
-                const func = leftType.symbol.declarations[0];
+            let fnType = leftType;
+            if (fnType.flags & 65536 /* Mapped */) {
+                fnType = this.resolveMappedReference(fnType);
+            }
+            if (fnType.flags & 8192 /* Function */) {
+                const func = fnType.symbol.declarations[0];
                 if (node.arguments.length !== func.parameters.length) {
                     this.report(node, `expected ${func.parameters.length} arguments, got ${node.arguments.length}`);
                 }
@@ -423,6 +454,9 @@ class TypeChecker {
         if (objectType.flags & 32768 /* Array */) {
             return objectType.elementType;
         }
+        else {
+            this.report(node, 'trying to access element on non-array type');
+        }
         return unknownType;
     }
     checkPropertyAccessExpression(node) {
@@ -431,7 +465,7 @@ class TypeChecker {
         const right = node.name;
         const prop = this.getPropertyOfType(type, node.name.name);
         if (!prop) {
-            this.report(node.name, 'undeclared property');
+            this.report(node.name, 'undeclared or unacessible property');
             return unknownType;
         }
         this.getNodeLinks(node).resolvedSymbol = prop;
@@ -441,7 +475,7 @@ class TypeChecker {
     resolveName(location, name, nameNotFoundMessage) {
         if (location) {
             const currentContext = utils_1.findAncestor(location, (element) => {
-                return element.kind === 135 /* FunctionDeclaration */;
+                return element.kind === 136 /* FunctionDeclaration */;
             });
             if (currentContext && currentContext.symbol.members.has(name)) {
                 return currentContext.symbol.members.get(name);
@@ -461,7 +495,7 @@ class TypeChecker {
         // }
         // TODO: ^
         let symbol;
-        if (entityName.kind === 107 /* Identifier */) {
+        if (entityName.kind === 108 /* Identifier */) {
             symbol = this.resolveName(location || entityName, entityName.name, ignoreErrors ? undefined : 'symbol referenced but not declared');
             if (!symbol) {
                 return undefined;
@@ -523,10 +557,10 @@ class TypeChecker {
             entityName = entityName.parent;
         }
         if (utils_1.isPartOfExpression(entityName)) {
-            if (entityName.kind === 107 /* Identifier */) {
+            if (entityName.kind === 108 /* Identifier */) {
                 return this.resolveEntityName(entityName, null, false);
             }
-            else if (entityName.kind === 114 /* PropertyAccessExpression */) {
+            else if (entityName.kind === 115 /* PropertyAccessExpression */) {
                 const links = this.getNodeLinks(entityName);
                 if (links.resolvedSymbol) {
                     return links.resolvedSymbol;
@@ -541,8 +575,8 @@ class TypeChecker {
     // }
     getSymbolAtLocation(node) {
         switch (node.kind) {
-            case 107 /* Identifier */:
-            case 114 /* PropertyAccessExpression */:
+            case 108 /* Identifier */:
+            case 115 /* PropertyAccessExpression */:
                 return this.getSymbolOfEntityNameOrPropertyAccessExpression(node);
         }
         // if (node.kind === gt.SyntaxKind.Identifier) {

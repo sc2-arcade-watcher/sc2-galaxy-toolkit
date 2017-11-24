@@ -1,6 +1,6 @@
 import * as lsp from 'vscode-languageserver';
 export declare class Server {
-    private connection;
+    connection: lsp.IConnection;
     private store;
     private diagnosticsProvider;
     private navigationProvider;
@@ -9,10 +9,11 @@ export declare class Server {
     private definitionsProvider;
     private hoverProvider;
     private documents;
-    private workspaces;
+    private workspaceWatcher;
     private createProvider<T>(cls);
     createConnection(connection?: lsp.IConnection): lsp.IConnection;
     log(msg: string): void;
+    private reindex(rootPath, modSources);
     private onInitialize(params);
     private onDidChangeConfiguration(ev);
     private onDidChangeContent(ev);

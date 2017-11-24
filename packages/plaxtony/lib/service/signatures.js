@@ -1,10 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const gt = require("../compiler/types");
 const utils_1 = require("../compiler/utils");
 const printer_1 = require("../compiler/printer");
+const checker_1 = require("../compiler/checker");
 const provider_1 = require("./provider");
 const utils_2 = require("./utils");
-const trig = require("../sc2mod/trigger");
+const s2meta_1 = require("./s2meta");
 class SignaturesProvider extends provider_1.AbstractProvider {
     constructor() {
         super(...arguments);
@@ -37,56 +39,25 @@ class SignaturesProvider extends provider_1.AbstractProvider {
     }
     getSignatureOfFunction(functionSymbol) {
         const functionDeclaration = functionSymbol.declarations[0];
+        let code = this.printer.printNode(Object.assign({}, functionDeclaration, { body: null })).trim();
+        // strip ;
+        if (code.substr(code.length - 1, 1) === ';') {
+            code = code.substr(0, code.length - 1);
+        }
         const signatureInfo = {
-            label: this.printer.printNode(Object.assign({}, functionDeclaration, { body: null })).trim(),
+            label: code,
             documentation: '',
             parameters: [],
         };
-        // metadata
-        const s2archive = this.store.getArchiveOfSourceFile(utils_1.getSourceFileOfNode(functionDeclaration));
-        const funcEl = this.store.getSymbolMetadata(functionSymbol);
-        if (s2archive && funcEl) {
-            for (const prop of ['Name', 'Hint']) {
-                const textKey = funcEl.textKey(prop);
-                if (s2archive.trigStrings.has(textKey)) {
-                    if (signatureInfo.documentation.length) {
-                        signatureInfo.documentation += '\n\n';
-                    }
-                    if (prop === 'Name') {
-                        signatureInfo.documentation += '### ' + s2archive.trigStrings.get(textKey);
-                    }
-                    else {
-                        signatureInfo.documentation += s2archive.trigStrings.get(textKey);
-                    }
-                }
-            }
-        }
+        signatureInfo.documentation = s2meta_1.getDocumentationOfSymbol(this.store, functionSymbol);
+        const argsDoc = this.store.s2metadata ? this.store.s2metadata.getFunctionArgumentsDoc(functionSymbol.escapedName) : null;
         for (const [index, paramDeclaration] of functionDeclaration.parameters.entries()) {
             const paramInfo = {
                 label: this.printer.printNode(paramDeclaration),
-                documentation: '',
+                documentation: null,
             };
-            if (funcEl) {
-                const realIndex = index + (funcEl.flags & 16 /* Event */ ? -1 : 0);
-                if (realIndex >= 0) {
-                    const paramEl = funcEl.getParameters()[realIndex];
-                    if (paramEl) {
-                        const textKey = paramEl.textKey('Name');
-                        if (s2archive.trigStrings.has(textKey)) {
-                            paramInfo.documentation += '#### ' + s2archive.trigStrings.get(textKey) + ` - *${paramEl.type.type}*` + '\n';
-                        }
-                        if (paramEl.type.type === 'preset') {
-                            paramInfo.documentation += '---\n';
-                            // #### Presets:\n
-                            const preset = paramEl.type.typeElement.resolve();
-                            for (const presetValueRef of preset.values) {
-                                const presetValue = presetValueRef.resolve();
-                                const locName = s2archive.trigStrings.get(presetValue.textKey('Name'));
-                                paramInfo.documentation += `- \`${presetValue.value}\` - **${locName}**\n`;
-                            }
-                        }
-                    }
-                }
+            if (argsDoc && argsDoc[index]) {
+                paramInfo.documentation = argsDoc[index];
             }
             signatureInfo.parameters.push(paramInfo);
         }
@@ -100,21 +71,12 @@ class SignaturesProvider extends provider_1.AbstractProvider {
         };
         const currentDocument = this.store.documents.get(uri);
         const currentToken = utils_2.getTokenAtPosition(position, currentDocument, true);
-        let node = currentToken.parent;
         if (!currentToken) {
-            return signatureHelp;
+            return null;
         }
-        // we don't want to provide signature for left side of CallExpression
-        // if (currentToken.parent.kind === gt.SyntaxKind.CallExpression &&
-        //     (
-        //         (<gt.CallExpression>currentToken.parent).expression === currentToken ||
-        //         currentToken.parent.syntaxTokens.indexOf(currentToken) === 0 // only OpenParenToken
-        //     )
-        // ) {
-        //     node = currentToken.parent.parent;
-        // }
+        let node = currentToken.parent;
         const callNode = utils_1.findAncestor(node, (element) => {
-            if (element.kind !== 115 /* CallExpression */) {
+            if (element.kind !== 116 /* CallExpression */) {
                 return false;
             }
             // we don't want to provide signature for left side of CallExpression
@@ -128,26 +90,15 @@ class SignaturesProvider extends provider_1.AbstractProvider {
             return true;
         });
         if (!callNode) {
-            return signatureHelp;
+            return null;
         }
-        if (callNode.expression.kind !== 107 /* Identifier */) {
-            return signatureHelp;
-        }
-        const callIdentifier = (callNode.expression);
-        for (const document of this.store.documents.values()) {
-            const functionSymbol = document.symbol.members.get(callIdentifier.name);
-            if (!functionSymbol) {
-                continue;
-            }
-            const signatureInfo = this.getSignatureOfFunction(functionSymbol);
+        const checker = new checker_1.TypeChecker(this.store);
+        const type = checker.getTypeOfNode(callNode.expression, true);
+        if (type.flags & 8192 /* Function */) {
+            const signatureInfo = this.getSignatureOfFunction(type.symbol);
             signatureHelp.activeSignature = 0;
             signatureHelp.activeParameter = this.evaluateActiveParameter(callNode, position);
-            // not really a valid signature parameter right there
-            // if (signatureHelp.activeParameter && (signatureHelp.activeParameter + 1) > signatureInfo.parameters.length) {
-            //     signatureHelp.activeParameter = null;
-            // }
             signatureHelp.signatures.push(signatureInfo);
-            break;
         }
         return signatureHelp;
     }

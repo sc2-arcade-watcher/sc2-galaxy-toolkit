@@ -5,9 +5,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const lsp = require("vscode-languageserver");
 const Types = require("../compiler/types");
+const util = require("util");
+const path = require("path");
 const utils_1 = require("../compiler/utils");
 const store_1 = require("./store");
 const utils_2 = require("./utils");
@@ -18,6 +28,7 @@ const completions_1 = require("./completions");
 const signatures_1 = require("./signatures");
 const definitions_1 = require("./definitions");
 const hover_1 = require("./hover");
+const archive_1 = require("../sc2mod/archive");
 function getNodeRange(node) {
     return {
         start: { line: node.line, character: node.char },
@@ -40,15 +51,15 @@ function translateDiagnostics(sourceFile, origDiagnostics) {
 }
 function translateNodeKind(node) {
     switch (node.kind) {
-        case 134 /* VariableDeclaration */:
+        case 135 /* VariableDeclaration */:
             const variable = node;
             const isConstant = variable.modifiers.some((value) => {
                 return value.kind === 52 /* ConstKeyword */;
             });
             return isConstant ? lsp.SymbolKind.Constant : lsp.SymbolKind.Variable;
-        case 135 /* FunctionDeclaration */:
+        case 136 /* FunctionDeclaration */:
             return lsp.SymbolKind.Function;
-        case 133 /* StructDeclaration */:
+        case 134 /* StructDeclaration */:
             return lsp.SymbolKind.Class;
         default:
             return lsp.SymbolKind.Field;
@@ -59,7 +70,7 @@ function translateDeclaratons(origDeclarations) {
     let kind;
     for (let node of origDeclarations) {
         const sourceFile = utils_1.findAncestor(node, (element) => {
-            return element.kind === 121 /* SourceFile */;
+            return element.kind === 122 /* SourceFile */;
         });
         symbols.push({
             kind: translateNodeKind(node),
@@ -88,25 +99,32 @@ function wrapRequest(msg, showArg, singleLine) {
         descriptor.value = function (...args) {
             const server = this;
             let log = [];
-            args = args.map((value) => {
-                if (!value) {
-                    return;
-                }
-                if (value['document']) {
-                    return value.document.uri;
-                }
-                else {
-                    return value.toString();
-                }
-            });
+            // args = args.map((value) => {
+            //     if (!value) { return; }
+            //     if (value['document']) {
+            //         return value.document.uri;
+            //     }
+            //     else if (value['name']) {
+            //         return value.name;
+            //     }
+            //     else {
+            //         return value.toString();
+            //     }
+            // });
             if (msg) {
-                log.push(`${msg}: ${args.toLocaleString()}`);
+                log.push(`${msg}: ${util.inspect(args, true, 2)}`);
             }
             else {
                 log.push(`### Processing '${propertyKey}'`);
             }
             var start = process.hrtime();
-            const ret = method.bind(this)(...arguments);
+            let ret;
+            try {
+                ret = method.bind(this)(...arguments);
+            }
+            catch (e) {
+                server.connection.console.error('[' + e.name + '] ' + e.message + '\n' + e.stack);
+            }
             log.push(formatElapsed(start, process.hrtime()));
             if (ret && ret[Symbol.iterator]) {
                 log.push(`results: ${ret.length}`);
@@ -120,7 +138,6 @@ class Server {
     constructor() {
         this.store = new store_1.Store();
         this.documents = new lsp.TextDocuments();
-        this.workspaces = [];
     }
     createProvider(cls) {
         return provider_1.createProvider(cls, this.store, this.connection.console);
@@ -151,49 +168,64 @@ class Server {
     log(msg) {
         this.connection.console.log(msg);
     }
+    reindex(rootPath, modSources) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let archivePath;
+            let workspace;
+            if (rootPath) {
+                archivePath = yield store_1.findWorkspaceArchive(rootPath);
+            }
+            if (archivePath) {
+                this.workspaceWatcher = new store_1.WorkspaceWatcher(archivePath);
+                try {
+                    workspace = yield archive_1.openArchiveWorkspace(new archive_1.SC2Archive(path.basename(archivePath), archivePath), modSources);
+                }
+                catch (e) {
+                    this.connection.console.error('Trigger data couldn\'t be loaded: ' + e.message);
+                    workspace = null;
+                }
+            }
+            else if (rootPath) {
+                this.workspaceWatcher = new store_1.WorkspaceWatcher(rootPath);
+            }
+            if (!workspace) {
+                workspace = new archive_1.SC2Workspace(null, [new archive_1.SC2Archive('untitled.sc2mod', archive_1.resolveArchiveDirectory('mods/core.sc2mod', modSources))]);
+            }
+            this.log('Indexing s2workspace: ' + archivePath);
+            yield this.store.updateS2Workspace(workspace);
+            for (const modArchive of workspace.dependencies) {
+                for (const extSrc of yield modArchive.findFiles('*.galaxy')) {
+                    this.onDidFindInWorkspace({ document: store_1.createTextDocumentFromFs(path.join(modArchive.directory, extSrc)) });
+                }
+            }
+            if (this.workspaceWatcher) {
+                this.workspaceWatcher.onDidOpen(this.onDidFindInWorkspace.bind(this));
+                // workspace.onDidOpenS2Archive(this.onDidFindS2Workspace.bind(this));
+                yield this.workspaceWatcher.watch();
+            }
+        });
+    }
     onInitialize(params) {
-        if (params.initializationOptions.sources) {
-            for (const s2path of params.initializationOptions.sources) {
-                this.log('Indexing s2 sources: ' + s2path);
-                const ws = new store_1.S2Workspace(s2path);
-                ws.onDidOpen(this.onDidFindInWorkspace.bind(this));
-                // ws.onDidOpen((ev) => {
-                //     this.log('Indexing archive galaxy: ' + ev.document.uri);
-                //     // this.store.updateArchive(ev.archive);
-                // });
-                ws.onDidOpenS2Archive((ev) => {
-                    this.log('Indexed archive: ' + ev.archive.directory);
-                    this.store.updateArchive(ev.archive);
-                });
-                ws.watch().then(() => {
-                    this.log('ready');
-                }, (err) => {
-                    this.log('e: ' + err);
-                });
-            }
-        }
-        if (params.rootPath) {
-            const ws = new store_1.Workspace(params.rootPath);
-            ws.onDidOpen(this.onDidFindInWorkspace.bind(this));
-            this.workspaces.push(ws);
-            ws.watch();
-        }
-        return {
-            capabilities: {
-                textDocumentSync: this.documents.syncKind,
-                documentSymbolProvider: true,
-                workspaceSymbolProvider: true,
-                completionProvider: {
-                    triggerCharacters: ['.'],
-                    resolveProvider: true,
-                },
-                signatureHelpProvider: {
-                    triggerCharacters: ['(', ','],
-                },
-                definitionProvider: true,
-                hoverProvider: true
-            }
-        };
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.reindex(params.rootPath, params.initializationOptions.sources);
+            this.log('ready');
+            return {
+                capabilities: {
+                    textDocumentSync: this.documents.syncKind,
+                    documentSymbolProvider: true,
+                    workspaceSymbolProvider: true,
+                    completionProvider: {
+                        triggerCharacters: ['.'],
+                        resolveProvider: true,
+                    },
+                    signatureHelpProvider: {
+                        triggerCharacters: ['(', ','],
+                    },
+                    definitionProvider: true,
+                    hoverProvider: true
+                }
+            };
+        });
     }
     onDidChangeConfiguration(ev) {
         // interface Settings {
@@ -228,6 +260,12 @@ class Server {
     onDidFindInWorkspace(ev) {
         this.store.updateDocument(ev.document);
     }
+    // @wrapRequest('Indexing workspace ', true, true)
+    // private async onDidFindS2Workspace(ev: S2WorkspaceChangeEvent) {
+    //     this.log('Updating archives');
+    //     await this.store.updateS2Workspace(ev.workspace);
+    //     this.log('Archives: ' + util.inspect(ev.workspace.allArchives, false, 1));
+    // }
     onCompletion(params) {
         return this.completionsProvider.getCompletionsAt(params.textDocument.uri, utils_2.getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character));
     }

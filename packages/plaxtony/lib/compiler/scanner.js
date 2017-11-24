@@ -26,40 +26,41 @@ const textToTokenTable = new Map([
     ["animfilter", 76 /* AnimfilterKeyword */],
     ["bank", 77 /* BankKeyword */],
     ["bool", 66 /* BoolKeyword */],
+    ["bitmask", 78 /* BitmaskKeyword */],
     ["byte", 67 /* ByteKeyword */],
-    ["camerainfo", 78 /* CamerainfoKeyword */],
+    ["camerainfo", 79 /* CamerainfoKeyword */],
     ["char", 68 /* CharKeyword */],
-    ["color", 79 /* ColorKeyword */],
-    ["doodad", 80 /* DoodadKeyword */],
+    ["color", 80 /* ColorKeyword */],
+    ["doodad", 81 /* DoodadKeyword */],
     ["fixed", 70 /* FixedKeyword */],
-    ["handle", 81 /* HandleKeyword */],
-    ["generichandle", 82 /* GenerichandleKeyword */],
-    ["effecthistory", 83 /* EffecthistoryKeyword */],
+    ["handle", 82 /* HandleKeyword */],
+    ["generichandle", 83 /* GenerichandleKeyword */],
+    ["effecthistory", 84 /* EffecthistoryKeyword */],
     ["int", 69 /* IntKeyword */],
-    ["marker", 84 /* MarkerKeyword */],
-    ["order", 85 /* OrderKeyword */],
-    ["playergroup", 86 /* PlayergroupKeyword */],
-    ["point", 87 /* PointKeyword */],
-    ["region", 88 /* RegionKeyword */],
-    ["revealer", 89 /* RevealerKeyword */],
-    ["sound", 90 /* SoundKeyword */],
-    ["soundlink", 91 /* SoundlinkKeyword */],
+    ["marker", 85 /* MarkerKeyword */],
+    ["order", 86 /* OrderKeyword */],
+    ["playergroup", 87 /* PlayergroupKeyword */],
+    ["point", 88 /* PointKeyword */],
+    ["region", 89 /* RegionKeyword */],
+    ["revealer", 90 /* RevealerKeyword */],
+    ["sound", 91 /* SoundKeyword */],
+    ["soundlink", 92 /* SoundlinkKeyword */],
     ["string", 71 /* StringKeyword */],
-    ["text", 92 /* TextKeyword */],
-    ["timer", 93 /* TimerKeyword */],
-    ["transmissionsource", 94 /* TransmissionsourceKeyword */],
-    ["trigger", 95 /* TriggerKeyword */],
-    ["unit", 96 /* UnitKeyword */],
-    ["unitfilter", 97 /* UnitfilterKeyword */],
-    ["unitgroup", 98 /* UnitgroupKeyword */],
-    ["unitref", 99 /* UnitrefKeyword */],
-    ["void", 100 /* VoidKeyword */],
-    ["wave", 101 /* WaveKeyword */],
-    ["waveinfo", 102 /* WaveinfoKeyword */],
-    ["wavetarget", 103 /* WavetargetKeyword */],
-    ["arrayref", 104 /* ArrayrefKeyword */],
-    ["structref", 105 /* StructrefKeyword */],
-    ["funcref", 106 /* FuncrefKeyword */],
+    ["text", 93 /* TextKeyword */],
+    ["timer", 94 /* TimerKeyword */],
+    ["transmissionsource", 95 /* TransmissionsourceKeyword */],
+    ["trigger", 96 /* TriggerKeyword */],
+    ["unit", 97 /* UnitKeyword */],
+    ["unitfilter", 98 /* UnitfilterKeyword */],
+    ["unitgroup", 99 /* UnitgroupKeyword */],
+    ["unitref", 100 /* UnitrefKeyword */],
+    ["void", 101 /* VoidKeyword */],
+    ["wave", 102 /* WaveKeyword */],
+    ["waveinfo", 103 /* WaveinfoKeyword */],
+    ["wavetarget", 104 /* WavetargetKeyword */],
+    ["arrayref", 105 /* ArrayrefKeyword */],
+    ["structref", 106 /* StructrefKeyword */],
+    ["funcref", 107 /* FuncrefKeyword */],
     ["{", 3 /* OpenBraceToken */],
     ["}", 4 /* CloseBraceToken */],
     ["(", 5 /* OpenParenToken */],
@@ -124,15 +125,16 @@ function tokenToString(t) {
 }
 exports.tokenToString = tokenToString;
 function isIdentifierStart(ch) {
-    return ch >= 65 /* A */ && ch <= 90 /* Z */ || ch >= 97 /* a */ && ch <= 122 /* z */ ||
-        ch === 95 /* _ */ ||
-        ch > 127 /* maxAsciiCharacter */;
+    return (ch >= 65 /* A */ && ch <= 90 /* Z */)
+        || (ch >= 97 /* a */ && ch <= 122 /* z */)
+        || (ch === 95 /* _ */);
 }
 exports.isIdentifierStart = isIdentifierStart;
 function isIdentifierPart(ch) {
-    return ch >= 65 /* A */ && ch <= 90 /* Z */ || ch >= 97 /* a */ && ch <= 122 /* z */ ||
-        ch >= 48 /* _0 */ && ch <= 57 /* _9 */ || ch === 95 /* _ */ ||
-        ch > 127 /* maxAsciiCharacter */;
+    return (ch >= 65 /* A */ && ch <= 90 /* Z */)
+        || (ch >= 97 /* a */ && ch <= 122 /* z */)
+        || (ch >= 48 /* _0 */ && ch <= 57 /* _9 */)
+        || (ch === 95 /* _ */);
 }
 exports.isIdentifierPart = isIdentifierPart;
 function isLineBreak(ch) {
@@ -160,7 +162,7 @@ class Scanner {
                 category: types_1.DiagnosticCategory.Error,
                 code: 0,
                 message: msg,
-            }, 0);
+            }, this.pos, 1);
         }
     }
     speculationHelper(callback, isLookahead) {
@@ -287,6 +289,9 @@ class Scanner {
                 break;
             }
             const ch = this.text.charCodeAt(this.pos);
+            if (ch > 127 /* maxAsciiCharacter */) {
+                this.error('multibyte characters not allowed');
+            }
             if (ch === quote) {
                 result += this.text.substring(start, this.pos);
                 this.pos++;
@@ -375,7 +380,7 @@ class Scanner {
                 return token;
             }
         }
-        return 107 /* Identifier */;
+        return 108 /* Identifier */;
     }
     setText(text) {
         this.text = text;
@@ -389,8 +394,9 @@ class Scanner {
         this.startPos = this.pos;
         while (true) {
             this.tokenPos = this.pos;
+            this.tokenValue = null;
             if (this.pos >= this.end) {
-                return 108 /* EndOfFileToken */;
+                return 109 /* EndOfFileToken */;
             }
             let ch = this.text.charCodeAt(this.pos);
             switch (ch) {
@@ -628,7 +634,7 @@ class Scanner {
                         }
                         continue;
                     }
-                    this.error(`encountered invalid character ${this.text.charAt(this.pos)}`);
+                    this.error('encountered invalid character');
                     this.pos++;
                     return this.token = 0 /* Unknown */;
             }
@@ -646,11 +652,11 @@ class Scanner {
     getTokenPos() {
         return this.tokenPos;
     }
-    getTextPos() {
-        return this.end;
-    }
     getTokenValue() {
         return this.tokenValue;
+    }
+    getTokenText() {
+        return this.text.substring(this.tokenPos, this.pos);
     }
     getLineMap() {
         return this.lineMap;

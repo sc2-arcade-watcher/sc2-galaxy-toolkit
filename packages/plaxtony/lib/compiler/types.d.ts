@@ -203,81 +203,83 @@ export declare const enum SyntaxKind {
     AifilterKeyword = 75,
     AnimfilterKeyword = 76,
     BankKeyword = 77,
-    CamerainfoKeyword = 78,
-    ColorKeyword = 79,
-    DoodadKeyword = 80,
-    HandleKeyword = 81,
-    GenerichandleKeyword = 82,
-    EffecthistoryKeyword = 83,
-    MarkerKeyword = 84,
-    OrderKeyword = 85,
-    PlayergroupKeyword = 86,
-    PointKeyword = 87,
-    RegionKeyword = 88,
-    RevealerKeyword = 89,
-    SoundKeyword = 90,
-    SoundlinkKeyword = 91,
-    TextKeyword = 92,
-    TimerKeyword = 93,
-    TransmissionsourceKeyword = 94,
-    TriggerKeyword = 95,
-    UnitKeyword = 96,
-    UnitfilterKeyword = 97,
-    UnitgroupKeyword = 98,
-    UnitrefKeyword = 99,
-    VoidKeyword = 100,
-    WaveKeyword = 101,
-    WaveinfoKeyword = 102,
-    WavetargetKeyword = 103,
-    ArrayrefKeyword = 104,
-    StructrefKeyword = 105,
-    FuncrefKeyword = 106,
-    Identifier = 107,
-    EndOfFileToken = 108,
-    TypeReference = 109,
-    MappedType = 110,
-    ArrayType = 111,
-    ArrayLiteralExpression = 112,
-    ElementAccessExpression = 113,
-    PropertyAccessExpression = 114,
-    CallExpression = 115,
-    PrefixUnaryExpression = 116,
-    PostfixUnaryExpression = 117,
-    BinaryExpression = 118,
-    TypeAssertionExpression = 119,
-    ParenthesizedExpression = 120,
-    SourceFile = 121,
-    Block = 122,
-    IfStatement = 123,
-    DoStatement = 124,
-    WhileStatement = 125,
-    ForStatement = 126,
-    BreakStatement = 127,
-    ContinueStatement = 128,
-    IncludeStatement = 129,
-    ReturnStatement = 130,
-    ExpressionStatement = 131,
-    EmptyStatement = 132,
-    StructDeclaration = 133,
-    VariableDeclaration = 134,
-    FunctionDeclaration = 135,
-    ParameterDeclaration = 136,
-    PropertyDeclaration = 137,
+    BitmaskKeyword = 78,
+    CamerainfoKeyword = 79,
+    ColorKeyword = 80,
+    DoodadKeyword = 81,
+    HandleKeyword = 82,
+    GenerichandleKeyword = 83,
+    EffecthistoryKeyword = 84,
+    MarkerKeyword = 85,
+    OrderKeyword = 86,
+    PlayergroupKeyword = 87,
+    PointKeyword = 88,
+    RegionKeyword = 89,
+    RevealerKeyword = 90,
+    SoundKeyword = 91,
+    SoundlinkKeyword = 92,
+    TextKeyword = 93,
+    TimerKeyword = 94,
+    TransmissionsourceKeyword = 95,
+    TriggerKeyword = 96,
+    UnitKeyword = 97,
+    UnitfilterKeyword = 98,
+    UnitgroupKeyword = 99,
+    UnitrefKeyword = 100,
+    VoidKeyword = 101,
+    WaveKeyword = 102,
+    WaveinfoKeyword = 103,
+    WavetargetKeyword = 104,
+    ArrayrefKeyword = 105,
+    StructrefKeyword = 106,
+    FuncrefKeyword = 107,
+    Identifier = 108,
+    EndOfFileToken = 109,
+    TypeReference = 110,
+    MappedType = 111,
+    ArrayType = 112,
+    ArrayLiteralExpression = 113,
+    ElementAccessExpression = 114,
+    PropertyAccessExpression = 115,
+    CallExpression = 116,
+    PrefixUnaryExpression = 117,
+    PostfixUnaryExpression = 118,
+    BinaryExpression = 119,
+    TypeAssertionExpression = 120,
+    ParenthesizedExpression = 121,
+    SourceFile = 122,
+    Block = 123,
+    IfStatement = 124,
+    DoStatement = 125,
+    WhileStatement = 126,
+    ForStatement = 127,
+    BreakStatement = 128,
+    ContinueStatement = 129,
+    IncludeStatement = 130,
+    ReturnStatement = 131,
+    ExpressionStatement = 132,
+    EmptyStatement = 133,
+    StructDeclaration = 134,
+    VariableDeclaration = 135,
+    FunctionDeclaration = 136,
+    ParameterDeclaration = 137,
+    PropertyDeclaration = 138,
+    TypedefDeclaration = 139,
 }
 export declare const enum SyntaxKindMarker {
     FirstToken = 1,
-    LastToken = 107,
+    LastToken = 108,
     FirstKeyword = 49,
-    LastKeyword = 106,
+    LastKeyword = 107,
     FirstBasicType = 66,
     LastBasicType = 71,
     FirstComplexType = 72,
-    LastComplexType = 103,
-    FirstTypeNode = 109,
-    LastTypeNode = 111,
+    LastComplexType = 104,
+    FirstTypeNode = 110,
+    LastTypeNode = 112,
 }
 export declare type Modifier = Token<SyntaxKind.ConstKeyword> | Token<SyntaxKind.NativeKeyword> | Token<SyntaxKind.StaticKeyword>;
-export declare type KeywordType = SyntaxKind.AbilcmdKeyword | SyntaxKind.ActorKeyword | SyntaxKind.ActorscopeKeyword | SyntaxKind.AifilterKeyword | SyntaxKind.AnimfilterKeyword | SyntaxKind.BankKeyword | SyntaxKind.BoolKeyword | SyntaxKind.ByteKeyword | SyntaxKind.CamerainfoKeyword | SyntaxKind.CharKeyword | SyntaxKind.ColorKeyword | SyntaxKind.DoodadKeyword | SyntaxKind.FixedKeyword | SyntaxKind.HandleKeyword | SyntaxKind.GenerichandleKeyword | SyntaxKind.EffecthistoryKeyword | SyntaxKind.IntKeyword | SyntaxKind.MarkerKeyword | SyntaxKind.OrderKeyword | SyntaxKind.PlayergroupKeyword | SyntaxKind.PointKeyword | SyntaxKind.RegionKeyword | SyntaxKind.RevealerKeyword | SyntaxKind.SoundKeyword | SyntaxKind.SoundlinkKeyword | SyntaxKind.StringKeyword | SyntaxKind.TextKeyword | SyntaxKind.TimerKeyword | SyntaxKind.TransmissionsourceKeyword | SyntaxKind.TriggerKeyword | SyntaxKind.UnitKeyword | SyntaxKind.UnitfilterKeyword | SyntaxKind.UnitgroupKeyword | SyntaxKind.UnitrefKeyword | SyntaxKind.VoidKeyword | SyntaxKind.WaveKeyword | SyntaxKind.WaveinfoKeyword | SyntaxKind.WavetargetKeyword | SyntaxKind.ArrayrefKeyword | SyntaxKind.StructrefKeyword | SyntaxKind.FuncrefKeyword;
+export declare type KeywordType = SyntaxKind.AbilcmdKeyword | SyntaxKind.ActorKeyword | SyntaxKind.ActorscopeKeyword | SyntaxKind.AifilterKeyword | SyntaxKind.AnimfilterKeyword | SyntaxKind.BankKeyword | SyntaxKind.BitmaskKeyword | SyntaxKind.BoolKeyword | SyntaxKind.ByteKeyword | SyntaxKind.CamerainfoKeyword | SyntaxKind.CharKeyword | SyntaxKind.ColorKeyword | SyntaxKind.DoodadKeyword | SyntaxKind.FixedKeyword | SyntaxKind.HandleKeyword | SyntaxKind.GenerichandleKeyword | SyntaxKind.EffecthistoryKeyword | SyntaxKind.IntKeyword | SyntaxKind.MarkerKeyword | SyntaxKind.OrderKeyword | SyntaxKind.PlayergroupKeyword | SyntaxKind.PointKeyword | SyntaxKind.RegionKeyword | SyntaxKind.RevealerKeyword | SyntaxKind.SoundKeyword | SyntaxKind.SoundlinkKeyword | SyntaxKind.StringKeyword | SyntaxKind.TextKeyword | SyntaxKind.TimerKeyword | SyntaxKind.TransmissionsourceKeyword | SyntaxKind.TriggerKeyword | SyntaxKind.UnitKeyword | SyntaxKind.UnitfilterKeyword | SyntaxKind.UnitgroupKeyword | SyntaxKind.UnitrefKeyword | SyntaxKind.VoidKeyword | SyntaxKind.WaveKeyword | SyntaxKind.WaveinfoKeyword | SyntaxKind.WavetargetKeyword | SyntaxKind.ArrayrefKeyword | SyntaxKind.StructrefKeyword | SyntaxKind.FuncrefKeyword;
 export declare const enum SymbolFlags {
     None = 0,
     LocalVariable = 2,
@@ -286,8 +288,7 @@ export declare const enum SymbolFlags {
     Property = 16,
     Function = 32,
     Struct = 64,
-    Signature = 131072,
-    TypeParameter = 262144,
+    Typedef = 128,
     Variable = 14,
     FunctionScopedVariable = 6,
 }
@@ -324,6 +325,7 @@ export declare const enum TypeFlags {
     Funcref = 131072,
     Arrayref = 262144,
     Structref = 524288,
+    Typedef = 1048576,
     Nullable = 2048,
     Literal = 448,
     Numeric = 12,
@@ -350,6 +352,9 @@ export interface NumberLiteralType extends LiteralType {
 export interface StructType extends Type {
 }
 export interface FunctionType extends Type {
+}
+export interface TypedefType extends Type {
+    referencedType: Type;
 }
 export interface ArrayType extends Type {
     elementType: Type;
@@ -402,7 +407,7 @@ export interface Block extends Statement {
     statements: NodeArray<Statement>;
 }
 export interface IncludeStatement extends Statement {
-    kind: SyntaxKind.IncludeKeyword;
+    kind: SyntaxKind.IncludeStatement;
     path: StringLiteral;
 }
 export interface TypeNode extends Node {
@@ -456,6 +461,10 @@ export interface FunctionDeclaration extends SignatureDeclaration, NamedDeclarat
     kind: SyntaxKind.FunctionDeclaration;
     body?: Block;
 }
+export interface TypedefDeclaration extends NamedDeclaration {
+    kind: SyntaxKind.TypedefDeclaration;
+    type: TypeNode;
+}
 export interface ReturnStatement extends Statement {
     kind: SyntaxKind.ReturnStatement;
     expression?: Expression;
@@ -476,13 +485,8 @@ export interface ParenthesizedExpression extends PrimaryExpression {
     expression: Expression;
 }
 export interface Literal extends Expression {
-    text: string;
-}
-export interface NullLiteral extends Literal {
-    kind: SyntaxKind.NullKeyword;
-}
-export interface BooleanLiteral extends Literal {
-    kind: SyntaxKind.TrueKeyword | SyntaxKind.FalseKeyword;
+    value?: string;
+    text?: string;
 }
 export interface StringLiteral extends Literal {
     kind: SyntaxKind.StringLiteral;
@@ -526,7 +530,7 @@ export interface PostfixUnaryExpression extends UnaryExpression {
 export interface ElementAccessExpression extends MemberExpression {
     kind: SyntaxKind.ElementAccessExpression;
     expression: LeftHandSideExpression;
-    argumentExpression?: Expression;
+    argumentExpression: Expression;
 }
 export interface SymbolLink {
     symbolLink: Symbol;

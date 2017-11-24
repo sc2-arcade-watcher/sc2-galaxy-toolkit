@@ -104,7 +104,8 @@ function getTokenAtPositionWorker(position, sourceFile, includePrecedingTokenAtE
                 }
             }
         }
-        throw new Error('how did we get here?');
+        // supress error to ignore missing nodes and whitespace/comments
+        // throw new Error(`failed to find token at position ${position} in ${sourceFile.fileName}`);
     }
     function findRightmostChildNodeWithTokens(children, exclusiveStartPosition) {
         for (let i = exclusiveStartPosition; i >= 0; i--) {

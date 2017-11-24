@@ -23,18 +23,21 @@ class CompletionsProvider extends provider_1.AbstractProvider {
             label: node.name.name,
         };
         switch (node.kind) {
-            case 133 /* StructDeclaration */:
+            case 134 /* StructDeclaration */:
                 item.kind = vs.CompletionItemKind.Class;
                 break;
-            case 135 /* FunctionDeclaration */:
+            case 136 /* FunctionDeclaration */:
                 item.kind = vs.CompletionItemKind.Function;
                 break;
-            case 134 /* VariableDeclaration */:
-            case 136 /* ParameterDeclaration */:
+            case 135 /* VariableDeclaration */:
+            case 137 /* ParameterDeclaration */:
                 item.kind = vs.CompletionItemKind.Variable;
                 break;
-            case 137 /* PropertyDeclaration */:
+            case 138 /* PropertyDeclaration */:
                 item.kind = vs.CompletionItemKind.Property;
+                break;
+            case 139 /* TypedefDeclaration */:
+                item.kind = vs.CompletionItemKind.Interface;
                 break;
             default:
                 item.kind = vs.CompletionItemKind.Text;
@@ -47,6 +50,9 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         for (const symbol of parentSymbol.members.values()) {
             if (!query || utils_2.fuzzysearch(query, symbol.escapedName)) {
                 const item = this.buildFromSymbolDecl(symbol);
+                item.data = {
+                    parentSymbol: parentSymbol.escapedName,
+                };
                 if (item) {
                     completions.push(item);
                 }
@@ -64,25 +70,24 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         }
         // query
         let query = null;
-        if (currentToken && currentToken.pos <= position && currentToken.end >= position && currentToken.kind === 107 /* Identifier */) {
+        if (currentToken && currentToken.pos <= position && currentToken.end >= position && currentToken.kind === 108 /* Identifier */) {
             const offset = position -= currentToken.pos;
             query = currentToken.name.substr(0, offset);
         }
         if (currentToken) {
             // properties
-            const checker = new checker_1.TypeChecker(this.store);
-            if (currentToken.kind === 9 /* DotToken */ || currentToken.kind === 107 /* Identifier */) {
-                if (currentToken.parent.kind === 114 /* PropertyAccessExpression */) {
-                    currentToken = currentToken.parent.expression;
-                    const type = checker.getTypeOfNode(currentToken);
-                    if (type.flags & 4096 /* Struct */) {
-                        return this.buildFromSymbolMembers(type.symbol);
-                    }
+            if ((currentToken.kind === 9 /* DotToken */ || currentToken.kind === 108 /* Identifier */) &&
+                (currentToken.parent.kind === 115 /* PropertyAccessExpression */ && currentToken.parent.expression !== currentToken)) {
+                const checker = new checker_1.TypeChecker(this.store);
+                currentToken = currentToken.parent.expression;
+                const type = checker.getTypeOfNode(currentToken, true);
+                if (type.flags & 4096 /* Struct */) {
+                    return this.buildFromSymbolMembers(type.symbol);
                 }
             }
             // local variables
             const currentContext = utils_1.findAncestor(currentToken, (element) => {
-                return element.kind === 135 /* FunctionDeclaration */;
+                return element.kind === 136 /* FunctionDeclaration */;
             });
             if (currentContext) {
                 completions = completions.concat(this.buildFromSymbolMembers(currentContext.symbol, query));
@@ -96,7 +101,7 @@ class CompletionsProvider extends provider_1.AbstractProvider {
                     kind: vs.CompletionItemKind.Keyword
                 });
             }
-            for (let i = 72 /* FirstComplexType */; i <= 103 /* LastComplexType */; i++) {
+            for (let i = 72 /* FirstComplexType */; i <= 104 /* LastComplexType */; i++) {
                 completions.push({
                     label: scanner_1.tokenToString(i),
                     kind: vs.CompletionItemKind.Keyword
@@ -123,22 +128,38 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         return completions;
     }
     resolveCompletion(completion) {
+        let symbol;
+        let parentSymbolName;
+        if (completion.data && completion.data.parentSymbol) {
+            parentSymbolName = completion.data.parentSymbol;
+        }
         for (const sourceFile of this.store.documents.values()) {
-            const symbol = sourceFile.symbol.members.get(completion.label);
-            if (symbol) {
-                completion.documentation = s2meta_1.getDocumentationOfSymbol(this.store, symbol);
-                let node = symbol.declarations[0];
-                switch (node.kind) {
-                    case 135 /* FunctionDeclaration */:
-                        node = Object.create(node);
-                        node.body = null;
-                    case 134 /* VariableDeclaration */:
-                    case 136 /* ParameterDeclaration */:
-                    case 137 /* PropertyDeclaration */:
-                        completion.detail = this.printer.printNode(node);
-                        break;
-                }
+            if (parentSymbolName) {
+                symbol = sourceFile.symbol.members.get(parentSymbolName);
+                if (!symbol)
+                    continue;
+            }
+            else {
+                symbol = sourceFile.symbol;
+            }
+            symbol = symbol.members.get(completion.label);
+            if (symbol)
                 break;
+        }
+        if (symbol) {
+            completion.documentation = s2meta_1.getDocumentationOfSymbol(this.store, symbol);
+            let node = symbol.declarations[0];
+            switch (node.kind) {
+                case 136 /* FunctionDeclaration */:
+                    node = Object.create(node);
+                    node.body = null;
+                // pass through
+                case 135 /* VariableDeclaration */:
+                case 137 /* ParameterDeclaration */:
+                case 138 /* PropertyDeclaration */:
+                case 139 /* TypedefDeclaration */:
+                    completion.detail = this.printer.printNode(node);
+                    break;
             }
         }
         return completion;

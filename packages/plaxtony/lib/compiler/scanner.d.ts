@@ -1,6 +1,6 @@
 import { SyntaxKind, DiagnosticMessage } from './types';
 export interface ErrorCallback {
-    (message: DiagnosticMessage, length: number): void;
+    (message: DiagnosticMessage, pos: number, length: number): void;
 }
 export declare function stringToToken(s: string): SyntaxKind | undefined;
 export declare function tokenToString(t: SyntaxKind): string | undefined;
@@ -39,7 +39,7 @@ export declare class Scanner {
     getChar(): number;
     getStartPos(): number;
     getTokenPos(): number;
-    getTextPos(): number;
     getTokenValue(): string;
+    getTokenText(): string;
     getLineMap(): number[];
 }

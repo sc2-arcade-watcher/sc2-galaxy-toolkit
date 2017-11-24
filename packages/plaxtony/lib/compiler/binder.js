@@ -11,13 +11,13 @@ function bindSourceFile(sourceFile, store) {
         let parentContainer = currentContainer;
         if (utils_1.isDeclarationKind(node.kind)) {
             switch (node.kind) {
-                case 121 /* SourceFile */:
+                case 122 /* SourceFile */:
                     {
                         declareSymbol(node, null);
                         break;
                     }
-                case 115 /* CallExpression */:
-                case 114 /* PropertyAccessExpression */:
+                case 116 /* CallExpression */:
+                case 115 /* PropertyAccessExpression */:
                     {
                         // TODO: to be reomved?
                         // declareSymbol(<gt.Declaration>node, null);
@@ -43,29 +43,30 @@ function bindSourceFile(sourceFile, store) {
     }
     function getDeclarationName(node) {
         switch (node.kind) {
-            case 121 /* SourceFile */:
+            case 122 /* SourceFile */:
                 {
                     return node.fileName;
                     break;
                 }
-            case 134 /* VariableDeclaration */:
-            case 135 /* FunctionDeclaration */:
-            case 133 /* StructDeclaration */:
-            case 136 /* ParameterDeclaration */:
-            case 137 /* PropertyDeclaration */:
+            case 135 /* VariableDeclaration */:
+            case 136 /* FunctionDeclaration */:
+            case 134 /* StructDeclaration */:
+            case 137 /* ParameterDeclaration */:
+            case 138 /* PropertyDeclaration */:
+            case 139 /* TypedefDeclaration */:
                 {
                     return node.name.name;
                     break;
                 }
-            case 114 /* PropertyAccessExpression */:
+            case 115 /* PropertyAccessExpression */:
                 {
                     return '__prop__' + node.name.name;
                     break;
                 }
-            case 115 /* CallExpression */:
+            case 116 /* CallExpression */:
                 {
                     const call = node;
-                    if (call.expression.kind === 107 /* Identifier */) {
+                    if (call.expression.kind === 108 /* Identifier */) {
                         return call.expression.name;
                     }
                     else {
@@ -90,11 +91,14 @@ function bindSourceFile(sourceFile, store) {
         let nodeSymbol;
         let name;
         name = getDeclarationName(node);
+        if (!name) {
+            name = '__anonymous';
+        }
         if (parentSymbol && parentSymbol.members.has(name)) {
             nodeSymbol = parentSymbol.members.get(name);
         }
         else {
-            if (parentSymbol && parentSymbol.declarations[0].kind === 121 /* SourceFile */) {
+            if (parentSymbol && parentSymbol.declarations[0].kind === 122 /* SourceFile */) {
                 nodeSymbol = store.resolveGlobalSymbol(name);
             }
             if (!nodeSymbol) {
@@ -108,21 +112,24 @@ function bindSourceFile(sourceFile, store) {
                     parent: parentSymbol,
                 };
                 switch (node.kind) {
-                    case 136 /* ParameterDeclaration */:
+                    case 137 /* ParameterDeclaration */:
                         nodeSymbol.flags = 4 /* FunctionParameter */;
                         break;
-                    case 134 /* VariableDeclaration */:
-                        nodeSymbol.flags = ((parentSymbol && parentSymbol.declarations[0].kind == 121 /* SourceFile */) ?
+                    case 135 /* VariableDeclaration */:
+                        nodeSymbol.flags = ((parentSymbol && parentSymbol.declarations[0].kind == 122 /* SourceFile */) ?
                             8 /* GlobalVariable */ : 2 /* LocalVariable */);
                         break;
-                    case 135 /* FunctionDeclaration */:
+                    case 136 /* FunctionDeclaration */:
                         nodeSymbol.flags = 32 /* Function */;
                         break;
-                    case 133 /* StructDeclaration */:
+                    case 134 /* StructDeclaration */:
                         nodeSymbol.flags = 64 /* Struct */;
                         break;
-                    case 137 /* PropertyDeclaration */:
+                    case 138 /* PropertyDeclaration */:
                         nodeSymbol.flags = 16 /* Property */;
+                        break;
+                    case 139 /* TypedefDeclaration */:
+                        nodeSymbol.flags = 128 /* Typedef */;
                         break;
                 }
             }
@@ -132,8 +139,8 @@ function bindSourceFile(sourceFile, store) {
         }
         node.symbol = nodeSymbol;
         nodeSymbol.declarations.push(node);
-        if (!node.symbol.valueDeclaration && ((node.kind === 135 /* FunctionDeclaration */ && node.body) ||
-            (node.kind === 134 /* VariableDeclaration */ && node.initializer))) {
+        if (!node.symbol.valueDeclaration && ((node.kind === 136 /* FunctionDeclaration */ && node.body) ||
+            (node.kind === 135 /* VariableDeclaration */ && node.initializer))) {
             node.symbol.valueDeclaration = node;
         }
         return nodeSymbol;

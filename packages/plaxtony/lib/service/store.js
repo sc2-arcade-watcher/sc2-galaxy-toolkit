@@ -8,9 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const gt = require("../compiler/types");
-const utils_1 = require("../compiler/utils");
 const parser_1 = require("../compiler/parser");
+const s2meta_1 = require("./s2meta");
 const binder_1 = require("../compiler/binder");
 const archive_1 = require("../sc2mod/archive");
 const lsp = require("vscode-languageserver");
@@ -36,79 +35,99 @@ class IndexedDocument {
 }
 exports.IndexedDocument = IndexedDocument;
 ;
-class Workspace {
+class WorkspaceWatcher {
     constructor(workspacePath) {
         this.workspacePath = workspacePath;
-        this._onDidStart = new lsp.Emitter();
-        this._onDidEnd = new lsp.Emitter();
         this._onDidOpen = new lsp.Emitter();
     }
-    watch() {
+    watchFiles() {
         // TODO: filewatch
-        this._onDidStart.fire(this.workspacePath);
         const files = glob.sync(path.join(path.resolve(this.workspacePath), '**/*.galaxy'));
         for (let filepath of files) {
-            // this.store.updateDocument(createTextDocumentFromFs(filepath));
             this._onDidOpen.fire({ document: createTextDocumentFromFs(filepath) });
         }
-        this._onDidEnd.fire(files.length);
     }
-    get onDidStart() {
-        return this._onDidStart.event;
-    }
-    get onDidEnd() {
-        return this._onDidEnd.event;
+    watch() {
+        this.watchFiles();
     }
     get onDidOpen() {
         return this._onDidOpen.event;
     }
 }
-exports.Workspace = Workspace;
-class S2Workspace extends Workspace {
-    constructor(workspacePath) {
+exports.WorkspaceWatcher = WorkspaceWatcher;
+class S2WorkspaceWatcher extends WorkspaceWatcher {
+    constructor(workspacePath, modSources) {
         super(workspacePath);
-        this._onDidOpenS2Archive = new lsp.Emitter();
-    }
-    watch() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this._onDidStart.fire(this.workspacePath);
-            const files = glob.sync(path.join(path.resolve(this.workspacePath), '**/*.galaxy'));
-            for (let filepath of files) {
-                this._onDidOpen.fire({ document: createTextDocumentFromFs(filepath) });
-            }
-            if (archive_1.isSC2Archive(this.workspacePath)) {
-                const modpath = path.resolve(this.workspacePath);
-                const archive = new archive_1.SC2Archive();
-                yield archive.openFromDirectory(modpath);
-                this._onDidOpenS2Archive.fire({
-                    localPath: '',
-                    archive: archive
-                });
-            }
-            for (let modpath of yield archive_1.findSC2Archives(path.resolve(this.workspacePath))) {
-                const archive = new archive_1.SC2Archive();
-                yield archive.openFromDirectory(modpath);
-                this._onDidOpenS2Archive.fire({
-                    localPath: '',
-                    archive: archive
-                });
-            }
-            this._onDidEnd.fire(files.length);
-        });
+        this.modSources = [];
+        this.modSources = modSources;
+        this._onDidOpenS2Workspace = new lsp.Emitter();
     }
     get onDidOpenS2Archive() {
-        return this._onDidOpenS2Archive.event;
+        return this._onDidOpenS2Workspace.event;
+    }
+    // public setSources(sources: string[]) {
+    //     this.modSources = sources;
+    // }
+    watch() {
+        const _super = name => super[name];
+        return __awaiter(this, void 0, void 0, function* () {
+            _super("watch").call(this);
+            const rootArchive = new archive_1.SC2Archive(path.basename(this.workspacePath), this.workspacePath);
+            const workspace = yield archive_1.openArchiveWorkspace(rootArchive, this.modSources);
+            for (const modArchive of workspace.dependencies) {
+                for (const extSrc of yield modArchive.findFiles('*.galaxy')) {
+                    this._onDidOpen.fire({ document: createTextDocumentFromFs(path.join(modArchive.directory, extSrc)) });
+                }
+            }
+            this._onDidOpenS2Workspace.fire({
+                src: this.workspacePath,
+                workspace: workspace,
+            });
+        });
     }
 }
-exports.S2Workspace = S2Workspace;
+exports.S2WorkspaceWatcher = S2WorkspaceWatcher;
+// export async function resolveWorkspaces(dir: string, modSources: string[]) {
+//     const watchers: WorkspaceWatcher[] = [];
+//     dir = path.resolve(dir);
+//     const archives = await findSC2ArchiveDirectories(dir);
+//     if (archives.length) {
+//         for (const archive of archives) {
+//             watchers.push(new S2WorkspaceWatcher(archive, modSources));
+//         }
+//     }
+//     else {
+//         watchers.push(new WorkspaceWatcher(dir))
+//     }
+//     return watchers;
+// }
+function findWorkspaceArchive(rootPath) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (archive_1.isSC2Archive(rootPath)) {
+            return rootPath;
+        }
+        const archives = yield archive_1.findSC2ArchiveDirectories(rootPath);
+        if (archives.length > 0) {
+            const map = archives.find((dir) => {
+                return path.extname(dir).toLowerCase() === 'sc2map';
+            });
+            if (map) {
+                return map;
+            }
+            else {
+                return archives[0];
+            }
+        }
+        return null;
+    });
+}
+exports.findWorkspaceArchive = findWorkspaceArchive;
 class Store {
     constructor() {
         this.parser = new parser_1.Parser();
         this.documents = new Map();
-        this.s2archives = new Map();
     }
-    initialize() {
-    }
+    // protected watchers = new Map<string, WorkspaceWatcher>();
     updateDocument(document) {
         if (this.documents.has(document.uri)) {
             binder_1.unbindSourceFile(this.documents.get(document.uri), this);
@@ -118,41 +137,18 @@ class Store {
         binder_1.bindSourceFile(sourceFile, this);
         this.documents.set(document.uri, sourceFile);
     }
-    updateArchive(archive) {
-        this.s2archives.set(archive.directory, archive);
+    updateS2Workspace(workspace) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.s2workspace = workspace;
+            this.s2metadata = new s2meta_1.S2WorkspaceMetadata(this.s2workspace);
+            yield this.s2metadata.build();
+        });
     }
     resolveGlobalSymbol(name) {
         for (const doc of this.documents.values()) {
             if (doc.symbol.members.has(name)) {
                 return doc.symbol.members.get(name);
             }
-        }
-    }
-    getArchiveOfSourceFile(sourceFile) {
-        for (const archive of this.s2archives.values()) {
-            const filePath = vscode_uri_1.default.parse(sourceFile.fileName).fsPath;
-            if (filePath.indexOf(archive.directory) === 0) {
-                return archive;
-            }
-        }
-    }
-    getSymbolMetadata(symbol) {
-        const sourceFile = utils_1.getSourceFileOfNode(symbol.declarations[0]);
-        const archive = this.getArchiveOfSourceFile(sourceFile);
-        if (!archive) {
-            return undefined;
-        }
-        if (symbol.flags & 8 /* GlobalVariable */) {
-            const variable = symbol.declarations[0];
-            const isConstant = variable.modifiers.find((modifier) => {
-                return modifier.kind === 52 /* ConstKeyword */;
-            });
-            if (isConstant) {
-                return archive.trigLibs.findPresetValueByStr(variable.name.name);
-            }
-        }
-        else {
-            return archive.trigLibs.findElementByName(symbol.escapedName);
         }
     }
 }

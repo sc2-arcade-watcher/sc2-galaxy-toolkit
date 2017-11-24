@@ -10,7 +10,7 @@ class DefinitionProvider extends provider_1.AbstractProvider {
         // let completions = <lsp.CompletionItem[]> [];
         const currentDocument = this.store.documents.get(uri);
         const currentToken = utils_2.getTokenAtPosition(position, currentDocument);
-        if (!currentToken || currentToken.kind !== 107 /* Identifier */) {
+        if (!currentToken || currentToken.kind !== 108 /* Identifier */) {
             return [];
         }
         const definitions = [];

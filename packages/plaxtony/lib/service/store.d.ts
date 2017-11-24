@@ -1,7 +1,7 @@
 import * as gt from '../compiler/types';
 import { SourceFile } from '../compiler/types';
-import { SC2Archive } from '../sc2mod/archive';
-import { Element } from '../sc2mod/trigger';
+import { S2WorkspaceMetadata } from './s2meta';
+import { SC2Workspace } from '../sc2mod/archive';
 import * as lsp from 'vscode-languageserver';
 export declare function createTextDocument(uri: string, text: string): lsp.TextDocument;
 export declare function createTextDocumentFromFs(filepath: string): lsp.TextDocument;
@@ -9,35 +9,32 @@ export declare class IndexedDocument {
     textDocument: lsp.TextDocument;
     sourceNode: SourceFile;
 }
-export interface S2ArchiveChangeEvent {
-    localPath: string;
-    archive: SC2Archive;
+export interface S2WorkspaceChangeEvent {
+    src: string;
+    workspace: SC2Workspace;
 }
-export declare class Workspace {
-    protected workspacePath: string;
-    protected _onDidStart: lsp.Emitter<string>;
-    protected _onDidEnd: lsp.Emitter<number>;
+export declare class WorkspaceWatcher {
+    workspacePath: string;
     protected _onDidOpen: lsp.Emitter<lsp.TextDocumentChangeEvent>;
     constructor(workspacePath: string);
+    protected watchFiles(): void;
     watch(): void;
-    readonly onDidStart: lsp.Event<string>;
-    readonly onDidEnd: lsp.Event<number>;
     readonly onDidOpen: lsp.Event<lsp.TextDocumentChangeEvent>;
 }
-export declare class S2Workspace extends Workspace {
-    protected _onDidOpenS2Archive: lsp.Emitter<S2ArchiveChangeEvent>;
-    constructor(workspacePath: string);
+export declare class S2WorkspaceWatcher extends WorkspaceWatcher {
+    protected _onDidOpenS2Workspace: lsp.Emitter<S2WorkspaceChangeEvent>;
+    protected modSources: string[];
+    constructor(workspacePath: string, modSources: string[]);
+    readonly onDidOpenS2Archive: lsp.Event<S2WorkspaceChangeEvent>;
     watch(): Promise<void>;
-    readonly onDidOpenS2Archive: lsp.Event<S2ArchiveChangeEvent>;
 }
+export declare function findWorkspaceArchive(rootPath: string): Promise<string>;
 export declare class Store {
     private parser;
     documents: Map<string, gt.SourceFile>;
-    s2archives: Map<string, SC2Archive>;
-    initialize(): void;
+    s2workspace: SC2Workspace;
+    s2metadata: S2WorkspaceMetadata;
     updateDocument(document: lsp.TextDocument): void;
-    updateArchive(archive: SC2Archive): void;
+    updateS2Workspace(workspace: SC2Workspace): Promise<void>;
     resolveGlobalSymbol(name: string): gt.Symbol | undefined;
-    getArchiveOfSourceFile(sourceFile: SourceFile): SC2Archive | undefined;
-    getSymbolMetadata(symbol: gt.Symbol): Element | undefined;
 }
