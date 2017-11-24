@@ -56,6 +56,18 @@ Following language statements are not yet properly supported: `typedef`, `funcre
 
 ---
 
+## Configuration
+
+```js
+{
+    "sc2galaxy.s2mod.sources": [
+        "c:\\SC2" // path to SC2 directory
+    ]
+}
+```
+
+---
+
 ## How to use this extension in combination with **SC2 Editor**
 
 To avoid copy-pasting code into **Custom script element** within trigger editor, or manually reimporting *.galaxy* files after every change, it is advised to save the map in unpacked format - that is **.SC2Components** in save dialog.
