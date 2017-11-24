@@ -188,14 +188,20 @@ export class Server {
 
         if (archivePath) {
             this.workspaceWatcher = new WorkspaceWatcher(archivePath);
-            workspace = await openArchiveWorkspace(new SC2Archive(path.basename(archivePath), archivePath), modSources);
+            try {
+                workspace = await openArchiveWorkspace(new SC2Archive(path.basename(archivePath), archivePath), modSources);
+            }
+            catch (e) {
+                this.connection.console.error('Trigger data couldn\'t be loaded: ' + e.message);
+                workspace = null;
+            }
         }
         else if (rootPath) {
             this.workspaceWatcher = new WorkspaceWatcher(rootPath);
         }
 
         if (!workspace) {
-            workspace = new SC2Workspace(null, [new SC2Archive(null, resolveArchiveDirectory('mods/core.sc2mod', modSources))]);
+            workspace = new SC2Workspace(null, [new SC2Archive('untitled.sc2mod', resolveArchiveDirectory('mods/core.sc2mod', modSources))]);
         }
 
         this.log('Indexing s2workspace: ' + archivePath);
