@@ -179,6 +179,7 @@ export class Server {
         this.connection.console.log(msg);
     }
 
+    @wrapRequest()
     private async reindex(rootPath: string, modSources: string[]) {
         let archivePath: string;
         let workspace: SC2Workspace;
@@ -222,7 +223,6 @@ export class Server {
     @wrapRequest()
     private async onInitialize(params: lsp.InitializeParams): Promise<lsp.InitializeResult> {
         await this.reindex(params.rootPath, params.initializationOptions.sources)
-        this.log('ready');
         return {
             capabilities: {
                 textDocumentSync: this.documents.syncKind,

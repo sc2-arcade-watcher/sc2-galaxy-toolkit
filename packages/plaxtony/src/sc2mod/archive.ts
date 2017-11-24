@@ -10,6 +10,7 @@ export function isSC2Archive(directory: string) {
 }
 
 export function findSC2ArchiveDirectories(directory: string) {
+    directory = path.relative(process.cwd(), path.resolve(directory));
     return new Promise<string[]>((resolve, reject) => {
         if (isSC2Archive(directory)) {
             resolve([path.resolve(directory)]);
@@ -152,6 +153,9 @@ export interface ArchiveLink {
 
 export function resolveArchiveDirectory(name: string, sources: string[]) {
     for (const src of sources) {
+        if (fs.existsSync(path.join(src, name).toLowerCase())) {
+            return path.join(src, name).toLowerCase();
+        }
         const results = glob.sync(path.join(src, name), {nocase: true, realpath: true});
 
         if (results.length) {
@@ -207,7 +211,7 @@ export class SC2Archive {
     public async findFiles(pattern: string) {
         const dirs = await findSC2File(this.directory, pattern);
         return dirs.map((item) => {
-            return item.substr(this.directory.length + 1);
+            return item.substr(fs.realpathSync(this.directory).length + 1);
         });
     }
 

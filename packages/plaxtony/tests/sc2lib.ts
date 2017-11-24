@@ -11,15 +11,24 @@ const resourcesPath = path.join('tests', 'fixtures', 'sc2-data-trigger');
 describe('SC2Mod', () => {
     describe('General', () => {
         let archives: string[];
+        let archives2: string[];
 
         before(async () => {
             archives = await findSC2ArchiveDirectories(resourcesPath);
+            archives2 = await findSC2ArchiveDirectories(path.join(resourcesPath, 'mods'));
         });
 
         it('should find SC2 archives within directory', () => {
             assert.lengthOf(archives, 20);
+            assert.lengthOf(archives2, 13);
             assert.include(archives, path.resolve(path.join(resourcesPath, 'mods', 'core.sc2mod')));
         })
+
+        it('should find SC2 all galaxy files', async () => {
+            const core = new SC2Archive('core/sc2.mod', path.join(resourcesPath, 'mods', 'core.sc2mod'));
+            const gf = await core.findFiles('*.galaxy');
+            assert.lengthOf(gf, 121);
+        });
     });
 
     context('Archive', () => {
