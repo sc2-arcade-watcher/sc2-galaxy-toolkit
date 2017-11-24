@@ -162,7 +162,7 @@ export class TypeChecker {
 
     private getPropertyOfType(type: gt.Type, name: string): gt.Symbol | undefined {
         type = this.resolveMappedReference(type);
-        if (type.flags & gt.TypeFlags.Struct) {
+        if (type && type.flags & gt.TypeFlags.Struct) {
             if (type.symbol.members.has(name)) {
                 return type.symbol.members.get(name);
             }
