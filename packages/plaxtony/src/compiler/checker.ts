@@ -528,6 +528,9 @@ export class TypeChecker {
         if (objectType.flags & gt.TypeFlags.Array) {
             return (<gt.ArrayType>objectType).elementType;
         }
+        else {
+            this.report(node, 'trying to access element on non-array type');
+        }
 
         return unknownType;
     }

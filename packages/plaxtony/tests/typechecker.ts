@@ -71,6 +71,45 @@ describe('Typechecker', () => {
             });
         });
 
+        context('arrayref', () => {
+            let type: gt.Type;
+            let sourceFile: gt.SourceFile;
+
+            before(() => {
+                const document = mockupTextDocument('type_checker', 'arrayref.galaxy');
+                store.updateDocument(document);
+                sourceFile = store.documents.get(document.uri);
+            })
+
+            it('ref []' ,() => {
+                type = getNodeTypeAt(checker, sourceFile, 7, 5);
+                assert.isOk(type.flags & gt.TypeFlags.Mapped);
+                assert.isOk((<gt.MappedType>type).returnType.flags & gt.TypeFlags.Arrayref);
+                assert.isOk((<gt.MappedType>type).referencedType.flags & gt.TypeFlags.Array);
+                assert.isOk((<gt.ArrayType>(<gt.MappedType>type).referencedType).elementType.flags & gt.TypeFlags.String);
+            });
+
+            it('ref [][]' ,() => {
+                type = getNodeTypeAt(checker, sourceFile, 8, 5);
+                assert.isOk(type.flags & gt.TypeFlags.Mapped);
+                assert.isOk((<gt.MappedType>type).returnType.flags & gt.TypeFlags.Arrayref);
+                assert.isOk((<gt.MappedType>type).referencedType.flags & gt.TypeFlags.Array);
+                assert.isOk((<gt.ArrayType>(<gt.MappedType>type).referencedType).elementType.flags & gt.TypeFlags.Array);
+            });
+
+            it('typedef decl of [][]' ,() => {
+                type = getNodeTypeAt(checker, sourceFile, 13, 2);
+                assert.isOk(type.flags & gt.TypeFlags.Typedef);
+                assert.isOk((<gt.TypedefType>type).referencedType.flags & gt.TypeFlags.Array);
+                assert.isOk((<gt.ArrayType>(<gt.MappedType>type).referencedType).elementType.flags & gt.TypeFlags.Array);
+            });
+
+            it('typedef var of [][]' ,() => {
+                type = getNodeTypeAt(checker, sourceFile, 13, 11);
+                assert.isOk(type.flags & gt.TypeFlags.Array);
+            });
+        });
+
         it('struct property', () => {
             let type: gt.Type;
 
