@@ -208,7 +208,6 @@ class Server {
     onInitialize(params) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.reindex(params.rootPath, params.initializationOptions.sources);
-            this.log('ready');
             return {
                 capabilities: {
                     textDocumentSync: this.documents.syncKind,
@@ -288,6 +287,9 @@ class Server {
         return this.hoverProvider.getHoverAt(params);
     }
 }
+__decorate([
+    wrapRequest()
+], Server.prototype, "reindex", null);
 __decorate([
     wrapRequest()
 ], Server.prototype, "onInitialize", null);

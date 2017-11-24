@@ -19,6 +19,7 @@ function isSC2Archive(directory) {
 }
 exports.isSC2Archive = isSC2Archive;
 function findSC2ArchiveDirectories(directory) {
+    directory = path.relative(process.cwd(), path.resolve(directory));
     return new Promise((resolve, reject) => {
         if (isSC2Archive(directory)) {
             resolve([path.resolve(directory)]);
@@ -134,6 +135,9 @@ class LocalizationComponent extends Component {
 exports.LocalizationComponent = LocalizationComponent;
 function resolveArchiveDirectory(name, sources) {
     for (const src of sources) {
+        if (fs.existsSync(path.join(src, name).toLowerCase())) {
+            return path.join(src, name).toLowerCase();
+        }
         const results = glob.sync(path.join(src, name), { nocase: true, realpath: true });
         if (results.length) {
             return results[0];
@@ -183,7 +187,7 @@ class SC2Archive {
         return __awaiter(this, void 0, void 0, function* () {
             const dirs = yield findSC2File(this.directory, pattern);
             return dirs.map((item) => {
-                return item.substr(this.directory.length + 1);
+                return item.substr(fs.realpathSync(this.directory).length + 1);
             });
         });
     }
