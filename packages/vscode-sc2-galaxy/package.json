@@ -30,16 +30,24 @@
       "type": "object",
       "title": "sc2galaxy",
       "properties": {
-        "sc2galaxy.trace.server": {
+        "sc2galaxy.logLevel": {
           "scope": "window",
           "type": "string",
           "enum": [
-            "off",
-            "messages",
+            "info",
             "verbose"
           ],
-          "default": "verbose",
-          "description": "Traces the communication between VSCode and the Plaxtony language server."
+          "default": "info",
+          "description": "Logging verbosity of Plaxtony language server."
+        },
+        "sc2galaxy.localDependencies": {
+          "scope": "window",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "List of additional mod dependencies to be indexed."
         },
         "sc2galaxy.s2mod.sources": {
           "scope": "window",
@@ -47,7 +55,27 @@
           "items": {
             "type": "string"
           },
-          "description": "List of directories where to look for SC2Mod dependencies"
+          "default": [],
+          "description": "List of directories providing SC2Mod dependencies. List will be resolved in the given order."
+        },
+        "sc2galaxy.s2mod.overrides": {
+          "scope": "window",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "title": "Archives",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Mod name"
+              },
+              "src": {
+                "type": "string",
+                "description": "Directory"
+              }
+            }
+          },
+          "description": "Local overrides of SC2Mod archives"
         }
       }
     },

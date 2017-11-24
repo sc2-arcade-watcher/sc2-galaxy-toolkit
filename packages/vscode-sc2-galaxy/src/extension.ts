@@ -5,12 +5,15 @@ import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } f
 
 export function activate(context: ExtensionContext) {
     let serverModule = context.asAbsolutePath(path.join('out', 'src', 'server.js'));
-    let debugOptions = { execArgv: ['--nolazy', '--debug=6009'] };
+    let debugOptions = { execArgv: ['--nolazy', '--debug-brk=3456'] };
 
     let serverOptions: ServerOptions = {
         run : { module: serverModule, transport: TransportKind.ipc },
         debug: { module: serverModule, transport: TransportKind.ipc, options: debugOptions }
     };
+
+    let modSources = [context.asAbsolutePath(path.join('sc2-data-trigger'))];
+    modSources = modSources.concat(workspace.getConfiguration().get('sc2galaxy.s2mod.sources'));
 
     const clientOptions: LanguageClientOptions = {
         documentSelector: [{scheme: 'file', language: 'galaxy'}],
@@ -20,9 +23,7 @@ export function activate(context: ExtensionContext) {
             // fileEvents: workspace.createFileSystemWatcher('**/.galaxy')
         },
         initializationOptions: {
-            sources: [
-                context.asAbsolutePath(path.join('sc2-data-trigger', 'mods', 'core.sc2mod'))
-            ]
+            sources: modSources
         }
     };
 
