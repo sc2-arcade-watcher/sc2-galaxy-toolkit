@@ -225,7 +225,12 @@ export class TypeChecker {
             //     return getTypeFromIndexedAccessTypeNode(<IndexedAccessTypeNode>node);
             case gt.SyntaxKind.Identifier:
                 const symbol = this.getSymbolAtLocation(node);
-                return symbol && this.getDeclaredTypeOfSymbol(symbol);
+                if (symbol) {
+                    return this.getDeclaredTypeOfSymbol(symbol);
+                }
+                else {
+                    return unknownType;
+                }
             default:
                 return unknownType;
         }
