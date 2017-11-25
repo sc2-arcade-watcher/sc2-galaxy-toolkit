@@ -37,7 +37,7 @@ describe('SC2Metadata', function () {
 
     it('documentation', () => {
         assert.equal(s2meta.getSymbolDoc('c_unitCountAll'), '**Any** - Unit Count Type');
-        assert.equal(s2meta.getSymbolDoc('UnitCreate'), '**Create Units Facing Angle**\n\nCreates units facing a specified angle.  Use the *Last Created Unit* and *Last Created Units* functions to refer to the created units.');
+        assert.equal(s2meta.getSymbolDoc('UnitCreate'), '**Create Units Facing Angle** (Create `count|Number` `type|Unit` for player `player` at `pos` facing `angle` degrees (`flags`))\n\nCreates units facing a specified angle.  Use the *Last Created Unit* and *Last Created Units* functions to refer to the created units.');
     });
 
     it('documentation function args', () => {

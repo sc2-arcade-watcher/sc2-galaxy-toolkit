@@ -8,6 +8,7 @@ import * as lsp from 'vscode-languageserver';
 const elementNotValidCharsRE = /[^a-zA-Z0-9_]+/g;
 const elementValidCharsRE = /[a-zA-Z]+/g;
 const quationMarkRE = /"/g;
+const tildeRE = /~/g;
 
 export class S2WorkspaceMetadata {
     protected workspace: SC2Workspace;
@@ -106,11 +107,18 @@ export class S2WorkspaceMetadata {
     }
 
     public getElementDoc(el: trig.Element) {
-        const name = '**' + this.workspace.locComponent.triggers.text('Name', el) + '**';
+        let name = '**' + this.workspace.locComponent.triggers.text('Name', el) + '**';
 
         if (el instanceof trig.FunctionDef) {
+            const grammar = this.workspace.locComponent.triggers.text('Grammar', el);
+            if (grammar) {
+                name += ' (' + grammar.replace(tildeRE, '`') + ')';
+            }
             const hint = this.workspace.locComponent.triggers.text('Hint', el);
-            return name + (hint ? '\n\n' + hint.replace(quationMarkRE, '*') : '');
+            if (hint) {
+                name += '\n\n' + hint.replace(quationMarkRE, '*');
+            }
+            return name;
         }
         else if (el instanceof trig.PresetValue) {
             const presetName = this.workspace.locComponent.triggers.text('Name', this.findPresetDef(el));
