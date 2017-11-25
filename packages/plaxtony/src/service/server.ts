@@ -148,7 +148,7 @@ export class Server {
     }
 
     public createConnection(connection?: lsp.IConnection): lsp.IConnection {
-        this.connection = connection ? connection : lsp.createConnection(new lsp.IPCMessageReader(process), new lsp.IPCMessageWriter(process));
+        this.connection = connection ? connection : lsp.createConnection();
 
         this.diagnosticsProvider = this.createProvider(DiagnosticsProvider);
         this.navigationProvider = this.createProvider(NavigationProvider);

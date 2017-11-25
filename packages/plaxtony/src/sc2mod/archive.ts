@@ -156,7 +156,7 @@ export function resolveArchiveDirectory(name: string, sources: string[]) {
         if (fs.existsSync(path.join(src, name).toLowerCase())) {
             return path.join(src, name).toLowerCase();
         }
-        const results = glob.sync(path.join(src, name), {nocase: true, realpath: true});
+        const results = glob.sync(name, {nocase: true, realpath: true, cwd: src});
 
         if (results.length) {
             return results[0];
