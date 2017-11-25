@@ -545,8 +545,12 @@ export class Scanner {
                         this.pos += 2;
 
                         while (this.pos < this.end) {
-                            if (isLineBreak(this.text.charCodeAt(this.pos))) {
+                            const char = this.text.charCodeAt(this.pos);
+                            if (isLineBreak(char)) {
                                 break;
+                            }
+                            if (char >= CharacterCodes.maxAsciiCharacter) {
+                                this.error('multibyte characters not allowed');
                             }
                             this.pos++;
                         }
