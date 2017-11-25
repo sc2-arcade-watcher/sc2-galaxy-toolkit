@@ -6,50 +6,134 @@ import { tokenToString } from '../compiler/scanner';
 import { findAncestor, isToken, isPartOfExpression } from '../compiler/utils';
 import { getTokenAtPosition, findPrecedingToken, fuzzysearch } from './utils';
 import { Printer } from '../compiler/printer';
-import * as vs from 'vscode-languageserver';
+import * as lsp from 'vscode-languageserver';
 import { getDocumentationOfSymbol } from './s2meta';
+import * as trig from '../sc2mod/trigger';
+
+export const enum CompletionFunctionExpand {
+    None,
+    Parenthesis,
+    ArgumentsNull,
+    ArgumentsDefault,
+};
+
+export interface CompletionConfig {
+    functionExpand: CompletionFunctionExpand;
+};
 
 export class CompletionsProvider extends AbstractProvider {
     private printer: Printer = new Printer();
+    public config: CompletionConfig;
 
-    private buildFromSymbolDecl(symbol: Symbol): vs.CompletionItem {
+    constructor() {
+        super();
+        this.config = <CompletionConfig>{
+            functionExpand: CompletionFunctionExpand.None,
+        };
+    }
+
+    public expandFunctionArguments(decl: gt.FunctionDeclaration): string[] {
+        let args: string[] = [];
+        let funcElement: trig.FunctionDef;
+
+        if (this.store.s2metadata && this.config.functionExpand === CompletionFunctionExpand.ArgumentsDefault) {
+            funcElement = <trig.FunctionDef>this.store.s2metadata.findElementByName(decl.name.name)
+        }
+
+        for (const [key, param] of decl.parameters.entries()) {
+            let paramElement: trig.Param;
+            if (funcElement) {
+                const index = key - (funcElement.flags & trig.ElementFlag.Event ? 1 : 0);
+                if (index > 0) {
+                    const paramDef = funcElement.getParameters()[index];
+                    if (paramDef.default) {
+                        paramElement = paramDef.default.resolve();
+                    }
+                }
+            }
+
+            if (!paramElement) {
+                if (param.type.kind === gt.SyntaxKind.IntKeyword) {
+                    args.push('0');
+                }
+                else if (param.type.kind === gt.SyntaxKind.FixedKeyword) {
+                    args.push('0.0');
+                }
+                else {
+                    args.push('null');
+                }
+            }
+            else {
+                if (paramElement.value) {
+                    if (paramElement.valueType === "gamelink") {
+                        args.push(`"${paramElement.value}"`);
+                    }
+                    else {
+                        args.push(paramElement.value);
+                    }
+                }
+                else if (paramElement.preset) {
+                    args.push(this.store.s2metadata.getElementSymbolName(paramElement.preset.resolve()));
+                }
+                else if (paramElement.valueElement) {
+                    args.push(this.store.s2metadata.getElementSymbolName(paramElement.valueElement.resolve().values[0].resolve()));
+                }
+                else if (paramElement.functionCall) {
+                    const fcallDef = paramElement.functionCall.resolve().functionDef.resolve();
+                    const fcallSymbol = this.store.resolveGlobalSymbol(
+                        this.store.s2metadata.getElementSymbolName(fcallDef)
+                    );
+                    args.push(
+                        this.store.s2metadata.getElementSymbolName(fcallDef)
+                         + '(' + this.expandFunctionArguments(<gt.FunctionDeclaration>fcallSymbol.declarations[0]).join(', ') + ')'
+                    );
+                }
+                else {
+                    args.push('null');
+                }
+            }
+        }
+        return args;
+    }
+
+    private buildFromSymbolDecl(symbol: Symbol): lsp.CompletionItem {
         const node = <NamedDeclaration>(symbol.declarations[0]);
 
         if (node.name === undefined) {
             return null;
         }
 
-        const item = <vs.CompletionItem>{
+        const item = <lsp.CompletionItem>{
             label: node.name.name,
         };
 
         switch (node.kind) {
             case SyntaxKind.StructDeclaration:
-                item.kind = vs.CompletionItemKind.Class;
+                item.kind = lsp.CompletionItemKind.Class;
                 break;
             case SyntaxKind.FunctionDeclaration:
-                item.kind = vs.CompletionItemKind.Function;
+                item.kind = lsp.CompletionItemKind.Function;
                 break;
             case SyntaxKind.VariableDeclaration:
             case SyntaxKind.ParameterDeclaration:
-                item.kind = vs.CompletionItemKind.Variable;
+                item.kind = lsp.CompletionItemKind.Variable;
                 break;
             case SyntaxKind.PropertyDeclaration:
-                item.kind = vs.CompletionItemKind.Property;
+                item.kind = lsp.CompletionItemKind.Property;
                 break;
             case SyntaxKind.TypedefDeclaration:
-                item.kind = vs.CompletionItemKind.Interface;
+                item.kind = lsp.CompletionItemKind.Interface;
                 break;
             default:
-                item.kind = vs.CompletionItemKind.Text;
+                item.kind = lsp.CompletionItemKind.Text;
                 break;
         }
 
         return item;
     }
 
-    private buildFromSymbolMembers(parentSymbol: Symbol, query?: string): vs.CompletionItem[] {
-        const completions = <vs.CompletionItem[]> [];
+    private buildFromSymbolMembers(parentSymbol: Symbol, query?: string): lsp.CompletionItem[] {
+        const completions = <lsp.CompletionItem[]> [];
 
         for (const symbol of parentSymbol.members.values()) {
             if (!query || fuzzysearch(query, symbol.escapedName)) {
@@ -66,8 +150,8 @@ export class CompletionsProvider extends AbstractProvider {
         return completions;
     }
 
-    public getCompletionsAt(uri: string, position: number): vs.CompletionItem[] {
-        let completions = <vs.CompletionItem[]> [];
+    public getCompletionsAt(uri: string, position: number): lsp.CompletionItem[] {
+        let completions = <lsp.CompletionItem[]> [];
 
         const currentDocument = this.store.documents.get(uri);
         let currentToken = findPrecedingToken(position, currentDocument);
@@ -114,13 +198,13 @@ export class CompletionsProvider extends AbstractProvider {
             for (let i = gt.SyntaxKindMarker.FirstBasicType; i <= gt.SyntaxKindMarker.LastBasicType; i++) {
                 completions.push({
                     label: tokenToString(<any>i),
-                    kind: vs.CompletionItemKind.Keyword
+                    kind: lsp.CompletionItemKind.Keyword
                 });
             }
             for (let i = gt.SyntaxKindMarker.FirstComplexType; i <= gt.SyntaxKindMarker.LastComplexType; i++) {
                 completions.push({
                     label: tokenToString(<any>i),
-                    kind: vs.CompletionItemKind.Keyword
+                    kind: lsp.CompletionItemKind.Keyword
                 });
             }
         }
@@ -146,7 +230,7 @@ export class CompletionsProvider extends AbstractProvider {
         return completions;
     }
 
-    public resolveCompletion(completion: vs.CompletionItem): vs.CompletionItem {
+    public resolveCompletion(completion: lsp.CompletionItem): lsp.CompletionItem {
         let symbol: gt.Symbol;
         let parentSymbolName: string;
 
@@ -163,6 +247,28 @@ export class CompletionsProvider extends AbstractProvider {
             }
             symbol = symbol.members.get(completion.label);
             if (symbol) break;
+        }
+
+        if (this.config.functionExpand !== CompletionFunctionExpand.None && completion.kind === lsp.CompletionItemKind.Function) {
+            const decl = <gt.FunctionDeclaration>symbol.declarations[0];
+            let funcArgs: string[] = [];
+
+            // TODO: support funcrefs expansion
+            if (decl.kind === gt.SyntaxKind.FunctionDeclaration && this.config.functionExpand !== CompletionFunctionExpand.Parenthesis) {
+                funcArgs = this.expandFunctionArguments(decl);
+            }
+
+            if (funcArgs) {
+                completion.insertTextFormat = lsp.InsertTextFormat.Snippet;
+                funcArgs = funcArgs.map((item, index) => {
+                    return `\${${index+1}:${item}}`;
+                });
+                completion.insertText = completion.label + '(' + funcArgs.join(', ') + ')$0';
+            }
+            else {
+                completion.insertTextFormat = lsp.InsertTextFormat.PlainText;
+                completion.insertText = completion.label + '($1)$0';
+            }
         }
 
         if (symbol) {

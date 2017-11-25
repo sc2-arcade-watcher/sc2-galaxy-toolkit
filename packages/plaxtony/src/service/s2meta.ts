@@ -15,7 +15,7 @@ export class S2WorkspaceMetadata {
     protected symbolMap: Map<string, trig.Element> = new Map();
     protected presetValueParentMap: Map<string, trig.Preset> = new Map();
 
-    private getElementSymbolName(el: trig.Element) {
+    public getElementSymbolName(el: trig.Element) {
         let parts: string[] = [];
         let elemName: string;
 
@@ -26,11 +26,18 @@ export class S2WorkspaceMetadata {
             elemName = this.workspace.locComponent.triggers.text('Name', el).replace(elementNotValidCharsRE, '');
         }
 
-        if (
-            (el instanceof trig.FunctionDef && el.flags & trig.ElementFlag.Native) ||
-            (<trig.PresetValue>el).value
-        ) {
+        if (el instanceof trig.FunctionDef && el.flags & trig.ElementFlag.Native) {
             parts.push(elemName);
+        }
+        else if (
+            (<trig.PresetValue>el).value && (
+                (<trig.PresetValue>el).value.startsWith('c_') ||
+                (<trig.PresetValue>el).value === 'null' ||
+                (<trig.PresetValue>el).value === 'true' ||
+                (<trig.PresetValue>el).value === 'false'
+            )
+        ) {
+            parts.push((<trig.PresetValue>el).value);
         }
         else {
             if (el.libId) {

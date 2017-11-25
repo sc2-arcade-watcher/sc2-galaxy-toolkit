@@ -2,7 +2,7 @@ import { Store } from '../src/service/store';
 import { createProvider } from '../src/service/provider';
 import { DiagnosticsProvider } from '../src/service/diagnostics';
 import { NavigationProvider } from '../src/service/navigation';
-import { CompletionsProvider } from '../src/service/completions';
+import { CompletionsProvider, CompletionFunctionExpand } from '../src/service/completions';
 import { SignaturesProvider } from '../src/service/signatures';
 import { DefinitionProvider } from '../src/service/definitions';
 import { HoverProvider } from '../src/service/hover';
@@ -83,6 +83,7 @@ describe('Service', () => {
             documentCompletions,
         );
         const completionsProvider = createProvider(CompletionsProvider, store);
+        completionsProvider.config.functionExpand = CompletionFunctionExpand.ArgumentsNull;
 
         function getCompletionsAt(doc: lsp.TextDocument, line: number, char: number) {
             return completionsProvider.getCompletionsAt(
@@ -140,6 +141,11 @@ describe('Service', () => {
         it('filter suggestions basing on preceding indentifier', () => {
             const completions = getCompletionsAt(documentCompletions, 3, 9);
             assert.equal(completions.length, 1);
+        });
+
+        it('expand functions', () => {
+            const completions = getCompletionsAt(documentCompletions, 3, 9);
+            assert.equal(completionsProvider.resolveCompletion(completions[0]).insertText, 'completion_test(${1:0})$0');
         });
     });
 

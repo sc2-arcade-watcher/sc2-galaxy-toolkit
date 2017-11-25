@@ -97,6 +97,7 @@ export abstract class Element {
 
 export class ParamDef extends Element {
     type: ParameterType;
+    default?: ElementReference<Param>;
 }
 
 export class FunctionDef extends Element {
@@ -121,11 +122,15 @@ export class PresetValue extends Element {
 }
 
 export class Param extends Element {
-    valueType: string;
-    parameterDef?: ElementReference<ParamDef>
+    functionCall?: ElementReference<FunctionCall>;
+    preset?: ElementReference<PresetValue>;
     value?: string;
-    valueId?: number;
-    scriptCode?: string;
+    valueType?: string;
+    valueElement?: ElementReference<Preset>;
+}
+
+export class FunctionCall extends Element {
+    functionDef: ElementReference<FunctionDef>;
 }
 
 const ElementClasses = {
@@ -134,6 +139,7 @@ const ElementClasses = {
     Preset,
     PresetValue,
     Param,
+    FunctionCall,
 };
 
 // export class TriggerExplorer {
@@ -259,6 +265,35 @@ export class XMLReader {
         return ref;
     }
 
+    private parseParam(item: any): Param {
+        const element = new Param();
+        if (item.FunctionCall) {
+            element.functionCall = this.parseReference(item.FunctionCall[0], FunctionCall);
+        }
+        if (item.Preset) {
+            element.preset = this.parseReference(item.Preset[0], PresetValue);
+        }
+        if (item.Value) {
+            element.value = item.Value[0];
+        }
+        if (item.ValueType) {
+            element.valueType = item.ValueType[0].$.Type;
+            if (item.ValueGameType) {
+                // item.ValueGameType[0].$.Type;
+            }
+        }
+        if (item.ValueElement) {
+            element.valueElement = this.parseReference(item.ValueElement[0], Preset);
+        }
+        return element;
+    }
+
+    private parseFunctionCall(item: any): FunctionCall {
+        const element = new FunctionCall();
+        element.functionDef = this.parseReference(item.FunctionDef[0], FunctionDef);
+        return element;
+    }
+
     private parseElement(item: any): Element {
         let el: Element;
 
@@ -286,17 +321,26 @@ export class XMLReader {
             }
             case 'ParamDef':
             {
-                const param = el = new ParamDef();
-                param.type = new ParameterType();
-                param.type.type = item.ParameterType[0].Type[0].$.Value;
-                if (param.type.type === 'gamelink') {
-                    param.type.gameType = item.ParameterType[0].GameType[0].$.Value;
+                const paramDef = el = new ParamDef();
+                paramDef.type = new ParameterType();
+                paramDef.type.type = item.ParameterType[0].Type[0].$.Value;
+                if (paramDef.type.type === 'gamelink') {
+                    paramDef.type.gameType = item.ParameterType[0].GameType[0].$.Value;
                 }
-                if (param.type.type === 'preset') {
-                    param.type.typeElement = this.parseReference(item.ParameterType[0].TypeElement[0], Preset);
+                if (paramDef.type.type === 'preset') {
+                    paramDef.type.typeElement = this.parseReference(item.ParameterType[0].TypeElement[0], Preset);
+                }
+                if (item.Default) {
+                    paramDef.default = this.parseReference(item.Default[0], Param);
                 }
                 break;
             }
+            case 'Param':
+                el = this.parseParam(item);
+                break;
+            case 'FunctionCall':
+                el = this.parseFunctionCall(item);
+                break;
             case 'Preset':
             {
                 const preset = el = new Preset();
