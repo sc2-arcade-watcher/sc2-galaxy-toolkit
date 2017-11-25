@@ -142,7 +142,12 @@ export class Store {
 
     public updateDocument(document: lsp.TextDocument) {
         if (this.documents.has(document.uri)) {
-            unbindSourceFile(this.documents.get(document.uri), this);
+            const currSorceFile = this.documents.get(document.uri);
+            if (document.getText().length === currSorceFile.text.length && document.getText().valueOf() === currSorceFile.text.valueOf()) {
+                return;
+            }
+
+            unbindSourceFile(currSorceFile, this);
             this.documents.delete(document.uri);
         }
         let sourceFile = this.parser.parseFile(document.uri, document.getText());

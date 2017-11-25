@@ -614,6 +614,7 @@ export interface SourceFile extends Declaration {
     fileName: string;
     statements: NodeArray<Statement>;
     lineMap: number[];
+    /* @internal */ text: string;
     /* @internal */ parseDiagnostics: Diagnostic[]; // File-level diagnostics reported by the parser
     /* @internal */ bindDiagnostics: Diagnostic[]; // File-level diagnostics reported by the binder.
     /* @internal */ additionalSyntacticDiagnostics: Diagnostic[]; // Stores additional file-level diagnostics reported by the program

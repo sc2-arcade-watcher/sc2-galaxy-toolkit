@@ -1070,6 +1070,7 @@ export class Parser {
 
         this.finishNode(this.sourceFile);
         this.sourceFile.lineMap = this.scanner.getLineMap();
+        this.sourceFile.text = text;
 
         fixupParentReferences(this.sourceFile);
 
