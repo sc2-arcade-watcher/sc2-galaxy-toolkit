@@ -76,11 +76,13 @@ describe('Service', () => {
         const document = mockupTextDocument('service', 'navigation', 'funcs.galaxy');
         const documentStruct = mockupTextDocument('service', 'completion', 'struct.galaxy');
         const documentCompletions = mockupTextDocument('service', 'completion', 'completion.galaxy');
+        const documentTrigger = mockupTextDocument('service', 'completion', 'trigger.galaxy');
         const store = mockupStore(
             document,
             mockupTextDocument('service', 'navigation', 'declarations.galaxy'),
             documentStruct,
             documentCompletions,
+            documentTrigger,
         );
         const completionsProvider = createProvider(CompletionsProvider, store);
         completionsProvider.config.functionExpand = CompletionFunctionExpand.ArgumentsNull;
@@ -146,6 +148,19 @@ describe('Service', () => {
         it('expand functions', () => {
             const completions = getCompletionsAt(documentCompletions, 3, 9);
             assert.equal(completionsProvider.resolveCompletion(completions[0]).insertText, 'completion_test(${1:0})$0');
+        });
+
+        it('trigger handle function definitions', () => {
+            let completions = getCompletionsAt(documentTrigger, 24, 19);
+            assert.equal(completions.length, 2);
+            assert.equal(completions[0].label, 'on_t1');
+            assert.isTrue(completionsProvider.resolveCompletion(completions[0]).insertText === undefined);
+
+            completions = getCompletionsAt(documentTrigger, 25, 22);
+            assert.equal(completions.length, 0);
+
+            completions = getCompletionsAt(documentTrigger, 26, 19);
+            assert.equal(completions.length, 2);
         });
     });
 

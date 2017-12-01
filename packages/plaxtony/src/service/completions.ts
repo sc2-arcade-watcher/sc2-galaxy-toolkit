@@ -105,6 +105,7 @@ export class CompletionsProvider extends AbstractProvider {
 
         const item = <lsp.CompletionItem>{
             label: node.name.name,
+            data: {},
         };
 
         switch (node.kind) {
@@ -150,11 +151,44 @@ export class CompletionsProvider extends AbstractProvider {
         return completions;
     }
 
+    private provideTriggerHandlers(): lsp.CompletionItem[] {
+        let completions = <lsp.CompletionItem[]> [];
+
+        for (const document of this.store.documents.values()) {
+            for (const [name, symbol] of document.symbol.members) {
+                if (symbol.declarations[0].kind !== gt.SyntaxKind.FunctionDeclaration) continue;
+                const funcDecl = <gt.FunctionDeclaration>symbol.declarations[0];
+                if (funcDecl.type.kind !== gt.SyntaxKind.BoolKeyword) continue;
+                if (funcDecl.parameters.length !== 2) continue;
+                if (funcDecl.parameters[0].type.kind !== gt.SyntaxKind.BoolKeyword) continue;
+                if (funcDecl.parameters[1].type.kind !== gt.SyntaxKind.BoolKeyword) continue;
+
+                const item = this.buildFromSymbolDecl(symbol);
+                item.data.dontExpand = true;
+                completions.push(item);
+            }
+        }
+
+        return completions;
+    }
+
     public getCompletionsAt(uri: string, position: number): lsp.CompletionItem[] {
         let completions = <lsp.CompletionItem[]> [];
 
         const currentDocument = this.store.documents.get(uri);
         let currentToken = findPrecedingToken(position, currentDocument);
+
+        if (currentToken && currentToken.kind === gt.SyntaxKind.StringLiteral) {
+            const callExpr = <gt.CallExpression>currentToken.parent;
+            // trigger handlers
+            if (
+                callExpr.kind === gt.SyntaxKind.CallExpression &&
+                callExpr.expression.kind === gt.SyntaxKind.Identifier &&
+                (<gt.Identifier>(callExpr.expression)).name === "TriggerCreate"
+            ) {
+                return this.provideTriggerHandlers();
+            }
+        }
 
         if (currentToken && (
             currentToken.kind === gt.SyntaxKind.StringLiteral ||
@@ -249,7 +283,11 @@ export class CompletionsProvider extends AbstractProvider {
             if (symbol) break;
         }
 
-        if (this.config.functionExpand !== CompletionFunctionExpand.None && completion.kind === lsp.CompletionItemKind.Function) {
+        if (
+            this.config.functionExpand !== CompletionFunctionExpand.None &&
+            completion.kind === lsp.CompletionItemKind.Function &&
+            !(completion.data && completion.data.dontExpand)
+        ) {
             const decl = <gt.FunctionDeclaration>symbol.declarations[0];
             let funcArgs: string[] = [];
 
