@@ -142,7 +142,7 @@ describe('Service', () => {
 
         it('filter suggestions basing on preceding indentifier', () => {
             const completions = getCompletionsAt(documentCompletions, 3, 9);
-            assert.equal(completions.length, 1);
+            assert.equal(completions.length, 2);
         });
 
         it('expand functions', () => {
