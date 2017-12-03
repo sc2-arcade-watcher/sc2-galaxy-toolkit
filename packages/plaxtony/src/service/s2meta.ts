@@ -18,13 +18,16 @@ export class S2WorkspaceMetadata {
 
     public getElementSymbolName(el: trig.Element) {
         let parts: string[] = [];
-        let elemName: string;
+        let elemName: string = '';
 
         if (el.name) {
             elemName = el.name;
         }
         else {
-            elemName = this.workspace.locComponent.triggers.elementName('Name', el).replace(elementNotValidCharsRE, '');
+            const localizedName = this.workspace.locComponent.triggers.elementName('Name', el);
+            if (localizedName) {
+                elemName = localizedName.replace(elementNotValidCharsRE, '');
+            }
         }
 
         if (el instanceof trig.FunctionDef && el.flags & trig.ElementFlag.Native) {
@@ -92,7 +95,8 @@ export class S2WorkspaceMetadata {
         }
     }
 
-    public async build() {
+    public async build(lang: string) {
+        this.workspace.locComponent.lang = lang;
         await this.workspace.trigComponent.sync();
         await this.workspace.locComponent.sync();
         await this.workspace.catalogComponent.sync();

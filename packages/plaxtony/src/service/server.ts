@@ -8,7 +8,7 @@ import { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition } from './
 import { AbstractProvider, LoggerConsole, createProvider } from './provider';
 import { DiagnosticsProvider } from './diagnostics';
 import { NavigationProvider } from './navigation';
-import { CompletionsProvider } from './completions';
+import { CompletionsProvider, CompletionConfig, CompletionFunctionExpand } from './completions';
 import { SignaturesProvider } from './signatures';
 import { DefinitionProvider } from './definitions';
 import { HoverProvider } from './hover';
@@ -87,49 +87,61 @@ var formatElapsed = function(start: [number, number], end: [number, number]): st
     return out;
 }
 
-function wrapRequest(msg?: string, showArg?: boolean, singleLine?: boolean) {
+function wrapRequest(msg?: string, showArg?: boolean, argFormatter?: (payload: any) => any) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         const method = (<Function>descriptor.value);
-        descriptor.value = function(...args: any[]) {
+        descriptor.value = async function(...args: any[]) {
             const server = <Server>this;
             let log = [];
-            // args = args.map((value) => {
-            //     if (!value) { return; }
-            //     if (value['document']) {
-            //         return value.document.uri;
-            //     }
-            //     else if (value['name']) {
-            //         return value.name;
-            //     }
-            //     else {
-            //         return value.toString();
-            //     }
-            // });
-            if (msg) {
-                log.push(`${msg}: ${util.inspect(args, true, 2)}`);
-            }
-            else {
-                log.push(`### Processing '${propertyKey}'`);
-            }
+            log.push('### ' + (msg ? msg : propertyKey));
 
             var start = process.hrtime();
             let ret;
             try {
                 ret = method.bind(this)(...arguments);
+                if (ret instanceof Promise) {
+                    ret = await ret;
+                }
             }
             catch (e) {
                 server.connection.console.error('[' + (<Error>e).name + '] ' + (<Error>e).message + '\n' + (<Error>e).stack);
             }
-            log.push(formatElapsed(start, process.hrtime()));
 
+            log.push(formatElapsed(start, process.hrtime()));
             if (ret && ret[Symbol.iterator]) {
                 log.push(`results: ${ret.length}`)
             }
-            server.log(log.join(' | '))
+            server.log(log.join(' | '));
+
+            if (argFormatter) {
+                server.log(util.inspect(argFormatter(arguments[0])));
+            }
+
             return ret;
         }
     }
 }
+
+function mapFromObject(stuff: any) {
+    const m = new Map<string,string>();
+    Object.keys(stuff).forEach((key) => {
+        m.set(key, stuff[key]);
+    });
+    return m;
+}
+
+interface PlaxtonyConfig {
+    logLevel: string;
+    localization: string;
+    s2mod: {
+        sources: string[],
+        overrides: {},
+        extra: {},
+    },
+    completion: {
+        functionExpand: string
+    };
+};
 
 export class Server {
     public connection: lsp.IConnection;
@@ -142,6 +154,9 @@ export class Server {
     private hoverProvider: HoverProvider;
     private documents = new lsp.TextDocuments();
     private workspaceWatcher: WorkspaceWatcher;
+    private initParams: lsp.InitializeParams;
+    private indexing = false;
+    private config: PlaxtonyConfig;
 
     private createProvider<T extends AbstractProvider>(cls: new () => T): T {
         return createProvider(cls, this.store, this.connection.console);
@@ -163,6 +178,7 @@ export class Server {
         this.documents.onDidClose(this.onDidClose.bind(this));
 
         this.connection.onInitialize(this.onInitialize.bind(this));
+        this.connection.onInitialized(this.onInitialized.bind(this));
         this.connection.onDidChangeConfiguration(this.onDidChangeConfiguration.bind(this));
         this.connection.onCompletion(this.onCompletion.bind(this));
         this.connection.onCompletionResolve(this.onCompletionResolve.bind(this));
@@ -183,6 +199,10 @@ export class Server {
     private async reindex(rootPath: string, modSources: string[]) {
         let archivePath: string;
         let workspace: SC2Workspace;
+
+        this.indexing = true;
+        this.connection.sendNotification("indexStart");
+
         if (rootPath) {
             archivePath = await findWorkspaceArchive(rootPath);
         }
@@ -190,10 +210,18 @@ export class Server {
         if (archivePath) {
             this.workspaceWatcher = new WorkspaceWatcher(archivePath);
             try {
-                workspace = await openArchiveWorkspace(new SC2Archive(path.basename(archivePath), archivePath), modSources);
+                workspace = await openArchiveWorkspace(
+                    new SC2Archive(path.basename(archivePath), archivePath),
+                    modSources,
+                    mapFromObject(this.config.s2mod.overrides),
+                    mapFromObject(this.config.s2mod.extra)
+                );
+                this.log('Resolved archives:\n' + workspace.allArchives.map(item => {
+                    return `${item.name}: ${item.directory}`;
+                }).join('\n'));
             }
             catch (e) {
-                this.connection.console.error('Trigger data couldn\'t be loaded: ' + e.message);
+                this.connection.console.error('SC2 data couldn\'t be loaded: ' + e.message);
                 workspace = null;
             }
         }
@@ -206,7 +234,7 @@ export class Server {
         }
 
         this.log('Indexing s2workspace: ' + archivePath);
-        await this.store.updateS2Workspace(workspace);
+        await this.store.updateS2Workspace(workspace, this.config.localization);
         for (const modArchive of workspace.dependencies) {
             for (const extSrc of await modArchive.findFiles('**/*.galaxy')) {
                 this.onDidFindInWorkspace({document: createTextDocumentFromFs(path.join(modArchive.directory, extSrc))});
@@ -218,11 +246,14 @@ export class Server {
             // workspace.onDidOpenS2Archive(this.onDidFindS2Workspace.bind(this));
             await this.workspaceWatcher.watch();
         }
+
+        this.indexing = false;
+        this.connection.sendNotification("indexEnd");
     }
 
     @wrapRequest()
     private async onInitialize(params: lsp.InitializeParams): Promise<lsp.InitializeResult> {
-        await this.reindex(params.rootPath, params.initializationOptions.sources)
+        this.initParams = params;
         return {
             capabilities: {
                 textDocumentSync: this.documents.syncKind,
@@ -242,25 +273,33 @@ export class Server {
     }
 
     @wrapRequest()
+    private async onInitialized(params: lsp.InitializeParams) {
+        await this.reindex(this.initParams.rootPath, this.initParams.initializationOptions.sources);
+    }
+
+    @wrapRequest()
     private onDidChangeConfiguration(ev: lsp.DidChangeConfigurationParams) {
-        // interface Settings {
-        //     plaxtony: ExampleSettings;
-        // }
-
-        // interface ExampleSettings {
-        //     // maxNumberOfProblems: number;
-        // }
-
-        // let maxNumberOfProblems: number;
-
-        // let settings = <Settings>change.settings;
-        // maxNumberOfProblems = settings.plaxtony.maxNumberOfProblems || 100;
-        // Revalidate any open text documents
-        // documents.all().forEach(validateTextDocument);
+        this.log(util.inspect(ev.settings.sc2galaxy));
+        this.config = <PlaxtonyConfig>ev.settings.sc2galaxy;
+        switch (this.config.completion.functionExpand) {
+            case "None":
+                this.completionsProvider.config.functionExpand = CompletionFunctionExpand.None;
+                break;
+            case "Parenthesis":
+                this.completionsProvider.config.functionExpand = CompletionFunctionExpand.Parenthesis;
+                break;
+            case "ArgumentsNull":
+                this.completionsProvider.config.functionExpand = CompletionFunctionExpand.ArgumentsNull;
+                break;
+            case "ArgumentsDefault":
+                this.completionsProvider.config.functionExpand = CompletionFunctionExpand.ArgumentsDefault;
+                break;
+        }
     }
 
     @wrapRequest()
     private onDidChangeContent(ev: lsp.TextDocumentChangeEvent) {
+        if (this.indexing) return;
         this.store.updateDocument(ev.document);
         if (this.documents.keys().indexOf(ev.document.uri) !== undefined) {
             this.connection.sendDiagnostics({
@@ -282,7 +321,9 @@ export class Server {
         })
     }
 
-    @wrapRequest('Indexing: ', true, true)
+    @wrapRequest('Indexing', true, (payload: lsp.TextDocumentChangeEvent) => {
+        return payload.document.uri;
+    })
     private onDidFindInWorkspace(ev: lsp.TextDocumentChangeEvent) {
         this.store.updateDocument(ev.document);
     }
@@ -296,6 +337,7 @@ export class Server {
 
     @wrapRequest()
     private onCompletion(params: lsp.TextDocumentPositionParams): lsp.CompletionItem[] {
+        if (!this.store.documents.has(params.textDocument.uri)) return null;
         return this.completionsProvider.getCompletionsAt(
             params.textDocument.uri,
             getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character)
@@ -319,6 +361,7 @@ export class Server {
 
     @wrapRequest()
     private onSignatureHelp(params: lsp.TextDocumentPositionParams): lsp.SignatureHelp {
+        if (!this.store.documents.has(params.textDocument.uri)) return null;
         return this.signaturesProvider.getSignatureAt(
             params.textDocument.uri,
             getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character)
@@ -327,6 +370,7 @@ export class Server {
 
     @wrapRequest()
     private onDefinition(params: lsp.TextDocumentPositionParams): lsp.Definition {
+        if (!this.store.documents.has(params.textDocument.uri)) return null;
         return this.definitionsProvider.getDefinitionAt(
             params.textDocument.uri,
             getPositionOfLineAndCharacter(

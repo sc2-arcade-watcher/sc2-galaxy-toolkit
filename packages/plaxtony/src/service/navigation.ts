@@ -31,7 +31,9 @@ function collectDeclarations(sourceFile: SourceFile): NamedDeclaration[] {
 
 export class NavigationProvider extends AbstractProvider {
     public getDocumentSymbols(uri: string): NamedDeclaration[] {
-        return collectDeclarations(this.store.documents.get(uri));
+        const sourceFile = this.store.documents.get(uri);
+        if (!sourceFile) return;
+        return collectDeclarations(sourceFile);
     }
 
     public getWorkspaceSymbols(query?: string): NamedDeclaration[] {

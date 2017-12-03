@@ -155,10 +155,10 @@ export class Store {
         this.documents.set(document.uri, sourceFile);
     }
 
-    public async updateS2Workspace(workspace: SC2Workspace) {
+    public async updateS2Workspace(workspace: SC2Workspace, lang: string) {
         this.s2workspace = workspace;
         this.s2metadata = new S2WorkspaceMetadata(this.s2workspace);
-        await this.s2metadata.build();
+        await this.s2metadata.build(lang);
     }
 
     public resolveGlobalSymbol(name: string): gt.Symbol | undefined {

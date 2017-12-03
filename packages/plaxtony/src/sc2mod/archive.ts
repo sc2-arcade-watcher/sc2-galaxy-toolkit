@@ -1,4 +1,5 @@
 import * as fs from 'fs'
+import * as util from 'util'
 import * as glob from 'glob'
 import * as path from 'path'
 import * as xml from 'xml2js';
@@ -127,13 +128,14 @@ export class CatalogComponent extends Component {
 }
 
 export class LocalizationComponent extends Component {
+    lang = 'enUS';
     triggers = new loc.LocalizationTriggers();
     strings = new Map<string,loc.LocalizationTextStore>();
 
-    private async loadStrings(name: string, lang: string) {
+    private async loadStrings(name: string) {
         const textStore = new loc.LocalizationTextStore();
         for (const archive of this.workspace.allArchives) {
-            const filenames = await archive.findFiles(lang + '.SC2Data/LocalizedData/' + name + 'Strings.txt');
+            const filenames = await archive.findFiles(this.lang + '.SC2Data/LocalizedData/' + name + 'Strings.txt');
             if (filenames.length) {
                 const locFile = new loc.LocalizationFile();
                 locFile.read(await archive.readFile(filenames[0]));
@@ -145,7 +147,7 @@ export class LocalizationComponent extends Component {
 
     public async loadData() {
         for (const archive of this.workspace.allArchives) {
-            const filenames = await archive.findFiles('**/TriggerStrings.txt');
+            const filenames = await archive.findFiles('enUS.SC2Data/LocalizedData/TriggerStrings.txt');
             if (filenames.length) {
                 const locFile = new loc.LocalizationFile();
                 locFile.read(await archive.readFile(filenames[0]));
@@ -153,9 +155,9 @@ export class LocalizationComponent extends Component {
             }
         }
 
-        // await this.loadStrings('Trigger', 'enUS');
-        await this.loadStrings('Game', 'enUS');
-        await this.loadStrings('Object', 'enUS');
+        // await this.loadStrings('Trigger');
+        await this.loadStrings('Game');
+        await this.loadStrings('Object');
 
         return true;
     }
@@ -179,7 +181,7 @@ export function resolveArchiveDirectory(name: string, sources: string[]) {
     }
 }
 
-export async function resolveArchiveDependencyList(archive: SC2Archive, sources: string[], list: ArchiveLink[] = []) {
+export async function resolveArchiveDependencyList(archive: SC2Archive, sources: string[], overrides: Map<string,string> = null, list: ArchiveLink[] = []) {
     for (const entry of await archive.getDependencyList()) {
         if (list.findIndex((item) => item.name === entry) !== -1) {
             continue;
@@ -188,23 +190,35 @@ export async function resolveArchiveDependencyList(archive: SC2Archive, sources:
             name: entry,
         };
 
-        const dir = resolveArchiveDirectory(entry, sources);
+        let dir: string;
+        if (overrides && overrides.has(entry)) {
+            dir = overrides.get(entry);
+        }
+        else {
+            dir = resolveArchiveDirectory(entry, sources);
+        }
         if (!dir) {
-            throw new Error('coldn\'t resolve "' + entry + '"');
+            throw new Error('couldn\'t resolve "' + entry + '".\n Sources: ' + util.inspect(sources) + '\nOverrides: ' + util.inspect(overrides));
         }
         link.src = dir;
         list.push(link);
-        await resolveArchiveDependencyList(new SC2Archive(entry, dir), sources, list);
+        await resolveArchiveDependencyList(new SC2Archive(entry, dir), sources, overrides, list);
     }
     return list;
 }
 
-export async function openArchiveWorkspace(archive: SC2Archive, sources: string[]) {
+export async function openArchiveWorkspace(archive: SC2Archive, sources: string[], overrides: Map<string,string> = null, extra: Map<string,string> = null) {
     const dependencyArchives: SC2Archive[] = [];
-    const list = await resolveArchiveDependencyList(archive, sources);
+    const list = await resolveArchiveDependencyList(archive, sources, overrides);
 
     for (const link of list) {
         dependencyArchives.push(new SC2Archive(link.name, link.src));
+    }
+
+    if (extra) {
+        for (const [name, src] of extra) {
+            dependencyArchives.push(new SC2Archive(name, src));
+        }
     }
 
     return new SC2Workspace(archive, dependencyArchives);
@@ -278,7 +292,7 @@ export class SC2Archive {
 
             let depValue: string;
             for (depValue of data.DocInfo.Dependencies[0].Value) {
-                list.push(depValue.substr(depValue.indexOf('file:') + 5).replace('\\', '/'));
+                list.push(depValue.substr(depValue.indexOf('file:') + 5).replace('\\', '/').toLowerCase());
             }
         }
         return list;

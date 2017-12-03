@@ -198,8 +198,9 @@ export class CompletionsProvider extends AbstractProvider {
     public getCompletionsAt(uri: string, position: number): lsp.CompletionItem[] {
         let completions = <lsp.CompletionItem[]> [];
 
-        const currentDocument = this.store.documents.get(uri);
-        let currentToken = findPrecedingToken(position, currentDocument);
+        const sourceFile = this.store.documents.get(uri);
+        if (!sourceFile) return;
+        let currentToken = findPrecedingToken(position, sourceFile);
 
         if (currentToken && currentToken.kind === gt.SyntaxKind.StringLiteral) {
             const callExpr = <gt.CallExpression>currentToken.parent;

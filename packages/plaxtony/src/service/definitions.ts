@@ -7,10 +7,9 @@ import * as lsp from 'vscode-languageserver';
 
 export class DefinitionProvider extends AbstractProvider {
     public getDefinitionAt(uri: string, position: number): lsp.Definition {
-        // let completions = <lsp.CompletionItem[]> [];
-
-        const currentDocument = this.store.documents.get(uri);
-        const currentToken = getTokenAtPosition(position, currentDocument);
+        const sourceFile = this.store.documents.get(uri);
+        if (!sourceFile) return;
+        const currentToken = getTokenAtPosition(position, sourceFile);
 
         if (!currentToken || (<gt.Node>currentToken).kind !== gt.SyntaxKind.Identifier) {
             return [];

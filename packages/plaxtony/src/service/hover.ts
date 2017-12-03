@@ -12,6 +12,7 @@ export class HoverProvider extends AbstractProvider {
 
     public getHoverAt(params: lsp.TextDocumentPositionParams): lsp.Hover {
         const sourceFile = this.store.documents.get(params.textDocument.uri);
+        if (!sourceFile) return;
         const position = getPositionOfLineAndCharacter(sourceFile, params.position.line, params.position.character);
         const currentToken = getTokenAtPosition(position, sourceFile);
 

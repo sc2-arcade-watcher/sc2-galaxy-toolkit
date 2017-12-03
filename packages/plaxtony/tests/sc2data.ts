@@ -19,7 +19,7 @@ describe('SC2Metadata', function () {
         const rootArchive = new SC2Archive(path.basename(dir), dir);
         s2work = await openArchiveWorkspace(rootArchive, sources);
         s2meta = new S2WorkspaceMetadata(s2work);
-        await s2meta.build();
+        await s2meta.build('enUS');
     });
 
     it('find elements by name', () => {
