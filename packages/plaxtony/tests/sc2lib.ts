@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import { assert } from 'chai';
 import { findSC2ArchiveDirectories, SC2Archive, SC2Workspace, openArchiveWorkspace } from '../src/sc2mod/archive';
 import * as trig from '../src/sc2mod/trigger';
+import * as cat from '../src/sc2mod/datacatalog';
 import * as loc from '../src/sc2mod/localization';
 
 const resourcesPath = path.join('tests', 'fixtures', 'sc2-data-trigger');
@@ -11,23 +12,23 @@ const resourcesPath = path.join('tests', 'fixtures', 'sc2-data-trigger');
 describe('SC2Mod', () => {
     describe('General', () => {
         let archives: string[];
-        let archives2: string[];
+        let modArchives: string[];
 
         before(async () => {
             archives = await findSC2ArchiveDirectories(resourcesPath);
-            archives2 = await findSC2ArchiveDirectories(path.join(resourcesPath, 'mods'));
+            modArchives = await findSC2ArchiveDirectories(path.join(resourcesPath, 'mods'));
         });
 
         it('should find SC2 archives within directory', () => {
-            assert.lengthOf(archives, 20);
-            assert.lengthOf(archives2, 13);
+            assert.lengthOf(archives, 22);
+            assert.lengthOf(modArchives, 15);
             assert.include(archives, path.resolve(path.join(resourcesPath, 'mods', 'core.sc2mod')));
         })
 
         it('should find SC2 all galaxy files', async () => {
             const core = new SC2Archive('core/sc2.mod', path.join(resourcesPath, 'mods', 'core.sc2mod'));
-            const gf = await core.findFiles('*.galaxy');
-            assert.lengthOf(gf, 121);
+            const gf = await core.findFiles('**/*.galaxy');
+            assert.lengthOf(gf, 124);
         });
     });
 
@@ -66,14 +67,14 @@ describe('SC2Mod', () => {
 
         it('load localization', async () => {
             await s2work.locComponent.load();
-            assert.equal(s2work.locComponent.triggers.text('Library/Name/Ntve'), 'Built-In');
+            assert.equal(s2work.locComponent.triggers.elementName('Library/Name/Ntve'), 'Built-In');
         });
 
         it('localization text for trigger elements', async () => {
             await s2work.trigComponent.load();
             await s2work.locComponent.load();
             const el = <trig.FunctionDef>s2work.trigComponent.getStore().findElementById('BF1FA304', trig.FunctionDef)
-            assert.equal(s2work.locComponent.triggers.text('Name', el), 'Action1');
+            assert.equal(s2work.locComponent.triggers.elementName('Name', el), 'Action1');
         });
     });
 
@@ -163,6 +164,38 @@ describe('SC2Mod', () => {
         });
     });
 
+    describe('Catalog', () => {
+        it('file', async () => {
+            const s2archive = new SC2Archive('sc2-map.SC2Map', path.resolve('tests/fixtures/sc2-map.SC2Map'));
+            const catalogFile = new cat.CatalogFile(s2archive, 'Unit');
+            await catalogFile.load();
+            assert.isAtLeast(catalogFile.entries.size, 1);
+        });
+
+        it('store', async () => {
+            const coreArchive = new SC2Archive('core.sc2mod', path.join(resourcesPath, 'mods', 'core.sc2mod'));
+            const libertyArchive = new SC2Archive('liberty.sc2mod', path.join(resourcesPath, 'mods', 'liberty.sc2mod'));
+            const catalogStore = new cat.CatalogStore('Unit');
+            await catalogStore.addArchive(coreArchive);
+            await catalogStore.addArchive(libertyArchive);
+            catalogStore.merge();
+            assert.isAtLeast(catalogStore.entries.size, 1);
+        });
+
+        it('component', async () => {
+            let s2work: SC2Workspace;
+            const sources = [
+                path.resolve(resourcesPath),
+            ];
+            const dir = path.resolve(path.join('tests', 'fixtures', 'sc2-map.SC2Map'));
+            const rootArchive = new SC2Archive(path.basename(dir), dir);
+            s2work = await openArchiveWorkspace(rootArchive, sources);
+            await s2work.catalogComponent.load();
+            assert.isAtLeast(s2work.catalogComponent.getStore().catalogs.size, 99);
+            assert.isTrue(s2work.catalogComponent.getStore().catalogs.has('Actor'));
+        });
+    });
+
     describe('Localization', () => {
         const enus = new loc.LocalizationFile();
 
@@ -171,7 +204,7 @@ describe('SC2Mod', () => {
         });
 
         it('should read all entries', () => {
-            assert.equal(enus.size, 18669);
+            assert.isAtLeast(enus.size, 18000);
         })
 
         it('should provide actual values', () => {
