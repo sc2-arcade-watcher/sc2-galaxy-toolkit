@@ -87,7 +87,7 @@ export class S2WorkspaceWatcher extends WorkspaceWatcher {
         const workspace = await openArchiveWorkspace(rootArchive, this.modSources);
 
         for (const modArchive of workspace.dependencies) {
-            for (const extSrc of await modArchive.findFiles('*.galaxy')) {
+            for (const extSrc of await modArchive.findFiles('**/*.galaxy')) {
                 this._onDidOpen.fire({document: createTextDocumentFromFs(path.join(modArchive.directory, extSrc))})
             }
         }

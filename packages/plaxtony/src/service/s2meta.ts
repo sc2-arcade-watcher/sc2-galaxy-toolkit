@@ -2,6 +2,7 @@ import * as gt from '../compiler/types';
 import { getSourceFileOfNode } from '../compiler/utils';
 import { Store } from './store';
 import * as trig from '../sc2mod/trigger';
+import * as cat from '../sc2mod/datacatalog';
 import { SC2Workspace } from '../sc2mod/archive';
 import * as lsp from 'vscode-languageserver';
 
@@ -23,7 +24,7 @@ export class S2WorkspaceMetadata {
             elemName = el.name;
         }
         else {
-            elemName = this.workspace.locComponent.triggers.text('Name', el).replace(elementNotValidCharsRE, '');
+            elemName = this.workspace.locComponent.triggers.elementName('Name', el).replace(elementNotValidCharsRE, '');
         }
 
         if (el instanceof trig.FunctionDef && el.flags & trig.ElementFlag.Native) {
@@ -94,6 +95,7 @@ export class S2WorkspaceMetadata {
     public async build() {
         await this.workspace.trigComponent.sync();
         await this.workspace.locComponent.sync();
+        await this.workspace.catalogComponent.sync();
 
         for (const lib of this.workspace.trigComponent.getStore().getLibraries().values()) {
             this.mapContainer(lib);
@@ -114,21 +116,21 @@ export class S2WorkspaceMetadata {
     }
 
     public getElementDoc(el: trig.Element) {
-        let name = '**' + this.workspace.locComponent.triggers.text('Name', el) + '**';
+        let name = '**' + this.workspace.locComponent.triggers.elementName('Name', el) + '**';
 
         if (el instanceof trig.FunctionDef) {
-            const grammar = this.workspace.locComponent.triggers.text('Grammar', el);
+            const grammar = this.workspace.locComponent.triggers.elementName('Grammar', el);
             if (grammar) {
                 name += ' (' + grammar.replace(tildeRE, '`') + ')';
             }
-            const hint = this.workspace.locComponent.triggers.text('Hint', el);
+            const hint = this.workspace.locComponent.triggers.elementName('Hint', el);
             if (hint) {
                 name += '\n\n' + hint.replace(quationMarkRE, '*');
             }
             return name;
         }
         else if (el instanceof trig.PresetValue) {
-            const presetName = this.workspace.locComponent.triggers.text('Name', this.findPresetDef(el));
+            const presetName = this.workspace.locComponent.triggers.elementName('Name', this.findPresetDef(el));
             return name + (presetName ? ' - ' + presetName : '');
         }
         else if (el instanceof trig.ParamDef) {
@@ -137,7 +139,7 @@ export class S2WorkspaceMetadata {
                 type = '`gamelink<' + (<trig.ParamDef>el).type.gameType + '>`';
             }
             else if ((<trig.ParamDef>el).type.type === 'preset') {
-                type = '' + this.workspace.locComponent.triggers.text('Name', (<trig.ParamDef>el).type.typeElement.resolve()) + '';
+                type = '' + this.workspace.locComponent.triggers.elementName('Name', (<trig.ParamDef>el).type.typeElement.resolve()) + '';
             }
             else {
                 type = '`' + (<trig.ParamDef>el).type.type + '`';
@@ -171,6 +173,47 @@ export class S2WorkspaceMetadata {
         }
 
         return docs;
+    }
+
+    public getElementTypeOfNode(node: gt.Node) {
+        // if (node.kind !== gt.SyntaxKind.StringLiteral) return null;
+        if (node.parent.kind !== gt.SyntaxKind.CallExpression) return null;
+        const callExpr = <gt.CallExpression>node.parent;
+        if (callExpr.expression.kind !== gt.SyntaxKind.Identifier) return null;
+        const el = <trig.FunctionDef>this.findElementByName((<gt.Identifier>callExpr.expression).name);
+        if (!el) return null;
+
+        let index: number;
+        for (const [key, arg] of callExpr.arguments.entries()) {
+            if (arg === node) {
+                index = key;
+                break;
+            }
+        }
+        if (!index) return null;
+
+        if (el.flags & trig.ElementFlag.Event) {
+            index--;
+        }
+
+        return el.getParameters()[index].type;
+    }
+
+    public getLinksForGameType(gameType: string) {
+        const catalog = this.workspace.catalogComponent.getStore().catalogs.get(gameType);
+        if (!catalog) return null;
+        return <ReadonlyMap<string, cat.CatalogEntry>>catalog.entries;
+    }
+
+    public getGameLinkLocalizedName(gameType: string, gameLink: string, includePrefix: boolean = false) {
+        const name = this.workspace.locComponent.strings.get('Game').text(`${gameType}/Name/${gameLink}`);
+        const prefix = this.workspace.locComponent.strings.get('Object').text(`${gameType}/EditorPrefix/${gameLink}`);
+        const sufix = this.workspace.locComponent.strings.get('Object').text(`${gameType}/EditorSuffix/${gameLink}`);
+        return (prefix ? prefix + ' ' : '') + (name ? name : '') + (sufix ? ' ' + sufix : '');
+    }
+
+    public getGameLinkKind(gameType: string, gameLink: string) {
+        return this.workspace.catalogComponent.getStore().catalogs.get(gameType).entries.get(gameLink).kind;
     }
 }
 

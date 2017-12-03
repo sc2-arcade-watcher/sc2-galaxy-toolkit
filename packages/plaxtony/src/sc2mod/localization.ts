@@ -23,8 +23,7 @@ export class LocalizationFile extends Map<string,string> {
     }
 }
 
-export class LocalizationTriggers {
-    // protected entries: LocalizationFile;
+export class LocalizationTextStore {
     protected entries = new LocalizationFile();
 
     public merge(files: LocalizationFile[] | LocalizationFile) {
@@ -38,7 +37,13 @@ export class LocalizationTriggers {
         }
     }
 
-    public text(key: string, el?: Element) {
+    public text(key: string) {
+        return this.entries.get(key);
+    }
+}
+
+export class LocalizationTriggers extends LocalizationTextStore {
+    public elementName(key: string, el?: Element) {
         if (el) {
             key = el.textKey(key);
         }

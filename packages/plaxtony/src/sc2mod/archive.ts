@@ -3,6 +3,7 @@ import * as glob from 'glob'
 import * as path from 'path'
 import * as xml from 'xml2js';
 import * as trig from './trigger';
+import * as cat from './datacatalog';
 import * as loc from './localization';
 
 export function isSC2Archive(directory: string) {
@@ -31,7 +32,7 @@ export function findSC2ArchiveDirectories(directory: string) {
 
 function findSC2File(directory: string, pattern: string) {
     return new Promise<string[]>((resolve, reject) => {
-        glob(path.join('**/' + pattern), {nocase: true, realpath: true, nodir: true, cwd: directory} , (err, matches) => {
+        glob(path.join(pattern), {nocase: true, realpath: true, nodir: true, cwd: directory} , (err, matches) => {
             if (err) {
                 reject(err);
             }
@@ -95,7 +96,7 @@ export class TriggerComponent extends Component {
         const trigReader = new trig.XMLReader(this.store);
 
         for (const archive of this.workspace.allArchives) {
-            for (const filename of await archive.findFiles('+(*.TriggerLib|*.SC2Lib)')) {
+            for (const filename of await archive.findFiles('**/+(*.TriggerLib|*.SC2Lib)')) {
                 this.store.addLibrary(await trigReader.loadLibrary(await archive.readFile(filename)));
             }
             if (await archive.hasFile('Triggers')) {
@@ -111,15 +112,40 @@ export class TriggerComponent extends Component {
     }
 }
 
-export class LocalizationComponent extends Component {
-    triggers = new loc.LocalizationTriggers();
+export class CatalogComponent extends Component {
+    protected store = new cat.GameCatalogStore();
 
     public async loadData() {
-        // for (const filename of await findSC2File(this.directory, '*.sc2data/LocalizedData/TriggerStrings.txt')) {
-        // }
+        await this.store.loadData(this.workspace);
 
+        return true;
+    }
+
+    public getStore() {
+        return this.store;
+    }
+}
+
+export class LocalizationComponent extends Component {
+    triggers = new loc.LocalizationTriggers();
+    strings = new Map<string,loc.LocalizationTextStore>();
+
+    private async loadStrings(name: string, lang: string) {
+        const textStore = new loc.LocalizationTextStore();
         for (const archive of this.workspace.allArchives) {
-            const filenames = await archive.findFiles('TriggerStrings.txt');
+            const filenames = await archive.findFiles(lang + '.SC2Data/LocalizedData/' + name + 'Strings.txt');
+            if (filenames.length) {
+                const locFile = new loc.LocalizationFile();
+                locFile.read(await archive.readFile(filenames[0]));
+                textStore.merge(locFile);
+            }
+        }
+        this.strings.set(name, textStore);
+    }
+
+    public async loadData() {
+        for (const archive of this.workspace.allArchives) {
+            const filenames = await archive.findFiles('**/TriggerStrings.txt');
             if (filenames.length) {
                 const locFile = new loc.LocalizationFile();
                 locFile.read(await archive.readFile(filenames[0]));
@@ -127,24 +153,13 @@ export class LocalizationComponent extends Component {
             }
         }
 
+        // await this.loadStrings('Trigger', 'enUS');
+        await this.loadStrings('Game', 'enUS');
+        await this.loadStrings('Object', 'enUS');
+
         return true;
     }
 }
-
-// export class SC2ArchiveAgregator {
-//     protected archives: SC2Archive[] = [];
-//     protected triggers = new trig.TriggerStore();
-
-//     public getLocalizedName(key: string): string {
-//         for (const archive of this.archives) {
-//             const value = archive.trigStrings.get(key);
-//             if (value) {
-//                 return value;
-//             }
-//         }
-//         return key;
-//     }
-// }
 
 export interface ArchiveLink {
     name: string;
@@ -276,6 +291,7 @@ export class SC2Workspace {
     dependencies: SC2Archive[] = [];
     trigComponent: TriggerComponent = new TriggerComponent(this);
     locComponent: LocalizationComponent = new LocalizationComponent(this);
+    catalogComponent: CatalogComponent = new CatalogComponent(this);
 
     constructor(rootArchive?: SC2Archive, dependencies: SC2Archive[] = []) {
         this.rootArchive = rootArchive;
@@ -289,5 +305,6 @@ export class SC2Workspace {
     public async loadComponents() {
         await this.trigComponent.load();
         await this.locComponent.load();
+        await this.catalogComponent.load();
     }
 }

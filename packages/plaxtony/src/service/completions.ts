@@ -172,6 +172,29 @@ export class CompletionsProvider extends AbstractProvider {
         return completions;
     }
 
+    private provideGameLinks(gameType: string) {
+        const links = this.store.s2metadata.getLinksForGameType(gameType);
+
+        let completions = <lsp.CompletionItem[]> [];
+        for (const item of links.values()) {
+            const localizedName = this.store.s2metadata.getGameLinkLocalizedName(gameType, item.id, false);
+            let name = item.id;
+            if (localizedName) {
+                name += ` "${localizedName}"`;
+            }
+            completions.push(<lsp.CompletionItem>{
+                label: name,
+                insertText: item.id,
+                data: {
+                    elementType: 'gamelink',
+                    gameType: gameType,
+                },
+                kind: lsp.CompletionItemKind.Value,
+            });
+        }
+        return completions;
+    }
+
     public getCompletionsAt(uri: string, position: number): lsp.CompletionItem[] {
         let completions = <lsp.CompletionItem[]> [];
 
@@ -187,6 +210,16 @@ export class CompletionsProvider extends AbstractProvider {
                 (<gt.Identifier>(callExpr.expression)).name === "TriggerCreate"
             ) {
                 return this.provideTriggerHandlers();
+            }
+        }
+
+        if (currentToken && this.store.s2metadata) {
+            const elementType = this.store.s2metadata.getElementTypeOfNode(currentToken);
+
+            if (elementType) {
+                if (elementType.type === 'gamelink' && currentToken.kind === gt.SyntaxKind.StringLiteral) {
+                    return this.provideGameLinks(elementType.gameType);
+                }
             }
         }
 
@@ -267,6 +300,12 @@ export class CompletionsProvider extends AbstractProvider {
     public resolveCompletion(completion: lsp.CompletionItem): lsp.CompletionItem {
         let symbol: gt.Symbol;
         let parentSymbolName: string;
+
+        if (completion.data && completion.data.elementType && completion.data.elementType === 'gamelink') {
+            completion.documentation = this.store.s2metadata.getGameLinkLocalizedName(completion.data.gameType, completion.insertText, true);
+            completion.documentation += '\n<' + this.store.s2metadata.getGameLinkKind(completion.data.gameType, completion.insertText) + '>';
+            return completion;
+        }
 
         if (completion.data && completion.data.parentSymbol) {
             parentSymbolName = (<string>completion.data.parentSymbol);

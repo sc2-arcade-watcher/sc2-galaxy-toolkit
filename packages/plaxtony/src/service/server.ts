@@ -208,7 +208,7 @@ export class Server {
         this.log('Indexing s2workspace: ' + archivePath);
         await this.store.updateS2Workspace(workspace);
         for (const modArchive of workspace.dependencies) {
-            for (const extSrc of await modArchive.findFiles('*.galaxy')) {
+            for (const extSrc of await modArchive.findFiles('**/*.galaxy')) {
                 this.onDidFindInWorkspace({document: createTextDocumentFromFs(path.join(modArchive.directory, extSrc))});
             }
         }

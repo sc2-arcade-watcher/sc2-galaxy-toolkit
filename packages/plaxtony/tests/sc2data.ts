@@ -47,4 +47,8 @@ describe('SC2Metadata', function () {
         assert.equal(args[1], '**Type** - `gamelink<Unit>`');
         assert.equal(args[2], '**Flags** - Unit Create Flags');
     });
+
+    it('gamelinks', () => {
+        assert.isTrue(s2meta.getLinksForGameType('Unit').has('AberrationACGluescreenDummy'));
+    })
 });
