@@ -119,6 +119,28 @@ export class S2WorkspaceMetadata {
         return this.presetValueParentMap.get(presetValue.link());
     }
 
+    public getConstantNamesOfPreset(preset: trig.Preset) {
+        let names: string[] = [];
+
+        if (!(preset.flags & trig.ElementFlag.PresetGenConstVar)) return [];
+        if (preset.baseType === 'bool') return [];
+
+        for (const link of preset.values) {
+            const presetValue = link.resolve();
+
+            if (preset.flags & trig.ElementFlag.PresetCustom) {
+                if (presetValue.value.match(elementValidCharsRE)) {
+                    names.push(presetValue.value);
+                }
+            }
+            else {
+                names.push(this.getElementSymbolName(preset) + '_' + presetValue.name);
+            }
+        }
+
+        return names;
+    }
+
     public getElementDoc(el: trig.Element) {
         let name = '**' + this.workspace.locComponent.triggers.elementName('Name', el) + '**';
 
@@ -187,14 +209,24 @@ export class S2WorkspaceMetadata {
         const el = <trig.FunctionDef>this.findElementByName((<gt.Identifier>callExpr.expression).name);
         if (!el) return null;
 
-        let index: number;
-        for (const [key, arg] of callExpr.arguments.entries()) {
-            if (arg === node) {
-                index = key;
-                break;
+        let index: number = null;
+        if (node.kind === gt.SyntaxKind.CommaToken || node.kind === gt.SyntaxKind.OpenParenToken) {
+            for (const [key, token] of callExpr.syntaxTokens.entries()) {
+                index = key - 1;
+                if (node.end < token.end) {
+                    break;
+                }
             }
         }
-        if (!index) return null;
+        else {
+            for (const [key, arg] of callExpr.arguments.entries()) {
+                if (arg === node) {
+                    index = key;
+                    break;
+                }
+            }
+        }
+        if (index === null) return null;
 
         if (el.flags & trig.ElementFlag.Event) {
             index--;

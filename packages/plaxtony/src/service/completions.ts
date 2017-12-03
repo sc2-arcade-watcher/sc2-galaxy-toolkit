@@ -201,6 +201,7 @@ export class CompletionsProvider extends AbstractProvider {
         const sourceFile = this.store.documents.get(uri);
         if (!sourceFile) return;
         let currentToken = findPrecedingToken(position, sourceFile);
+        let elementType: trig.ParameterType;
 
         if (currentToken && currentToken.kind === gt.SyntaxKind.StringLiteral) {
             const callExpr = <gt.CallExpression>currentToken.parent;
@@ -215,7 +216,7 @@ export class CompletionsProvider extends AbstractProvider {
         }
 
         if (currentToken && this.store.s2metadata) {
-            const elementType = this.store.s2metadata.getElementTypeOfNode(currentToken);
+            elementType = this.store.s2metadata.getElementTypeOfNode(currentToken);
 
             if (elementType) {
                 if (elementType.type === 'gamelink' && currentToken.kind === gt.SyntaxKind.StringLiteral) {
@@ -233,9 +234,23 @@ export class CompletionsProvider extends AbstractProvider {
 
         // query
         let query: string = null;
+        const processedSymbols = new Map<string, Symbol>();
         if (currentToken && currentToken.pos <= position && currentToken.end >= position && currentToken.kind === gt.SyntaxKind.Identifier) {
             const offset = position -= currentToken.pos;
             query = (<gt.Identifier>currentToken).name.substr(0, offset);
+        }
+
+        // presets
+        if (elementType && elementType.type === 'preset') {
+            for (const name of this.store.s2metadata.getConstantNamesOfPreset(elementType.typeElement.resolve())) {
+                const symbol = this.store.resolveGlobalSymbol(name);
+                if (symbol) {
+                    const citem = this.buildFromSymbolDecl(symbol);
+                    completions.push(citem);
+                    processedSymbols.set(name, symbol);
+                }
+            }
+            if (!query) return completions;
         }
 
         if (currentToken) {
@@ -277,8 +292,6 @@ export class CompletionsProvider extends AbstractProvider {
             }
         }
 
-        // global symbols
-        const processedSymbols = new Map<string, Symbol>();
         let count = 0;
         outer: for (const document of this.store.documents.values()) {
             for (const [name, symbol] of document.symbol.members) {
