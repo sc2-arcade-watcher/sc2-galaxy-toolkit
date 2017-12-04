@@ -236,26 +236,30 @@ class Server {
     }
     onInitialized(params) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.reindex(this.initParams.rootPath, this.initParams.initializationOptions.sources);
         });
     }
     onDidChangeConfiguration(ev) {
-        this.log(util.inspect(ev.settings.sc2galaxy));
-        this.config = ev.settings.sc2galaxy;
-        switch (this.config.completion.functionExpand) {
-            case "None":
-                this.completionsProvider.config.functionExpand = 0 /* None */;
-                break;
-            case "Parenthesis":
-                this.completionsProvider.config.functionExpand = 1 /* Parenthesis */;
-                break;
-            case "ArgumentsNull":
-                this.completionsProvider.config.functionExpand = 2 /* ArgumentsNull */;
-                break;
-            case "ArgumentsDefault":
-                this.completionsProvider.config.functionExpand = 3 /* ArgumentsDefault */;
-                break;
-        }
+        return __awaiter(this, void 0, void 0, function* () {
+            this.log(util.inspect(ev.settings.sc2galaxy));
+            this.config = ev.settings.sc2galaxy;
+            switch (this.config.completion.functionExpand) {
+                case "None":
+                    this.completionsProvider.config.functionExpand = 0 /* None */;
+                    break;
+                case "Parenthesis":
+                    this.completionsProvider.config.functionExpand = 1 /* Parenthesis */;
+                    break;
+                case "ArgumentsNull":
+                    this.completionsProvider.config.functionExpand = 2 /* ArgumentsNull */;
+                    break;
+                case "ArgumentsDefault":
+                    this.completionsProvider.config.functionExpand = 3 /* ArgumentsDefault */;
+                    break;
+            }
+            if (!this.indexing) {
+                this.reindex(this.initParams.rootPath, this.initParams.initializationOptions.sources);
+            }
+        });
     }
     onDidChangeContent(ev) {
         if (this.indexing)
