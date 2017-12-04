@@ -13,7 +13,7 @@ Rich set of utilities providing IDE like capabilities for StarCraft 2 Galaxy Scr
 - [x] Context aware code completions.
 - [x] Signature help for functions.
 - [x] Document and workspace symbols navigation list.
-- [x] Symbol definitions provider (goto *click*). `<kbd>Ctrl</kbd>+**Click** on identifier will go to its declaration.`
+- [x] Symbol definitions provider (goto *click*). `<kbd>Ctrl</kbd>`+**Click** on identifier will go to its declaration.
 - [x] Tooltips when hovering over symbol identifiers.
 - [x] Indexing of `Trigger` scheme files to extract elements metadata and associate it with their auto-generated symbols. This allows it to provide localized documentation, aswell better code completions for things like *presets*.
 - [x] Indexing of game data `*Data.xml` files. To provide code completions of `gamelink` types. (i.e. complete list of available units will be provided for functions such as `UnitCreate`).
