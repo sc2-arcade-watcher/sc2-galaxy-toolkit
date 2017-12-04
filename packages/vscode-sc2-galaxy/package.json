@@ -25,6 +25,7 @@
     "onLanguage:galaxy"
   ],
   "main": "./out/src/extension",
+  "icon": "icon.png",
   "contributes": {
     "configuration": {
       "type": "object",
@@ -40,15 +41,6 @@
           "default": "info",
           "description": "Logging verbosity of Plaxtony language server."
         },
-        "sc2galaxy.localDependencies": {
-          "scope": "window",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [],
-          "description": "List of additional mod dependencies to be indexed."
-        },
         "sc2galaxy.s2mod.sources": {
           "scope": "window",
           "type": "array",
@@ -60,22 +52,45 @@
         },
         "sc2galaxy.s2mod.overrides": {
           "scope": "window",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "title": "Archives",
-            "properties": {
-              "name": {
-                "type": "string",
-                "description": "Mod name"
-              },
-              "src": {
-                "type": "string",
-                "description": "Directory"
-              }
-            }
-          },
+          "type": "object",
           "description": "Local overrides of SC2Mod archives"
+        },
+        "sc2galaxy.s2mod.extra": {
+          "scope": "window",
+          "type": "object",
+          "description": "List of extra mod dependencies to index."
+        },
+        "sc2galaxy.localization": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "enUS",
+            "deDE",
+            "esES",
+            "frFR",
+            "ruRU",
+            "koKR",
+            "zhCN",
+            "zhTW",
+            "ptBR",
+            "plPL",
+            "esMX",
+            "itIT"
+          ],
+          "default": "enUS",
+          "description": "Localization file to use when providing documentation."
+        },
+        "sc2galaxy.completion.functionExpand": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "None",
+            "Parenthesis",
+            "ArgumentsNull",
+            "ArgumentsDefault"
+          ],
+          "default": "None",
+          "description": "[Completion] Function expansion behavior"
         }
       }
     },
@@ -115,7 +130,7 @@
   "dependencies": {
     "fs": "0.0.2",
     "path": "^0.12.7",
-    "plaxtony": "^1.4.1",
+    "plaxtony": "^1.5.0",
     "vscode-languageclient": "^3.4.5"
   },
   "devDependencies": {
