@@ -323,7 +323,7 @@ export type Modifier
     | Token<SyntaxKind.StaticKeyword>
 ;
 
-export type KeywordType
+export type ComplexTypeKeyword
     = SyntaxKind.AbilcmdKeyword
     | SyntaxKind.ActorKeyword
     | SyntaxKind.ActorscopeKeyword
@@ -363,9 +363,6 @@ export type KeywordType
     | SyntaxKind.WaveKeyword
     | SyntaxKind.WaveinfoKeyword
     | SyntaxKind.WavetargetKeyword
-    | SyntaxKind.ArrayrefKeyword
-    | SyntaxKind.StructrefKeyword
-    | SyntaxKind.FuncrefKeyword
 ;
 
 export const enum SymbolFlags {

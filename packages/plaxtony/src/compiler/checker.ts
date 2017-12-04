@@ -111,6 +111,15 @@ const structrefType = createIntrinsicType(gt.TypeFlags.Structref, "structref");
 const complexTypes: gt.ComplexType[] = [];
 complexTypes[gt.SyntaxKind.UnitKeyword] = createComplexType(gt.SyntaxKind.UnitKeyword);
 
+function generateComplexTypes() {
+    const map = new Map<gt.ComplexTypeKeyword, gt.ComplexType>();
+
+    for (let i = gt.SyntaxKindMarker.FirstComplexType; i <= gt.SyntaxKindMarker.LastComplexType; i++) {
+        const ckind = <gt.ComplexTypeKeyword>(<any>i);
+        map.set(ckind, createComplexType(ckind));
+    }
+}
+
 // const undefinedSymbol = createSymbol(gt.SymbolFlags.None, "undefined")
 
 export class TypeChecker {
