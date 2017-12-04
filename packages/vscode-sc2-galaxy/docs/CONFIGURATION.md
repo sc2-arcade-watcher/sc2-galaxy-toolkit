@@ -6,7 +6,7 @@ Allows providing external directories when looking up for dependencies.
 It is good to put path to SC2 directory here.
 > * CASC and MPQ archives are not supported.
 > * Usually dependency links are prefixed with `mods/`.
-> * The extension itself is being shipped with all of default
+> * The extension itself is being shipped with default SC2 mods (they're stripped from irrevelant files, also only *enUS* localization is included).
 ```json
 {
     "sc2galaxy.s2mod.sources": [
