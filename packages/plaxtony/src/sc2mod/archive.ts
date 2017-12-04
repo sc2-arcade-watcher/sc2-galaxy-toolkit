@@ -200,9 +200,9 @@ export async function resolveArchiveDependencyList(archive: SC2Archive, sources:
         if (!dir) {
             throw new Error('couldn\'t resolve "' + entry + '".\n Sources: ' + util.inspect(sources) + '\nOverrides: ' + util.inspect(overrides));
         }
+        await resolveArchiveDependencyList(new SC2Archive(entry, dir), sources, overrides, list);
         link.src = dir;
         list.push(link);
-        await resolveArchiveDependencyList(new SC2Archive(entry, dir), sources, overrides, list);
     }
     return list;
 }
@@ -270,6 +270,28 @@ export class SC2Archive {
 
         if (this.name !== 'mods/core.sc2mod') {
             list.push('mods/core.sc2mod');
+        }
+
+        let matches: RegExpExecArray;
+        if (matches = /^campaigns\/(liberty|swarm|void)story\.sc2campaign$/.exec(this.name)) {
+            list.push('campaigns/' + matches[1] + '.sc2campaign');
+        }
+        else if (matches = /^campaigns\/(liberty|swarm|void)\.sc2campaign$/.exec(this.name)) {
+            if (matches[1] === 'void') {
+                list.push('campaigns/swarm.sc2campaign');
+            }
+            else if (matches[1] === 'swarm') {
+                list.push('campaigns/liberty.sc2campaign');
+            }
+            list.push('mods/' + matches[1] + '.sc2mod');
+        }
+        else if (matches = /^mods\/(liberty|swarm|void)\.sc2mod/.exec(this.name)) {
+            if (matches[1] === 'void') {
+                list.push('mods/swarm.sc2mod');
+            }
+            else if (matches[1] === 'swarm') {
+                list.push('mods/liberty.sc2mod');
+            }
         }
 
         if (await this.hasFile('DocumentInfo')) {

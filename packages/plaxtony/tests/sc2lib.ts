@@ -2,7 +2,7 @@ import 'mocha';
 import * as path from 'path';
 import * as fs from 'fs';
 import { assert } from 'chai';
-import { findSC2ArchiveDirectories, SC2Archive, SC2Workspace, openArchiveWorkspace } from '../src/sc2mod/archive';
+import { findSC2ArchiveDirectories, SC2Archive, SC2Workspace, openArchiveWorkspace, resolveArchiveDependencyList } from '../src/sc2mod/archive';
 import * as trig from '../src/sc2mod/trigger';
 import * as cat from '../src/sc2mod/datacatalog';
 import * as loc from '../src/sc2mod/localization';
@@ -33,15 +33,44 @@ describe('SC2Mod', () => {
     });
 
     context('Archive', () => {
-        let s2archive: SC2Archive;
+        // let s2archive: SC2Archive;
 
-        before(async () => {
-            s2archive = new SC2Archive('mods/core.sc2mod', path.resolve(path.join(resourcesPath, 'mods', 'core.sc2mod')));
-        });
+        // before(async () => {
+        //     s2archive = new SC2Archive('mods/core.sc2mod', path.resolve(path.join(resourcesPath, 'mods', 'core.sc2mod')));
+        // });
 
         it('dependency list', async () => {
+            const s2archive = new SC2Archive('mods/core.sc2mod', path.resolve(path.join(resourcesPath, 'mods', 'core.sc2mod')));
             const list = await s2archive.getDependencyList();
             assert.equal(list.length, 0);
+        });
+
+        it('campaign dependency list', async () => {
+            const s2archive = new SC2Archive(
+                'campaigns/voidstory.sc2campaign',
+                path.resolve(path.join(resourcesPath, 'campaigns', 'voidstory.sc2campaign'))
+            );
+            const list = await resolveArchiveDependencyList(s2archive, [resourcesPath]);
+            assert.equal(list.length, 7);
+            assert.equal(list[0].name, 'mods/core.sc2mod');
+            assert.equal(list[1].name, 'mods/liberty.sc2mod');
+            assert.equal(list[2].name, 'campaigns/liberty.sc2campaign');
+            assert.equal(list[3].name, 'mods/swarm.sc2mod');
+            assert.equal(list[4].name, 'campaigns/swarm.sc2campaign');
+            assert.equal(list[5].name, 'mods/void.sc2mod');
+            assert.equal(list[6].name, 'campaigns/void.sc2campaign');
+        });
+
+        it('void mod dependency list', async () => {
+            const s2archive = new SC2Archive(
+                'mods/void.sc2mod',
+                path.resolve(path.join(resourcesPath, 'mods', 'void.sc2mod'))
+            );
+            const list = await resolveArchiveDependencyList(s2archive, [resourcesPath]);
+            assert.equal(list.length, 3);
+            assert.equal(list[0].name, 'mods/core.sc2mod');
+            assert.equal(list[1].name, 'mods/liberty.sc2mod');
+            assert.equal(list[2].name, 'mods/swarm.sc2mod');
         });
     });
 

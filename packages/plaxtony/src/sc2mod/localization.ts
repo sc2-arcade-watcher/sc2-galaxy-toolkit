@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import { Element } from './trigger';
 
-const fileRe = /^((\w+)\/(\w+)\/(\w+))=(.+)$/gmu;
+// const fileRe = /^((\w+)\/(\w+)\/(\w+))=(.+)$/gmu;
+const fileRe = /^\s*([^=]+)=(.+)$/gmu;
 
 export class LocalizationFile extends Map<string,string> {
     readFromFile(filename: string): boolean {
@@ -16,7 +17,8 @@ export class LocalizationFile extends Map<string,string> {
 
         let result: RegExpExecArray;
         while (result = fileRe.exec(content)) {
-            this.set(result[1], result[5]);
+            // this.set(result[1], result[5]);
+            this.set(result[1], result[2]);
         }
 
         return true;
