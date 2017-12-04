@@ -7,9 +7,10 @@ const utils_1 = require("../compiler/utils");
 const utils_2 = require("./utils");
 class DefinitionProvider extends provider_1.AbstractProvider {
     getDefinitionAt(uri, position) {
-        // let completions = <lsp.CompletionItem[]> [];
-        const currentDocument = this.store.documents.get(uri);
-        const currentToken = utils_2.getTokenAtPosition(position, currentDocument);
+        const sourceFile = this.store.documents.get(uri);
+        if (!sourceFile)
+            return;
+        const currentToken = utils_2.getTokenAtPosition(position, sourceFile);
         if (!currentToken || currentToken.kind !== 108 /* Identifier */) {
             return [];
         }

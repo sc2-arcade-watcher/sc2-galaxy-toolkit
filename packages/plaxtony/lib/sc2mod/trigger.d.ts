@@ -36,6 +36,7 @@ export declare abstract class Element {
 }
 export declare class ParamDef extends Element {
     type: ParameterType;
+    default?: ElementReference<Param>;
 }
 export declare class FunctionDef extends Element {
     static prefix: string;
@@ -51,11 +52,14 @@ export declare class PresetValue extends Element {
     value?: string;
 }
 export declare class Param extends Element {
-    valueType: string;
-    parameterDef?: ElementReference<ParamDef>;
+    functionCall?: ElementReference<FunctionCall>;
+    preset?: ElementReference<PresetValue>;
     value?: string;
-    valueId?: number;
-    scriptCode?: string;
+    valueType?: string;
+    valueElement?: ElementReference<Preset>;
+}
+export declare class FunctionCall extends Element {
+    functionDef: ElementReference<FunctionDef>;
 }
 export declare abstract class ElementContainer {
     protected elements: Map<string, Element>;
@@ -86,6 +90,8 @@ export declare class TriggerStore extends ElementContainer {
 export declare class XMLReader {
     protected store: TriggerStore;
     private parseReference<T>(data, type);
+    private parseParam(item);
+    private parseFunctionCall(item);
     private parseElement(item);
     private parseTree(data, container);
     private parseLibrary(id, data);

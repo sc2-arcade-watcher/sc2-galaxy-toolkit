@@ -10,11 +10,15 @@ export declare class Server {
     private hoverProvider;
     private documents;
     private workspaceWatcher;
+    private initParams;
+    private indexing;
+    private config;
     private createProvider<T>(cls);
     createConnection(connection?: lsp.IConnection): lsp.IConnection;
     log(msg: string): void;
     private reindex(rootPath, modSources);
     private onInitialize(params);
+    private onInitialized(params);
     private onDidChangeConfiguration(ev);
     private onDidChangeContent(ev);
     private onDidOpen(ev);

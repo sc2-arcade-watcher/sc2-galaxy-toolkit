@@ -93,57 +93,57 @@ var formatElapsed = function (start, end) {
     out += elapsed.toFixed(3) + "ms";
     return out;
 };
-function wrapRequest(msg, showArg, singleLine) {
+function wrapRequest(msg, showArg, argFormatter) {
     return function (target, propertyKey, descriptor) {
         const method = descriptor.value;
         descriptor.value = function (...args) {
-            const server = this;
-            let log = [];
-            // args = args.map((value) => {
-            //     if (!value) { return; }
-            //     if (value['document']) {
-            //         return value.document.uri;
-            //     }
-            //     else if (value['name']) {
-            //         return value.name;
-            //     }
-            //     else {
-            //         return value.toString();
-            //     }
-            // });
-            if (msg) {
-                log.push(`${msg}: ${util.inspect(args, true, 2)}`);
-            }
-            else {
-                log.push(`### Processing '${propertyKey}'`);
-            }
-            var start = process.hrtime();
-            let ret;
-            try {
-                ret = method.bind(this)(...arguments);
-            }
-            catch (e) {
-                server.connection.console.error('[' + e.name + '] ' + e.message + '\n' + e.stack);
-            }
-            log.push(formatElapsed(start, process.hrtime()));
-            if (ret && ret[Symbol.iterator]) {
-                log.push(`results: ${ret.length}`);
-            }
-            server.log(log.join(' | '));
-            return ret;
+            return __awaiter(this, arguments, void 0, function* () {
+                const server = this;
+                let log = [];
+                log.push('### ' + (msg ? msg : propertyKey));
+                var start = process.hrtime();
+                let ret;
+                try {
+                    ret = method.bind(this)(...arguments);
+                    if (ret instanceof Promise) {
+                        ret = yield ret;
+                    }
+                }
+                catch (e) {
+                    server.connection.console.error('[' + e.name + '] ' + e.message + '\n' + e.stack);
+                }
+                log.push(formatElapsed(start, process.hrtime()));
+                if (ret && ret[Symbol.iterator]) {
+                    log.push(`results: ${ret.length}`);
+                }
+                server.log(log.join(' | '));
+                if (argFormatter) {
+                    server.log(util.inspect(argFormatter(arguments[0])));
+                }
+                return ret;
+            });
         };
     };
 }
+function mapFromObject(stuff) {
+    const m = new Map();
+    Object.keys(stuff).forEach((key) => {
+        m.set(key, stuff[key]);
+    });
+    return m;
+}
+;
 class Server {
     constructor() {
         this.store = new store_1.Store();
         this.documents = new lsp.TextDocuments();
+        this.indexing = false;
     }
     createProvider(cls) {
         return provider_1.createProvider(cls, this.store, this.connection.console);
     }
     createConnection(connection) {
-        this.connection = connection ? connection : lsp.createConnection(new lsp.IPCMessageReader(process), new lsp.IPCMessageWriter(process));
+        this.connection = connection ? connection : lsp.createConnection();
         this.diagnosticsProvider = this.createProvider(diagnostics_1.DiagnosticsProvider);
         this.navigationProvider = this.createProvider(navigation_1.NavigationProvider);
         this.completionsProvider = this.createProvider(completions_1.CompletionsProvider);
@@ -155,6 +155,7 @@ class Server {
         this.documents.onDidOpen(this.onDidOpen.bind(this));
         this.documents.onDidClose(this.onDidClose.bind(this));
         this.connection.onInitialize(this.onInitialize.bind(this));
+        this.connection.onInitialized(this.onInitialized.bind(this));
         this.connection.onDidChangeConfiguration(this.onDidChangeConfiguration.bind(this));
         this.connection.onCompletion(this.onCompletion.bind(this));
         this.connection.onCompletionResolve(this.onCompletionResolve.bind(this));
@@ -172,16 +173,21 @@ class Server {
         return __awaiter(this, void 0, void 0, function* () {
             let archivePath;
             let workspace;
+            this.indexing = true;
+            this.connection.sendNotification("indexStart");
             if (rootPath) {
                 archivePath = yield store_1.findWorkspaceArchive(rootPath);
             }
             if (archivePath) {
                 this.workspaceWatcher = new store_1.WorkspaceWatcher(archivePath);
                 try {
-                    workspace = yield archive_1.openArchiveWorkspace(new archive_1.SC2Archive(path.basename(archivePath), archivePath), modSources);
+                    workspace = yield archive_1.openArchiveWorkspace(new archive_1.SC2Archive(path.basename(archivePath), archivePath), modSources, mapFromObject(this.config.s2mod.overrides), mapFromObject(this.config.s2mod.extra));
+                    this.log('Resolved archives:\n' + workspace.allArchives.map(item => {
+                        return `${item.name}: ${item.directory}`;
+                    }).join('\n'));
                 }
                 catch (e) {
-                    this.connection.console.error('Trigger data couldn\'t be loaded: ' + e.message);
+                    this.connection.console.error('SC2 data couldn\'t be loaded: ' + e.message);
                     workspace = null;
                 }
             }
@@ -192,9 +198,9 @@ class Server {
                 workspace = new archive_1.SC2Workspace(null, [new archive_1.SC2Archive('untitled.sc2mod', archive_1.resolveArchiveDirectory('mods/core.sc2mod', modSources))]);
             }
             this.log('Indexing s2workspace: ' + archivePath);
-            yield this.store.updateS2Workspace(workspace);
+            yield this.store.updateS2Workspace(workspace, this.config.localization);
             for (const modArchive of workspace.dependencies) {
-                for (const extSrc of yield modArchive.findFiles('*.galaxy')) {
+                for (const extSrc of yield modArchive.findFiles('**/*.galaxy')) {
                     this.onDidFindInWorkspace({ document: store_1.createTextDocumentFromFs(path.join(modArchive.directory, extSrc)) });
                 }
             }
@@ -203,11 +209,13 @@ class Server {
                 // workspace.onDidOpenS2Archive(this.onDidFindS2Workspace.bind(this));
                 yield this.workspaceWatcher.watch();
             }
+            this.indexing = false;
+            this.connection.sendNotification("indexEnd");
         });
     }
     onInitialize(params) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.reindex(params.rootPath, params.initializationOptions.sources);
+            this.initParams = params;
             return {
                 capabilities: {
                     textDocumentSync: this.documents.syncKind,
@@ -226,20 +234,32 @@ class Server {
             };
         });
     }
+    onInitialized(params) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.reindex(this.initParams.rootPath, this.initParams.initializationOptions.sources);
+        });
+    }
     onDidChangeConfiguration(ev) {
-        // interface Settings {
-        //     plaxtony: ExampleSettings;
-        // }
-        // interface ExampleSettings {
-        //     // maxNumberOfProblems: number;
-        // }
-        // let maxNumberOfProblems: number;
-        // let settings = <Settings>change.settings;
-        // maxNumberOfProblems = settings.plaxtony.maxNumberOfProblems || 100;
-        // Revalidate any open text documents
-        // documents.all().forEach(validateTextDocument);
+        this.log(util.inspect(ev.settings.sc2galaxy));
+        this.config = ev.settings.sc2galaxy;
+        switch (this.config.completion.functionExpand) {
+            case "None":
+                this.completionsProvider.config.functionExpand = 0 /* None */;
+                break;
+            case "Parenthesis":
+                this.completionsProvider.config.functionExpand = 1 /* Parenthesis */;
+                break;
+            case "ArgumentsNull":
+                this.completionsProvider.config.functionExpand = 2 /* ArgumentsNull */;
+                break;
+            case "ArgumentsDefault":
+                this.completionsProvider.config.functionExpand = 3 /* ArgumentsDefault */;
+                break;
+        }
     }
     onDidChangeContent(ev) {
+        if (this.indexing)
+            return;
         this.store.updateDocument(ev.document);
         if (this.documents.keys().indexOf(ev.document.uri) !== undefined) {
             this.connection.sendDiagnostics({
@@ -266,6 +286,8 @@ class Server {
     //     this.log('Archives: ' + util.inspect(ev.workspace.allArchives, false, 1));
     // }
     onCompletion(params) {
+        if (!this.store.documents.has(params.textDocument.uri))
+            return null;
         return this.completionsProvider.getCompletionsAt(params.textDocument.uri, utils_2.getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character));
     }
     onCompletionResolve(params) {
@@ -278,9 +300,13 @@ class Server {
         return translateDeclaratons(this.navigationProvider.getWorkspaceSymbols(params.query));
     }
     onSignatureHelp(params) {
+        if (!this.store.documents.has(params.textDocument.uri))
+            return null;
         return this.signaturesProvider.getSignatureAt(params.textDocument.uri, utils_2.getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character));
     }
     onDefinition(params) {
+        if (!this.store.documents.has(params.textDocument.uri))
+            return null;
         return this.definitionsProvider.getDefinitionAt(params.textDocument.uri, utils_2.getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character));
     }
     onHover(params) {
@@ -295,6 +321,9 @@ __decorate([
 ], Server.prototype, "onInitialize", null);
 __decorate([
     wrapRequest()
+], Server.prototype, "onInitialized", null);
+__decorate([
+    wrapRequest()
 ], Server.prototype, "onDidChangeConfiguration", null);
 __decorate([
     wrapRequest()
@@ -306,7 +335,9 @@ __decorate([
     wrapRequest()
 ], Server.prototype, "onDidClose", null);
 __decorate([
-    wrapRequest('Indexing: ', true, true)
+    wrapRequest('Indexing', true, (payload) => {
+        return payload.document.uri;
+    })
 ], Server.prototype, "onDidFindInWorkspace", null);
 __decorate([
     wrapRequest()

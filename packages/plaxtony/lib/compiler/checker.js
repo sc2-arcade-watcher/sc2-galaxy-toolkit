@@ -97,6 +97,13 @@ const arrayrefType = createIntrinsicType(262144 /* Arrayref */, "arrayref");
 const structrefType = createIntrinsicType(524288 /* Structref */, "structref");
 const complexTypes = [];
 complexTypes[97 /* UnitKeyword */] = createComplexType(97 /* UnitKeyword */);
+function generateComplexTypes() {
+    const map = new Map();
+    for (let i = 72 /* FirstComplexType */; i <= 104 /* LastComplexType */; i++) {
+        const ckind = i;
+        map.set(ckind, createComplexType(ckind));
+    }
+}
 // const undefinedSymbol = createSymbol(gt.SymbolFlags.None, "undefined")
 class TypeChecker {
     constructor(store) {
@@ -194,7 +201,12 @@ class TypeChecker {
             //     return getTypeFromIndexedAccessTypeNode(<IndexedAccessTypeNode>node);
             case 108 /* Identifier */:
                 const symbol = this.getSymbolAtLocation(node);
-                return symbol && this.getDeclaredTypeOfSymbol(symbol);
+                if (symbol) {
+                    return this.getDeclaredTypeOfSymbol(symbol);
+                }
+                else {
+                    return unknownType;
+                }
             default:
                 return unknownType;
         }

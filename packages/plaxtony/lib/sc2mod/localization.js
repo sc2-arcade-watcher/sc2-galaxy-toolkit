@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
-const fileRe = /^((\w+)\/(\w+)\/(\w+))=(.+)$/gmu;
+// const fileRe = /^((\w+)\/(\w+)\/(\w+))=(.+)$/gmu;
+const fileRe = /^\s*([^=]+)=(.+)$/gmu;
 class LocalizationFile extends Map {
     readFromFile(filename) {
         const text = fs.readFileSync(filename, 'utf8');
@@ -12,15 +13,15 @@ class LocalizationFile extends Map {
         content = content.replace(/^\uFEFF/, '');
         let result;
         while (result = fileRe.exec(content)) {
-            this.set(result[1], result[5]);
+            // this.set(result[1], result[5]);
+            this.set(result[1], result[2]);
         }
         return true;
     }
 }
 exports.LocalizationFile = LocalizationFile;
-class LocalizationTriggers {
+class LocalizationTextStore {
     constructor() {
-        // protected entries: LocalizationFile;
         this.entries = new LocalizationFile();
     }
     merge(files) {
@@ -33,7 +34,13 @@ class LocalizationTriggers {
             }
         }
     }
-    text(key, el) {
+    text(key) {
+        return this.entries.get(key);
+    }
+}
+exports.LocalizationTextStore = LocalizationTextStore;
+class LocalizationTriggers extends LocalizationTextStore {
+    elementName(key, el) {
         if (el) {
             key = el.textKey(key);
         }

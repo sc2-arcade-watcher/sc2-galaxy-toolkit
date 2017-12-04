@@ -75,7 +75,7 @@ class S2WorkspaceWatcher extends WorkspaceWatcher {
             const rootArchive = new archive_1.SC2Archive(path.basename(this.workspacePath), this.workspacePath);
             const workspace = yield archive_1.openArchiveWorkspace(rootArchive, this.modSources);
             for (const modArchive of workspace.dependencies) {
-                for (const extSrc of yield modArchive.findFiles('*.galaxy')) {
+                for (const extSrc of yield modArchive.findFiles('**/*.galaxy')) {
                     this._onDidOpen.fire({ document: createTextDocumentFromFs(path.join(modArchive.directory, extSrc)) });
                 }
             }
@@ -130,18 +130,22 @@ class Store {
     // protected watchers = new Map<string, WorkspaceWatcher>();
     updateDocument(document) {
         if (this.documents.has(document.uri)) {
-            binder_1.unbindSourceFile(this.documents.get(document.uri), this);
+            const currSorceFile = this.documents.get(document.uri);
+            if (document.getText().length === currSorceFile.text.length && document.getText().valueOf() === currSorceFile.text.valueOf()) {
+                return;
+            }
+            binder_1.unbindSourceFile(currSorceFile, this);
             this.documents.delete(document.uri);
         }
         let sourceFile = this.parser.parseFile(document.uri, document.getText());
         binder_1.bindSourceFile(sourceFile, this);
         this.documents.set(document.uri, sourceFile);
     }
-    updateS2Workspace(workspace) {
+    updateS2Workspace(workspace, lang) {
         return __awaiter(this, void 0, void 0, function* () {
             this.s2workspace = workspace;
             this.s2metadata = new s2meta_1.S2WorkspaceMetadata(this.s2workspace);
-            yield this.s2metadata.build();
+            yield this.s2metadata.build(lang);
         });
     }
     resolveGlobalSymbol(name) {

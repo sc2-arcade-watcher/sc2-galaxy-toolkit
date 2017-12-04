@@ -13,6 +13,8 @@ class HoverProvider extends provider_1.AbstractProvider {
     }
     getHoverAt(params) {
         const sourceFile = this.store.documents.get(params.textDocument.uri);
+        if (!sourceFile)
+            return;
         const position = utils_1.getPositionOfLineAndCharacter(sourceFile, params.position.line, params.position.character);
         const currentToken = utils_1.getTokenAtPosition(position, sourceFile);
         if (!currentToken || currentToken.kind !== 108 /* Identifier */) {

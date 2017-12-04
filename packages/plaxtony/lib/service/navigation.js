@@ -23,7 +23,10 @@ function collectDeclarations(sourceFile) {
 }
 class NavigationProvider extends provider_1.AbstractProvider {
     getDocumentSymbols(uri) {
-        return collectDeclarations(this.store.documents.get(uri));
+        const sourceFile = this.store.documents.get(uri);
+        if (!sourceFile)
+            return;
+        return collectDeclarations(sourceFile);
     }
     getWorkspaceSymbols(query) {
         let declarations = [];

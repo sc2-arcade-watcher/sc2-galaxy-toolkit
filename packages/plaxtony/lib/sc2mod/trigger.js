@@ -111,12 +111,16 @@ exports.PresetValue = PresetValue;
 class Param extends Element {
 }
 exports.Param = Param;
+class FunctionCall extends Element {
+}
+exports.FunctionCall = FunctionCall;
 const ElementClasses = {
     ParamDef,
     FunctionDef,
     Preset,
     PresetValue,
     Param,
+    FunctionCall,
 };
 // export class TriggerExplorer {
 //     protected containers: ElementContainer;
@@ -225,6 +229,33 @@ class XMLReader {
         this.store.addElementReference(ref);
         return ref;
     }
+    parseParam(item) {
+        const element = new Param();
+        if (item.FunctionCall) {
+            element.functionCall = this.parseReference(item.FunctionCall[0], FunctionCall);
+        }
+        if (item.Preset) {
+            element.preset = this.parseReference(item.Preset[0], PresetValue);
+        }
+        if (item.Value) {
+            element.value = item.Value[0];
+        }
+        if (item.ValueType) {
+            element.valueType = item.ValueType[0].$.Type;
+            if (item.ValueGameType) {
+                // item.ValueGameType[0].$.Type;
+            }
+        }
+        if (item.ValueElement) {
+            element.valueElement = this.parseReference(item.ValueElement[0], Preset);
+        }
+        return element;
+    }
+    parseFunctionCall(item) {
+        const element = new FunctionCall();
+        element.functionDef = this.parseReference(item.FunctionDef[0], FunctionDef);
+        return element;
+    }
     parseElement(item) {
         let el;
         switch (item.$.Type) {
@@ -248,17 +279,26 @@ class XMLReader {
                 }
             case 'ParamDef':
                 {
-                    const param = el = new ParamDef();
-                    param.type = new ParameterType();
-                    param.type.type = item.ParameterType[0].Type[0].$.Value;
-                    if (param.type.type === 'gamelink') {
-                        param.type.gameType = item.ParameterType[0].GameType[0].$.Value;
+                    const paramDef = el = new ParamDef();
+                    paramDef.type = new ParameterType();
+                    paramDef.type.type = item.ParameterType[0].Type[0].$.Value;
+                    if (paramDef.type.type === 'gamelink') {
+                        paramDef.type.gameType = item.ParameterType[0].GameType[0].$.Value;
                     }
-                    if (param.type.type === 'preset') {
-                        param.type.typeElement = this.parseReference(item.ParameterType[0].TypeElement[0], Preset);
+                    if (paramDef.type.type === 'preset') {
+                        paramDef.type.typeElement = this.parseReference(item.ParameterType[0].TypeElement[0], Preset);
+                    }
+                    if (item.Default) {
+                        paramDef.default = this.parseReference(item.Default[0], Param);
                     }
                     break;
                 }
+            case 'Param':
+                el = this.parseParam(item);
+                break;
+            case 'FunctionCall':
+                el = this.parseFunctionCall(item);
+                break;
             case 'Preset':
                 {
                     const preset = el = new Preset();

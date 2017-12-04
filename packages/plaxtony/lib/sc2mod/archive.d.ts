@@ -1,4 +1,5 @@
 import * as trig from './trigger';
+import * as cat from './datacatalog';
 import * as loc from './localization';
 export declare function isSC2Archive(directory: string): RegExpExecArray;
 export declare function findSC2ArchiveDirectories(directory: string): Promise<string[]>;
@@ -18,8 +19,16 @@ export declare class TriggerComponent extends Component {
     loadData(): Promise<boolean>;
     getStore(): trig.TriggerStore;
 }
+export declare class CatalogComponent extends Component {
+    protected store: cat.GameCatalogStore;
+    loadData(): Promise<boolean>;
+    getStore(): cat.GameCatalogStore;
+}
 export declare class LocalizationComponent extends Component {
+    lang: string;
     triggers: loc.LocalizationTriggers;
+    strings: Map<string, loc.LocalizationTextStore>;
+    private loadStrings(name);
     loadData(): Promise<boolean>;
 }
 export interface ArchiveLink {
@@ -27,8 +36,8 @@ export interface ArchiveLink {
     src: string;
 }
 export declare function resolveArchiveDirectory(name: string, sources: string[]): string;
-export declare function resolveArchiveDependencyList(archive: SC2Archive, sources: string[], list?: ArchiveLink[]): Promise<ArchiveLink[]>;
-export declare function openArchiveWorkspace(archive: SC2Archive, sources: string[]): Promise<SC2Workspace>;
+export declare function resolveArchiveDependencyList(archive: SC2Archive, sources: string[], overrides?: Map<string, string>, list?: ArchiveLink[]): Promise<ArchiveLink[]>;
+export declare function openArchiveWorkspace(archive: SC2Archive, sources: string[], overrides?: Map<string, string>, extra?: Map<string, string>): Promise<SC2Workspace>;
 export declare class SC2Archive {
     name: string;
     directory: string;
@@ -44,6 +53,7 @@ export declare class SC2Workspace {
     dependencies: SC2Archive[];
     trigComponent: TriggerComponent;
     locComponent: LocalizationComponent;
+    catalogComponent: CatalogComponent;
     constructor(rootArchive?: SC2Archive, dependencies?: SC2Archive[]);
     loadComponents(): Promise<void>;
 }

@@ -904,6 +904,7 @@ class Parser {
         this.sourceFile.statements = this.parseList(0 /* SourceElements */, this.parseStatement.bind(this));
         this.finishNode(this.sourceFile);
         this.sourceFile.lineMap = this.scanner.getLineMap();
+        this.sourceFile.text = text;
         utils_1.fixupParentReferences(this.sourceFile);
         return this.sourceFile;
     }

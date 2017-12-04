@@ -69,8 +69,10 @@ class SignaturesProvider extends provider_1.AbstractProvider {
             activeSignature: null,
             activeParameter: null,
         };
-        const currentDocument = this.store.documents.get(uri);
-        const currentToken = utils_2.getTokenAtPosition(position, currentDocument, true);
+        const sourceFile = this.store.documents.get(uri);
+        if (!sourceFile)
+            return;
+        const currentToken = utils_2.getTokenAtPosition(position, sourceFile, true);
         if (!currentToken) {
             return null;
         }

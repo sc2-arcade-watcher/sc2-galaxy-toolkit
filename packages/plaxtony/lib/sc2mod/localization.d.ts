@@ -3,8 +3,11 @@ export declare class LocalizationFile extends Map<string, string> {
     readFromFile(filename: string): boolean;
     read(content: string): boolean;
 }
-export declare class LocalizationTriggers {
+export declare class LocalizationTextStore {
     protected entries: LocalizationFile;
     merge(files: LocalizationFile[] | LocalizationFile): void;
-    text(key: string, el?: Element): string;
+    text(key: string): string;
+}
+export declare class LocalizationTriggers extends LocalizationTextStore {
+    elementName(key: string, el?: Element): string;
 }

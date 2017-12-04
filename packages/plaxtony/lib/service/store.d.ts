@@ -35,6 +35,6 @@ export declare class Store {
     s2workspace: SC2Workspace;
     s2metadata: S2WorkspaceMetadata;
     updateDocument(document: lsp.TextDocument): void;
-    updateS2Workspace(workspace: SC2Workspace): Promise<void>;
+    updateS2Workspace(workspace: SC2Workspace, lang: string): Promise<void>;
     resolveGlobalSymbol(name: string): gt.Symbol | undefined;
 }

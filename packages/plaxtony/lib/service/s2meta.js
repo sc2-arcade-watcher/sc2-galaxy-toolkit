@@ -8,10 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const gt = require("../compiler/types");
 const trig = require("../sc2mod/trigger");
 const elementNotValidCharsRE = /[^a-zA-Z0-9_]+/g;
 const elementValidCharsRE = /[a-zA-Z]+/g;
 const quationMarkRE = /"/g;
+const tildeRE = /~/g;
 class S2WorkspaceMetadata {
     constructor(workspace) {
         this.symbolMap = new Map();
@@ -20,16 +22,24 @@ class S2WorkspaceMetadata {
     }
     getElementSymbolName(el) {
         let parts = [];
-        let elemName;
+        let elemName = '';
         if (el.name) {
             elemName = el.name;
         }
         else {
-            elemName = this.workspace.locComponent.triggers.text('Name', el).replace(elementNotValidCharsRE, '');
+            const localizedName = this.workspace.locComponent.triggers.elementName('Name', el);
+            if (localizedName) {
+                elemName = localizedName.replace(elementNotValidCharsRE, '');
+            }
         }
-        if ((el instanceof trig.FunctionDef && el.flags & 2 /* Native */) ||
-            el.value) {
+        if (el instanceof trig.FunctionDef && el.flags & 2 /* Native */) {
             parts.push(elemName);
+        }
+        else if (el.value && (el.value.startsWith('c_') ||
+            el.value === 'null' ||
+            el.value === 'true' ||
+            el.value === 'false')) {
+            parts.push(el.value);
         }
         else {
             if (el.libId) {
@@ -78,10 +88,12 @@ class S2WorkspaceMetadata {
             }
         }
     }
-    build() {
+    build(lang) {
         return __awaiter(this, void 0, void 0, function* () {
+            this.workspace.locComponent.lang = lang;
             yield this.workspace.trigComponent.sync();
             yield this.workspace.locComponent.sync();
+            yield this.workspace.catalogComponent.sync();
             for (const lib of this.workspace.trigComponent.getStore().getLibraries().values()) {
                 this.mapContainer(lib);
             }
@@ -94,14 +106,40 @@ class S2WorkspaceMetadata {
     findPresetDef(presetValue) {
         return this.presetValueParentMap.get(presetValue.link());
     }
+    getConstantNamesOfPreset(preset) {
+        let names = [];
+        if (!(preset.flags & 64 /* PresetGenConstVar */))
+            return [];
+        if (preset.baseType === 'bool')
+            return [];
+        for (const link of preset.values) {
+            const presetValue = link.resolve();
+            if (preset.flags & 128 /* PresetCustom */) {
+                if (presetValue.value.match(elementValidCharsRE)) {
+                    names.push(presetValue.value);
+                }
+            }
+            else {
+                names.push(this.getElementSymbolName(preset) + '_' + presetValue.name);
+            }
+        }
+        return names;
+    }
     getElementDoc(el) {
-        const name = '**' + this.workspace.locComponent.triggers.text('Name', el) + '**';
+        let name = '**' + this.workspace.locComponent.triggers.elementName('Name', el) + '**';
         if (el instanceof trig.FunctionDef) {
-            const hint = this.workspace.locComponent.triggers.text('Hint', el);
-            return name + (hint ? '\n\n' + hint.replace(quationMarkRE, '*') : '');
+            const grammar = this.workspace.locComponent.triggers.elementName('Grammar', el);
+            if (grammar) {
+                name += ' (' + grammar.replace(tildeRE, '`') + ')';
+            }
+            const hint = this.workspace.locComponent.triggers.elementName('Hint', el);
+            if (hint) {
+                name += '\n\n' + hint.replace(quationMarkRE, '*');
+            }
+            return name;
         }
         else if (el instanceof trig.PresetValue) {
-            const presetName = this.workspace.locComponent.triggers.text('Name', this.findPresetDef(el));
+            const presetName = this.workspace.locComponent.triggers.elementName('Name', this.findPresetDef(el));
             return name + (presetName ? ' - ' + presetName : '');
         }
         else if (el instanceof trig.ParamDef) {
@@ -110,7 +148,7 @@ class S2WorkspaceMetadata {
                 type = '`gamelink<' + el.type.gameType + '>`';
             }
             else if (el.type.type === 'preset') {
-                type = '' + this.workspace.locComponent.triggers.text('Name', el.type.typeElement.resolve()) + '';
+                type = '' + this.workspace.locComponent.triggers.elementName('Name', el.type.typeElement.resolve()) + '';
             }
             else {
                 type = '`' + el.type.type + '`';
@@ -139,6 +177,55 @@ class S2WorkspaceMetadata {
             docs.push(this.getElementDoc(param));
         }
         return docs;
+    }
+    getElementTypeOfNode(node) {
+        // if (node.kind !== gt.SyntaxKind.StringLiteral) return null;
+        if (node.parent.kind !== 116 /* CallExpression */)
+            return null;
+        const callExpr = node.parent;
+        if (callExpr.expression.kind !== 108 /* Identifier */)
+            return null;
+        const el = this.findElementByName(callExpr.expression.name);
+        if (!el)
+            return null;
+        let index = null;
+        if (node.kind === 11 /* CommaToken */ || node.kind === 5 /* OpenParenToken */) {
+            for (const [key, token] of callExpr.syntaxTokens.entries()) {
+                index = key - 1;
+                if (node.end < token.end) {
+                    break;
+                }
+            }
+        }
+        else {
+            for (const [key, arg] of callExpr.arguments.entries()) {
+                if (arg === node) {
+                    index = key;
+                    break;
+                }
+            }
+        }
+        if (index === null)
+            return null;
+        if (el.flags & 16 /* Event */) {
+            index--;
+        }
+        return el.getParameters()[index].type;
+    }
+    getLinksForGameType(gameType) {
+        const catalog = this.workspace.catalogComponent.getStore().catalogs.get(gameType);
+        if (!catalog)
+            return null;
+        return catalog.entries;
+    }
+    getGameLinkLocalizedName(gameType, gameLink, includePrefix = false) {
+        const name = this.workspace.locComponent.strings.get('Game').text(`${gameType}/Name/${gameLink}`);
+        const prefix = this.workspace.locComponent.strings.get('Object').text(`${gameType}/EditorPrefix/${gameLink}`);
+        const sufix = this.workspace.locComponent.strings.get('Object').text(`${gameType}/EditorSuffix/${gameLink}`);
+        return (prefix ? prefix + ' ' : '') + (name ? name : '') + (sufix ? ' ' + sufix : '');
+    }
+    getGameLinkKind(gameType, gameLink) {
+        return this.workspace.catalogComponent.getStore().catalogs.get(gameType).entries.get(gameLink).kind;
     }
 }
 exports.S2WorkspaceMetadata = S2WorkspaceMetadata;
