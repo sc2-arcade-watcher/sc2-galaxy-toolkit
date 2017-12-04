@@ -274,11 +274,10 @@ export class Server {
 
     @wrapRequest()
     private async onInitialized(params: lsp.InitializeParams) {
-        await this.reindex(this.initParams.rootPath, this.initParams.initializationOptions.sources);
     }
 
     @wrapRequest()
-    private onDidChangeConfiguration(ev: lsp.DidChangeConfigurationParams) {
+    private async onDidChangeConfiguration(ev: lsp.DidChangeConfigurationParams) {
         this.log(util.inspect(ev.settings.sc2galaxy));
         this.config = <PlaxtonyConfig>ev.settings.sc2galaxy;
         switch (this.config.completion.functionExpand) {
@@ -294,6 +293,10 @@ export class Server {
             case "ArgumentsDefault":
                 this.completionsProvider.config.functionExpand = CompletionFunctionExpand.ArgumentsDefault;
                 break;
+        }
+
+        if (!this.indexing) {
+            this.reindex(this.initParams.rootPath, this.initParams.initializationOptions.sources);
         }
     }
 
