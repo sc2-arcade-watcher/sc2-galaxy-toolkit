@@ -1,34 +1,24 @@
-# StarCraft 2 Galaxy Script for Visual Studio Code
+# StarCraft 2 Galaxy Script IDE
 
-**Visual Studio Code** extension providing language support for **StarCraft 2 Galaxy Script**.
+Rich set of utilities providing IDE like capabilities for StarCraft 2 Galaxy Script language, as **Visual Studio Code** extension.
 
 ## Features
 
-- Grammar:
-    - [x] Syntax highliting.
-    - [x] Basic snippets.
+- [x] Code syntax highlighting:
+- [x] Basic completion snippets.
 - Real time code diagnostics, reporting about:
-    - [x] Parse errors.
-    - [x] Reference of undeclared symbol.
+    - [x] Syntax errors.
+    - [x] References of undeclared symbol.
     - [x] Incorrect number of arguments provided within function call.
-    - [ ] Type missmatch.
-    - [ ] Declared but unused symbols.
-- Providers:
-    - [x] Context aware code completions.
-    - [x] Signature help for functions.
-    - [x] Document and workspace symbols navigation.
-    - [x] Symbols show definitions (goto *click*).
-    - [x] Symbols hover info.
-    - [ ] Symbols show references.
+- [x] Context aware code completions.
+- [x] Signature help for functions.
+- [x] Document and workspace symbols navigation list.
+- [x] Symbol definitions provider (goto *click*). `<kbd>Ctrl</kbd>+**Click** on identifier will go to its declaration.`
+- [x] Tooltips when hovering over symbol identifiers.
+- [x] Indexing of `Trigger` scheme files to extract elements metadata and associate it with their auto-generated symbols. This allows it to provide localized documentation, aswell better code completions for things like *presets*.
+- [x] Indexing of game data `*Data.xml` files. To provide code completions of `gamelink` types. (i.e. complete list of available units will be provided for functions such as `UnitCreate`).
 
-Parser is meant to be error tolerant - when parse error occurs it will try to recover and continue processing rest of the code.
-
-Extension is also capable of parsing *Trigger Libraries* from *SC2Mod* archives in order to provide extended documentation.\
-Currently it does that only for *Native library*. Although it is planned to load all libraries defined within dependencies of currently opened map/mod, by reading its *DocumentHeader*.
-
-Following language statements are not yet properly supported: `typedef`, `funcref`, `arrayref` (`structref` works).
-
-*Notice: This extension is just a wrapper around [plaxtony](https://github.com/Talv/plaxtony) - this library does all the heavy work.*
+*Notice: Actual indexing logic is provided by [plaxtony](https://github.com/Talv/plaxtony) library. This extension is merely a wrapper.*
 
 ---
 
@@ -36,89 +26,46 @@ Following language statements are not yet properly supported: `typedef`, `funcre
 
 ### Real time code diagnostics
 
-![diagnostics](doc/diagnostics.gif)
+![diagnostics](assets/diagnostics.gif)
 
 ### Code completions
 
-![code-completions](doc/code-completions.gif)
+![code-completions](assets/code-completions.gif)
+
+Prioritizing *preset* constants when valid (function must declare preset type within *Triggers* metadata).
+
+![presets](assets/presets.png)
+
+Gamelinks suggestions (units, effects etc.)
+
+![gamelinks](assets/gamelinks.png)
 
 ### Function signature information
 
-![signature-help](doc/signature-help.gif)
+![signature-help](assets/signature-help.gif)
 
 ### Goto definition
 
-![goto-definition](doc/goto-definition.gif)
+![goto-definition](assets/goto-definition.gif)
 
 ### Symbol navigation
 
-![symbol-navigation](doc/symbol-navigation.gif)
+![symbol-navigation](assets/symbol-navigation.gif)
+
+### Hover tooltips
+
+![tooltip](assets/tooltip.png)
 
 ---
 
-## Configuration
+## Documentation
 
-```js
-{
-    "sc2galaxy.s2mod.sources": [
-        "c:\\SC2" // path to SC2 directory
-    ]
-}
-```
+1. [Extension configuration](docs/CONFIGURATION.md)
+2. [SC2 Editor workflow tips](docs/SC2_EDITOR.md)
 
----
+## Planned features
 
-## How to use this extension in combination with **SC2 Editor**
-
-To avoid copy-pasting code into **Custom script element** within trigger editor, or manually reimporting *.galaxy* files after every change, it is advised to save the map in unpacked format - that is **.SC2Components** in save dialog.
-
-![save dialog](doc/sc2-editor-save-dialog.png)
-
-This will expose your map files to be accessed through the filesystem, then simply open map directory within **VS Code editor**.
-
-It's also advised to not write your code directly to `MapScript.galaxy` as it might be easly overridden by **Trigger module** of **SC2 Editor**. The better way is to create a **Custom script element** and include your scripts in there.
-
-Scripts can be saved in any directory within the map, even root directory. No manual file re-importing in **SC2 Editor** is required. Your scripts will be read on demand - always up to date.
-
-For Example:
-
-![custom script](doc/sc2-editor-custom-script-include.png)
-
-Note the **Initialization Function** at the bottom
-
-Inside your map directory create new folder named `scripts`. There you can insert your galaxy files:
-
-`scripts/main.galaxy`:
-```c
-bool onInit(bool testConds, bool runActions) {
-    UIDisplayMessage(PlayerGroupActive(), c_messageAreaSubtitle, StringToText("HELLO WORLD"));
-    return true;
-}
-
-void main() {
-    // this is your entry point
-    TriggerAddEventMapInit(TriggerCreate("onInit"));
-}
-```
-
-### Mixing GUI Elements with Custom scripts
-
-It is possible to declare certain **Functions** and **Actions** as **Native** within **Trigger module**. This basically just creates a reference to a function you must declare on your own.
-
-![native action element](doc/sc2-editor-action-element-native.png)
-
-Then somewhere in your scripts make a declaration:
-
-```c
-void action(string parameter) {
-    // ...
-}
-```
-
-Such action can be used in **Trigger module**.
-
-![native action call](doc/sc2-editor-action-use.png)
-
-### Example maps
-
-- [sc2-sef](https://gitlab.com/Talv/sc2-sef) - **Ice Baneling Escape: Cold Voyage** in *Arcade*.
+- [ ] Complete type checking
+- [ ] Format code command (pretty print)
+- [ ] Find symbol references
+- [ ] Symbol rename command
