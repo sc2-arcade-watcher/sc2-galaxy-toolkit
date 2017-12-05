@@ -1,0 +1,15 @@
+void fn_prototype_t(int a);
+void fn_prototype_x(int a);
+void fn_prototype_c(int a, int b);
+
+void test_funcref()
+{
+    funcref<fn_prototype_t> ref;
+    ref = fn_prototype_t;
+    ref = fn_prototype_x;
+    ref = fn_prototype_c;
+    ref(1, 1);
+    ref(ref(1));
+
+    ref = ref;
+}
