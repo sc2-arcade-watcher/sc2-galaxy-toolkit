@@ -1,5 +1,6 @@
 import 'mocha';
 import { assert } from 'chai';
+import * as tc from '../src/compiler/checker';
 import { TypeChecker } from '../src/compiler/checker';
 import { mockupStoreDocument, mockupStore, mockupSourceFile, mockupTextDocument } from './helpers';
 import { getPositionOfLineAndCharacter, findPrecedingToken, getTokenAtPosition } from '../src/service/utils';
@@ -16,7 +17,7 @@ function getNodeTypeAt(checker: TypeChecker, sourceFile: gt.SourceFile, line: nu
     return checker.getTypeOfNode(token)
 }
 
-describe('Typechecker', () => {
+describe('Checker', () => {
     describe('Resolve', () => {
         const store = mockupStore();
         const checker = new TypeChecker(store);
@@ -60,9 +61,9 @@ describe('Typechecker', () => {
 
             it('funcref' ,() => {
                 type = getNodeTypeAt(checker, sourceFile, 29, 6);
-                assert.isOk(type.flags & gt.TypeFlags.Mapped);
-                assert.isOk((<gt.MappedType>type).returnType.flags & gt.TypeFlags.Funcref);
-                assert.equal((<gt.MappedType>type).referencedType.symbol.escapedName, 'fprototype');
+                assert.isOk(type instanceof tc.ReferenceType);
+                assert.isOk((<tc.ReferenceType>type).kind & gt.SyntaxKind.FuncrefKeyword);
+                assert.isOk((<tc.FunctionType>(<tc.ReferenceType>type).declaredType).symbol.escapedName, 'fprototype');
             });
 
             it('code validation' ,() => {
@@ -83,18 +84,18 @@ describe('Typechecker', () => {
 
             it('ref []' ,() => {
                 type = getNodeTypeAt(checker, sourceFile, 7, 5);
-                assert.isOk(type.flags & gt.TypeFlags.Mapped);
-                assert.isOk((<gt.MappedType>type).returnType.flags & gt.TypeFlags.Arrayref);
-                assert.isOk((<gt.MappedType>type).referencedType.flags & gt.TypeFlags.Array);
-                assert.isOk((<gt.ArrayType>(<gt.MappedType>type).referencedType).elementType.flags & gt.TypeFlags.String);
+                assert.isOk(type instanceof tc.ReferenceType);
+                assert.isOk((<tc.ReferenceType>type).kind & gt.SyntaxKind.ArrayrefKeyword);
+                assert.isOk((<tc.ReferenceType>type).declaredType.flags & gt.TypeFlags.Array);
+                assert.isOk((<tc.ArrayType>(<tc.ReferenceType>type).declaredType).elementType.flags & gt.TypeFlags.String);
             });
 
             it('ref [][]' ,() => {
                 type = getNodeTypeAt(checker, sourceFile, 8, 5);
-                assert.isOk(type.flags & gt.TypeFlags.Mapped);
-                assert.isOk((<gt.MappedType>type).returnType.flags & gt.TypeFlags.Arrayref);
-                assert.isOk((<gt.MappedType>type).referencedType.flags & gt.TypeFlags.Array);
-                assert.isOk((<gt.ArrayType>(<gt.MappedType>type).referencedType).elementType.flags & gt.TypeFlags.Array);
+                assert.isOk(type instanceof tc.ReferenceType);
+                assert.isOk((<tc.ReferenceType>type).kind & gt.SyntaxKind.ArrayrefKeyword);
+                assert.isOk((<tc.ReferenceType>type).declaredType.flags & gt.TypeFlags.Array);
+                assert.isOk((<tc.ArrayType>(<tc.ReferenceType>type).declaredType).elementType.flags & gt.TypeFlags.Array);
             });
 
             it('typedef decl of [][]' ,() => {
@@ -173,6 +174,104 @@ describe('Typechecker', () => {
 
             symbol = getSymbolAt(checker, sourceFileRef, 10, 11);
             assert.isDefined(symbol);
+        });
+    });
+
+    describe('Type', () => {
+        function validateDocument(src: string) {
+            const doc = mockupTextDocument('type_checker', 'diagnostics', src);
+            const store = mockupStore(doc);
+            const checker = new TypeChecker(store);
+            const sourceFile = store.documents.get(doc.uri);
+
+            return checker.checkSourceFile(sourceFile);
+        }
+
+        it('numeric_assignment', () => {
+            const diagnostics = validateDocument('numeric_assignment.galaxy');
+            assert.equal(diagnostics.length, 3);
+            assert.equal(diagnostics[0].messageText, 'Type \'1.0\' is not assignable to type \'integer\'');
+            assert.equal(diagnostics[1].messageText, 'Type \'fixed\' is not assignable to type \'integer\'');
+            assert.equal(diagnostics[2].messageText, 'Type \'fixed\' is not assignable to type \'byte\'');
+        });
+
+        it('numeric_comparison', () => {
+            const diagnostics = validateDocument('numeric_comparison.galaxy');
+            assert.equal(diagnostics.length, 2);
+            assert.equal(diagnostics[0].messageText, 'Type \'null\' is not comparable to type \'integer\'');
+            assert.equal(diagnostics[1].messageText, 'Type \'""\' is not comparable to type \'integer\'');
+        });
+
+        it('string', () => {
+            const diagnostics = validateDocument('string.galaxy');
+            assert.equal(diagnostics.length, 0);
+        });
+
+        it('bool', () => {
+            const diagnostics = validateDocument('bool.galaxy');
+            assert.equal(diagnostics.length, 1);
+            assert.equal(diagnostics[0].messageText, 'Type \'1\' is not assignable to type \'bool\'');
+        });
+
+        it('bitwise', () => {
+            const diagnostics = validateDocument('bitwise.galaxy');
+            assert.equal(diagnostics.length, 1);
+            assert.equal(diagnostics[0].messageText, 'Binary \'&\' operation not supported between \'integer\' type and \'false\' type');
+        });
+
+        it('complex', () => {
+            const diagnostics = validateDocument('complex.galaxy');
+            assert.equal(diagnostics.length, 0);
+        });
+
+        it('loop', () => {
+            const diagnostics = validateDocument('loop.galaxy');
+            assert.equal(diagnostics.length, 2);
+            assert.equal(diagnostics[0].messageText, 'break statement used outside of loop boundaries');
+            assert.equal(diagnostics[1].messageText, 'continue statement used outside of loop boundaries');
+        });
+
+        it('func_call', () => {
+            const diagnostics = validateDocument('func_call.galaxy');
+            assert.equal(diagnostics.length, 3);
+            assert.equal(diagnostics[0].messageText, 'Type \'string\' is not assignable to type \'integer\'');
+            assert.equal(diagnostics[1].messageText, 'Type \'integer\' is not assignable to type \'string\'');
+            assert.equal(diagnostics[2].messageText, 'Type \'null\' is not assignable to type \'integer\'');
+        });
+
+        it('struct', () => {
+            const diagnostics = validateDocument('struct.galaxy');
+            assert.equal(diagnostics.length, 5);
+            assert.equal(diagnostics[0].messageText, 'Can only pass basic types');
+            assert.equal(diagnostics[1].messageText, 'Type \'struct1_t\' is not assignable to type \'struct1_t\'');
+            assert.equal(diagnostics[2].messageText, 'Type \'struct2_t\' is not assignable to type \'struct1_t\'');
+            assert.equal(diagnostics[3].messageText, 'Type \'struct1_t\' is not assignable to type \'struct1_t\'');
+            assert.equal(diagnostics[4].messageText, 'Type \'struct2_t\' is not assignable to type \'structref<struct1_t>\'');
+        });
+
+        it('funcref', () => {
+            const diagnostics = validateDocument('funcref.galaxy');
+            assert.equal(diagnostics.length, 3);
+            assert.equal(diagnostics[0].messageText, 'Type \'fn_prototype_c\' is not assignable to type \'funcref<fn_prototype_t>\'');
+            assert.equal(diagnostics[1].messageText, 'expected 1 arguments, got 2');
+            assert.equal(diagnostics[2].messageText, 'Type \'void\' is not assignable to type \'integer\'');
+        });
+
+        it('array', () => {
+            const diagnostics = validateDocument('array.galaxy');
+            assert.equal(diagnostics.length, 2);
+            assert.equal(diagnostics[0].messageText, 'trying to access element on non-array type');
+            assert.equal(diagnostics[1].messageText, 'Type \'1\' is not assignable to type \'UnknownType\'');
+        });
+
+        it('typedef', () => {
+            const diagnostics = validateDocument('../typedef.galaxy');
+            assert.equal(diagnostics.length, 0);
+        });
+
+        it('arrayref', () => {
+            const diagnostics = validateDocument('../arrayref.galaxy');
+            assert.equal(diagnostics.length, 0);
         });
     });
 

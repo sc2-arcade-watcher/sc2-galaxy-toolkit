@@ -232,6 +232,8 @@ export class S2WorkspaceMetadata {
             index--;
         }
 
+        if (el.getParameters().length <= index) return null;
+
         return el.getParameters()[index].type;
     }
 

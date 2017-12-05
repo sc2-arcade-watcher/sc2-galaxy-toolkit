@@ -152,6 +152,8 @@ export const enum SyntaxKind {
     DotToken,
     SemicolonToken,
     CommaToken,
+
+    // Comparison
     LessThanToken,
     GreaterThanToken,
     LessThanEqualsToken,
@@ -159,6 +161,7 @@ export const enum SyntaxKind {
     EqualsEqualsToken,
     ExclamationEqualsToken,
     EqualsGreaterThanToken,
+
     PlusToken,
     MinusToken,
     AsteriskToken,
@@ -223,7 +226,6 @@ export const enum SyntaxKind {
     ActorKeyword,
     ActorscopeKeyword,
     AifilterKeyword,
-    AnimfilterKeyword,
     BankKeyword,
     BitmaskKeyword,
     CamerainfoKeyword,
@@ -323,48 +325,6 @@ export type Modifier
     | Token<SyntaxKind.StaticKeyword>
 ;
 
-export type ComplexTypeKeyword
-    = SyntaxKind.AbilcmdKeyword
-    | SyntaxKind.ActorKeyword
-    | SyntaxKind.ActorscopeKeyword
-    | SyntaxKind.AifilterKeyword
-    | SyntaxKind.AnimfilterKeyword
-    | SyntaxKind.BankKeyword
-    | SyntaxKind.BitmaskKeyword
-    | SyntaxKind.BoolKeyword
-    | SyntaxKind.ByteKeyword
-    | SyntaxKind.CamerainfoKeyword
-    | SyntaxKind.CharKeyword
-    | SyntaxKind.ColorKeyword
-    | SyntaxKind.DoodadKeyword
-    | SyntaxKind.FixedKeyword
-    | SyntaxKind.HandleKeyword
-    | SyntaxKind.GenerichandleKeyword
-    | SyntaxKind.EffecthistoryKeyword
-    | SyntaxKind.IntKeyword
-    | SyntaxKind.MarkerKeyword
-    | SyntaxKind.OrderKeyword
-    | SyntaxKind.PlayergroupKeyword
-    | SyntaxKind.PointKeyword
-    | SyntaxKind.RegionKeyword
-    | SyntaxKind.RevealerKeyword
-    | SyntaxKind.SoundKeyword
-    | SyntaxKind.SoundlinkKeyword
-    | SyntaxKind.StringKeyword
-    | SyntaxKind.TextKeyword
-    | SyntaxKind.TimerKeyword
-    | SyntaxKind.TransmissionsourceKeyword
-    | SyntaxKind.TriggerKeyword
-    | SyntaxKind.UnitKeyword
-    | SyntaxKind.UnitfilterKeyword
-    | SyntaxKind.UnitgroupKeyword
-    | SyntaxKind.UnitrefKeyword
-    | SyntaxKind.VoidKeyword
-    | SyntaxKind.WaveKeyword
-    | SyntaxKind.WaveinfoKeyword
-    | SyntaxKind.WavetargetKeyword
-;
-
 export const enum SymbolFlags {
     None                    = 0,
     LocalVariable           = 1 << 1,
@@ -395,41 +355,40 @@ export interface Symbol {
 export type SymbolTable = Map<string, Symbol>;
 
 export const enum TypeFlags {
-    Any                     = 1 << 0,
+    Unknown                 = 1 << 0,
     String                  = 1 << 1,
     Integer                 = 1 << 2,
-    Fixed                   = 1 << 3,
-    Boolean                 = 1 << 4,
-    Enum                    = 1 << 5,
-    StringLiteral           = 1 << 6,
-    NumberLiteral           = 1 << 7,
-    BooleanLiteral          = 1 << 8,
-    Void                    = 1 << 10,
-    Null                    = 1 << 11,
-    Struct                  = 1 << 12,
-    Function                = 1 << 13,
-    Complex                 = 1 << 14,
-    Array                   = 1 << 15,
-    Mapped                  = 1 << 16,
-    Funcref                 = 1 << 17,
-    Arrayref                = 1 << 18,
-    Structref               = 1 << 19,
-    Typedef                 = 1 << 20,
+    Byte                    = 1 << 3,
+    Char                    = 1 << 4,
+    Fixed                   = 1 << 5,
+    Boolean                 = 1 << 6,
+    Nullable                = 1 << 7,
+    StringLiteral           = 1 << 8,
+    NumericLiteral          = 1 << 9,
+    BooleanLiteral          = 1 << 10,
+    Void                    = 1 << 11,
+    Null                    = 1 << 12,
+    Struct                  = 1 << 13,
+    Function                = 1 << 14,
+    Complex                 = 1 << 15,
+    Array                   = 1 << 16,
+    Mapped                  = 1 << 17,
+
+    Reference               = 1 << 18,
+
+    Typedef                 = 1 << 21,
+
+    True                    = 1 << 22,
+    False                   = 1 << 23,
 
     /* @internal */
-    Nullable = Null,
-    Literal = StringLiteral | NumberLiteral | BooleanLiteral,
+    Literal = StringLiteral | NumericLiteral | BooleanLiteral,
     Numeric = Integer | Fixed,
-    Reference = Funcref | Arrayref | Structref,
 }
 
 export interface Type {
     flags: TypeFlags;                // Flags
     symbol?: Symbol;                 // Symbol associated with type (if any)
-}
-
-export interface IntrinsicType extends Type {
-    intrinsicName: string;        // Name of intrinsic type
 }
 
 // String literal types (TypeFlags.StringLiteral)
@@ -538,10 +497,10 @@ export interface TypeNode extends Node {
 export interface TypeNode extends Node {
 }
 
-export interface TypeReferenceNode extends TypeNode {
-    kind: SyntaxKind.TypeReference;
-    name: Identifier;
-}
+// export interface TypeReferenceNode extends TypeNode {
+//     kind: SyntaxKind.TypeReference;
+//     name: Identifier;
+// }
 
 export interface ArrayTypeNode extends TypeNode {
     kind: SyntaxKind.ArrayType;
@@ -634,6 +593,10 @@ export interface StringLiteral extends Literal {
     kind: SyntaxKind.StringLiteral;
 }
 
+export interface NumericLiteral extends Literal {
+    kind: SyntaxKind.NumericLiteral;
+}
+
 export interface Identifier extends PrimaryExpression {
     kind: SyntaxKind.Identifier;
     name: string;
@@ -657,7 +620,20 @@ export type PostfixUnaryOperator
 ;
 
 export type BinaryOperator
-    = PrefixUnaryOperator
+    = SyntaxKind.MinusToken
+    | SyntaxKind.PlusToken
+    | SyntaxKind.AsteriskToken
+    | SyntaxKind.SlashToken
+    | SyntaxKind.PercentToken
+
+    | SyntaxKind.AmpersandToken
+    | SyntaxKind.BarToken
+    | SyntaxKind.CaretToken
+    | SyntaxKind.LessThanLessThanToken
+    | SyntaxKind.GreaterThanGreaterThanToken
+
+    | SyntaxKind.BarBarToken
+    | SyntaxKind.AmpersandAmpersandToken
 ;
 
 export type BinaryOperatorToken = Token<BinaryOperator>;

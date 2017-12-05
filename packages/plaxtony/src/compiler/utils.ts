@@ -25,7 +25,6 @@ export function isKeywordTypeKind(token: SyntaxKind): boolean {
         case SyntaxKind.ActorKeyword:
         case SyntaxKind.ActorscopeKeyword:
         case SyntaxKind.AifilterKeyword:
-        case SyntaxKind.AnimfilterKeyword:
         case SyntaxKind.BankKeyword:
         case SyntaxKind.BitmaskKeyword:
         case SyntaxKind.BoolKeyword:
@@ -68,6 +67,13 @@ export function isKeywordTypeKind(token: SyntaxKind): boolean {
     return false;
 }
 
+export function isComplexTypeKind(token: SyntaxKind): boolean {
+    if (Types.SyntaxKindMarker.FirstComplexType <= <number>token && Types.SyntaxKindMarker.LastComplexType >= <number>token) {
+        return true;
+    }
+    return false;
+}
+
 export function isReferenceKeywordKind(token: SyntaxKind): boolean {
     switch (token) {
         case SyntaxKind.ArrayrefKeyword:
@@ -76,6 +82,10 @@ export function isReferenceKeywordKind(token: SyntaxKind): boolean {
             return true;
     }
     return false;
+}
+
+export function isComparisonOperator(token: SyntaxKind): boolean {
+    return token >= SyntaxKind.LessThanToken && token <= SyntaxKind.EqualsGreaterThanToken;
 }
 
 export function isAssignmentOperator(token: SyntaxKind): boolean {
@@ -359,6 +369,13 @@ export function findAncestor(node: Node, callback: (element: Node) => boolean | 
         node = node.parent;
     }
     return undefined;
+}
+
+export function findAncestorByKind(node: Node, kind: SyntaxKind): Types.Node {
+    while (node && node.kind !== kind) {
+        node = node.parent;
+    }
+    return node;
 }
 
 export function getSourceFileOfNode(node: Node): Types.SourceFile {
