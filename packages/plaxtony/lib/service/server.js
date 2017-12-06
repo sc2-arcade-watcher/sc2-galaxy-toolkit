@@ -51,15 +51,15 @@ function translateDiagnostics(sourceFile, origDiagnostics) {
 }
 function translateNodeKind(node) {
     switch (node.kind) {
-        case 135 /* VariableDeclaration */:
+        case 134 /* VariableDeclaration */:
             const variable = node;
             const isConstant = variable.modifiers.some((value) => {
                 return value.kind === 52 /* ConstKeyword */;
             });
             return isConstant ? lsp.SymbolKind.Constant : lsp.SymbolKind.Variable;
-        case 136 /* FunctionDeclaration */:
+        case 135 /* FunctionDeclaration */:
             return lsp.SymbolKind.Function;
-        case 134 /* StructDeclaration */:
+        case 133 /* StructDeclaration */:
             return lsp.SymbolKind.Class;
         default:
             return lsp.SymbolKind.Field;
@@ -70,7 +70,7 @@ function translateDeclaratons(origDeclarations) {
     let kind;
     for (let node of origDeclarations) {
         const sourceFile = utils_1.findAncestor(node, (element) => {
-            return element.kind === 122 /* SourceFile */;
+            return element.kind === 121 /* SourceFile */;
         });
         symbols.push({
             kind: translateNodeKind(node),

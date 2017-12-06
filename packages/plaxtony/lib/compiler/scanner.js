@@ -23,44 +23,43 @@ const textToTokenTable = new Map([
     ["actor", 73 /* ActorKeyword */],
     ["actorscope", 74 /* ActorscopeKeyword */],
     ["aifilter", 75 /* AifilterKeyword */],
-    ["animfilter", 76 /* AnimfilterKeyword */],
-    ["bank", 77 /* BankKeyword */],
+    ["bank", 76 /* BankKeyword */],
     ["bool", 66 /* BoolKeyword */],
-    ["bitmask", 78 /* BitmaskKeyword */],
+    ["bitmask", 77 /* BitmaskKeyword */],
     ["byte", 67 /* ByteKeyword */],
-    ["camerainfo", 79 /* CamerainfoKeyword */],
+    ["camerainfo", 78 /* CamerainfoKeyword */],
     ["char", 68 /* CharKeyword */],
-    ["color", 80 /* ColorKeyword */],
-    ["doodad", 81 /* DoodadKeyword */],
+    ["color", 79 /* ColorKeyword */],
+    ["doodad", 80 /* DoodadKeyword */],
     ["fixed", 70 /* FixedKeyword */],
-    ["handle", 82 /* HandleKeyword */],
-    ["generichandle", 83 /* GenerichandleKeyword */],
-    ["effecthistory", 84 /* EffecthistoryKeyword */],
+    ["handle", 81 /* HandleKeyword */],
+    ["generichandle", 82 /* GenerichandleKeyword */],
+    ["effecthistory", 83 /* EffecthistoryKeyword */],
     ["int", 69 /* IntKeyword */],
-    ["marker", 85 /* MarkerKeyword */],
-    ["order", 86 /* OrderKeyword */],
-    ["playergroup", 87 /* PlayergroupKeyword */],
-    ["point", 88 /* PointKeyword */],
-    ["region", 89 /* RegionKeyword */],
-    ["revealer", 90 /* RevealerKeyword */],
-    ["sound", 91 /* SoundKeyword */],
-    ["soundlink", 92 /* SoundlinkKeyword */],
+    ["marker", 84 /* MarkerKeyword */],
+    ["order", 85 /* OrderKeyword */],
+    ["playergroup", 86 /* PlayergroupKeyword */],
+    ["point", 87 /* PointKeyword */],
+    ["region", 88 /* RegionKeyword */],
+    ["revealer", 89 /* RevealerKeyword */],
+    ["sound", 90 /* SoundKeyword */],
+    ["soundlink", 91 /* SoundlinkKeyword */],
     ["string", 71 /* StringKeyword */],
-    ["text", 93 /* TextKeyword */],
-    ["timer", 94 /* TimerKeyword */],
-    ["transmissionsource", 95 /* TransmissionsourceKeyword */],
-    ["trigger", 96 /* TriggerKeyword */],
-    ["unit", 97 /* UnitKeyword */],
-    ["unitfilter", 98 /* UnitfilterKeyword */],
-    ["unitgroup", 99 /* UnitgroupKeyword */],
-    ["unitref", 100 /* UnitrefKeyword */],
-    ["void", 101 /* VoidKeyword */],
-    ["wave", 102 /* WaveKeyword */],
-    ["waveinfo", 103 /* WaveinfoKeyword */],
-    ["wavetarget", 104 /* WavetargetKeyword */],
-    ["arrayref", 105 /* ArrayrefKeyword */],
-    ["structref", 106 /* StructrefKeyword */],
-    ["funcref", 107 /* FuncrefKeyword */],
+    ["text", 92 /* TextKeyword */],
+    ["timer", 93 /* TimerKeyword */],
+    ["transmissionsource", 94 /* TransmissionsourceKeyword */],
+    ["trigger", 95 /* TriggerKeyword */],
+    ["unit", 96 /* UnitKeyword */],
+    ["unitfilter", 97 /* UnitfilterKeyword */],
+    ["unitgroup", 98 /* UnitgroupKeyword */],
+    ["unitref", 99 /* UnitrefKeyword */],
+    ["void", 100 /* VoidKeyword */],
+    ["wave", 101 /* WaveKeyword */],
+    ["waveinfo", 102 /* WaveinfoKeyword */],
+    ["wavetarget", 103 /* WavetargetKeyword */],
+    ["arrayref", 104 /* ArrayrefKeyword */],
+    ["structref", 105 /* StructrefKeyword */],
+    ["funcref", 106 /* FuncrefKeyword */],
     ["{", 3 /* OpenBraceToken */],
     ["}", 4 /* CloseBraceToken */],
     ["(", 5 /* OpenParenToken */],
@@ -380,7 +379,7 @@ class Scanner {
                 return token;
             }
         }
-        return 108 /* Identifier */;
+        return 107 /* Identifier */;
     }
     setText(text) {
         this.text = text;
@@ -396,7 +395,7 @@ class Scanner {
             this.tokenPos = this.pos;
             this.tokenValue = null;
             if (this.pos >= this.end) {
-                return 109 /* EndOfFileToken */;
+                return 108 /* EndOfFileToken */;
             }
             let ch = this.text.charCodeAt(this.pos);
             switch (ch) {

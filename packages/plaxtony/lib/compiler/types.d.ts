@@ -201,85 +201,83 @@ export declare const enum SyntaxKind {
     ActorKeyword = 73,
     ActorscopeKeyword = 74,
     AifilterKeyword = 75,
-    AnimfilterKeyword = 76,
-    BankKeyword = 77,
-    BitmaskKeyword = 78,
-    CamerainfoKeyword = 79,
-    ColorKeyword = 80,
-    DoodadKeyword = 81,
-    HandleKeyword = 82,
-    GenerichandleKeyword = 83,
-    EffecthistoryKeyword = 84,
-    MarkerKeyword = 85,
-    OrderKeyword = 86,
-    PlayergroupKeyword = 87,
-    PointKeyword = 88,
-    RegionKeyword = 89,
-    RevealerKeyword = 90,
-    SoundKeyword = 91,
-    SoundlinkKeyword = 92,
-    TextKeyword = 93,
-    TimerKeyword = 94,
-    TransmissionsourceKeyword = 95,
-    TriggerKeyword = 96,
-    UnitKeyword = 97,
-    UnitfilterKeyword = 98,
-    UnitgroupKeyword = 99,
-    UnitrefKeyword = 100,
-    VoidKeyword = 101,
-    WaveKeyword = 102,
-    WaveinfoKeyword = 103,
-    WavetargetKeyword = 104,
-    ArrayrefKeyword = 105,
-    StructrefKeyword = 106,
-    FuncrefKeyword = 107,
-    Identifier = 108,
-    EndOfFileToken = 109,
-    TypeReference = 110,
-    MappedType = 111,
-    ArrayType = 112,
-    ArrayLiteralExpression = 113,
-    ElementAccessExpression = 114,
-    PropertyAccessExpression = 115,
-    CallExpression = 116,
-    PrefixUnaryExpression = 117,
-    PostfixUnaryExpression = 118,
-    BinaryExpression = 119,
-    TypeAssertionExpression = 120,
-    ParenthesizedExpression = 121,
-    SourceFile = 122,
-    Block = 123,
-    IfStatement = 124,
-    DoStatement = 125,
-    WhileStatement = 126,
-    ForStatement = 127,
-    BreakStatement = 128,
-    ContinueStatement = 129,
-    IncludeStatement = 130,
-    ReturnStatement = 131,
-    ExpressionStatement = 132,
-    EmptyStatement = 133,
-    StructDeclaration = 134,
-    VariableDeclaration = 135,
-    FunctionDeclaration = 136,
-    ParameterDeclaration = 137,
-    PropertyDeclaration = 138,
-    TypedefDeclaration = 139,
+    BankKeyword = 76,
+    BitmaskKeyword = 77,
+    CamerainfoKeyword = 78,
+    ColorKeyword = 79,
+    DoodadKeyword = 80,
+    HandleKeyword = 81,
+    GenerichandleKeyword = 82,
+    EffecthistoryKeyword = 83,
+    MarkerKeyword = 84,
+    OrderKeyword = 85,
+    PlayergroupKeyword = 86,
+    PointKeyword = 87,
+    RegionKeyword = 88,
+    RevealerKeyword = 89,
+    SoundKeyword = 90,
+    SoundlinkKeyword = 91,
+    TextKeyword = 92,
+    TimerKeyword = 93,
+    TransmissionsourceKeyword = 94,
+    TriggerKeyword = 95,
+    UnitKeyword = 96,
+    UnitfilterKeyword = 97,
+    UnitgroupKeyword = 98,
+    UnitrefKeyword = 99,
+    VoidKeyword = 100,
+    WaveKeyword = 101,
+    WaveinfoKeyword = 102,
+    WavetargetKeyword = 103,
+    ArrayrefKeyword = 104,
+    StructrefKeyword = 105,
+    FuncrefKeyword = 106,
+    Identifier = 107,
+    EndOfFileToken = 108,
+    TypeReference = 109,
+    MappedType = 110,
+    ArrayType = 111,
+    ArrayLiteralExpression = 112,
+    ElementAccessExpression = 113,
+    PropertyAccessExpression = 114,
+    CallExpression = 115,
+    PrefixUnaryExpression = 116,
+    PostfixUnaryExpression = 117,
+    BinaryExpression = 118,
+    TypeAssertionExpression = 119,
+    ParenthesizedExpression = 120,
+    SourceFile = 121,
+    Block = 122,
+    IfStatement = 123,
+    DoStatement = 124,
+    WhileStatement = 125,
+    ForStatement = 126,
+    BreakStatement = 127,
+    ContinueStatement = 128,
+    IncludeStatement = 129,
+    ReturnStatement = 130,
+    ExpressionStatement = 131,
+    EmptyStatement = 132,
+    StructDeclaration = 133,
+    VariableDeclaration = 134,
+    FunctionDeclaration = 135,
+    ParameterDeclaration = 136,
+    PropertyDeclaration = 137,
+    TypedefDeclaration = 138,
 }
 export declare const enum SyntaxKindMarker {
     FirstToken = 1,
-    LastToken = 108,
+    LastToken = 107,
     FirstKeyword = 49,
-    LastKeyword = 107,
+    LastKeyword = 106,
     FirstBasicType = 66,
     LastBasicType = 71,
     FirstComplexType = 72,
-    LastComplexType = 104,
-    FirstTypeNode = 110,
-    LastTypeNode = 112,
+    LastComplexType = 103,
+    FirstTypeNode = 109,
+    LastTypeNode = 111,
 }
 export declare type Modifier = Token<SyntaxKind.ConstKeyword> | Token<SyntaxKind.NativeKeyword> | Token<SyntaxKind.StaticKeyword>;
-export declare type ComplexTypeKeyword = SyntaxKind.AbilcmdKeyword | SyntaxKind.ActorKeyword | SyntaxKind.ActorscopeKeyword | SyntaxKind.AifilterKeyword | SyntaxKind.AnimfilterKeyword | SyntaxKind.BankKeyword | SyntaxKind.BitmaskKeyword | SyntaxKind.BoolKeyword | SyntaxKind.ByteKeyword | SyntaxKind.CamerainfoKeyword | SyntaxKind.CharKeyword | SyntaxKind.ColorKeyword | SyntaxKind.DoodadKeyword | SyntaxKind.FixedKeyword | SyntaxKind.HandleKeyword | SyntaxKind.GenerichandleKeyword | SyntaxKind.EffecthistoryKeyword | SyntaxKind.IntKeyword | SyntaxKind.MarkerKeyword | SyntaxKind.OrderKeyword | SyntaxKind.PlayergroupKeyword | SyntaxKind.PointKeyword | SyntaxKind.RegionKeyword | SyntaxKind.RevealerKeyword | SyntaxKind.SoundKeyword | SyntaxKind.SoundlinkKeyword | SyntaxKind.StringKeyword | SyntaxKind.TextKeyword | SyntaxKind.TimerKeyword | SyntaxKind.TransmissionsourceKeyword | SyntaxKind.TriggerKeyword | SyntaxKind.UnitKeyword | SyntaxKind.UnitfilterKeyword | SyntaxKind.UnitgroupKeyword | SyntaxKind.UnitrefKeyword | SyntaxKind.VoidKeyword | SyntaxKind.WaveKeyword | SyntaxKind.WaveinfoKeyword | SyntaxKind.WavetargetKeyword;
 export declare const enum SymbolFlags {
     None = 0,
     LocalVariable = 2,
@@ -306,37 +304,34 @@ export interface Symbol {
 }
 export declare type SymbolTable = Map<string, Symbol>;
 export declare const enum TypeFlags {
-    Any = 1,
+    Unknown = 1,
     String = 2,
     Integer = 4,
-    Fixed = 8,
-    Boolean = 16,
-    Enum = 32,
-    StringLiteral = 64,
-    NumberLiteral = 128,
-    BooleanLiteral = 256,
-    Void = 1024,
-    Null = 2048,
-    Struct = 4096,
-    Function = 8192,
-    Complex = 16384,
-    Array = 32768,
-    Mapped = 65536,
-    Funcref = 131072,
-    Arrayref = 262144,
-    Structref = 524288,
-    Typedef = 1048576,
-    Nullable = 2048,
-    Literal = 448,
-    Numeric = 12,
-    Reference = 917504,
+    Byte = 8,
+    Char = 16,
+    Fixed = 32,
+    Boolean = 64,
+    Nullable = 128,
+    StringLiteral = 256,
+    NumericLiteral = 512,
+    BooleanLiteral = 1024,
+    Void = 2048,
+    Null = 4096,
+    Struct = 8192,
+    Function = 16384,
+    Complex = 32768,
+    Array = 65536,
+    Mapped = 131072,
+    Reference = 262144,
+    Typedef = 2097152,
+    True = 4194304,
+    False = 8388608,
+    Literal = 1792,
+    Numeric = 36,
 }
 export interface Type {
     flags: TypeFlags;
     symbol?: Symbol;
-}
-export interface IntrinsicType extends Type {
-    intrinsicName: string;
 }
 export interface LiteralType extends Type {
     value: string | number;
@@ -415,10 +410,6 @@ export interface TypeNode extends Node {
 }
 export interface TypeNode extends Node {
 }
-export interface TypeReferenceNode extends TypeNode {
-    kind: SyntaxKind.TypeReference;
-    name: Identifier;
-}
 export interface ArrayTypeNode extends TypeNode {
     kind: SyntaxKind.ArrayType;
     elementType: TypeNode;
@@ -492,6 +483,9 @@ export interface Literal extends Expression {
 export interface StringLiteral extends Literal {
     kind: SyntaxKind.StringLiteral;
 }
+export interface NumericLiteral extends Literal {
+    kind: SyntaxKind.NumericLiteral;
+}
 export interface Identifier extends PrimaryExpression {
     kind: SyntaxKind.Identifier;
     name: string;
@@ -500,7 +494,7 @@ export interface Identifier extends PrimaryExpression {
 export declare type EntityNameExpression = Identifier | PropertyAccessExpression | ParenthesizedExpression;
 export declare type PrefixUnaryOperator = SyntaxKind.MinusToken | SyntaxKind.PlusToken | SyntaxKind.TildeToken | SyntaxKind.ExclamationToken | SyntaxKind.MinusMinusToken | SyntaxKind.PlusPlusToken;
 export declare type PostfixUnaryOperator = SyntaxKind.PlusPlusToken | SyntaxKind.MinusMinusToken;
-export declare type BinaryOperator = PrefixUnaryOperator;
+export declare type BinaryOperator = SyntaxKind.MinusToken | SyntaxKind.PlusToken | SyntaxKind.AsteriskToken | SyntaxKind.SlashToken | SyntaxKind.PercentToken | SyntaxKind.AmpersandToken | SyntaxKind.BarToken | SyntaxKind.CaretToken | SyntaxKind.LessThanLessThanToken | SyntaxKind.GreaterThanGreaterThanToken | SyntaxKind.BarBarToken | SyntaxKind.AmpersandAmpersandToken;
 export declare type BinaryOperatorToken = Token<BinaryOperator>;
 export interface UpdateExpression extends UnaryExpression {
 }

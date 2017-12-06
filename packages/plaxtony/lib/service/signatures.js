@@ -78,7 +78,7 @@ class SignaturesProvider extends provider_1.AbstractProvider {
         }
         let node = currentToken.parent;
         const callNode = utils_1.findAncestor(node, (element) => {
-            if (element.kind !== 116 /* CallExpression */) {
+            if (element.kind !== 115 /* CallExpression */) {
                 return false;
             }
             // we don't want to provide signature for left side of CallExpression
@@ -96,7 +96,7 @@ class SignaturesProvider extends provider_1.AbstractProvider {
         }
         const checker = new checker_1.TypeChecker(this.store);
         const type = checker.getTypeOfNode(callNode.expression, true);
-        if (type.flags & 8192 /* Function */) {
+        if (type.flags & 16384 /* Function */) {
             const signatureInfo = this.getSignatureOfFunction(type.symbol);
             signatureHelp.activeSignature = 0;
             signatureHelp.activeParameter = this.evaluateActiveParameter(callNode, position);

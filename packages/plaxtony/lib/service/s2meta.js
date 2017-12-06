@@ -180,10 +180,10 @@ class S2WorkspaceMetadata {
     }
     getElementTypeOfNode(node) {
         // if (node.kind !== gt.SyntaxKind.StringLiteral) return null;
-        if (node.parent.kind !== 116 /* CallExpression */)
+        if (node.parent.kind !== 115 /* CallExpression */)
             return null;
         const callExpr = node.parent;
-        if (callExpr.expression.kind !== 108 /* Identifier */)
+        if (callExpr.expression.kind !== 107 /* Identifier */)
             return null;
         const el = this.findElementByName(callExpr.expression.name);
         if (!el)
@@ -210,6 +210,8 @@ class S2WorkspaceMetadata {
         if (el.flags & 16 /* Event */) {
             index--;
         }
+        if (el.getParameters().length <= index)
+            return null;
         return el.getParameters()[index].type;
     }
     getLinksForGameType(gameType) {

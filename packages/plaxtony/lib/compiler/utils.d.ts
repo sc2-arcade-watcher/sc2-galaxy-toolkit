@@ -7,7 +7,9 @@ import { SyntaxKind, Node, NodeArray } from './types';
 export declare function isToken(n: Node): boolean;
 export declare function isModifierKind(token: SyntaxKind): boolean;
 export declare function isKeywordTypeKind(token: SyntaxKind): boolean;
+export declare function isComplexTypeKind(token: SyntaxKind): boolean;
 export declare function isReferenceKeywordKind(token: SyntaxKind): boolean;
+export declare function isComparisonOperator(token: SyntaxKind): boolean;
 export declare function isAssignmentOperator(token: SyntaxKind): boolean;
 export declare function isLeftHandSideExpressionKind(kind: SyntaxKind): boolean;
 export declare function isContainerKind(kind: SyntaxKind): boolean;
@@ -27,6 +29,7 @@ export declare function sourceFileToJSON(file: Types.Node): string;
  */
 export declare function findAncestor<T extends Node>(node: Node, callback: (element: Node) => element is T): T | undefined;
 export declare function findAncestor(node: Node, callback: (element: Node) => boolean | "quit"): Node | undefined;
+export declare function findAncestorByKind(node: Node, kind: SyntaxKind): Types.Node;
 export declare function getSourceFileOfNode(node: Node): Types.SourceFile;
 export declare function fixupParentReferences(rootNode: Node): void;
 /**

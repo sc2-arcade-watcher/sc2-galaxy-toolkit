@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const gt = require("./types");
-const utils_1 = require("./utils");
+const utils_1 = require("../compiler/utils");
+const utils_2 = require("./utils");
+const scanner_1 = require("./scanner");
 let nextSymbolId = 1;
 let nextNodeId = 1;
 let nextMergeId = 1;
@@ -28,54 +30,469 @@ var CheckMode;
     CheckMode[CheckMode["SkipContextSensitive"] = 1] = "SkipContextSensitive";
     CheckMode[CheckMode["Inferential"] = 2] = "Inferential";
 })(CheckMode || (CheckMode = {}));
-function createType(flags) {
-    const result = {
-        flags: flags,
-    };
-    return result;
+class AbstractType {
+    isValidBinaryOperation(operation, rightType) {
+        return false;
+    }
+    isValidPrefixOperation(operation) {
+        return false;
+    }
+    isValidPostfixOperation(operation) {
+        return false;
+    }
+    getName() {
+        return this.constructor.name;
+    }
 }
-function createIntrinsicType(kind, intrinsicName) {
-    const type = createType(kind);
-    type.intrinsicName = intrinsicName;
-    return type;
+exports.AbstractType = AbstractType;
+class UnknownType extends AbstractType {
+    constructor() {
+        super(...arguments);
+        this.flags = 1 /* Unknown */;
+    }
+    isAssignableTo(target) {
+        return false;
+    }
+    isComparableTo(target) {
+        return false;
+    }
+    isBoolExpression(negation) {
+        return false;
+    }
 }
-// function createBooleanType(trueFalseTypes: Type[]): IntrinsicType & UnionType {
-//     const type = <IntrinsicType & UnionType>getUnionType(trueFalseTypes);
-//     type.flags |= gt.TypeFlags.Boolean;
-//     type.intrinsicName = "boolean";
-//     return type;
-// }
-function createStructType(symbol) {
-    const type = createType(4096 /* Struct */);
-    type.symbol = symbol;
-    return type;
+exports.UnknownType = UnknownType;
+class IntrinsicType extends AbstractType {
+    constructor(flags, name) {
+        super();
+        this.flags = flags;
+        this.name = name;
+    }
+    isAssignableTo(target) {
+        if (this === target)
+            return true;
+        if (target instanceof IntrinsicType) {
+            if (target.flags & 32 /* Fixed */ && (this.flags & 4 /* Integer */ || this.flags & 8 /* Byte */))
+                return true;
+            if (target.flags & 4 /* Integer */ && (this.flags & 8 /* Byte */))
+                return true;
+            if (target.flags & 8 /* Byte */ && (this.flags & 4 /* Integer */))
+                return true;
+            if (this.flags & 64 /* Boolean */ && target.flags & 64 /* Boolean */)
+                return true;
+        }
+        if (this.flags & 4096 /* Null */ && target.flags & 128 /* Nullable */)
+            return true;
+        return false;
+    }
+    isComparableTo(target) {
+        if (this === target)
+            return true;
+        if (target instanceof IntrinsicType) {
+            if ((this.flags & 4 /* Integer */ || this.flags & 8 /* Byte */ || this.flags & 32 /* Fixed */) &&
+                (target.flags & 4 /* Integer */ || target.flags & 8 /* Byte */ || target.flags & 32 /* Fixed */)) {
+                return true;
+            }
+            if (this.flags & 64 /* Boolean */ && target.flags & 64 /* Boolean */)
+                return true;
+        }
+        if (this.flags & 4096 /* Null */ && target.flags & 128 /* Nullable */)
+            return true;
+        return false;
+    }
+    isBoolExpression(negation) {
+        return true;
+    }
+    isValidBinaryOperation(operation, rightType) {
+        if (this === rightType || (rightType instanceof LiteralType && rightType.value.kind === 2 /* StringLiteral */)) {
+            switch (operation) {
+                case 19 /* PlusToken */:
+                    if (this.flags & 2 /* String */)
+                        return true;
+            }
+        }
+        if (this === rightType ||
+            (rightType.flags & 4 /* Integer */) ||
+            (rightType.flags & 32 /* Fixed */) ||
+            (rightType.flags & 8 /* Byte */) ||
+            (rightType instanceof LiteralType && rightType.value.kind === 1 /* NumericLiteral */)) {
+            switch (operation) {
+                case 19 /* PlusToken */:
+                case 20 /* MinusToken */:
+                case 21 /* AsteriskToken */:
+                case 23 /* PercentToken */:
+                case 22 /* SlashToken */:
+                    if (this.flags & 4 /* Integer */ || this.flags & 8 /* Byte */ || this.flags & 32 /* Fixed */)
+                        return true;
+            }
+        }
+        if (this === rightType || (rightType instanceof LiteralType && rightType.value.kind === 1 /* NumericLiteral */)) {
+            switch (operation) {
+                case 28 /* AmpersandToken */:
+                case 29 /* BarToken */:
+                case 30 /* CaretToken */:
+                case 26 /* LessThanLessThanToken */:
+                case 27 /* GreaterThanGreaterThanToken */:
+                case 34 /* BarBarToken */:
+                case 33 /* AmpersandAmpersandToken */:
+                    if (this.flags & 4 /* Integer */)
+                        return true;
+            }
+        }
+        return false;
+    }
+    isValidPrefixOperation(operation) {
+        switch (operation) {
+            case 19 /* PlusToken */:
+            case 20 /* MinusToken */:
+                if (this.flags & 4 /* Integer */ || this.flags & 8 /* Byte */ || this.flags & 32 /* Fixed */)
+                    return true;
+            case 32 /* TildeToken */:
+                if (this.flags & 4 /* Integer */ || this.flags & 8 /* Byte */)
+                    return true;
+            case 31 /* ExclamationToken */:
+                if (this.flags & 4 /* Integer */ || this.flags & 8 /* Byte */ || this.flags & 32 /* Fixed */ || this.flags & 64 /* Boolean */)
+                    return true;
+        }
+    }
+    isValidPostfixOperation(operation) {
+        return false;
+    }
+    getName() {
+        return this.name;
+    }
 }
-function createFunctionType(symbol) {
-    const type = createType(8192 /* Function */);
-    type.symbol = symbol;
-    return type;
+exports.IntrinsicType = IntrinsicType;
+class ComplexType extends AbstractType {
+    constructor(kind) {
+        super();
+        this.flags = 32768 /* Complex */;
+        this.kind = kind;
+        switch (this.kind) {
+            case 79 /* ColorKeyword */:
+                break;
+            default:
+                this.flags |= 128 /* Nullable */;
+                break;
+        }
+    }
+    isAssignableTo(target) {
+        if (this === target)
+            return true;
+        if (target instanceof ComplexType) {
+            const cmpKind = target.kind === 81 /* HandleKeyword */ ? this.kind : target.kind;
+            switch (cmpKind) {
+                case 72 /* AbilcmdKeyword */:
+                case 73 /* ActorKeyword */:
+                case 74 /* ActorscopeKeyword */:
+                case 75 /* AifilterKeyword */:
+                case 76 /* BankKeyword */:
+                case 77 /* BitmaskKeyword */:
+                case 78 /* CamerainfoKeyword */:
+                case 82 /* GenerichandleKeyword */:
+                case 83 /* EffecthistoryKeyword */:
+                case 84 /* MarkerKeyword */:
+                case 85 /* OrderKeyword */:
+                case 86 /* PlayergroupKeyword */:
+                case 87 /* PointKeyword */:
+                case 88 /* RegionKeyword */:
+                case 90 /* SoundKeyword */:
+                case 91 /* SoundlinkKeyword */:
+                case 92 /* TextKeyword */:
+                case 93 /* TimerKeyword */:
+                case 94 /* TransmissionsourceKeyword */:
+                case 97 /* UnitfilterKeyword */:
+                case 98 /* UnitgroupKeyword */:
+                case 99 /* UnitrefKeyword */:
+                case 102 /* WaveinfoKeyword */:
+                case 103 /* WavetargetKeyword */:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        // if (target.flags && gt.TypeFlags.Null && this.flags & gt.TypeFlags.Nullable) return true;
+        return false;
+    }
+    isComparableTo(target) {
+        if (this === target)
+            return true;
+        if (target.flags && 4096 /* Null */ && this.flags & 128 /* Nullable */)
+            return true;
+        return false;
+    }
+    isBoolExpression(negation) {
+        if (negation) {
+            switch (this.kind) {
+                case 95 /* TriggerKeyword */:
+                case 96 /* UnitKeyword */:
+                    return false;
+            }
+        }
+        return true;
+    }
+    isValidBinaryOperation(operation, rightType) {
+        if (this !== rightType)
+            return false;
+        switch (operation) {
+            case 19 /* PlusToken */:
+                {
+                    switch (this.kind) {
+                        case 92 /* TextKeyword */:
+                        case 87 /* PointKeyword */:
+                            return true;
+                    }
+                    break;
+                }
+            case 20 /* MinusToken */:
+                {
+                    switch (this.kind) {
+                        case 87 /* PointKeyword */:
+                            return true;
+                    }
+                    break;
+                }
+        }
+        return false;
+    }
+    isValidPrefixOperation(operation) {
+        switch (operation) {
+            case 31 /* ExclamationToken */:
+                return this.isBoolExpression(true);
+        }
+        return false;
+    }
+    getName() {
+        return scanner_1.tokenToString(this.kind);
+    }
 }
-function createTypedefType(referencedType) {
-    const type = createType(1048576 /* Typedef */);
-    type.referencedType = referencedType;
-    return type;
+exports.ComplexType = ComplexType;
+class LiteralType extends AbstractType {
+    constructor(flags, value) {
+        super();
+        this.flags = flags;
+        this.value = value;
+    }
+    isAssignableTo(target) {
+        if (this === target)
+            return true;
+        if (this.value.kind === 2 /* StringLiteral */ && target.flags & 2 /* String */) {
+            return true;
+        }
+        if (this.value.kind === 1 /* NumericLiteral */ && (target.flags & 8 /* Byte */ ||
+            target.flags & 4 /* Integer */ ||
+            target.flags & 32 /* Fixed */)) {
+            if (this.value.text.indexOf('.') !== -1 && !(target.flags & 32 /* Fixed */)) {
+                return false;
+            }
+            return true;
+        }
+        if (this.flags & 4096 /* Null */ && target.flags & 128 /* Nullable */) {
+            return true;
+        }
+        return false;
+    }
+    isComparableTo(target) {
+        if (this === target)
+            return true;
+        if (this.value.kind === 1 /* NumericLiteral */ && (target.flags & 8 /* Byte */ ||
+            target.flags & 4 /* Integer */ ||
+            target.flags & 32 /* Fixed */)) {
+            return true;
+        }
+        if (target instanceof LiteralType && this.value.kind === target.value.kind)
+            return true;
+        return this.isAssignableTo(target);
+    }
+    isBoolExpression(negation) {
+        return true;
+    }
+    isValidBinaryOperation(operation, rightType) {
+        let type;
+        if (this.value.kind === 1 /* NumericLiteral */) {
+            if (this.value.text.indexOf('.') !== -1) {
+                type = fixedType;
+            }
+            else {
+                type = integerType;
+            }
+        }
+        else if (this.value.kind === 2 /* StringLiteral */) {
+            type = stringType;
+        }
+        else {
+            return false;
+        }
+        return type.isValidBinaryOperation(operation, rightType);
+    }
+    isValidPrefixOperation(operation) {
+        let type;
+        if (this.value.kind === 1 /* NumericLiteral */) {
+            if (this.value.text.indexOf('.') !== -1) {
+                type = fixedType;
+            }
+            else {
+                type = integerType;
+            }
+        }
+        else if (this.value.kind === 2 /* StringLiteral */) {
+            type = stringType;
+        }
+        else {
+            return false;
+        }
+        return type.isValidPrefixOperation(operation);
+    }
+    getName() {
+        return `${this.value.text}`;
+    }
 }
-function createArrayType(elementType) {
-    const type = createType(32768 /* Array */);
-    type.elementType = elementType;
-    return type;
+exports.LiteralType = LiteralType;
+class StructType extends AbstractType {
+    constructor(symbol) {
+        super();
+        this.flags = 8192 /* Struct */;
+        this.symbol = symbol;
+    }
+    isAssignableTo(target) {
+        if (target instanceof ReferenceType && target.kind === 105 /* StructrefKeyword */ && this.symbol === target.declaredType.symbol) {
+            return true;
+        }
+        return false;
+    }
+    isComparableTo(target) {
+        if (this === target)
+            return true;
+        if (target instanceof StructType && target.symbol === this.symbol)
+            return true;
+        return false;
+    }
+    isBoolExpression(negation) {
+        return false;
+    }
+    getName() {
+        return this.symbol.escapedName;
+    }
 }
-function createMappedType(returnType, referencedType) {
-    const type = createType(65536 /* Mapped */);
-    type.returnType = returnType;
-    type.referencedType = referencedType;
-    return type;
+exports.StructType = StructType;
+class SignatureMeta {
+    constructor(returnType, args) {
+        this.returnType = returnType;
+        this.args = args;
+    }
+    match(other) {
+        if (this.returnType !== other.returnType)
+            return false;
+        if (this.args.length !== other.args.length)
+            return false;
+        for (const [key, arg] of this.args.entries()) {
+            if (this.args[key] !== arg)
+                return false;
+        }
+        return true;
+    }
 }
-function createComplexType(kind) {
-    const type = createType(16384 /* Complex */);
-    type.kind = kind;
-    return type;
+exports.SignatureMeta = SignatureMeta;
+class FunctionType extends AbstractType {
+    constructor(symbol, signature) {
+        super();
+        this.flags = 16384 /* Function */;
+        this.symbol = symbol;
+        this.signature = signature;
+    }
+    isAssignableTo(target) {
+        if (target instanceof ReferenceType && target.kind === 106 /* FuncrefKeyword */) {
+            if (this.symbol === target.declaredType.symbol)
+                return true;
+            if (this.signature.match(target.declaredType.signature))
+                return true;
+        }
+        return false;
+    }
+    isComparableTo(target) {
+        if (this === target)
+            return true;
+        if (target instanceof FunctionType && target.symbol === this.symbol)
+            return true;
+        return false;
+    }
+    isBoolExpression(negation) {
+        if (negation)
+            return false;
+        return true;
+    }
+    getName() {
+        return this.symbol.escapedName;
+    }
 }
+exports.FunctionType = FunctionType;
+class ReferenceType extends AbstractType {
+    constructor(kind, declaredType) {
+        super();
+        this.flags = 262144 /* Reference */;
+        this.kind = kind;
+        this.declaredType = declaredType;
+        // this.symbol = symbol;
+    }
+    isAssignableTo(target) {
+        if (target instanceof ReferenceType && this.kind === target.kind) {
+            return this.declaredType.isAssignableTo(this);
+        }
+        return false;
+    }
+    isComparableTo(target) {
+        return false;
+    }
+    isBoolExpression(negation) {
+        return false;
+    }
+    getName() {
+        return scanner_1.tokenToString(this.kind) + '<' + this.declaredType.getName() + '>';
+    }
+}
+exports.ReferenceType = ReferenceType;
+class ArrayType extends AbstractType {
+    constructor(elementType) {
+        super();
+        this.flags = 65536 /* Array */;
+        this.elementType = elementType;
+    }
+    isAssignableTo(target) {
+        if (target instanceof ReferenceType && target.kind === 104 /* ArrayrefKeyword */) {
+            if (this.elementType === target.declaredType.elementType)
+                return true;
+        }
+    }
+    isComparableTo(target) {
+        return false;
+    }
+    isBoolExpression(negation) {
+        return false;
+    }
+    getName() {
+        return this.elementType.getName() + '[]';
+    }
+}
+exports.ArrayType = ArrayType;
+class TypedefType extends AbstractType {
+    constructor(referencedType) {
+        super();
+        this.flags = 2097152 /* Typedef */;
+        this.referencedType = referencedType;
+    }
+    isAssignableTo(target) {
+        return false;
+    }
+    isComparableTo(target) {
+        return false;
+    }
+    isBoolExpression(negation) {
+        return false;
+    }
+    getName() {
+        return this.referencedType.getName();
+    }
+}
+exports.TypedefType = TypedefType;
 function createSymbol(flags, name) {
     const symbol = {
         flags: flags,
@@ -83,26 +500,24 @@ function createSymbol(flags, name) {
     };
     return symbol;
 }
-const unknownType = createIntrinsicType(1 /* Any */, "unknown");
-const nullType = createIntrinsicType(2048 /* Null */, "null");
-const stringType = createIntrinsicType(2 /* String */, "string");
-const integerType = createIntrinsicType(4 /* Integer */, "integer");
-const fixedType = createIntrinsicType(8 /* Fixed */, "fixed");
-const trueType = createIntrinsicType(256 /* BooleanLiteral */, "true");
-const falseType = createIntrinsicType(256 /* BooleanLiteral */, "false");
-// const booleanType = createBooleanType([trueType, falseType]);
-const voidType = createIntrinsicType(1024 /* Void */, "void");
-const funcrefType = createIntrinsicType(131072 /* Funcref */, "funcref");
-const arrayrefType = createIntrinsicType(262144 /* Arrayref */, "arrayref");
-const structrefType = createIntrinsicType(524288 /* Structref */, "structref");
-const complexTypes = [];
-complexTypes[97 /* UnitKeyword */] = createComplexType(97 /* UnitKeyword */);
+const unknownType = new UnknownType();
+const nullType = new IntrinsicType(4096 /* Null */ | 128 /* Nullable */, "null");
+const boolType = new IntrinsicType(64 /* Boolean */, "bool");
+const trueType = new IntrinsicType(64 /* Boolean */, "true");
+const falseType = new IntrinsicType(64 /* Boolean */, "false");
+const stringType = new IntrinsicType(2 /* String */ | 128 /* Nullable */, "string");
+const integerType = new IntrinsicType(4 /* Integer */, "integer");
+const byteType = new IntrinsicType(8 /* Byte */, "byte");
+const fixedType = new IntrinsicType(32 /* Fixed */, "fixed");
+const voidType = new IntrinsicType(2048 /* Void */, "void");
+const complexTypes = generateComplexTypes();
 function generateComplexTypes() {
     const map = new Map();
-    for (let i = 72 /* FirstComplexType */; i <= 104 /* LastComplexType */; i++) {
+    for (let i = 72 /* FirstComplexType */; i <= 103 /* LastComplexType */; i++) {
         const ckind = i;
-        map.set(ckind, createComplexType(ckind));
+        map.set(ckind, new ComplexType(ckind));
     }
+    return map;
 }
 // const undefinedSymbol = createSymbol(gt.SymbolFlags.None, "undefined")
 class TypeChecker {
@@ -112,36 +527,50 @@ class TypeChecker {
         this.store = store;
     }
     report(location, msg, category = gt.DiagnosticCategory.Error) {
-        this.diagnostics.push(utils_1.createDiagnosticForNode(location, category, msg));
+        this.diagnostics.push(utils_2.createDiagnosticForNode(location, category, msg));
     }
     getNodeLinks(node) {
         const nodeId = getNodeId(node);
         return this.nodeLinks[nodeId] || (this.nodeLinks[nodeId] = { flags: 0 });
     }
+    checkTypeAssignableTo(source, target, node) {
+        if (!source.isAssignableTo(target)) {
+            this.report(node, 'Type \'' + source.getName() + '\' is not assignable to type \'' + target.getName() + '\'');
+        }
+    }
+    checkTypeComparableTo(source, target, node) {
+        if (!source.isComparableTo(target)) {
+            this.report(node, 'Type \'' + source.getName() + '\' is not comparable to type \'' + target.getName() + '\'');
+        }
+    }
+    checkTypeBoolExpression(source, negation, node) {
+        if (!source.isBoolExpression(negation)) {
+            this.report(node, 'Type \'' + source.getName() + '\' can not be used as boolean expression');
+        }
+    }
     getTypeFromArrayTypeNode(node) {
         const links = this.getNodeLinks(node);
         if (!links.resolvedType) {
-            links.resolvedType = createArrayType(this.getTypeFromTypeNode(node.elementType));
+            links.resolvedType = new ArrayType(this.getTypeFromTypeNode(node.elementType));
         }
         return links.resolvedType;
     }
     getTypeFromMappedTypeNode(node) {
         const links = this.getNodeLinks(node);
         if (!links.resolvedType) {
-            links.resolvedType = createMappedType(this.getTypeFromTypeNode(node.returnType), this.getTypeFromTypeNode(node.typeArguments[0]));
+            links.resolvedType = new ReferenceType(node.returnType.kind, node.typeArguments.length ? this.getTypeFromTypeNode(node.typeArguments[0]) : unknownType);
         }
         return links.resolvedType;
     }
     resolveMappedReference(type) {
-        if (type.flags & 65536 /* Mapped */ && (type.returnType.flags & 524288 /* Structref */ ||
-            type.returnType.flags & 131072 /* Funcref */)) {
-            type = type.referencedType;
+        if (type.flags & 262144 /* Reference */) {
+            type = type.declaredType;
         }
         return type;
     }
     getPropertyOfType(type, name) {
         type = this.resolveMappedReference(type);
-        if (type && type.flags & 4096 /* Struct */) {
+        if (type && type.flags & 8192 /* Struct */) {
             if (type.symbol.members.has(name)) {
                 return type.symbol.members.get(name);
             }
@@ -149,7 +578,20 @@ class TypeChecker {
         return undefined;
     }
     getDeclaredTypeOfStruct(symbol) {
-        return createStructType(symbol);
+        // TODO: persist in map<symbol,type>
+        return new StructType(symbol);
+    }
+    getTypeOfFunction(symbol) {
+        const fnDecl = symbol.declarations[0];
+        const signature = new SignatureMeta(this.getTypeFromTypeNode(fnDecl.type), fnDecl.parameters.map((param) => {
+            return this.getTypeFromTypeNode(param.type);
+        }));
+        // TODO: persist in map<symbol,type>
+        return new FunctionType(symbol, signature);
+    }
+    getTypeOfTypedef(symbol) {
+        const refType = this.getTypeFromTypeNode(symbol.declarations[0].type);
+        return new TypedefType(refType);
     }
     getDeclaredTypeOfSymbol(symbol) {
         if (symbol.flags & (64 /* Struct */)) {
@@ -173,33 +615,25 @@ class TypeChecker {
                 return stringType;
             case 69 /* IntKeyword */:
                 return integerType;
+            case 67 /* ByteKeyword */:
+                return byteType;
             case 70 /* FixedKeyword */:
                 return fixedType;
-            // case gt.SyntaxKind.BooleanKeyword:
-            //     return booleanType;
-            case 101 /* VoidKeyword */:
+            case 66 /* BoolKeyword */:
+                return boolType;
+            case 100 /* VoidKeyword */:
                 return voidType;
             case 64 /* NullKeyword */:
                 return nullType;
-            case 107 /* FuncrefKeyword */:
-                return funcrefType;
-            case 105 /* ArrayrefKeyword */:
-                return arrayrefType;
-            case 106 /* StructrefKeyword */:
-                return structrefType;
-            case 97 /* UnitKeyword */:
-                return complexTypes[node.kind];
             // case gt.SyntaxKind.LiteralType:
             //     return getTypeFromLiteralTypeNode(<LiteralTypeNode>node);
-            // case gt.SyntaxKind.TypeReference:
-            //     return getTypeFromTypeReference(<TypeReferenceNode>node);
-            case 112 /* ArrayType */:
+            case 111 /* ArrayType */:
                 return this.getTypeFromArrayTypeNode(node);
-            case 111 /* MappedType */:
+            case 110 /* MappedType */:
                 return this.getTypeFromMappedTypeNode(node);
             // case gt.SyntaxKind.IndexedAccessType:
             //     return getTypeFromIndexedAccessTypeNode(<IndexedAccessTypeNode>node);
-            case 108 /* Identifier */:
+            case 107 /* Identifier */:
                 const symbol = this.getSymbolAtLocation(node);
                 if (symbol) {
                     return this.getDeclaredTypeOfSymbol(symbol);
@@ -208,6 +642,9 @@ class TypeChecker {
                     return unknownType;
                 }
             default:
+                if (utils_1.isComplexTypeKind(node.kind)) {
+                    return complexTypes.get(node.kind);
+                }
                 return unknownType;
         }
     }
@@ -226,18 +663,11 @@ class TypeChecker {
     getTypeOfVariableOrParameterOrProperty(symbol) {
         return this.getTypeFromTypeNode(symbol.declarations[0].type);
     }
-    getTypeOfFunction(symbol) {
-        return createFunctionType(symbol);
-    }
-    getTypeOfTypedef(symbol) {
-        const refType = this.getTypeFromTypeNode(symbol.declarations[0].type);
-        return createTypedefType(refType);
-    }
     getTypeOfNode(node, followRef = false) {
         // if (isPartOfTypeNode(node)) {
         //     return this.getTypeFromTypeNode(<TypeNode>node);
         // }
-        if (utils_1.isPartOfExpression(node)) {
+        if (utils_2.isPartOfExpression(node)) {
             let type = this.getRegularTypeOfExpression(node);
             if (followRef) {
                 type = this.resolveMappedReference(type);
@@ -273,33 +703,37 @@ class TypeChecker {
     }
     checkSourceElement(node) {
         switch (node.kind) {
-            case 123 /* Block */:
+            case 122 /* Block */:
                 return this.checkBlock(node);
-            case 136 /* FunctionDeclaration */:
+            case 135 /* FunctionDeclaration */:
                 return this.checkFunction(node);
-            case 135 /* VariableDeclaration */:
-            case 138 /* PropertyDeclaration */:
+            case 134 /* VariableDeclaration */:
+            case 137 /* PropertyDeclaration */:
                 return this.checkVariableDeclaration(node);
-            case 134 /* StructDeclaration */:
+            case 136 /* ParameterDeclaration */:
+                return this.checkParameterDeclaration(node);
+            case 133 /* StructDeclaration */:
                 return this.checkStructDeclaration(node);
-            case 132 /* ExpressionStatement */:
+            case 131 /* ExpressionStatement */:
                 return this.checkExpressionStatement(node);
-            case 124 /* IfStatement */:
+            case 123 /* IfStatement */:
                 return this.checkIfStatement(node);
-            case 127 /* ForStatement */:
+            case 126 /* ForStatement */:
                 return this.checkForStatement(node);
-            case 126 /* WhileStatement */:
-            case 125 /* DoStatement */:
+            case 125 /* WhileStatement */:
+            case 124 /* DoStatement */:
                 return this.checkWhileStatement(node);
-            case 128 /* BreakStatement */:
-            case 129 /* ContinueStatement */:
+            case 127 /* BreakStatement */:
+            case 128 /* ContinueStatement */:
                 return this.checkBreakOrContinueStatement(node);
-            case 131 /* ReturnStatement */:
+            case 130 /* ReturnStatement */:
                 return this.checkReturnStatement(node);
-            case 111 /* MappedType */:
+            case 110 /* MappedType */:
                 return this.checkMappedType(node);
-            case 112 /* ArrayType */:
+            case 111 /* ArrayType */:
                 return this.checkArrayType(node);
+            case 107 /* Identifier */:
+                return this.checkIdentifier(node);
         }
     }
     checkFunction(node) {
@@ -309,17 +743,27 @@ class TypeChecker {
             this.checkSourceElement(node.body);
         }
     }
+    checkParameterDeclaration(node) {
+        this.checkSourceElement(node.type);
+        const type = this.getTypeFromTypeNode(node.type);
+        if (type instanceof StructType || type instanceof FunctionType) {
+            this.report(node.type, 'Can only pass basic types');
+        }
+    }
     checkVariableDeclaration(node) {
         this.checkSourceElement(node.type);
         if (node.initializer) {
-            this.checkExpression(node.initializer);
+            const varType = this.getTypeFromTypeNode(node.type);
+            const exprType = this.checkExpression(node.initializer);
+            this.checkTypeAssignableTo(exprType, varType, node.initializer);
         }
     }
     checkStructDeclaration(node) {
         node.members.forEach(this.checkSourceElement.bind(this));
     }
     checkIfStatement(node) {
-        this.checkExpression(node.expression);
+        const exprType = this.checkExpression(node.expression);
+        this.checkTypeBoolExpression(exprType, false, node.expression);
         this.checkSourceElement(node.thenStatement);
         if (node.elseStatement) {
             this.checkSourceElement(node.elseStatement);
@@ -330,7 +774,8 @@ class TypeChecker {
             this.checkExpression(node.initializer);
         }
         if (node.condition) {
-            this.checkExpression(node.condition);
+            const exprType = this.checkExpression(node.condition);
+            this.checkTypeBoolExpression(exprType, false, node.condition);
         }
         if (node.incrementor) {
             this.checkExpression(node.incrementor);
@@ -339,27 +784,66 @@ class TypeChecker {
     }
     checkWhileStatement(node) {
         if (node.expression) {
-            this.checkExpression(node.expression);
+            const exprType = this.checkExpression(node.expression);
+            this.checkTypeBoolExpression(exprType, false, node.expression);
         }
         this.checkSourceElement(node.statement);
     }
     checkBreakOrContinueStatement(node) {
-        // TODO: report when used outside of loop
+        const loop = utils_2.findAncestor(node, (parent) => {
+            switch (parent.kind) {
+                case 126 /* ForStatement */:
+                case 125 /* WhileStatement */:
+                case 124 /* DoStatement */:
+                    return true;
+            }
+            return false;
+        });
+        if (!loop) {
+            this.report(node, `${scanner_1.tokenToString(node.syntaxTokens[0].kind)} statement used outside of loop boundaries`);
+        }
     }
     checkReturnStatement(node) {
-        if (node.expression) {
-            this.checkExpression(node.expression);
+        const fn = utils_2.findAncestorByKind(node, 135 /* FunctionDeclaration */);
+        const rtype = this.getTypeFromTypeNode(fn.type);
+        if (rtype.flags & 2048 /* Void */ && node.expression) {
+            this.report(node.expression, 'Unexpected value returned for void function');
         }
-        // TODO: report when used with expr on void func
+        else if (!(rtype.flags & 2048 /* Void */) && !node.expression) {
+            this.report(node.expression, 'Expected a return value');
+        }
+        if (node.expression) {
+            const exprType = this.checkExpression(node.expression);
+            this.checkTypeAssignableTo(exprType, rtype, node.expression);
+        }
     }
     checkArrayType(node) {
         this.checkExpression(node.size);
         this.checkSourceElement(node.elementType);
     }
     checkMappedType(node) {
-        this.checkExpression(node.returnType);
-        if (node.typeArguments) {
-            node.typeArguments.forEach(this.checkSourceElement.bind(this));
+        if (!utils_2.isReferenceKeywordKind(node.returnType.kind)) {
+            this.report(node.returnType, 'Invalid keyword for reference type provided. Use funcref, arrayref or structref');
+        }
+        if (node.typeArguments.length !== 1) {
+            this.report(node, 'Expected exactly 1 argument');
+        }
+        node.typeArguments.forEach(this.checkSourceElement.bind(this));
+        const type = this.getTypeFromMappedTypeNode(node);
+        let invalid = false;
+        switch (type.kind) {
+            case 105 /* StructrefKeyword */:
+                invalid = !(type.declaredType.flags & 8192 /* Struct */);
+                break;
+            case 106 /* FuncrefKeyword */:
+                invalid = !(type.declaredType.flags & 16384 /* Function */);
+                break;
+            case 104 /* ArrayrefKeyword */:
+                invalid = !(type.declaredType.flags & 65536 /* Array */);
+                break;
+        }
+        if (invalid) {
+            this.report(node, 'Type \'' + type.declaredType.getName() + '\' cannot be used here.');
         }
     }
     checkBlock(node) {
@@ -378,42 +862,79 @@ class TypeChecker {
     }
     checkExpressionWorker(node, checkMode) {
         switch (node.kind) {
-            case 108 /* Identifier */:
+            case 107 /* Identifier */:
                 return this.checkIdentifier(node);
-            // case gt.SyntaxKind.NullKeyword:
-            //     return nullWideningType;
-            // case gt.SyntaxKind.StringLiteral:
-            // case gt.SyntaxKind.NumericLiteral:
-            // case gt.SyntaxKind.TrueKeyword:
-            // case gt.SyntaxKind.FalseKeyword:
-            //     return checkLiteralExpression(node);
-            case 115 /* PropertyAccessExpression */:
+            case 64 /* NullKeyword */:
+                return nullType;
+            case 2 /* StringLiteral */:
+            case 1 /* NumericLiteral */:
+            case 62 /* TrueKeyword */:
+            case 63 /* FalseKeyword */:
+                return this.checkLiteralExpression(node);
+            case 114 /* PropertyAccessExpression */:
                 return this.checkPropertyAccessExpression(node);
-            case 114 /* ElementAccessExpression */:
+            case 113 /* ElementAccessExpression */:
                 return this.checkIndexedAccess(node);
-            case 116 /* CallExpression */:
+            case 115 /* CallExpression */:
                 return this.checkCallExpression(node);
-            case 121 /* ParenthesizedExpression */:
+            case 120 /* ParenthesizedExpression */:
                 return this.checkParenthesizedExpression(node, checkMode);
-            case 117 /* PrefixUnaryExpression */:
+            case 116 /* PrefixUnaryExpression */:
                 return this.checkPrefixUnaryExpression(node);
-            case 118 /* PostfixUnaryExpression */:
+            case 117 /* PostfixUnaryExpression */:
                 return this.checkPostfixUnaryExpression(node);
-            case 119 /* BinaryExpression */:
+            case 118 /* BinaryExpression */:
                 return this.checkBinaryExpression(node, checkMode);
         }
         return unknownType;
     }
+    checkLiteralExpression(node) {
+        switch (node.kind) {
+            case 2 /* StringLiteral */:
+                return new LiteralType(256 /* StringLiteral */, node);
+            case 1 /* NumericLiteral */:
+                return new LiteralType(512 /* NumericLiteral */, node);
+            case 62 /* TrueKeyword */:
+                return trueType;
+            case 63 /* FalseKeyword */:
+                return falseType;
+        }
+    }
     checkBinaryExpression(node, checkMode) {
         const leftType = this.checkExpression(node.left);
         const rightType = this.checkExpression(node.right);
+        if (utils_2.isAssignmentOperator(node.operatorToken.kind)) {
+            this.checkTypeAssignableTo(rightType, leftType, node.right);
+        }
+        else if (utils_2.isComparisonOperator(node.operatorToken.kind)) {
+            this.checkTypeComparableTo(rightType, leftType, node.right);
+            return boolType;
+        }
+        else if (node.operatorToken.kind === 34 /* BarBarToken */ || node.operatorToken.kind === 33 /* AmpersandAmpersandToken */) {
+            this.checkTypeAssignableTo(leftType, boolType, node.left);
+            this.checkTypeAssignableTo(rightType, boolType, node.right);
+            return boolType;
+        }
+        else {
+            const valid = leftType.isValidBinaryOperation(node.operatorToken.kind, rightType);
+            if (!valid) {
+                this.report(node, `Binary '${scanner_1.tokenToString(node.operatorToken.kind)}' operation not supported between '${leftType.getName()}' type and '${rightType.getName()}' type`);
+            }
+        }
         return leftType;
     }
     checkParenthesizedExpression(node, checkMode) {
         return this.checkExpression(node.expression);
     }
     checkPrefixUnaryExpression(node, checkMode) {
-        return this.checkExpression(node.operand);
+        const type = this.checkExpression(node.operand);
+        if (!type.isValidPrefixOperation(node.operator.kind)) {
+            this.report(node, `Prefix '${scanner_1.tokenToString(node.operator.kind)}' operation not supported for '${type.getName()}' type`);
+        }
+        // if (node.operator.kind === gt.SyntaxKind.ExclamationToken) {
+        //     this.checkTypeBoolExpression(type, true, node.operand);
+        // }
+        return type;
     }
     checkPostfixUnaryExpression(node, checkMode) {
         return this.checkExpression(node.operand);
@@ -428,29 +949,41 @@ class TypeChecker {
     }
     checkCallExpression(node) {
         const leftType = this.checkExpression(node.expression);
+        let returnType = leftType;
+        let func;
         if (leftType != unknownType) {
             let fnType = leftType;
-            if (fnType.flags & 65536 /* Mapped */) {
+            if (fnType.flags & 262144 /* Reference */) {
                 fnType = this.resolveMappedReference(fnType);
             }
-            if (fnType.flags & 8192 /* Function */) {
-                const func = fnType.symbol.declarations[0];
+            if (fnType.flags & 16384 /* Function */) {
+                func = fnType.symbol.declarations[0];
                 if (node.arguments.length !== func.parameters.length) {
                     this.report(node, `expected ${func.parameters.length} arguments, got ${node.arguments.length}`);
                 }
+                returnType = this.getTypeFromTypeNode(func.type);
             }
             else {
                 this.report(node, 'not calllable');
+                returnType = unknownType;
             }
         }
-        node.arguments.forEach(this.checkExpression.bind(this));
-        return leftType;
+        if (func) {
+            for (const [key, arg] of node.arguments.entries()) {
+                const exprType = this.checkExpression(arg);
+                if (func.parameters.length > key) {
+                    const expectedType = this.getTypeFromTypeNode(func.parameters[key].type);
+                    this.checkTypeAssignableTo(exprType, expectedType, arg);
+                }
+            }
+        }
+        return returnType;
     }
     checkNonNullExpression(node) {
         return this.checkNonNullType(this.checkExpression(node), node);
     }
     checkNonNullType(type, errorNode) {
-        const kind = type.flags & 2048 /* Nullable */;
+        const kind = type.flags & 128 /* Nullable */;
         if (kind) {
             // TODO:
             // this.error(errorNode, 'cannot be null');
@@ -460,10 +993,15 @@ class TypeChecker {
         return type;
     }
     checkIndexedAccess(node) {
-        const objectType = this.checkNonNullExpression(node.expression);
+        let objectType = this.checkNonNullExpression(node.expression);
         const indexType = this.checkExpression(node.argumentExpression);
-        // TODO: check if index is number
-        if (objectType.flags & 32768 /* Array */) {
+        if (!(indexType.flags & 4 /* Integer */) && !(indexType.flags & 512 /* NumericLiteral */)) {
+            this.report(node.argumentExpression, 'Array index require an integer value');
+        }
+        if (objectType.flags & 262144 /* Reference */) {
+            objectType = this.resolveMappedReference(objectType);
+        }
+        if (objectType.flags & 65536 /* Array */) {
             return objectType.elementType;
         }
         else {
@@ -486,8 +1024,8 @@ class TypeChecker {
     }
     resolveName(location, name, nameNotFoundMessage) {
         if (location) {
-            const currentContext = utils_1.findAncestor(location, (element) => {
-                return element.kind === 136 /* FunctionDeclaration */;
+            const currentContext = utils_2.findAncestor(location, (element) => {
+                return element.kind === 135 /* FunctionDeclaration */;
             });
             if (currentContext && currentContext.symbol.members.has(name)) {
                 return currentContext.symbol.members.get(name);
@@ -507,7 +1045,7 @@ class TypeChecker {
         // }
         // TODO: ^
         let symbol;
-        if (entityName.kind === 108 /* Identifier */) {
+        if (entityName.kind === 107 /* Identifier */) {
             symbol = this.resolveName(location || entityName, entityName.name, ignoreErrors ? undefined : 'symbol referenced but not declared');
             if (!symbol) {
                 return undefined;
@@ -565,14 +1103,14 @@ class TypeChecker {
         // }
         // TODO: ^
         let type;
-        if (utils_1.isRightSideOfPropertyAccess(entityName)) {
+        if (utils_2.isRightSideOfPropertyAccess(entityName)) {
             entityName = entityName.parent;
         }
-        if (utils_1.isPartOfExpression(entityName)) {
-            if (entityName.kind === 108 /* Identifier */) {
+        if (utils_2.isPartOfExpression(entityName)) {
+            if (entityName.kind === 107 /* Identifier */) {
                 return this.resolveEntityName(entityName, null, false);
             }
-            else if (entityName.kind === 115 /* PropertyAccessExpression */) {
+            else if (entityName.kind === 114 /* PropertyAccessExpression */) {
                 const links = this.getNodeLinks(entityName);
                 if (links.resolvedSymbol) {
                     return links.resolvedSymbol;
@@ -587,8 +1125,8 @@ class TypeChecker {
     // }
     getSymbolAtLocation(node) {
         switch (node.kind) {
-            case 108 /* Identifier */:
-            case 115 /* PropertyAccessExpression */:
+            case 107 /* Identifier */:
+            case 114 /* PropertyAccessExpression */:
                 return this.getSymbolOfEntityNameOrPropertyAccessExpression(node);
         }
         // if (node.kind === gt.SyntaxKind.Identifier) {
