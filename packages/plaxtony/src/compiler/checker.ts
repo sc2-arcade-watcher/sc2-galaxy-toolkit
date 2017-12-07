@@ -32,6 +32,7 @@ const enum CheckMode {
 
 export abstract class AbstractType implements gt.Type {
     flags: gt.TypeFlags;
+    symbol: gt.Symbol;
 
     public abstract isAssignableTo(target: AbstractType): boolean;
     public abstract isComparableTo(target: AbstractType): boolean;
@@ -610,29 +611,29 @@ export class TypeChecker {
         return this.nodeLinks[nodeId] || (this.nodeLinks[nodeId] = { flags: 0 });
     }
 
-    private checkTypeAssignableTo(source: gt.Type, target: gt.Type, node: gt.Node) {
+    private checkTypeAssignableTo(source: AbstractType, target: AbstractType, node: gt.Node) {
         // TODO: error when using local var as reference
-        if (!(<AbstractType>source).isAssignableTo(<AbstractType>target)) {
-            this.report(node, 'Type \'' + (<AbstractType>source).getName() + '\' is not assignable to type \'' + (<AbstractType>target).getName() + '\'');
+        if (!source.isAssignableTo(target)) {
+            this.report(node, 'Type \'' + source.getName() + '\' is not assignable to type \'' + target.getName() + '\'');
         }
     }
 
-    private checkTypeComparableTo(source: gt.Type, target: gt.Type, node: gt.Node) {
-        if (!(<AbstractType>source).isComparableTo(<AbstractType>target)) {
-            this.report(node, 'Type \'' + (<AbstractType>source).getName() + '\' is not comparable to type \'' + (<AbstractType>target).getName() + '\'');
+    private checkTypeComparableTo(source: AbstractType, target: AbstractType, node: gt.Node) {
+        if (!source.isComparableTo(target)) {
+            this.report(node, 'Type \'' + source.getName() + '\' is not comparable to type \'' + target.getName() + '\'');
         }
     }
 
-    private checkTypeBoolExpression(source: gt.Type, negation: boolean, node: gt.Node) {
-        if (!(<AbstractType>source).isBoolExpression(negation)) {
-            this.report(node, 'Type \'' + (<AbstractType>source).getName() + '\' can not be used as boolean expression');
+    private checkTypeBoolExpression(source: AbstractType, negation: boolean, node: gt.Node) {
+        if (!source.isBoolExpression(negation)) {
+            this.report(node, 'Type \'' + source.getName() + '\' can not be used as boolean expression');
         }
     }
 
-    private getTypeFromArrayTypeNode(node: gt.ArrayTypeNode): gt.ArrayType {
+    private getTypeFromArrayTypeNode(node: gt.ArrayTypeNode): ArrayType {
         const links = this.getNodeLinks(node);
         if (!links.resolvedType) {
-            links.resolvedType = new ArrayType(<AbstractType>this.getTypeFromTypeNode(node.elementType));
+            links.resolvedType = new ArrayType(this.getTypeFromTypeNode(node.elementType));
         }
         return <ArrayType>links.resolvedType;
     }
@@ -642,20 +643,20 @@ export class TypeChecker {
         if (!links.resolvedType) {
             links.resolvedType = new ReferenceType(
                 <ReferenceKind>node.returnType.kind,
-                node.typeArguments.length ? <AbstractType>this.getTypeFromTypeNode(node.typeArguments[0]) : unknownType
+                node.typeArguments.length ? this.getTypeFromTypeNode(node.typeArguments[0]) : unknownType
             );
         }
         return <ReferenceType>links.resolvedType;
     }
 
-    private resolveMappedReference(type: gt.Type) {
+    private resolveMappedReference(type: AbstractType) {
         if (type.flags & gt.TypeFlags.Reference) {
             type = (<ReferenceType>type).declaredType;
         }
         return type;
     }
 
-    private getPropertyOfType(type: gt.Type, name: string): gt.Symbol | undefined {
+    private getPropertyOfType(type: AbstractType, name: string): gt.Symbol | undefined {
         if (type && type.flags & gt.TypeFlags.Struct) {
             if (type.symbol.members.has(name)) {
                 return type.symbol.members.get(name);
@@ -671,9 +672,9 @@ export class TypeChecker {
     private getTypeOfFunction(symbol: gt.Symbol) {
         const fnDecl = <gt.FunctionDeclaration>symbol.declarations[0];
         const signature = new SignatureMeta(
-            <AbstractType>this.getTypeFromTypeNode(fnDecl.type),
+            this.getTypeFromTypeNode(fnDecl.type),
             fnDecl.parameters.map((param) => {
-                return <AbstractType>this.getTypeFromTypeNode(param.type);
+                return this.getTypeFromTypeNode(param.type);
             })
         );
 
@@ -681,12 +682,12 @@ export class TypeChecker {
         return new FunctionType(symbol, signature);
     }
 
-    private getTypeOfTypedef(symbol: gt.Symbol): gt.Type {
+    private getTypeOfTypedef(symbol: gt.Symbol): AbstractType {
         const refType = this.getTypeFromTypeNode((<gt.TypedefDeclaration>symbol.declarations[0]).type);
-        return new TypedefType(<AbstractType>refType);
+        return new TypedefType(refType);
     }
 
-    private getDeclaredTypeOfSymbol(symbol: gt.Symbol): gt.Type {
+    private getDeclaredTypeOfSymbol(symbol: gt.Symbol): AbstractType {
         if (symbol.flags & (gt.SymbolFlags.Struct)) {
             return this.getDeclaredTypeOfStruct(symbol);
         }
@@ -703,7 +704,7 @@ export class TypeChecker {
         return unknownType;
     }
 
-    private getTypeFromTypeNode(node: gt.TypeNode): gt.Type {
+    private getTypeFromTypeNode(node: gt.TypeNode): AbstractType {
         switch (node.kind) {
             case gt.SyntaxKind.StringKeyword:
                 return stringType;
@@ -741,7 +742,7 @@ export class TypeChecker {
         }
     }
 
-    private getTypeOfSymbol(symbol: gt.Symbol): gt.Type {
+    private getTypeOfSymbol(symbol: gt.Symbol): AbstractType {
         if (symbol.flags & (gt.SymbolFlags.Variable | gt.SymbolFlags.Property)) {
             return this.getTypeOfVariableOrParameterOrProperty(symbol);
         }
@@ -754,11 +755,11 @@ export class TypeChecker {
         return unknownType;
     }
 
-    private getTypeOfVariableOrParameterOrProperty(symbol: gt.Symbol): gt.Type {
+    private getTypeOfVariableOrParameterOrProperty(symbol: gt.Symbol): AbstractType {
         return this.getTypeFromTypeNode((<gt.VariableDeclaration>symbol.declarations[0]).type);
     }
 
-    public getTypeOfNode(node: gt.Node, followRef: boolean = false): gt.Type {
+    public getTypeOfNode(node: gt.Node, followRef: boolean = false): AbstractType {
         // TODO:
         // if (isPartOfTypeNode(node)) {
         //     return this.getTypeFromTypeNode(<TypeNode>node);
@@ -775,11 +776,11 @@ export class TypeChecker {
         return unknownType;
     }
 
-    private getRegularTypeOfExpression(expr: gt.Expression): gt.Type {
+    private getRegularTypeOfExpression(expr: gt.Expression): AbstractType {
         return this.getTypeOfExpression(expr);
     }
 
-    private getTypeOfExpression(node: gt.Expression, cache?: boolean): gt.Type {
+    private getTypeOfExpression(node: gt.Expression, cache?: boolean): AbstractType {
         return this.checkExpression(node);
     }
 
@@ -964,11 +965,11 @@ export class TypeChecker {
         this.checkExpression(node.expression);
     }
 
-    private checkExpression(node: gt.Expression, checkMode?: CheckMode): gt.Type {
+    private checkExpression(node: gt.Expression, checkMode?: CheckMode): AbstractType {
         return this.checkExpressionWorker(<gt.Expression>node, checkMode);
     }
 
-    private checkExpressionWorker(node: gt.Expression, checkMode: CheckMode): gt.Type {
+    private checkExpressionWorker(node: gt.Expression, checkMode: CheckMode): AbstractType {
         switch (node.kind) {
             case gt.SyntaxKind.Identifier:
                 return this.checkIdentifier(<gt.Identifier>node);
@@ -997,7 +998,7 @@ export class TypeChecker {
         return unknownType;
     }
 
-    private checkLiteralExpression(node: gt.Expression): gt.Type {
+    private checkLiteralExpression(node: gt.Expression): AbstractType {
         switch (node.kind) {
             case gt.SyntaxKind.StringLiteral:
                 return new LiteralType(gt.TypeFlags.StringLiteral, node);
@@ -1011,8 +1012,8 @@ export class TypeChecker {
     }
 
     private checkBinaryExpression(node: gt.BinaryExpression, checkMode?: CheckMode) {
-        const leftType = <AbstractType>this.checkExpression(node.left);
-        const rightType = <AbstractType>this.checkExpression(node.right);
+        const leftType = this.checkExpression(node.left);
+        const rightType = this.checkExpression(node.right);
 
         if (isAssignmentOperator(node.operatorToken.kind)) {
             this.checkTypeAssignableTo(rightType, leftType, node.right);
@@ -1041,7 +1042,7 @@ export class TypeChecker {
     }
 
     private checkPrefixUnaryExpression(node: gt.PrefixUnaryExpression, checkMode?: CheckMode) {
-        const type = <AbstractType>this.checkExpression(node.operand);
+        const type = this.checkExpression(node.operand);
         if (!type.isValidPrefixOperation(node.operator.kind)) {
             this.report(node, `Prefix '${tokenToString(node.operator.kind)}' operation not supported for '${type.getName()}' type`);
         }
@@ -1052,7 +1053,7 @@ export class TypeChecker {
         return this.checkExpression(node.operand);
     }
 
-    private checkIdentifier(node: gt.Identifier): gt.Type {
+    private checkIdentifier(node: gt.Identifier): AbstractType {
         const symbol = this.getSymbolOfEntityNameOrPropertyAccessExpression(node);
         if (!symbol) {
             this.report(node, 'Undeclared symbol');
@@ -1061,14 +1062,14 @@ export class TypeChecker {
         return this.getTypeOfSymbol(symbol);
     }
 
-    private checkCallExpression(node: gt.CallExpression): gt.Type {
+    private checkCallExpression(node: gt.CallExpression): AbstractType {
         const leftType = this.checkExpression(node.expression);
         let returnType = leftType;
         let func: gt.FunctionDeclaration;
         if (leftType != unknownType) {
-            let fnType: gt.FunctionType = leftType;
+            let fnType = <FunctionType>leftType;
             if (fnType.flags & gt.TypeFlags.Reference) {
-                fnType = this.resolveMappedReference(fnType);
+                fnType = <FunctionType>this.resolveMappedReference(fnType);
             }
             if (fnType.flags & gt.TypeFlags.Function) {
                 func = <gt.FunctionDeclaration>fnType.symbol.declarations[0];
@@ -1078,7 +1079,7 @@ export class TypeChecker {
                 returnType = this.getTypeFromTypeNode(func.type);
             }
             else {
-                this.report(node, `Type '${(<AbstractType>fnType).getName()}' is not calllable`);
+                this.report(node, `Type '${fnType.getName()}' is not calllable`);
                 returnType = unknownType;
             }
         }
@@ -1094,7 +1095,7 @@ export class TypeChecker {
         return returnType;
     }
 
-    private checkIndexedAccess(node: gt.ElementAccessExpression): gt.Type {
+    private checkIndexedAccess(node: gt.ElementAccessExpression): AbstractType {
         let objectType = this.checkExpression(node.expression);
         const indexType = this.checkExpression(node.argumentExpression);
 
@@ -1107,7 +1108,7 @@ export class TypeChecker {
         }
 
         if (objectType.flags & gt.TypeFlags.Array) {
-            return (<gt.ArrayType>objectType).elementType;
+            return (<ArrayType>objectType).elementType;
         }
         else {
             this.report(node, 'Index access on non-array type');
@@ -1116,12 +1117,12 @@ export class TypeChecker {
         return unknownType;
     }
 
-    private checkPropertyAccessExpression(node: gt.PropertyAccessExpression): gt.Type {
+    private checkPropertyAccessExpression(node: gt.PropertyAccessExpression): AbstractType {
         let type = this.checkExpression(node.expression);
 
         type = this.resolveMappedReference(type);
         if (!(type.flags & gt.TypeFlags.Struct)) {
-            this.report(node.name, 'Cannot access property on \'' + (<AbstractType>type).getName() + '\' type');
+            this.report(node.name, 'Cannot access property on \'' + type.getName() + '\' type');
         }
         else {
             const prop = this.getPropertyOfType(type, node.name.name);
