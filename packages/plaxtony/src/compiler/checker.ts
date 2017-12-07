@@ -7,8 +7,6 @@ import { tokenToString } from './scanner';
 
 let nextSymbolId = 1;
 let nextNodeId = 1;
-let nextMergeId = 1;
-let nextFlowId = 1;
 
 export function getNodeId(node: gt.Node): number {
     if (!node.id) {
@@ -30,7 +28,6 @@ export function getSymbolId(symbol: gt.Symbol): number {
 const enum CheckMode {
     Normal = 0,                // Normal type checking
     SkipContextSensitive = 1,  // Skip context sensitive function expressions
-    Inferential = 2,           // Inferential typing
 }
 
 export abstract class AbstractType implements gt.Type {
@@ -480,7 +477,6 @@ export type ReferenceKind = gt.SyntaxKind.FuncrefKeyword | gt.SyntaxKind.Structr
 
 export class ReferenceType extends AbstractType {
     kind: ReferenceKind;
-    // symbol: gt.Symbol;
     declaredType: AbstractType;
 
     constructor(kind: ReferenceKind, declaredType: AbstractType) {
@@ -488,7 +484,6 @@ export class ReferenceType extends AbstractType {
         this.flags = gt.TypeFlags.Reference;
         this.kind = kind;
         this.declaredType = declaredType;
-        // this.symbol = symbol;
     }
 
     public isAssignableTo(target: AbstractType): boolean {
@@ -597,8 +592,6 @@ function generateComplexTypes() {
     return map;
 }
 
-// const undefinedSymbol = createSymbol(gt.SymbolFlags.None, "undefined")
-
 export class TypeChecker {
     private store: Store;
     private nodeLinks: gt.NodeLinks[] = [];
@@ -618,6 +611,7 @@ export class TypeChecker {
     }
 
     private checkTypeAssignableTo(source: gt.Type, target: gt.Type, node: gt.Node) {
+        // TODO: error when using local var as reference
         if (!(<AbstractType>source).isAssignableTo(<AbstractType>target)) {
             this.report(node, 'Type \'' + (<AbstractType>source).getName() + '\' is not assignable to type \'' + (<AbstractType>target).getName() + '\'');
         }
@@ -662,13 +656,11 @@ export class TypeChecker {
     }
 
     private getPropertyOfType(type: gt.Type, name: string): gt.Symbol | undefined {
-        type = this.resolveMappedReference(type);
         if (type && type.flags & gt.TypeFlags.Struct) {
             if (type.symbol.members.has(name)) {
                 return type.symbol.members.get(name);
             }
         }
-        return undefined;
     }
 
     private getDeclaredTypeOfStruct(symbol: gt.Symbol) {
@@ -733,8 +725,6 @@ export class TypeChecker {
                 return this.getTypeFromArrayTypeNode(<gt.ArrayTypeNode>node);
             case gt.SyntaxKind.MappedType:
                 return this.getTypeFromMappedTypeNode(<gt.MappedTypeNode>node);
-            // case gt.SyntaxKind.IndexedAccessType:
-            //     return getTypeFromIndexedAccessTypeNode(<IndexedAccessTypeNode>node);
             case gt.SyntaxKind.Identifier:
                 const symbol = this.getSymbolAtLocation(node);
                 if (symbol) {
@@ -769,6 +759,7 @@ export class TypeChecker {
     }
 
     public getTypeOfNode(node: gt.Node, followRef: boolean = false): gt.Type {
+        // TODO:
         // if (isPartOfTypeNode(node)) {
         //     return this.getTypeFromTypeNode(<TypeNode>node);
         // }
@@ -785,23 +776,10 @@ export class TypeChecker {
     }
 
     private getRegularTypeOfExpression(expr: gt.Expression): gt.Type {
-        // if (isRightSideOfQualifiedNameOrPropertyAccess(expr)) {
-        //     expr = <Expression>expr.parent;
-        // }
-        // return this.getRegularTypeOfLiteralType(this.getTypeOfExpression(expr));
-        // TODO: ^
         return this.getTypeOfExpression(expr);
     }
 
     private getTypeOfExpression(node: gt.Expression, cache?: boolean): gt.Type {
-        // if (node.kind === gt.CallExpression) {
-        //     const funcType = checkNonNullExpression((<CallExpression>node).expression);
-        //     const signature = getSingleCallSignature(funcType);
-        //     if (signature && !signature.typeParameters) {
-        //         return getReturnTypeOfSignature(signature);
-        //     }
-        // }
-
         return this.checkExpression(node);
     }
 
@@ -951,28 +929,30 @@ export class TypeChecker {
 
     private checkMappedType(node: gt.MappedTypeNode) {
         if (!isReferenceKeywordKind(node.returnType.kind)) {
-            this.report(node.returnType, 'Invalid keyword for reference type provided. Use funcref, arrayref or structref');
+            this.report(node.returnType, 'Invalid keyword for reference type provided - use funcref, arrayref or structref');
         }
         if (node.typeArguments.length !== 1) {
             this.report(node, 'Expected exactly 1 argument');
         }
         node.typeArguments.forEach(this.checkSourceElement.bind(this));
 
-        const type = this.getTypeFromMappedTypeNode(node);
-        let invalid = false;
-        switch (type.kind) {
-            case gt.SyntaxKind.StructrefKeyword:
-                invalid = !(type.declaredType.flags & gt.TypeFlags.Struct);
-                break;
-            case gt.SyntaxKind.FuncrefKeyword:
-                invalid = !(type.declaredType.flags & gt.TypeFlags.Function);
-                break;
-            case gt.SyntaxKind.ArrayrefKeyword:
-                invalid = !(type.declaredType.flags & gt.TypeFlags.Array);
-                break;
-        }
-        if (invalid) {
-            this.report(node, 'Type \'' + type.declaredType.getName() + '\' cannot be used here.');
+        if (node.typeArguments.length > 0) {
+            const type = this.getTypeFromMappedTypeNode(node);
+            let invalid = false;
+            switch (type.kind) {
+                case gt.SyntaxKind.StructrefKeyword:
+                    invalid = !(type.declaredType.flags & gt.TypeFlags.Struct);
+                    break;
+                case gt.SyntaxKind.FuncrefKeyword:
+                    invalid = !(type.declaredType.flags & gt.TypeFlags.Function);
+                    break;
+                case gt.SyntaxKind.ArrayrefKeyword:
+                    invalid = !(type.declaredType.flags & gt.TypeFlags.Array);
+                    break;
+            }
+            if (invalid) {
+                this.report(node, 'Type \'' + type.declaredType.getName() + '\' is not a valid reference for \'' + tokenToString(node.returnType.kind) + '\'');
+            }
         }
     }
 
@@ -985,13 +965,7 @@ export class TypeChecker {
     }
 
     private checkExpression(node: gt.Expression, checkMode?: CheckMode): gt.Type {
-        let type: gt.Type;
-        const uninstantiatedType = this.checkExpressionWorker(<gt.Expression>node, checkMode);
-        // type = this.instantiateTypeWithSingleGenericCallSignature(<gt.Expression>node, uninstantiatedType, checkMode);
-        // return type;
-        // TODO: ^
-
-        return uninstantiatedType;
+        return this.checkExpressionWorker(<gt.Expression>node, checkMode);
     }
 
     private checkExpressionWorker(node: gt.Expression, checkMode: CheckMode): gt.Type {
@@ -1019,8 +993,6 @@ export class TypeChecker {
                 return this.checkPostfixUnaryExpression(<gt.PostfixUnaryExpression>node);
             case gt.SyntaxKind.BinaryExpression:
                 return this.checkBinaryExpression(<gt.BinaryExpression>node, checkMode);
-            // case gt.SyntaxKind.OmittedExpression:
-            //     return undefinedWideningType;
         }
         return unknownType;
     }
@@ -1073,9 +1045,6 @@ export class TypeChecker {
         if (!type.isValidPrefixOperation(node.operator.kind)) {
             this.report(node, `Prefix '${tokenToString(node.operator.kind)}' operation not supported for '${type.getName()}' type`);
         }
-        // if (node.operator.kind === gt.SyntaxKind.ExclamationToken) {
-        //     this.checkTypeBoolExpression(type, true, node.operand);
-        // }
         return type;
     }
 
@@ -1086,7 +1055,7 @@ export class TypeChecker {
     private checkIdentifier(node: gt.Identifier): gt.Type {
         const symbol = this.getSymbolOfEntityNameOrPropertyAccessExpression(node);
         if (!symbol) {
-            this.report(node, 'undeclared symbol');
+            this.report(node, 'Undeclared symbol');
             return unknownType;
         }
         return this.getTypeOfSymbol(symbol);
@@ -1104,12 +1073,12 @@ export class TypeChecker {
             if (fnType.flags & gt.TypeFlags.Function) {
                 func = <gt.FunctionDeclaration>fnType.symbol.declarations[0];
                 if (node.arguments.length !== func.parameters.length) {
-                    this.report(node, `expected ${func.parameters.length} arguments, got ${node.arguments.length}`);
+                    this.report(node, `Expected ${func.parameters.length} arguments, got ${node.arguments.length}`);
                 }
                 returnType = this.getTypeFromTypeNode(func.type);
             }
             else {
-                this.report(node, 'not calllable');
+                this.report(node, `Type '${(<AbstractType>fnType).getName()}' is not calllable`);
                 returnType = unknownType;
             }
         }
@@ -1125,23 +1094,8 @@ export class TypeChecker {
         return returnType;
     }
 
-    private checkNonNullExpression(node: gt.Expression): gt.Type {
-        return this.checkNonNullType(this.checkExpression(node), node);
-    }
-
-    private checkNonNullType(type: gt.Type, errorNode: gt.Node): gt.Type {
-        const kind = type.flags & gt.TypeFlags.Nullable;
-        if (kind) {
-            // TODO:
-            // this.error(errorNode, 'cannot be null');
-            // const t = getNonNullableType(type);
-            // return t.flags & (gt.TypeFlags.Nullable | gt.TypeFlags.Never) ? unknownType : t;
-        }
-        return type;
-    }
-
     private checkIndexedAccess(node: gt.ElementAccessExpression): gt.Type {
-        let objectType = this.checkNonNullExpression(node.expression);
+        let objectType = this.checkExpression(node.expression);
         const indexType = this.checkExpression(node.argumentExpression);
 
         if (!(indexType.flags & gt.TypeFlags.Integer) && !(indexType.flags & gt.TypeFlags.NumericLiteral)) {
@@ -1156,28 +1110,32 @@ export class TypeChecker {
             return (<gt.ArrayType>objectType).elementType;
         }
         else {
-            this.report(node, 'trying to access element on non-array type');
+            this.report(node, 'Index access on non-array type');
         }
 
         return unknownType;
     }
 
     private checkPropertyAccessExpression(node: gt.PropertyAccessExpression): gt.Type {
-        const type = this.checkNonNullExpression(node.expression);
-        const left = node.expression;
-        const right = node.name;
+        let type = this.checkExpression(node.expression);
 
-        const prop = this.getPropertyOfType(type, node.name.name);
-        if (!prop) {
-            this.report(node.name, 'undeclared or unacessible property');
-            return unknownType;
+        type = this.resolveMappedReference(type);
+        if (!(type.flags & gt.TypeFlags.Struct)) {
+            this.report(node.name, 'Cannot access property on \'' + (<AbstractType>type).getName() + '\' type');
+        }
+        else {
+            const prop = this.getPropertyOfType(type, node.name.name);
+            if (prop) {
+                this.getNodeLinks(node).resolvedSymbol = prop;
+                const propType = this.getTypeOfSymbol(prop);
+                return propType;
+            }
+            else {
+                this.report(node.name, 'Undeclared property');
+            }
         }
 
-        this.getNodeLinks(node).resolvedSymbol = prop;
-
-        const propType = this.getTypeOfSymbol(prop);
-
-        return propType;
+        return unknownType;
     }
 
     private resolveName(location: gt.Node | undefined, name: string, nameNotFoundMessage: string): gt.Symbol | undefined {
@@ -1201,11 +1159,6 @@ export class TypeChecker {
     }
 
     private resolveEntityName(entityName: gt.EntityNameExpression, meaning: gt.SymbolFlags, ignoreErrors?: boolean, location?: gt.Node): gt.Symbol | undefined {
-        // if (nodeIsMissing(entityName)) {
-        //     return undefined;
-        // }
-        // TODO: ^
-
         let symbol: gt.Symbol;
         if (entityName.kind === gt.SyntaxKind.Identifier) {
             symbol = this.resolveName(location || entityName, entityName.name, ignoreErrors ? undefined : 'symbol referenced but not declared');
@@ -1213,85 +1166,26 @@ export class TypeChecker {
                 return undefined;
             }
         }
-        // else if (name.kind === SyntaxKind.QualifiedName || name.kind === SyntaxKind.PropertyAccessExpression) {
-        //     let left: EntityNameOrEntityNameExpression;
-
-        //     if (name.kind === SyntaxKind.QualifiedName) {
-        //         left = (<QualifiedName>name).left;
-        //     }
-        //     else if (name.kind === SyntaxKind.PropertyAccessExpression &&
-        //         (name.expression.kind === SyntaxKind.ParenthesizedExpression || isEntityNameExpression(name.expression))) {
-        //         left = name.expression;
-        //     }
-        //     else {
-        //         // If the expression in property-access expression is not entity-name or parenthsizedExpression (e.g. it is a call expression), it won't be able to successfully resolve the name.
-        //         // This is the case when we are trying to do any language service operation in heritage clauses. By return undefined, the getSymbolOfEntityNameOrPropertyAccessExpression
-        //         // will attempt to checkPropertyAccessExpression to resolve symbol.
-        //         // i.e class C extends foo()./*do language service operation here*/B {}
-        //         return undefined;
-        //     }
-        //     const right = name.kind === SyntaxKind.QualifiedName ? name.right : name.name;
-        //     const namespace = resolveEntityName(left, SymbolFlags.Namespace, ignoreErrors, /*dontResolveAlias*/ false, location);
-        //     if (!namespace || nodeIsMissing(right)) {
-        //         return undefined;
-        //     }
-        //     else if (namespace === unknownSymbol) {
-        //         return namespace;
-        //     }
-        //     symbol = getSymbol(getExportsOfSymbol(namespace), right.escapedText, meaning);
-        //     if (!symbol) {
-        //         if (!ignoreErrors) {
-        //             error(right, Diagnostics.Namespace_0_has_no_exported_member_1, getFullyQualifiedName(namespace), declarationNameToString(right));
-        //         }
-        //         return undefined;
-        //     }
-        // }
-        // else if (name.kind === gt.SyntaxKind.ParenthesizedExpression) {
-        //     // TODO:
-        //     return undefined;
-        // }
         return symbol;
     }
 
-    // private resolvePropertySymbol(node: gt.PropertyAccessExpression): gt.Symbol | undefined {
-    //     if (node.expression.kind === gt.SyntaxKind.Identifier) {
-    //         return this.resolveName(<gt.Identifier>node.expression);
-    //     }
-    //     else if (node.expression.kind === gt.SyntaxKind.PropertyAccessExpression) {
-    //         return this.resolvePropertySymbol(<gt.PropertyAccessExpression>node.expression);
-    //     }
-    // }
-
     private getSymbolOfEntityNameOrPropertyAccessExpression(entityName: gt.Identifier | gt.PropertyAccessExpression): gt.Symbol | undefined {
-        // if (isDeclarationKind(entityName.parent.kind)) {
-        //     return (<gt.Declaration>entityName.parent).symbol;
-        // }
-        // TODO: ^
-        let type: gt.Type;
-
         if (isRightSideOfPropertyAccess(entityName)) {
             entityName = <gt.PropertyAccessExpression>entityName.parent;
         }
 
-        if (isPartOfExpression(entityName)) {
-            if (entityName.kind === gt.SyntaxKind.Identifier) {
-                return this.resolveEntityName(entityName, null, false);
-            }
-            else if (entityName.kind === gt.SyntaxKind.PropertyAccessExpression) {
-                const links = this.getNodeLinks(entityName);
-                if (links.resolvedSymbol) {
-                    return links.resolvedSymbol;
-                }
-                this.checkPropertyAccessExpression(<gt.PropertyAccessExpression>entityName).symbol;
+        if (entityName.kind === gt.SyntaxKind.Identifier) {
+            return this.resolveEntityName(entityName, null, false);
+        }
+        else if (entityName.kind === gt.SyntaxKind.PropertyAccessExpression) {
+            const links = this.getNodeLinks(entityName);
+            if (links.resolvedSymbol) {
                 return links.resolvedSymbol;
             }
+            this.checkPropertyAccessExpression(<gt.PropertyAccessExpression>entityName).symbol;
+            return links.resolvedSymbol;
         }
-
-        throw new Error('how did we get here?');
     }
-
-    // public getRootSymbols(symbol: Symbol): Symbol[] {
-    // }
 
     public getSymbolAtLocation(node: gt.Node): gt.Symbol | undefined {
         switch (node.kind) {
@@ -1299,8 +1193,5 @@ export class TypeChecker {
             case gt.SyntaxKind.PropertyAccessExpression:
                 return this.getSymbolOfEntityNameOrPropertyAccessExpression(<gt.Identifier | gt.PropertyAccessExpression>node);
         }
-        // if (node.kind === gt.SyntaxKind.Identifier) {
-        //     return (<gt.Identifier>node).
-        // }
     }
 }

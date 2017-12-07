@@ -21,15 +21,6 @@ export function bindSourceFile(sourceFile: SourceFile, store: Store) {
                     declareSymbol(<gt.Declaration>node, null);
                     break;
                 }
-
-                case SyntaxKind.CallExpression:
-                case SyntaxKind.PropertyAccessExpression:
-                {
-                    // TODO: to be reomved?
-                    // declareSymbol(<gt.Declaration>node, null);
-                    break;
-                }
-
                 default:
                 {
                     declareSymbol(<gt.Declaration>node, currentContainer.symbol);

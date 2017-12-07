@@ -253,14 +253,14 @@ describe('Checker', () => {
             const diagnostics = validateDocument('funcref.galaxy');
             assert.equal(diagnostics.length, 3);
             assert.equal(diagnostics[0].messageText, 'Type \'fn_prototype_c\' is not assignable to type \'funcref<fn_prototype_t>\'');
-            assert.equal(diagnostics[1].messageText, 'expected 1 arguments, got 2');
+            assert.equal(diagnostics[1].messageText, 'Expected 1 arguments, got 2');
             assert.equal(diagnostics[2].messageText, 'Type \'void\' is not assignable to type \'integer\'');
         });
 
         it('array', () => {
             const diagnostics = validateDocument('array.galaxy');
             assert.equal(diagnostics.length, 2);
-            assert.equal(diagnostics[0].messageText, 'trying to access element on non-array type');
+            assert.equal(diagnostics[0].messageText, 'Index access on non-array type');
             assert.equal(diagnostics[1].messageText, 'Type \'1\' is not assignable to type \'UnknownType\'');
         });
 
@@ -283,7 +283,7 @@ describe('Checker', () => {
 
             const diagnostics = checker.checkSourceFile(store.documents.get(document.uri));
             assert.lengthOf(diagnostics, 3);
-            assert.equal(diagnostics[0].messageText, 'undeclared symbol');
+            assert.equal(diagnostics[0].messageText, 'Undeclared symbol');
         });
 
         it('call params', () => {
@@ -293,7 +293,7 @@ describe('Checker', () => {
 
             const diagnostics = checker.checkSourceFile(store.documents.get(document.uri));
             assert.lengthOf(diagnostics, 1);
-            assert.equal(diagnostics[0].messageText, 'expected 2 arguments, got 1');
+            assert.equal(diagnostics[0].messageText, 'Expected 2 arguments, got 1');
         });
 
         it('callable', () => {
@@ -303,7 +303,7 @@ describe('Checker', () => {
 
             const diagnostics = checker.checkSourceFile(store.documents.get(document.uri));
             assert.lengthOf(diagnostics, 1);
-            assert.equal(diagnostics[0].messageText, 'not calllable');
+            assert.equal(diagnostics[0].messageText, 'Type \'integer\' is not calllable');
         });
     });
 });
