@@ -11,7 +11,7 @@ By a result it is very error tolerant, and can handle most of syntax errors with
 
 ### Static analysis
 
-Parsed AST is fully traversed. Symbol table is being built during indexing process.
+Parsed AST is fully traversed. Symbol table is being built during indexing process. Typechecker implemented.
 
 ### Language Server Protocol
 
@@ -23,6 +23,9 @@ Implemented providers:
 - [x] Function signature help
 - [x] Symbol definitions
 - [x] Symbol hover documentation tooltips
+- [ ] Find all references
+- [ ] Rename symbol
+- [ ] Format code
 
 ## Triggers
 
