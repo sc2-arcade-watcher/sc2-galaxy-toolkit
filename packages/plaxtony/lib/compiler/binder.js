@@ -16,13 +16,6 @@ function bindSourceFile(sourceFile, store) {
                         declareSymbol(node, null);
                         break;
                     }
-                case 115 /* CallExpression */:
-                case 114 /* PropertyAccessExpression */:
-                    {
-                        // TODO: to be reomved?
-                        // declareSymbol(<gt.Declaration>node, null);
-                        break;
-                    }
                 default:
                     {
                         declareSymbol(node, currentContainer.symbol);

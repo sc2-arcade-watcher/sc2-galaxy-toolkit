@@ -4,6 +4,7 @@ export declare function getNodeId(node: gt.Node): number;
 export declare function getSymbolId(symbol: gt.Symbol): number;
 export declare abstract class AbstractType implements gt.Type {
     flags: gt.TypeFlags;
+    symbol: gt.Symbol;
     abstract isAssignableTo(target: AbstractType): boolean;
     abstract isComparableTo(target: AbstractType): boolean;
     abstract isBoolExpression(negation: boolean): boolean;
@@ -119,7 +120,7 @@ export declare class TypeChecker {
     private getTypeFromTypeNode(node);
     private getTypeOfSymbol(symbol);
     private getTypeOfVariableOrParameterOrProperty(symbol);
-    getTypeOfNode(node: gt.Node, followRef?: boolean): gt.Type;
+    getTypeOfNode(node: gt.Node, followRef?: boolean): AbstractType;
     private getRegularTypeOfExpression(expr);
     private getTypeOfExpression(node, cache?);
     checkSourceFile(sourceFile: gt.SourceFile): gt.Diagnostic[];
@@ -146,8 +147,6 @@ export declare class TypeChecker {
     private checkPostfixUnaryExpression(node, checkMode?);
     private checkIdentifier(node);
     private checkCallExpression(node);
-    private checkNonNullExpression(node);
-    private checkNonNullType(type, errorNode);
     private checkIndexedAccess(node);
     private checkPropertyAccessExpression(node);
     private resolveName(location, name, nameNotFoundMessage);

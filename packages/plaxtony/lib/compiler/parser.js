@@ -402,14 +402,6 @@ class Parser {
             this.parseErrorAtCurrentToken('expected identifier or keyword');
             baseType = this.createMissingNode(107 /* Identifier */);
         }
-        while (this.token() === 7 /* OpenBracketToken */) {
-            let arrayType = this.createNode(111 /* ArrayType */, baseType.pos);
-            this.parseExpected(7 /* OpenBracketToken */);
-            arrayType.size = this.parseExpression();
-            arrayType.elementType = baseType;
-            this.parseExpected(8 /* CloseBracketToken */);
-            baseType = this.finishNode(arrayType);
-        }
         if (utils_1.isReferenceKeywordKind(baseType.kind)) {
             if (this.token() === 12 /* LessThanToken */) {
                 const mappedType = this.createNode(110 /* MappedType */, baseType.pos);
@@ -417,6 +409,14 @@ class Parser {
                 mappedType.typeArguments = this.parseBracketedList(4 /* TypeArguments */, this.parseTypeDefinition.bind(this), 12 /* LessThanToken */, 13 /* GreaterThanToken */);
                 baseType = this.finishNode(mappedType);
             }
+        }
+        while (this.token() === 7 /* OpenBracketToken */) {
+            let arrayType = this.createNode(111 /* ArrayType */, baseType.pos);
+            this.parseExpected(7 /* OpenBracketToken */);
+            arrayType.size = this.parseExpression();
+            arrayType.elementType = baseType;
+            this.parseExpected(8 /* CloseBracketToken */);
+            baseType = this.finishNode(arrayType);
         }
         return baseType;
     }

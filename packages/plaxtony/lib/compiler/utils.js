@@ -118,7 +118,6 @@ function isNamedDeclarationKind(kind) {
         || kind === 135 /* FunctionDeclaration */
         || kind === 133 /* StructDeclaration */
         || kind === 137 /* PropertyDeclaration */
-        // || kind === SyntaxKind.PropertyAccessExpression
         || kind === 136 /* ParameterDeclaration */
         || kind === 138 /* TypedefDeclaration */;
 }
