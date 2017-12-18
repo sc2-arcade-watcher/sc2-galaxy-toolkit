@@ -485,15 +485,6 @@ export class Parser {
             baseType = this.createMissingNode(SyntaxKind.Identifier);
         }
 
-        while (this.token() === SyntaxKind.OpenBracketToken) {
-            let arrayType = <Types.ArrayTypeNode>this.createNode(SyntaxKind.ArrayType, baseType.pos);
-            this.parseExpected(SyntaxKind.OpenBracketToken)
-            arrayType.size = this.parseExpression();
-            arrayType.elementType = baseType;
-            this.parseExpected(SyntaxKind.CloseBracketToken);
-            baseType = this.finishNode(arrayType)
-        }
-
         if (isReferenceKeywordKind(baseType.kind)) {
             if (this.token() === SyntaxKind.LessThanToken) {
                 const mappedType = <Types.MappedTypeNode>this.createNode(SyntaxKind.MappedType, baseType.pos);
@@ -501,6 +492,15 @@ export class Parser {
                 mappedType.typeArguments = this.parseBracketedList(ParsingContext.TypeArguments, this.parseTypeDefinition.bind(this), SyntaxKind.LessThanToken, SyntaxKind.GreaterThanToken);
                 baseType = this.finishNode(mappedType)
             }
+        }
+
+        while (this.token() === SyntaxKind.OpenBracketToken) {
+            let arrayType = <Types.ArrayTypeNode>this.createNode(SyntaxKind.ArrayType, baseType.pos);
+            this.parseExpected(SyntaxKind.OpenBracketToken)
+            arrayType.size = this.parseExpression();
+            arrayType.elementType = baseType;
+            this.parseExpected(SyntaxKind.CloseBracketToken);
+            baseType = this.finishNode(arrayType)
         }
 
         return baseType;

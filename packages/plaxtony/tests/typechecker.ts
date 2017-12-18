@@ -142,6 +142,18 @@ describe('Checker', () => {
             type = getNodeTypeAt(checker, sourceFile, 9, 12);
             assert.isAbove(type.flags & gt.TypeFlags.Integer, 0);
         })
+
+        it('funcref array', () => {
+            let type: gt.Type;
+
+            const document = mockupTextDocument('type_checker', 'funcref_arr.galaxy');
+            store.updateDocument(document);
+            const sourceFile = store.documents.get(document.uri);
+
+            type = getNodeTypeAt(checker, sourceFile, 2, 31);
+            assert.isAbove(type.flags & gt.TypeFlags.Array, 0);
+            assert.isAbove((<gt.ArrayType>type).elementType.flags & gt.TypeFlags.Reference, 0);
+        })
     });
 
     describe('Resolve symbol', () => {
