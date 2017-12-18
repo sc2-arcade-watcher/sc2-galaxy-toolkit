@@ -6,10 +6,7 @@ Rich set of utilities providing IDE like capabilities for StarCraft 2 Galaxy Scr
 
 - [x] Code syntax highlighting:
 - [x] Basic completion snippets.
-- Real time code diagnostics, reporting about:
-    - [x] Syntax errors.
-    - [x] References of undeclared symbol.
-    - [x] Incorrect number of arguments provided within function call.
+- [x] Real time code diagnostics - syntax validation, as well as typechecking.
 - [x] Context aware code completions.
 - [x] Signature help for functions.
 - [x] Document and workspace symbols navigation list.
@@ -27,6 +24,8 @@ Rich set of utilities providing IDE like capabilities for StarCraft 2 Galaxy Scr
 ### Real time code diagnostics
 
 ![diagnostics](assets/diagnostics.gif)
+
+![typechecker](assets/typechecker.png)
 
 ### Code completions
 
@@ -65,7 +64,6 @@ Gamelinks suggestions (units, effects etc.)
 
 ## Planned features
 
-- [ ] Complete type checking
 - [ ] Format code command (pretty print)
 - [ ] Find symbol references
 - [ ] Symbol rename command
