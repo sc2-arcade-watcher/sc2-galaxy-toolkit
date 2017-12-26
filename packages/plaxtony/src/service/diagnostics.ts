@@ -1,6 +1,5 @@
 import { AbstractProvider } from './provider';
 import { Diagnostic } from '../compiler/types';
-import { TypeChecker } from '../compiler/checker';
 
 export type DiagnosticsCallback = (a: string) => void;
 
@@ -20,8 +19,7 @@ export class DiagnosticsProvider extends AbstractProvider {
         this.console.info(`parse diagnostics = ${parseDiag.length}`);
         diagnostics = diagnostics.concat(parseDiag);
 
-        const checker = new TypeChecker(this.store);
-        const checkerDiag = checker.checkSourceFile(sourceFile);
+        const checkerDiag = sourceFile.additionalSyntacticDiagnostics;
         this.console.info(`type checker diagnostics = ${checkerDiag.length}`);
         diagnostics = diagnostics.concat(checkerDiag);
 

@@ -11,6 +11,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as glob from 'glob';
 import Uri from 'vscode-uri';
+import { TypeChecker } from '../compiler/checker';
 
 export function createTextDocument(uri: string, text: string): lsp.TextDocument {
     return <lsp.TextDocument>{
@@ -136,6 +137,7 @@ export async function findWorkspaceArchive(rootPath: string) {
 export class Store {
     private parser = new Parser();
     public documents = new Map<string, SourceFile>();
+    public openDocuments = new Map<string, boolean>();
     public s2workspace: SC2Workspace;
     public s2metadata: S2WorkspaceMetadata;
     // protected watchers = new Map<string, WorkspaceWatcher>();
@@ -151,8 +153,14 @@ export class Store {
             this.documents.delete(document.uri);
         }
         let sourceFile = this.parser.parseFile(document.uri, document.getText());
-        bindSourceFile(sourceFile, this);
         this.documents.set(document.uri, sourceFile);
+        if (this.openDocuments.has(document.uri)) {
+            const checker = new TypeChecker(this);
+            sourceFile.additionalSyntacticDiagnostics = checker.checkSourceFile(sourceFile, true);
+        }
+        else {
+            bindSourceFile(sourceFile, this);
+        }
     }
 
     public async updateS2Workspace(workspace: SC2Workspace, lang: string) {

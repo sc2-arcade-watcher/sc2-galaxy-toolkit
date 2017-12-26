@@ -271,9 +271,8 @@ describe('Checker', () => {
 
         it('array', () => {
             const diagnostics = validateDocument('array.galaxy');
-            assert.equal(diagnostics.length, 2);
+            assert.isAtLeast(diagnostics.length, 1);
             assert.equal(diagnostics[0].messageText, 'Index access on non-array type');
-            assert.equal(diagnostics[1].messageText, 'Type \'1\' is not assignable to type \'UnknownType\'');
         });
 
         it('typedef', () => {
@@ -294,8 +293,8 @@ describe('Checker', () => {
             const checker = new TypeChecker(store);
 
             const diagnostics = checker.checkSourceFile(store.documents.get(document.uri));
-            assert.lengthOf(diagnostics, 3);
-            assert.equal(diagnostics[0].messageText, 'Undeclared symbol');
+            assert.isAtLeast(diagnostics.length, 2);
+            assert.isTrue(diagnostics[0].messageText.startsWith('Undeclared symbol'));
         });
 
         it('call params', () => {
@@ -316,6 +315,26 @@ describe('Checker', () => {
             const diagnostics = checker.checkSourceFile(store.documents.get(document.uri));
             assert.lengthOf(diagnostics, 1);
             assert.equal(diagnostics[0].messageText, 'Type \'integer\' is not calllable');
+        });
+
+        it('redeclaration', () => {
+            const document = mockupTextDocument('type_checker', 'diagnostics', 'redeclaration.galaxy');
+            const store = mockupStore(document);
+            const checker = new TypeChecker(store);
+
+            const diagnostics = checker.checkSourceFile(store.documents.get(document.uri), true);
+            assert.lengthOf(diagnostics, 1);
+            assert.isTrue(diagnostics[0].messageText.startsWith('Symbol redeclared'));
+        });
+
+        it('ref_before_declaration', () => {
+            const document = mockupTextDocument('type_checker', 'diagnostics', 'ref_before_declaration.galaxy');
+            const store = mockupStore(document);
+            const checker = new TypeChecker(store);
+
+            const diagnostics = checker.checkSourceFile(store.documents.get(document.uri), true);
+            assert.lengthOf(diagnostics, 1);
+            assert.isTrue(diagnostics[0].messageText.startsWith('Undeclared symbol'));
         });
     });
 });

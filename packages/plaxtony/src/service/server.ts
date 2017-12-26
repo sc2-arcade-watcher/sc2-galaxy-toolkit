@@ -314,10 +314,12 @@ export class Server {
 
     @wrapRequest()
     private onDidOpen(ev: lsp.TextDocumentChangeEvent) {
+        this.store.openDocuments.set(ev.document.uri, true);
     }
 
     @wrapRequest()
     private onDidClose(ev: lsp.TextDocumentChangeEvent) {
+        this.store.openDocuments.delete(ev.document.uri)
         this.connection.sendDiagnostics({
             uri: ev.document.uri,
             diagnostics: [],

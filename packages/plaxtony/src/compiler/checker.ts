@@ -4,9 +4,13 @@ import { isComplexTypeKind } from '../compiler/utils';
 import { isDeclarationKind, forEachChild, isPartOfExpression, isRightSideOfPropertyAccess, findAncestor, createDiagnosticForNode, isAssignmentOperator, isComparisonOperator, isReferenceKeywordKind, findAncestorByKind } from './utils';
 import { Store } from '../service/store';
 import { tokenToString } from './scanner';
+import { Printer } from './printer';
+import { declareSymbol } from './binder';
+import { getLineAndCharacterOfPosition } from '../service/utils';
 
 let nextSymbolId = 1;
 let nextNodeId = 1;
+const printer = new Printer();
 
 export function getNodeId(node: gt.Node): number {
     if (!node.id) {
@@ -164,7 +168,7 @@ export class IntrinsicType extends AbstractType {
             case gt.SyntaxKind.TildeToken:
                 if (this.flags & gt.TypeFlags.Integer || this.flags & gt.TypeFlags.Byte) return true;
             case gt.SyntaxKind.ExclamationToken:
-                if (this.flags & gt.TypeFlags.Integer || this.flags & gt.TypeFlags.Byte || this.flags & gt.TypeFlags.Fixed || this.flags & gt.TypeFlags.Boolean) return true;
+                if (this.flags & gt.TypeFlags.Integer || this.flags & gt.TypeFlags.Byte || this.flags & gt.TypeFlags.Fixed || this.flags & gt.TypeFlags.Boolean || this.flags & gt.TypeFlags.String) return true;
         }
     }
 
@@ -437,6 +441,14 @@ export class SignatureMeta {
         }
         return true;
     }
+
+    public toString() {
+        const params = [];
+        for (const p of this.args) {
+            params.push(p.getName());
+        }
+        return `${this.returnType.getName()} (${params.join(',')})`;
+    }
 }
 
 export class FunctionType extends AbstractType implements gt.FunctionType {
@@ -452,6 +464,7 @@ export class FunctionType extends AbstractType implements gt.FunctionType {
 
     public isAssignableTo(target: AbstractType) {
         if (target instanceof ReferenceType && target.kind === gt.SyntaxKind.FuncrefKeyword) {
+            if (!(target.declaredType.flags & gt.TypeFlags.Function)) return false;
             if (this.symbol === (<FunctionType>target.declaredType).symbol) return true;
             if (this.signature.match((<FunctionType>target.declaredType).signature)) return true;
         }
@@ -597,6 +610,7 @@ export class TypeChecker {
     private store: Store;
     private nodeLinks: gt.NodeLinks[] = [];
     private diagnostics: gt.Diagnostic[] = [];
+    private currentSymbolContainer: gt.Symbol = null;
 
     constructor(store: Store) {
         this.store = store;
@@ -613,18 +627,21 @@ export class TypeChecker {
 
     private checkTypeAssignableTo(source: AbstractType, target: AbstractType, node: gt.Node) {
         // TODO: error when using local var as reference
+        if (source === unknownType || target === unknownType) return;
         if (!source.isAssignableTo(target)) {
             this.report(node, 'Type \'' + source.getName() + '\' is not assignable to type \'' + target.getName() + '\'');
         }
     }
 
     private checkTypeComparableTo(source: AbstractType, target: AbstractType, node: gt.Node) {
+        if (source === unknownType || target === unknownType) return;
         if (!source.isComparableTo(target)) {
             this.report(node, 'Type \'' + source.getName() + '\' is not comparable to type \'' + target.getName() + '\'');
         }
     }
 
     private checkTypeBoolExpression(source: AbstractType, negation: boolean, node: gt.Node) {
+        if (source === unknownType) return;
         if (!source.isBoolExpression(negation)) {
             this.report(node, 'Type \'' + source.getName() + '\' can not be used as boolean expression');
         }
@@ -669,17 +686,19 @@ export class TypeChecker {
         return new StructType(symbol);
     }
 
-    private getTypeOfFunction(symbol: gt.Symbol) {
-        const fnDecl = <gt.FunctionDeclaration>symbol.declarations[0];
-        const signature = new SignatureMeta(
+    public getSignatureOfFunction(fnDecl: gt.FunctionDeclaration) {
+        return new SignatureMeta(
             this.getTypeFromTypeNode(fnDecl.type),
             fnDecl.parameters.map((param) => {
                 return this.getTypeFromTypeNode(param.type);
             })
         );
+    }
 
+    private getTypeOfFunction(symbol: gt.Symbol) {
+        const fnDecl = <gt.FunctionDeclaration>symbol.declarations[0];
         // TODO: persist in map<symbol,type>
-        return new FunctionType(symbol, signature);
+        return new FunctionType(symbol, this.getSignatureOfFunction(fnDecl));
     }
 
     private getTypeOfTypedef(symbol: gt.Symbol): AbstractType {
@@ -784,8 +803,11 @@ export class TypeChecker {
         return this.checkExpression(node);
     }
 
-    public checkSourceFile(sourceFile: gt.SourceFile) {
+    public checkSourceFile(sourceFile: gt.SourceFile, bindSymbols = false) {
         this.diagnostics = [];
+        if (bindSymbols) {
+            this.currentSymbolContainer = declareSymbol(sourceFile, this.store, null);
+        }
         for (const statement of sourceFile.statements) {
             this.checkSourceElement(statement);
         }
@@ -793,43 +815,102 @@ export class TypeChecker {
     }
 
     private checkSourceElement(node: gt.Node) {
+        let prevSymbolContainer = null;
+        if (this.currentSymbolContainer && isDeclarationKind(node.kind)) {
+            prevSymbolContainer = this.currentSymbolContainer;
+            this.currentSymbolContainer = declareSymbol(node, this.store, prevSymbolContainer);
+            if (this.currentSymbolContainer.declarations.length > 1) {
+                let previousDeclaration: gt.Node;
+                if (node.kind === gt.SyntaxKind.FunctionDeclaration) {
+                    for (const pd of this.currentSymbolContainer.declarations) {
+                        if (pd === node) continue;
+                        if (pd.kind === gt.SyntaxKind.FunctionDeclaration && (
+                            !(<gt.FunctionDeclaration>pd).body || !(<gt.FunctionDeclaration>node).body
+                        )) {
+                            continue;
+                        }
+                        previousDeclaration = pd;
+                        break;
+                    }
+                }
+                else {
+                    previousDeclaration = this.currentSymbolContainer.declarations[this.currentSymbolContainer.declarations.length - 2];
+                }
+
+                if (previousDeclaration) {
+                    const prevSourceFile = <gt.SourceFile>findAncestorByKind(previousDeclaration, gt.SyntaxKind.SourceFile);
+                    const prevPos = getLineAndCharacterOfPosition(prevSourceFile, previousDeclaration.pos);
+                    this.report(node, `Symbol redeclared, previous declaration in ${prevSourceFile.fileName}:${prevPos.line + 1},${prevPos.character + 1}`);
+                }
+            }
+        }
+
         switch (node.kind) {
             case gt.SyntaxKind.Block:
-                return this.checkBlock(<gt.Block>node);
+                this.checkBlock(<gt.Block>node);
+                break;
             case gt.SyntaxKind.FunctionDeclaration:
-                return this.checkFunction(<gt.FunctionDeclaration>node);
+                this.checkFunction(<gt.FunctionDeclaration>node);
+                break;
             case gt.SyntaxKind.VariableDeclaration:
             case gt.SyntaxKind.PropertyDeclaration:
-                return this.checkVariableDeclaration(<gt.VariableDeclaration>node);
+                this.checkVariableDeclaration(<gt.VariableDeclaration>node);
+                break;
             case gt.SyntaxKind.ParameterDeclaration:
-                return this.checkParameterDeclaration(<gt.ParameterDeclaration>node);
+                this.checkParameterDeclaration(<gt.ParameterDeclaration>node);
+                break;
             case gt.SyntaxKind.StructDeclaration:
-                return this.checkStructDeclaration(<gt.StructDeclaration>node);
+                this.checkStructDeclaration(<gt.StructDeclaration>node);
+                break;
             case gt.SyntaxKind.ExpressionStatement:
-                return this.checkExpressionStatement(<gt.ExpressionStatement>node);
+                this.checkExpressionStatement(<gt.ExpressionStatement>node);
+                break;
             case gt.SyntaxKind.IfStatement:
-                return this.checkIfStatement(<gt.IfStatement>node);
+                this.checkIfStatement(<gt.IfStatement>node);
+                break;
             case gt.SyntaxKind.ForStatement:
-                return this.checkForStatement(<gt.ForStatement>node);
+                this.checkForStatement(<gt.ForStatement>node);
+                break;
             case gt.SyntaxKind.WhileStatement:
             case gt.SyntaxKind.DoStatement:
-                return this.checkWhileStatement(<gt.WhileStatement>node);
+                this.checkWhileStatement(<gt.WhileStatement>node);
+                break;
             case gt.SyntaxKind.BreakStatement:
             case gt.SyntaxKind.ContinueStatement:
-                return this.checkBreakOrContinueStatement(<gt.BreakOrContinueStatement>node);
+                this.checkBreakOrContinueStatement(<gt.BreakOrContinueStatement>node);
+                break;
             case gt.SyntaxKind.ReturnStatement:
-                return this.checkReturnStatement(<gt.ReturnStatement>node);
+                this.checkReturnStatement(<gt.ReturnStatement>node);
+                break;
             case gt.SyntaxKind.MappedType:
-                return this.checkMappedType(<gt.MappedTypeNode>node);
+                this.checkMappedType(<gt.MappedTypeNode>node);
+                break;
             case gt.SyntaxKind.ArrayType:
-                return this.checkArrayType(<gt.ArrayTypeNode>node);
+                this.checkArrayType(<gt.ArrayTypeNode>node);
+                break;
             case gt.SyntaxKind.Identifier:
-                return this.checkIdentifier(<gt.Identifier>node);
+                this.checkIdentifier(<gt.Identifier>node);
+                break;
+        }
+
+        if (prevSymbolContainer) {
+            this.currentSymbolContainer = prevSymbolContainer;
         }
     }
 
     private checkFunction(node: gt.FunctionDeclaration) {
         this.checkSourceElement(node.type);
+
+        const currentSignature = this.getSignatureOfFunction(node);
+        for (const prevDecl of node.symbol.declarations) {
+            if (node === prevDecl) continue;
+            if (prevDecl.kind !== gt.SyntaxKind.FunctionDeclaration) break;
+            const previousSignature = this.getSignatureOfFunction(<gt.FunctionDeclaration>prevDecl);
+            if (!currentSignature.match(previousSignature)) {
+                this.report(node, `Function signature doesn't match it's previous declaration '${previousSignature.toString()}'`);
+                break;
+            }
+        }
 
         node.parameters.forEach(this.checkSourceElement.bind(this));
 
@@ -1056,7 +1137,7 @@ export class TypeChecker {
     private checkIdentifier(node: gt.Identifier): AbstractType {
         const symbol = this.getSymbolOfEntityNameOrPropertyAccessExpression(node);
         if (!symbol) {
-            this.report(node, 'Undeclared symbol');
+            this.report(node, `Undeclared symbol: '${node.name}'`);
             return unknownType;
         }
         return this.getTypeOfSymbol(symbol);
@@ -1139,7 +1220,7 @@ export class TypeChecker {
         return unknownType;
     }
 
-    private resolveName(location: gt.Node | undefined, name: string, nameNotFoundMessage: string): gt.Symbol | undefined {
+    private resolveName(location: gt.Node | undefined, name: string): gt.Symbol | undefined {
         if (location) {
             const currentContext = <gt.FunctionDeclaration>findAncestor(location, (element: gt.Node): boolean => {
                 return element.kind === gt.SyntaxKind.FunctionDeclaration;
@@ -1162,7 +1243,7 @@ export class TypeChecker {
     private resolveEntityName(entityName: gt.EntityNameExpression, meaning: gt.SymbolFlags, ignoreErrors?: boolean, location?: gt.Node): gt.Symbol | undefined {
         let symbol: gt.Symbol;
         if (entityName.kind === gt.SyntaxKind.Identifier) {
-            symbol = this.resolveName(location || entityName, entityName.name, ignoreErrors ? undefined : 'symbol referenced but not declared');
+            symbol = this.resolveName(location || entityName, entityName.name);
             if (!symbol) {
                 return undefined;
             }
