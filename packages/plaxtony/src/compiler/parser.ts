@@ -363,6 +363,16 @@ export class Parser {
         return true;
     }
 
+    private isParameter(): boolean {
+        this.parseTypeDefinition();
+
+        if (this.token() !== SyntaxKind.Identifier) {
+            return false;
+        }
+
+        return true;
+    }
+
     private isStartOfExpression(): boolean {
         if (this.isStartOfLeftHandSideExpression()) {
             return true;
@@ -441,7 +451,7 @@ export class Parser {
     }
 
     private isStartOfParameter(): boolean {
-        return this.isStartOfTypeDefinition();
+        return this.lookAhead(this.isParameter.bind(this));
     }
 
     private parseLiteral(kind?: SyntaxKind): Types.Literal {
