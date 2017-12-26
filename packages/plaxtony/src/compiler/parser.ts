@@ -560,7 +560,7 @@ export class Parser {
         func.parameters = this.parseBracketedList(ParsingContext.Parameters, this.parseParameter.bind(this), SyntaxKind.OpenParenToken, SyntaxKind.CloseParenToken);
 
         if (this.token() === SyntaxKind.OpenBraceToken) {
-            func.body = this.parseBlock();
+            func.body = this.parseBlock(true);
         }
         else {
             this.parseExpected(SyntaxKind.SemicolonToken);
@@ -581,10 +581,21 @@ export class Parser {
         return this.finishNode(variable);
     }
 
-    private parseBlock(): Types.Block {
+    private parseBlock(allowVarDeclarations = false): Types.Block {
         const node = <Types.Block>this.createNode(SyntaxKind.Block);
         this.parseExpected(SyntaxKind.OpenBraceToken);
-        node.statements = this.parseList(ParsingContext.BlockStatements, this.parseStatement.bind(this));
+        node.statements = this.parseList(ParsingContext.BlockStatements, () => {
+            const child = this.parseStatement();
+            if (child.kind === SyntaxKind.VariableDeclaration) {
+                if (!allowVarDeclarations) {
+                    this.parseErrorAtPosition(child.pos, child.end - child.pos, 'Local variables must be declared at the begining of function block');
+                }
+            }
+            else {
+                allowVarDeclarations = false;
+            }
+            return child;
+        });
         this.parseExpected(SyntaxKind.CloseBraceToken);
         return this.finishNode(node);
     }
