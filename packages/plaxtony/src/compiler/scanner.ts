@@ -336,7 +336,7 @@ export class Scanner {
             }
             const ch = this.text.charCodeAt(this.pos);
             if (ch > CharacterCodes.maxAsciiCharacter) {
-                this.error('multibyte characters not allowed');
+                this.error(`Non ASCII characters not allowed: 0x${ch.toString(16)}`);
             }
             if (ch === quote) {
                 result += this.text.substring(start, this.pos);
@@ -549,7 +549,7 @@ export class Scanner {
                                 break;
                             }
                             if (char >= CharacterCodes.maxAsciiCharacter) {
-                                this.error('multibyte characters not allowed');
+                                this.error(`Non ASCII characters not allowed: 0x${char.toString(16)}`);
                             }
                             this.pos++;
                         }
@@ -701,7 +701,7 @@ export class Scanner {
                         }
                         continue;
                     }
-                    this.error('encountered invalid character');
+                    this.error(`Encountered invalid character: 0x${ch.toString(16)}`);
                     this.pos++;
                     return this.token = SyntaxKind.Unknown;
             }
