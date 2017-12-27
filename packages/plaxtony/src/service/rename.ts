@@ -44,6 +44,10 @@ export class RenameProvider extends AbstractProvider {
             return new lsp.ResponseError<undefined>(lsp.ErrorCodes.InvalidRequest, 'Invalid name');
         }
 
+        if (this.store.resolveGlobalSymbol(params.newName)) {
+            return new lsp.ResponseError<undefined>(lsp.ErrorCodes.InvalidRequest, 'Name already in use');
+        }
+
         const locations = this.referencesProvider.onReferences({
             textDocument: params.textDocument,
             position: params.position,
