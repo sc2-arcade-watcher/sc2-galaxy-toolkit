@@ -1222,8 +1222,8 @@ export class TypeChecker {
 
     private resolveName(location: gt.Node | undefined, name: string): gt.Symbol | undefined {
         if (location) {
-            const currentContext = <gt.FunctionDeclaration>findAncestor(location, (element: gt.Node): boolean => {
-                return element.kind === gt.SyntaxKind.FunctionDeclaration;
+            const currentContext = <gt.NamedDeclaration>findAncestor(location, (element: gt.Node): boolean => {
+                return element.kind === gt.SyntaxKind.FunctionDeclaration || element.kind === gt.SyntaxKind.StructDeclaration;
             })
             if (currentContext && currentContext.symbol.members.has(name)) {
                 return currentContext.symbol.members.get(name);

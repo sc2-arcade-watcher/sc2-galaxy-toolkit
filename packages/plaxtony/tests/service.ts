@@ -6,6 +6,7 @@ import { CompletionsProvider, CompletionFunctionExpand } from '../src/service/co
 import { SignaturesProvider } from '../src/service/signatures';
 import { DefinitionProvider } from '../src/service/definitions';
 import { HoverProvider } from '../src/service/hover';
+import { ReferencesProvider } from '../src/service/references';
 import { getPositionOfLineAndCharacter, findPrecedingToken } from '../src/service/utils';
 import * as gt from '../src/compiler/types';
 import { mockupSourceFile, mockupTextDocument, mockupStore, mockupStoreFromDirectory } from './helpers';
@@ -434,6 +435,34 @@ describe('Service', () => {
             const contents = <string[]>info.contents;
             assert.isAtLeast(contents.length, 1)
             assert.equal(contents[0], '```galaxy\nstruct info_t {\n\tint a;\n}\n```');
+        });
+    });
+
+    describe('References', () => {
+        const refsDoc = mockupTextDocument('service', 'definition', 'refs.galaxy');
+        const headerDoc = mockupTextDocument('service', 'definition', 'header.galaxy');
+        const store = mockupStore(
+            headerDoc,
+            refsDoc
+        );
+
+        const referenceProvider = createProvider(ReferencesProvider, store);
+
+        it('local variable', () => {
+            const result = referenceProvider.onReferences({textDocument: refsDoc, position: {line: 7, character: 9}, context: null});
+            assert.isDefined(result);
+            assert.equal(result.length, 2);
+            assert.equal(result[0].range.start.line, 7);
+            assert.equal(result[1].range.start.line, 12);
+        });
+
+        it('struct property', () => {
+            const result = referenceProvider.onReferences({textDocument: refsDoc, position: {line: 14, character: 10}, context: null});
+            assert.isDefined(result);
+            assert.equal(result.length, 2);
+            assert.equal(result[0].uri, headerDoc.uri);
+            assert.equal(result[0].range.start.line, 6);
+            assert.equal(result[1].range.start.line, 14);
         });
     });
 });

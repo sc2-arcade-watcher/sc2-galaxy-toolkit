@@ -2,7 +2,7 @@ import * as gt from '../compiler/types';
 import { TypeChecker } from '../compiler/checker';
 import { AbstractProvider } from './provider';
 import { getSourceFileOfNode, isNamedDeclarationKind } from '../compiler/utils';
-import { getTokenAtPosition, getLineAndCharacterOfPosition, getPositionOfLineAndCharacter } from './utils';
+import { getAdjacentIdentfier, getLineAndCharacterOfPosition, getPositionOfLineAndCharacter } from './utils';
 import { Printer } from '../compiler/printer';
 import { getDocumentationOfSymbol } from './s2meta';
 import * as lsp from 'vscode-languageserver';
@@ -14,7 +14,7 @@ export class HoverProvider extends AbstractProvider {
         const sourceFile = this.store.documents.get(params.textDocument.uri);
         if (!sourceFile) return;
         const position = getPositionOfLineAndCharacter(sourceFile, params.position.line, params.position.character);
-        const currentToken = getTokenAtPosition(position, sourceFile);
+        const currentToken = getAdjacentIdentfier(position, sourceFile);
 
         if (!currentToken || (<gt.Node>currentToken).kind !== gt.SyntaxKind.Identifier) {
             return null;
@@ -65,6 +65,10 @@ export class HoverProvider extends AbstractProvider {
 
         return <lsp.Hover>{
             contents: content,
+            range: {
+                start: getLineAndCharacterOfPosition(sourceFile, currentToken.pos),
+                end: getLineAndCharacterOfPosition(sourceFile, currentToken.end),
+            }
         };
     }
 }

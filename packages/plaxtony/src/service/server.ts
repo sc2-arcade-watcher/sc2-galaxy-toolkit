@@ -12,6 +12,7 @@ import { CompletionsProvider, CompletionConfig, CompletionFunctionExpand } from 
 import { SignaturesProvider } from './signatures';
 import { DefinitionProvider } from './definitions';
 import { HoverProvider } from './hover';
+import { ReferencesProvider, ReferencesConfig } from './references';
 import { SC2Archive, SC2Workspace, resolveArchiveDirectory, openArchiveWorkspace } from '../sc2mod/archive';
 import { setTimeout, clearTimeout } from 'timers';
 
@@ -141,8 +142,9 @@ interface PlaxtonyConfig {
         extra: {},
     },
     completion: {
-        functionExpand: string
+        functionExpand: string,
     };
+    references: ReferencesConfig
 };
 
 interface DocumentUpdateRequest {
@@ -160,6 +162,7 @@ export class Server {
     private signaturesProvider: SignaturesProvider;
     private definitionsProvider: DefinitionProvider;
     private hoverProvider: HoverProvider;
+    private referenceProvider: ReferencesProvider;
     private documents = new lsp.TextDocuments();
     private workspaceWatcher: WorkspaceWatcher;
     private initParams: lsp.InitializeParams;
@@ -180,6 +183,7 @@ export class Server {
         this.signaturesProvider = this.createProvider(SignaturesProvider);
         this.definitionsProvider = this.createProvider(DefinitionProvider);
         this.hoverProvider = this.createProvider(HoverProvider);
+        this.referenceProvider = this.createProvider(ReferencesProvider);
 
         this.documents.listen(this.connection);
         this.documents.onDidChangeContent(this.onDidChangeContent.bind(this));
@@ -197,6 +201,7 @@ export class Server {
         this.connection.onSignatureHelp(this.onSignatureHelp.bind(this));
         this.connection.onDefinition(this.onDefinition.bind(this));
         this.connection.onHover(this.onHover.bind(this));
+        this.connection.onReferences(this.onReferences.bind(this));
 
         return this.connection;
     }
@@ -225,6 +230,7 @@ export class Server {
         this.indexing = true;
         this.connection.sendNotification("indexStart");
 
+        this.store.rootPath = rootPath;
         if (rootPath) {
             archivePath = await findWorkspaceArchive(rootPath);
         }
@@ -289,7 +295,8 @@ export class Server {
                     triggerCharacters: ['(', ','],
                 },
                 definitionProvider: true,
-                hoverProvider: true
+                hoverProvider: true,
+                referencesProvider: true
             }
         }
     }
@@ -316,6 +323,8 @@ export class Server {
                 this.completionsProvider.config.functionExpand = CompletionFunctionExpand.ArgumentsDefault;
                 break;
         }
+
+        this.referenceProvider.config = this.config.references;
 
         if (!this.indexing) {
             this.reindex(this.initParams.rootPath, this.initParams.initializationOptions.sources);
@@ -452,6 +461,12 @@ export class Server {
     private async onHover(params: lsp.TextDocumentPositionParams): Promise<lsp.Hover> {
         await this.flushDocument(params.textDocument.uri);
         return this.hoverProvider.getHoverAt(params);
+    }
+
+    @wrapRequest()
+    private async onReferences(params: lsp.ReferenceParams): Promise<lsp.Location[]> {
+        await this.flushDocument(params.textDocument.uri);
+        return this.referenceProvider.onReferences(params);
     }
 }
 

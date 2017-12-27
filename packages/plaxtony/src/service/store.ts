@@ -136,6 +136,7 @@ export async function findWorkspaceArchive(rootPath: string) {
 
 export class Store {
     private parser = new Parser();
+    public rootPath?: string;
     public documents = new Map<string, SourceFile>();
     public openDocuments = new Map<string, boolean>();
     public s2workspace: SC2Workspace;
