@@ -23,8 +23,8 @@ Implemented providers:
 - [x] Function signature help
 - [x] Symbol definitions
 - [x] Symbol hover documentation tooltips
-- [ ] Find all references
-- [ ] Rename symbol
+- [x] Find all references
+- [x] Rename symbol
 - [ ] Format code
 
 ## Triggers
