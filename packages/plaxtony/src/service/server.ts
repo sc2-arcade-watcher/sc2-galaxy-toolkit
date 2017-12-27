@@ -13,6 +13,7 @@ import { SignaturesProvider } from './signatures';
 import { DefinitionProvider } from './definitions';
 import { HoverProvider } from './hover';
 import { SC2Archive, SC2Workspace, resolveArchiveDirectory, openArchiveWorkspace } from '../sc2mod/archive';
+import { setTimeout, clearTimeout } from 'timers';
 
 function getNodeRange(node: Types.Node): lsp.Range {
     return {
@@ -133,6 +134,7 @@ function mapFromObject(stuff: any) {
 interface PlaxtonyConfig {
     logLevel: string;
     localization: string;
+    documentUpdateDelay: number;
     s2mod: {
         sources: string[],
         overrides: {},
@@ -141,6 +143,12 @@ interface PlaxtonyConfig {
     completion: {
         functionExpand: string
     };
+};
+
+interface DocumentUpdateRequest {
+    timer: NodeJS.Timer;
+    promise: Promise<boolean>;
+    content: string;
 };
 
 export class Server {
@@ -157,6 +165,7 @@ export class Server {
     private initParams: lsp.InitializeParams;
     private indexing = false;
     private config: PlaxtonyConfig;
+    private documentUpdateRequests = new Map<string, DocumentUpdateRequest>();
 
     private createProvider<T extends AbstractProvider>(cls: new () => T): T {
         return createProvider(cls, this.store, this.connection.console);
@@ -176,6 +185,7 @@ export class Server {
         this.documents.onDidChangeContent(this.onDidChangeContent.bind(this));
         this.documents.onDidOpen(this.onDidOpen.bind(this));
         this.documents.onDidClose(this.onDidClose.bind(this));
+        this.documents.onDidSave(this.onDidSave.bind(this));
 
         this.connection.onInitialize(this.onInitialize.bind(this));
         this.connection.onInitialized(this.onInitialized.bind(this));
@@ -193,6 +203,18 @@ export class Server {
 
     public log(msg: string) {
         this.connection.console.log(msg);
+    }
+
+    private async flushDocument(documentUri: string) {
+        const req = this.documentUpdateRequests.get(documentUri);
+        if (!req) return;
+        if (req.promise) {
+            await req.promise;
+        }
+        else {
+            clearTimeout(req.timer);
+            await this.onUpdateContent(documentUri, req);
+        }
     }
 
     @wrapRequest()
@@ -301,15 +323,51 @@ export class Server {
     }
 
     @wrapRequest()
-    private onDidChangeContent(ev: lsp.TextDocumentChangeEvent) {
+    private async onDidChangeContent(ev: lsp.TextDocumentChangeEvent) {
         if (this.indexing) return;
-        this.store.updateDocument(ev.document);
-        if (this.documents.keys().indexOf(ev.document.uri) !== undefined) {
-            this.connection.sendDiagnostics({
-                uri: ev.document.uri,
-                diagnostics: translateDiagnostics(this.store.documents.get(ev.document.uri), this.diagnosticsProvider.diagnose(ev.document.uri)),
-            });
+
+        let req = this.documentUpdateRequests.get(ev.document.uri);
+        if (req) {
+            if (req.promise) {
+                await req.promise;
+            }
+            else {
+                clearTimeout(req.timer);
+                this.documentUpdateRequests.delete(ev.document.uri);
+            }
+            req = null;
         }
+
+        if (!req) {
+            req = <DocumentUpdateRequest>{
+                content: ev.document.getText(),
+                timer: null,
+                promise: null,
+            };
+        }
+        req.timer = setTimeout(this.onUpdateContent.bind(this, ev.document.uri, req), this.config.documentUpdateDelay);
+        this.documentUpdateRequests.set(ev.document.uri, req);
+    }
+
+    @wrapRequest()
+    private async onUpdateContent(documentUri: string, req: DocumentUpdateRequest) {
+        req.promise = new Promise((resolve) => {
+            this.store.updateDocument(<lsp.TextDocument>{
+                uri: documentUri,
+                getText: () => {
+                    return req.content;
+                }
+            });
+            if (this.documents.keys().indexOf(documentUri) !== undefined) {
+                this.connection.sendDiagnostics({
+                    uri: documentUri,
+                    diagnostics: translateDiagnostics(this.store.documents.get(documentUri), this.diagnosticsProvider.diagnose(documentUri)),
+                });
+            }
+            this.documentUpdateRequests.delete(documentUri);
+            resolve(true);
+        });
+        await req.promise;
     }
 
     @wrapRequest()
@@ -324,6 +382,11 @@ export class Server {
             uri: ev.document.uri,
             diagnostics: [],
         })
+    }
+
+    @wrapRequest()
+    private async onDidSave(ev: lsp.TextDocumentChangeEvent) {
+        await this.flushDocument(ev.document.uri);
     }
 
     @wrapRequest('Indexing', true, (payload: lsp.TextDocumentChangeEvent) => {
@@ -341,8 +404,9 @@ export class Server {
     // }
 
     @wrapRequest()
-    private onCompletion(params: lsp.TextDocumentPositionParams): lsp.CompletionItem[] {
+    private async onCompletion(params: lsp.TextDocumentPositionParams): Promise<lsp.CompletionItem[]> {
         if (!this.store.documents.has(params.textDocument.uri)) return null;
+        await this.flushDocument(params.textDocument.uri);
         return this.completionsProvider.getCompletionsAt(
             params.textDocument.uri,
             getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character)
@@ -365,8 +429,9 @@ export class Server {
     }
 
     @wrapRequest()
-    private onSignatureHelp(params: lsp.TextDocumentPositionParams): lsp.SignatureHelp {
+    private async onSignatureHelp(params: lsp.TextDocumentPositionParams): Promise<lsp.SignatureHelp> {
         if (!this.store.documents.has(params.textDocument.uri)) return null;
+        await this.flushDocument(params.textDocument.uri);
         return this.signaturesProvider.getSignatureAt(
             params.textDocument.uri,
             getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character)
@@ -384,7 +449,8 @@ export class Server {
     }
 
     @wrapRequest()
-    private onHover(params: lsp.TextDocumentPositionParams): lsp.Hover {
+    private async onHover(params: lsp.TextDocumentPositionParams): Promise<lsp.Hover> {
+        await this.flushDocument(params.textDocument.uri);
         return this.hoverProvider.getHoverAt(params);
     }
 }
