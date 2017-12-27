@@ -281,6 +281,10 @@ export class Server {
             await this.workspaceWatcher.watch();
         }
 
+        for (const documentUri of this.documentUpdateRequests.keys()) {
+            await this.flushDocument(documentUri);
+        }
+
         this.indexing = false;
         this.connection.sendNotification("indexEnd");
     }
@@ -340,15 +344,15 @@ export class Server {
 
     @wrapRequest()
     private async onDidChangeContent(ev: lsp.TextDocumentChangeEvent) {
-        if (this.indexing) return;
-
         let req = this.documentUpdateRequests.get(ev.document.uri);
         if (req) {
             if (req.promise) {
                 await req.promise;
             }
             else {
-                clearTimeout(req.timer);
+                if (req.timer) {
+                    clearTimeout(req.timer);
+                }
                 this.documentUpdateRequests.delete(ev.document.uri);
             }
             req = null;
@@ -361,7 +365,11 @@ export class Server {
                 promise: null,
             };
         }
-        req.timer = setTimeout(this.onUpdateContent.bind(this, ev.document.uri, req), this.config.documentUpdateDelay);
+
+        if (!this.indexing) {;
+            req.timer = setTimeout(this.onUpdateContent.bind(this, ev.document.uri, req), this.config.documentUpdateDelay);
+        }
+
         this.documentUpdateRequests.set(ev.document.uri, req);
     }
 
