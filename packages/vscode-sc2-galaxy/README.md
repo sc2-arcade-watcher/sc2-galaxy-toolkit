@@ -12,6 +12,7 @@ Rich set of utilities providing IDE like capabilities for StarCraft 2 Galaxy Scr
 - [x] Document and workspace symbols navigation list.
 - [x] Symbol definitions provider (goto *click*). `<kbd>Ctrl</kbd>`+**Click** on identifier will go to its declaration.
 - [x] Tooltips when hovering over symbol identifiers.
+- [x] Find all symbol references
 - [x] Indexing of `Trigger` scheme files to extract elements metadata and associate it with their auto-generated symbols. This allows it to provide localized documentation, aswell better code completions for things like *presets*.
 - [x] Indexing of game data `*Data.xml` files. To provide code completions of `gamelink` types. (i.e. complete list of available units will be provided for functions such as `UnitCreate`).
 
@@ -55,15 +56,18 @@ Gamelinks suggestions (units, effects etc.)
 
 ![tooltip](assets/tooltip.png)
 
+### Find all symbol references
+
+![find-references](assets/find-references.png)
+
 ---
 
 ## Documentation
 
 1. [Extension configuration](docs/CONFIGURATION.md)
-2. [SC2 Editor workflow tips](docs/SC2_EDITOR.md)
+1. [SC2 Editor workflow tips](docs/SC2_EDITOR.md)
 
 ## Planned features
 
 - [ ] Format code command (pretty print)
-- [ ] Find symbol references
 - [ ] Symbol rename command
