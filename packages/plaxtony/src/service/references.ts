@@ -39,7 +39,7 @@ export class ReferencesProvider extends AbstractProvider {
         });
     }
 
-    public onReferences(params: lsp.ReferenceParams): lsp.Location[] {
+    public onReferences(params: lsp.ReferenceParams, currentWorkspaceOnly?: boolean): lsp.Location[] {
         this.locations = [];
 
         const sourceFile = this.store.documents.get(params.textDocument.uri);
@@ -59,7 +59,7 @@ export class ReferencesProvider extends AbstractProvider {
         }
 
         for (const sourceFile of this.store.documents.values()) {
-            if (this.config.currentWorkspaceOnly && this.store.rootPath) {
+            if ((this.config.currentWorkspaceOnly || currentWorkspaceOnly === true) && this.store.rootPath) {
                 if (!URI.parse(sourceFile.fileName).fsPath.startsWith(this.store.rootPath)) continue;
             }
             this.collectReferences(sourceFile, sourceFile);

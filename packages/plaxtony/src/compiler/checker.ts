@@ -820,7 +820,7 @@ export class TypeChecker {
             prevSymbolContainer = this.currentSymbolContainer;
             this.currentSymbolContainer = declareSymbol(node, this.store, prevSymbolContainer);
             if (this.currentSymbolContainer.declarations.length > 1) {
-                let previousDeclaration: gt.Node;
+                let previousDeclaration: gt.Declaration;
                 if (node.kind === gt.SyntaxKind.FunctionDeclaration) {
                     for (const pd of this.currentSymbolContainer.declarations) {
                         if (pd === node) continue;
@@ -833,6 +833,14 @@ export class TypeChecker {
                         break;
                     }
                 }
+                else if (node.kind === gt.SyntaxKind.ParameterDeclaration) {
+                    for (const pd of this.currentSymbolContainer.declarations) {
+                        if (pd === node) continue;
+                        if (pd.parent !== node.parent) continue;
+                        previousDeclaration = pd;
+                        break;
+                    }
+                }
                 else {
                     previousDeclaration = this.currentSymbolContainer.declarations[this.currentSymbolContainer.declarations.length - 2];
                 }
@@ -840,7 +848,7 @@ export class TypeChecker {
                 if (previousDeclaration) {
                     const prevSourceFile = <gt.SourceFile>findAncestorByKind(previousDeclaration, gt.SyntaxKind.SourceFile);
                     const prevPos = getLineAndCharacterOfPosition(prevSourceFile, previousDeclaration.pos);
-                    this.report(node, `Symbol redeclared, previous declaration in ${prevSourceFile.fileName}:${prevPos.line + 1},${prevPos.character + 1}`);
+                    this.report((<gt.NamedDeclaration>node).name, `Symbol redeclared, previous declaration in ${prevSourceFile.fileName}:${prevPos.line + 1},${prevPos.character + 1}`);
                 }
             }
         }

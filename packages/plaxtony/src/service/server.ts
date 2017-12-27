@@ -13,8 +13,10 @@ import { SignaturesProvider } from './signatures';
 import { DefinitionProvider } from './definitions';
 import { HoverProvider } from './hover';
 import { ReferencesProvider, ReferencesConfig } from './references';
+import { RenameProvider } from './rename';
 import { SC2Archive, SC2Workspace, resolveArchiveDirectory, openArchiveWorkspace } from '../sc2mod/archive';
 import { setTimeout, clearTimeout } from 'timers';
+import URI from 'vscode-uri/lib';
 
 function getNodeRange(node: Types.Node): lsp.Range {
     return {
@@ -163,6 +165,7 @@ export class Server {
     private definitionsProvider: DefinitionProvider;
     private hoverProvider: HoverProvider;
     private referenceProvider: ReferencesProvider;
+    private renameProvider: RenameProvider;
     private documents = new lsp.TextDocuments();
     private workspaceWatcher: WorkspaceWatcher;
     private initParams: lsp.InitializeParams;
@@ -184,6 +187,8 @@ export class Server {
         this.definitionsProvider = this.createProvider(DefinitionProvider);
         this.hoverProvider = this.createProvider(HoverProvider);
         this.referenceProvider = this.createProvider(ReferencesProvider);
+        this.renameProvider = this.createProvider(RenameProvider);
+        this.renameProvider.referencesProvider = this.referenceProvider;
 
         this.documents.listen(this.connection);
         this.documents.onDidChangeContent(this.onDidChangeContent.bind(this));
@@ -202,6 +207,7 @@ export class Server {
         this.connection.onDefinition(this.onDefinition.bind(this));
         this.connection.onHover(this.onHover.bind(this));
         this.connection.onReferences(this.onReferences.bind(this));
+        this.connection.onRenameRequest(this.onRenameRequest.bind(this));
 
         return this.connection;
     }
@@ -296,7 +302,8 @@ export class Server {
                 },
                 definitionProvider: true,
                 hoverProvider: true,
-                referencesProvider: true
+                referencesProvider: true,
+                renameProvider: true,
             }
         }
     }
@@ -387,6 +394,9 @@ export class Server {
     @wrapRequest()
     private onDidClose(ev: lsp.TextDocumentChangeEvent) {
         this.store.openDocuments.delete(ev.document.uri)
+        if (!this.store.rootPath || URI.parse(ev.document.uri).fsPath.startsWith(this.store.rootPath)) {
+            this.store.removeDocument(ev.document.uri)
+        }
         this.connection.sendDiagnostics({
             uri: ev.document.uri,
             diagnostics: [],
@@ -448,8 +458,9 @@ export class Server {
     }
 
     @wrapRequest()
-    private onDefinition(params: lsp.TextDocumentPositionParams): lsp.Definition {
+    private async onDefinition(params: lsp.TextDocumentPositionParams): Promise<lsp.Definition> {
         if (!this.store.documents.has(params.textDocument.uri)) return null;
+        await this.flushDocument(params.textDocument.uri);
         return this.definitionsProvider.getDefinitionAt(
             params.textDocument.uri,
             getPositionOfLineAndCharacter(
@@ -467,6 +478,12 @@ export class Server {
     private async onReferences(params: lsp.ReferenceParams): Promise<lsp.Location[]> {
         await this.flushDocument(params.textDocument.uri);
         return this.referenceProvider.onReferences(params);
+    }
+
+    @wrapRequest()
+    private async onRenameRequest(params: lsp.RenameParams) {
+        await this.flushDocument(params.textDocument.uri);
+        return this.renameProvider.onRenameRequest(params);
     }
 }
 

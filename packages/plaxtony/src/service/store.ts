@@ -143,6 +143,13 @@ export class Store {
     public s2metadata: S2WorkspaceMetadata;
     // protected watchers = new Map<string, WorkspaceWatcher>();
 
+    public removeDocument(documentUri: string) {
+        const currSorceFile = this.documents.get(documentUri);
+        if (!currSorceFile) return;
+        unbindSourceFile(currSorceFile, this);
+        this.documents.delete(documentUri);
+    }
+
     public updateDocument(document: lsp.TextDocument) {
         if (this.documents.has(document.uri)) {
             const currSorceFile = this.documents.get(document.uri);
@@ -150,8 +157,7 @@ export class Store {
                 return;
             }
 
-            unbindSourceFile(currSorceFile, this);
-            this.documents.delete(document.uri);
+            this.removeDocument(document.uri);
         }
         let sourceFile = this.parser.parseFile(document.uri, document.getText());
         this.documents.set(document.uri, sourceFile);
