@@ -122,7 +122,7 @@ export async function findWorkspaceArchive(rootPath: string) {
     const archives = await findSC2ArchiveDirectories(rootPath);
     if (archives.length > 0) {
         const map = archives.find((dir) => {
-            return path.extname(dir).toLowerCase() === 'sc2map';
+            return path.extname(dir).toLowerCase() === '.sc2map';
         });
         if (map) {
             return map;
