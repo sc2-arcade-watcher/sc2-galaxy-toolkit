@@ -2,7 +2,7 @@
 
 ### General
 
-```json
+```js
 {
     // Allows providing external directories when looking up for dependencies.
     // It is good to put path to SC2 directory here.
@@ -13,11 +13,6 @@
         "c:\\SC2"
     ],
 
-    // What localizations files shall be indexed.
-    // Currently it affects only *gamelinks* hints - *Units* etc.
-    // TriggersStrings are hardcoded to *enUS*
-    "sc2galaxy.localization": "enUS",
-
     // Allows overriding dependency links for local workspace. As well as forcing indexing of extra ones.
     // "archive link": "absolute path"
     "sc2galaxy.s2mod.overrides": {
@@ -26,6 +21,11 @@
     "sc2galaxy.s2mod.extra": {
         "mods/liberty.sc2mod": "c:\\stuff\\liberty.SC2Mod"
     },
+
+    // Which localizations files to index.
+    // Currently it affects only *gamelinks* hints - *Units* etc.
+    // TriggersStrings are hardcoded to *enUS*
+    "sc2galaxy.localization": "enUS",
 
     // Wait time before reindexing changed dirty files
     "sc2galaxy.documentUpdateDelay": 300,
@@ -43,7 +43,7 @@
 ### Code completions
 As default function completions are not populated with placeholder arguments (since we have *signature tooltip*).
 It is however possible to placehold arguments basing on metadata from *Triggers* scheme with following config.
-```json
+```js
 {
     "sc2galaxy.completion.functionExpand": "ArgumentsDefault"
 }
