@@ -170,6 +170,7 @@ export class Server {
     private workspaceWatcher: WorkspaceWatcher;
     private initParams: lsp.InitializeParams;
     private indexing = false;
+    private ready = false;
     private config: PlaxtonyConfig;
     private documentUpdateRequests = new Map<string, DocumentUpdateRequest>();
 
@@ -217,6 +218,7 @@ export class Server {
     }
 
     private async flushDocument(documentUri: string) {
+        if (!this.ready) return false;
         const req = this.documentUpdateRequests.get(documentUri);
         if (!req) return;
         if (req.promise) {
@@ -286,6 +288,7 @@ export class Server {
         }
 
         this.indexing = false;
+        this.ready = true;
         this.connection.sendNotification("indexEnd");
     }
 
@@ -366,7 +369,7 @@ export class Server {
             };
         }
 
-        if (!this.indexing) {;
+        if (!this.indexing && this.ready) {
             req.timer = setTimeout(this.onUpdateContent.bind(this, ev.document.uri, req), this.config.documentUpdateDelay);
         }
 
@@ -381,7 +384,7 @@ export class Server {
                 getText: () => {
                     return req.content;
                 }
-            });
+            }, true);
             if (this.documents.keys().indexOf(documentUri) !== undefined) {
                 this.connection.sendDiagnostics({
                     uri: documentUri,
@@ -394,15 +397,15 @@ export class Server {
         await req.promise;
     }
 
-    @wrapRequest()
+    @wrapRequest('Opened', true, (payload: lsp.TextDocumentChangeEvent) => payload.document.uri)
     private onDidOpen(ev: lsp.TextDocumentChangeEvent) {
         this.store.openDocuments.set(ev.document.uri, true);
     }
 
-    @wrapRequest()
+    @wrapRequest('Closed', true, (payload: lsp.TextDocumentChangeEvent) => payload.document.uri)
     private onDidClose(ev: lsp.TextDocumentChangeEvent) {
-        this.store.openDocuments.delete(ev.document.uri)
-        if (!this.store.rootPath || URI.parse(ev.document.uri).fsPath.startsWith(this.store.rootPath)) {
+        this.store.openDocuments.delete(ev.document.uri);
+        if (!this.store.rootPath || !URI.parse(ev.document.uri).fsPath.startsWith(this.store.rootPath)) {
             this.store.removeDocument(ev.document.uri)
         }
         this.connection.sendDiagnostics({

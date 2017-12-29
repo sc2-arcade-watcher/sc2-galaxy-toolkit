@@ -150,7 +150,7 @@ export class Store {
         this.documents.delete(documentUri);
     }
 
-    public updateDocument(document: lsp.TextDocument) {
+    public updateDocument(document: lsp.TextDocument, check = false) {
         if (this.documents.has(document.uri)) {
             const currSorceFile = this.documents.get(document.uri);
             if (document.getText().length === currSorceFile.text.length && document.getText().valueOf() === currSorceFile.text.valueOf()) {
@@ -161,7 +161,7 @@ export class Store {
         }
         let sourceFile = this.parser.parseFile(document.uri, document.getText());
         this.documents.set(document.uri, sourceFile);
-        if (this.openDocuments.has(document.uri)) {
+        if (check) {
             const checker = new TypeChecker(this);
             sourceFile.additionalSyntacticDiagnostics = checker.checkSourceFile(sourceFile, true);
         }
