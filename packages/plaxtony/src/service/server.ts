@@ -405,8 +405,9 @@ export class Server {
     @wrapRequest('Closed', true, (payload: lsp.TextDocumentChangeEvent) => payload.document.uri)
     private onDidClose(ev: lsp.TextDocumentChangeEvent) {
         this.store.openDocuments.delete(ev.document.uri);
-        if (!this.store.rootPath || !URI.parse(ev.document.uri).fsPath.startsWith(this.store.rootPath)) {
+        if (!this.store.isDocumentInWorkspace(ev.document.uri)) {
             this.store.removeDocument(ev.document.uri)
+            this.log('removed from store');
         }
         this.connection.sendDiagnostics({
             uri: ev.document.uri,

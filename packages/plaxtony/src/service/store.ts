@@ -12,6 +12,7 @@ import * as fs from 'fs';
 import * as glob from 'glob';
 import Uri from 'vscode-uri';
 import { TypeChecker } from '../compiler/checker';
+import URI from 'vscode-uri';
 
 export function createTextDocument(uri: string, text: string): lsp.TextDocument {
     return <lsp.TextDocument>{
@@ -174,6 +175,19 @@ export class Store {
         this.s2workspace = workspace;
         this.s2metadata = new S2WorkspaceMetadata(this.s2workspace);
         await this.s2metadata.build(lang);
+    }
+
+    public isDocumentInWorkspace(documentUri: string, includeDepds = true) {
+        const documentPath = URI.parse(documentUri).fsPath;
+        if (this.rootPath && documentPath.startsWith(this.rootPath)) {
+            return true;
+        }
+        if (includeDepds && this.s2workspace) {
+            for (const archive of this.s2workspace.allArchives) {
+                if (documentPath.startsWith(archive.directory)) return true;
+            }
+        }
+        return false;
     }
 
     public resolveGlobalSymbol(name: string): gt.Symbol | undefined {
