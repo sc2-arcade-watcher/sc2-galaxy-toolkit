@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const provider_1 = require("./provider");
-const checker_1 = require("../compiler/checker");
 class DiagnosticsProvider extends provider_1.AbstractProvider {
     subscribe(uri) {
     }
@@ -12,8 +11,7 @@ class DiagnosticsProvider extends provider_1.AbstractProvider {
         const parseDiag = sourceFile.parseDiagnostics;
         this.console.info(`parse diagnostics = ${parseDiag.length}`);
         diagnostics = diagnostics.concat(parseDiag);
-        const checker = new checker_1.TypeChecker(this.store);
-        const checkerDiag = checker.checkSourceFile(sourceFile);
+        const checkerDiag = sourceFile.additionalSyntacticDiagnostics;
         this.console.info(`type checker diagnostics = ${checkerDiag.length}`);
         diagnostics = diagnostics.concat(checkerDiag);
         return diagnostics;

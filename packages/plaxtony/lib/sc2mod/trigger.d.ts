@@ -41,7 +41,7 @@ export declare class ParamDef extends Element {
 export declare class FunctionDef extends Element {
     static prefix: string;
     parameters: ElementReference<ParamDef>[];
-    returnType?: string;
+    returnType?: ParameterType;
     getParameters(): ParamDef[];
 }
 export declare class Preset extends Element {
@@ -92,6 +92,7 @@ export declare class XMLReader {
     private parseReference<T>(data, type);
     private parseParam(item);
     private parseFunctionCall(item);
+    private parseParameterType(item);
     private parseElement(item);
     private parseTree(data, container);
     private parseLibrary(id, data);

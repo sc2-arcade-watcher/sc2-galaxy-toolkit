@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const gt = require("../compiler/types");
 const utils_1 = require("../compiler/utils");
 function getNodeChildren(node) {
     let children = [];
@@ -123,6 +124,26 @@ function getTokenAtPositionWorker(position, sourceFile, includePrecedingTokenAtE
         return candidate && findRightmostToken(candidate);
     }
 }
+function getAdjacentIdentfier(position, sourceFile) {
+    let token = getTokenAtPosition(position, sourceFile);
+    if (token && token.kind === 107 /* Identifier */)
+        return token;
+    token = findPrecedingToken(position, sourceFile);
+    if (token && token.kind === 107 /* Identifier */)
+        return token;
+    return null;
+}
+exports.getAdjacentIdentfier = getAdjacentIdentfier;
+function getAdjacentToken(position, sourceFile) {
+    let token = getTokenAtPosition(position, sourceFile);
+    if (token)
+        return token;
+    token = findPrecedingToken(position, sourceFile);
+    if (token)
+        return token;
+    return null;
+}
+exports.getAdjacentToken = getAdjacentToken;
 function getPositionOfLineAndCharacter(sourceFile, line, character) {
     return sourceFile.lineMap[line] + character;
 }

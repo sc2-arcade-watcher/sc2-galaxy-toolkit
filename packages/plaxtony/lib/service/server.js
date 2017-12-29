@@ -28,7 +28,11 @@ const completions_1 = require("./completions");
 const signatures_1 = require("./signatures");
 const definitions_1 = require("./definitions");
 const hover_1 = require("./hover");
+const references_1 = require("./references");
+const rename_1 = require("./rename");
 const archive_1 = require("../sc2mod/archive");
+const timers_1 = require("timers");
+const lib_1 = require("vscode-uri/lib");
 function getNodeRange(node) {
     return {
         start: { line: node.line, character: node.char },
@@ -133,11 +137,14 @@ function mapFromObject(stuff) {
     return m;
 }
 ;
+;
 class Server {
     constructor() {
         this.store = new store_1.Store();
         this.documents = new lsp.TextDocuments();
         this.indexing = false;
+        this.ready = false;
+        this.documentUpdateRequests = new Map();
     }
     createProvider(cls) {
         return provider_1.createProvider(cls, this.store, this.connection.console);
@@ -150,10 +157,14 @@ class Server {
         this.signaturesProvider = this.createProvider(signatures_1.SignaturesProvider);
         this.definitionsProvider = this.createProvider(definitions_1.DefinitionProvider);
         this.hoverProvider = this.createProvider(hover_1.HoverProvider);
+        this.referenceProvider = this.createProvider(references_1.ReferencesProvider);
+        this.renameProvider = this.createProvider(rename_1.RenameProvider);
+        this.renameProvider.referencesProvider = this.referenceProvider;
         this.documents.listen(this.connection);
         this.documents.onDidChangeContent(this.onDidChangeContent.bind(this));
         this.documents.onDidOpen(this.onDidOpen.bind(this));
         this.documents.onDidClose(this.onDidClose.bind(this));
+        this.documents.onDidSave(this.onDidSave.bind(this));
         this.connection.onInitialize(this.onInitialize.bind(this));
         this.connection.onInitialized(this.onInitialized.bind(this));
         this.connection.onDidChangeConfiguration(this.onDidChangeConfiguration.bind(this));
@@ -164,10 +175,28 @@ class Server {
         this.connection.onSignatureHelp(this.onSignatureHelp.bind(this));
         this.connection.onDefinition(this.onDefinition.bind(this));
         this.connection.onHover(this.onHover.bind(this));
+        this.connection.onReferences(this.onReferences.bind(this));
+        this.connection.onRenameRequest(this.onRenameRequest.bind(this));
         return this.connection;
     }
     log(msg) {
         this.connection.console.log(msg);
+    }
+    flushDocument(documentUri) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.ready)
+                return false;
+            const req = this.documentUpdateRequests.get(documentUri);
+            if (!req)
+                return;
+            if (req.promise) {
+                yield req.promise;
+            }
+            else {
+                timers_1.clearTimeout(req.timer);
+                yield this.onUpdateContent(documentUri, req);
+            }
+        });
     }
     reindex(rootPath, modSources) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -175,6 +204,7 @@ class Server {
             let workspace;
             this.indexing = true;
             this.connection.sendNotification("indexStart");
+            this.store.rootPath = rootPath;
             if (rootPath) {
                 archivePath = yield store_1.findWorkspaceArchive(rootPath);
             }
@@ -209,7 +239,11 @@ class Server {
                 // workspace.onDidOpenS2Archive(this.onDidFindS2Workspace.bind(this));
                 yield this.workspaceWatcher.watch();
             }
+            for (const documentUri of this.documentUpdateRequests.keys()) {
+                yield this.flushDocument(documentUri);
+            }
             this.indexing = false;
+            this.ready = true;
             this.connection.sendNotification("indexEnd");
         });
     }
@@ -229,7 +263,9 @@ class Server {
                         triggerCharacters: ['(', ','],
                     },
                     definitionProvider: true,
-                    hoverProvider: true
+                    hoverProvider: true,
+                    referencesProvider: true,
+                    renameProvider: true,
                 }
             };
         });
@@ -256,28 +292,77 @@ class Server {
                     this.completionsProvider.config.functionExpand = 3 /* ArgumentsDefault */;
                     break;
             }
+            this.referenceProvider.config = this.config.references;
             if (!this.indexing) {
                 this.reindex(this.initParams.rootPath, this.initParams.initializationOptions.sources);
             }
         });
     }
     onDidChangeContent(ev) {
-        if (this.indexing)
-            return;
-        this.store.updateDocument(ev.document);
-        if (this.documents.keys().indexOf(ev.document.uri) !== undefined) {
-            this.connection.sendDiagnostics({
-                uri: ev.document.uri,
-                diagnostics: translateDiagnostics(this.store.documents.get(ev.document.uri), this.diagnosticsProvider.diagnose(ev.document.uri)),
+        return __awaiter(this, void 0, void 0, function* () {
+            let req = this.documentUpdateRequests.get(ev.document.uri);
+            if (req) {
+                if (req.promise) {
+                    yield req.promise;
+                }
+                else {
+                    if (req.timer) {
+                        timers_1.clearTimeout(req.timer);
+                    }
+                    this.documentUpdateRequests.delete(ev.document.uri);
+                }
+                req = null;
+            }
+            if (!req) {
+                req = {
+                    content: ev.document.getText(),
+                    timer: null,
+                    promise: null,
+                };
+            }
+            if (!this.indexing && this.ready) {
+                req.timer = timers_1.setTimeout(this.onUpdateContent.bind(this, ev.document.uri, req), this.config.documentUpdateDelay);
+            }
+            this.documentUpdateRequests.set(ev.document.uri, req);
+        });
+    }
+    onUpdateContent(documentUri, req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            req.promise = new Promise((resolve) => {
+                this.store.updateDocument({
+                    uri: documentUri,
+                    getText: () => {
+                        return req.content;
+                    }
+                }, true);
+                if (this.documents.keys().indexOf(documentUri) !== undefined) {
+                    this.connection.sendDiagnostics({
+                        uri: documentUri,
+                        diagnostics: translateDiagnostics(this.store.documents.get(documentUri), this.diagnosticsProvider.diagnose(documentUri)),
+                    });
+                }
+                this.documentUpdateRequests.delete(documentUri);
+                resolve(true);
             });
-        }
+            yield req.promise;
+        });
     }
     onDidOpen(ev) {
+        this.store.openDocuments.set(ev.document.uri, true);
     }
     onDidClose(ev) {
+        this.store.openDocuments.delete(ev.document.uri);
+        if (!this.store.rootPath || !lib_1.default.parse(ev.document.uri).fsPath.startsWith(this.store.rootPath)) {
+            this.store.removeDocument(ev.document.uri);
+        }
         this.connection.sendDiagnostics({
             uri: ev.document.uri,
             diagnostics: [],
+        });
+    }
+    onDidSave(ev) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.flushDocument(ev.document.uri);
         });
     }
     onDidFindInWorkspace(ev) {
@@ -290,9 +375,12 @@ class Server {
     //     this.log('Archives: ' + util.inspect(ev.workspace.allArchives, false, 1));
     // }
     onCompletion(params) {
-        if (!this.store.documents.has(params.textDocument.uri))
-            return null;
-        return this.completionsProvider.getCompletionsAt(params.textDocument.uri, utils_2.getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character));
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.store.documents.has(params.textDocument.uri))
+                return null;
+            yield this.flushDocument(params.textDocument.uri);
+            return this.completionsProvider.getCompletionsAt(params.textDocument.uri, utils_2.getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character));
+        });
     }
     onCompletionResolve(params) {
         return this.completionsProvider.resolveCompletion(params);
@@ -304,17 +392,38 @@ class Server {
         return translateDeclaratons(this.navigationProvider.getWorkspaceSymbols(params.query));
     }
     onSignatureHelp(params) {
-        if (!this.store.documents.has(params.textDocument.uri))
-            return null;
-        return this.signaturesProvider.getSignatureAt(params.textDocument.uri, utils_2.getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character));
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.store.documents.has(params.textDocument.uri))
+                return null;
+            yield this.flushDocument(params.textDocument.uri);
+            return this.signaturesProvider.getSignatureAt(params.textDocument.uri, utils_2.getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character));
+        });
     }
     onDefinition(params) {
-        if (!this.store.documents.has(params.textDocument.uri))
-            return null;
-        return this.definitionsProvider.getDefinitionAt(params.textDocument.uri, utils_2.getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character));
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.store.documents.has(params.textDocument.uri))
+                return null;
+            yield this.flushDocument(params.textDocument.uri);
+            return this.definitionsProvider.getDefinitionAt(params.textDocument.uri, utils_2.getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character));
+        });
     }
     onHover(params) {
-        return this.hoverProvider.getHoverAt(params);
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.flushDocument(params.textDocument.uri);
+            return this.hoverProvider.getHoverAt(params);
+        });
+    }
+    onReferences(params) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.flushDocument(params.textDocument.uri);
+            return this.referenceProvider.onReferences(params);
+        });
+    }
+    onRenameRequest(params) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.flushDocument(params.textDocument.uri);
+            return this.renameProvider.onRenameRequest(params);
+        });
     }
 }
 __decorate([
@@ -334,10 +443,16 @@ __decorate([
 ], Server.prototype, "onDidChangeContent", null);
 __decorate([
     wrapRequest()
+], Server.prototype, "onUpdateContent", null);
+__decorate([
+    wrapRequest('Opened', true, (payload) => payload.document.uri)
 ], Server.prototype, "onDidOpen", null);
 __decorate([
-    wrapRequest()
+    wrapRequest('Closed', true, (payload) => payload.document.uri)
 ], Server.prototype, "onDidClose", null);
+__decorate([
+    wrapRequest()
+], Server.prototype, "onDidSave", null);
 __decorate([
     wrapRequest('Indexing', true, (payload) => {
         return payload.document.uri;
@@ -364,6 +479,12 @@ __decorate([
 __decorate([
     wrapRequest()
 ], Server.prototype, "onHover", null);
+__decorate([
+    wrapRequest()
+], Server.prototype, "onReferences", null);
+__decorate([
+    wrapRequest()
+], Server.prototype, "onRenameRequest", null);
 exports.Server = Server;
 function createServer() {
     return (new Server()).createConnection();

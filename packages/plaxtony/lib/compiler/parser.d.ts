@@ -27,6 +27,7 @@ export declare class Parser {
     private parseDelimitedList<T>(kind, parseElement);
     private isVariableDeclaration();
     private isFunctionDeclaration();
+    private isParameter();
     private isStartOfExpression();
     private isStartOfStatement();
     private isStartOfVariableDeclaration();
@@ -44,7 +45,7 @@ export declare class Parser {
     private parseModifiers();
     private parseFunctionDeclaration();
     private parseVariableDeclaration();
-    private parseBlock();
+    private parseBlock(allowVarDeclarations?);
     private isUpdateExpression();
     private isStartOfLeftHandSideExpression();
     private makeBinaryExpression(left, operatorToken, right);

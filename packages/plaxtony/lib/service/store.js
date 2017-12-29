@@ -17,6 +17,7 @@ const path = require("path");
 const fs = require("fs");
 const glob = require("glob");
 const vscode_uri_1 = require("vscode-uri");
+const checker_1 = require("../compiler/checker");
 function createTextDocument(uri, text) {
     return {
         uri: uri,
@@ -109,7 +110,7 @@ function findWorkspaceArchive(rootPath) {
         const archives = yield archive_1.findSC2ArchiveDirectories(rootPath);
         if (archives.length > 0) {
             const map = archives.find((dir) => {
-                return path.extname(dir).toLowerCase() === 'sc2map';
+                return path.extname(dir).toLowerCase() === '.sc2map';
             });
             if (map) {
                 return map;
@@ -126,20 +127,33 @@ class Store {
     constructor() {
         this.parser = new parser_1.Parser();
         this.documents = new Map();
+        this.openDocuments = new Map();
     }
     // protected watchers = new Map<string, WorkspaceWatcher>();
-    updateDocument(document) {
+    removeDocument(documentUri) {
+        const currSorceFile = this.documents.get(documentUri);
+        if (!currSorceFile)
+            return;
+        binder_1.unbindSourceFile(currSorceFile, this);
+        this.documents.delete(documentUri);
+    }
+    updateDocument(document, check = false) {
         if (this.documents.has(document.uri)) {
             const currSorceFile = this.documents.get(document.uri);
             if (document.getText().length === currSorceFile.text.length && document.getText().valueOf() === currSorceFile.text.valueOf()) {
                 return;
             }
-            binder_1.unbindSourceFile(currSorceFile, this);
-            this.documents.delete(document.uri);
+            this.removeDocument(document.uri);
         }
         let sourceFile = this.parser.parseFile(document.uri, document.getText());
-        binder_1.bindSourceFile(sourceFile, this);
         this.documents.set(document.uri, sourceFile);
+        if (check) {
+            const checker = new checker_1.TypeChecker(this);
+            sourceFile.additionalSyntacticDiagnostics = checker.checkSourceFile(sourceFile, true);
+        }
+        else {
+            binder_1.bindSourceFile(sourceFile, this);
+        }
     }
     updateS2Workspace(workspace, lang) {
         return __awaiter(this, void 0, void 0, function* () {

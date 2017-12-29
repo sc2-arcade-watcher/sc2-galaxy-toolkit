@@ -16,7 +16,7 @@ class HoverProvider extends provider_1.AbstractProvider {
         if (!sourceFile)
             return;
         const position = utils_1.getPositionOfLineAndCharacter(sourceFile, params.position.line, params.position.character);
-        const currentToken = utils_1.getTokenAtPosition(position, sourceFile);
+        const currentToken = utils_1.getAdjacentIdentfier(position, sourceFile);
         if (!currentToken || currentToken.kind !== 107 /* Identifier */) {
             return null;
         }
@@ -58,6 +58,10 @@ class HoverProvider extends provider_1.AbstractProvider {
         }
         return {
             contents: content,
+            range: {
+                start: utils_1.getLineAndCharacterOfPosition(sourceFile, currentToken.pos),
+                end: utils_1.getLineAndCharacterOfPosition(sourceFile, currentToken.end),
+            }
         };
     }
 }

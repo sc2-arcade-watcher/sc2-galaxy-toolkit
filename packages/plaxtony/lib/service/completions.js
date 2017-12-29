@@ -179,7 +179,15 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         if (!sourceFile)
             return;
         let currentToken = utils_2.findPrecedingToken(position, sourceFile);
-        let elementType;
+        // const adjacentToken = getAdjacentToken(position, sourceFile);
+        // query
+        let query = null;
+        const processedSymbols = new Map();
+        if (currentToken && currentToken.pos <= position && currentToken.end >= position && currentToken.kind === 107 /* Identifier */) {
+            const offset = position -= currentToken.pos;
+            query = currentToken.name.substr(0, offset);
+        }
+        // trigger handlers
         if (currentToken && currentToken.kind === 2 /* StringLiteral */) {
             const callExpr = currentToken.parent;
             // trigger handlers
@@ -189,40 +197,35 @@ class CompletionsProvider extends provider_1.AbstractProvider {
                 return this.provideTriggerHandlers();
             }
         }
+        // presets
         if (currentToken && this.store.s2metadata) {
-            elementType = this.store.s2metadata.getElementTypeOfNode(currentToken);
+            const elementType = this.store.s2metadata.getElementTypeOfNode(currentToken);
             if (elementType) {
-                if (elementType.type === 'gamelink' && currentToken.kind === 2 /* StringLiteral */) {
+                // TODO: support <any> gamelink
+                if (elementType.type === 'gamelink' && currentToken.kind === 2 /* StringLiteral */ && elementType.gameType) {
                     return this.provideGameLinks(elementType.gameType);
                 }
             }
+            if (elementType && elementType.type === 'preset') {
+                for (const name of this.store.s2metadata.getConstantNamesOfPreset(elementType.typeElement.resolve())) {
+                    const symbol = this.store.resolveGlobalSymbol(name);
+                    if (symbol) {
+                        const citem = this.buildFromSymbolDecl(symbol);
+                        completions.push(citem);
+                        processedSymbols.set(name, symbol);
+                    }
+                }
+                if (!query)
+                    return completions;
+            }
         }
+        // exit early for str and num literals
         if (currentToken && (currentToken.kind === 2 /* StringLiteral */ ||
             currentToken.kind === 1 /* NumericLiteral */)) {
             return completions;
         }
-        // query
-        let query = null;
-        const processedSymbols = new Map();
-        if (currentToken && currentToken.pos <= position && currentToken.end >= position && currentToken.kind === 107 /* Identifier */) {
-            const offset = position -= currentToken.pos;
-            query = currentToken.name.substr(0, offset);
-        }
-        // presets
-        if (elementType && elementType.type === 'preset') {
-            for (const name of this.store.s2metadata.getConstantNamesOfPreset(elementType.typeElement.resolve())) {
-                const symbol = this.store.resolveGlobalSymbol(name);
-                if (symbol) {
-                    const citem = this.buildFromSymbolDecl(symbol);
-                    completions.push(citem);
-                    processedSymbols.set(name, symbol);
-                }
-            }
-            if (!query)
-                return completions;
-        }
+        // properties
         if (currentToken) {
-            // properties
             if ((currentToken.kind === 9 /* DotToken */ || currentToken.kind === 107 /* Identifier */) &&
                 (currentToken.parent.kind === 114 /* PropertyAccessExpression */ && currentToken.parent.expression !== currentToken)) {
                 const checker = new checker_1.TypeChecker(this.store);
@@ -232,7 +235,9 @@ class CompletionsProvider extends provider_1.AbstractProvider {
                     return this.buildFromSymbolMembers(type.symbol);
                 }
             }
-            // local variables
+        }
+        // local variables
+        if (currentToken) {
             const currentContext = utils_1.findAncestor(currentToken, (element) => {
                 return element.kind === 135 /* FunctionDeclaration */;
             });
@@ -241,16 +246,26 @@ class CompletionsProvider extends provider_1.AbstractProvider {
             }
         }
         // keyword types
-        if (!currentToken || !utils_1.isPartOfExpression(currentToken)) {
-            for (let i = 66 /* FirstBasicType */; i <= 71 /* LastBasicType */; i++) {
+        // if (!currentToken || !isPartOfExpression(currentToken)) {
+        //     for (let i = gt.SyntaxKindMarker.FirstBasicType; i <= gt.SyntaxKindMarker.LastBasicType; i++) {
+        //         completions.push({
+        //             label: tokenToString(<any>i),
+        //             kind: lsp.CompletionItemKind.Keyword
+        //         });
+        //     }
+        //     for (let i = gt.SyntaxKindMarker.FirstComplexType; i <= gt.SyntaxKindMarker.LastComplexType; i++) {
+        //         completions.push({
+        //             label: tokenToString(<any>i),
+        //             kind: lsp.CompletionItemKind.Keyword
+        //         });
+        //     }
+        // }
+        // keywords
+        for (let i = 49 /* FirstKeyword */; i <= 106 /* LastKeyword */; i++) {
+            const name = scanner_1.tokenToString(i);
+            if (!query || utils_2.fuzzysearch(query, name)) {
                 completions.push({
-                    label: scanner_1.tokenToString(i),
-                    kind: lsp.CompletionItemKind.Keyword
-                });
-            }
-            for (let i = 72 /* FirstComplexType */; i <= 103 /* LastComplexType */; i++) {
-                completions.push({
-                    label: scanner_1.tokenToString(i),
+                    label: name,
                     kind: lsp.CompletionItemKind.Keyword
                 });
             }

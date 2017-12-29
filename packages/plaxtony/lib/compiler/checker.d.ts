@@ -63,6 +63,7 @@ export declare class SignatureMeta {
     args: AbstractType[];
     constructor(returnType: AbstractType, args: AbstractType[]);
     match(other: SignatureMeta): boolean;
+    toString(): string;
 }
 export declare class FunctionType extends AbstractType implements gt.FunctionType {
     symbol: gt.Symbol;
@@ -103,6 +104,7 @@ export declare class TypeChecker {
     private store;
     private nodeLinks;
     private diagnostics;
+    private currentSymbolContainer;
     constructor(store: Store);
     private report(location, msg, category?);
     private getNodeLinks(node);
@@ -114,6 +116,7 @@ export declare class TypeChecker {
     private resolveMappedReference(type);
     private getPropertyOfType(type, name);
     private getDeclaredTypeOfStruct(symbol);
+    getSignatureOfFunction(fnDecl: gt.FunctionDeclaration): SignatureMeta;
     private getTypeOfFunction(symbol);
     private getTypeOfTypedef(symbol);
     private getDeclaredTypeOfSymbol(symbol);
@@ -123,7 +126,7 @@ export declare class TypeChecker {
     getTypeOfNode(node: gt.Node, followRef?: boolean): AbstractType;
     private getRegularTypeOfExpression(expr);
     private getTypeOfExpression(node, cache?);
-    checkSourceFile(sourceFile: gt.SourceFile): gt.Diagnostic[];
+    checkSourceFile(sourceFile: gt.SourceFile, bindSymbols?: boolean): gt.Diagnostic[];
     private checkSourceElement(node);
     private checkFunction(node);
     private checkParameterDeclaration(node);
@@ -149,7 +152,7 @@ export declare class TypeChecker {
     private checkCallExpression(node);
     private checkIndexedAccess(node);
     private checkPropertyAccessExpression(node);
-    private resolveName(location, name, nameNotFoundMessage);
+    private resolveName(location, name);
     private resolveEntityName(entityName, meaning, ignoreErrors?, location?);
     private getSymbolOfEntityNameOrPropertyAccessExpression(entityName);
     getSymbolAtLocation(node: gt.Node): gt.Symbol | undefined;

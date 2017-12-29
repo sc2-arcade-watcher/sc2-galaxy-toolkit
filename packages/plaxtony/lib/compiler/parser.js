@@ -297,6 +297,13 @@ class Parser {
         }
         return true;
     }
+    isParameter() {
+        this.parseTypeDefinition();
+        if (this.token() !== 107 /* Identifier */) {
+            return false;
+        }
+        return true;
+    }
     isStartOfExpression() {
         if (this.isStartOfLeftHandSideExpression()) {
             return true;
@@ -364,7 +371,7 @@ class Parser {
         return utils_1.isKeywordTypeKind(this.token()) || this.token() === 107 /* Identifier */;
     }
     isStartOfParameter() {
-        return this.isStartOfTypeDefinition();
+        return this.lookAhead(this.isParameter.bind(this));
     }
     parseLiteral(kind) {
         if (!kind) {
@@ -386,7 +393,7 @@ class Parser {
     parseIdentifier(diagnosticMessage) {
         const identifier = this.createNode(107 /* Identifier */);
         this.parseExpected(107 /* Identifier */, diagnosticMessage, false);
-        identifier.name = this.scanner.getTokenValue();
+        identifier.name = this.scanner.getTokenValue() || '';
         this.nextToken();
         return this.finishNode(identifier);
     }
@@ -458,7 +465,7 @@ class Parser {
         func.name = this.parseIdentifier();
         func.parameters = this.parseBracketedList(3 /* Parameters */, this.parseParameter.bind(this), 5 /* OpenParenToken */, 6 /* CloseParenToken */);
         if (this.token() === 3 /* OpenBraceToken */) {
-            func.body = this.parseBlock();
+            func.body = this.parseBlock(true);
         }
         else {
             this.parseExpected(10 /* SemicolonToken */);
@@ -477,10 +484,21 @@ class Parser {
         this.parseExpected(10 /* SemicolonToken */);
         return this.finishNode(variable);
     }
-    parseBlock() {
+    parseBlock(allowVarDeclarations = false) {
         const node = this.createNode(122 /* Block */);
         this.parseExpected(3 /* OpenBraceToken */);
-        node.statements = this.parseList(1 /* BlockStatements */, this.parseStatement.bind(this));
+        node.statements = this.parseList(1 /* BlockStatements */, () => {
+            const child = this.parseStatement();
+            if (child.kind === 134 /* VariableDeclaration */) {
+                if (!allowVarDeclarations) {
+                    this.parseErrorAtPosition(child.pos, child.end - child.pos, 'Local variables must be declared at the begining of function block');
+                }
+            }
+            else {
+                allowVarDeclarations = false;
+            }
+            return child;
+        });
         this.parseExpected(4 /* CloseBraceToken */);
         return this.finishNode(node);
     }

@@ -31,10 +31,13 @@ export declare class S2WorkspaceWatcher extends WorkspaceWatcher {
 export declare function findWorkspaceArchive(rootPath: string): Promise<string>;
 export declare class Store {
     private parser;
+    rootPath?: string;
     documents: Map<string, gt.SourceFile>;
+    openDocuments: Map<string, boolean>;
     s2workspace: SC2Workspace;
     s2metadata: S2WorkspaceMetadata;
-    updateDocument(document: lsp.TextDocument): void;
+    removeDocument(documentUri: string): void;
+    updateDocument(document: lsp.TextDocument, check?: boolean): void;
     updateS2Workspace(workspace: SC2Workspace, lang: string): Promise<void>;
     resolveGlobalSymbol(name: string): gt.Symbol | undefined;
 }

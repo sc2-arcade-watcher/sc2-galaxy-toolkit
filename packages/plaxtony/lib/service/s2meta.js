@@ -145,7 +145,7 @@ class S2WorkspaceMetadata {
         else if (el instanceof trig.ParamDef) {
             let type;
             if (el.type.type === 'gamelink') {
-                type = '`gamelink<' + el.type.gameType + '>`';
+                type = '`gamelink<' + (el.type.gameType || 'any') + '>`';
             }
             else if (el.type.type === 'preset') {
                 type = '' + this.workspace.locComponent.triggers.elementName('Name', el.type.typeElement.resolve()) + '';

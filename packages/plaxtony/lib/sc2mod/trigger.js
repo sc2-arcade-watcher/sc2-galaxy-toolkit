@@ -47,6 +47,19 @@ exports.ElementReference = ElementReference;
 class ParameterType {
 }
 exports.ParameterType = ParameterType;
+// TODO:
+// <Type Value="filepath"/>
+// <AssetType Value="Cutscene"/>
+// -
+// <Type Value="convline"/>
+// -
+// <Type Value="control"/>
+// -
+// <Type Value="gameoption"/>
+// -
+// <Type Value="gameoptionvalue"/>
+// -
+// <Type Value="modelanim"/>
 class Element {
     link() {
         return (this.libId ? this.libId + '/' : '') + (this.constructor.name + '/') + this.id;
@@ -256,6 +269,17 @@ class XMLReader {
         element.functionDef = this.parseReference(item.FunctionDef[0], FunctionDef);
         return element;
     }
+    parseParameterType(item) {
+        const element = new ParameterType();
+        element.type = item.Type[0].$.Value;
+        if (element.type === 'gamelink' && item.GameType) {
+            element.gameType = item.GameType[0].$.Value;
+        }
+        if (element.type === 'preset') {
+            element.typeElement = this.parseReference(item.TypeElement[0], Preset);
+        }
+        return element;
+    }
     parseElement(item) {
         let el;
         switch (item.$.Type) {
@@ -273,21 +297,14 @@ class XMLReader {
                         }
                     }
                     if (item.ReturnType) {
-                        func.returnType = item.ReturnType[0].Type[0].$.Value;
+                        func.returnType = this.parseParameterType(item.ReturnType[0]);
                     }
                     break;
                 }
             case 'ParamDef':
                 {
                     const paramDef = el = new ParamDef();
-                    paramDef.type = new ParameterType();
-                    paramDef.type.type = item.ParameterType[0].Type[0].$.Value;
-                    if (paramDef.type.type === 'gamelink') {
-                        paramDef.type.gameType = item.ParameterType[0].GameType[0].$.Value;
-                    }
-                    if (paramDef.type.type === 'preset') {
-                        paramDef.type.typeElement = this.parseReference(item.ParameterType[0].TypeElement[0], Preset);
-                    }
+                    paramDef.type = this.parseParameterType(item.ParameterType[0]);
                     if (item.Default) {
                         paramDef.default = this.parseReference(item.Default[0], Param);
                     }

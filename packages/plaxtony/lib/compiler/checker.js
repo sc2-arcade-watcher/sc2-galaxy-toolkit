@@ -4,8 +4,12 @@ const gt = require("./types");
 const utils_1 = require("../compiler/utils");
 const utils_2 = require("./utils");
 const scanner_1 = require("./scanner");
+const printer_1 = require("./printer");
+const binder_1 = require("./binder");
+const utils_3 = require("../service/utils");
 let nextSymbolId = 1;
 let nextNodeId = 1;
+const printer = new printer_1.Printer();
 function getNodeId(node) {
     if (!node.id) {
         node.id = nextNodeId;
@@ -147,7 +151,7 @@ class IntrinsicType extends AbstractType {
                 if (this.flags & 4 /* Integer */ || this.flags & 8 /* Byte */)
                     return true;
             case 31 /* ExclamationToken */:
-                if (this.flags & 4 /* Integer */ || this.flags & 8 /* Byte */ || this.flags & 32 /* Fixed */ || this.flags & 64 /* Boolean */)
+                if (this.flags & 4 /* Integer */ || this.flags & 8 /* Byte */ || this.flags & 32 /* Fixed */ || this.flags & 64 /* Boolean */ || this.flags & 2 /* String */)
                     return true;
         }
     }
@@ -387,6 +391,13 @@ class SignatureMeta {
         }
         return true;
     }
+    toString() {
+        const params = [];
+        for (const p of this.args) {
+            params.push(p.getName());
+        }
+        return `${this.returnType.getName()} (${params.join(',')})`;
+    }
 }
 exports.SignatureMeta = SignatureMeta;
 class FunctionType extends AbstractType {
@@ -398,6 +409,8 @@ class FunctionType extends AbstractType {
     }
     isAssignableTo(target) {
         if (target instanceof ReferenceType && target.kind === 106 /* FuncrefKeyword */) {
+            if (!(target.declaredType.flags & 16384 /* Function */))
+                return false;
             if (this.symbol === target.declaredType.symbol)
                 return true;
             if (this.signature.match(target.declaredType.signature))
@@ -519,6 +532,7 @@ class TypeChecker {
     constructor(store) {
         this.nodeLinks = [];
         this.diagnostics = [];
+        this.currentSymbolContainer = null;
         this.store = store;
     }
     report(location, msg, category = gt.DiagnosticCategory.Error) {
@@ -530,16 +544,22 @@ class TypeChecker {
     }
     checkTypeAssignableTo(source, target, node) {
         // TODO: error when using local var as reference
+        if (source === unknownType || target === unknownType)
+            return;
         if (!source.isAssignableTo(target)) {
             this.report(node, 'Type \'' + source.getName() + '\' is not assignable to type \'' + target.getName() + '\'');
         }
     }
     checkTypeComparableTo(source, target, node) {
+        if (source === unknownType || target === unknownType)
+            return;
         if (!source.isComparableTo(target)) {
             this.report(node, 'Type \'' + source.getName() + '\' is not comparable to type \'' + target.getName() + '\'');
         }
     }
     checkTypeBoolExpression(source, negation, node) {
+        if (source === unknownType)
+            return;
         if (!source.isBoolExpression(negation)) {
             this.report(node, 'Type \'' + source.getName() + '\' can not be used as boolean expression');
         }
@@ -575,13 +595,15 @@ class TypeChecker {
         // TODO: persist in map<symbol,type>
         return new StructType(symbol);
     }
-    getTypeOfFunction(symbol) {
-        const fnDecl = symbol.declarations[0];
-        const signature = new SignatureMeta(this.getTypeFromTypeNode(fnDecl.type), fnDecl.parameters.map((param) => {
+    getSignatureOfFunction(fnDecl) {
+        return new SignatureMeta(this.getTypeFromTypeNode(fnDecl.type), fnDecl.parameters.map((param) => {
             return this.getTypeFromTypeNode(param.type);
         }));
+    }
+    getTypeOfFunction(symbol) {
+        const fnDecl = symbol.declarations[0];
         // TODO: persist in map<symbol,type>
-        return new FunctionType(symbol, signature);
+        return new FunctionType(symbol, this.getSignatureOfFunction(fnDecl));
     }
     getTypeOfTypedef(symbol) {
         const refType = this.getTypeFromTypeNode(symbol.declarations[0].type);
@@ -675,50 +697,119 @@ class TypeChecker {
     getTypeOfExpression(node, cache) {
         return this.checkExpression(node);
     }
-    checkSourceFile(sourceFile) {
+    checkSourceFile(sourceFile, bindSymbols = false) {
         this.diagnostics = [];
+        if (bindSymbols) {
+            this.currentSymbolContainer = binder_1.declareSymbol(sourceFile, this.store, null);
+        }
         for (const statement of sourceFile.statements) {
             this.checkSourceElement(statement);
         }
         return this.diagnostics;
     }
     checkSourceElement(node) {
+        let prevSymbolContainer = null;
+        if (this.currentSymbolContainer && utils_2.isDeclarationKind(node.kind)) {
+            prevSymbolContainer = this.currentSymbolContainer;
+            this.currentSymbolContainer = binder_1.declareSymbol(node, this.store, prevSymbolContainer);
+            if (this.currentSymbolContainer.declarations.length > 1) {
+                let previousDeclaration;
+                if (node.kind === 135 /* FunctionDeclaration */) {
+                    for (const pd of this.currentSymbolContainer.declarations) {
+                        if (pd === node)
+                            continue;
+                        if (pd.kind === 135 /* FunctionDeclaration */ && (!pd.body || !node.body)) {
+                            continue;
+                        }
+                        previousDeclaration = pd;
+                        break;
+                    }
+                }
+                else if (node.kind === 136 /* ParameterDeclaration */) {
+                    for (const pd of this.currentSymbolContainer.declarations) {
+                        if (pd === node)
+                            continue;
+                        if (pd.parent !== node.parent)
+                            continue;
+                        previousDeclaration = pd;
+                        break;
+                    }
+                }
+                else {
+                    previousDeclaration = this.currentSymbolContainer.declarations[this.currentSymbolContainer.declarations.length - 2];
+                }
+                if (previousDeclaration) {
+                    const prevSourceFile = utils_2.findAncestorByKind(previousDeclaration, 121 /* SourceFile */);
+                    const prevPos = utils_3.getLineAndCharacterOfPosition(prevSourceFile, previousDeclaration.pos);
+                    this.report(node.name, `Symbol redeclared, previous declaration in ${prevSourceFile.fileName}:${prevPos.line + 1},${prevPos.character + 1}`);
+                }
+            }
+        }
         switch (node.kind) {
             case 122 /* Block */:
-                return this.checkBlock(node);
+                this.checkBlock(node);
+                break;
             case 135 /* FunctionDeclaration */:
-                return this.checkFunction(node);
+                this.checkFunction(node);
+                break;
             case 134 /* VariableDeclaration */:
             case 137 /* PropertyDeclaration */:
-                return this.checkVariableDeclaration(node);
+                this.checkVariableDeclaration(node);
+                break;
             case 136 /* ParameterDeclaration */:
-                return this.checkParameterDeclaration(node);
+                this.checkParameterDeclaration(node);
+                break;
             case 133 /* StructDeclaration */:
-                return this.checkStructDeclaration(node);
+                this.checkStructDeclaration(node);
+                break;
             case 131 /* ExpressionStatement */:
-                return this.checkExpressionStatement(node);
+                this.checkExpressionStatement(node);
+                break;
             case 123 /* IfStatement */:
-                return this.checkIfStatement(node);
+                this.checkIfStatement(node);
+                break;
             case 126 /* ForStatement */:
-                return this.checkForStatement(node);
+                this.checkForStatement(node);
+                break;
             case 125 /* WhileStatement */:
             case 124 /* DoStatement */:
-                return this.checkWhileStatement(node);
+                this.checkWhileStatement(node);
+                break;
             case 127 /* BreakStatement */:
             case 128 /* ContinueStatement */:
-                return this.checkBreakOrContinueStatement(node);
+                this.checkBreakOrContinueStatement(node);
+                break;
             case 130 /* ReturnStatement */:
-                return this.checkReturnStatement(node);
+                this.checkReturnStatement(node);
+                break;
             case 110 /* MappedType */:
-                return this.checkMappedType(node);
+                this.checkMappedType(node);
+                break;
             case 111 /* ArrayType */:
-                return this.checkArrayType(node);
+                this.checkArrayType(node);
+                break;
             case 107 /* Identifier */:
-                return this.checkIdentifier(node);
+                this.checkIdentifier(node);
+                break;
+        }
+        if (prevSymbolContainer) {
+            this.currentSymbolContainer = prevSymbolContainer;
         }
     }
     checkFunction(node) {
         this.checkSourceElement(node.type);
+        const currentSignature = this.getSignatureOfFunction(node);
+        for (const prevDecl of node.symbol.declarations) {
+            if (node === prevDecl)
+                continue;
+            if (prevDecl.kind !== 135 /* FunctionDeclaration */)
+                break;
+            const previousSignature = this.getSignatureOfFunction(prevDecl);
+            if (!currentSignature.match(previousSignature)) {
+                this.report(node, `Function signature doesn't match it's previous declaration '${previousSignature.toString()}'`);
+                break;
+            }
+        }
         node.parameters.forEach(this.checkSourceElement.bind(this));
         if (node.body) {
             this.checkSourceElement(node.body);
@@ -917,7 +1008,7 @@ class TypeChecker {
     checkIdentifier(node) {
         const symbol = this.getSymbolOfEntityNameOrPropertyAccessExpression(node);
         if (!symbol) {
-            this.report(node, 'Undeclared symbol');
+            this.report(node, `Undeclared symbol: '${node.name}'`);
             return unknownType;
         }
         return this.getTypeOfSymbol(symbol);
@@ -990,10 +1081,10 @@ class TypeChecker {
         }
         return unknownType;
     }
-    resolveName(location, name, nameNotFoundMessage) {
+    resolveName(location, name) {
         if (location) {
             const currentContext = utils_2.findAncestor(location, (element) => {
-                return element.kind === 135 /* FunctionDeclaration */;
+                return element.kind === 135 /* FunctionDeclaration */ || element.kind === 133 /* StructDeclaration */;
             });
             if (currentContext && currentContext.symbol.members.has(name)) {
                 return currentContext.symbol.members.get(name);
@@ -1010,7 +1101,7 @@ class TypeChecker {
     resolveEntityName(entityName, meaning, ignoreErrors, location) {
         let symbol;
         if (entityName.kind === 107 /* Identifier */) {
-            symbol = this.resolveName(location || entityName, entityName.name, ignoreErrors ? undefined : 'symbol referenced but not declared');
+            symbol = this.resolveName(location || entityName, entityName.name);
             if (!symbol) {
                 return undefined;
             }
