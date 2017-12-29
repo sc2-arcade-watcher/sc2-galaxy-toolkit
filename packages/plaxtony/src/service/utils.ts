@@ -152,6 +152,16 @@ export function getAdjacentIdentfier(position: number, sourceFile: gt.SourceFile
     return null;
 }
 
+export function getAdjacentToken(position: number, sourceFile: gt.SourceFile) {
+    let token = getTokenAtPosition(position, sourceFile);
+    if (token) return token;
+
+    token = findPrecedingToken(position, sourceFile);
+    if (token) return token;
+
+    return null;
+}
+
 export function getPositionOfLineAndCharacter(sourceFile: gt.SourceFile, line: number, character: number): number {
     return sourceFile.lineMap[line] + character;
 }

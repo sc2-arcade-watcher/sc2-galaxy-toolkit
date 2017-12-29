@@ -4,7 +4,7 @@ import { TypeChecker } from '../compiler/checker';
 import { AbstractProvider } from './provider';
 import { tokenToString } from '../compiler/scanner';
 import { findAncestor, isToken, isPartOfExpression } from '../compiler/utils';
-import { getTokenAtPosition, findPrecedingToken, fuzzysearch } from './utils';
+import { getTokenAtPosition, findPrecedingToken, fuzzysearch, getAdjacentToken } from './utils';
 import { Printer } from '../compiler/printer';
 import * as lsp from 'vscode-languageserver';
 import { getDocumentationOfSymbol } from './s2meta';
@@ -201,8 +201,17 @@ export class CompletionsProvider extends AbstractProvider {
         const sourceFile = this.store.documents.get(uri);
         if (!sourceFile) return;
         let currentToken = findPrecedingToken(position, sourceFile);
-        let elementType: trig.ParameterType;
+        // const adjacentToken = getAdjacentToken(position, sourceFile);
 
+        // query
+        let query: string = null;
+        const processedSymbols = new Map<string, Symbol>();
+        if (currentToken && currentToken.pos <= position && currentToken.end >= position && currentToken.kind === gt.SyntaxKind.Identifier) {
+            const offset = position -= currentToken.pos;
+            query = (<gt.Identifier>currentToken).name.substr(0, offset);
+        }
+
+        // trigger handlers
         if (currentToken && currentToken.kind === gt.SyntaxKind.StringLiteral) {
             const callExpr = <gt.CallExpression>currentToken.parent;
             // trigger handlers
@@ -215,32 +224,15 @@ export class CompletionsProvider extends AbstractProvider {
             }
         }
 
+        // presets
         if (currentToken && this.store.s2metadata) {
-            elementType = this.store.s2metadata.getElementTypeOfNode(currentToken);
-
+            const elementType = this.store.s2metadata.getElementTypeOfNode(currentToken);
             if (elementType) {
-                if (elementType.type === 'gamelink' && currentToken.kind === gt.SyntaxKind.StringLiteral) {
+                // TODO: support <any> gamelink
+                if (elementType.type === 'gamelink' && currentToken.kind === gt.SyntaxKind.StringLiteral && elementType.gameType) {
                     return this.provideGameLinks(elementType.gameType);
                 }
             }
-        }
-
-        if (currentToken && (
-            currentToken.kind === gt.SyntaxKind.StringLiteral ||
-            currentToken.kind === gt.SyntaxKind.NumericLiteral
-        )) {
-            return completions;
-        }
-
-        // query
-        let query: string = null;
-        const processedSymbols = new Map<string, Symbol>();
-        if (currentToken && currentToken.pos <= position && currentToken.end >= position && currentToken.kind === gt.SyntaxKind.Identifier) {
-            const offset = position -= currentToken.pos;
-            query = (<gt.Identifier>currentToken).name.substr(0, offset);
-        }
-
-        // presets
         if (elementType && elementType.type === 'preset') {
             for (const name of this.store.s2metadata.getConstantNamesOfPreset(elementType.typeElement.resolve())) {
                 const symbol = this.store.resolveGlobalSymbol(name);
@@ -252,9 +244,18 @@ export class CompletionsProvider extends AbstractProvider {
             }
             if (!query) return completions;
         }
+        }
 
-        if (currentToken) {
+        // exit early for str and num literals
+        if (currentToken && (
+            currentToken.kind === gt.SyntaxKind.StringLiteral ||
+            currentToken.kind === gt.SyntaxKind.NumericLiteral
+        )) {
+            return completions;
+        }
+
             // properties
+        if (currentToken) {
             if (
                 (currentToken.kind === gt.SyntaxKind.DotToken || currentToken.kind === gt.SyntaxKind.Identifier) &&
                 (currentToken.parent.kind === gt.SyntaxKind.PropertyAccessExpression && (<gt.PropertyAccessExpression>currentToken.parent).expression !== currentToken)
@@ -266,8 +267,10 @@ export class CompletionsProvider extends AbstractProvider {
                     return this.buildFromSymbolMembers(type.symbol);
                 }
             }
+        }
 
             // local variables
+        if (currentToken) {
             const currentContext = <FunctionDeclaration>findAncestor(currentToken, (element: Node): boolean => {
                 return element.kind === SyntaxKind.FunctionDeclaration;
             })
