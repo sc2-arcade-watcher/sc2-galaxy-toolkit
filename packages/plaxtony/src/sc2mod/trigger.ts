@@ -48,9 +48,22 @@ export class ElementReference<T extends Element> {
 
 export class ParameterType {
     type: string;
-    gameType?: string; // when type == gamelink; e.g. Model
+    gameType?: string; // when type == gamelink; e.g. Model; (may be omitted - "any")
     typeElement?: ElementReference<Preset>; // when type == preset;
 }
+// TODO:
+// <Type Value="filepath"/>
+// <AssetType Value="Cutscene"/>
+// -
+// <Type Value="convline"/>
+// -
+// <Type Value="control"/>
+// -
+// <Type Value="gameoption"/>
+// -
+// <Type Value="gameoptionvalue"/>
+// -
+// <Type Value="modelanim"/>
 
 export abstract class Element {
     static prefix?: string;
@@ -103,7 +116,7 @@ export class ParamDef extends Element {
 export class FunctionDef extends Element {
     static prefix = 'gf';
     parameters: ElementReference<ParamDef>[] = [];
-    returnType?: string;
+    returnType?: ParameterType;
 
     public getParameters() {
         return this.parameters.map((paramRef): ParamDef => {
@@ -294,6 +307,18 @@ export class XMLReader {
         return element;
     }
 
+    private parseParameterType(item: any): ParameterType {
+        const element = new ParameterType();
+        element.type = item.Type[0].$.Value;
+        if (element.type === 'gamelink' && item.GameType) {
+            element.gameType = item.GameType[0].$.Value;
+        }
+        if (element.type === 'preset') {
+            element.typeElement = this.parseReference(item.TypeElement[0], Preset);
+        }
+        return element;
+    }
+
     private parseElement(item: any): Element {
         let el: Element;
 
@@ -315,21 +340,14 @@ export class XMLReader {
                 }
 
                 if (item.ReturnType) {
-                    func.returnType = item.ReturnType[0].Type[0].$.Value;
+                    func.returnType = this.parseParameterType(item.ReturnType[0]);
                 }
                 break;
             }
             case 'ParamDef':
             {
                 const paramDef = el = new ParamDef();
-                paramDef.type = new ParameterType();
-                paramDef.type.type = item.ParameterType[0].Type[0].$.Value;
-                if (paramDef.type.type === 'gamelink') {
-                    paramDef.type.gameType = item.ParameterType[0].GameType[0].$.Value;
-                }
-                if (paramDef.type.type === 'preset') {
-                    paramDef.type.typeElement = this.parseReference(item.ParameterType[0].TypeElement[0], Preset);
-                }
+                paramDef.type = this.parseParameterType(item.ParameterType[0]);
                 if (item.Default) {
                     paramDef.default = this.parseReference(item.Default[0], Param);
                 }

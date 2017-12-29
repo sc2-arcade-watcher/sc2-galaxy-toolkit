@@ -144,7 +144,7 @@ describe('SC2Mod', () => {
             });
 
             it('should fetch returnType', () => {
-                assert.equal(el.returnType, 'unitgroup');
+                assert.equal(el.returnType.type, 'unitgroup');
             });
 
             it('should fetch parameters names', () => {

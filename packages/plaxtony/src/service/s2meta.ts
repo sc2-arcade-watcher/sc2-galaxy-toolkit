@@ -162,7 +162,7 @@ export class S2WorkspaceMetadata {
         else if (el instanceof trig.ParamDef) {
             let type: string;
             if ((<trig.ParamDef>el).type.type === 'gamelink') {
-                type = '`gamelink<' + (<trig.ParamDef>el).type.gameType + '>`';
+                type = '`gamelink<' + ((<trig.ParamDef>el).type.gameType || 'any') + '>`';
             }
             else if ((<trig.ParamDef>el).type.type === 'preset') {
                 type = '' + this.workspace.locComponent.triggers.elementName('Name', (<trig.ParamDef>el).type.typeElement.resolve()) + '';
