@@ -32,7 +32,6 @@ const references_1 = require("./references");
 const rename_1 = require("./rename");
 const archive_1 = require("../sc2mod/archive");
 const timers_1 = require("timers");
-const lib_1 = require("vscode-uri/lib");
 function getNodeRange(node) {
     return {
         start: { line: node.line, character: node.char },
@@ -352,8 +351,9 @@ class Server {
     }
     onDidClose(ev) {
         this.store.openDocuments.delete(ev.document.uri);
-        if (!this.store.rootPath || !lib_1.default.parse(ev.document.uri).fsPath.startsWith(this.store.rootPath)) {
+        if (!this.store.isDocumentInWorkspace(ev.document.uri)) {
             this.store.removeDocument(ev.document.uri);
+            this.log('removed from store');
         }
         this.connection.sendDiagnostics({
             uri: ev.document.uri,
