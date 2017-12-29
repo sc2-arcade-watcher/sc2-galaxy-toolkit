@@ -233,17 +233,17 @@ export class CompletionsProvider extends AbstractProvider {
                     return this.provideGameLinks(elementType.gameType);
                 }
             }
-        if (elementType && elementType.type === 'preset') {
-            for (const name of this.store.s2metadata.getConstantNamesOfPreset(elementType.typeElement.resolve())) {
-                const symbol = this.store.resolveGlobalSymbol(name);
-                if (symbol) {
-                    const citem = this.buildFromSymbolDecl(symbol);
-                    completions.push(citem);
-                    processedSymbols.set(name, symbol);
+            if (elementType && elementType.type === 'preset') {
+                for (const name of this.store.s2metadata.getConstantNamesOfPreset(elementType.typeElement.resolve())) {
+                    const symbol = this.store.resolveGlobalSymbol(name);
+                    if (symbol) {
+                        const citem = this.buildFromSymbolDecl(symbol);
+                        completions.push(citem);
+                        processedSymbols.set(name, symbol);
+                    }
                 }
+                if (!query) return completions;
             }
-            if (!query) return completions;
-        }
         }
 
         // exit early for str and num literals
@@ -254,7 +254,7 @@ export class CompletionsProvider extends AbstractProvider {
             return completions;
         }
 
-            // properties
+        // properties
         if (currentToken) {
             if (
                 (currentToken.kind === gt.SyntaxKind.DotToken || currentToken.kind === gt.SyntaxKind.Identifier) &&
@@ -269,7 +269,7 @@ export class CompletionsProvider extends AbstractProvider {
             }
         }
 
-            // local variables
+        // local variables
         if (currentToken) {
             const currentContext = <FunctionDeclaration>findAncestor(currentToken, (element: Node): boolean => {
                 return element.kind === SyntaxKind.FunctionDeclaration;
@@ -280,16 +280,27 @@ export class CompletionsProvider extends AbstractProvider {
         }
 
         // keyword types
-        if (!currentToken || !isPartOfExpression(currentToken)) {
-            for (let i = gt.SyntaxKindMarker.FirstBasicType; i <= gt.SyntaxKindMarker.LastBasicType; i++) {
+        // if (!currentToken || !isPartOfExpression(currentToken)) {
+        //     for (let i = gt.SyntaxKindMarker.FirstBasicType; i <= gt.SyntaxKindMarker.LastBasicType; i++) {
+        //         completions.push({
+        //             label: tokenToString(<any>i),
+        //             kind: lsp.CompletionItemKind.Keyword
+        //         });
+        //     }
+        //     for (let i = gt.SyntaxKindMarker.FirstComplexType; i <= gt.SyntaxKindMarker.LastComplexType; i++) {
+        //         completions.push({
+        //             label: tokenToString(<any>i),
+        //             kind: lsp.CompletionItemKind.Keyword
+        //         });
+        //     }
+        // }
+
+        // keywords
+        for (let i = gt.SyntaxKindMarker.FirstKeyword; i <= gt.SyntaxKindMarker.LastKeyword; i++) {
+            const name = tokenToString(<any>i);
+            if (!query || fuzzysearch(query, name)) {
                 completions.push({
-                    label: tokenToString(<any>i),
-                    kind: lsp.CompletionItemKind.Keyword
-                });
-            }
-            for (let i = gt.SyntaxKindMarker.FirstComplexType; i <= gt.SyntaxKindMarker.LastComplexType; i++) {
-                completions.push({
-                    label: tokenToString(<any>i),
+                    label: name,
                     kind: lsp.CompletionItemKind.Keyword
                 });
             }
