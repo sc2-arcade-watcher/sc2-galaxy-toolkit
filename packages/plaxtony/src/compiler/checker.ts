@@ -1000,10 +1000,10 @@ export class TypeChecker {
         const rtype = this.getTypeFromTypeNode(fn.type);
 
         if (rtype.flags & gt.TypeFlags.Void && node.expression) {
-            this.report(node.expression, 'Unexpected value returned for void function');
+            this.report(node, 'Unexpected value returned for void function');
         }
         else if (!(rtype.flags & gt.TypeFlags.Void) && !node.expression) {
-            this.report(node.expression, 'Expected a return value');
+            this.report(node, 'Expected a return value');
         }
 
         if (node.expression) {

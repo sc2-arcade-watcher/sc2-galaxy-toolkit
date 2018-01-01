@@ -336,5 +336,15 @@ describe('Checker', () => {
             assert.lengthOf(diagnostics, 1);
             assert.isTrue(diagnostics[0].messageText.startsWith('Undeclared symbol'));
         });
+
+        it('return_expected_value', () => {
+            const document = mockupTextDocument('type_checker', 'diagnostics', 'return_expected_value.galaxy');
+            const store = mockupStore(document);
+            const checker = new TypeChecker(store);
+
+            const diagnostics = checker.checkSourceFile(store.documents.get(document.uri), true);
+            assert.lengthOf(diagnostics, 1);
+            assert.isTrue(diagnostics[0].messageText.startsWith('Expected a return value'));
+        });
     });
 });
