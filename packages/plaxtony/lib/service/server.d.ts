@@ -20,13 +20,14 @@ export declare class Server {
     private createProvider<T>(cls);
     createConnection(connection?: lsp.IConnection): lsp.IConnection;
     log(msg: string): void;
-    private flushDocument(documentUri);
+    private flushDocument(documentUri, isDirty?);
     private reindex(rootPath, modSources);
     private onInitialize(params);
     private onInitialized(params);
     private onDidChangeConfiguration(ev);
     private onDidChangeContent(ev);
     private onUpdateContent(documentUri, req);
+    private onDiagnostics(documentUri, req);
     private onDidOpen(ev);
     private onDidClose(ev);
     private onDidSave(ev);

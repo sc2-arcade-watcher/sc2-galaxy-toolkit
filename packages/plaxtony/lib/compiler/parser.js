@@ -132,7 +132,7 @@ class Parser {
         return array;
     }
     createMissingNode(kind) {
-        this.parseErrorAtCurrentToken("missing node {0}", kind);
+        this.parseErrorAtCurrentToken('Missing node: {0}', utils_1.getKindName(kind));
         const result = this.createNode(0 /* Unknown */);
         return this.finishNode(result);
     }
@@ -486,21 +486,25 @@ class Parser {
     }
     parseBlock(allowVarDeclarations = false) {
         const node = this.createNode(122 /* Block */);
-        this.parseExpected(3 /* OpenBraceToken */);
-        node.statements = this.parseList(1 /* BlockStatements */, () => {
-            const child = this.parseStatement();
-            if (child.kind === 134 /* VariableDeclaration */) {
-                if (!allowVarDeclarations) {
-                    this.parseErrorAtPosition(child.pos, child.end - child.pos, 'Local variables must be declared at the begining of function block');
+        if (this.parseExpected(3 /* OpenBraceToken */)) {
+            node.statements = this.parseList(1 /* BlockStatements */, () => {
+                const child = this.parseStatement();
+                if (child.kind === 134 /* VariableDeclaration */) {
+                    if (!allowVarDeclarations) {
+                        this.parseErrorAtPosition(child.pos, child.end - child.pos, 'Local variables must be declared at the begining of function block');
+                    }
                 }
-            }
-            else {
-                allowVarDeclarations = false;
-            }
-            return child;
-        });
-        this.parseExpected(4 /* CloseBraceToken */);
-        return this.finishNode(node);
+                else {
+                    allowVarDeclarations = false;
+                }
+                return child;
+            });
+            this.parseExpected(4 /* CloseBraceToken */);
+            return this.finishNode(node);
+        }
+        else {
+            return this.createMissingNode(122 /* Block */);
+        }
     }
     isUpdateExpression() {
         // This function is called inside parseUnaryExpression to decide

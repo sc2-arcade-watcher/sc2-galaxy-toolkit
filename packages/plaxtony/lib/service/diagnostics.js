@@ -1,20 +1,42 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const lsp = require("vscode-languageserver");
 const provider_1 = require("./provider");
+const checker_1 = require("../compiler/checker");
+const binder_1 = require("../compiler/binder");
+const utils_1 = require("./utils");
 class DiagnosticsProvider extends provider_1.AbstractProvider {
+    translateDiagnostics(sourceFile, origDiagnostics) {
+        let lspDiagnostics = [];
+        for (let dg of origDiagnostics) {
+            lspDiagnostics.push({
+                severity: lsp.DiagnosticSeverity.Error,
+                range: {
+                    start: utils_1.getLineAndCharacterOfPosition(sourceFile, dg.start),
+                    end: utils_1.getLineAndCharacterOfPosition(sourceFile, dg.start + dg.length)
+                },
+                message: dg.messageText,
+            });
+        }
+        return lspDiagnostics;
+    }
     subscribe(uri) {
     }
-    diagnose(uri) {
+    checkFile(documentUri) {
+        const checker = new checker_1.TypeChecker(this.store);
+        const sourceFile = this.store.documents.get(documentUri);
+        binder_1.unbindSourceFile(sourceFile, this.store);
+        sourceFile.additionalSyntacticDiagnostics = checker.checkSourceFile(sourceFile, true);
+    }
+    provideDiagnostics(uri) {
         let diagnostics = [];
         const sourceFile = this.store.documents.get(uri);
-        this.console.info(`${uri}`);
         const parseDiag = sourceFile.parseDiagnostics;
-        this.console.info(`parse diagnostics = ${parseDiag.length}`);
         diagnostics = diagnostics.concat(parseDiag);
         const checkerDiag = sourceFile.additionalSyntacticDiagnostics;
-        this.console.info(`type checker diagnostics = ${checkerDiag.length}`);
         diagnostics = diagnostics.concat(checkerDiag);
-        return diagnostics;
+        this.console.info(`${uri} - ${parseDiag.length} - ${checkerDiag.length}`);
+        return this.translateDiagnostics(sourceFile, diagnostics);
     }
 }
 exports.DiagnosticsProvider = DiagnosticsProvider;

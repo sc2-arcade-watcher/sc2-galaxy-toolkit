@@ -139,7 +139,7 @@ export declare class TypeChecker {
     private checkReturnStatement(node);
     private checkArrayType(node);
     private checkMappedType(node);
-    private checkBlock(node);
+    private checkBlock(node, returnExpected?);
     private checkExpressionStatement(node);
     private checkExpression(node, checkMode?);
     private checkExpressionWorker(node, checkMode);

@@ -23,7 +23,7 @@ function createTextDocument(uri, text) {
     return {
         uri: uri,
         languageId: 'galaxy',
-        version: 1,
+        version: 0,
         getText: () => text,
     };
 }

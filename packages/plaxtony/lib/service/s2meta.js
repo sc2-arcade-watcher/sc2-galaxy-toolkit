@@ -210,7 +210,7 @@ class S2WorkspaceMetadata {
         if (el.flags & 16 /* Event */) {
             index--;
         }
-        if (el.getParameters().length <= index)
+        if (el.getParameters().length <= index || index < 0)
             return null;
         return el.getParameters()[index].type;
     }

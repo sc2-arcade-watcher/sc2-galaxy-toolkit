@@ -38,20 +38,6 @@ function getNodeRange(node) {
         end: { line: node.line, character: node.char }
     };
 }
-function translateDiagnostics(sourceFile, origDiagnostics) {
-    let lspDiagnostics = [];
-    for (let dg of origDiagnostics) {
-        lspDiagnostics.push({
-            severity: lsp.DiagnosticSeverity.Error,
-            range: {
-                start: utils_2.getLineAndCharacterOfPosition(sourceFile, dg.start),
-                end: utils_2.getLineAndCharacterOfPosition(sourceFile, dg.start + dg.length)
-            },
-            message: dg.messageText,
-        });
-    }
-    return lspDiagnostics;
-}
 function translateNodeKind(node) {
     switch (node.kind) {
         case 134 /* VariableDeclaration */:
@@ -181,7 +167,7 @@ class Server {
     log(msg) {
         this.connection.console.log(msg);
     }
-    flushDocument(documentUri) {
+    flushDocument(documentUri, isDirty = true) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.ready)
                 return false;
@@ -193,6 +179,7 @@ class Server {
             }
             else {
                 timers_1.clearTimeout(req.timer);
+                req.isDirty = isDirty;
                 yield this.onUpdateContent(documentUri, req);
             }
         });
@@ -317,6 +304,8 @@ class Server {
                     content: ev.document.getText(),
                     timer: null,
                     promise: null,
+                    isDirty: true,
+                    version: ev.document.version,
                 };
             }
             if (!this.indexing && this.ready) {
@@ -333,17 +322,25 @@ class Server {
                     getText: () => {
                         return req.content;
                     }
-                }, true);
-                if (this.documents.keys().indexOf(documentUri) !== undefined) {
-                    this.connection.sendDiagnostics({
-                        uri: documentUri,
-                        diagnostics: translateDiagnostics(this.store.documents.get(documentUri), this.diagnosticsProvider.diagnose(documentUri)),
-                    });
-                }
+                });
+                timers_1.setTimeout(this.onDiagnostics.bind(this, documentUri, req), req.isDirty ? this.config.documentDiagnosticsDelay : 1);
                 this.documentUpdateRequests.delete(documentUri);
                 resolve(true);
             });
             yield req.promise;
+        });
+    }
+    onDiagnostics(documentUri, req) {
+        if (this.documentUpdateRequests.has(documentUri))
+            return;
+        if (this.documents.keys().indexOf(documentUri) === -1)
+            return;
+        if (this.documents.get(documentUri).version > req.version)
+            return;
+        this.diagnosticsProvider.checkFile(documentUri);
+        this.connection.sendDiagnostics({
+            uri: documentUri,
+            diagnostics: this.diagnosticsProvider.provideDiagnostics(documentUri),
         });
     }
     onDidOpen(ev) {
@@ -362,7 +359,7 @@ class Server {
     }
     onDidSave(ev) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.flushDocument(ev.document.uri);
+            yield this.flushDocument(ev.document.uri, true);
         });
     }
     onDidFindInWorkspace(ev) {
@@ -444,6 +441,9 @@ __decorate([
 __decorate([
     wrapRequest()
 ], Server.prototype, "onUpdateContent", null);
+__decorate([
+    wrapRequest()
+], Server.prototype, "onDiagnostics", null);
 __decorate([
     wrapRequest('Opened', true, (payload) => payload.document.uri)
 ], Server.prototype, "onDidOpen", null);
