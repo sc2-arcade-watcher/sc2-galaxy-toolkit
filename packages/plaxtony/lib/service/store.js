@@ -18,6 +18,7 @@ const fs = require("fs");
 const glob = require("glob");
 const vscode_uri_1 = require("vscode-uri");
 const checker_1 = require("../compiler/checker");
+const vscode_uri_2 = require("vscode-uri");
 function createTextDocument(uri, text) {
     return {
         uri: uri,
@@ -161,6 +162,19 @@ class Store {
             this.s2metadata = new s2meta_1.S2WorkspaceMetadata(this.s2workspace);
             yield this.s2metadata.build(lang);
         });
+    }
+    isDocumentInWorkspace(documentUri, includeDepds = true) {
+        const documentPath = vscode_uri_2.default.parse(documentUri).fsPath;
+        if (this.rootPath && documentPath.startsWith(this.rootPath)) {
+            return true;
+        }
+        if (includeDepds && this.s2workspace) {
+            for (const archive of this.s2workspace.allArchives) {
+                if (documentPath.startsWith(archive.directory))
+                    return true;
+            }
+        }
+        return false;
     }
     resolveGlobalSymbol(name) {
         for (const doc of this.documents.values()) {

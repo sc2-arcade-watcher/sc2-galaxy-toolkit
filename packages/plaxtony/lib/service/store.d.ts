@@ -39,5 +39,6 @@ export declare class Store {
     removeDocument(documentUri: string): void;
     updateDocument(document: lsp.TextDocument, check?: boolean): void;
     updateS2Workspace(workspace: SC2Workspace, lang: string): Promise<void>;
+    isDocumentInWorkspace(documentUri: string, includeDepds?: boolean): boolean;
     resolveGlobalSymbol(name: string): gt.Symbol | undefined;
 }
