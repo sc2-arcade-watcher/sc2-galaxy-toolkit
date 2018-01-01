@@ -374,22 +374,23 @@ export class Server {
                     return req.content;
                 }
             });
+            setTimeout(this.onDiagnostics.bind(this, documentUri, req), req.isDirty ? this.config.documentDiagnosticsDelay : 1);
             this.documentUpdateRequests.delete(documentUri);
-
-            setTimeout(() => {
-                if (this.documents.keys().indexOf(documentUri) === undefined) return;
-                if (this.documentUpdateRequests.has(documentUri)) return;
-                if (this.documents.get(documentUri).version > req.version) return;
-                this.diagnosticsProvider.checkFile(documentUri);
-                this.connection.sendDiagnostics({
-                    uri: documentUri,
-                    diagnostics: this.diagnosticsProvider.provideDiagnostics(documentUri),
-                });
-            }, req.isDirty ? this.config.documentDiagnosticsDelay : 1);
-
             resolve(true);
         });
         await req.promise;
+    }
+
+    @wrapRequest()
+    private onDiagnostics(documentUri: string, req: DocumentUpdateRequest) {
+        if (this.documentUpdateRequests.has(documentUri)) return;
+        if (this.documents.keys().indexOf(documentUri) === -1) return;
+        if (this.documents.get(documentUri).version > req.version) return;
+        this.diagnosticsProvider.checkFile(documentUri);
+        this.connection.sendDiagnostics({
+            uri: documentUri,
+            diagnostics: this.diagnosticsProvider.provideDiagnostics(documentUri),
+        });
     }
 
     @wrapRequest('Opened', true, (payload: lsp.TextDocumentChangeEvent) => payload.document.uri)

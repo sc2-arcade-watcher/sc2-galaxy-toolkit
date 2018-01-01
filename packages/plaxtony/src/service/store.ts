@@ -18,7 +18,7 @@ export function createTextDocument(uri: string, text: string): lsp.TextDocument 
     return <lsp.TextDocument>{
         uri: uri,
         languageId: 'galaxy',
-        version: 1,
+        version: 0,
         getText: () => text,
     };
 }
