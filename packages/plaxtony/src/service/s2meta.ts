@@ -232,7 +232,7 @@ export class S2WorkspaceMetadata {
             index--;
         }
 
-        if (el.getParameters().length <= index) return null;
+        if (el.getParameters().length <= index || index < 0) return null;
 
         return el.getParameters()[index].type;
     }
