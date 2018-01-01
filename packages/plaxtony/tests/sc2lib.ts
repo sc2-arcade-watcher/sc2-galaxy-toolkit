@@ -20,15 +20,15 @@ describe('SC2Mod', () => {
         });
 
         it('should find SC2 archives within directory', () => {
-            assert.lengthOf(archives, 22);
-            assert.lengthOf(modArchives, 15);
+            assert.isAtLeast(archives.length, 22);
+            assert.isAtLeast(archives.length, 15);
             assert.include(archives, path.resolve(path.join(resourcesPath, 'mods', 'core.sc2mod')));
         })
 
         it('should find SC2 all galaxy files', async () => {
             const core = new SC2Archive('core/sc2.mod', path.join(resourcesPath, 'mods', 'core.sc2mod'));
             const gf = await core.findFiles('**/*.galaxy');
-            assert.lengthOf(gf, 124);
+            assert.isAbove(gf.length, 124);
         });
     });
 
