@@ -1,4 +1,6 @@
 import 'mocha';
+import * as fs from 'fs';
+import * as path from 'path';
 import { assert } from 'chai';
 import * as tc from '../src/compiler/checker';
 import { TypeChecker } from '../src/compiler/checker';
@@ -6,6 +8,7 @@ import { mockupStoreDocument, mockupStore, mockupSourceFile, mockupTextDocument 
 import { getPositionOfLineAndCharacter, findPrecedingToken, getTokenAtPosition } from '../src/service/utils';
 import * as lsp from 'vscode-languageserver';
 import * as gt from './../src/compiler/types';
+import { unbindSourceFile } from '../src/compiler/binder';
 
 function getSymbolAt(checker: TypeChecker, sourceFile: gt.SourceFile, line: number, character: number): gt.Symbol | undefined {
     const token = getTokenAtPosition(getPositionOfLineAndCharacter(sourceFile, line, character), sourceFile);
@@ -287,64 +290,30 @@ describe('Checker', () => {
     });
 
     describe('Diagnostics', () => {
-        it('undeclared symbol', () => {
-            const document = mockupTextDocument('type_checker', 'undeclared.galaxy');
+        function checkFile(filename: string) {
+            const document = mockupTextDocument('type_checker', filename);
             const store = mockupStore(document);
+            const sourceFile = store.documents.get(document.uri);
             const checker = new TypeChecker(store);
 
-            const diagnostics = checker.checkSourceFile(store.documents.get(document.uri));
-            assert.isAtLeast(diagnostics.length, 2);
-            assert.isTrue(diagnostics[0].messageText.startsWith('Undeclared symbol'));
+            unbindSourceFile(sourceFile, store);
+            return checker.checkSourceFile(sourceFile, true);
+        }
+
+        describe('Error', () => {
+            for (let filename of fs.readdirSync(path.resolve('tests/fixtures/type_checker/error'))) {
+                it(filename, () => {
+                    assert.isAtLeast(checkFile(path.join('error', filename)).length, 1);
+                });
+            }
         });
 
-        it('call params', () => {
-            const document = mockupTextDocument('type_checker', 'call_params.galaxy');
-            const store = mockupStore(document);
-            const checker = new TypeChecker(store);
-
-            const diagnostics = checker.checkSourceFile(store.documents.get(document.uri));
-            assert.lengthOf(diagnostics, 1);
-            assert.equal(diagnostics[0].messageText, 'Expected 2 arguments, got 1');
-        });
-
-        it('callable', () => {
-            const document = mockupTextDocument('type_checker', 'callable.galaxy');
-            const store = mockupStore(document);
-            const checker = new TypeChecker(store);
-
-            const diagnostics = checker.checkSourceFile(store.documents.get(document.uri));
-            assert.lengthOf(diagnostics, 1);
-            assert.equal(diagnostics[0].messageText, 'Type \'integer\' is not calllable');
-        });
-
-        it('redeclaration', () => {
-            const document = mockupTextDocument('type_checker', 'diagnostics', 'redeclaration.galaxy');
-            const store = mockupStore(document);
-            const checker = new TypeChecker(store);
-
-            const diagnostics = checker.checkSourceFile(store.documents.get(document.uri), true);
-            assert.lengthOf(diagnostics, 1);
-            assert.isTrue(diagnostics[0].messageText.startsWith('Symbol redeclared'));
-        });
-
-        it('ref_before_declaration', () => {
-            const document = mockupTextDocument('type_checker', 'diagnostics', 'ref_before_declaration.galaxy');
-            const store = mockupStore(document);
-            const checker = new TypeChecker(store);
-
-            const diagnostics = checker.checkSourceFile(store.documents.get(document.uri), true);
-            assert.lengthOf(diagnostics, 1);
-            assert.isTrue(diagnostics[0].messageText.startsWith('Undeclared symbol'));
-        });
-
-        it('return_expected_value', () => {
-            const document = mockupTextDocument('type_checker', 'diagnostics', 'return_expected_value.galaxy');
-            const store = mockupStore(document);
-            const checker = new TypeChecker(store);
-
-            const diagnostics = checker.checkSourceFile(store.documents.get(document.uri), true);
-            assert.lengthOf(diagnostics, 1);
-            assert.isTrue(diagnostics[0].messageText.startsWith('Expected a return value'));
+        describe('Pass', () => {
+            for (let filename of fs.readdirSync(path.resolve('tests/fixtures/type_checker/pass'))) {
+                it(filename, () => {
+                    assert.equal(checkFile(path.join('pass', filename)).length, 0);
+                });
+            }
         });
     });
 });
