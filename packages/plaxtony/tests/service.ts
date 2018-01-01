@@ -43,9 +43,9 @@ describe('Service', () => {
             const document = mockupTextDocument(path.join('service', 'diagnostics_parse_error.galaxy'));
             store.updateDocument(document);
             diagnosticsProvider.subscribe(document.uri);
-            const diagnostics = diagnosticsProvider.diagnose(document.uri);
+            const diagnostics = diagnosticsProvider.provideDiagnostics(document.uri);
             assert.isAtLeast(diagnostics.length, 1);
-            assert.equal(diagnostics[0].messageText, 'Expected SemicolonToken, found CloseBraceToken');
+            assert.equal(diagnostics[0].message, 'Expected SemicolonToken, found CloseBraceToken');
         });
     });
 

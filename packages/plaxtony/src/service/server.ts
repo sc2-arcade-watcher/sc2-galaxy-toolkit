@@ -25,23 +25,6 @@ function getNodeRange(node: Types.Node): lsp.Range {
     };
 }
 
-function translateDiagnostics(sourceFile: Types.SourceFile, origDiagnostics: Types.Diagnostic[]): lsp.Diagnostic[] {
-    let lspDiagnostics: lsp.Diagnostic[] = [];
-
-    for (let dg of origDiagnostics) {
-        lspDiagnostics.push({
-            severity: lsp.DiagnosticSeverity.Error,
-            range: {
-                start: getLineAndCharacterOfPosition(sourceFile, dg.start),
-                end: getLineAndCharacterOfPosition(sourceFile, dg.start + dg.length)
-            },
-            message: dg.messageText,
-        });
-    }
-
-    return lspDiagnostics;
-}
-
 function translateNodeKind(node: Types.Node): lsp.SymbolKind {
     switch (node.kind) {
         case Types.SyntaxKind.VariableDeclaration:
@@ -138,6 +121,7 @@ interface PlaxtonyConfig {
     logLevel: string;
     localization: string;
     documentUpdateDelay: number;
+    documentDiagnosticsDelay: number;
     s2mod: {
         sources: string[],
         overrides: {},
@@ -153,6 +137,8 @@ interface DocumentUpdateRequest {
     timer: NodeJS.Timer;
     promise: Promise<boolean>;
     content: string;
+    isDirty: boolean;
+    version: number;
 };
 
 export class Server {
@@ -217,7 +203,7 @@ export class Server {
         this.connection.console.log(msg);
     }
 
-    private async flushDocument(documentUri: string) {
+    private async flushDocument(documentUri: string, isDirty = true) {
         if (!this.ready) return false;
         const req = this.documentUpdateRequests.get(documentUri);
         if (!req) return;
@@ -226,6 +212,7 @@ export class Server {
         }
         else {
             clearTimeout(req.timer);
+            req.isDirty = isDirty;
             await this.onUpdateContent(documentUri, req);
         }
     }
@@ -366,6 +353,8 @@ export class Server {
                 content: ev.document.getText(),
                 timer: null,
                 promise: null,
+                isDirty: true,
+                version: ev.document.version,
             };
         }
 
@@ -384,14 +373,20 @@ export class Server {
                 getText: () => {
                     return req.content;
                 }
-            }, true);
-            if (this.documents.keys().indexOf(documentUri) !== undefined) {
+            });
+            this.documentUpdateRequests.delete(documentUri);
+
+            setTimeout(() => {
+                if (this.documents.keys().indexOf(documentUri) === undefined) return;
+                if (this.documentUpdateRequests.has(documentUri)) return;
+                if (this.documents.get(documentUri).version > req.version) return;
+                this.diagnosticsProvider.checkFile(documentUri);
                 this.connection.sendDiagnostics({
                     uri: documentUri,
-                    diagnostics: translateDiagnostics(this.store.documents.get(documentUri), this.diagnosticsProvider.diagnose(documentUri)),
+                    diagnostics: this.diagnosticsProvider.provideDiagnostics(documentUri),
                 });
-            }
-            this.documentUpdateRequests.delete(documentUri);
+            }, req.isDirty ? this.config.documentDiagnosticsDelay : 1);
+
             resolve(true);
         });
         await req.promise;
@@ -417,7 +412,7 @@ export class Server {
 
     @wrapRequest()
     private async onDidSave(ev: lsp.TextDocumentChangeEvent) {
-        await this.flushDocument(ev.document.uri);
+        await this.flushDocument(ev.document.uri, true);
     }
 
     @wrapRequest('Indexing', true, (payload: lsp.TextDocumentChangeEvent) => {
