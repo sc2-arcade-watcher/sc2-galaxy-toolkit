@@ -483,6 +483,7 @@ export interface EmptyStatement extends Statement {
 export interface Block extends Statement {
     kind: SyntaxKind.Block;
     statements: NodeArray<Statement>;
+    returnStatements?: ReturnStatement[]; /* @internal */
 }
 
 export interface IncludeStatement extends Statement {

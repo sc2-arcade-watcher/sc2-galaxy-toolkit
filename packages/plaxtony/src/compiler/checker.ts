@@ -923,7 +923,7 @@ export class TypeChecker {
         node.parameters.forEach(this.checkSourceElement.bind(this));
 
         if (node.body) {
-            this.checkSourceElement(node.body);
+            this.checkBlock(node.body, true)
         }
     }
 
@@ -1046,8 +1046,36 @@ export class TypeChecker {
         }
     }
 
-    private checkBlock(node: gt.Block) {
-        node.statements.forEach(this.checkSourceElement.bind(this));
+    private checkBlock(node: gt.Block, returnExpected = false) {
+        let returnFound = false;
+        let returnFoundExplict = false;
+        node.returnStatements = [];
+        node.statements.forEach((child) => {
+            this.checkSourceElement(child);
+            switch (child.kind) {
+                case gt.SyntaxKind.ReturnStatement:
+                    node.returnStatements.push(<gt.ReturnStatement>child);
+                    returnFoundExplict = returnFound = true;
+                    break;
+
+                case gt.SyntaxKind.IfStatement:
+                    if (returnFoundExplict === true) break;
+                    const ifStatement = (<gt.IfStatement>child);
+                    if (
+                        (ifStatement.thenStatement && (<gt.Block>ifStatement.thenStatement).returnStatements.length <= 0) ||
+                        (ifStatement.elseStatement && (<gt.Block>ifStatement.elseStatement).returnStatements.length <= 0)
+                    ) {
+                        returnFound = false;
+                    }
+                    else {
+                        returnFound = true;
+                    }
+                    break;
+            }
+        });
+        if (returnExpected && !returnFound) {
+            this.report((<gt.FunctionDeclaration>node.parent).name, 'Expected return statement');
+        }
     }
 
     private checkExpressionStatement(node: gt.ExpressionStatement) {
