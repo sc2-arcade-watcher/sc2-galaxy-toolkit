@@ -923,7 +923,8 @@ export class TypeChecker {
         node.parameters.forEach(this.checkSourceElement.bind(this));
 
         if (node.body) {
-            this.checkBlock(node.body, true)
+            const rtype = this.getTypeFromTypeNode(node.type);
+            this.checkBlock(node.body, !(rtype.flags & gt.TypeFlags.Void))
         }
     }
 
