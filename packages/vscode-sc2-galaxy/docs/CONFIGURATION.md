@@ -28,7 +28,10 @@
     "sc2galaxy.localization": "enUS",
 
     // Wait time before reindexing changed dirty files
-    "sc2galaxy.documentUpdateDelay": 300,
+    "sc2galaxy.documentUpdateDelay": 100,
+
+    // Wait time before providing diagnostics for dirty files (value from *documentUpdateDelay* is contributed)
+    "sc2galaxy.documentDiagnosticsDelay": 300,
 
     // [Code completions]
     // Function expansion behavior
