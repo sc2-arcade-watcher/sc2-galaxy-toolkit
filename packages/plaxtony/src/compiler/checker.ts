@@ -922,7 +922,7 @@ export class TypeChecker {
 
         node.parameters.forEach(this.checkSourceElement.bind(this));
 
-        if (node.body) {
+        if (node.body && node.body.kind === gt.SyntaxKind.Block) {
             const rtype = this.getTypeFromTypeNode(node.type);
             this.checkBlock(node.body, !(rtype.flags & gt.TypeFlags.Void))
         }
@@ -1063,8 +1063,15 @@ export class TypeChecker {
                     if (returnFoundExplict === true) break;
                     const ifStatement = (<gt.IfStatement>child);
                     if (
-                        (ifStatement.thenStatement && (<gt.Block>ifStatement.thenStatement).returnStatements.length <= 0) ||
-                        (ifStatement.elseStatement && (<gt.Block>ifStatement.elseStatement).returnStatements.length <= 0)
+                        (
+                            ifStatement.thenStatement.kind === gt.SyntaxKind.Block &&
+                            (<gt.Block>ifStatement.thenStatement).returnStatements.length <= 0
+                        ) ||
+                        (!ifStatement.elseStatement) ||
+                        (
+                            ifStatement.elseStatement.kind === gt.SyntaxKind.Block &&
+                            (<gt.Block>ifStatement.elseStatement).returnStatements.length <= 0
+                        )
                     ) {
                         returnFound = false;
                     }

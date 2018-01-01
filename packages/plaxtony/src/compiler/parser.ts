@@ -159,8 +159,8 @@ export class Parser {
         return array;
     }
 
-    private createMissingNode<T extends Node>(kind: T["kind"]): T {
-        this.parseErrorAtCurrentToken("missing node {0}", kind);
+    private createMissingNode<T extends Node>(kind: T['kind']): T {
+        this.parseErrorAtCurrentToken('Missing node: {0}', getKindName(kind));
 
         const result = this.createNode(SyntaxKind.Unknown);
 
@@ -583,21 +583,25 @@ export class Parser {
 
     private parseBlock(allowVarDeclarations = false): Types.Block {
         const node = <Types.Block>this.createNode(SyntaxKind.Block);
-        this.parseExpected(SyntaxKind.OpenBraceToken);
-        node.statements = this.parseList(ParsingContext.BlockStatements, () => {
-            const child = this.parseStatement();
-            if (child.kind === SyntaxKind.VariableDeclaration) {
-                if (!allowVarDeclarations) {
-                    this.parseErrorAtPosition(child.pos, child.end - child.pos, 'Local variables must be declared at the begining of function block');
+        if (this.parseExpected(SyntaxKind.OpenBraceToken)) {
+            node.statements = this.parseList(ParsingContext.BlockStatements, () => {
+                const child = this.parseStatement();
+                if (child.kind === SyntaxKind.VariableDeclaration) {
+                    if (!allowVarDeclarations) {
+                        this.parseErrorAtPosition(child.pos, child.end - child.pos, 'Local variables must be declared at the begining of function block');
+                    }
                 }
-            }
-            else {
-                allowVarDeclarations = false;
-            }
-            return child;
-        });
-        this.parseExpected(SyntaxKind.CloseBraceToken);
-        return this.finishNode(node);
+                else {
+                    allowVarDeclarations = false;
+                }
+                return child;
+            });
+            this.parseExpected(SyntaxKind.CloseBraceToken);
+            return this.finishNode(node);
+        }
+        else {
+            return this.createMissingNode(SyntaxKind.Block);
+        }
     }
 
     private isUpdateExpression(): boolean {
