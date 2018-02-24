@@ -924,7 +924,11 @@ export class TypeChecker {
 
         if (node.body && node.body.kind === gt.SyntaxKind.Block) {
             const rtype = this.getTypeFromTypeNode(node.type);
-            this.checkBlock(node.body, !(rtype.flags & gt.TypeFlags.Void))
+            this.checkBlock(node.body)
+
+            if (!(rtype.flags & gt.TypeFlags.Void) && !node.body.hasReturn) {
+                this.report(node.name, 'Expected return statement');
+            }
         }
     }
 
@@ -956,6 +960,7 @@ export class TypeChecker {
         this.checkSourceElement(node.thenStatement);
         if (node.elseStatement) {
             this.checkSourceElement(node.elseStatement);
+            node.hasReturn = (<gt.Block>node.thenStatement).hasReturn && (<gt.Block>node.elseStatement).hasReturn;
         }
     }
 
@@ -1047,43 +1052,24 @@ export class TypeChecker {
         }
     }
 
-    private checkBlock(node: gt.Block, returnExpected = false) {
+    private checkBlock(node: gt.Block) {
         let returnFound = false;
         let returnFoundExplict = false;
-        node.returnStatements = [];
         node.statements.forEach((child) => {
             this.checkSourceElement(child);
+
             switch (child.kind) {
                 case gt.SyntaxKind.ReturnStatement:
-                    node.returnStatements.push(<gt.ReturnStatement>child);
                     returnFoundExplict = returnFound = true;
                     break;
 
                 case gt.SyntaxKind.IfStatement:
-                    if (returnFoundExplict === true) break;
-                    const ifStatement = (<gt.IfStatement>child);
-                    if (
-                        (
-                            ifStatement.thenStatement.kind === gt.SyntaxKind.Block &&
-                            (<gt.Block>ifStatement.thenStatement).returnStatements.length <= 0
-                        ) ||
-                        (!ifStatement.elseStatement) ||
-                        (
-                            ifStatement.elseStatement.kind === gt.SyntaxKind.Block &&
-                            (<gt.Block>ifStatement.elseStatement).returnStatements.length <= 0
-                        )
-                    ) {
-                        returnFound = false;
-                    }
-                    else {
-                        returnFound = true;
-                    }
+                    // if (returnFoundExplict === true) break;
+                    returnFound = (<gt.IfStatement>child).hasReturn;
                     break;
             }
         });
-        if (returnExpected && !returnFound) {
-            this.report((<gt.FunctionDeclaration>node.parent).name, 'Expected return statement');
-        }
+        node.hasReturn = returnFound;
     }
 
     private checkExpressionStatement(node: gt.ExpressionStatement) {
