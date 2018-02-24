@@ -911,7 +911,19 @@ export class Parser {
         const node = <Types.ExpressionStatement>this.createNode(SyntaxKind.ExpressionStatement);
         node.expression = this.parseExpression();
         this.parseExpected(SyntaxKind.SemicolonToken);
-        return this.finishNode(node);
+        this.finishNode(node);
+
+        switch (node.expression.kind) {
+            case Types.SyntaxKind.CallExpression:
+                break;
+            case Types.SyntaxKind.BinaryExpression:
+                if (isAssignmentOperator((<Types.BinaryExpression>node.expression).operatorToken.kind)) break;
+                // pass through
+            default:
+                this.parseErrorAtPosition(node.pos, node.end - node.pos, 'dummy expression');
+        }
+
+        return node;
     }
 
     private parseEmptyStatement(): Types.EmptyStatement {
