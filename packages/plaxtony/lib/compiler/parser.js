@@ -479,7 +479,7 @@ class Parser {
         variable.name = this.parseIdentifier();
         if (this.token() === 38 /* EqualsToken */) {
             this.parseExpected(38 /* EqualsToken */);
-            variable.initializer = this.parseAssignmentExpressionOrHigher();
+            variable.initializer = this.parseBinaryExpressionOrHigher(0);
         }
         this.parseExpected(10 /* SemicolonToken */);
         return this.finishNode(variable);
@@ -772,7 +772,18 @@ class Parser {
         const node = this.createNode(131 /* ExpressionStatement */);
         node.expression = this.parseExpression();
         this.parseExpected(10 /* SemicolonToken */);
-        return this.finishNode(node);
+        this.finishNode(node);
+        switch (node.expression.kind) {
+            case 115 /* CallExpression */:
+                break;
+            case 118 /* BinaryExpression */:
+                if (utils_1.isAssignmentOperator(node.expression.operatorToken.kind))
+                    break;
+            // pass through
+            default:
+                this.parseErrorAtPosition(node.pos, node.end - node.pos, 'dummy expression');
+        }
+        return node;
     }
     parseEmptyStatement() {
         const node = this.createNode(132 /* EmptyStatement */);

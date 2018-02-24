@@ -813,7 +813,10 @@ class TypeChecker {
         node.parameters.forEach(this.checkSourceElement.bind(this));
         if (node.body && node.body.kind === 122 /* Block */) {
             const rtype = this.getTypeFromTypeNode(node.type);
-            this.checkBlock(node.body, !(rtype.flags & 2048 /* Void */));
+            this.checkBlock(node.body);
+            if (!(rtype.flags & 2048 /* Void */) && !node.body.hasReturn) {
+                this.report(node.name, 'Expected return statement');
+            }
         }
     }
     checkParameterDeclaration(node) {
@@ -840,6 +843,7 @@ class TypeChecker {
         this.checkSourceElement(node.thenStatement);
         if (node.elseStatement) {
             this.checkSourceElement(node.elseStatement);
+            node.hasReturn = node.thenStatement.hasReturn && node.elseStatement.hasReturn;
         }
     }
     checkForStatement(node) {
@@ -921,37 +925,22 @@ class TypeChecker {
             }
         }
     }
-    checkBlock(node, returnExpected = false) {
+    checkBlock(node) {
         let returnFound = false;
         let returnFoundExplict = false;
-        node.returnStatements = [];
         node.statements.forEach((child) => {
             this.checkSourceElement(child);
             switch (child.kind) {
                 case 130 /* ReturnStatement */:
-                    node.returnStatements.push(child);
                     returnFoundExplict = returnFound = true;
                     break;
                 case 123 /* IfStatement */:
-                    if (returnFoundExplict === true)
-                        break;
-                    const ifStatement = child;
-                    if ((ifStatement.thenStatement.kind === 122 /* Block */ &&
-                        ifStatement.thenStatement.returnStatements.length <= 0) ||
-                        (!ifStatement.elseStatement) ||
-                        (ifStatement.elseStatement.kind === 122 /* Block */ &&
-                            ifStatement.elseStatement.returnStatements.length <= 0)) {
-                        returnFound = false;
-                    }
-                    else {
-                        returnFound = true;
-                    }
+                    // if (returnFoundExplict === true) break;
+                    returnFound = child.hasReturn;
                     break;
             }
         });
-        if (returnExpected && !returnFound) {
-            this.report(node.parent.name, 'Expected return statement');
-        }
+        node.hasReturn = returnFound;
     }
     checkExpressionStatement(node) {
         this.checkExpression(node.expression);

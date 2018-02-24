@@ -400,7 +400,7 @@ export interface EmptyStatement extends Statement {
 export interface Block extends Statement {
     kind: SyntaxKind.Block;
     statements: NodeArray<Statement>;
-    returnStatements?: ReturnStatement[];
+    hasReturn?: boolean;
 }
 export interface IncludeStatement extends Statement {
     kind: SyntaxKind.IncludeStatement;
@@ -553,6 +553,7 @@ export interface IfStatement extends Statement {
     expression: Expression;
     thenStatement: Statement;
     elseStatement?: Statement;
+    hasReturn?: boolean;
 }
 export interface IterationStatement extends Statement {
     statement: Statement;
