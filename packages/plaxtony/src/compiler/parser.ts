@@ -575,7 +575,7 @@ export class Parser {
         variable.name = this.parseIdentifier();
         if (this.token() === SyntaxKind.EqualsToken) {
             this.parseExpected(SyntaxKind.EqualsToken);
-            variable.initializer = this.parseAssignmentExpressionOrHigher();
+            variable.initializer = this.parseBinaryExpressionOrHigher(0);
         }
         this.parseExpected(SyntaxKind.SemicolonToken);
         return this.finishNode(variable);
