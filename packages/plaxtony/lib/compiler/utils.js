@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Types = require("./types");
+const gt = require("./types");
 /**
  * True if node is of some token syntax kind.
  * For example, this is true for an IfKeyword but not for an IfStatement.
@@ -190,7 +190,7 @@ function isPartOfTypeNode(node) {
                 node = node.parent;
             }
         // At this point, node is either a qualified name or an identifier
-        // Debug.assert(node.kind === SyntaxKind.Identifier || node.kind === SyntaxKind.QualifiedName || node.kind === SyntaxKind.PropertyAccessExpression,
+        // Debug.assert(node.kind === gt.SyntaxKind.Identifier || node.kind === gt.SyntaxKind.QualifiedName || node.kind === gt.SyntaxKind.PropertyAccessExpression,
         //     "'node' was expected to be a qualified name, identifier or property access in 'isPartOfTypeNode'.");
         // falls through
         case 114 /* PropertyAccessExpression */:
@@ -227,47 +227,11 @@ function getKindName(k) {
     if (typeof k === "string") {
         return k;
     }
-    // For some markers in SyntaxKind, we should print its original syntax name instead of
-    // the marker name in tests.
-    // if (k === (<any>Types).SyntaxKind.FirstJSDocNode ||
-    //     k === (<any>Types).SyntaxKind.LastJSDocNode ||
-    //     k === (<any>Types).SyntaxKind.FirstJSDocTagNode ||
-    //     k === (<any>Types).SyntaxKind.LastJSDocTagNode) {
-    //     for (const kindName in (<any>Types).SyntaxKind) {
-    //         if ((<any>Types).SyntaxKind[kindName] === k) {
-    //             return kindName;
-    //         }
-    //     }
-    // }
-    return Types.SyntaxKind[k];
+    return gt.SyntaxKind[k];
 }
 exports.getKindName = getKindName;
 function sourceFileToJSON(file) {
     return JSON.stringify(file, (_, v) => isNodeOrArray(v) ? serializeNode(v) : v, "    ");
-    // function getFlagName(flags: any, f: number): any {
-    //     if (f === 0) {
-    //         return 0;
-    //     }
-    //     let result = "";
-    //     forEach(Object.getOwnPropertyNames(flags), (v: any) => {
-    //         if (isFinite(v)) {
-    //             v = +v;
-    //             if (f === +v) {
-    //                 result = flags[v];
-    //                 return true;
-    //             }
-    //             else if ((f & v) > 0) {
-    //                 if (result.length) {
-    //                     result += " | ";
-    //                 }
-    //                 result += flags[v];
-    //                 return false;
-    //             }
-    //         }
-    //     });
-    //     return result;
-    // }
-    // function getNodeFlagName(f: number) { return getFlagName((<any>ts).NodeFlags, f); }
     function serializeNode(n) {
         const o = { kind: getKindName(n.kind) };
         // if (ts.containsParseError(n)) {
@@ -434,15 +398,6 @@ function forEachChild(node, cbNode, cbNodes) {
         case 110 /* MappedType */:
             return visitNode(cbNode, node.returnType) ||
                 visitNodes(cbNode, cbNodes, node.typeArguments);
-        // case SyntaxKind.TypeReference:
-        //     return visitNode(cbNode, (<Types.TypeReferenceNode>node).typeName) ||
-        //         visitNodes(cbNode, cbNodes, (<Types.TypeReferenceNode>node).typeArguments);
-        // case SyntaxKind.LiteralType:
-        //     return visitNode(cbNode, (<Types.LiteralTypeNode>node).literal);
-        // case SyntaxKind.ArrayLiteralExpression:
-        //     return visitNodes(cbNode, cbNodes, (<Types.ArrayLiteralExpression>node).elements);
-        // case SyntaxKind.ObjectLiteralExpression:
-        //     return visitNodes(cbNode, cbNodes, (<Types.ObjectLiteralExpression>node).properties);
         case 114 /* PropertyAccessExpression */:
             return visitNode(cbNode, node.expression) ||
                 visitNode(cbNode, node.name);

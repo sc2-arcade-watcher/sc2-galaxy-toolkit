@@ -32,7 +32,7 @@ class S2WorkspaceMetadata {
                 elemName = localizedName.replace(elementNotValidCharsRE, '');
             }
         }
-        if (el instanceof trig.FunctionDef && el.flags & 2 /* Native */) {
+        if (el instanceof trig.FunctionDef && (el.flags & 2 /* Native */ || el.flags & 16384 /* NoScriptPrefix */)) {
             parts.push(elemName);
         }
         else if (el.value && (el.value.startsWith('c_') ||
@@ -46,7 +46,10 @@ class S2WorkspaceMetadata {
                 parts.push('lib' + el.libId);
             }
             if (el instanceof trig.FunctionDef) {
-                parts.push('gf');
+                if (el.flags & 512 /* Operator */)
+                    parts.push('op');
+                else
+                    parts.push('gf');
             }
             else if (el instanceof trig.Preset) {
                 parts.push('ge');

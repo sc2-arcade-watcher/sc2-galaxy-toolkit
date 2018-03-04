@@ -6,15 +6,22 @@ export declare const enum ElementFlag {
     Template = 32,
     PresetGenConstVar = 64,
     PresetCustom = 128,
+    CustomScript = 256,
+    Operator = 512,
+    CustomAI = 1024,
+    SubFunctions = 2048,
+    AllowBreak = 4096,
+    Hidden = 8192,
+    NoScriptPrefix = 16384,
+    Deprecated = 32768,
+    Internal = 65536,
 }
 export declare class ElementReference<T extends Element> {
     private store;
     id: string;
     type: typeof Element;
     library?: string;
-    constructor(container: TriggerStore, type: {
-        new (): T;
-    });
+    constructor(container: TriggerStore);
     link(): string;
     globalLink(): string;
     resolve(): T | undefined;
@@ -23,16 +30,22 @@ export declare class ParameterType {
     type: string;
     gameType?: string;
     typeElement?: ElementReference<Preset>;
+    galaxyType(): string;
 }
-export declare abstract class Element {
+export declare abstract class Tag {
     static prefix?: string;
     libId?: string;
     id: string;
     name?: string;
-    flags: ElementFlag;
     link(): string;
     toString(): string;
     textKey(kind: string): string;
+}
+export declare abstract class Element extends Tag {
+    flags: ElementFlag;
+    label?: ElementReference<Label>;
+    items: ElementReference<Element>[];
+    toString(): string;
 }
 export declare class ParamDef extends Element {
     type: ParameterType;
@@ -42,6 +55,7 @@ export declare class FunctionDef extends Element {
     static prefix: string;
     parameters: ElementReference<ParamDef>[];
     returnType?: ParameterType;
+    scriptCode?: string;
     getParameters(): ParamDef[];
 }
 export declare class Preset extends Element {
@@ -61,7 +75,14 @@ export declare class Param extends Element {
 export declare class FunctionCall extends Element {
     functionDef: ElementReference<FunctionDef>;
 }
+export declare class Category extends Element {
+}
+export declare class Label extends Element {
+    icon?: string;
+    color?: string;
+}
 export declare abstract class ElementContainer {
+    items: ElementReference<Element>[];
     protected elements: Map<string, Element>;
     protected nameMap: Map<string, Element>;
     addElement(identifier: string, el: Element): void;
@@ -93,7 +114,10 @@ export declare class XMLReader {
     private parseParam(item);
     private parseFunctionCall(item);
     private parseParameterType(item);
+    private parseCategory(item);
+    private parseLabel(item);
     private parseElement(item);
+    private parseItems(data);
     private parseTree(data, container);
     private parseLibrary(id, data);
     constructor(container: TriggerStore);
