@@ -1,167 +1,166 @@
-import * as Types from './types';
-import { SyntaxKind, SyntaxKindMarker, Node, NodeArray } from './types';
+import * as gt from './types';
 
 /**
  * True if node is of some token syntax kind.
  * For example, this is true for an IfKeyword but not for an IfStatement.
  */
-export function isToken(n: Node): boolean {
-    return <number>n.kind >= SyntaxKindMarker.FirstToken && <number>n.kind <= SyntaxKindMarker.LastToken;
+export function isToken(n: gt.Node): boolean {
+    return <number>n.kind >= gt.SyntaxKindMarker.FirstToken && <number>n.kind <= gt.SyntaxKindMarker.LastToken;
 }
 
-export function isModifierKind(token: SyntaxKind): boolean {
+export function isModifierKind(token: gt.SyntaxKind): boolean {
     switch (token) {
-        case SyntaxKind.ConstKeyword:
-        case SyntaxKind.StaticKeyword:
-        case SyntaxKind.NativeKeyword:
+        case gt.SyntaxKind.ConstKeyword:
+        case gt.SyntaxKind.StaticKeyword:
+        case gt.SyntaxKind.NativeKeyword:
             return true;
     }
     return false;
 }
 
-export function isKeywordTypeKind(token: SyntaxKind): boolean {
+export function isKeywordTypeKind(token: gt.SyntaxKind): boolean {
     switch (token) {
-        case SyntaxKind.AbilcmdKeyword:
-        case SyntaxKind.ActorKeyword:
-        case SyntaxKind.ActorscopeKeyword:
-        case SyntaxKind.AifilterKeyword:
-        case SyntaxKind.BankKeyword:
-        case SyntaxKind.BitmaskKeyword:
-        case SyntaxKind.BoolKeyword:
-        case SyntaxKind.ByteKeyword:
-        case SyntaxKind.CamerainfoKeyword:
-        case SyntaxKind.CharKeyword:
-        case SyntaxKind.ColorKeyword:
-        case SyntaxKind.DoodadKeyword:
-        case SyntaxKind.FixedKeyword:
-        case SyntaxKind.HandleKeyword:
-        case SyntaxKind.GenerichandleKeyword:
-        case SyntaxKind.EffecthistoryKeyword:
-        case SyntaxKind.IntKeyword:
-        case SyntaxKind.MarkerKeyword:
-        case SyntaxKind.OrderKeyword:
-        case SyntaxKind.PlayergroupKeyword:
-        case SyntaxKind.PointKeyword:
-        case SyntaxKind.RegionKeyword:
-        case SyntaxKind.RevealerKeyword:
-        case SyntaxKind.SoundKeyword:
-        case SyntaxKind.SoundlinkKeyword:
-        case SyntaxKind.StringKeyword:
-        case SyntaxKind.TextKeyword:
-        case SyntaxKind.TimerKeyword:
-        case SyntaxKind.TransmissionsourceKeyword:
-        case SyntaxKind.TriggerKeyword:
-        case SyntaxKind.UnitKeyword:
-        case SyntaxKind.UnitfilterKeyword:
-        case SyntaxKind.UnitgroupKeyword:
-        case SyntaxKind.UnitrefKeyword:
-        case SyntaxKind.VoidKeyword:
-        case SyntaxKind.WaveKeyword:
-        case SyntaxKind.WaveinfoKeyword:
-        case SyntaxKind.WavetargetKeyword:
-        case SyntaxKind.ArrayrefKeyword:
-        case SyntaxKind.StructrefKeyword:
-        case SyntaxKind.FuncrefKeyword:
+        case gt.SyntaxKind.AbilcmdKeyword:
+        case gt.SyntaxKind.ActorKeyword:
+        case gt.SyntaxKind.ActorscopeKeyword:
+        case gt.SyntaxKind.AifilterKeyword:
+        case gt.SyntaxKind.BankKeyword:
+        case gt.SyntaxKind.BitmaskKeyword:
+        case gt.SyntaxKind.BoolKeyword:
+        case gt.SyntaxKind.ByteKeyword:
+        case gt.SyntaxKind.CamerainfoKeyword:
+        case gt.SyntaxKind.CharKeyword:
+        case gt.SyntaxKind.ColorKeyword:
+        case gt.SyntaxKind.DoodadKeyword:
+        case gt.SyntaxKind.FixedKeyword:
+        case gt.SyntaxKind.HandleKeyword:
+        case gt.SyntaxKind.GenerichandleKeyword:
+        case gt.SyntaxKind.EffecthistoryKeyword:
+        case gt.SyntaxKind.IntKeyword:
+        case gt.SyntaxKind.MarkerKeyword:
+        case gt.SyntaxKind.OrderKeyword:
+        case gt.SyntaxKind.PlayergroupKeyword:
+        case gt.SyntaxKind.PointKeyword:
+        case gt.SyntaxKind.RegionKeyword:
+        case gt.SyntaxKind.RevealerKeyword:
+        case gt.SyntaxKind.SoundKeyword:
+        case gt.SyntaxKind.SoundlinkKeyword:
+        case gt.SyntaxKind.StringKeyword:
+        case gt.SyntaxKind.TextKeyword:
+        case gt.SyntaxKind.TimerKeyword:
+        case gt.SyntaxKind.TransmissionsourceKeyword:
+        case gt.SyntaxKind.TriggerKeyword:
+        case gt.SyntaxKind.UnitKeyword:
+        case gt.SyntaxKind.UnitfilterKeyword:
+        case gt.SyntaxKind.UnitgroupKeyword:
+        case gt.SyntaxKind.UnitrefKeyword:
+        case gt.SyntaxKind.VoidKeyword:
+        case gt.SyntaxKind.WaveKeyword:
+        case gt.SyntaxKind.WaveinfoKeyword:
+        case gt.SyntaxKind.WavetargetKeyword:
+        case gt.SyntaxKind.ArrayrefKeyword:
+        case gt.SyntaxKind.StructrefKeyword:
+        case gt.SyntaxKind.FuncrefKeyword:
             return true;
     }
     return false;
 }
 
-export function isComplexTypeKind(token: SyntaxKind): boolean {
-    if (Types.SyntaxKindMarker.FirstComplexType <= <number>token && Types.SyntaxKindMarker.LastComplexType >= <number>token) {
+export function isComplexTypeKind(token: gt.SyntaxKind): boolean {
+    if (gt.SyntaxKindMarker.FirstComplexType <= <number>token && gt.SyntaxKindMarker.LastComplexType >= <number>token) {
         return true;
     }
     return false;
 }
 
-export function isReferenceKeywordKind(token: SyntaxKind): boolean {
+export function isReferenceKeywordKind(token: gt.SyntaxKind): boolean {
     switch (token) {
-        case SyntaxKind.ArrayrefKeyword:
-        case SyntaxKind.StructrefKeyword:
-        case SyntaxKind.FuncrefKeyword:
+        case gt.SyntaxKind.ArrayrefKeyword:
+        case gt.SyntaxKind.StructrefKeyword:
+        case gt.SyntaxKind.FuncrefKeyword:
             return true;
     }
     return false;
 }
 
-export function isComparisonOperator(token: SyntaxKind): boolean {
-    return token >= SyntaxKind.LessThanToken && token <= SyntaxKind.EqualsGreaterThanToken;
+export function isComparisonOperator(token: gt.SyntaxKind): boolean {
+    return token >= gt.SyntaxKind.LessThanToken && token <= gt.SyntaxKind.EqualsGreaterThanToken;
 }
 
-export function isAssignmentOperator(token: SyntaxKind): boolean {
-    return token >= SyntaxKind.EqualsToken && token <= SyntaxKind.CaretEqualsToken;
+export function isAssignmentOperator(token: gt.SyntaxKind): boolean {
+    return token >= gt.SyntaxKind.EqualsToken && token <= gt.SyntaxKind.CaretEqualsToken;
 }
 
-export function isLeftHandSideExpressionKind(kind: SyntaxKind): boolean {
-    return kind === SyntaxKind.PropertyAccessExpression
-        || kind === SyntaxKind.ElementAccessExpression
-        || kind === SyntaxKind.CallExpression
-        || kind === SyntaxKind.ParenthesizedExpression
-        || kind === SyntaxKind.ArrayLiteralExpression
-        || kind === SyntaxKind.Identifier
-        || kind === SyntaxKind.NumericLiteral
-        || kind === SyntaxKind.StringLiteral
-        || kind === SyntaxKind.FalseKeyword
-        || kind === SyntaxKind.NullKeyword
-        || kind === SyntaxKind.TrueKeyword;
+export function isLeftHandSideExpressionKind(kind: gt.SyntaxKind): boolean {
+    return kind === gt.SyntaxKind.PropertyAccessExpression
+        || kind === gt.SyntaxKind.ElementAccessExpression
+        || kind === gt.SyntaxKind.CallExpression
+        || kind === gt.SyntaxKind.ParenthesizedExpression
+        || kind === gt.SyntaxKind.ArrayLiteralExpression
+        || kind === gt.SyntaxKind.Identifier
+        || kind === gt.SyntaxKind.NumericLiteral
+        || kind === gt.SyntaxKind.StringLiteral
+        || kind === gt.SyntaxKind.FalseKeyword
+        || kind === gt.SyntaxKind.NullKeyword
+        || kind === gt.SyntaxKind.TrueKeyword;
 }
 
-export function isContainerKind(kind: SyntaxKind): boolean {
-    return kind === SyntaxKind.SourceFile
-        || kind === SyntaxKind.FunctionDeclaration
-        || kind === SyntaxKind.StructDeclaration
+export function isContainerKind(kind: gt.SyntaxKind): boolean {
+    return kind === gt.SyntaxKind.SourceFile
+        || kind === gt.SyntaxKind.FunctionDeclaration
+        || kind === gt.SyntaxKind.StructDeclaration
     ;
 }
 
-export function isNamedDeclarationKind(kind: SyntaxKind): boolean {
-    return kind === SyntaxKind.SourceFile
-        || kind === SyntaxKind.VariableDeclaration
-        || kind === SyntaxKind.FunctionDeclaration
-        || kind === SyntaxKind.StructDeclaration
-        || kind === SyntaxKind.PropertyDeclaration
-        || kind === SyntaxKind.ParameterDeclaration
-        || kind === SyntaxKind.TypedefDeclaration
+export function isNamedDeclarationKind(kind: gt.SyntaxKind): boolean {
+    return kind === gt.SyntaxKind.SourceFile
+        || kind === gt.SyntaxKind.VariableDeclaration
+        || kind === gt.SyntaxKind.FunctionDeclaration
+        || kind === gt.SyntaxKind.StructDeclaration
+        || kind === gt.SyntaxKind.PropertyDeclaration
+        || kind === gt.SyntaxKind.ParameterDeclaration
+        || kind === gt.SyntaxKind.TypedefDeclaration
     ;
 }
 
-export function isDeclarationKind(kind: SyntaxKind): boolean {
+export function isDeclarationKind(kind: gt.SyntaxKind): boolean {
     return isNamedDeclarationKind(kind)
     ;
 }
 
-export function isLeftHandSideExpression(node: Types.Node): boolean {
+export function isLeftHandSideExpression(node: gt.Node): boolean {
     return isLeftHandSideExpressionKind(node.kind);
 }
 
-export function isPartOfExpression(node: Node): boolean {
+export function isPartOfExpression(node: gt.Node): boolean {
     switch (node.kind) {
-        case SyntaxKind.NullKeyword:
-        case SyntaxKind.TrueKeyword:
-        case SyntaxKind.FalseKeyword:
-        case SyntaxKind.ArrayLiteralExpression:
-        case SyntaxKind.PropertyAccessExpression:
-        case SyntaxKind.ElementAccessExpression:
-        case SyntaxKind.CallExpression:
-        case SyntaxKind.TypeAssertionExpression:
-        case SyntaxKind.ParenthesizedExpression:
-        case SyntaxKind.PrefixUnaryExpression:
-        case SyntaxKind.PostfixUnaryExpression:
-        case SyntaxKind.BinaryExpression:
-        case SyntaxKind.Identifier:
+        case gt.SyntaxKind.NullKeyword:
+        case gt.SyntaxKind.TrueKeyword:
+        case gt.SyntaxKind.FalseKeyword:
+        case gt.SyntaxKind.ArrayLiteralExpression:
+        case gt.SyntaxKind.PropertyAccessExpression:
+        case gt.SyntaxKind.ElementAccessExpression:
+        case gt.SyntaxKind.CallExpression:
+        case gt.SyntaxKind.TypeAssertionExpression:
+        case gt.SyntaxKind.ParenthesizedExpression:
+        case gt.SyntaxKind.PrefixUnaryExpression:
+        case gt.SyntaxKind.PostfixUnaryExpression:
+        case gt.SyntaxKind.BinaryExpression:
+        case gt.SyntaxKind.Identifier:
             return true;
-        case SyntaxKind.NumericLiteral:
-        case SyntaxKind.StringLiteral:
+        case gt.SyntaxKind.NumericLiteral:
+        case gt.SyntaxKind.StringLiteral:
             const parent = node.parent;
             switch (parent.kind) {
-                case SyntaxKind.VariableDeclaration:
-                case SyntaxKind.PropertyDeclaration:
-                case SyntaxKind.ExpressionStatement:
-                case SyntaxKind.IfStatement:
-                case SyntaxKind.DoStatement:
-                case SyntaxKind.WhileStatement:
-                case SyntaxKind.ReturnStatement:
-                case SyntaxKind.ForStatement:
-                    const forStatement = <Types.ForStatement>parent;
+                case gt.SyntaxKind.VariableDeclaration:
+                case gt.SyntaxKind.PropertyDeclaration:
+                case gt.SyntaxKind.ExpressionStatement:
+                case gt.SyntaxKind.IfStatement:
+                case gt.SyntaxKind.DoStatement:
+                case gt.SyntaxKind.WhileStatement:
+                case gt.SyntaxKind.ReturnStatement:
+                case gt.SyntaxKind.ForStatement:
+                    const forStatement = <gt.ForStatement>parent;
                     return (forStatement.initializer === node) ||
                         forStatement.condition === node ||
                         forStatement.incrementor === node;
@@ -174,59 +173,59 @@ export function isPartOfExpression(node: Node): boolean {
     return false;
 }
 
-export function isPartOfTypeNode(node: Node): boolean {
-        if (SyntaxKindMarker.FirstTypeNode <= <number>node.kind && <number>node.kind <= SyntaxKindMarker.LastTypeNode) {
-            return true;
-        }
-
-        switch (node.kind) {
-            case SyntaxKind.IntKeyword:
-            case SyntaxKind.FixedKeyword:
-            case SyntaxKind.StringKeyword:
-            case SyntaxKind.BoolKeyword:
-            case SyntaxKind.VoidKeyword:
-                return true;
-
-            // Identifiers and qualified names may be type nodes, depending on their context. Climb
-            // above them to find the lowest container
-            case SyntaxKind.Identifier:
-                // If the identifier is the RHS of a qualified name, then it's a type iff its parent is.
-                if (node.parent.kind === SyntaxKind.PropertyAccessExpression && (<Types.PropertyAccessExpression>node.parent).name === node) {
-                    node = node.parent;
-                }
-                // At this point, node is either a qualified name or an identifier
-                // Debug.assert(node.kind === SyntaxKind.Identifier || node.kind === SyntaxKind.QualifiedName || node.kind === SyntaxKind.PropertyAccessExpression,
-                //     "'node' was expected to be a qualified name, identifier or property access in 'isPartOfTypeNode'.");
-                // falls through
-            case SyntaxKind.PropertyAccessExpression:
-                const parent = node.parent;
-                // Do not recursively call isPartOfTypeNode on the parent. In the example:
-                //
-                //     let a: A.B.C;
-                //
-                // Calling isPartOfTypeNode would consider the qualified name A.B a type node.
-                // Only C and A.B.C are type nodes.
-                if (SyntaxKindMarker.FirstTypeNode <= <number>parent.kind && <number>parent.kind <= SyntaxKindMarker.LastTypeNode) {
-                    return true;
-                }
-                switch (parent.kind) {
-                    case SyntaxKind.PropertyDeclaration:
-                    case SyntaxKind.ParameterDeclaration:
-                    case SyntaxKind.VariableDeclaration:
-                        return node === (<Types.VariableDeclaration>parent).type;
-                    case SyntaxKind.FunctionDeclaration:
-                        return node === (<Types.FunctionDeclaration>parent).type;
-                    // TODO:
-                    // case SyntaxKind.CallExpression:
-                    //     return (<Types.CallExpression>parent).typeArguments && indexOf((<Types.CallExpression>parent).typeArguments, node) >= 0;
-                }
-        }
-
-        return false;
+export function isPartOfTypeNode(node: gt.Node): boolean {
+    if (gt.SyntaxKindMarker.FirstTypeNode <= <number>node.kind && <number>node.kind <= gt.SyntaxKindMarker.LastTypeNode) {
+        return true;
     }
 
-export function isRightSideOfPropertyAccess(node: Node) {
-    return (node.parent.kind === SyntaxKind.PropertyAccessExpression && (<Types.PropertyAccessExpression>node.parent).name === node);
+    switch (node.kind) {
+        case gt.SyntaxKind.IntKeyword:
+        case gt.SyntaxKind.FixedKeyword:
+        case gt.SyntaxKind.StringKeyword:
+        case gt.SyntaxKind.BoolKeyword:
+        case gt.SyntaxKind.VoidKeyword:
+            return true;
+
+        // Identifiers and qualified names may be type nodes, depending on their context. Climb
+        // above them to find the lowest container
+        case gt.SyntaxKind.Identifier:
+            // If the identifier is the RHS of a qualified name, then it's a type iff its parent is.
+            if (node.parent.kind === gt.SyntaxKind.PropertyAccessExpression && (<gt.PropertyAccessExpression>node.parent).name === node) {
+                node = node.parent;
+            }
+            // At this point, node is either a qualified name or an identifier
+            // Debug.assert(node.kind === gt.SyntaxKind.Identifier || node.kind === gt.SyntaxKind.QualifiedName || node.kind === gt.SyntaxKind.PropertyAccessExpression,
+            //     "'node' was expected to be a qualified name, identifier or property access in 'isPartOfTypeNode'.");
+            // falls through
+        case gt.SyntaxKind.PropertyAccessExpression:
+            const parent = node.parent;
+            // Do not recursively call isPartOfTypeNode on the parent. In the example:
+            //
+            //     let a: A.B.C;
+            //
+            // Calling isPartOfTypeNode would consider the qualified name A.B a type node.
+            // Only C and A.B.C are type nodes.
+            if (gt.SyntaxKindMarker.FirstTypeNode <= <number>parent.kind && <number>parent.kind <= gt.SyntaxKindMarker.LastTypeNode) {
+                return true;
+            }
+            switch (parent.kind) {
+                case gt.SyntaxKind.PropertyDeclaration:
+                case gt.SyntaxKind.ParameterDeclaration:
+                case gt.SyntaxKind.VariableDeclaration:
+                    return node === (<gt.VariableDeclaration>parent).type;
+                case gt.SyntaxKind.FunctionDeclaration:
+                    return node === (<gt.FunctionDeclaration>parent).type;
+                // TODO:
+                // case gt.SyntaxKind.CallExpression:
+                //     return (<gt.CallExpression>parent).typeArguments && indexOf((<gt.CallExpression>parent).typeArguments, node) >= 0;
+            }
+    }
+
+    return false;
+}
+
+export function isRightSideOfPropertyAccess(node: gt.Node) {
+    return (node.parent.kind === gt.SyntaxKind.PropertyAccessExpression && (<gt.PropertyAccessExpression>node.parent).name === node);
 }
 
 function isNodeOrArray(a: any): boolean {
@@ -238,53 +237,13 @@ export function getKindName(k: number | string): string {
         return k;
     }
 
-    // For some markers in SyntaxKind, we should print its original syntax name instead of
-    // the marker name in tests.
-    // if (k === (<any>Types).SyntaxKind.FirstJSDocNode ||
-    //     k === (<any>Types).SyntaxKind.LastJSDocNode ||
-    //     k === (<any>Types).SyntaxKind.FirstJSDocTagNode ||
-    //     k === (<any>Types).SyntaxKind.LastJSDocTagNode) {
-    //     for (const kindName in (<any>Types).SyntaxKind) {
-    //         if ((<any>Types).SyntaxKind[kindName] === k) {
-    //             return kindName;
-    //         }
-    //     }
-    // }
-
-    return (<any>Types).SyntaxKind[k];
+    return (<any>gt).SyntaxKind[k];
 }
 
-export function sourceFileToJSON(file: Types.Node): string {
+export function sourceFileToJSON(file: gt.Node): string {
     return JSON.stringify(file, (_, v) => isNodeOrArray(v) ? serializeNode(v) : v, "    ");
 
-    // function getFlagName(flags: any, f: number): any {
-    //     if (f === 0) {
-    //         return 0;
-    //     }
-
-    //     let result = "";
-    //     forEach(Object.getOwnPropertyNames(flags), (v: any) => {
-    //         if (isFinite(v)) {
-    //             v = +v;
-    //             if (f === +v) {
-    //                 result = flags[v];
-    //                 return true;
-    //             }
-    //             else if ((f & v) > 0) {
-    //                 if (result.length) {
-    //                     result += " | ";
-    //                 }
-    //                 result += flags[v];
-    //                 return false;
-    //             }
-    //         }
-    //     });
-    //     return result;
-    // }
-
-    // function getNodeFlagName(f: number) { return getFlagName((<any>ts).NodeFlags, f); }
-
-    function serializeNode(n: Types.Node): any {
+    function serializeNode(n: gt.Node): any {
         const o: any = { kind: getKindName(n.kind) };
         // if (ts.containsParseError(n)) {
         //     o.containsParseError = true;
@@ -333,7 +292,7 @@ export function sourceFileToJSON(file: Types.Node): string {
 
                 case "text":
                     // Include 'text' field for identifiers/literals, but not for source files.
-                    if (n.kind !== Types.SyntaxKind.SourceFile) {
+                    if (n.kind !== gt.SyntaxKind.SourceFile) {
                         o[propertyName] = (<any>n)[propertyName];
                     }
                     break;
@@ -353,9 +312,9 @@ export function sourceFileToJSON(file: Types.Node): string {
  * If no such value is found, it applies the callback until the parent pointer is undefined or the callback returns "quit"
  * At that point findAncestor returns undefined.
  */
-export function findAncestor<T extends Node>(node: Node, callback: (element: Node) => element is T): T | undefined;
-export function findAncestor(node: Node, callback: (element: Node) => boolean | "quit"): Node | undefined;
-export function findAncestor(node: Node, callback: (element: Node) => boolean | "quit"): Node {
+export function findAncestor<T extends gt.Node>(node: gt.Node, callback: (element: gt.Node) => element is T): T | undefined;
+export function findAncestor(node: gt.Node, callback: (element: gt.Node) => boolean | "quit"): gt.Node | undefined;
+export function findAncestor(node: gt.Node, callback: (element: gt.Node) => boolean | "quit"): gt.Node {
     while (node) {
         const result = callback(node);
         if (result === "quit") {
@@ -369,25 +328,25 @@ export function findAncestor(node: Node, callback: (element: Node) => boolean | 
     return undefined;
 }
 
-export function findAncestorByKind(node: Node, kind: SyntaxKind): Types.Node {
+export function findAncestorByKind(node: gt.Node, kind: gt.SyntaxKind): gt.Node {
     while (node && node.kind !== kind) {
         node = node.parent;
     }
     return node;
 }
 
-export function getSourceFileOfNode(node: Node): Types.SourceFile {
-    while (node && node.kind !== SyntaxKind.SourceFile) {
+export function getSourceFileOfNode(node: gt.Node): gt.SourceFile {
+    while (node && node.kind !== gt.SyntaxKind.SourceFile) {
         node = node.parent;
     }
-    return <Types.SourceFile>node;
+    return <gt.SourceFile>node;
 }
 
-export function fixupParentReferences(rootNode: Node) {
-    let parent: Node = rootNode;
+export function fixupParentReferences(rootNode: gt.Node) {
+    let parent: gt.Node = rootNode;
     forEachChild(rootNode, visitNode);
 
-    function visitNode(n: Node): void {
+    function visitNode(n: gt.Node): void {
         // walk down setting parents that differ from the parent we think it should be.  This
         // allows us to quickly bail out of setting parents for subtrees during incremental
         // parsing
@@ -402,11 +361,11 @@ export function fixupParentReferences(rootNode: Node) {
     }
 }
 
-function visitNode<T>(cbNode: (node?: Node) => T, node: Node): T | undefined {
+function visitNode<T>(cbNode: (node?: gt.Node) => T, node: gt.Node): T | undefined {
     return node && cbNode(node);
 }
 
-function visitNodes<T>(cbNode: (node: Node) => T, cbNodes: (node: NodeArray<Node>) => T | undefined, nodes: NodeArray<Node>): T | undefined {
+function visitNodes<T>(cbNode: (node: gt.Node) => T, cbNodes: (node: gt.NodeArray<gt.Node>) => T | undefined, nodes: gt.NodeArray<gt.Node>): T | undefined {
     if (nodes) {
         if (cbNodes) {
             return cbNodes(nodes);
@@ -433,106 +392,97 @@ function visitNodes<T>(cbNode: (node: Node) => T, cbNodes: (node: NodeArray<Node
  * @remarks `forEachChild` must visit the children of a node in the order
  * that they appear in the source code.
  */
-export function forEachChild<T>(node: Node, cbNode: (node: Node) => T | undefined, cbNodes?: (nodes: NodeArray<Node>) => T | undefined): T | undefined {
+export function forEachChild<T>(node: gt.Node, cbNode: (node: gt.Node) => T | undefined, cbNodes?: (nodes: gt.NodeArray<gt.Node>) => T | undefined): T | undefined {
     if (!node || !node.kind) {
         return;
     }
     switch (node.kind) {
-        case SyntaxKind.PropertyDeclaration:
-            return visitNodes(cbNode, cbNodes, (<Types.PropertyDeclaration>node).modifiers) ||
-                visitNode(cbNode, (<Types.PropertyDeclaration>node).type) ||
-                visitNode(cbNode, (<Types.PropertyDeclaration>node).name);
-        case SyntaxKind.VariableDeclaration:
-            return visitNodes(cbNode, cbNodes, (<Types.VariableDeclaration>node).modifiers) ||
-                visitNode(cbNode, (<Types.VariableDeclaration>node).type) ||
-                visitNode(cbNode, (<Types.VariableDeclaration>node).name) ||
-                visitNode(cbNode, (<Types.VariableDeclaration>node).initializer);
-        case SyntaxKind.FunctionDeclaration:
-            return visitNodes(cbNode, cbNodes, (<Types.FunctionDeclaration>node).modifiers) ||
-                visitNode(cbNode, (<Types.FunctionDeclaration>node).type) ||
-                visitNode(cbNode, (<Types.FunctionDeclaration>node).name) ||
-                visitNodes(cbNode, cbNodes, (<Types.FunctionDeclaration>node).parameters) ||
-                visitNode(cbNode, (<Types.FunctionDeclaration>node).body);
-        case SyntaxKind.StructDeclaration:
-            return visitNodes(cbNode, cbNodes, (<Types.StructDeclaration>node).modifiers) ||
-                visitNode(cbNode, (<Types.StructDeclaration>node).name) ||
-                visitNodes(cbNode, cbNodes, (<Types.StructDeclaration>node).members);
-        case SyntaxKind.ParameterDeclaration:
-            return visitNodes(cbNode, cbNodes, (<Types.ParameterDeclaration>node).modifiers) ||
-                visitNode(cbNode, (<Types.ParameterDeclaration>node).name) ||
-                visitNode(cbNode, (<Types.ParameterDeclaration>node).type);
-        case SyntaxKind.TypedefDeclaration:
-            return visitNode(cbNode, (<Types.TypedefDeclaration>node).type) ||
-                visitNode(cbNode, (<Types.TypedefDeclaration>node).name);
-        case SyntaxKind.ArrayType:
-            return visitNode(cbNode, (<Types.ArrayTypeNode>node).elementType) ||
-                visitNode(cbNode, (<Types.ArrayTypeNode>node).size);
-        case SyntaxKind.MappedType:
-            return visitNode(cbNode, (<Types.MappedTypeNode>node).returnType) ||
-                visitNodes(cbNode, cbNodes, (<Types.MappedTypeNode>node).typeArguments);
-        // case SyntaxKind.TypeReference:
-        //     return visitNode(cbNode, (<Types.TypeReferenceNode>node).typeName) ||
-        //         visitNodes(cbNode, cbNodes, (<Types.TypeReferenceNode>node).typeArguments);
-        // case SyntaxKind.LiteralType:
-        //     return visitNode(cbNode, (<Types.LiteralTypeNode>node).literal);
-        // case SyntaxKind.ArrayLiteralExpression:
-        //     return visitNodes(cbNode, cbNodes, (<Types.ArrayLiteralExpression>node).elements);
-        // case SyntaxKind.ObjectLiteralExpression:
-        //     return visitNodes(cbNode, cbNodes, (<Types.ObjectLiteralExpression>node).properties);
-        case SyntaxKind.PropertyAccessExpression:
-            return visitNode(cbNode, (<Types.PropertyAccessExpression>node).expression) ||
-                visitNode(cbNode, (<Types.PropertyAccessExpression>node).name);
-        case SyntaxKind.ElementAccessExpression:
-            return visitNode(cbNode, (<Types.ElementAccessExpression>node).expression) ||
-                visitNode(cbNode, (<Types.ElementAccessExpression>node).argumentExpression);
-        case SyntaxKind.CallExpression:
-            return visitNode(cbNode, (<Types.CallExpression>node).expression) ||
-                visitNodes(cbNode, cbNodes, (<Types.CallExpression>node).arguments);
-        case SyntaxKind.ParenthesizedExpression:
-            return visitNode(cbNode, (<Types.ParenthesizedExpression>node).expression);
-        case SyntaxKind.PrefixUnaryExpression:
-            return visitNode(cbNode, (<Types.PrefixUnaryExpression>node).operator) ||
-                visitNode(cbNode, (<Types.PrefixUnaryExpression>node).operand);
-        case SyntaxKind.PostfixUnaryExpression:
-            return visitNode(cbNode, (<Types.PostfixUnaryExpression>node).operand) ||
-                visitNode(cbNode, (<Types.PostfixUnaryExpression>node).operator);
-        case SyntaxKind.BinaryExpression:
-            return visitNode(cbNode, (<Types.BinaryExpression>node).left) ||
-                visitNode(cbNode, (<Types.BinaryExpression>node).operatorToken) ||
-                visitNode(cbNode, (<Types.BinaryExpression>node).right);
-        case SyntaxKind.Block:
-            return visitNodes(cbNode, cbNodes, (<Types.Block>node).statements);
-        case SyntaxKind.SourceFile:
-            return visitNodes(cbNode, cbNodes, (<Types.SourceFile>node).statements);
-        case SyntaxKind.ExpressionStatement:
-            return visitNode(cbNode, (<Types.ExpressionStatement>node).expression);
-        case SyntaxKind.IfStatement:
-            return visitNode(cbNode, (<Types.IfStatement>node).expression) ||
-                visitNode(cbNode, (<Types.IfStatement>node).thenStatement) ||
-                visitNode(cbNode, (<Types.IfStatement>node).elseStatement);
-        case SyntaxKind.DoStatement:
-            return visitNode(cbNode, (<Types.DoStatement>node).statement) ||
-                visitNode(cbNode, (<Types.DoStatement>node).expression);
-        case SyntaxKind.WhileStatement:
-            return visitNode(cbNode, (<Types.WhileStatement>node).expression) ||
-                visitNode(cbNode, (<Types.WhileStatement>node).statement);
-        case SyntaxKind.ForStatement:
-            return visitNode(cbNode, (<Types.ForStatement>node).initializer) ||
-                visitNode(cbNode, (<Types.ForStatement>node).condition) ||
-                visitNode(cbNode, (<Types.ForStatement>node).incrementor) ||
-                visitNode(cbNode, (<Types.ForStatement>node).statement);
-        case SyntaxKind.ContinueStatement:
-        case SyntaxKind.BreakStatement:
+        case gt.SyntaxKind.PropertyDeclaration:
+            return visitNodes(cbNode, cbNodes, (<gt.PropertyDeclaration>node).modifiers) ||
+                visitNode(cbNode, (<gt.PropertyDeclaration>node).type) ||
+                visitNode(cbNode, (<gt.PropertyDeclaration>node).name);
+        case gt.SyntaxKind.VariableDeclaration:
+            return visitNodes(cbNode, cbNodes, (<gt.VariableDeclaration>node).modifiers) ||
+                visitNode(cbNode, (<gt.VariableDeclaration>node).type) ||
+                visitNode(cbNode, (<gt.VariableDeclaration>node).name) ||
+                visitNode(cbNode, (<gt.VariableDeclaration>node).initializer);
+        case gt.SyntaxKind.FunctionDeclaration:
+            return visitNodes(cbNode, cbNodes, (<gt.FunctionDeclaration>node).modifiers) ||
+                visitNode(cbNode, (<gt.FunctionDeclaration>node).type) ||
+                visitNode(cbNode, (<gt.FunctionDeclaration>node).name) ||
+                visitNodes(cbNode, cbNodes, (<gt.FunctionDeclaration>node).parameters) ||
+                visitNode(cbNode, (<gt.FunctionDeclaration>node).body);
+        case gt.SyntaxKind.StructDeclaration:
+            return visitNodes(cbNode, cbNodes, (<gt.StructDeclaration>node).modifiers) ||
+                visitNode(cbNode, (<gt.StructDeclaration>node).name) ||
+                visitNodes(cbNode, cbNodes, (<gt.StructDeclaration>node).members);
+        case gt.SyntaxKind.ParameterDeclaration:
+            return visitNodes(cbNode, cbNodes, (<gt.ParameterDeclaration>node).modifiers) ||
+                visitNode(cbNode, (<gt.ParameterDeclaration>node).name) ||
+                visitNode(cbNode, (<gt.ParameterDeclaration>node).type);
+        case gt.SyntaxKind.TypedefDeclaration:
+            return visitNode(cbNode, (<gt.TypedefDeclaration>node).type) ||
+                visitNode(cbNode, (<gt.TypedefDeclaration>node).name);
+        case gt.SyntaxKind.ArrayType:
+            return visitNode(cbNode, (<gt.ArrayTypeNode>node).elementType) ||
+                visitNode(cbNode, (<gt.ArrayTypeNode>node).size);
+        case gt.SyntaxKind.MappedType:
+            return visitNode(cbNode, (<gt.MappedTypeNode>node).returnType) ||
+                visitNodes(cbNode, cbNodes, (<gt.MappedTypeNode>node).typeArguments);
+        case gt.SyntaxKind.PropertyAccessExpression:
+            return visitNode(cbNode, (<gt.PropertyAccessExpression>node).expression) ||
+                visitNode(cbNode, (<gt.PropertyAccessExpression>node).name);
+        case gt.SyntaxKind.ElementAccessExpression:
+            return visitNode(cbNode, (<gt.ElementAccessExpression>node).expression) ||
+                visitNode(cbNode, (<gt.ElementAccessExpression>node).argumentExpression);
+        case gt.SyntaxKind.CallExpression:
+            return visitNode(cbNode, (<gt.CallExpression>node).expression) ||
+                visitNodes(cbNode, cbNodes, (<gt.CallExpression>node).arguments);
+        case gt.SyntaxKind.ParenthesizedExpression:
+            return visitNode(cbNode, (<gt.ParenthesizedExpression>node).expression);
+        case gt.SyntaxKind.PrefixUnaryExpression:
+            return visitNode(cbNode, (<gt.PrefixUnaryExpression>node).operator) ||
+                visitNode(cbNode, (<gt.PrefixUnaryExpression>node).operand);
+        case gt.SyntaxKind.PostfixUnaryExpression:
+            return visitNode(cbNode, (<gt.PostfixUnaryExpression>node).operand) ||
+                visitNode(cbNode, (<gt.PostfixUnaryExpression>node).operator);
+        case gt.SyntaxKind.BinaryExpression:
+            return visitNode(cbNode, (<gt.BinaryExpression>node).left) ||
+                visitNode(cbNode, (<gt.BinaryExpression>node).operatorToken) ||
+                visitNode(cbNode, (<gt.BinaryExpression>node).right);
+        case gt.SyntaxKind.Block:
+            return visitNodes(cbNode, cbNodes, (<gt.Block>node).statements);
+        case gt.SyntaxKind.SourceFile:
+            return visitNodes(cbNode, cbNodes, (<gt.SourceFile>node).statements);
+        case gt.SyntaxKind.ExpressionStatement:
+            return visitNode(cbNode, (<gt.ExpressionStatement>node).expression);
+        case gt.SyntaxKind.IfStatement:
+            return visitNode(cbNode, (<gt.IfStatement>node).expression) ||
+                visitNode(cbNode, (<gt.IfStatement>node).thenStatement) ||
+                visitNode(cbNode, (<gt.IfStatement>node).elseStatement);
+        case gt.SyntaxKind.DoStatement:
+            return visitNode(cbNode, (<gt.DoStatement>node).statement) ||
+                visitNode(cbNode, (<gt.DoStatement>node).expression);
+        case gt.SyntaxKind.WhileStatement:
+            return visitNode(cbNode, (<gt.WhileStatement>node).expression) ||
+                visitNode(cbNode, (<gt.WhileStatement>node).statement);
+        case gt.SyntaxKind.ForStatement:
+            return visitNode(cbNode, (<gt.ForStatement>node).initializer) ||
+                visitNode(cbNode, (<gt.ForStatement>node).condition) ||
+                visitNode(cbNode, (<gt.ForStatement>node).incrementor) ||
+                visitNode(cbNode, (<gt.ForStatement>node).statement);
+        case gt.SyntaxKind.ContinueStatement:
+        case gt.SyntaxKind.BreakStatement:
             break;
-        case SyntaxKind.ReturnStatement:
-            return visitNode(cbNode, (<Types.ReturnStatement>node).expression);
-        case SyntaxKind.IncludeStatement:
-            return visitNode(cbNode, (<Types.IncludeStatement>node).path);
+        case gt.SyntaxKind.ReturnStatement:
+            return visitNode(cbNode, (<gt.ReturnStatement>node).expression);
+        case gt.SyntaxKind.IncludeStatement:
+            return visitNode(cbNode, (<gt.IncludeStatement>node).path);
     }
 }
 
-export function createDiagnosticForNode(node: Types.Node, category: Types.DiagnosticCategory, msg: string): Types.Diagnostic {
-    return <Types.Diagnostic>{
+export function createDiagnosticForNode(node: gt.Node, category: gt.DiagnosticCategory, msg: string): gt.Diagnostic {
+    return <gt.Diagnostic>{
         file: getSourceFileOfNode(node),
         category: category,
         start: node.pos,
