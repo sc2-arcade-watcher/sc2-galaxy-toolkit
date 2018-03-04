@@ -30,7 +30,7 @@ export class S2WorkspaceMetadata {
             }
         }
 
-        if (el instanceof trig.FunctionDef && el.flags & trig.ElementFlag.Native) {
+        if (el instanceof trig.FunctionDef && (el.flags & trig.ElementFlag.Native || el.flags & trig.ElementFlag.NoScriptPrefix)) {
             parts.push(elemName);
         }
         else if (
@@ -49,7 +49,8 @@ export class S2WorkspaceMetadata {
             }
 
             if (el instanceof trig.FunctionDef) {
-                parts.push('gf');
+                if (el.flags & trig.ElementFlag.Operator) parts.push('op');
+                else parts.push('gf');
             }
             else if (el instanceof trig.Preset) {
                 parts.push('ge');

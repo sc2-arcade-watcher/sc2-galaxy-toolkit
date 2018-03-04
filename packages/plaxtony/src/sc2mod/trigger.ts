@@ -2,25 +2,31 @@ import * as fs from 'fs';
 import * as xml from 'xml2js';
 
 export const enum ElementFlag {
-    Native = 1 << 1,
-    FuncAction = 1 << 2,
-    FuncCall = 1 << 3,
-    Event = 1 << 4,
-    Template = 1 << 5,
-    PresetGenConstVar = 1 << 6,
-    PresetCustom = 1 << 7,
+    Native             = 1 << 1,
+    FuncAction         = 1 << 2,
+    FuncCall           = 1 << 3,
+    Event              = 1 << 4,
+    Template           = 1 << 5,
+    PresetGenConstVar  = 1 << 6,
+    PresetCustom       = 1 << 7,
+    CustomScript       = 1 << 8,
+    Operator           = 1 << 9,
+    CustomAI           = 1 << 10,
+    SubFunctions       = 1 << 11,
+    AllowBreak         = 1 << 12,
+    Hidden             = 1 << 13,
+    NoScriptPrefix     = 1 << 14,
+    Deprecated         = 1 << 15,
+    Internal           = 1 << 16,
 }
 
 export class ElementReference<T extends Element> {
     private store: TriggerStore;
     id: string;
     type: typeof Element;
-    // type: { new(): T };
-    // type: string;
     library?: string;
 
-    public constructor(container: TriggerStore, type: { new(): T }) {
-        // this.type = type;
+    public constructor(container: TriggerStore) {
         this.store = container;
     }
 
@@ -50,6 +56,29 @@ export class ParameterType {
     type: string;
     gameType?: string; // when type == gamelink; e.g. Model; (may be omitted - "any")
     typeElement?: ElementReference<Preset>; // when type == preset;
+
+    public galaxyType() {
+        switch (this.type) {
+            case 'gamelink':
+            case 'convline':
+            case 'filepath':
+            case 'gameoption':
+            case 'gameoptionvalue':
+            case 'modelanim':
+                return 'string';
+
+            case 'control':
+            case 'transmission':
+            case 'portrait':
+                return 'int';
+
+            case 'preset':
+                return this.typeElement.resolve().baseType;
+
+            default:
+                return this.type;
+        }
+    }
 }
 // TODO:
 // <Type Value="filepath"/>
@@ -65,33 +94,27 @@ export class ParameterType {
 // -
 // <Type Value="modelanim"/>
 
-export abstract class Element {
+export abstract class Tag {
     static prefix?: string;
     libId?: string;
     id: string;
     name?: string;
-    flags: ElementFlag;
 
     public link() {
         return (this.libId ? this.libId + '/' : '') + (this.constructor.name + '/') + this.id;
     }
 
     public toString() {
-        if (this.flags & ElementFlag.Native) {
-            return this.name ? this.name : this.id;
+        const parts: string[] = [];
+        if (this.libId) {
+            parts.push('lib' + this.libId);
         }
-        else {
-            const parts: string[] = [];
-            if (this.libId) {
-                parts.push('lib' + this.libId);
-            }
-            const prefix = (<any>this.constructor).prefix;
-            if (prefix) {
-                parts.push(prefix);
-            }
-            parts.push(this.name ? this.name : this.id);
-            return parts.join('_');
+        const prefix = (<any>this.constructor).prefix;
+        if (prefix) {
+            parts.push(prefix);
         }
+        parts.push(this.name ? this.name : this.id);
+        return parts.join('_');
     }
 
     public textKey(kind: string) {
@@ -108,6 +131,19 @@ export abstract class Element {
     }
 }
 
+export abstract class Element extends Tag {
+    flags: ElementFlag;
+    label?: ElementReference<Label>;
+    items: ElementReference<Element>[] = [];
+
+    public toString() {
+        if (this.flags & ElementFlag.Native) {
+            return this.name ? this.name : this.id;
+        }
+        return super.toString();
+    }
+}
+
 export class ParamDef extends Element {
     type: ParameterType;
     default?: ElementReference<Param>;
@@ -117,6 +153,7 @@ export class FunctionDef extends Element {
     static prefix = 'gf';
     parameters: ElementReference<ParamDef>[] = [];
     returnType?: ParameterType;
+    scriptCode?: string;
 
     public getParameters() {
         return this.parameters.map((paramRef): ParamDef => {
@@ -146,6 +183,14 @@ export class FunctionCall extends Element {
     functionDef: ElementReference<FunctionDef>;
 }
 
+export class Category extends Element {
+};
+
+export class Label extends Element {
+    icon?: string;
+    color?: string;
+};
+
 const ElementClasses = {
     ParamDef,
     FunctionDef,
@@ -153,6 +198,8 @@ const ElementClasses = {
     PresetValue,
     Param,
     FunctionCall,
+    Category,
+    Label,
 };
 
 // export class TriggerExplorer {
@@ -160,6 +207,7 @@ const ElementClasses = {
 // }
 
 export abstract class ElementContainer {
+    public items: ElementReference<Element>[] = [];
     protected elements: Map<string, Element> = new Map();
     protected nameMap: Map<string, Element> = new Map();
 
@@ -266,7 +314,7 @@ export class XMLReader {
     protected store: TriggerStore;
 
     private parseReference<T extends Element>(data: any, type: { new(): T }): ElementReference<T> {
-        const ref = new ElementReference<T>(this.store, type);
+        const ref = new ElementReference<T>(this.store);
         ref.id = data.$.Id;
         if (data.$.Library) {
             ref.library = data.$.Library;
@@ -303,7 +351,10 @@ export class XMLReader {
 
     private parseFunctionCall(item: any): FunctionCall {
         const element = new FunctionCall();
-        element.functionDef = this.parseReference(item.FunctionDef[0], FunctionDef);
+        if (item.FunctionDef) {
+            // TODO: check one of the void story libraries - it doesn't have FunctionDef
+            element.functionDef = this.parseReference(item.FunctionDef[0], FunctionDef);
+        }
         return element;
     }
 
@@ -315,6 +366,22 @@ export class XMLReader {
         }
         if (element.type === 'preset') {
             element.typeElement = this.parseReference(item.TypeElement[0], Preset);
+        }
+        return element;
+    }
+
+    private parseCategory(item: any) {
+        const element = new Category();
+        return element;
+    }
+
+    private parseLabel(item: any) {
+        const element = new Label();
+        if (item.Icon) {
+            element.icon = item.Icon[0];
+        }
+        if (item.Color) {
+            element.color = item.Color[0];
         }
         return element;
     }
@@ -332,15 +399,33 @@ export class XMLReader {
                 func.flags |= item.FlagCall ? ElementFlag.FuncCall : 0;
                 func.flags |= item.FlagEvent ? ElementFlag.Event : 0;
                 func.flags |= item.Template ? ElementFlag.Template : 0;
+                func.flags |= item.FlagCustomScript ? ElementFlag.CustomScript : 0;
+                func.flags |= item.FlagOperator ? ElementFlag.Operator : 0;
+                func.flags |= item.FlagCustomAI ? ElementFlag.CustomAI : 0;
+                func.flags |= item.FlagSubFunctions ? ElementFlag.SubFunctions : 0;
+                func.flags |= item.FlagAllowBreak ? ElementFlag.AllowBreak : 0;
+                func.flags |= item.FlagHidden ? ElementFlag.Hidden : 0;
+                func.flags |= item.FlagNoScriptPrefix ? ElementFlag.NoScriptPrefix : 0;
+                func.flags |= item.Deprecated ? ElementFlag.Deprecated : 0;
+                func.flags |= item.Internal ? ElementFlag.Internal : 0;
 
                 if (item.Parameter) {
                     for (const param of item.Parameter) {
+                        if (param.$.Type === 'Comment') continue;
                         func.parameters.push(this.parseReference(param, ParamDef));
                     }
                 }
 
                 if (item.ReturnType) {
                     func.returnType = this.parseParameterType(item.ReturnType[0]);
+                }
+
+                if (item.ScriptCode) {
+                    func.scriptCode = item.ScriptCode[0];
+                    const whitespace = func.scriptCode.match(/^\r\n(\s+)/)[1];
+                    if (whitespace) {
+                        func.scriptCode = func.scriptCode.trim().replace(/\r\n/g, '\n').replace(new RegExp('^' + whitespace, 'gm'), '');
+                    }
                 }
                 break;
             }
@@ -384,10 +469,24 @@ export class XMLReader {
                 }
                 break;
             }
+            case 'Category':
+                el = this.parseCategory(item);
+                break;
+            case 'Label':
+                el = this.parseLabel(item);
+                break;
             default:
             {
                 return null;
             }
+        }
+
+        if (item.Item) {
+            el.items = this.parseItems(item);
+        }
+
+        if (item.Label) {
+            el.label = this.parseReference(item.Label[0], Label);
         }
 
         if (item.Identifier) {
@@ -397,7 +496,20 @@ export class XMLReader {
         return el;
     }
 
+    private parseItems(data: any) {
+        const elItems: ElementReference<Element>[] = [];
+        for (const itEntry of data.Item) {
+            const cls = (ElementClasses as any)[itEntry.$.Type];
+            if (!cls) continue;
+            elItems.push(this.parseReference(itEntry, cls));
+        }
+        return elItems;
+    }
+
     private parseTree(data: any, container: ElementContainer) {
+        if (data.Root && data.Root[0].Item) {
+            container.items = this.parseItems(data.Root[0]);
+        }
         if (!data.Element) return;
         for (const item of data.Element) {
             const el = this.parseElement(item);
@@ -459,3 +571,7 @@ export class XMLReader {
         return this.store;
     }
 }
+
+// export function forEachElement(element: Element) {
+//     function visitElement()
+// }
