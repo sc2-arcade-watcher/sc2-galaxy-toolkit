@@ -15,6 +15,10 @@
 			"name": "keyword.control.galaxy"
 		},
 		{
+			"match": "\\b(switch|default|new)\\b",
+			"name": "keyword.reserved.galaxy"
+		},
+		{
 			"include": "#storage_types"
 		},
 		{
@@ -84,16 +88,12 @@
 			]
 		},
 		{
-			"match": "\\b(c_[A-Za-z0-9_]+)\\b",
+			"match": "\\b((c|e)_[A-Za-z0-9_]+)\\b",
 			"name": "constant.other.variable.native.galaxy"
 		},
 		{
-			"match": "\\b(gt_[A-Za-z0-9_]+)\\b",
-			"name": "support.type.global-trigger.galaxy"
-		},
-		{
-			"match": "\\b(gv_[A-Za-z0-9_]+)\\b",
-			"name": "support.type.global-variable.galaxy"
+			"match": "\\b((gt|gv|ge)_[A-Za-z0-9_]+)\\b",
+			"name": "support.type.global-symbol.galaxy"
 		},
 		{
 			"include": "#block"
