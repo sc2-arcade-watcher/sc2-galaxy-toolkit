@@ -16,7 +16,7 @@ import { ReferencesProvider, ReferencesConfig } from './references';
 import { RenameProvider } from './rename';
 import { SC2Archive, SC2Workspace, resolveArchiveDirectory, openArchiveWorkspace } from '../sc2mod/archive';
 import { setTimeout, clearTimeout } from 'timers';
-import URI from 'vscode-uri/lib';
+import URI from 'vscode-uri';
 
 function getNodeRange(node: Types.Node): lsp.Range {
     return {

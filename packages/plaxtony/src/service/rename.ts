@@ -5,7 +5,7 @@ import { ReferencesProvider } from './references';
 import { TypeChecker } from '../compiler/checker';
 import { getPositionOfLineAndCharacter, getAdjacentIdentfier } from './utils';
 import { getSourceFileOfNode } from '../compiler/utils';
-import URI from 'vscode-uri/lib';
+import URI from 'vscode-uri';
 
 export class RenameProvider extends AbstractProvider {
     public referencesProvider: ReferencesProvider;

@@ -4,7 +4,7 @@ import * as lsp from 'vscode-languageserver';
 import { forEachChild } from '../compiler/utils';
 import { getPositionOfLineAndCharacter, getAdjacentIdentfier, getLineAndCharacterOfPosition } from './utils';
 import { TypeChecker } from '../compiler/checker';
-import URI from 'vscode-uri/lib';
+import URI from 'vscode-uri';
 
 export interface ReferencesConfig {
     currentWorkspaceOnly: boolean;
