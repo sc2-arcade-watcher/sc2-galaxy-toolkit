@@ -83,7 +83,7 @@ export class S2WorkspaceMetadata {
                     this.presetValueParentMap.set(presetValue.link(), el);
 
                     if (el.flags & trig.ElementFlag.PresetCustom) {
-                        if (presetValue.value.match(elementValidCharsRE)) {
+                        if (presetValue.value.match(elementValidCharsRE) && !this.symbolMap.has(presetValue.value)) {
                             this.symbolMap.set(presetValue.value, presetValue);
                         }
                     }
