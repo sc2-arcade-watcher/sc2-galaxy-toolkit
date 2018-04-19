@@ -37,6 +37,7 @@ export declare class Store {
     s2workspace: SC2Workspace;
     s2metadata: S2WorkspaceMetadata;
     removeDocument(documentUri: string): void;
+    getFirstMatchingDocument(partialname: string): gt.SourceFile;
     updateDocument(document: lsp.TextDocument, check?: boolean): void;
     updateS2Workspace(workspace: SC2Workspace, lang: string): Promise<void>;
     isDocumentInWorkspace(documentUri: string, includeDepds?: boolean): boolean;

@@ -39,7 +39,7 @@ class Printer {
     }
     emitNode(node) {
         switch (node.kind) {
-            case 135 /* FunctionDeclaration */:
+            case 138 /* FunctionDeclaration */:
                 {
                     const func = node;
                     if (func.modifiers && func.modifiers.length > 0) {
@@ -62,7 +62,7 @@ class Printer {
                     this.newLine();
                     break;
                 }
-            case 133 /* StructDeclaration */:
+            case 136 /* StructDeclaration */:
                 {
                     const struct = node;
                     this.write('struct ');
@@ -76,8 +76,8 @@ class Printer {
                     this.newLine();
                     break;
                 }
-            case 134 /* VariableDeclaration */:
-            case 137 /* PropertyDeclaration */:
+            case 137 /* VariableDeclaration */:
+            case 140 /* PropertyDeclaration */:
                 {
                     const variable = node;
                     if (variable.modifiers && variable.modifiers.length > 0) {
@@ -87,7 +87,7 @@ class Printer {
                     this.emitNode(variable.type);
                     this.write(' ');
                     this.emitNode(variable.name);
-                    if (variable.kind === 134 /* VariableDeclaration */ && variable.initializer) {
+                    if (variable.kind === 137 /* VariableDeclaration */ && variable.initializer) {
                         this.whitespace(' ');
                         this.write('=');
                         this.whitespace(' ');
@@ -96,7 +96,7 @@ class Printer {
                     this.write(';');
                     break;
                 }
-            case 136 /* ParameterDeclaration */:
+            case 139 /* ParameterDeclaration */:
                 {
                     const param = node;
                     if (param.modifiers && param.modifiers.length > 0) {
@@ -108,7 +108,7 @@ class Printer {
                     this.emitNode(param.name);
                     break;
                 }
-            case 138 /* TypedefDeclaration */:
+            case 141 /* TypedefDeclaration */:
                 {
                     const typedef = node;
                     this.write('typedef ');
@@ -118,7 +118,7 @@ class Printer {
                     this.write(';');
                     break;
                 }
-            case 107 /* Identifier */:
+            case 110 /* Identifier */:
                 {
                     const identifier = node;
                     this.write(identifier.name);
@@ -131,7 +131,7 @@ class Printer {
                     this.write(literal.text);
                     break;
                 }
-            case 111 /* ArrayType */:
+            case 114 /* ArrayType */:
                 {
                     const type = node;
                     this.emitNode(type.elementType);
@@ -140,7 +140,7 @@ class Printer {
                     this.write(']');
                     break;
                 }
-            case 110 /* MappedType */:
+            case 113 /* MappedType */:
                 {
                     const type = node;
                     this.emitNode(type.returnType);
@@ -149,7 +149,7 @@ class Printer {
                     this.write('>');
                     break;
                 }
-            case 118 /* BinaryExpression */:
+            case 121 /* BinaryExpression */:
                 {
                     const expr = node;
                     this.emitNode(expr.left);
@@ -159,21 +159,21 @@ class Printer {
                     this.emitNode(expr.right);
                     break;
                 }
-            case 116 /* PrefixUnaryExpression */:
+            case 119 /* PrefixUnaryExpression */:
                 {
                     const expr = node;
                     this.emitNode(expr.operator);
                     this.emitNode(expr.operand);
                     break;
                 }
-            case 117 /* PostfixUnaryExpression */:
+            case 120 /* PostfixUnaryExpression */:
                 {
                     const expr = node;
                     this.emitNode(expr.operand);
                     this.emitNode(expr.operator);
                     break;
                 }
-            case 120 /* ParenthesizedExpression */:
+            case 123 /* ParenthesizedExpression */:
                 {
                     const expr = node;
                     this.write('(');
@@ -181,7 +181,7 @@ class Printer {
                     this.write(')');
                     break;
                 }
-            case 115 /* CallExpression */:
+            case 118 /* CallExpression */:
                 {
                     const expr = node;
                     this.emitNode(expr.expression);
@@ -190,7 +190,7 @@ class Printer {
                     this.write(')');
                     break;
                 }
-            case 113 /* ElementAccessExpression */:
+            case 116 /* ElementAccessExpression */:
                 {
                     const expr = node;
                     this.emitNode(expr.expression);
@@ -199,7 +199,7 @@ class Printer {
                     this.write(']');
                     break;
                 }
-            case 114 /* PropertyAccessExpression */:
+            case 117 /* PropertyAccessExpression */:
                 {
                     const expr = node;
                     this.emitNode(expr.expression);

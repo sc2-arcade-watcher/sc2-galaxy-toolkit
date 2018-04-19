@@ -79,7 +79,7 @@ class S2WorkspaceMetadata {
                     const presetValue = presetRef.resolve();
                     this.presetValueParentMap.set(presetValue.link(), el);
                     if (el.flags & 128 /* PresetCustom */) {
-                        if (presetValue.value.match(elementValidCharsRE)) {
+                        if (presetValue.value.match(elementValidCharsRE) && !this.symbolMap.has(presetValue.value)) {
                             this.symbolMap.set(presetValue.value, presetValue);
                         }
                     }
@@ -183,10 +183,10 @@ class S2WorkspaceMetadata {
     }
     getElementTypeOfNode(node) {
         // if (node.kind !== gt.SyntaxKind.StringLiteral) return null;
-        if (node.parent.kind !== 115 /* CallExpression */)
+        if (node.parent.kind !== 118 /* CallExpression */)
             return null;
         const callExpr = node.parent;
-        if (callExpr.expression.kind !== 107 /* Identifier */)
+        if (callExpr.expression.kind !== 110 /* Identifier */)
             return null;
         const el = this.findElementByName(callExpr.expression.name);
         if (!el)

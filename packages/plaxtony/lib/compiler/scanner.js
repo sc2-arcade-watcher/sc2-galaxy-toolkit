@@ -10,56 +10,60 @@ const textToTokenTable = new Map([
     ["break", 54 /* BreakKeyword */],
     ["continue", 55 /* ContinueKeyword */],
     ["return", 56 /* ReturnKeyword */],
-    ["do", 57 /* DoKeyword */],
-    ["for", 58 /* ForKeyword */],
-    ["while", 59 /* WhileKeyword */],
-    ["if", 60 /* IfKeyword */],
-    ["else", 61 /* ElseKeyword */],
-    ["true", 62 /* TrueKeyword */],
-    ["false", 63 /* FalseKeyword */],
-    ["null", 64 /* NullKeyword */],
-    ["typedef", 65 /* TypedefKeyword */],
-    ["abilcmd", 72 /* AbilcmdKeyword */],
-    ["actor", 73 /* ActorKeyword */],
-    ["actorscope", 74 /* ActorscopeKeyword */],
-    ["aifilter", 75 /* AifilterKeyword */],
-    ["bank", 76 /* BankKeyword */],
-    ["bool", 66 /* BoolKeyword */],
-    ["bitmask", 77 /* BitmaskKeyword */],
-    ["byte", 67 /* ByteKeyword */],
-    ["camerainfo", 78 /* CamerainfoKeyword */],
-    ["char", 68 /* CharKeyword */],
-    ["color", 79 /* ColorKeyword */],
-    ["doodad", 80 /* DoodadKeyword */],
-    ["fixed", 70 /* FixedKeyword */],
-    ["handle", 81 /* HandleKeyword */],
-    ["generichandle", 82 /* GenerichandleKeyword */],
-    ["effecthistory", 83 /* EffecthistoryKeyword */],
-    ["int", 69 /* IntKeyword */],
-    ["marker", 84 /* MarkerKeyword */],
-    ["order", 85 /* OrderKeyword */],
-    ["playergroup", 86 /* PlayergroupKeyword */],
-    ["point", 87 /* PointKeyword */],
-    ["region", 88 /* RegionKeyword */],
-    ["revealer", 89 /* RevealerKeyword */],
-    ["sound", 90 /* SoundKeyword */],
-    ["soundlink", 91 /* SoundlinkKeyword */],
-    ["string", 71 /* StringKeyword */],
-    ["text", 92 /* TextKeyword */],
-    ["timer", 93 /* TimerKeyword */],
-    ["transmissionsource", 94 /* TransmissionsourceKeyword */],
-    ["trigger", 95 /* TriggerKeyword */],
-    ["unit", 96 /* UnitKeyword */],
-    ["unitfilter", 97 /* UnitfilterKeyword */],
-    ["unitgroup", 98 /* UnitgroupKeyword */],
-    ["unitref", 99 /* UnitrefKeyword */],
-    ["void", 100 /* VoidKeyword */],
-    ["wave", 101 /* WaveKeyword */],
-    ["waveinfo", 102 /* WaveinfoKeyword */],
-    ["wavetarget", 103 /* WavetargetKeyword */],
-    ["arrayref", 104 /* ArrayrefKeyword */],
-    ["structref", 105 /* StructrefKeyword */],
-    ["funcref", 106 /* FuncrefKeyword */],
+    ["switch", 57 /* SwitchKeyword */],
+    // ["case", SyntaxKind.CaseKeyword],
+    ["default", 58 /* DefaultKeyword */],
+    ["new", 59 /* NewKeyword */],
+    ["do", 60 /* DoKeyword */],
+    ["for", 61 /* ForKeyword */],
+    ["while", 62 /* WhileKeyword */],
+    ["if", 63 /* IfKeyword */],
+    ["else", 64 /* ElseKeyword */],
+    ["true", 65 /* TrueKeyword */],
+    ["false", 66 /* FalseKeyword */],
+    ["null", 67 /* NullKeyword */],
+    ["typedef", 68 /* TypedefKeyword */],
+    ["abilcmd", 75 /* AbilcmdKeyword */],
+    ["actor", 76 /* ActorKeyword */],
+    ["actorscope", 77 /* ActorscopeKeyword */],
+    ["aifilter", 78 /* AifilterKeyword */],
+    ["bank", 79 /* BankKeyword */],
+    ["bool", 69 /* BoolKeyword */],
+    ["bitmask", 80 /* BitmaskKeyword */],
+    ["byte", 70 /* ByteKeyword */],
+    ["camerainfo", 81 /* CamerainfoKeyword */],
+    ["char", 71 /* CharKeyword */],
+    ["color", 82 /* ColorKeyword */],
+    ["doodad", 83 /* DoodadKeyword */],
+    ["fixed", 73 /* FixedKeyword */],
+    ["handle", 84 /* HandleKeyword */],
+    ["generichandle", 85 /* GenerichandleKeyword */],
+    ["effecthistory", 86 /* EffecthistoryKeyword */],
+    ["int", 72 /* IntKeyword */],
+    ["marker", 87 /* MarkerKeyword */],
+    ["order", 88 /* OrderKeyword */],
+    ["playergroup", 89 /* PlayergroupKeyword */],
+    ["point", 90 /* PointKeyword */],
+    ["region", 91 /* RegionKeyword */],
+    ["revealer", 92 /* RevealerKeyword */],
+    ["sound", 93 /* SoundKeyword */],
+    ["soundlink", 94 /* SoundlinkKeyword */],
+    ["string", 74 /* StringKeyword */],
+    ["text", 95 /* TextKeyword */],
+    ["timer", 96 /* TimerKeyword */],
+    ["transmissionsource", 97 /* TransmissionsourceKeyword */],
+    ["trigger", 98 /* TriggerKeyword */],
+    ["unit", 99 /* UnitKeyword */],
+    ["unitfilter", 100 /* UnitfilterKeyword */],
+    ["unitgroup", 101 /* UnitgroupKeyword */],
+    ["unitref", 102 /* UnitrefKeyword */],
+    ["void", 103 /* VoidKeyword */],
+    ["wave", 104 /* WaveKeyword */],
+    ["waveinfo", 105 /* WaveinfoKeyword */],
+    ["wavetarget", 106 /* WavetargetKeyword */],
+    ["arrayref", 107 /* ArrayrefKeyword */],
+    ["structref", 108 /* StructrefKeyword */],
+    ["funcref", 109 /* FuncrefKeyword */],
     ["{", 3 /* OpenBraceToken */],
     ["}", 4 /* CloseBraceToken */],
     ["(", 5 /* OpenParenToken */],
@@ -270,6 +274,7 @@ class Scanner {
             case 10 /* lineFeed */:
             case 8232 /* lineSeparator */:
             case 8233 /* paragraphSeparator */:
+                this.error('Multiline strings not supported');
                 return "";
             default:
                 return String.fromCharCode(ch);
@@ -379,7 +384,7 @@ class Scanner {
                 return token;
             }
         }
-        return 107 /* Identifier */;
+        return 110 /* Identifier */;
     }
     setText(text) {
         this.text = text;
@@ -395,7 +400,7 @@ class Scanner {
             this.tokenPos = this.pos;
             this.tokenValue = null;
             if (this.pos >= this.end) {
-                return 108 /* EndOfFileToken */;
+                return 111 /* EndOfFileToken */;
             }
             let ch = this.text.charCodeAt(this.pos);
             switch (ch) {

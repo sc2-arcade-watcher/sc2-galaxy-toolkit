@@ -45,10 +45,10 @@ class CompletionsProvider extends provider_1.AbstractProvider {
                 }
             }
             if (!paramElement) {
-                if (param.type.kind === 69 /* IntKeyword */) {
+                if (param.type.kind === 72 /* IntKeyword */) {
                     args.push('0');
                 }
-                else if (param.type.kind === 70 /* FixedKeyword */) {
+                else if (param.type.kind === 73 /* FixedKeyword */) {
                     args.push('0.0');
                 }
                 else {
@@ -93,20 +93,20 @@ class CompletionsProvider extends provider_1.AbstractProvider {
             data: {},
         };
         switch (node.kind) {
-            case 133 /* StructDeclaration */:
+            case 136 /* StructDeclaration */:
                 item.kind = lsp.CompletionItemKind.Class;
                 break;
-            case 135 /* FunctionDeclaration */:
+            case 138 /* FunctionDeclaration */:
                 item.kind = lsp.CompletionItemKind.Function;
                 break;
-            case 134 /* VariableDeclaration */:
-            case 136 /* ParameterDeclaration */:
+            case 137 /* VariableDeclaration */:
+            case 139 /* ParameterDeclaration */:
                 item.kind = lsp.CompletionItemKind.Variable;
                 break;
-            case 137 /* PropertyDeclaration */:
+            case 140 /* PropertyDeclaration */:
                 item.kind = lsp.CompletionItemKind.Property;
                 break;
-            case 138 /* TypedefDeclaration */:
+            case 141 /* TypedefDeclaration */:
                 item.kind = lsp.CompletionItemKind.Interface;
                 break;
             default:
@@ -134,16 +134,16 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         let completions = [];
         for (const document of this.store.documents.values()) {
             for (const [name, symbol] of document.symbol.members) {
-                if (symbol.declarations[0].kind !== 135 /* FunctionDeclaration */)
+                if (symbol.declarations[0].kind !== 138 /* FunctionDeclaration */)
                     continue;
                 const funcDecl = symbol.declarations[0];
-                if (funcDecl.type.kind !== 66 /* BoolKeyword */)
+                if (funcDecl.type.kind !== 69 /* BoolKeyword */)
                     continue;
                 if (funcDecl.parameters.length !== 2)
                     continue;
-                if (funcDecl.parameters[0].type.kind !== 66 /* BoolKeyword */)
+                if (funcDecl.parameters[0].type.kind !== 69 /* BoolKeyword */)
                     continue;
-                if (funcDecl.parameters[1].type.kind !== 66 /* BoolKeyword */)
+                if (funcDecl.parameters[1].type.kind !== 69 /* BoolKeyword */)
                     continue;
                 const item = this.buildFromSymbolDecl(symbol);
                 item.data.dontExpand = true;
@@ -183,7 +183,7 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         // query
         let query = null;
         const processedSymbols = new Map();
-        if (currentToken && currentToken.pos <= position && currentToken.end >= position && currentToken.kind === 107 /* Identifier */) {
+        if (currentToken && currentToken.pos <= position && currentToken.end >= position && currentToken.kind === 110 /* Identifier */) {
             const offset = position -= currentToken.pos;
             query = currentToken.name.substr(0, offset);
         }
@@ -191,8 +191,8 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         if (currentToken && currentToken.kind === 2 /* StringLiteral */) {
             const callExpr = currentToken.parent;
             // trigger handlers
-            if (callExpr.kind === 115 /* CallExpression */ &&
-                callExpr.expression.kind === 107 /* Identifier */ &&
+            if (callExpr.kind === 118 /* CallExpression */ &&
+                callExpr.expression.kind === 110 /* Identifier */ &&
                 (callExpr.expression).name === "TriggerCreate") {
                 return this.provideTriggerHandlers();
             }
@@ -226,8 +226,8 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         }
         // properties
         if (currentToken) {
-            if ((currentToken.kind === 9 /* DotToken */ || currentToken.kind === 107 /* Identifier */) &&
-                (currentToken.parent.kind === 114 /* PropertyAccessExpression */ && currentToken.parent.expression !== currentToken)) {
+            if ((currentToken.kind === 9 /* DotToken */ || currentToken.kind === 110 /* Identifier */) &&
+                (currentToken.parent.kind === 117 /* PropertyAccessExpression */ && currentToken.parent.expression !== currentToken)) {
                 const checker = new checker_1.TypeChecker(this.store);
                 currentToken = currentToken.parent.expression;
                 const type = checker.getTypeOfNode(currentToken, true);
@@ -239,7 +239,7 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         // local variables
         if (currentToken) {
             const currentContext = utils_1.findAncestor(currentToken, (element) => {
-                return element.kind === 135 /* FunctionDeclaration */;
+                return element.kind === 138 /* FunctionDeclaration */;
             });
             if (currentContext) {
                 completions = completions.concat(this.buildFromSymbolMembers(currentContext.symbol, query));
@@ -261,7 +261,7 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         //     }
         // }
         // keywords
-        for (let i = 49 /* FirstKeyword */; i <= 106 /* LastKeyword */; i++) {
+        for (let i = 49 /* FirstKeyword */; i <= 109 /* LastKeyword */; i++) {
             const name = scanner_1.tokenToString(i);
             if (!query || utils_2.fuzzysearch(query, name)) {
                 completions.push({
@@ -273,6 +273,8 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         let count = 0;
         outer: for (const document of this.store.documents.values()) {
             for (const [name, symbol] of document.symbol.members) {
+                if ((symbol.flags & 1024 /* Static */) && document.fileName !== uri)
+                    continue;
                 if (processedSymbols.has(name))
                     continue;
                 if (!query || utils_2.fuzzysearch(query, name)) {
@@ -317,7 +319,7 @@ class CompletionsProvider extends provider_1.AbstractProvider {
             const decl = symbol.declarations[0];
             let funcArgs = [];
             // TODO: support funcrefs expansion
-            if (decl.kind === 135 /* FunctionDeclaration */ && this.config.functionExpand !== 1 /* Parenthesis */) {
+            if (decl.kind === 138 /* FunctionDeclaration */ && this.config.functionExpand !== 1 /* Parenthesis */) {
                 funcArgs = this.expandFunctionArguments(decl);
             }
             if (funcArgs) {
@@ -336,14 +338,14 @@ class CompletionsProvider extends provider_1.AbstractProvider {
             completion.documentation = s2meta_1.getDocumentationOfSymbol(this.store, symbol);
             let node = symbol.declarations[0];
             switch (node.kind) {
-                case 135 /* FunctionDeclaration */:
+                case 138 /* FunctionDeclaration */:
                     node = Object.create(node);
                     node.body = null;
                 // pass through
-                case 134 /* VariableDeclaration */:
-                case 136 /* ParameterDeclaration */:
-                case 137 /* PropertyDeclaration */:
-                case 138 /* TypedefDeclaration */:
+                case 137 /* VariableDeclaration */:
+                case 139 /* ParameterDeclaration */:
+                case 140 /* PropertyDeclaration */:
+                case 141 /* TypedefDeclaration */:
                     completion.detail = this.printer.printNode(node);
                     break;
             }

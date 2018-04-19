@@ -40,15 +40,15 @@ function getNodeRange(node) {
 }
 function translateNodeKind(node) {
     switch (node.kind) {
-        case 134 /* VariableDeclaration */:
+        case 137 /* VariableDeclaration */:
             const variable = node;
             const isConstant = variable.modifiers.some((value) => {
                 return value.kind === 52 /* ConstKeyword */;
             });
             return isConstant ? lsp.SymbolKind.Constant : lsp.SymbolKind.Variable;
-        case 135 /* FunctionDeclaration */:
+        case 138 /* FunctionDeclaration */:
             return lsp.SymbolKind.Function;
-        case 133 /* StructDeclaration */:
+        case 136 /* StructDeclaration */:
             return lsp.SymbolKind.Class;
         default:
             return lsp.SymbolKind.Field;
@@ -59,7 +59,7 @@ function translateDeclaratons(origDeclarations) {
     let kind;
     for (let node of origDeclarations) {
         const sourceFile = utils_1.findAncestor(node, (element) => {
-            return element.kind === 121 /* SourceFile */;
+            return element.kind === 124 /* SourceFile */;
         });
         symbols.push({
             kind: translateNodeKind(node),

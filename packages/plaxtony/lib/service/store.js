@@ -138,6 +138,14 @@ class Store {
         binder_1.unbindSourceFile(currSorceFile, this);
         this.documents.delete(documentUri);
     }
+    getFirstMatchingDocument(partialname) {
+        for (const [fullname, sourceFile] of this.documents.entries()) {
+            if (fullname.endsWith(partialname)) {
+                return sourceFile;
+            }
+        }
+        return null;
+    }
     updateDocument(document, check = false) {
         if (this.documents.has(document.uri)) {
             const currSorceFile = this.documents.get(document.uri);

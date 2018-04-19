@@ -150,7 +150,7 @@ class Parser {
         return node;
     }
     isListTerminator(kind) {
-        if (this.token() === 108 /* EndOfFileToken */) {
+        if (this.token() === 111 /* EndOfFileToken */) {
             // Being at the end of the file ends all lists.
             return true;
         }
@@ -267,11 +267,11 @@ class Parser {
         while (this.token() === 52 /* ConstKeyword */ || this.token() === 51 /* StaticKeyword */) {
             this.nextToken();
         }
-        if (!utils_1.isKeywordTypeKind(this.token()) && this.token() !== 107 /* Identifier */) {
+        if (!utils_1.isKeywordTypeKind(this.token()) && this.token() !== 110 /* Identifier */) {
             return false;
         }
         this.parseTypeDefinition();
-        if (this.token() !== 107 /* Identifier */) {
+        if (this.token() !== 110 /* Identifier */) {
             return false;
         }
         this.nextToken();
@@ -284,11 +284,11 @@ class Parser {
         while (this.token() === 53 /* NativeKeyword */ || this.token() === 51 /* StaticKeyword */) {
             this.nextToken();
         }
-        if (!utils_1.isKeywordTypeKind(this.token()) && this.token() !== 107 /* Identifier */) {
+        if (!utils_1.isKeywordTypeKind(this.token()) && this.token() !== 110 /* Identifier */) {
             return false;
         }
         this.parseTypeDefinition();
-        if (this.token() !== 107 /* Identifier */) {
+        if (this.token() !== 110 /* Identifier */) {
             return false;
         }
         this.nextToken();
@@ -299,7 +299,7 @@ class Parser {
     }
     isParameter() {
         this.parseTypeDefinition();
-        if (this.token() !== 107 /* Identifier */) {
+        if (this.token() !== 110 /* Identifier */) {
             return false;
         }
         return true;
@@ -324,7 +324,7 @@ class Parser {
                 if (this.isBinaryOperator()) {
                     return true;
                 }
-                return this.token() === 107 /* Identifier */;
+                return this.token() === 110 /* Identifier */;
         }
     }
     isStartOfStatement() {
@@ -332,10 +332,10 @@ class Parser {
             case 10 /* SemicolonToken */:
             case 3 /* OpenBraceToken */:
             case 50 /* StructKeyword */:
-            case 60 /* IfKeyword */:
-            case 57 /* DoKeyword */:
-            case 59 /* WhileKeyword */:
-            case 58 /* ForKeyword */:
+            case 63 /* IfKeyword */:
+            case 60 /* DoKeyword */:
+            case 62 /* WhileKeyword */:
+            case 61 /* ForKeyword */:
             case 55 /* ContinueKeyword */:
             case 54 /* BreakKeyword */:
             case 56 /* ReturnKeyword */:
@@ -359,7 +359,7 @@ class Parser {
             case 10 /* SemicolonToken */:
             case 50 /* StructKeyword */:
             case 49 /* IncludeKeyword */:
-            case 65 /* TypedefKeyword */:
+            case 68 /* TypedefKeyword */:
                 return true;
         }
         if (this.isStartOfVariableDeclaration() || this.isStartOfFunctionDeclaration()) {
@@ -368,7 +368,7 @@ class Parser {
         return false;
     }
     isStartOfTypeDefinition() {
-        return utils_1.isKeywordTypeKind(this.token()) || this.token() === 107 /* Identifier */;
+        return utils_1.isKeywordTypeKind(this.token()) || this.token() === 110 /* Identifier */;
     }
     isStartOfParameter() {
         return this.lookAhead(this.isParameter.bind(this));
@@ -385,21 +385,21 @@ class Parser {
         return this.finishNode(node);
     }
     parseInclude() {
-        const node = this.createNode(129 /* IncludeStatement */);
+        const node = this.createNode(132 /* IncludeStatement */);
         this.parseExpected(49 /* IncludeKeyword */);
         node.path = this.parseLiteral(2 /* StringLiteral */);
         return this.finishNode(node);
     }
     parseIdentifier(diagnosticMessage) {
-        const identifier = this.createNode(107 /* Identifier */);
-        this.parseExpected(107 /* Identifier */, diagnosticMessage, false);
+        const identifier = this.createNode(110 /* Identifier */);
+        this.parseExpected(110 /* Identifier */, diagnosticMessage, false);
         identifier.name = this.scanner.getTokenValue() || '';
         this.nextToken();
         return this.finishNode(identifier);
     }
     parseTypeDefinition() {
         let baseType;
-        if (this.token() === 107 /* Identifier */) {
+        if (this.token() === 110 /* Identifier */) {
             baseType = this.parseIdentifier();
         }
         else if (utils_1.isKeywordTypeKind(this.token())) {
@@ -407,18 +407,18 @@ class Parser {
         }
         else {
             this.parseErrorAtCurrentToken('expected identifier or keyword');
-            baseType = this.createMissingNode(107 /* Identifier */);
+            baseType = this.createMissingNode(110 /* Identifier */);
         }
         if (utils_1.isReferenceKeywordKind(baseType.kind)) {
             if (this.token() === 12 /* LessThanToken */) {
-                const mappedType = this.createNode(110 /* MappedType */, baseType.pos);
+                const mappedType = this.createNode(113 /* MappedType */, baseType.pos);
                 mappedType.returnType = baseType;
                 mappedType.typeArguments = this.parseBracketedList(4 /* TypeArguments */, this.parseTypeDefinition.bind(this), 12 /* LessThanToken */, 13 /* GreaterThanToken */);
                 baseType = this.finishNode(mappedType);
             }
         }
         while (this.token() === 7 /* OpenBracketToken */) {
-            let arrayType = this.createNode(111 /* ArrayType */, baseType.pos);
+            let arrayType = this.createNode(114 /* ArrayType */, baseType.pos);
             this.parseExpected(7 /* OpenBracketToken */);
             arrayType.size = this.parseExpression();
             arrayType.elementType = baseType;
@@ -428,20 +428,20 @@ class Parser {
         return baseType;
     }
     parseParameter() {
-        const param = this.createNode(136 /* ParameterDeclaration */);
+        const param = this.createNode(139 /* ParameterDeclaration */);
         param.type = this.parseTypeDefinition();
         param.name = this.parseIdentifier();
         return this.finishNode(param);
     }
     parsePropertyDeclaration() {
-        const property = this.createNode(137 /* PropertyDeclaration */);
+        const property = this.createNode(140 /* PropertyDeclaration */);
         property.type = this.parseTypeDefinition();
         property.name = this.parseIdentifier();
         this.parseExpected(10 /* SemicolonToken */);
         return this.finishNode(property);
     }
     parseStructDeclaration() {
-        const node = this.createNode(133 /* StructDeclaration */);
+        const node = this.createNode(136 /* StructDeclaration */);
         this.parseExpected(50 /* StructKeyword */);
         node.name = this.parseIdentifier();
         this.parseExpected(3 /* OpenBraceToken */);
@@ -459,7 +459,7 @@ class Parser {
         return mods;
     }
     parseFunctionDeclaration() {
-        const func = this.createNode(135 /* FunctionDeclaration */);
+        const func = this.createNode(138 /* FunctionDeclaration */);
         func.modifiers = this.parseModifiers();
         func.type = this.parseTypeDefinition();
         func.name = this.parseIdentifier();
@@ -473,7 +473,7 @@ class Parser {
         return this.finishNode(func);
     }
     parseVariableDeclaration() {
-        const variable = this.createNode(134 /* VariableDeclaration */);
+        const variable = this.createNode(137 /* VariableDeclaration */);
         variable.modifiers = this.parseModifiers();
         variable.type = this.parseTypeDefinition();
         variable.name = this.parseIdentifier();
@@ -485,11 +485,11 @@ class Parser {
         return this.finishNode(variable);
     }
     parseBlock(allowVarDeclarations = false) {
-        const node = this.createNode(122 /* Block */);
+        const node = this.createNode(125 /* Block */);
         if (this.parseExpected(3 /* OpenBraceToken */)) {
             node.statements = this.parseList(1 /* BlockStatements */, () => {
                 const child = this.parseStatement();
-                if (child.kind === 134 /* VariableDeclaration */) {
+                if (child.kind === 137 /* VariableDeclaration */) {
                     if (!allowVarDeclarations) {
                         this.parseErrorAtPosition(child.pos, child.end - child.pos, 'Local variables must be declared at the begining of function block');
                     }
@@ -503,7 +503,7 @@ class Parser {
             return this.finishNode(node);
         }
         else {
-            return this.createMissingNode(122 /* Block */);
+            return this.createMissingNode(125 /* Block */);
         }
     }
     isUpdateExpression() {
@@ -521,20 +521,20 @@ class Parser {
     }
     isStartOfLeftHandSideExpression() {
         switch (this.token()) {
-            case 64 /* NullKeyword */:
-            case 62 /* TrueKeyword */:
-            case 63 /* FalseKeyword */:
+            case 67 /* NullKeyword */:
+            case 65 /* TrueKeyword */:
+            case 66 /* FalseKeyword */:
             case 1 /* NumericLiteral */:
             case 2 /* StringLiteral */:
             case 5 /* OpenParenToken */:
-            case 107 /* Identifier */:
+            case 110 /* Identifier */:
                 return true;
             default:
                 return false;
         }
     }
     makeBinaryExpression(left, operatorToken, right) {
-        const node = this.createNode(118 /* BinaryExpression */, left.pos);
+        const node = this.createNode(121 /* BinaryExpression */, left.pos);
         node.left = left;
         node.operatorToken = operatorToken;
         node.right = right;
@@ -583,9 +583,9 @@ class Parser {
             case 1 /* NumericLiteral */:
             case 2 /* StringLiteral */:
                 return this.parseLiteral();
-            case 64 /* NullKeyword */:
-            case 62 /* TrueKeyword */:
-            case 63 /* FalseKeyword */:
+            case 67 /* NullKeyword */:
+            case 65 /* TrueKeyword */:
+            case 66 /* FalseKeyword */:
                 return this.parseTokenNode();
             case 5 /* OpenParenToken */:
                 return this.parseParenthesizedExpression();
@@ -593,7 +593,7 @@ class Parser {
         return this.parseIdentifier('expression expected');
     }
     parseParenthesizedExpression() {
-        const node = this.createNode(120 /* ParenthesizedExpression */);
+        const node = this.createNode(123 /* ParenthesizedExpression */);
         this.parseExpected(5 /* OpenParenToken */);
         node.expression = this.parseExpression();
         this.parseExpected(6 /* CloseParenToken */);
@@ -606,7 +606,7 @@ class Parser {
     parseMemberExpressionRest(expression) {
         while (true) {
             if (this.token() === 9 /* DotToken */) {
-                const propertyAccess = this.createNode(114 /* PropertyAccessExpression */, expression.pos);
+                const propertyAccess = this.createNode(117 /* PropertyAccessExpression */, expression.pos);
                 this.parseExpected(9 /* DotToken */);
                 propertyAccess.expression = expression;
                 propertyAccess.name = this.parseIdentifier();
@@ -614,7 +614,7 @@ class Parser {
                 continue;
             }
             if (this.token() === 7 /* OpenBracketToken */) {
-                const indexedAccess = this.createNode(113 /* ElementAccessExpression */, expression.pos);
+                const indexedAccess = this.createNode(116 /* ElementAccessExpression */, expression.pos);
                 this.parseExpected(7 /* OpenBracketToken */);
                 indexedAccess.expression = expression;
                 indexedAccess.argumentExpression = this.parseExpression();
@@ -629,7 +629,7 @@ class Parser {
         while (true) {
             expression = this.parseMemberExpressionRest(expression);
             if (this.token() === 5 /* OpenParenToken */) {
-                const callExpr = this.createNode(115 /* CallExpression */, expression.pos);
+                const callExpr = this.createNode(118 /* CallExpression */, expression.pos);
                 callExpr.expression = expression;
                 this.parseExpected(5 /* OpenParenToken */);
                 callExpr.arguments = this.parseDelimitedList(5 /* ArgumentExpressions */, this.parseAssignmentExpressionOrHigher.bind(this));
@@ -648,7 +648,7 @@ class Parser {
     parseUpdateExpression() {
         if (this.token() === 24 /* PlusPlusToken */ || this.token() === 25 /* MinusMinusToken */) {
             this.parseErrorAtCurrentToken('unary increment operators not allowed');
-            const node = this.createNode(116 /* PrefixUnaryExpression */);
+            const node = this.createNode(119 /* PrefixUnaryExpression */);
             node.operator = this.parseTokenNode();
             node.operand = this.parseLeftHandSideExpressionOrHigher();
             return this.finishNode(node);
@@ -656,13 +656,13 @@ class Parser {
         const expression = this.parseLeftHandSideExpressionOrHigher();
         if (!utils_1.isLeftHandSideExpression(expression)) {
             console.log(expression.kind);
-            console.log(120 /* ParenthesizedExpression */);
-            console.log(expression.kind === 120 /* ParenthesizedExpression */);
+            console.log(123 /* ParenthesizedExpression */);
+            console.log(expression.kind === 123 /* ParenthesizedExpression */);
             throw new Error('isLeftHandSideExpression = false');
         }
         if ((this.token() === 24 /* PlusPlusToken */ || this.token() === 25 /* MinusMinusToken */)) {
             this.parseErrorAtCurrentToken('unary increment operators not supported');
-            const node = this.createNode(117 /* PostfixUnaryExpression */, expression.pos);
+            const node = this.createNode(120 /* PostfixUnaryExpression */, expression.pos);
             node.operand = expression;
             node.operator = this.parseTokenNode();
             return this.finishNode(node);
@@ -670,7 +670,7 @@ class Parser {
         return expression;
     }
     parsePrefixUnaryExpression() {
-        const node = this.createNode(116 /* PrefixUnaryExpression */);
+        const node = this.createNode(119 /* PrefixUnaryExpression */);
         node.operator = this.parseTokenNode();
         node.operand = this.parseSimpleUnaryExpression();
         return this.finishNode(node);
@@ -747,14 +747,14 @@ class Parser {
         return this.parseAssignmentExpressionOrHigher();
     }
     parseTypedefDeclaration() {
-        const node = this.createNode(138 /* TypedefDeclaration */);
-        this.parseExpected(65 /* TypedefKeyword */);
+        const node = this.createNode(141 /* TypedefDeclaration */);
+        this.parseExpected(68 /* TypedefKeyword */);
         node.type = this.parseTypeDefinition();
         node.name = this.parseIdentifier();
         return this.finishNode(node);
     }
     parseReturnStatement() {
-        const node = this.createNode(130 /* ReturnStatement */);
+        const node = this.createNode(133 /* ReturnStatement */);
         this.parseExpected(56 /* ReturnKeyword */);
         if (this.token() !== 10 /* SemicolonToken */) {
             node.expression = this.parseExpression();
@@ -764,19 +764,19 @@ class Parser {
     }
     parseBreakOrContinueStatement(kind) {
         const node = this.createNode(kind);
-        this.parseExpected(kind === 127 /* BreakStatement */ ? 54 /* BreakKeyword */ : 55 /* ContinueKeyword */);
+        this.parseExpected(kind === 130 /* BreakStatement */ ? 54 /* BreakKeyword */ : 55 /* ContinueKeyword */);
         this.parseExpected(10 /* SemicolonToken */);
         return this.finishNode(node);
     }
     parseExpressionStatement() {
-        const node = this.createNode(131 /* ExpressionStatement */);
+        const node = this.createNode(134 /* ExpressionStatement */);
         node.expression = this.parseExpression();
         this.parseExpected(10 /* SemicolonToken */);
         this.finishNode(node);
         switch (node.expression.kind) {
-            case 115 /* CallExpression */:
+            case 118 /* CallExpression */:
                 break;
-            case 118 /* BinaryExpression */:
+            case 121 /* BinaryExpression */:
                 if (utils_1.isAssignmentOperator(node.expression.operatorToken.kind))
                     break;
             // pass through
@@ -786,27 +786,27 @@ class Parser {
         return node;
     }
     parseEmptyStatement() {
-        const node = this.createNode(132 /* EmptyStatement */);
+        const node = this.createNode(135 /* EmptyStatement */);
         this.parseExpected(10 /* SemicolonToken */);
         return this.finishNode(node);
     }
     parseIfStatement() {
-        const node = this.createNode(123 /* IfStatement */);
-        this.parseExpected(60 /* IfKeyword */);
+        const node = this.createNode(126 /* IfStatement */);
+        this.parseExpected(63 /* IfKeyword */);
         this.parseExpected(5 /* OpenParenToken */);
         node.expression = this.parseExpression();
         this.parseExpected(6 /* CloseParenToken */);
         node.thenStatement = this.parseBlock();
-        if (this.parseOptional(61 /* ElseKeyword */)) {
-            node.elseStatement = this.token() === 60 /* IfKeyword */ ? this.parseIfStatement() : this.parseBlock();
+        if (this.parseOptional(64 /* ElseKeyword */)) {
+            node.elseStatement = this.token() === 63 /* IfKeyword */ ? this.parseIfStatement() : this.parseBlock();
         }
         return this.finishNode(node);
     }
     parseDoStatement() {
-        const node = this.createNode(124 /* DoStatement */);
-        this.parseExpected(57 /* DoKeyword */);
+        const node = this.createNode(127 /* DoStatement */);
+        this.parseExpected(60 /* DoKeyword */);
         node.statement = this.parseBlock();
-        this.parseExpected(59 /* WhileKeyword */);
+        this.parseExpected(62 /* WhileKeyword */);
         this.parseExpected(5 /* OpenParenToken */);
         node.expression = this.parseExpression();
         this.parseExpected(6 /* CloseParenToken */);
@@ -814,8 +814,8 @@ class Parser {
         return this.finishNode(node);
     }
     parseWhileStatement() {
-        const node = this.createNode(125 /* WhileStatement */);
-        this.parseExpected(59 /* WhileKeyword */);
+        const node = this.createNode(128 /* WhileStatement */);
+        this.parseExpected(62 /* WhileKeyword */);
         this.parseExpected(5 /* OpenParenToken */);
         node.expression = this.parseExpression();
         this.parseExpected(6 /* CloseParenToken */);
@@ -823,8 +823,8 @@ class Parser {
         return this.finishNode(node);
     }
     parseForStatement() {
-        const node = this.createNode(126 /* ForStatement */);
-        this.parseExpected(58 /* ForKeyword */);
+        const node = this.createNode(129 /* ForStatement */);
+        this.parseExpected(61 /* ForKeyword */);
         this.parseExpected(5 /* OpenParenToken */);
         if (this.token() !== 10 /* SemicolonToken */ && this.token() !== 6 /* CloseParenToken */) {
             node.initializer = this.parseExpression();
@@ -849,67 +849,67 @@ class Parser {
                 return this.parseInclude();
             case 50 /* StructKeyword */:
                 return this.parseStructDeclaration();
-            case 60 /* IfKeyword */:
+            case 63 /* IfKeyword */:
                 return this.parseIfStatement();
-            case 57 /* DoKeyword */:
+            case 60 /* DoKeyword */:
                 return this.parseDoStatement();
-            case 59 /* WhileKeyword */:
+            case 62 /* WhileKeyword */:
                 return this.parseWhileStatement();
-            case 58 /* ForKeyword */:
+            case 61 /* ForKeyword */:
                 return this.parseForStatement();
             case 55 /* ContinueKeyword */:
-                return this.parseBreakOrContinueStatement(128 /* ContinueStatement */);
+                return this.parseBreakOrContinueStatement(131 /* ContinueStatement */);
             case 54 /* BreakKeyword */:
-                return this.parseBreakOrContinueStatement(127 /* BreakStatement */);
+                return this.parseBreakOrContinueStatement(130 /* BreakStatement */);
             case 56 /* ReturnKeyword */:
                 return this.parseReturnStatement();
-            case 65 /* TypedefKeyword */:
+            case 68 /* TypedefKeyword */:
                 return this.parseTypedefDeclaration();
-            case 107 /* Identifier */:
+            case 110 /* Identifier */:
             case 52 /* ConstKeyword */:
             case 51 /* StaticKeyword */:
             case 53 /* NativeKeyword */:
-            case 72 /* AbilcmdKeyword */:
-            case 73 /* ActorKeyword */:
-            case 74 /* ActorscopeKeyword */:
-            case 75 /* AifilterKeyword */:
-            case 76 /* BankKeyword */:
-            case 77 /* BitmaskKeyword */:
-            case 66 /* BoolKeyword */:
-            case 67 /* ByteKeyword */:
-            case 78 /* CamerainfoKeyword */:
-            case 68 /* CharKeyword */:
-            case 79 /* ColorKeyword */:
-            case 80 /* DoodadKeyword */:
-            case 70 /* FixedKeyword */:
-            case 81 /* HandleKeyword */:
-            case 82 /* GenerichandleKeyword */:
-            case 83 /* EffecthistoryKeyword */:
-            case 69 /* IntKeyword */:
-            case 84 /* MarkerKeyword */:
-            case 85 /* OrderKeyword */:
-            case 86 /* PlayergroupKeyword */:
-            case 87 /* PointKeyword */:
-            case 88 /* RegionKeyword */:
-            case 89 /* RevealerKeyword */:
-            case 90 /* SoundKeyword */:
-            case 91 /* SoundlinkKeyword */:
-            case 71 /* StringKeyword */:
-            case 92 /* TextKeyword */:
-            case 93 /* TimerKeyword */:
-            case 94 /* TransmissionsourceKeyword */:
-            case 95 /* TriggerKeyword */:
-            case 96 /* UnitKeyword */:
-            case 97 /* UnitfilterKeyword */:
-            case 98 /* UnitgroupKeyword */:
-            case 99 /* UnitrefKeyword */:
-            case 100 /* VoidKeyword */:
-            case 101 /* WaveKeyword */:
-            case 102 /* WaveinfoKeyword */:
-            case 103 /* WavetargetKeyword */:
-            case 104 /* ArrayrefKeyword */:
-            case 105 /* StructrefKeyword */:
-            case 106 /* FuncrefKeyword */:
+            case 75 /* AbilcmdKeyword */:
+            case 76 /* ActorKeyword */:
+            case 77 /* ActorscopeKeyword */:
+            case 78 /* AifilterKeyword */:
+            case 79 /* BankKeyword */:
+            case 80 /* BitmaskKeyword */:
+            case 69 /* BoolKeyword */:
+            case 70 /* ByteKeyword */:
+            case 81 /* CamerainfoKeyword */:
+            case 71 /* CharKeyword */:
+            case 82 /* ColorKeyword */:
+            case 83 /* DoodadKeyword */:
+            case 73 /* FixedKeyword */:
+            case 84 /* HandleKeyword */:
+            case 85 /* GenerichandleKeyword */:
+            case 86 /* EffecthistoryKeyword */:
+            case 72 /* IntKeyword */:
+            case 87 /* MarkerKeyword */:
+            case 88 /* OrderKeyword */:
+            case 89 /* PlayergroupKeyword */:
+            case 90 /* PointKeyword */:
+            case 91 /* RegionKeyword */:
+            case 92 /* RevealerKeyword */:
+            case 93 /* SoundKeyword */:
+            case 94 /* SoundlinkKeyword */:
+            case 74 /* StringKeyword */:
+            case 95 /* TextKeyword */:
+            case 96 /* TimerKeyword */:
+            case 97 /* TransmissionsourceKeyword */:
+            case 98 /* TriggerKeyword */:
+            case 99 /* UnitKeyword */:
+            case 100 /* UnitfilterKeyword */:
+            case 101 /* UnitgroupKeyword */:
+            case 102 /* UnitrefKeyword */:
+            case 103 /* VoidKeyword */:
+            case 104 /* WaveKeyword */:
+            case 105 /* WaveinfoKeyword */:
+            case 106 /* WavetargetKeyword */:
+            case 107 /* ArrayrefKeyword */:
+            case 108 /* StructrefKeyword */:
+            case 109 /* FuncrefKeyword */:
                 if (this.isStartOfFunctionDeclaration()) {
                     return this.parseFunctionDeclaration();
                 }
@@ -927,7 +927,7 @@ class Parser {
     parseFile(fileName, text) {
         this.scanner.setText(text);
         this.syntaxTokens = [];
-        this.sourceFile = this.createNode(121 /* SourceFile */, 0);
+        this.sourceFile = this.createNode(124 /* SourceFile */, 0);
         this.sourceFile.parseDiagnostics = [];
         this.sourceFile.bindDiagnostics = [];
         this.sourceFile.additionalSyntacticDiagnostics = [];

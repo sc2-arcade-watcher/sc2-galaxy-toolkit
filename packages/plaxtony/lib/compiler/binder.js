@@ -5,30 +5,30 @@ const utils_1 = require("./utils");
 // import { SignatureMeta, TypeChecker } from './checker';
 function getDeclarationName(node) {
     switch (node.kind) {
-        case 121 /* SourceFile */:
+        case 124 /* SourceFile */:
             {
                 return node.fileName;
                 break;
             }
-        case 134 /* VariableDeclaration */:
-        case 135 /* FunctionDeclaration */:
-        case 133 /* StructDeclaration */:
-        case 136 /* ParameterDeclaration */:
-        case 137 /* PropertyDeclaration */:
-        case 138 /* TypedefDeclaration */:
+        case 137 /* VariableDeclaration */:
+        case 138 /* FunctionDeclaration */:
+        case 136 /* StructDeclaration */:
+        case 139 /* ParameterDeclaration */:
+        case 140 /* PropertyDeclaration */:
+        case 141 /* TypedefDeclaration */:
             {
                 return node.name.name;
                 break;
             }
-        case 114 /* PropertyAccessExpression */:
+        case 117 /* PropertyAccessExpression */:
             {
                 return '__prop__' + node.name.name;
                 break;
             }
-        case 115 /* CallExpression */:
+        case 118 /* CallExpression */:
             {
                 const call = node;
-                if (call.expression.kind === 107 /* Identifier */) {
+                if (call.expression.kind === 110 /* Identifier */) {
                     return call.expression.name;
                 }
                 else {
@@ -61,7 +61,7 @@ function declareSymbol(node, store, parentSymbol) {
         nodeSymbol = parentSymbol.members.get(name);
     }
     else {
-        if (parentSymbol && parentSymbol.declarations[0].kind === 121 /* SourceFile */) {
+        if (parentSymbol && parentSymbol.declarations[0].kind === 124 /* SourceFile */) {
             nodeSymbol = store.resolveGlobalSymbol(name);
         }
         if (!nodeSymbol) {
@@ -75,25 +75,35 @@ function declareSymbol(node, store, parentSymbol) {
                 parent: parentSymbol,
             };
             switch (node.kind) {
-                case 136 /* ParameterDeclaration */:
+                case 139 /* ParameterDeclaration */:
                     nodeSymbol.flags = 4 /* FunctionParameter */;
                     break;
-                case 134 /* VariableDeclaration */:
-                    nodeSymbol.flags = ((parentSymbol && parentSymbol.declarations[0].kind == 121 /* SourceFile */) ?
+                case 137 /* VariableDeclaration */:
+                    nodeSymbol.flags = ((parentSymbol && parentSymbol.declarations[0].kind == 124 /* SourceFile */) ?
                         8 /* GlobalVariable */ : 2 /* LocalVariable */);
                     break;
-                case 135 /* FunctionDeclaration */:
+                case 138 /* FunctionDeclaration */:
                     nodeSymbol.flags = 32 /* Function */;
                     break;
-                case 133 /* StructDeclaration */:
+                case 136 /* StructDeclaration */:
                     nodeSymbol.flags = 64 /* Struct */;
                     break;
-                case 137 /* PropertyDeclaration */:
+                case 140 /* PropertyDeclaration */:
                     nodeSymbol.flags = 16 /* Property */;
                     break;
-                case 138 /* TypedefDeclaration */:
+                case 141 /* TypedefDeclaration */:
                     nodeSymbol.flags = 128 /* Typedef */;
                     break;
+            }
+            switch (node.kind) {
+                case 137 /* VariableDeclaration */:
+                case 138 /* FunctionDeclaration */:
+                    {
+                        if (node.modifiers.some((value) => value.kind === 51 /* StaticKeyword */)) {
+                            nodeSymbol.flags |= 1024 /* Static */;
+                        }
+                        break;
+                    }
             }
         }
         if (parentSymbol) {
@@ -102,8 +112,8 @@ function declareSymbol(node, store, parentSymbol) {
     }
     node.symbol = nodeSymbol;
     nodeSymbol.declarations.push(node);
-    if (!node.symbol.valueDeclaration && ((node.kind === 135 /* FunctionDeclaration */ && node.body) ||
-        (node.kind === 134 /* VariableDeclaration */ && node.initializer))) {
+    if (!node.symbol.valueDeclaration && ((node.kind === 138 /* FunctionDeclaration */ && node.body) ||
+        (node.kind === 137 /* VariableDeclaration */ && node.initializer))) {
         node.symbol.valueDeclaration = node;
     }
     return nodeSymbol;
@@ -118,7 +128,7 @@ function bindSourceFile(sourceFile, store) {
         let parentContainer = currentContainer;
         if (utils_1.isDeclarationKind(node.kind)) {
             switch (node.kind) {
-                case 121 /* SourceFile */:
+                case 124 /* SourceFile */:
                     {
                         declareSymbol(node, store, null);
                         break;
