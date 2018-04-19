@@ -204,6 +204,10 @@ export const enum SyntaxKind {
     BreakKeyword,
     ContinueKeyword,
     ReturnKeyword,
+    SwitchKeyword,
+    // CaseKeyword,
+    DefaultKeyword,
+    NewKeyword,
     DoKeyword,
     ForKeyword,
     WhileKeyword,
@@ -317,6 +321,9 @@ export const enum SyntaxKindMarker {
 
     FirstTypeNode = SyntaxKind.TypeReference,
     LastTypeNode = SyntaxKind.ArrayType,
+
+    FirstKeywordType = SyntaxKind.BoolKeyword,
+    LastKeywordType = SyntaxKind.ArrayType,
 };
 
 export type Modifier
@@ -334,6 +341,7 @@ export const enum SymbolFlags {
     Function                = 1 << 5,
     Struct                  = 1 << 6,
     Typedef                 = 1 << 7,
+    Static                  = 1 << 10,
 
     Variable = LocalVariable | FunctionParameter | GlobalVariable,
     FunctionScopedVariable = LocalVariable | FunctionParameter,
