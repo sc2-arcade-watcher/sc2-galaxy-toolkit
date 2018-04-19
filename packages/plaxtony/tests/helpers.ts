@@ -7,7 +7,7 @@ import * as path from 'path';
 
 const fixturesPath = 'tests/fixtures';
 
-function fixtureFilePath(...filepath: string[]) {
+export function fixtureFilePath(...filepath: string[]) {
     return path.join(fixturesPath, ...filepath);
 }
 
@@ -69,6 +69,14 @@ export async function mockupStoreFromS2Workspace(directory: string, modSources: 
         await store.updateS2Workspace(ws, 'enUS');
     }
     return store;
+}
+
+export function mapStoreFilesByBasename(store: Store) {
+    const m = new Map<string, SourceFile>();
+    for (const [fullname, sourceFile] of store.documents.entries()) {
+        m.set(path.basename(fullname), sourceFile);
+    }
+    return m;
 }
 
 function printDiagnostics(diagnostics: Diagnostic[]): string {

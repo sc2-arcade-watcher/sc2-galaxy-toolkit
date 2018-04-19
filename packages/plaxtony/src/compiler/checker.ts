@@ -1170,6 +1170,12 @@ export class TypeChecker {
             this.report(node, `Undeclared symbol: '${node.name}'`);
             return unknownType;
         }
+        if ((symbol.flags & gt.SymbolFlags.Static)) {
+            const sourceFile = <gt.SourceFile>findAncestorByKind(node, gt.SyntaxKind.SourceFile);
+            if (symbol.parent && symbol.parent.declarations[0] !== sourceFile) {
+                this.report(node, `Attempting to reference symbol with static modifier outside the scope of its definition.`);
+            }
+        }
         return this.getTypeOfSymbol(symbol);
     }
 

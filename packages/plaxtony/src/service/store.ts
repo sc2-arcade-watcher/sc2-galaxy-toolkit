@@ -151,6 +151,15 @@ export class Store {
         this.documents.delete(documentUri);
     }
 
+    public getFirstMatchingDocument(partialname: string) {
+        for (const [fullname, sourceFile] of this.documents.entries()) {
+            if (fullname.endsWith(partialname)) {
+                return sourceFile;
+            }
+        }
+        return null;
+    }
+
     public updateDocument(document: lsp.TextDocument, check = false) {
         if (this.documents.has(document.uri)) {
             const currSorceFile = this.documents.get(document.uri);

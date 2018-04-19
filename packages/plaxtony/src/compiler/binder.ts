@@ -107,6 +107,17 @@ export function declareSymbol(node: gt.Declaration, store: Store, parentSymbol?:
                     nodeSymbol.flags = gt.SymbolFlags.Typedef;
                     break;
             }
+
+            switch (node.kind) {
+                case gt.SyntaxKind.VariableDeclaration:
+                case gt.SyntaxKind.FunctionDeclaration:
+                {
+                    if (node.modifiers.some((value) => value.kind === gt.SyntaxKind.StaticKeyword)) {
+                        nodeSymbol.flags |= gt.SymbolFlags.Static;
+                    }
+                    break;
+                }
+            }
         }
 
         if (parentSymbol) {

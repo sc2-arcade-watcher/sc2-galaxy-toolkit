@@ -309,6 +309,7 @@ export class CompletionsProvider extends AbstractProvider {
         let count = 0;
         outer: for (const document of this.store.documents.values()) {
             for (const [name, symbol] of document.symbol.members) {
+                if ((symbol.flags & gt.SymbolFlags.Static) && document.fileName !== uri) continue;
                 if (processedSymbols.has(name)) continue;
                 if (!query || fuzzysearch(query, name)) {
                     processedSymbols.set(name, symbol);
