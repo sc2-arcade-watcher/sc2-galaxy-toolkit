@@ -1,11 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const provider_1 = require("./provider");
-const gt = require("../compiler/types");
 const utils_1 = require("../compiler/utils");
 const utils_2 = require("./utils");
 const checker_1 = require("../compiler/checker");
-const lib_1 = require("vscode-uri/lib");
+const vscode_uri_1 = require("vscode-uri");
 ;
 class ReferencesProvider extends provider_1.AbstractProvider {
     constructor() {
@@ -46,7 +45,7 @@ class ReferencesProvider extends provider_1.AbstractProvider {
         }
         for (const sourceFile of this.store.documents.values()) {
             if ((this.config.currentWorkspaceOnly || currentWorkspaceOnly === true) &&
-                (!this.store.rootPath || !lib_1.default.parse(sourceFile.fileName).fsPath.startsWith(this.store.rootPath)) &&
+                (!this.store.rootPath || !vscode_uri_1.default.parse(sourceFile.fileName).fsPath.startsWith(this.store.rootPath)) &&
                 !this.store.openDocuments.has(sourceFile.fileName)) {
                 continue;
             }

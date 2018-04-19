@@ -8,7 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const gt = require("../compiler/types");
 const trig = require("../sc2mod/trigger");
 const elementNotValidCharsRE = /[^a-zA-Z0-9_]+/g;
 const elementValidCharsRE = /[a-zA-Z]+/g;

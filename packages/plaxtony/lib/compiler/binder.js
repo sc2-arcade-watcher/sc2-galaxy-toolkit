@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const gt = require("./types");
 const utils_1 = require("./utils");
 // import { SignatureMeta, TypeChecker } from './checker';
 function getDeclarationName(node) {

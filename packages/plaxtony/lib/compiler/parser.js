@@ -919,6 +919,7 @@ class Parser {
                 return this.parseExpressionStatement();
             default:
                 return this.parseExpressionStatement();
+            // throw new Error("unexpected: " + getKindName(this.currentToken) + ": " + tokenToString(this.currentToken));
         }
     }
     setText(text) {

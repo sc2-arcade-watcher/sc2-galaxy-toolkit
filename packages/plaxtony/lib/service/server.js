@@ -15,7 +15,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const lsp = require("vscode-languageserver");
-const Types = require("../compiler/types");
 const util = require("util");
 const path = require("path");
 const utils_1 = require("../compiler/utils");

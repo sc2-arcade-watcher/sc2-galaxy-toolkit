@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const gt = require("../compiler/types");
 const utils_1 = require("../compiler/utils");
 function getNodeChildren(node) {
     let children = [];

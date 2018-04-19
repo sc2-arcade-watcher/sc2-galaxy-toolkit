@@ -167,6 +167,9 @@ function isPartOfTypeNode(node) {
                     return node === parent.type;
                 case 138 /* FunctionDeclaration */:
                     return node === parent.type;
+                // TODO:
+                // case gt.SyntaxKind.CallExpression:
+                //     return (<gt.CallExpression>parent).typeArguments && indexOf((<gt.CallExpression>parent).typeArguments, node) >= 0;
             }
     }
     return false;

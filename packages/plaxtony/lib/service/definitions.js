@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const gt = require("../compiler/types");
 const checker_1 = require("../compiler/checker");
 const provider_1 = require("./provider");
 const utils_1 = require("../compiler/utils");

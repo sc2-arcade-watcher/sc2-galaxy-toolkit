@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const gt = require("../compiler/types");
 const checker_1 = require("../compiler/checker");
 const provider_1 = require("./provider");
 const scanner_1 = require("../compiler/scanner");
@@ -9,7 +8,6 @@ const utils_2 = require("./utils");
 const printer_1 = require("../compiler/printer");
 const lsp = require("vscode-languageserver");
 const s2meta_1 = require("./s2meta");
-const trig = require("../sc2mod/trigger");
 var CompletionFunctionExpand;
 (function (CompletionFunctionExpand) {
     CompletionFunctionExpand[CompletionFunctionExpand["None"] = 0] = "None";

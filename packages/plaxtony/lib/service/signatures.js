@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const gt = require("../compiler/types");
 const utils_1 = require("../compiler/utils");
 const printer_1 = require("../compiler/printer");
 const checker_1 = require("../compiler/checker");
@@ -29,6 +28,7 @@ class SignaturesProvider extends provider_1.AbstractProvider {
                     activeParam++;
                 }
             }
+            // offset is before bounds of next param node, yet we got here - we must be in whitespace
             else if (prevArg) {
                 activeParam = index;
                 return true;

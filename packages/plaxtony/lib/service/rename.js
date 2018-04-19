@@ -5,7 +5,7 @@ const lsp = require("vscode-languageserver");
 const checker_1 = require("../compiler/checker");
 const utils_1 = require("./utils");
 const utils_2 = require("../compiler/utils");
-const lib_1 = require("vscode-uri/lib");
+const vscode_uri_1 = require("vscode-uri");
 class RenameProvider extends provider_1.AbstractProvider {
     onRenameRequest(params) {
         const workspaceEdit = {
@@ -26,7 +26,7 @@ class RenameProvider extends provider_1.AbstractProvider {
         }
         for (const decl of symbol.declarations) {
             const declSourceFile = utils_2.getSourceFileOfNode(decl);
-            if ((!this.store.rootPath || !lib_1.default.parse(declSourceFile.fileName).fsPath.startsWith(this.store.rootPath)) &&
+            if ((!this.store.rootPath || !vscode_uri_1.default.parse(declSourceFile.fileName).fsPath.startsWith(this.store.rootPath)) &&
                 !this.store.openDocuments.has(declSourceFile.fileName)) {
                 return new lsp.ResponseError(lsp.ErrorCodes.InvalidRequest, 'Declaration not in workspace');
             }
