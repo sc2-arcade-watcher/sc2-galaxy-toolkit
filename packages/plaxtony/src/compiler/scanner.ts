@@ -320,6 +320,7 @@ export class Scanner {
             case CharacterCodes.lineFeed:
             case CharacterCodes.lineSeparator:
             case CharacterCodes.paragraphSeparator:
+                this.error('Multiline strings not supported');
                 return "";
             default:
                 return String.fromCharCode(ch);
