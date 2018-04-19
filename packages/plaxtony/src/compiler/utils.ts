@@ -19,51 +19,7 @@ export function isModifierKind(token: gt.SyntaxKind): boolean {
 }
 
 export function isKeywordTypeKind(token: gt.SyntaxKind): boolean {
-    switch (token) {
-        case gt.SyntaxKind.AbilcmdKeyword:
-        case gt.SyntaxKind.ActorKeyword:
-        case gt.SyntaxKind.ActorscopeKeyword:
-        case gt.SyntaxKind.AifilterKeyword:
-        case gt.SyntaxKind.BankKeyword:
-        case gt.SyntaxKind.BitmaskKeyword:
-        case gt.SyntaxKind.BoolKeyword:
-        case gt.SyntaxKind.ByteKeyword:
-        case gt.SyntaxKind.CamerainfoKeyword:
-        case gt.SyntaxKind.CharKeyword:
-        case gt.SyntaxKind.ColorKeyword:
-        case gt.SyntaxKind.DoodadKeyword:
-        case gt.SyntaxKind.FixedKeyword:
-        case gt.SyntaxKind.HandleKeyword:
-        case gt.SyntaxKind.GenerichandleKeyword:
-        case gt.SyntaxKind.EffecthistoryKeyword:
-        case gt.SyntaxKind.IntKeyword:
-        case gt.SyntaxKind.MarkerKeyword:
-        case gt.SyntaxKind.OrderKeyword:
-        case gt.SyntaxKind.PlayergroupKeyword:
-        case gt.SyntaxKind.PointKeyword:
-        case gt.SyntaxKind.RegionKeyword:
-        case gt.SyntaxKind.RevealerKeyword:
-        case gt.SyntaxKind.SoundKeyword:
-        case gt.SyntaxKind.SoundlinkKeyword:
-        case gt.SyntaxKind.StringKeyword:
-        case gt.SyntaxKind.TextKeyword:
-        case gt.SyntaxKind.TimerKeyword:
-        case gt.SyntaxKind.TransmissionsourceKeyword:
-        case gt.SyntaxKind.TriggerKeyword:
-        case gt.SyntaxKind.UnitKeyword:
-        case gt.SyntaxKind.UnitfilterKeyword:
-        case gt.SyntaxKind.UnitgroupKeyword:
-        case gt.SyntaxKind.UnitrefKeyword:
-        case gt.SyntaxKind.VoidKeyword:
-        case gt.SyntaxKind.WaveKeyword:
-        case gt.SyntaxKind.WaveinfoKeyword:
-        case gt.SyntaxKind.WavetargetKeyword:
-        case gt.SyntaxKind.ArrayrefKeyword:
-        case gt.SyntaxKind.StructrefKeyword:
-        case gt.SyntaxKind.FuncrefKeyword:
-            return true;
-    }
-    return false;
+    return <number>token >= gt.SyntaxKindMarker.FirstKeywordType && <number>token <= gt.SyntaxKindMarker.LastKeywordType;
 }
 
 export function isComplexTypeKind(token: gt.SyntaxKind): boolean {
