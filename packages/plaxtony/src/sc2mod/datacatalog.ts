@@ -1,4 +1,4 @@
-import * as xml from 'xml2js';
+import * as sax from 'sax';
 import * as path from 'path';
 import { SC2Archive, SC2Workspace } from './archive';
 
@@ -6,7 +6,7 @@ export type CatalogEntryKind = string;
 export type CatalogFileKind = string;
 export type CatalogFileMap = Map<string, CatalogEntry>;
 
-export class CatalogEntry {
+export interface CatalogEntry {
     kind: CatalogEntryKind;
     id: string;
     parent?: string;
@@ -33,9 +33,10 @@ export class CatalogFile {
             return false;
         }
 
-        const reader = new XMLFileReader();
-        await reader.readFromString(await this.archive.readFile(resolvedFiles[0]));
-        this.entries = reader.toCatalog();
+        const parser = new CatalogParser();
+        parser.write(await this.archive.readFile(resolvedFiles[0]));
+        this.entries = parser.toCatalog();
+        parser.close();
         return true;
     }
 }
@@ -73,6 +74,17 @@ export class CatalogStore {
 export class GameCatalogStore {
     catalogs: Map<CatalogFileKind, CatalogStore>;
 
+    private async processDataKind(kind: string, workspace: SC2Workspace) {
+        const catalogStore = new CatalogStore(kind);
+        const p: Promise<boolean>[] = [];
+        for (const archive of workspace.allArchives) {
+            p.push(catalogStore.addArchive(archive));
+        }
+        await Promise.all(p);
+        catalogStore.merge();
+        this.catalogs.set(kind, catalogStore);
+    }
+
     async loadData(workspace: SC2Workspace): Promise<boolean> {
         const kindList: string[] = [];
         const archiveFiles = new Map<string,string[]>();
@@ -92,74 +104,55 @@ export class GameCatalogStore {
             }
         }
 
+        const p: Promise<void>[] = [];
         for (const kind of kindList) {
-            const catalogStore = new CatalogStore(kind);
-            for (const archive of workspace.allArchives) {
-                await catalogStore.addArchive(archive);
-            }
-            catalogStore.merge();
-            this.catalogs.set(kind, catalogStore);
+            p.push(this.processDataKind(kind, workspace));
         }
+        await Promise.all(p);
 
         return true;
     }
 }
 
-export class XMLFileReader {
+const reDataEntry = /^C([A-Za-z0-9]+)$/;
+
+export class CatalogParser extends sax.SAXParser {
     protected catalogMap: CatalogFileMap;
+    protected depth = 0;
 
-    protected parse(xmlEntries: any) {
-        this.catalogMap = new Map<string, CatalogEntry>();
-
-        for (const kind in xmlEntries) {
-            if (!kind.startsWith('C')) continue;
-
-            for (const xmlEntry of xmlEntries[kind]) {
-                const cEntry = new CatalogEntry();
-                cEntry.kind = kind;
-
-                if (xmlEntry.$ && xmlEntry.$.id) {
-                    cEntry.id = xmlEntry.$.id;
-                }
-                else {
-                    cEntry.id = kind;
-                }
-
-                if (xmlEntry.$ && xmlEntry.$.default) {
-                    cEntry.default = xmlEntry.$.default === '1';
-                }
-                else {
-                    cEntry.default = false;
-                }
-                if (xmlEntry.$ && xmlEntry.$.parent) {
-                    cEntry.parent = xmlEntry.$.parent;
-                }
-
-                this.catalogMap.set(cEntry.id, cEntry);
-            }
-        }
-    }
-
-    public readFromString(text: string) {
-        return new Promise<any>((resolve, reject) => {
-            xml.parseString(text, (err, result) => {
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    try {
-                        this.parse(result.Catalog);
-                        resolve();
-                    }
-                    catch (err) {
-                        reject(err);
-                    }
-                }
-            });
+    constructor() {
+        super(true, {
+            position: false,
         });
     }
 
-    public toCatalog(): CatalogFileMap {
+    onready() {
+        this.catalogMap = new Map<string, CatalogEntry>();
+    }
+
+    onend() {
+        this.catalogMap = new Map<string, CatalogEntry>();
+    }
+
+    onopentag(tag: sax.Tag) {
+        if (this.depth === 1 && tag.name.startsWith('C')) {
+            if (tag.attributes['id']) {
+                this.catalogMap.set(tag.attributes['id'], <CatalogEntry>{
+                    kind: tag.name,
+                    id: tag.attributes['id'],
+                    default: tag.attributes['default'] ? true : false,
+                    parent: tag.attributes['parent'] || null,
+                });
+            }
+        }
+        this.depth++;
+    }
+
+    onclosetag(tagName: string) {
+        this.depth--;
+    }
+
+    toCatalog() {
         return this.catalogMap;
     }
 }

@@ -339,8 +339,10 @@ export class SC2Workspace {
     }
 
     public async loadComponents() {
-        await this.trigComponent.load();
-        await this.locComponent.load();
-        await this.catalogComponent.load();
+        const p: Promise<boolean>[] = [];
+        p.push(this.trigComponent.load());
+        p.push(this.locComponent.load());
+        p.push(this.catalogComponent.load());
+        await Promise.all(p);
     }
 }
