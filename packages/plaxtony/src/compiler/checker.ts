@@ -198,40 +198,44 @@ export class ComplexType extends AbstractType implements gt.ComplexType {
         }
     }
 
-    public isAssignableTo(target: AbstractType) {
+    get extendsHandle() {
+        switch (this.kind) {
+            case gt.SyntaxKind.AbilcmdKeyword:
+            case gt.SyntaxKind.ActorKeyword:
+            case gt.SyntaxKind.ActorscopeKeyword:
+            case gt.SyntaxKind.AifilterKeyword:
+            case gt.SyntaxKind.BankKeyword:
+            case gt.SyntaxKind.BitmaskKeyword:
+            case gt.SyntaxKind.CamerainfoKeyword:
+            case gt.SyntaxKind.GenerichandleKeyword:
+            case gt.SyntaxKind.EffecthistoryKeyword:
+            case gt.SyntaxKind.MarkerKeyword:
+            case gt.SyntaxKind.OrderKeyword:
+            case gt.SyntaxKind.PlayergroupKeyword:
+            case gt.SyntaxKind.PointKeyword:
+            case gt.SyntaxKind.RegionKeyword:
+            case gt.SyntaxKind.SoundKeyword:
+            case gt.SyntaxKind.SoundlinkKeyword:
+            case gt.SyntaxKind.TextKeyword:
+            case gt.SyntaxKind.TimerKeyword:
+            case gt.SyntaxKind.TransmissionsourceKeyword:
+            case gt.SyntaxKind.UnitfilterKeyword:
+            case gt.SyntaxKind.UnitgroupKeyword:
+            case gt.SyntaxKind.UnitrefKeyword:
+            case gt.SyntaxKind.WaveinfoKeyword:
+            case gt.SyntaxKind.WavetargetKeyword:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public isAssignableTo(target: AbstractType): boolean {
         if (this === target) return true;
 
         if (target instanceof ComplexType) {
-            const cmpKind = target.kind === gt.SyntaxKind.HandleKeyword ? this.kind : target.kind;
-            switch (cmpKind) {
-                case gt.SyntaxKind.AbilcmdKeyword:
-                case gt.SyntaxKind.ActorKeyword:
-                case gt.SyntaxKind.ActorscopeKeyword:
-                case gt.SyntaxKind.AifilterKeyword:
-                case gt.SyntaxKind.BankKeyword:
-                case gt.SyntaxKind.BitmaskKeyword:
-                case gt.SyntaxKind.CamerainfoKeyword:
-                case gt.SyntaxKind.GenerichandleKeyword:
-                case gt.SyntaxKind.EffecthistoryKeyword:
-                case gt.SyntaxKind.MarkerKeyword:
-                case gt.SyntaxKind.OrderKeyword:
-                case gt.SyntaxKind.PlayergroupKeyword:
-                case gt.SyntaxKind.PointKeyword:
-                case gt.SyntaxKind.RegionKeyword:
-                case gt.SyntaxKind.SoundKeyword:
-                case gt.SyntaxKind.SoundlinkKeyword:
-                case gt.SyntaxKind.TextKeyword:
-                case gt.SyntaxKind.TimerKeyword:
-                case gt.SyntaxKind.TransmissionsourceKeyword:
-                case gt.SyntaxKind.UnitfilterKeyword:
-                case gt.SyntaxKind.UnitgroupKeyword:
-                case gt.SyntaxKind.UnitrefKeyword:
-                case gt.SyntaxKind.WaveinfoKeyword:
-                case gt.SyntaxKind.WavetargetKeyword:
-                    return true;
-                default:
-                    return false;
-            }
+            if (target.kind === gt.SyntaxKind.HandleKeyword) return this.extendsHandle;
+            if (this.kind === gt.SyntaxKind.HandleKeyword) return target.extendsHandle;
         }
 
         // if (target.flags && gt.TypeFlags.Null && this.flags & gt.TypeFlags.Nullable) return true;
