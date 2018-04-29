@@ -6,25 +6,25 @@ const gt = require("./types");
  * For example, this is true for an IfKeyword but not for an IfStatement.
  */
 function isToken(n) {
-    return n.kind >= 1 /* FirstToken */ && n.kind <= 110 /* LastToken */;
+    return n.kind >= 2 /* FirstToken */ && n.kind <= 111 /* LastToken */;
 }
 exports.isToken = isToken;
 function isModifierKind(token) {
     switch (token) {
-        case 52 /* ConstKeyword */:
-        case 51 /* StaticKeyword */:
-        case 53 /* NativeKeyword */:
+        case 53 /* ConstKeyword */:
+        case 52 /* StaticKeyword */:
+        case 54 /* NativeKeyword */:
             return true;
     }
     return false;
 }
 exports.isModifierKind = isModifierKind;
 function isKeywordTypeKind(token) {
-    return token >= 69 /* FirstKeywordType */ && token <= 114 /* LastKeywordType */;
+    return token >= 70 /* FirstKeywordType */ && token <= 115 /* LastKeywordType */;
 }
 exports.isKeywordTypeKind = isKeywordTypeKind;
 function isComplexTypeKind(token) {
-    if (75 /* FirstComplexType */ <= token && 106 /* LastComplexType */ >= token) {
+    if (76 /* FirstComplexType */ <= token && 107 /* LastComplexType */ >= token) {
         return true;
     }
     return false;
@@ -32,50 +32,50 @@ function isComplexTypeKind(token) {
 exports.isComplexTypeKind = isComplexTypeKind;
 function isReferenceKeywordKind(token) {
     switch (token) {
-        case 107 /* ArrayrefKeyword */:
-        case 108 /* StructrefKeyword */:
-        case 109 /* FuncrefKeyword */:
+        case 108 /* ArrayrefKeyword */:
+        case 109 /* StructrefKeyword */:
+        case 110 /* FuncrefKeyword */:
             return true;
     }
     return false;
 }
 exports.isReferenceKeywordKind = isReferenceKeywordKind;
 function isComparisonOperator(token) {
-    return token >= 12 /* LessThanToken */ && token <= 18 /* EqualsGreaterThanToken */;
+    return token >= 13 /* LessThanToken */ && token <= 19 /* EqualsGreaterThanToken */;
 }
 exports.isComparisonOperator = isComparisonOperator;
 function isAssignmentOperator(token) {
-    return token >= 38 /* EqualsToken */ && token <= 48 /* CaretEqualsToken */;
+    return token >= 39 /* EqualsToken */ && token <= 49 /* CaretEqualsToken */;
 }
 exports.isAssignmentOperator = isAssignmentOperator;
 function isLeftHandSideExpressionKind(kind) {
-    return kind === 117 /* PropertyAccessExpression */
-        || kind === 116 /* ElementAccessExpression */
-        || kind === 118 /* CallExpression */
-        || kind === 123 /* ParenthesizedExpression */
-        || kind === 115 /* ArrayLiteralExpression */
-        || kind === 110 /* Identifier */
-        || kind === 1 /* NumericLiteral */
-        || kind === 2 /* StringLiteral */
-        || kind === 66 /* FalseKeyword */
-        || kind === 67 /* NullKeyword */
-        || kind === 65 /* TrueKeyword */;
+    return kind === 118 /* PropertyAccessExpression */
+        || kind === 117 /* ElementAccessExpression */
+        || kind === 119 /* CallExpression */
+        || kind === 124 /* ParenthesizedExpression */
+        || kind === 116 /* ArrayLiteralExpression */
+        || kind === 111 /* Identifier */
+        || kind === 2 /* NumericLiteral */
+        || kind === 3 /* StringLiteral */
+        || kind === 67 /* FalseKeyword */
+        || kind === 68 /* NullKeyword */
+        || kind === 66 /* TrueKeyword */;
 }
 exports.isLeftHandSideExpressionKind = isLeftHandSideExpressionKind;
 function isContainerKind(kind) {
-    return kind === 124 /* SourceFile */
-        || kind === 138 /* FunctionDeclaration */
-        || kind === 136 /* StructDeclaration */;
+    return kind === 125 /* SourceFile */
+        || kind === 139 /* FunctionDeclaration */
+        || kind === 137 /* StructDeclaration */;
 }
 exports.isContainerKind = isContainerKind;
 function isNamedDeclarationKind(kind) {
-    return kind === 124 /* SourceFile */
-        || kind === 137 /* VariableDeclaration */
-        || kind === 138 /* FunctionDeclaration */
-        || kind === 136 /* StructDeclaration */
-        || kind === 140 /* PropertyDeclaration */
-        || kind === 139 /* ParameterDeclaration */
-        || kind === 141 /* TypedefDeclaration */;
+    return kind === 125 /* SourceFile */
+        || kind === 138 /* VariableDeclaration */
+        || kind === 139 /* FunctionDeclaration */
+        || kind === 137 /* StructDeclaration */
+        || kind === 141 /* PropertyDeclaration */
+        || kind === 140 /* ParameterDeclaration */
+        || kind === 142 /* TypedefDeclaration */;
 }
 exports.isNamedDeclarationKind = isNamedDeclarationKind;
 function isDeclarationKind(kind) {
@@ -88,32 +88,32 @@ function isLeftHandSideExpression(node) {
 exports.isLeftHandSideExpression = isLeftHandSideExpression;
 function isPartOfExpression(node) {
     switch (node.kind) {
-        case 67 /* NullKeyword */:
-        case 65 /* TrueKeyword */:
-        case 66 /* FalseKeyword */:
-        case 115 /* ArrayLiteralExpression */:
-        case 117 /* PropertyAccessExpression */:
-        case 116 /* ElementAccessExpression */:
-        case 118 /* CallExpression */:
-        case 122 /* TypeAssertionExpression */:
-        case 123 /* ParenthesizedExpression */:
-        case 119 /* PrefixUnaryExpression */:
-        case 120 /* PostfixUnaryExpression */:
-        case 121 /* BinaryExpression */:
-        case 110 /* Identifier */:
+        case 68 /* NullKeyword */:
+        case 66 /* TrueKeyword */:
+        case 67 /* FalseKeyword */:
+        case 116 /* ArrayLiteralExpression */:
+        case 118 /* PropertyAccessExpression */:
+        case 117 /* ElementAccessExpression */:
+        case 119 /* CallExpression */:
+        case 123 /* TypeAssertionExpression */:
+        case 124 /* ParenthesizedExpression */:
+        case 120 /* PrefixUnaryExpression */:
+        case 121 /* PostfixUnaryExpression */:
+        case 122 /* BinaryExpression */:
+        case 111 /* Identifier */:
             return true;
-        case 1 /* NumericLiteral */:
-        case 2 /* StringLiteral */:
+        case 2 /* NumericLiteral */:
+        case 3 /* StringLiteral */:
             const parent = node.parent;
             switch (parent.kind) {
-                case 137 /* VariableDeclaration */:
-                case 140 /* PropertyDeclaration */:
-                case 134 /* ExpressionStatement */:
-                case 126 /* IfStatement */:
-                case 127 /* DoStatement */:
-                case 128 /* WhileStatement */:
-                case 133 /* ReturnStatement */:
-                case 129 /* ForStatement */:
+                case 138 /* VariableDeclaration */:
+                case 141 /* PropertyDeclaration */:
+                case 135 /* ExpressionStatement */:
+                case 127 /* IfStatement */:
+                case 128 /* DoStatement */:
+                case 129 /* WhileStatement */:
+                case 134 /* ReturnStatement */:
+                case 130 /* ForStatement */:
                     const forStatement = parent;
                     return (forStatement.initializer === node) ||
                         forStatement.condition === node ||
@@ -128,28 +128,28 @@ function isPartOfExpression(node) {
 }
 exports.isPartOfExpression = isPartOfExpression;
 function isPartOfTypeNode(node) {
-    if (112 /* FirstTypeNode */ <= node.kind && node.kind <= 114 /* LastTypeNode */) {
+    if (113 /* FirstTypeNode */ <= node.kind && node.kind <= 115 /* LastTypeNode */) {
         return true;
     }
     switch (node.kind) {
-        case 72 /* IntKeyword */:
-        case 73 /* FixedKeyword */:
-        case 74 /* StringKeyword */:
-        case 69 /* BoolKeyword */:
-        case 103 /* VoidKeyword */:
+        case 73 /* IntKeyword */:
+        case 74 /* FixedKeyword */:
+        case 75 /* StringKeyword */:
+        case 70 /* BoolKeyword */:
+        case 104 /* VoidKeyword */:
             return true;
         // Identifiers and qualified names may be type nodes, depending on their context. Climb
         // above them to find the lowest container
-        case 110 /* Identifier */:
+        case 111 /* Identifier */:
             // If the identifier is the RHS of a qualified name, then it's a type iff its parent is.
-            if (node.parent.kind === 117 /* PropertyAccessExpression */ && node.parent.name === node) {
+            if (node.parent.kind === 118 /* PropertyAccessExpression */ && node.parent.name === node) {
                 node = node.parent;
             }
         // At this point, node is either a qualified name or an identifier
         // Debug.assert(node.kind === gt.SyntaxKind.Identifier || node.kind === gt.SyntaxKind.QualifiedName || node.kind === gt.SyntaxKind.PropertyAccessExpression,
         //     "'node' was expected to be a qualified name, identifier or property access in 'isPartOfTypeNode'.");
         // falls through
-        case 117 /* PropertyAccessExpression */:
+        case 118 /* PropertyAccessExpression */:
             const parent = node.parent;
             // Do not recursively call isPartOfTypeNode on the parent. In the example:
             //
@@ -157,15 +157,15 @@ function isPartOfTypeNode(node) {
             //
             // Calling isPartOfTypeNode would consider the qualified name A.B a type node.
             // Only C and A.B.C are type nodes.
-            if (112 /* FirstTypeNode */ <= parent.kind && parent.kind <= 114 /* LastTypeNode */) {
+            if (113 /* FirstTypeNode */ <= parent.kind && parent.kind <= 115 /* LastTypeNode */) {
                 return true;
             }
             switch (parent.kind) {
-                case 140 /* PropertyDeclaration */:
-                case 139 /* ParameterDeclaration */:
-                case 137 /* VariableDeclaration */:
+                case 141 /* PropertyDeclaration */:
+                case 140 /* ParameterDeclaration */:
+                case 138 /* VariableDeclaration */:
                     return node === parent.type;
-                case 138 /* FunctionDeclaration */:
+                case 139 /* FunctionDeclaration */:
                     return node === parent.type;
                 // TODO:
                 // case gt.SyntaxKind.CallExpression:
@@ -176,7 +176,7 @@ function isPartOfTypeNode(node) {
 }
 exports.isPartOfTypeNode = isPartOfTypeNode;
 function isRightSideOfPropertyAccess(node) {
-    return (node.parent.kind === 117 /* PropertyAccessExpression */ && node.parent.name === node);
+    return (node.parent.kind === 118 /* PropertyAccessExpression */ && node.parent.name === node);
 }
 exports.isRightSideOfPropertyAccess = isRightSideOfPropertyAccess;
 function isNodeOrArray(a) {
@@ -234,7 +234,7 @@ function sourceFileToJSON(file) {
                 //     break;
                 case "text":
                     // Include 'text' field for identifiers/literals, but not for source files.
-                    if (n.kind !== 124 /* SourceFile */) {
+                    if (n.kind !== 125 /* SourceFile */) {
                         o[propertyName] = n[propertyName];
                     }
                     break;
@@ -268,7 +268,7 @@ function findAncestorByKind(node, kind) {
 }
 exports.findAncestorByKind = findAncestorByKind;
 function getSourceFileOfNode(node) {
-    while (node && node.kind !== 124 /* SourceFile */) {
+    while (node && node.kind !== 125 /* SourceFile */) {
         node = node.parent;
     }
     return node;
@@ -325,86 +325,86 @@ function forEachChild(node, cbNode, cbNodes) {
         return;
     }
     switch (node.kind) {
-        case 140 /* PropertyDeclaration */:
+        case 141 /* PropertyDeclaration */:
             return visitNodes(cbNode, cbNodes, node.modifiers) ||
                 visitNode(cbNode, node.type) ||
                 visitNode(cbNode, node.name);
-        case 137 /* VariableDeclaration */:
+        case 138 /* VariableDeclaration */:
             return visitNodes(cbNode, cbNodes, node.modifiers) ||
                 visitNode(cbNode, node.type) ||
                 visitNode(cbNode, node.name) ||
                 visitNode(cbNode, node.initializer);
-        case 138 /* FunctionDeclaration */:
+        case 139 /* FunctionDeclaration */:
             return visitNodes(cbNode, cbNodes, node.modifiers) ||
                 visitNode(cbNode, node.type) ||
                 visitNode(cbNode, node.name) ||
                 visitNodes(cbNode, cbNodes, node.parameters) ||
                 visitNode(cbNode, node.body);
-        case 136 /* StructDeclaration */:
+        case 137 /* StructDeclaration */:
             return visitNodes(cbNode, cbNodes, node.modifiers) ||
                 visitNode(cbNode, node.name) ||
                 visitNodes(cbNode, cbNodes, node.members);
-        case 139 /* ParameterDeclaration */:
+        case 140 /* ParameterDeclaration */:
             return visitNodes(cbNode, cbNodes, node.modifiers) ||
                 visitNode(cbNode, node.name) ||
                 visitNode(cbNode, node.type);
-        case 141 /* TypedefDeclaration */:
+        case 142 /* TypedefDeclaration */:
             return visitNode(cbNode, node.type) ||
                 visitNode(cbNode, node.name);
-        case 114 /* ArrayType */:
+        case 115 /* ArrayType */:
             return visitNode(cbNode, node.elementType) ||
                 visitNode(cbNode, node.size);
-        case 113 /* MappedType */:
+        case 114 /* MappedType */:
             return visitNode(cbNode, node.returnType) ||
                 visitNodes(cbNode, cbNodes, node.typeArguments);
-        case 117 /* PropertyAccessExpression */:
+        case 118 /* PropertyAccessExpression */:
             return visitNode(cbNode, node.expression) ||
                 visitNode(cbNode, node.name);
-        case 116 /* ElementAccessExpression */:
+        case 117 /* ElementAccessExpression */:
             return visitNode(cbNode, node.expression) ||
                 visitNode(cbNode, node.argumentExpression);
-        case 118 /* CallExpression */:
+        case 119 /* CallExpression */:
             return visitNode(cbNode, node.expression) ||
                 visitNodes(cbNode, cbNodes, node.arguments);
-        case 123 /* ParenthesizedExpression */:
+        case 124 /* ParenthesizedExpression */:
             return visitNode(cbNode, node.expression);
-        case 119 /* PrefixUnaryExpression */:
+        case 120 /* PrefixUnaryExpression */:
             return visitNode(cbNode, node.operator) ||
                 visitNode(cbNode, node.operand);
-        case 120 /* PostfixUnaryExpression */:
+        case 121 /* PostfixUnaryExpression */:
             return visitNode(cbNode, node.operand) ||
                 visitNode(cbNode, node.operator);
-        case 121 /* BinaryExpression */:
+        case 122 /* BinaryExpression */:
             return visitNode(cbNode, node.left) ||
                 visitNode(cbNode, node.operatorToken) ||
                 visitNode(cbNode, node.right);
-        case 125 /* Block */:
+        case 126 /* Block */:
             return visitNodes(cbNode, cbNodes, node.statements);
-        case 124 /* SourceFile */:
+        case 125 /* SourceFile */:
             return visitNodes(cbNode, cbNodes, node.statements);
-        case 134 /* ExpressionStatement */:
+        case 135 /* ExpressionStatement */:
             return visitNode(cbNode, node.expression);
-        case 126 /* IfStatement */:
+        case 127 /* IfStatement */:
             return visitNode(cbNode, node.expression) ||
                 visitNode(cbNode, node.thenStatement) ||
                 visitNode(cbNode, node.elseStatement);
-        case 127 /* DoStatement */:
+        case 128 /* DoStatement */:
             return visitNode(cbNode, node.statement) ||
                 visitNode(cbNode, node.expression);
-        case 128 /* WhileStatement */:
+        case 129 /* WhileStatement */:
             return visitNode(cbNode, node.expression) ||
                 visitNode(cbNode, node.statement);
-        case 129 /* ForStatement */:
+        case 130 /* ForStatement */:
             return visitNode(cbNode, node.initializer) ||
                 visitNode(cbNode, node.condition) ||
                 visitNode(cbNode, node.incrementor) ||
                 visitNode(cbNode, node.statement);
-        case 131 /* ContinueStatement */:
-        case 130 /* BreakStatement */:
+        case 132 /* ContinueStatement */:
+        case 131 /* BreakStatement */:
             break;
-        case 133 /* ReturnStatement */:
+        case 134 /* ReturnStatement */:
             return visitNode(cbNode, node.expression);
-        case 132 /* IncludeStatement */:
+        case 133 /* IncludeStatement */:
             return visitNode(cbNode, node.path);
     }
 }

@@ -16,7 +16,7 @@ class HoverProvider extends provider_1.AbstractProvider {
             return;
         const position = utils_1.getPositionOfLineAndCharacter(sourceFile, params.position.line, params.position.character);
         const currentToken = utils_1.getAdjacentIdentfier(position, sourceFile);
-        if (!currentToken || currentToken.kind !== 110 /* Identifier */) {
+        if (!currentToken || currentToken.kind !== 111 /* Identifier */) {
             return null;
         }
         const checker = new checker_1.TypeChecker(this.store);
@@ -26,7 +26,7 @@ class HoverProvider extends provider_1.AbstractProvider {
         }
         const content = [];
         let decl = symbol.declarations[0];
-        if (decl.kind === 138 /* FunctionDeclaration */) {
+        if (decl.kind === 139 /* FunctionDeclaration */) {
             decl = Object.assign({}, decl, { body: null });
         }
         let code = this.printer.printNode(decl).trim();

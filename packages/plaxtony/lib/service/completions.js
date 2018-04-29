@@ -8,6 +8,10 @@ const utils_2 = require("./utils");
 const printer_1 = require("../compiler/printer");
 const lsp = require("vscode-languageserver");
 const s2meta_1 = require("./s2meta");
+function isInComment(sourceFile, pos) {
+    const comment = sourceFile.commentsLineMap.get(utils_2.getLineAndCharacterOfPosition(sourceFile, pos).line);
+    return comment && pos > comment.pos;
+}
 var CompletionFunctionExpand;
 (function (CompletionFunctionExpand) {
     CompletionFunctionExpand[CompletionFunctionExpand["None"] = 0] = "None";
@@ -15,6 +19,13 @@ var CompletionFunctionExpand;
     CompletionFunctionExpand[CompletionFunctionExpand["ArgumentsNull"] = 2] = "ArgumentsNull";
     CompletionFunctionExpand[CompletionFunctionExpand["ArgumentsDefault"] = 3] = "ArgumentsDefault";
 })(CompletionFunctionExpand = exports.CompletionFunctionExpand || (exports.CompletionFunctionExpand = {}));
+;
+;
+var CompletionItemDataFlags;
+(function (CompletionItemDataFlags) {
+    CompletionItemDataFlags[CompletionItemDataFlags["CanExpand"] = 2] = "CanExpand";
+    CompletionItemDataFlags[CompletionItemDataFlags["CanAppendSemicolon"] = 4] = "CanAppendSemicolon";
+})(CompletionItemDataFlags || (CompletionItemDataFlags = {}));
 ;
 ;
 class CompletionsProvider extends provider_1.AbstractProvider {
@@ -43,10 +54,10 @@ class CompletionsProvider extends provider_1.AbstractProvider {
                 }
             }
             if (!paramElement) {
-                if (param.type.kind === 72 /* IntKeyword */) {
+                if (param.type.kind === 73 /* IntKeyword */) {
                     args.push('0');
                 }
-                else if (param.type.kind === 73 /* FixedKeyword */) {
+                else if (param.type.kind === 74 /* FixedKeyword */) {
                     args.push('0.0');
                 }
                 else {
@@ -91,20 +102,20 @@ class CompletionsProvider extends provider_1.AbstractProvider {
             data: {},
         };
         switch (node.kind) {
-            case 136 /* StructDeclaration */:
+            case 137 /* StructDeclaration */:
                 item.kind = lsp.CompletionItemKind.Class;
                 break;
-            case 138 /* FunctionDeclaration */:
+            case 139 /* FunctionDeclaration */:
                 item.kind = lsp.CompletionItemKind.Function;
                 break;
-            case 137 /* VariableDeclaration */:
-            case 139 /* ParameterDeclaration */:
+            case 138 /* VariableDeclaration */:
+            case 140 /* ParameterDeclaration */:
                 item.kind = lsp.CompletionItemKind.Variable;
                 break;
-            case 140 /* PropertyDeclaration */:
+            case 141 /* PropertyDeclaration */:
                 item.kind = lsp.CompletionItemKind.Property;
                 break;
-            case 141 /* TypedefDeclaration */:
+            case 142 /* TypedefDeclaration */:
                 item.kind = lsp.CompletionItemKind.Interface;
                 break;
             default:
@@ -132,19 +143,19 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         let completions = [];
         for (const document of this.store.documents.values()) {
             for (const [name, symbol] of document.symbol.members) {
-                if (symbol.declarations[0].kind !== 138 /* FunctionDeclaration */)
+                if (symbol.declarations[0].kind !== 139 /* FunctionDeclaration */)
                     continue;
                 const funcDecl = symbol.declarations[0];
-                if (funcDecl.type.kind !== 69 /* BoolKeyword */)
+                if (funcDecl.type.kind !== 70 /* BoolKeyword */)
                     continue;
                 if (funcDecl.parameters.length !== 2)
                     continue;
-                if (funcDecl.parameters[0].type.kind !== 69 /* BoolKeyword */)
+                if (funcDecl.parameters[0].type.kind !== 70 /* BoolKeyword */)
                     continue;
-                if (funcDecl.parameters[1].type.kind !== 69 /* BoolKeyword */)
+                if (funcDecl.parameters[1].type.kind !== 70 /* BoolKeyword */)
                     continue;
                 const item = this.buildFromSymbolDecl(symbol);
-                item.data.dontExpand = true;
+                item.data.flags = 0;
                 completions.push(item);
             }
         }
@@ -171,28 +182,33 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         }
         return completions;
     }
-    getCompletionsAt(uri, position) {
+    getCompletionsAt(uri, position, context) {
         let completions = [];
         const sourceFile = this.store.documents.get(uri);
         if (!sourceFile)
+            return;
+        if (isInComment(sourceFile, position))
             return;
         let currentToken = utils_2.findPrecedingToken(position, sourceFile);
         // const adjacentToken = getAdjacentToken(position, sourceFile);
         // query
         let query = null;
         const processedSymbols = new Map();
-        if (currentToken && currentToken.pos <= position && currentToken.end >= position && currentToken.kind === 110 /* Identifier */) {
-            const offset = position -= currentToken.pos;
+        if (currentToken && currentToken.pos <= position && currentToken.end >= position && currentToken.kind === 111 /* Identifier */) {
+            const offset = position - currentToken.pos;
             query = currentToken.name.substr(0, offset);
         }
         // trigger handlers
-        if (currentToken && currentToken.kind === 2 /* StringLiteral */) {
+        if (currentToken && currentToken.kind === 3 /* StringLiteral */) {
             const callExpr = currentToken.parent;
             // trigger handlers
-            if (callExpr.kind === 118 /* CallExpression */ &&
-                callExpr.expression.kind === 110 /* Identifier */ &&
+            if (callExpr.kind === 119 /* CallExpression */ &&
+                callExpr.expression.kind === 111 /* Identifier */ &&
                 (callExpr.expression).name === "TriggerCreate") {
-                return this.provideTriggerHandlers();
+                return {
+                    items: this.provideTriggerHandlers(),
+                    isIncomplete: false,
+                };
             }
         }
         // presets
@@ -200,8 +216,11 @@ class CompletionsProvider extends provider_1.AbstractProvider {
             const elementType = this.store.s2metadata.getElementTypeOfNode(currentToken);
             if (elementType) {
                 // TODO: support <any> gamelink
-                if (elementType.type === 'gamelink' && currentToken.kind === 2 /* StringLiteral */ && elementType.gameType) {
-                    return this.provideGameLinks(elementType.gameType);
+                if (elementType.type === 'gamelink' && currentToken.kind === 3 /* StringLiteral */ && elementType.gameType) {
+                    return {
+                        items: this.provideGameLinks(elementType.gameType),
+                        isIncomplete: false,
+                    };
                 }
             }
             if (elementType && elementType.type === 'preset') {
@@ -214,30 +233,39 @@ class CompletionsProvider extends provider_1.AbstractProvider {
                     }
                 }
                 if (!query)
-                    return completions;
+                    return {
+                        items: completions,
+                        isIncomplete: false,
+                    };
             }
         }
         // exit early for str and num literals
-        if (currentToken && (currentToken.kind === 2 /* StringLiteral */ ||
-            currentToken.kind === 1 /* NumericLiteral */)) {
-            return completions;
+        if (currentToken && (currentToken.kind === 3 /* StringLiteral */ ||
+            currentToken.kind === 2 /* NumericLiteral */)) {
+            return {
+                items: completions,
+                isIncomplete: false,
+            };
         }
         // properties
         if (currentToken) {
-            if ((currentToken.kind === 9 /* DotToken */ || currentToken.kind === 110 /* Identifier */) &&
-                (currentToken.parent.kind === 117 /* PropertyAccessExpression */ && currentToken.parent.expression !== currentToken)) {
+            if ((currentToken.kind === 10 /* DotToken */ || currentToken.kind === 111 /* Identifier */) &&
+                (currentToken.parent.kind === 118 /* PropertyAccessExpression */ && currentToken.parent.expression !== currentToken)) {
                 const checker = new checker_1.TypeChecker(this.store);
                 currentToken = currentToken.parent.expression;
                 const type = checker.getTypeOfNode(currentToken, true);
                 if (type.flags & 8192 /* Struct */) {
-                    return this.buildFromSymbolMembers(type.symbol);
+                    return {
+                        items: this.buildFromSymbolMembers(type.symbol),
+                        isIncomplete: false,
+                    };
                 }
             }
         }
         // local variables
         if (currentToken) {
             const currentContext = utils_1.findAncestor(currentToken, (element) => {
-                return element.kind === 138 /* FunctionDeclaration */;
+                return element.kind === 139 /* FunctionDeclaration */;
             });
             if (currentContext) {
                 completions = completions.concat(this.buildFromSymbolMembers(currentContext.symbol, query));
@@ -259,7 +287,7 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         //     }
         // }
         // keywords
-        for (let i = 49 /* FirstKeyword */; i <= 109 /* LastKeyword */; i++) {
+        for (let i = 50 /* FirstKeyword */; i <= 110 /* LastKeyword */; i++) {
             const name = scanner_1.tokenToString(i);
             if (!query || utils_2.fuzzysearch(query, name)) {
                 completions.push({
@@ -268,7 +296,30 @@ class CompletionsProvider extends provider_1.AbstractProvider {
                 });
             }
         }
+        // can append semicolon
+        let flags = 2 /* CanExpand */;
+        if (currentToken) {
+            if (currentToken.kind === 111 /* Identifier */ && position < currentToken.end) {
+                flags &= ~2 /* CanExpand */;
+            }
+            if (position >= currentToken.end) {
+                flags |= 4 /* CanAppendSemicolon */;
+            }
+            else if (currentToken.parent) {
+                switch (currentToken.parent.kind) {
+                    case 135 /* ExpressionStatement */: {
+                        flags |= currentToken.parent.syntaxTokens.findIndex(value => value.kind === 11 /* SemicolonToken */) === -1 ? 4 /* CanAppendSemicolon */ : 0;
+                        break;
+                    }
+                    case 126 /* Block */: {
+                        flags |= 4 /* CanAppendSemicolon */;
+                        break;
+                    }
+                }
+            }
+        }
         let count = 0;
+        let isIncomplete = false;
         outer: for (const document of this.store.documents.values()) {
             for (const [name, symbol] of document.symbol.members) {
                 if ((symbol.flags & 1024 /* Static */) && document.fileName !== uri)
@@ -278,25 +329,33 @@ class CompletionsProvider extends provider_1.AbstractProvider {
                 if (!query || utils_2.fuzzysearch(query, name)) {
                     processedSymbols.set(name, symbol);
                     const citem = this.buildFromSymbolDecl(symbol);
+                    citem.data = {
+                        flags: flags,
+                    };
                     completions.push(citem);
-                    if (++count >= 10000 && query) {
+                    if (++count >= 7500) {
+                        isIncomplete = true;
                         break outer;
                     }
                 }
             }
         }
-        return completions;
+        return {
+            items: completions,
+            isIncomplete: isIncomplete,
+        };
     }
     resolveCompletion(completion) {
         let symbol;
         let parentSymbolName;
-        if (completion.data && completion.data.elementType && completion.data.elementType === 'gamelink') {
-            completion.documentation = this.store.s2metadata.getGameLinkLocalizedName(completion.data.gameType, completion.insertText, true);
-            completion.documentation += '\n<' + this.store.s2metadata.getGameLinkKind(completion.data.gameType, completion.insertText) + '>';
+        const customData = completion.data || {};
+        if (customData.elementType && customData.elementType === 'gamelink') {
+            completion.documentation = this.store.s2metadata.getGameLinkLocalizedName(customData.gameType, completion.insertText, true);
+            completion.documentation += '\n<' + this.store.s2metadata.getGameLinkKind(customData.gameType, completion.insertText) + '>';
             return completion;
         }
-        if (completion.data && completion.data.parentSymbol) {
-            parentSymbolName = completion.data.parentSymbol;
+        if (customData.parentSymbol) {
+            parentSymbolName = customData.parentSymbol;
         }
         for (const sourceFile of this.store.documents.values()) {
             if (parentSymbolName) {
@@ -313,11 +372,11 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         }
         if (this.config.functionExpand !== 0 /* None */ &&
             completion.kind === lsp.CompletionItemKind.Function &&
-            !(completion.data && completion.data.dontExpand)) {
+            customData.flags && customData.flags & 2 /* CanExpand */) {
             const decl = symbol.declarations[0];
             let funcArgs = [];
             // TODO: support funcrefs expansion
-            if (decl.kind === 138 /* FunctionDeclaration */ && this.config.functionExpand !== 1 /* Parenthesis */) {
+            if (decl.kind === 139 /* FunctionDeclaration */ && this.config.functionExpand !== 1 /* Parenthesis */) {
                 funcArgs = this.expandFunctionArguments(decl);
             }
             if (funcArgs) {
@@ -325,28 +384,38 @@ class CompletionsProvider extends provider_1.AbstractProvider {
                 funcArgs = funcArgs.map((item, index) => {
                     return `\${${index + 1}:${item}}`;
                 });
-                completion.insertText = completion.label + '(' + funcArgs.join(', ') + ')$0';
+                completion.insertText = completion.label + '(' + funcArgs.join(', ') + ')';
             }
             else {
                 completion.insertTextFormat = lsp.InsertTextFormat.PlainText;
-                completion.insertText = completion.label + '($1)$0';
+                completion.insertText = completion.label + '($1)';
             }
+            if (customData.flags && customData.flags & 4 /* CanAppendSemicolon */) {
+                completion.insertText += ';';
+            }
+            completion.insertText += '$0';
         }
         if (symbol) {
-            completion.documentation = s2meta_1.getDocumentationOfSymbol(this.store, symbol);
+            completion.documentation = s2meta_1.getDocumentationOfSymbol(this.store, symbol, false);
             let node = symbol.declarations[0];
             switch (node.kind) {
-                case 138 /* FunctionDeclaration */:
+                case 139 /* FunctionDeclaration */:
                     node = Object.create(node);
                     node.body = null;
                 // pass through
-                case 137 /* VariableDeclaration */:
-                case 139 /* ParameterDeclaration */:
-                case 140 /* PropertyDeclaration */:
-                case 141 /* TypedefDeclaration */:
+                case 138 /* VariableDeclaration */:
+                case 140 /* ParameterDeclaration */:
+                case 141 /* PropertyDeclaration */:
+                case 142 /* TypedefDeclaration */:
                     completion.detail = this.printer.printNode(node);
                     break;
             }
+        }
+        if (completion.documentation) {
+            completion.documentation = {
+                kind: lsp.MarkupKind.Markdown,
+                value: completion.documentation,
+            };
         }
         return completion;
     }

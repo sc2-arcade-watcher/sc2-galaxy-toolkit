@@ -5,6 +5,7 @@ import { SC2Workspace } from '../sc2mod/archive';
 import * as lsp from 'vscode-languageserver';
 export declare function createTextDocument(uri: string, text: string): lsp.TextDocument;
 export declare function createTextDocumentFromFs(filepath: string): lsp.TextDocument;
+export declare function createTextDocumentFromUri(uri: string): lsp.TextDocument;
 export declare class IndexedDocument {
     textDocument: lsp.TextDocument;
     sourceNode: SourceFile;
@@ -40,6 +41,6 @@ export declare class Store {
     getFirstMatchingDocument(partialname: string): gt.SourceFile;
     updateDocument(document: lsp.TextDocument, check?: boolean): void;
     updateS2Workspace(workspace: SC2Workspace, lang: string): Promise<void>;
-    isDocumentInWorkspace(documentUri: string, includeDepds?: boolean): boolean;
+    isUriInWorkspace(documentUri: string, includeDepds?: boolean): boolean;
     resolveGlobalSymbol(name: string): gt.Symbol | undefined;
 }

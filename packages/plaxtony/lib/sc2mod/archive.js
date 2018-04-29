@@ -330,9 +330,11 @@ class SC2Workspace {
     }
     loadComponents() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.trigComponent.load();
-            yield this.locComponent.load();
-            yield this.catalogComponent.load();
+            const p = [];
+            p.push(this.trigComponent.load());
+            p.push(this.locComponent.load());
+            p.push(this.catalogComponent.load());
+            yield Promise.all(p);
         });
     }
 }

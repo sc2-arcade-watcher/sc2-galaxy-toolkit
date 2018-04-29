@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const lsp = require("vscode-languageserver");
 const utils_1 = require("../compiler/utils");
 const printer_1 = require("../compiler/printer");
 const checker_1 = require("../compiler/checker");
@@ -46,18 +47,22 @@ class SignaturesProvider extends provider_1.AbstractProvider {
         }
         const signatureInfo = {
             label: code,
-            documentation: '',
             parameters: [],
         };
-        signatureInfo.documentation = s2meta_1.getDocumentationOfSymbol(this.store, functionSymbol);
+        signatureInfo.documentation = {
+            kind: lsp.MarkupKind.Markdown,
+            value: s2meta_1.getDocumentationOfSymbol(this.store, functionSymbol, false),
+        };
         const argsDoc = this.store.s2metadata ? this.store.s2metadata.getFunctionArgumentsDoc(functionSymbol.escapedName) : null;
         for (const [index, paramDeclaration] of functionDeclaration.parameters.entries()) {
             const paramInfo = {
                 label: this.printer.printNode(paramDeclaration),
-                documentation: null,
             };
             if (argsDoc && argsDoc[index]) {
-                paramInfo.documentation = argsDoc[index];
+                paramInfo.documentation = {
+                    kind: lsp.MarkupKind.Markdown,
+                    value: argsDoc[index],
+                };
             }
             signatureInfo.parameters.push(paramInfo);
         }
@@ -78,7 +83,7 @@ class SignaturesProvider extends provider_1.AbstractProvider {
         }
         let node = currentToken.parent;
         const callNode = utils_1.findAncestor(node, (element) => {
-            if (element.kind !== 118 /* CallExpression */) {
+            if (element.kind !== 119 /* CallExpression */) {
                 return false;
             }
             // we don't want to provide signature for left side of CallExpression

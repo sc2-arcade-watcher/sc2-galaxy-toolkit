@@ -2,113 +2,113 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const types_1 = require("./types");
 const textToTokenTable = new Map([
-    ["include", 49 /* IncludeKeyword */],
-    ["struct", 50 /* StructKeyword */],
-    ["static", 51 /* StaticKeyword */],
-    ["const", 52 /* ConstKeyword */],
-    ["native", 53 /* NativeKeyword */],
-    ["break", 54 /* BreakKeyword */],
-    ["continue", 55 /* ContinueKeyword */],
-    ["return", 56 /* ReturnKeyword */],
-    ["switch", 57 /* SwitchKeyword */],
+    ["include", 50 /* IncludeKeyword */],
+    ["struct", 51 /* StructKeyword */],
+    ["static", 52 /* StaticKeyword */],
+    ["const", 53 /* ConstKeyword */],
+    ["native", 54 /* NativeKeyword */],
+    ["break", 55 /* BreakKeyword */],
+    ["continue", 56 /* ContinueKeyword */],
+    ["return", 57 /* ReturnKeyword */],
+    ["switch", 58 /* SwitchKeyword */],
     // ["case", SyntaxKind.CaseKeyword],
-    ["default", 58 /* DefaultKeyword */],
-    ["new", 59 /* NewKeyword */],
-    ["do", 60 /* DoKeyword */],
-    ["for", 61 /* ForKeyword */],
-    ["while", 62 /* WhileKeyword */],
-    ["if", 63 /* IfKeyword */],
-    ["else", 64 /* ElseKeyword */],
-    ["true", 65 /* TrueKeyword */],
-    ["false", 66 /* FalseKeyword */],
-    ["null", 67 /* NullKeyword */],
-    ["typedef", 68 /* TypedefKeyword */],
-    ["abilcmd", 75 /* AbilcmdKeyword */],
-    ["actor", 76 /* ActorKeyword */],
-    ["actorscope", 77 /* ActorscopeKeyword */],
-    ["aifilter", 78 /* AifilterKeyword */],
-    ["bank", 79 /* BankKeyword */],
-    ["bool", 69 /* BoolKeyword */],
-    ["bitmask", 80 /* BitmaskKeyword */],
-    ["byte", 70 /* ByteKeyword */],
-    ["camerainfo", 81 /* CamerainfoKeyword */],
-    ["char", 71 /* CharKeyword */],
-    ["color", 82 /* ColorKeyword */],
-    ["doodad", 83 /* DoodadKeyword */],
-    ["fixed", 73 /* FixedKeyword */],
-    ["handle", 84 /* HandleKeyword */],
-    ["generichandle", 85 /* GenerichandleKeyword */],
-    ["effecthistory", 86 /* EffecthistoryKeyword */],
-    ["int", 72 /* IntKeyword */],
-    ["marker", 87 /* MarkerKeyword */],
-    ["order", 88 /* OrderKeyword */],
-    ["playergroup", 89 /* PlayergroupKeyword */],
-    ["point", 90 /* PointKeyword */],
-    ["region", 91 /* RegionKeyword */],
-    ["revealer", 92 /* RevealerKeyword */],
-    ["sound", 93 /* SoundKeyword */],
-    ["soundlink", 94 /* SoundlinkKeyword */],
-    ["string", 74 /* StringKeyword */],
-    ["text", 95 /* TextKeyword */],
-    ["timer", 96 /* TimerKeyword */],
-    ["transmissionsource", 97 /* TransmissionsourceKeyword */],
-    ["trigger", 98 /* TriggerKeyword */],
-    ["unit", 99 /* UnitKeyword */],
-    ["unitfilter", 100 /* UnitfilterKeyword */],
-    ["unitgroup", 101 /* UnitgroupKeyword */],
-    ["unitref", 102 /* UnitrefKeyword */],
-    ["void", 103 /* VoidKeyword */],
-    ["wave", 104 /* WaveKeyword */],
-    ["waveinfo", 105 /* WaveinfoKeyword */],
-    ["wavetarget", 106 /* WavetargetKeyword */],
-    ["arrayref", 107 /* ArrayrefKeyword */],
-    ["structref", 108 /* StructrefKeyword */],
-    ["funcref", 109 /* FuncrefKeyword */],
-    ["{", 3 /* OpenBraceToken */],
-    ["}", 4 /* CloseBraceToken */],
-    ["(", 5 /* OpenParenToken */],
-    [")", 6 /* CloseParenToken */],
-    ["[", 7 /* OpenBracketToken */],
-    ["]", 8 /* CloseBracketToken */],
-    [".", 9 /* DotToken */],
-    [";", 10 /* SemicolonToken */],
-    [",", 11 /* CommaToken */],
-    ["<", 12 /* LessThanToken */],
-    [">", 13 /* GreaterThanToken */],
-    ["<=", 14 /* LessThanEqualsToken */],
-    [">=", 15 /* GreaterThanEqualsToken */],
-    ["==", 16 /* EqualsEqualsToken */],
-    ["!=", 17 /* ExclamationEqualsToken */],
-    ["=>", 18 /* EqualsGreaterThanToken */],
-    ["+", 19 /* PlusToken */],
-    ["-", 20 /* MinusToken */],
-    ["*", 21 /* AsteriskToken */],
-    ["/", 22 /* SlashToken */],
-    ["%", 23 /* PercentToken */],
-    ["++", 24 /* PlusPlusToken */],
-    ["--", 25 /* MinusMinusToken */],
-    ["<<", 26 /* LessThanLessThanToken */],
-    [">>", 27 /* GreaterThanGreaterThanToken */],
-    ["&", 28 /* AmpersandToken */],
-    ["|", 29 /* BarToken */],
-    ["^", 30 /* CaretToken */],
-    ["!", 31 /* ExclamationToken */],
-    ["~", 32 /* TildeToken */],
-    ["&&", 33 /* AmpersandAmpersandToken */],
-    ["||", 34 /* BarBarToken */],
-    ["?", 35 /* QuestionToken */],
-    [":", 36 /* ColonToken */],
-    ["=", 38 /* EqualsToken */],
-    ["+=", 39 /* PlusEqualsToken */],
-    ["-=", 40 /* MinusEqualsToken */],
-    ["*=", 41 /* AsteriskEqualsToken */],
-    ["/=", 42 /* SlashEqualsToken */],
-    ["%=", 43 /* PercentEqualsToken */],
-    ["<<=", 44 /* LessThanLessThanEqualsToken */],
-    [">>=", 45 /* GreaterThanGreaterThanEqualsToken */],
-    ["&=", 46 /* AmpersandEqualsToken */],
-    ["|=", 47 /* BarEqualsToken */],
-    ["^=", 48 /* CaretEqualsToken */],
+    ["default", 59 /* DefaultKeyword */],
+    ["new", 60 /* NewKeyword */],
+    ["do", 61 /* DoKeyword */],
+    ["for", 62 /* ForKeyword */],
+    ["while", 63 /* WhileKeyword */],
+    ["if", 64 /* IfKeyword */],
+    ["else", 65 /* ElseKeyword */],
+    ["true", 66 /* TrueKeyword */],
+    ["false", 67 /* FalseKeyword */],
+    ["null", 68 /* NullKeyword */],
+    ["typedef", 69 /* TypedefKeyword */],
+    ["abilcmd", 76 /* AbilcmdKeyword */],
+    ["actor", 77 /* ActorKeyword */],
+    ["actorscope", 78 /* ActorscopeKeyword */],
+    ["aifilter", 79 /* AifilterKeyword */],
+    ["bank", 80 /* BankKeyword */],
+    ["bool", 70 /* BoolKeyword */],
+    ["bitmask", 81 /* BitmaskKeyword */],
+    ["byte", 71 /* ByteKeyword */],
+    ["camerainfo", 82 /* CamerainfoKeyword */],
+    ["char", 72 /* CharKeyword */],
+    ["color", 83 /* ColorKeyword */],
+    ["doodad", 84 /* DoodadKeyword */],
+    ["fixed", 74 /* FixedKeyword */],
+    ["handle", 85 /* HandleKeyword */],
+    ["generichandle", 86 /* GenerichandleKeyword */],
+    ["effecthistory", 87 /* EffecthistoryKeyword */],
+    ["int", 73 /* IntKeyword */],
+    ["marker", 88 /* MarkerKeyword */],
+    ["order", 89 /* OrderKeyword */],
+    ["playergroup", 90 /* PlayergroupKeyword */],
+    ["point", 91 /* PointKeyword */],
+    ["region", 92 /* RegionKeyword */],
+    ["revealer", 93 /* RevealerKeyword */],
+    ["sound", 94 /* SoundKeyword */],
+    ["soundlink", 95 /* SoundlinkKeyword */],
+    ["string", 75 /* StringKeyword */],
+    ["text", 96 /* TextKeyword */],
+    ["timer", 97 /* TimerKeyword */],
+    ["transmissionsource", 98 /* TransmissionsourceKeyword */],
+    ["trigger", 99 /* TriggerKeyword */],
+    ["unit", 100 /* UnitKeyword */],
+    ["unitfilter", 101 /* UnitfilterKeyword */],
+    ["unitgroup", 102 /* UnitgroupKeyword */],
+    ["unitref", 103 /* UnitrefKeyword */],
+    ["void", 104 /* VoidKeyword */],
+    ["wave", 105 /* WaveKeyword */],
+    ["waveinfo", 106 /* WaveinfoKeyword */],
+    ["wavetarget", 107 /* WavetargetKeyword */],
+    ["arrayref", 108 /* ArrayrefKeyword */],
+    ["structref", 109 /* StructrefKeyword */],
+    ["funcref", 110 /* FuncrefKeyword */],
+    ["{", 4 /* OpenBraceToken */],
+    ["}", 5 /* CloseBraceToken */],
+    ["(", 6 /* OpenParenToken */],
+    [")", 7 /* CloseParenToken */],
+    ["[", 8 /* OpenBracketToken */],
+    ["]", 9 /* CloseBracketToken */],
+    [".", 10 /* DotToken */],
+    [";", 11 /* SemicolonToken */],
+    [",", 12 /* CommaToken */],
+    ["<", 13 /* LessThanToken */],
+    [">", 14 /* GreaterThanToken */],
+    ["<=", 15 /* LessThanEqualsToken */],
+    [">=", 16 /* GreaterThanEqualsToken */],
+    ["==", 17 /* EqualsEqualsToken */],
+    ["!=", 18 /* ExclamationEqualsToken */],
+    ["=>", 19 /* EqualsGreaterThanToken */],
+    ["+", 20 /* PlusToken */],
+    ["-", 21 /* MinusToken */],
+    ["*", 22 /* AsteriskToken */],
+    ["/", 23 /* SlashToken */],
+    ["%", 24 /* PercentToken */],
+    ["++", 25 /* PlusPlusToken */],
+    ["--", 26 /* MinusMinusToken */],
+    ["<<", 27 /* LessThanLessThanToken */],
+    [">>", 28 /* GreaterThanGreaterThanToken */],
+    ["&", 29 /* AmpersandToken */],
+    ["|", 30 /* BarToken */],
+    ["^", 31 /* CaretToken */],
+    ["!", 32 /* ExclamationToken */],
+    ["~", 33 /* TildeToken */],
+    ["&&", 34 /* AmpersandAmpersandToken */],
+    ["||", 35 /* BarBarToken */],
+    ["?", 36 /* QuestionToken */],
+    [":", 37 /* ColonToken */],
+    ["=", 39 /* EqualsToken */],
+    ["+=", 40 /* PlusEqualsToken */],
+    ["-=", 41 /* MinusEqualsToken */],
+    ["*=", 42 /* AsteriskEqualsToken */],
+    ["/=", 43 /* SlashEqualsToken */],
+    ["%=", 44 /* PercentEqualsToken */],
+    ["<<=", 45 /* LessThanLessThanEqualsToken */],
+    [">>=", 46 /* GreaterThanGreaterThanEqualsToken */],
+    ["&=", 47 /* AmpersandEqualsToken */],
+    ["|=", 48 /* BarEqualsToken */],
+    ["^=", 49 /* CaretEqualsToken */],
 ]);
 // const tokenStrings = new Map(Array.from(textToTokenTable).reverse());
 function makeReverseMap(source) {
@@ -384,7 +384,7 @@ class Scanner {
                 return token;
             }
         }
-        return 110 /* Identifier */;
+        return 111 /* Identifier */;
     }
     setText(text) {
         this.text = text;
@@ -400,7 +400,7 @@ class Scanner {
             this.tokenPos = this.pos;
             this.tokenValue = null;
             if (this.pos >= this.end) {
-                return 111 /* EndOfFileToken */;
+                return 112 /* EndOfFileToken */;
             }
             let ch = this.text.charCodeAt(this.pos);
             switch (ch) {
@@ -412,78 +412,78 @@ class Scanner {
                     break;
                 case 59 /* semicolon */:
                     ++this.pos;
-                    return this.token = 10 /* SemicolonToken */;
+                    return this.token = 11 /* SemicolonToken */;
                 case 40 /* openParen */:
                     this.pos++;
-                    return this.token = 5 /* OpenParenToken */;
+                    return this.token = 6 /* OpenParenToken */;
                 case 41 /* closeParen */:
                     this.pos++;
-                    return this.token = 6 /* CloseParenToken */;
+                    return this.token = 7 /* CloseParenToken */;
                 case 34 /* doubleQuote */:
                 case 39 /* singleQuote */:
                     this.tokenValue = this.scanString();
-                    return this.token = 2 /* StringLiteral */;
+                    return this.token = 3 /* StringLiteral */;
                 case 33 /* exclamation */:
                     if (this.text.charCodeAt(this.pos + 1) === 61 /* equals */) {
-                        return this.pos += 2, this.token = 17 /* ExclamationEqualsToken */;
+                        return this.pos += 2, this.token = 18 /* ExclamationEqualsToken */;
                     }
                     this.pos++;
-                    return this.token = 31 /* ExclamationToken */;
+                    return this.token = 32 /* ExclamationToken */;
                 case 37 /* percent */:
                     if (this.text.charCodeAt(this.pos + 1) === 61 /* equals */) {
-                        return this.pos += 2, this.token = 43 /* PercentEqualsToken */;
+                        return this.pos += 2, this.token = 44 /* PercentEqualsToken */;
                     }
                     this.pos++;
-                    return this.token = 23 /* PercentToken */;
+                    return this.token = 24 /* PercentToken */;
                 case 38 /* ampersand */:
                     if (this.text.charCodeAt(this.pos + 1) === 38 /* ampersand */) {
-                        return this.pos += 2, this.token = 33 /* AmpersandAmpersandToken */;
+                        return this.pos += 2, this.token = 34 /* AmpersandAmpersandToken */;
                     }
                     if (this.text.charCodeAt(this.pos + 1) === 61 /* equals */) {
-                        return this.pos += 2, this.token = 46 /* AmpersandEqualsToken */;
+                        return this.pos += 2, this.token = 47 /* AmpersandEqualsToken */;
                     }
                     this.pos++;
-                    return this.token = 28 /* AmpersandToken */;
+                    return this.token = 29 /* AmpersandToken */;
                 case 40 /* openParen */:
                     this.pos++;
-                    return this.token = 5 /* OpenParenToken */;
+                    return this.token = 6 /* OpenParenToken */;
                 case 41 /* closeParen */:
                     this.pos++;
-                    return this.token = 6 /* CloseParenToken */;
+                    return this.token = 7 /* CloseParenToken */;
                 case 42 /* asterisk */:
                     if (this.text.charCodeAt(this.pos + 1) === 61 /* equals */) {
-                        return this.pos += 2, this.token = 41 /* AsteriskEqualsToken */;
+                        return this.pos += 2, this.token = 42 /* AsteriskEqualsToken */;
                     }
                     this.pos++;
-                    return this.token = 21 /* AsteriskToken */;
+                    return this.token = 22 /* AsteriskToken */;
                 case 43 /* plus */:
                     if (this.text.charCodeAt(this.pos + 1) === 43 /* plus */) {
-                        return this.pos += 2, this.token = 24 /* PlusPlusToken */;
+                        return this.pos += 2, this.token = 25 /* PlusPlusToken */;
                     }
                     if (this.text.charCodeAt(this.pos + 1) === 61 /* equals */) {
-                        return this.pos += 2, this.token = 39 /* PlusEqualsToken */;
+                        return this.pos += 2, this.token = 40 /* PlusEqualsToken */;
                     }
                     this.pos++;
-                    return this.token = 19 /* PlusToken */;
+                    return this.token = 20 /* PlusToken */;
                 case 44 /* comma */:
                     this.pos++;
-                    return this.token = 11 /* CommaToken */;
+                    return this.token = 12 /* CommaToken */;
                 case 45 /* minus */:
                     if (this.text.charCodeAt(this.pos + 1) === 45 /* minus */) {
-                        return this.pos += 2, this.token = 25 /* MinusMinusToken */;
+                        return this.pos += 2, this.token = 26 /* MinusMinusToken */;
                     }
                     if (this.text.charCodeAt(this.pos + 1) === 61 /* equals */) {
-                        return this.pos += 2, this.token = 40 /* MinusEqualsToken */;
+                        return this.pos += 2, this.token = 41 /* MinusEqualsToken */;
                     }
                     this.pos++;
-                    return this.token = 20 /* MinusToken */;
+                    return this.token = 21 /* MinusToken */;
                 case 46 /* dot */:
                     if (isDigit(this.text.charCodeAt(this.pos + 1))) {
                         this.tokenValue = this.scanNumber();
-                        return this.token = 1 /* NumericLiteral */;
+                        return this.token = 2 /* NumericLiteral */;
                     }
                     this.pos++;
-                    return this.token = 9 /* DotToken */;
+                    return this.token = 10 /* DotToken */;
                 case 47 /* slash */:
                     // Single-line comment
                     if (this.text.charCodeAt(this.pos + 1) === 47 /* slash */) {
@@ -498,13 +498,13 @@ class Scanner {
                             }
                             this.pos++;
                         }
-                        continue;
+                        return this.token = 1 /* SingleLineCommentTrivia */;
                     }
                     if (this.text.charCodeAt(this.pos + 1) === 61 /* equals */) {
-                        return this.pos += 2, this.token = 42 /* SlashEqualsToken */;
+                        return this.pos += 2, this.token = 43 /* SlashEqualsToken */;
                     }
                     this.pos++;
-                    return this.token = 22 /* SlashToken */;
+                    return this.token = 23 /* SlashToken */;
                 case 48 /* _0 */:
                     if (this.pos + 2 < this.end && (this.text.charCodeAt(this.pos + 1) === 88 /* X */ || this.text.charCodeAt(this.pos + 1) === 120 /* x */)) {
                         this.pos += 2;
@@ -515,7 +515,7 @@ class Scanner {
                         }
                         this.tokenValue = "" + value;
                         // numericLiteralFlags = NumericLiteralFlags.HexSpecifier;
-                        return this.token = 1 /* NumericLiteral */;
+                        return this.token = 2 /* NumericLiteral */;
                     }
                     else if (this.pos + 2 < this.end && (this.text.charCodeAt(this.pos + 1) === 66 /* B */ || this.text.charCodeAt(this.pos + 1) === 98 /* b */)) {
                         this.pos += 2;
@@ -526,7 +526,7 @@ class Scanner {
                         }
                         this.tokenValue = "" + value;
                         // numericLiteralFlags = NumericLiteralFlags.BinarySpecifier;
-                        return this.token = 1 /* NumericLiteral */;
+                        return this.token = 2 /* NumericLiteral */;
                     }
                     else if (this.pos + 2 < this.end && (this.text.charCodeAt(this.pos + 1) === 79 /* O */ || this.text.charCodeAt(this.pos + 1) === 111 /* o */)) {
                         this.pos += 2;
@@ -537,13 +537,13 @@ class Scanner {
                         }
                         this.tokenValue = "" + value;
                         // numericLiteralFlags = NumericLiteralFlags.OctalSpecifier;
-                        return this.token = 1 /* NumericLiteral */;
+                        return this.token = 2 /* NumericLiteral */;
                     }
                     // Try to parse as an octal
                     if (this.pos + 1 < this.end && isOctalDigit(this.text.charCodeAt(this.pos + 1))) {
                         this.tokenValue = "" + this.scanOctalDigits();
                         // numericLiteralFlags = NumericLiteralFlags.Octal;
-                        return this.token = 1 /* NumericLiteral */;
+                        return this.token = 2 /* NumericLiteral */;
                     }
                 // This fall-through is a deviation from the EcmaScript grammar. The grammar says that a leading zero
                 // can only be followed by an octal digit, a dot, or the end of the number literal. However, we are being
@@ -559,70 +559,70 @@ class Scanner {
                 case 56 /* _8 */:
                 case 57 /* _9 */:
                     this.tokenValue = this.scanNumber();
-                    return this.token = 1 /* NumericLiteral */;
+                    return this.token = 2 /* NumericLiteral */;
                 case 60 /* lessThan */:
                     if (this.text.charCodeAt(this.pos + 1) === 60 /* lessThan */) {
                         if (this.text.charCodeAt(this.pos + 2) === 61 /* equals */) {
-                            return this.pos += 3, this.token = 44 /* LessThanLessThanEqualsToken */;
+                            return this.pos += 3, this.token = 45 /* LessThanLessThanEqualsToken */;
                         }
-                        return this.pos += 2, this.token = 26 /* LessThanLessThanToken */;
+                        return this.pos += 2, this.token = 27 /* LessThanLessThanToken */;
                     }
                     if (this.text.charCodeAt(this.pos + 1) === 61 /* equals */) {
-                        return this.pos += 2, this.token = 14 /* LessThanEqualsToken */;
+                        return this.pos += 2, this.token = 15 /* LessThanEqualsToken */;
                     }
                     this.pos++;
-                    return this.token = 12 /* LessThanToken */;
+                    return this.token = 13 /* LessThanToken */;
                 case 61 /* equals */:
                     if (this.text.charCodeAt(this.pos + 1) === 61 /* equals */) {
-                        return this.pos += 2, this.token = 16 /* EqualsEqualsToken */;
+                        return this.pos += 2, this.token = 17 /* EqualsEqualsToken */;
                     }
                     if (this.text.charCodeAt(this.pos + 1) === 62 /* greaterThan */) {
-                        return this.pos += 2, this.token = 18 /* EqualsGreaterThanToken */;
+                        return this.pos += 2, this.token = 19 /* EqualsGreaterThanToken */;
                     }
                     this.pos++;
-                    return this.token = 38 /* EqualsToken */;
+                    return this.token = 39 /* EqualsToken */;
                 case 62 /* greaterThan */:
                     if (this.text.charCodeAt(this.pos + 1) === 62 /* greaterThan */) {
                         if (this.text.charCodeAt(this.pos + 2) === 61 /* equals */) {
-                            return this.pos += 3, this.token = 45 /* GreaterThanGreaterThanEqualsToken */;
+                            return this.pos += 3, this.token = 46 /* GreaterThanGreaterThanEqualsToken */;
                         }
-                        return this.pos += 2, this.token = 27 /* GreaterThanGreaterThanToken */;
+                        return this.pos += 2, this.token = 28 /* GreaterThanGreaterThanToken */;
                     }
                     if (this.text.charCodeAt(this.pos + 1) === 61 /* equals */) {
-                        return this.pos += 2, this.token = 15 /* GreaterThanEqualsToken */;
+                        return this.pos += 2, this.token = 16 /* GreaterThanEqualsToken */;
                     }
                     this.pos++;
-                    return this.token = 13 /* GreaterThanToken */;
+                    return this.token = 14 /* GreaterThanToken */;
                 case 91 /* openBracket */:
                     this.pos++;
-                    return this.token = 7 /* OpenBracketToken */;
+                    return this.token = 8 /* OpenBracketToken */;
                 case 93 /* closeBracket */:
                     this.pos++;
-                    return this.token = 8 /* CloseBracketToken */;
+                    return this.token = 9 /* CloseBracketToken */;
                 case 94 /* caret */:
                     if (this.text.charCodeAt(this.pos + 1) === 61 /* equals */) {
-                        return this.pos += 2, this.token = 48 /* CaretEqualsToken */;
+                        return this.pos += 2, this.token = 49 /* CaretEqualsToken */;
                     }
                     this.pos++;
-                    return this.token = 30 /* CaretToken */;
+                    return this.token = 31 /* CaretToken */;
                 case 123 /* openBrace */:
                     this.pos++;
-                    return this.token = 3 /* OpenBraceToken */;
+                    return this.token = 4 /* OpenBraceToken */;
                 case 124 /* bar */:
                     if (this.text.charCodeAt(this.pos + 1) === 124 /* bar */) {
-                        return this.pos += 2, this.token = 34 /* BarBarToken */;
+                        return this.pos += 2, this.token = 35 /* BarBarToken */;
                     }
                     if (this.text.charCodeAt(this.pos + 1) === 61 /* equals */) {
-                        return this.pos += 2, this.token = 47 /* BarEqualsToken */;
+                        return this.pos += 2, this.token = 48 /* BarEqualsToken */;
                     }
                     this.pos++;
-                    return this.token = 29 /* BarToken */;
+                    return this.token = 30 /* BarToken */;
                 case 125 /* closeBrace */:
                     this.pos++;
-                    return this.token = 4 /* CloseBraceToken */;
+                    return this.token = 5 /* CloseBraceToken */;
                 case 126 /* tilde */:
                     this.pos++;
-                    return this.token = 32 /* TildeToken */;
+                    return this.token = 33 /* TildeToken */;
                 default:
                     if (isIdentifierStart(ch)) {
                         this.pos++;

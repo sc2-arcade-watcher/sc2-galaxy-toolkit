@@ -93,9 +93,7 @@ class S2WorkspaceMetadata {
     build(lang) {
         return __awaiter(this, void 0, void 0, function* () {
             this.workspace.locComponent.lang = lang;
-            yield this.workspace.trigComponent.sync();
-            yield this.workspace.locComponent.sync();
-            yield this.workspace.catalogComponent.sync();
+            yield this.workspace.loadComponents();
             for (const lib of this.workspace.trigComponent.getStore().getLibraries().values()) {
                 this.mapContainer(lib);
             }
@@ -127,12 +125,14 @@ class S2WorkspaceMetadata {
         }
         return names;
     }
-    getElementDoc(el) {
+    getElementDoc(el, extended) {
         let name = '**' + this.workspace.locComponent.triggers.elementName('Name', el) + '**';
         if (el instanceof trig.FunctionDef) {
-            const grammar = this.workspace.locComponent.triggers.elementName('Grammar', el);
-            if (grammar) {
-                name += ' (' + grammar.replace(tildeRE, '`') + ')';
+            if (extended) {
+                const grammar = this.workspace.locComponent.triggers.elementName('Grammar', el);
+                if (grammar) {
+                    name += ' (' + grammar.replace(tildeRE, '`') + ')';
+                }
             }
             const hint = this.workspace.locComponent.triggers.elementName('Hint', el);
             if (hint) {
@@ -161,11 +161,11 @@ class S2WorkspaceMetadata {
             return name;
         }
     }
-    getSymbolDoc(symbolName) {
+    getSymbolDoc(symbolName, extended = true) {
         const el = this.findElementByName(symbolName);
         if (!el)
             return null;
-        return this.getElementDoc(el);
+        return this.getElementDoc(el, extended);
     }
     getFunctionArgumentsDoc(symbolName) {
         const el = this.findElementByName(symbolName);
@@ -176,22 +176,22 @@ class S2WorkspaceMetadata {
             docs.push('**Trigger**');
         }
         for (const param of el.getParameters()) {
-            docs.push(this.getElementDoc(param));
+            docs.push(this.getElementDoc(param, false));
         }
         return docs;
     }
     getElementTypeOfNode(node) {
         // if (node.kind !== gt.SyntaxKind.StringLiteral) return null;
-        if (node.parent.kind !== 118 /* CallExpression */)
+        if (node.parent.kind !== 119 /* CallExpression */)
             return null;
         const callExpr = node.parent;
-        if (callExpr.expression.kind !== 110 /* Identifier */)
+        if (callExpr.expression.kind !== 111 /* Identifier */)
             return null;
         const el = this.findElementByName(callExpr.expression.name);
         if (!el)
             return null;
         let index = null;
-        if (node.kind === 11 /* CommaToken */ || node.kind === 5 /* OpenParenToken */) {
+        if (node.kind === 12 /* CommaToken */ || node.kind === 6 /* OpenParenToken */) {
             for (const [key, token] of callExpr.syntaxTokens.entries()) {
                 index = key - 1;
                 if (node.end < token.end) {
@@ -233,10 +233,10 @@ class S2WorkspaceMetadata {
     }
 }
 exports.S2WorkspaceMetadata = S2WorkspaceMetadata;
-function getDocumentationOfSymbol(store, symbol) {
+function getDocumentationOfSymbol(store, symbol, extended = true) {
     if (!store.s2metadata)
         return null;
-    return store.s2metadata.getSymbolDoc(symbol.escapedName);
+    return store.s2metadata.getSymbolDoc(symbol.escapedName, extended);
 }
 exports.getDocumentationOfSymbol = getDocumentationOfSymbol;
 //# sourceMappingURL=s2meta.js.map

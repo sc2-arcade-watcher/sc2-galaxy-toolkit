@@ -14,12 +14,12 @@ export declare class S2WorkspaceMetadata {
     findElementByName(name: string): trig.Element;
     findPresetDef(presetValue: trig.PresetValue): trig.Preset;
     getConstantNamesOfPreset(preset: trig.Preset): string[];
-    getElementDoc(el: trig.Element): string;
-    getSymbolDoc(symbolName: string): string;
+    getElementDoc(el: trig.Element, extended: boolean): string;
+    getSymbolDoc(symbolName: string, extended?: boolean): string;
     getFunctionArgumentsDoc(symbolName: string): string[];
     getElementTypeOfNode(node: gt.Node): trig.ParameterType;
     getLinksForGameType(gameType: string): ReadonlyMap<string, cat.CatalogEntry>;
     getGameLinkLocalizedName(gameType: string, gameLink: string, includePrefix?: boolean): string;
     getGameLinkKind(gameType: string, gameLink: string): string;
 }
-export declare function getDocumentationOfSymbol(store: Store, symbol: gt.Symbol): string;
+export declare function getDocumentationOfSymbol(store: Store, symbol: gt.Symbol, extended?: boolean): string;

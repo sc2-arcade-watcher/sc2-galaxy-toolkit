@@ -33,6 +33,10 @@ function createTextDocumentFromFs(filepath) {
     return createTextDocument(vscode_uri_1.default.file(filepath).toString(), fs.readFileSync(filepath, 'utf8'));
 }
 exports.createTextDocumentFromFs = createTextDocumentFromFs;
+function createTextDocumentFromUri(uri) {
+    return createTextDocument(uri, fs.readFileSync(vscode_uri_1.default.parse(uri).fsPath, 'utf8'));
+}
+exports.createTextDocumentFromUri = createTextDocumentFromUri;
 class IndexedDocument {
 }
 exports.IndexedDocument = IndexedDocument;
@@ -171,7 +175,7 @@ class Store {
             yield this.s2metadata.build(lang);
         });
     }
-    isDocumentInWorkspace(documentUri, includeDepds = true) {
+    isUriInWorkspace(documentUri, includeDepds = true) {
         const documentPath = vscode_uri_2.default.parse(documentUri).fsPath;
         if (this.rootPath && documentPath.startsWith(this.rootPath)) {
             return true;

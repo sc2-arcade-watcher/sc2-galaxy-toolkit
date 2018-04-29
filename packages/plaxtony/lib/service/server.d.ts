@@ -19,7 +19,7 @@ export declare class Server {
     private documentUpdateRequests;
     private createProvider<T>(cls);
     createConnection(connection?: lsp.IConnection): lsp.IConnection;
-    log(msg: string): void;
+    log(msg: string, ...params: any[]): void;
     private flushDocument(documentUri, isDirty?);
     private reindex(rootPath, modSources);
     private onInitialize(params);
@@ -31,6 +31,7 @@ export declare class Server {
     private onDidOpen(ev);
     private onDidClose(ev);
     private onDidSave(ev);
+    private onDidChangeWatchedFiles(ev);
     private onDidFindInWorkspace(ev);
     private onCompletion(params);
     private onCompletionResolve(params);

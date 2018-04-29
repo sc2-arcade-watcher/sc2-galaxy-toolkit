@@ -9,12 +9,12 @@ function collectDeclarations(sourceFile) {
         declarations.push(node);
     }
     function visitNode(node) {
-        if (node.kind === 137 /* VariableDeclaration */ ||
-            node.kind === 138 /* FunctionDeclaration */ ||
-            node.kind === 136 /* StructDeclaration */) {
+        if (node.kind === 138 /* VariableDeclaration */ ||
+            node.kind === 139 /* FunctionDeclaration */ ||
+            node.kind === 137 /* StructDeclaration */) {
             registerDeclaration(node);
         }
-        if (node.kind === 124 /* SourceFile */) {
+        if (node.kind === 125 /* SourceFile */) {
             utils_1.forEachChild(node, child => visitNode(child));
         }
     }

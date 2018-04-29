@@ -8,11 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const xml = require("xml2js");
+const sax = require("sax");
 const path = require("path");
-class CatalogEntry {
-}
-exports.CatalogEntry = CatalogEntry;
 class CatalogFile {
     constructor(archive, kind) {
         this.archive = archive;
@@ -25,9 +22,10 @@ class CatalogFile {
             if (!(resolvedFiles).length) {
                 return false;
             }
-            const reader = new XMLFileReader();
-            yield reader.readFromString(yield this.archive.readFile(resolvedFiles[0]));
-            this.entries = reader.toCatalog();
+            const parser = new CatalogParser();
+            parser.write(yield this.archive.readFile(resolvedFiles[0]));
+            this.entries = parser.toCatalog();
+            parser.close();
             return true;
         });
     }
@@ -61,6 +59,18 @@ class CatalogStore {
 }
 exports.CatalogStore = CatalogStore;
 class GameCatalogStore {
+    processDataKind(kind, workspace) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const catalogStore = new CatalogStore(kind);
+            const p = [];
+            for (const archive of workspace.allArchives) {
+                p.push(catalogStore.addArchive(archive));
+            }
+            yield Promise.all(p);
+            catalogStore.merge();
+            this.catalogs.set(kind, catalogStore);
+        });
+    }
     loadData(workspace) {
         return __awaiter(this, void 0, void 0, function* () {
             const kindList = [];
@@ -77,68 +87,49 @@ class GameCatalogStore {
                     }
                 }
             }
+            const p = [];
             for (const kind of kindList) {
-                const catalogStore = new CatalogStore(kind);
-                for (const archive of workspace.allArchives) {
-                    yield catalogStore.addArchive(archive);
-                }
-                catalogStore.merge();
-                this.catalogs.set(kind, catalogStore);
+                p.push(this.processDataKind(kind, workspace));
             }
+            yield Promise.all(p);
             return true;
         });
     }
 }
 exports.GameCatalogStore = GameCatalogStore;
-class XMLFileReader {
-    parse(xmlEntries) {
+const reDataEntry = /^C([A-Za-z0-9]+)$/;
+class CatalogParser extends sax.SAXParser {
+    constructor() {
+        super(true, {
+            position: false,
+        });
+        this.depth = 0;
+    }
+    onready() {
         this.catalogMap = new Map();
-        for (const kind in xmlEntries) {
-            if (!kind.startsWith('C'))
-                continue;
-            for (const xmlEntry of xmlEntries[kind]) {
-                const cEntry = new CatalogEntry();
-                cEntry.kind = kind;
-                if (xmlEntry.$ && xmlEntry.$.id) {
-                    cEntry.id = xmlEntry.$.id;
-                }
-                else {
-                    cEntry.id = kind;
-                }
-                if (xmlEntry.$ && xmlEntry.$.default) {
-                    cEntry.default = xmlEntry.$.default === '1';
-                }
-                else {
-                    cEntry.default = false;
-                }
-                if (xmlEntry.$ && xmlEntry.$.parent) {
-                    cEntry.parent = xmlEntry.$.parent;
-                }
-                this.catalogMap.set(cEntry.id, cEntry);
+    }
+    onend() {
+        this.catalogMap = new Map();
+    }
+    onopentag(tag) {
+        if (this.depth === 1 && tag.name.startsWith('C')) {
+            if (tag.attributes['id']) {
+                this.catalogMap.set(tag.attributes['id'], {
+                    kind: tag.name,
+                    id: tag.attributes['id'],
+                    default: tag.attributes['default'] ? true : false,
+                    parent: tag.attributes['parent'] || null,
+                });
             }
         }
+        this.depth++;
     }
-    readFromString(text) {
-        return new Promise((resolve, reject) => {
-            xml.parseString(text, (err, result) => {
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    try {
-                        this.parse(result.Catalog);
-                        resolve();
-                    }
-                    catch (err) {
-                        reject(err);
-                    }
-                }
-            });
-        });
+    onclosetag(tagName) {
+        this.depth--;
     }
     toCatalog() {
         return this.catalogMap;
     }
 }
-exports.XMLFileReader = XMLFileReader;
+exports.CatalogParser = CatalogParser;
 //# sourceMappingURL=datacatalog.js.map

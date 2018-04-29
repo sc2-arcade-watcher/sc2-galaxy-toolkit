@@ -33,6 +33,7 @@ export declare class IntrinsicType extends AbstractType {
 export declare class ComplexType extends AbstractType implements gt.ComplexType {
     kind: gt.SyntaxKind;
     constructor(kind: gt.SyntaxKind);
+    readonly extendsHandle: boolean;
     isAssignableTo(target: AbstractType): boolean;
     isComparableTo(target: AbstractType): boolean;
     isBoolExpression(negation: boolean): boolean;

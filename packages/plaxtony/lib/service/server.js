@@ -31,6 +31,7 @@ const references_1 = require("./references");
 const rename_1 = require("./rename");
 const archive_1 = require("../sc2mod/archive");
 const timers_1 = require("timers");
+const vscode_uri_1 = require("vscode-uri");
 function getNodeRange(node) {
     return {
         start: { line: node.line, character: node.char },
@@ -39,15 +40,15 @@ function getNodeRange(node) {
 }
 function translateNodeKind(node) {
     switch (node.kind) {
-        case 137 /* VariableDeclaration */:
+        case 138 /* VariableDeclaration */:
             const variable = node;
             const isConstant = variable.modifiers.some((value) => {
-                return value.kind === 52 /* ConstKeyword */;
+                return value.kind === 53 /* ConstKeyword */;
             });
             return isConstant ? lsp.SymbolKind.Constant : lsp.SymbolKind.Variable;
-        case 138 /* FunctionDeclaration */:
+        case 139 /* FunctionDeclaration */:
             return lsp.SymbolKind.Function;
-        case 136 /* StructDeclaration */:
+        case 137 /* StructDeclaration */:
             return lsp.SymbolKind.Class;
         default:
             return lsp.SymbolKind.Field;
@@ -58,7 +59,7 @@ function translateDeclaratons(origDeclarations) {
     let kind;
     for (let node of origDeclarations) {
         const sourceFile = utils_1.findAncestor(node, (element) => {
-            return element.kind === 124 /* SourceFile */;
+            return element.kind === 125 /* SourceFile */;
         });
         symbols.push({
             kind: translateNodeKind(node),
@@ -120,6 +121,11 @@ function mapFromObject(stuff) {
     });
     return m;
 }
+const fileChangeTypeNames = {
+    [lsp.FileChangeType.Created]: 'Created',
+    [lsp.FileChangeType.Changed]: 'Changed',
+    [lsp.FileChangeType.Deleted]: 'Deleted',
+};
 ;
 ;
 class Server {
@@ -149,6 +155,7 @@ class Server {
         this.documents.onDidOpen(this.onDidOpen.bind(this));
         this.documents.onDidClose(this.onDidClose.bind(this));
         this.documents.onDidSave(this.onDidSave.bind(this));
+        this.connection.onDidChangeWatchedFiles(this.onDidChangeWatchedFiles.bind(this));
         this.connection.onInitialize(this.onInitialize.bind(this));
         this.connection.onInitialized(this.onInitialized.bind(this));
         this.connection.onDidChangeConfiguration(this.onDidChangeConfiguration.bind(this));
@@ -163,8 +170,11 @@ class Server {
         this.connection.onRenameRequest(this.onRenameRequest.bind(this));
         return this.connection;
     }
-    log(msg) {
+    log(msg, ...params) {
         this.connection.console.log(msg);
+        if (params.length) {
+            this.connection.console.log(util.inspect(params));
+        }
     }
     flushDocument(documentUri, isDirty = true) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -213,17 +223,25 @@ class Server {
                 workspace = new archive_1.SC2Workspace(null, [new archive_1.SC2Archive('untitled.sc2mod', archive_1.resolveArchiveDirectory('mods/core.sc2mod', modSources))]);
             }
             this.log('Indexing s2workspace: ' + archivePath);
+            this.connection.sendNotification('indexProgress', 'Indexing SC2 archives..');
             yield this.store.updateS2Workspace(workspace, this.config.localization);
+            this.connection.sendNotification('indexProgress', `Indexing Galaxy files..`);
             for (const modArchive of workspace.dependencies) {
                 for (const extSrc of yield modArchive.findFiles('**/*.galaxy')) {
+                    // this.connection.sendNotification('indexProgress', `Indexing: ${extSrc}`);
                     this.onDidFindInWorkspace({ document: store_1.createTextDocumentFromFs(path.join(modArchive.directory, extSrc)) });
                 }
             }
             if (this.workspaceWatcher) {
-                this.workspaceWatcher.onDidOpen(this.onDidFindInWorkspace.bind(this));
+                this.workspaceWatcher.onDidOpen((ev) => {
+                    const extSrc = vscode_uri_1.default.parse(ev.document.uri).fsPath.substr(this.workspaceWatcher.workspacePath.length);
+                    // this.connection.sendNotification('indexProgress', `Indexing: ${extSrc}`);
+                    this.onDidFindInWorkspace(ev);
+                });
                 // workspace.onDidOpenS2Archive(this.onDidFindS2Workspace.bind(this));
                 yield this.workspaceWatcher.watch();
             }
+            this.connection.sendNotification('indexProgress', 'Finalizing..');
             for (const documentUri of this.documentUpdateRequests.keys()) {
                 yield this.flushDocument(documentUri);
             }
@@ -237,7 +255,10 @@ class Server {
             this.initParams = params;
             return {
                 capabilities: {
-                    textDocumentSync: this.documents.syncKind,
+                    textDocumentSync: {
+                        change: this.documents.syncKind,
+                        openClose: true,
+                    },
                     documentSymbolProvider: true,
                     workspaceSymbolProvider: true,
                     completionProvider: {
@@ -347,7 +368,7 @@ class Server {
     }
     onDidClose(ev) {
         this.store.openDocuments.delete(ev.document.uri);
-        if (!this.store.isDocumentInWorkspace(ev.document.uri)) {
+        if (!this.store.isUriInWorkspace(ev.document.uri)) {
             this.store.removeDocument(ev.document.uri);
             this.log('removed from store');
         }
@@ -359,6 +380,30 @@ class Server {
     onDidSave(ev) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.flushDocument(ev.document.uri, true);
+        });
+    }
+    onDidChangeWatchedFiles(ev) {
+        return __awaiter(this, void 0, void 0, function* () {
+            for (const x of ev.changes) {
+                if (!this.store.isUriInWorkspace(x.uri))
+                    continue;
+                this.log(`${fileChangeTypeNames[x.type]} ${x.uri}`);
+                switch (x.type) {
+                    case lsp.FileChangeType.Created:
+                    case lsp.FileChangeType.Changed:
+                        {
+                            if (!this.store.openDocuments.has(x.uri)) {
+                                this.onDidFindInWorkspace({ document: store_1.createTextDocumentFromUri(x.uri) });
+                            }
+                            break;
+                        }
+                    case lsp.FileChangeType.Deleted:
+                        {
+                            this.store.removeDocument(x.uri);
+                            break;
+                        }
+                }
+            }
         });
     }
     onDidFindInWorkspace(ev) {
@@ -375,7 +420,14 @@ class Server {
             if (!this.store.documents.has(params.textDocument.uri))
                 return null;
             yield this.flushDocument(params.textDocument.uri);
-            return this.completionsProvider.getCompletionsAt(params.textDocument.uri, utils_2.getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character));
+            let context = null;
+            try {
+                if (this.initParams.capabilities.textDocument.completion.contextSupport) {
+                    context = params.context;
+                }
+            }
+            catch (e) { }
+            return this.completionsProvider.getCompletionsAt(params.textDocument.uri, utils_2.getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character), context);
         });
     }
     onCompletionResolve(params) {
@@ -452,6 +504,9 @@ __decorate([
 __decorate([
     wrapRequest()
 ], Server.prototype, "onDidSave", null);
+__decorate([
+    wrapRequest()
+], Server.prototype, "onDidChangeWatchedFiles", null);
 __decorate([
     wrapRequest('Indexing', true, (payload) => {
         return payload.document.uri;

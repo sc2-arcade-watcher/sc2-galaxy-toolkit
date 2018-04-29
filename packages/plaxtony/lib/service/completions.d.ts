@@ -19,6 +19,6 @@ export declare class CompletionsProvider extends AbstractProvider {
     private buildFromSymbolMembers(parentSymbol, query?);
     private provideTriggerHandlers();
     private provideGameLinks(gameType);
-    getCompletionsAt(uri: string, position: number): lsp.CompletionItem[];
+    getCompletionsAt(uri: string, position: number, context?: lsp.CompletionContext): lsp.CompletionList;
     resolveCompletion(completion: lsp.CompletionItem): lsp.CompletionItem;
 }
