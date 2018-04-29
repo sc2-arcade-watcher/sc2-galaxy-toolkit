@@ -69,7 +69,12 @@ export function declareSymbol(node: gt.Declaration, store: Store, parentSymbol?:
         nodeSymbol = parentSymbol.members.get(name);
     }
     else {
-        if (parentSymbol && parentSymbol.declarations[0].kind === gt.SyntaxKind.SourceFile) {
+        let isStatic = false;
+        if (node.modifiers) {
+            isStatic = node.modifiers.some((value) => value.kind === gt.SyntaxKind.StaticKeyword);
+        }
+
+        if (parentSymbol && !isStatic && parentSymbol.declarations[0].kind === gt.SyntaxKind.SourceFile) {
             nodeSymbol = store.resolveGlobalSymbol(name);
         }
 
@@ -112,7 +117,7 @@ export function declareSymbol(node: gt.Declaration, store: Store, parentSymbol?:
                 case gt.SyntaxKind.VariableDeclaration:
                 case gt.SyntaxKind.FunctionDeclaration:
                 {
-                    if (node.modifiers.some((value) => value.kind === gt.SyntaxKind.StaticKeyword)) {
+                    if (isStatic) {
                         nodeSymbol.flags |= gt.SymbolFlags.Static;
                     }
                     break;

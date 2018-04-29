@@ -159,6 +159,20 @@ describe('Checker', () => {
         })
     });
 
+    describe('Static', () => {
+        const documentStatic1 = mockupTextDocument('type_checker', 'static_conflict1.galaxy');
+        const documentStatic2 = mockupTextDocument('type_checker', 'static_conflict2.galaxy');
+        const store = mockupStore(documentStatic1, documentStatic2);
+        const sourceFileStatic1 = store.documents.get(documentStatic1.uri);
+        const sourceFileStatic2 = store.documents.get(documentStatic2.uri);
+        const checker = new TypeChecker(store);
+
+        it('name non-conflict', () => {
+            assert.equal(checker.checkSourceFile(sourceFileStatic1, true).length, 0);
+            assert.equal(checker.checkSourceFile(sourceFileStatic2, true).length, 0);
+        });
+    });
+
     describe('Resolve symbol', () => {
         const documentStruct = mockupTextDocument('type_checker', 'struct.galaxy');
         const documentRef = mockupTextDocument('type_checker', 'ref.galaxy');

@@ -1268,6 +1268,11 @@ export class TypeChecker {
             if (currentContext && currentContext.symbol.members.has(name)) {
                 return currentContext.symbol.members.get(name);
             }
+
+            const sourceFile = <gt.SourceFile>findAncestorByKind(location, gt.SyntaxKind.SourceFile)
+            if (sourceFile.symbol.members.has(name)) {
+                return sourceFile.symbol.members.get(name);
+            }
         }
 
         for (const document of this.store.documents.values()) {
