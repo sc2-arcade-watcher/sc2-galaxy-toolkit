@@ -26,6 +26,18 @@ export interface CompletionConfig {
     functionExpand: CompletionFunctionExpand;
 };
 
+const enum CompletionItemDataFlags {
+    CanExpand = 1 << 1,
+    CanAppendSemicolon = 1 << 2,
+};
+
+interface CompletionItemData {
+    flags?: CompletionItemDataFlags;
+    parentSymbol?: string;
+    elementType?: 'gamelink';
+    gameType?: string;
+};
+
 export class CompletionsProvider extends AbstractProvider {
     private printer: Printer = new Printer();
     public config: CompletionConfig;
@@ -169,7 +181,7 @@ export class CompletionsProvider extends AbstractProvider {
                 if (funcDecl.parameters[1].type.kind !== gt.SyntaxKind.BoolKeyword) continue;
 
                 const item = this.buildFromSymbolDecl(symbol);
-                item.data.dontExpand = true;
+                item.data.flags = 0;
                 completions.push(item);
             }
         }
@@ -213,7 +225,7 @@ export class CompletionsProvider extends AbstractProvider {
         let query: string = null;
         const processedSymbols = new Map<string, Symbol>();
         if (currentToken && currentToken.pos <= position && currentToken.end >= position && currentToken.kind === gt.SyntaxKind.Identifier) {
-            const offset = position -= currentToken.pos;
+            const offset = position - currentToken.pos;
             query = (<gt.Identifier>currentToken).name.substr(0, offset);
         }
 
@@ -327,6 +339,30 @@ export class CompletionsProvider extends AbstractProvider {
             }
         }
 
+        // can append semicolon
+        let flags: CompletionItemDataFlags = CompletionItemDataFlags.CanExpand;
+        if (currentToken) {
+            if (currentToken.kind === gt.SyntaxKind.Identifier && position < currentToken.end) {
+                flags &= ~CompletionItemDataFlags.CanExpand;
+            }
+
+            if (position >= currentToken.end) {
+                flags |= CompletionItemDataFlags.CanAppendSemicolon;
+            }
+            else if (currentToken.parent) {
+                switch (currentToken.parent.kind) {
+                    case gt.SyntaxKind.ExpressionStatement: {
+                        flags |= currentToken.parent.syntaxTokens.findIndex(value => value.kind === gt.SyntaxKind.SemicolonToken) === -1 ? CompletionItemDataFlags.CanAppendSemicolon : 0;
+                        break;
+                    }
+                    case gt.SyntaxKind.Block: {
+                        flags |= CompletionItemDataFlags.CanAppendSemicolon;
+                        break;
+                    }
+                }
+            }
+        }
+
         let count = 0;
         let isIncomplete = false;
         outer: for (const document of this.store.documents.values()) {
@@ -336,6 +372,9 @@ export class CompletionsProvider extends AbstractProvider {
                 if (!query || fuzzysearch(query, name)) {
                     processedSymbols.set(name, symbol);
                     const citem = this.buildFromSymbolDecl(symbol);
+                    citem.data = <CompletionItemData>{
+                        flags: flags,
+                    };
                     completions.push(citem);
 
                     if (++count >= 7500) {
@@ -355,15 +394,16 @@ export class CompletionsProvider extends AbstractProvider {
     public resolveCompletion(completion: lsp.CompletionItem): lsp.CompletionItem {
         let symbol: gt.Symbol;
         let parentSymbolName: string;
+        const customData: CompletionItemData = completion.data || {};
 
-        if (completion.data && completion.data.elementType && completion.data.elementType === 'gamelink') {
-            completion.documentation = this.store.s2metadata.getGameLinkLocalizedName(completion.data.gameType, completion.insertText, true);
-            completion.documentation += '\n<' + this.store.s2metadata.getGameLinkKind(completion.data.gameType, completion.insertText) + '>';
+        if (customData.elementType && customData.elementType === 'gamelink') {
+            completion.documentation = this.store.s2metadata.getGameLinkLocalizedName(customData.gameType, completion.insertText, true);
+            completion.documentation += '\n<' + this.store.s2metadata.getGameLinkKind(customData.gameType, completion.insertText) + '>';
             return completion;
         }
 
-        if (completion.data && completion.data.parentSymbol) {
-            parentSymbolName = (<string>completion.data.parentSymbol);
+        if (customData.parentSymbol) {
+            parentSymbolName = (<string>customData.parentSymbol);
         }
         for (const sourceFile of this.store.documents.values()) {
             if (parentSymbolName) {
@@ -380,7 +420,7 @@ export class CompletionsProvider extends AbstractProvider {
         if (
             this.config.functionExpand !== CompletionFunctionExpand.None &&
             completion.kind === lsp.CompletionItemKind.Function &&
-            !(completion.data && completion.data.dontExpand)
+            customData.flags && customData.flags & CompletionItemDataFlags.CanExpand
         ) {
             const decl = <gt.FunctionDeclaration>symbol.declarations[0];
             let funcArgs: string[] = [];
@@ -395,12 +435,17 @@ export class CompletionsProvider extends AbstractProvider {
                 funcArgs = funcArgs.map((item, index) => {
                     return `\${${index+1}:${item}}`;
                 });
-                completion.insertText = completion.label + '(' + funcArgs.join(', ') + ')$0';
+                completion.insertText = completion.label + '(' + funcArgs.join(', ') + ')';
             }
             else {
                 completion.insertTextFormat = lsp.InsertTextFormat.PlainText;
-                completion.insertText = completion.label + '($1)$0';
+                completion.insertText = completion.label + '($1)';
             }
+
+            if (customData.flags && customData.flags & CompletionItemDataFlags.CanAppendSemicolon) {
+                completion.insertText += ';';
+            }
+            completion.insertText += '$0';
         }
 
         if (symbol) {

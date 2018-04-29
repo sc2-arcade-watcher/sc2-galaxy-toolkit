@@ -148,7 +148,7 @@ describe('Service', () => {
 
         it('expand functions', () => {
             const completions = getCompletionsAt(documentCompletions, 3, 9);
-            assert.equal(completionsProvider.resolveCompletion(completions.items[0]).insertText, 'completion_test(${1:0})$0');
+            assert.equal(completionsProvider.resolveCompletion(completions.items[0]).insertText, 'completion_test(${1:0});$0');
         });
 
         it('trigger handle function definitions', () => {
