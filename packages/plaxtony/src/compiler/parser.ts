@@ -242,9 +242,14 @@ export class Parser {
         const result = this.createNodeArray<T>();
 
         while (!this.isListTerminator(kind)) {
+            if (this.token() === SyntaxKind.SingleLineCommentTrivia) {
+                const commentToken = <Types.Token<Types.SyntaxKind.SingleLineCommentTrivia>>this.parseTokenNode();
+                this.sourceFile.commentsLineMap.set(commentToken.line, commentToken);
+                continue;
+            }
+
             if (this.isListElement(kind, false)) {
                 result.push(parseElement());
-
                 continue;
             }
 
@@ -1096,6 +1101,7 @@ export class Parser {
         this.syntaxTokens = [];
 
         this.sourceFile = <Types.SourceFile>this.createNode(SyntaxKind.SourceFile, 0);
+        this.sourceFile.commentsLineMap = new Map<number, Types.Token<SyntaxKind.SingleLineCommentTrivia>>();
         this.sourceFile.parseDiagnostics = [];
         this.sourceFile.bindDiagnostics = [];
         this.sourceFile.additionalSyntacticDiagnostics = [];

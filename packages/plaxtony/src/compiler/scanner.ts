@@ -559,7 +559,7 @@ export class Scanner {
                             this.pos++;
                         }
 
-                        continue;
+                        return this.token = SyntaxKind.SingleLineCommentTrivia;
                     }
                     if (this.text.charCodeAt(this.pos + 1) === CharacterCodes.equals) {
                         return this.pos += 2, this.token = SyntaxKind.SlashEqualsToken;

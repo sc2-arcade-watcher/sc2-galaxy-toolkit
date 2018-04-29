@@ -294,7 +294,10 @@ export class Server {
         this.initParams = params;
         return {
             capabilities: {
-                textDocumentSync: this.documents.syncKind,
+                textDocumentSync: {
+                    change: this.documents.syncKind,
+                    openClose: true,
+                },
                 documentSymbolProvider: true,
                 workspaceSymbolProvider: true,
                 completionProvider: {
@@ -467,9 +470,19 @@ export class Server {
     private async onCompletion(params: lsp.TextDocumentPositionParams) {
         if (!this.store.documents.has(params.textDocument.uri)) return null;
         await this.flushDocument(params.textDocument.uri);
+
+        let context: lsp.CompletionContext = null;
+        try {
+            if (this.initParams.capabilities.textDocument.completion.contextSupport) {
+                context = (<lsp.CompletionParams>params).context;
+            }
+        }
+        catch (e) {}
+
         return this.completionsProvider.getCompletionsAt(
             params.textDocument.uri,
-            getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character)
+            getPositionOfLineAndCharacter(this.store.documents.get(params.textDocument.uri), params.position.line, params.position.character),
+            context
         );
     }
 

@@ -4,11 +4,16 @@ import { TypeChecker } from '../compiler/checker';
 import { AbstractProvider } from './provider';
 import { tokenToString } from '../compiler/scanner';
 import { findAncestor, isToken, isPartOfExpression } from '../compiler/utils';
-import { getTokenAtPosition, findPrecedingToken, fuzzysearch, getAdjacentToken } from './utils';
+import { getTokenAtPosition, findPrecedingToken, fuzzysearch, getAdjacentToken, getLineAndCharacterOfPosition } from './utils';
 import { Printer } from '../compiler/printer';
 import * as lsp from 'vscode-languageserver';
 import { getDocumentationOfSymbol } from './s2meta';
 import * as trig from '../sc2mod/trigger';
+
+function isInComment(sourceFile: gt.SourceFile, pos: number) {
+    const comment = sourceFile.commentsLineMap.get(getLineAndCharacterOfPosition(sourceFile, pos).line);
+    return comment && pos > comment.pos;
+}
 
 export const enum CompletionFunctionExpand {
     None,
@@ -195,11 +200,12 @@ export class CompletionsProvider extends AbstractProvider {
         return completions;
     }
 
-    public getCompletionsAt(uri: string, position: number): lsp.CompletionList {
+    public getCompletionsAt(uri: string, position: number, context?: lsp.CompletionContext): lsp.CompletionList {
         let completions = <lsp.CompletionItem[]> [];
 
         const sourceFile = this.store.documents.get(uri);
         if (!sourceFile) return;
+        if (isInComment(sourceFile, position)) return;
         let currentToken = findPrecedingToken(position, sourceFile);
         // const adjacentToken = getAdjacentToken(position, sourceFile);
 

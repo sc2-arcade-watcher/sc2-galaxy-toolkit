@@ -97,71 +97,71 @@ describe('Service', () => {
 
         it('should provide globaly declared symbols', () => {
             const completions = completionsProvider.getCompletionsAt(document.uri, 0);
-            assert.isAbove(completions.length, 0);
-            assert.isDefined(completions.find((item) => {
+            assert.isAbove(completions.items.length, 0);
+            assert.isDefined(completions.items.find((item) => {
                 return item.label === 'decl_var_string';
             }));
         });
 
         it('should provide localy declared symbols', () => {
             const completions = completionsProvider.getCompletionsAt(document.uri, 51);
-            assert.isAbove(completions.length, 0);
-            assert.isDefined(completions.find((item) => {
+            assert.isAbove(completions.items.length, 0);
+            assert.isDefined(completions.items.find((item) => {
                 return item.label === 'local';
             }));
         });
 
         it('should provide struct scoped symbols', () => {
-            let items: lsp.CompletionItem[];
+            let completionsList: lsp.CompletionList;
 
-            items = getCompletionsAt(documentStruct, 14, 9);
-            assert.lengthOf(items, 3);
-            items = getCompletionsAt(documentStruct, 14, 10);
-            assert.lengthOf(items, 3);
+            completionsList = getCompletionsAt(documentStruct, 14, 9);
+            assert.lengthOf(completionsList.items, 3);
+            completionsList = getCompletionsAt(documentStruct, 14, 10);
+            assert.lengthOf(completionsList.items, 3);
 
-            items = getCompletionsAt(documentStruct, 15, 13);
-            assert.lengthOf(items, 1);
-            items = getCompletionsAt(documentStruct, 15, 14);
-            assert.lengthOf(items, 1);
-            items = getCompletionsAt(documentStruct, 15, 12);
-            assert.lengthOf(items, 3);
+            completionsList = getCompletionsAt(documentStruct, 15, 13);
+            assert.lengthOf(completionsList.items, 1);
+            completionsList = getCompletionsAt(documentStruct, 15, 14);
+            assert.lengthOf(completionsList.items, 1);
+            completionsList = getCompletionsAt(documentStruct, 15, 12);
+            assert.lengthOf(completionsList.items, 3);
 
-            items = getCompletionsAt(documentStruct, 16, 21);
-            assert.lengthOf(items, 1);
-            assert.equal(items[0].label, 'submember');
-            assert.equal(items[0].kind, lsp.CompletionItemKind.Property);
-            assert.equal(completionsProvider.resolveCompletion(items[0]).detail, 'string submember;');
+            completionsList = getCompletionsAt(documentStruct, 16, 21);
+            assert.lengthOf(completionsList.items, 1);
+            assert.equal(completionsList.items[0].label, 'submember');
+            assert.equal(completionsList.items[0].kind, lsp.CompletionItemKind.Property);
+            assert.equal(completionsProvider.resolveCompletion(completionsList.items[0]).detail, 'string submember;');
 
-            items = getCompletionsAt(documentStruct, 17, 18);
-            assert.notEqual(items.length, 1);
+            completionsList = getCompletionsAt(documentStruct, 17, 18);
+            assert.notEqual(completionsList.items.length, 1);
         });
 
         it('string', () => {
             const completions = getCompletionsAt(documentCompletions, 2, 12);
-            assert.equal(completions.length, 0);
+            assert.equal(completions.items.length, 0);
         });
 
         it('filter suggestions basing on preceding indentifier', () => {
             const completions = getCompletionsAt(documentCompletions, 3, 9);
-            assert.equal(completions.length, 2);
+            assert.equal(completions.items.length, 2);
         });
 
         it('expand functions', () => {
             const completions = getCompletionsAt(documentCompletions, 3, 9);
-            assert.equal(completionsProvider.resolveCompletion(completions[0]).insertText, 'completion_test(${1:0})$0');
+            assert.equal(completionsProvider.resolveCompletion(completions.items[0]).insertText, 'completion_test(${1:0})$0');
         });
 
         it('trigger handle function definitions', () => {
             let completions = getCompletionsAt(documentTrigger, 24, 19);
-            assert.equal(completions.length, 2);
-            assert.equal(completions[0].label, 'on_t1');
-            assert.isTrue(completionsProvider.resolveCompletion(completions[0]).insertText === undefined);
+            assert.equal(completions.items.length, 2);
+            assert.equal(completions.items[0].label, 'on_t1');
+            assert.isTrue(completionsProvider.resolveCompletion(completions.items[0]).insertText === undefined);
 
             completions = getCompletionsAt(documentTrigger, 25, 22);
-            assert.equal(completions.length, 0);
+            assert.equal(completions.items.length, 0);
 
             completions = getCompletionsAt(documentTrigger, 26, 19);
-            assert.equal(completions.length, 2);
+            assert.equal(completions.items.length, 2);
         });
     });
 

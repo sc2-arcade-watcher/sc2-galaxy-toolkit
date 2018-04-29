@@ -9,8 +9,8 @@ import { CompletionsProvider, CompletionFunctionExpand } from '../src/service/co
 import { getPositionOfLineAndCharacter } from '../src/service/utils';
 import * as lsp from 'vscode-languageserver';
 
-function completionsContains(completions: lsp.CompletionItem[], name: string) {
-    for (const x of completions) {
+function completionsContains(completions: lsp.CompletionList, name: string) {
+    for (const x of completions.items) {
         if (x.label === name) return true;
     }
     return false;

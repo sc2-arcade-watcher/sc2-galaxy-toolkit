@@ -137,6 +137,7 @@ export const enum CharacterCodes {
 
 export const enum SyntaxKind {
     Unknown,
+    SingleLineCommentTrivia,
 
     // Literals
     NumericLiteral,
@@ -579,6 +580,7 @@ export interface SourceFile extends Declaration {
     fileName: string;
     statements: NodeArray<Statement>;
     lineMap: number[];
+    commentsLineMap: Map<number, Token<SyntaxKind.SingleLineCommentTrivia>>;
     /* @internal */ text: string;
     /* @internal */ parseDiagnostics: Diagnostic[]; // File-level diagnostics reported by the parser
     /* @internal */ bindDiagnostics: Diagnostic[]; // File-level diagnostics reported by the binder.
