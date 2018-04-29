@@ -142,13 +142,15 @@ export class S2WorkspaceMetadata {
         return names;
     }
 
-    public getElementDoc(el: trig.Element) {
+    public getElementDoc(el: trig.Element, extended: boolean) {
         let name = '**' + this.workspace.locComponent.triggers.elementName('Name', el) + '**';
 
         if (el instanceof trig.FunctionDef) {
+            if (extended) {
             const grammar = this.workspace.locComponent.triggers.elementName('Grammar', el);
             if (grammar) {
                 name += ' (' + grammar.replace(tildeRE, '`') + ')';
+            }
             }
             const hint = this.workspace.locComponent.triggers.elementName('Hint', el);
             if (hint) {
@@ -178,10 +180,10 @@ export class S2WorkspaceMetadata {
         }
     }
 
-    public getSymbolDoc(symbolName: string) {
+    public getSymbolDoc(symbolName: string, extended: boolean = true) {
         const el = this.findElementByName(symbolName);
         if (!el) return null;
-        return this.getElementDoc(el);
+        return this.getElementDoc(el, extended);
     }
 
     public getFunctionArgumentsDoc(symbolName: string) {
@@ -196,7 +198,7 @@ export class S2WorkspaceMetadata {
         }
 
         for (const param of el.getParameters()) {
-            docs.push(this.getElementDoc(param));
+            docs.push(this.getElementDoc(param, false));
         }
 
         return docs;
@@ -256,7 +258,7 @@ export class S2WorkspaceMetadata {
     }
 }
 
-export function getDocumentationOfSymbol(store: Store, symbol: gt.Symbol) {
+export function getDocumentationOfSymbol(store: Store, symbol: gt.Symbol, extended: boolean = true) {
     if (!store.s2metadata) return null;
-    return store.s2metadata.getSymbolDoc(symbol.escapedName);
+    return store.s2metadata.getSymbolDoc(symbol.escapedName, extended);
 }

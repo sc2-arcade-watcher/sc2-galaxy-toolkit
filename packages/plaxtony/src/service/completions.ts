@@ -404,7 +404,7 @@ export class CompletionsProvider extends AbstractProvider {
         }
 
         if (symbol) {
-            completion.documentation = getDocumentationOfSymbol(this.store, symbol);
+            completion.documentation = getDocumentationOfSymbol(this.store, symbol, false);
 
             let node = symbol.declarations[0];
 
