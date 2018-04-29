@@ -98,9 +98,7 @@ export class S2WorkspaceMetadata {
 
     public async build(lang: string) {
         this.workspace.locComponent.lang = lang;
-        await this.workspace.trigComponent.sync();
-        await this.workspace.locComponent.sync();
-        await this.workspace.catalogComponent.sync();
+        await this.workspace.loadComponents();
 
         for (const lib of this.workspace.trigComponent.getStore().getLibraries().values()) {
             this.mapContainer(lib);
@@ -147,10 +145,10 @@ export class S2WorkspaceMetadata {
 
         if (el instanceof trig.FunctionDef) {
             if (extended) {
-            const grammar = this.workspace.locComponent.triggers.elementName('Grammar', el);
-            if (grammar) {
-                name += ' (' + grammar.replace(tildeRE, '`') + ')';
-            }
+                const grammar = this.workspace.locComponent.triggers.elementName('Grammar', el);
+                if (grammar) {
+                    name += ' (' + grammar.replace(tildeRE, '`') + ')';
+                }
             }
             const hint = this.workspace.locComponent.triggers.elementName('Hint', el);
             if (hint) {
