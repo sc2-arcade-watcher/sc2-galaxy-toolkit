@@ -464,7 +464,7 @@ export class Server {
     // }
 
     @wrapRequest()
-    private async onCompletion(params: lsp.TextDocumentPositionParams): Promise<lsp.CompletionItem[]> {
+    private async onCompletion(params: lsp.TextDocumentPositionParams) {
         if (!this.store.documents.has(params.textDocument.uri)) return null;
         await this.flushDocument(params.textDocument.uri);
         return this.completionsProvider.getCompletionsAt(

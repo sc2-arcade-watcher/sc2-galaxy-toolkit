@@ -195,7 +195,7 @@ export class CompletionsProvider extends AbstractProvider {
         return completions;
     }
 
-    public getCompletionsAt(uri: string, position: number): lsp.CompletionItem[] {
+    public getCompletionsAt(uri: string, position: number): lsp.CompletionList {
         let completions = <lsp.CompletionItem[]> [];
 
         const sourceFile = this.store.documents.get(uri);
@@ -220,7 +220,10 @@ export class CompletionsProvider extends AbstractProvider {
                 callExpr.expression.kind === gt.SyntaxKind.Identifier &&
                 (<gt.Identifier>(callExpr.expression)).name === "TriggerCreate"
             ) {
-                return this.provideTriggerHandlers();
+                return {
+                    items: this.provideTriggerHandlers(),
+                    isIncomplete: false,
+                };
             }
         }
 
@@ -230,7 +233,10 @@ export class CompletionsProvider extends AbstractProvider {
             if (elementType) {
                 // TODO: support <any> gamelink
                 if (elementType.type === 'gamelink' && currentToken.kind === gt.SyntaxKind.StringLiteral && elementType.gameType) {
-                    return this.provideGameLinks(elementType.gameType);
+                    return {
+                        items: this.provideGameLinks(elementType.gameType),
+                        isIncomplete: false,
+                    };
                 }
             }
             if (elementType && elementType.type === 'preset') {
@@ -242,7 +248,10 @@ export class CompletionsProvider extends AbstractProvider {
                         processedSymbols.set(name, symbol);
                     }
                 }
-                if (!query) return completions;
+                if (!query) return {
+                    items: completions,
+                    isIncomplete: false,
+                };
             }
         }
 
@@ -251,7 +260,10 @@ export class CompletionsProvider extends AbstractProvider {
             currentToken.kind === gt.SyntaxKind.StringLiteral ||
             currentToken.kind === gt.SyntaxKind.NumericLiteral
         )) {
-            return completions;
+            return {
+                items: completions,
+                isIncomplete: false,
+            };
         }
 
         // properties
@@ -264,7 +276,10 @@ export class CompletionsProvider extends AbstractProvider {
                 currentToken = (<gt.PropertyAccessExpression>currentToken.parent).expression;
                 const type = checker.getTypeOfNode(currentToken, true);
                 if (type.flags & gt.TypeFlags.Struct) {
-                    return this.buildFromSymbolMembers(type.symbol);
+                    return {
+                        items: this.buildFromSymbolMembers(type.symbol),
+                        isIncomplete: false,
+                    };
                 }
             }
         }
@@ -307,6 +322,7 @@ export class CompletionsProvider extends AbstractProvider {
         }
 
         let count = 0;
+        let isIncomplete = false;
         outer: for (const document of this.store.documents.values()) {
             for (const [name, symbol] of document.symbol.members) {
                 if ((symbol.flags & gt.SymbolFlags.Static) && document.fileName !== uri) continue;
@@ -316,14 +332,18 @@ export class CompletionsProvider extends AbstractProvider {
                     const citem = this.buildFromSymbolDecl(symbol);
                     completions.push(citem);
 
-                    if (++count >= 10000 && query) {
+                    if (++count >= 7500) {
+                        isIncomplete = true;
                         break outer;
                     }
                 }
             }
         }
 
-        return completions;
+        return {
+            items: completions,
+            isIncomplete: isIncomplete,
+        };
     }
 
     public resolveCompletion(completion: lsp.CompletionItem): lsp.CompletionItem {
