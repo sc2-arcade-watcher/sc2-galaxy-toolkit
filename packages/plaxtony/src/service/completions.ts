@@ -421,6 +421,14 @@ export class CompletionsProvider extends AbstractProvider {
                     break;
             }
         }
+
+        if (completion.documentation) {
+            completion.documentation = <lsp.MarkupContent>{
+                kind: lsp.MarkupKind.Markdown,
+                value: completion.documentation,
+            };
+        }
+
         return completion;
     }
 }
