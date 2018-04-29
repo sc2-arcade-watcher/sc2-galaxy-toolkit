@@ -24,7 +24,12 @@ class Parser {
         return this.currentToken;
     }
     nextToken() {
-        return this.currentToken = this.scanner.scan();
+        this.currentToken = this.scanner.scan();
+        if (this.currentToken === 1 /* SingleLineCommentTrivia */) {
+            const commentToken = this.parseTokenNode();
+            this.sourceFile.commentsLineMap.set(commentToken.line, commentToken);
+        }
+        return this.currentToken;
     }
     parseErrorAtCurrentToken(message, arg0) {
         const start = this.scanner.getStartPos();
@@ -204,11 +209,6 @@ class Parser {
         this.parsingContext |= 1 << kind;
         const result = this.createNodeArray();
         while (!this.isListTerminator(kind)) {
-            if (this.token() === 1 /* SingleLineCommentTrivia */) {
-                const commentToken = this.parseTokenNode();
-                this.sourceFile.commentsLineMap.set(commentToken.line, commentToken);
-                continue;
-            }
             if (this.isListElement(kind, false)) {
                 result.push(parseElement());
                 continue;
