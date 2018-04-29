@@ -3,7 +3,7 @@ import * as Types from '../compiler/types';
 import * as util from 'util';
 import * as path from 'path';
 import { findAncestor } from '../compiler/utils';
-import { Store, WorkspaceWatcher, S2WorkspaceWatcher, findWorkspaceArchive, S2WorkspaceChangeEvent, createTextDocumentFromFs } from './store';
+import { Store, WorkspaceWatcher, S2WorkspaceWatcher, findWorkspaceArchive, S2WorkspaceChangeEvent, createTextDocumentFromFs, createTextDocumentFromUri } from './store';
 import { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition } from './utils';
 import { AbstractProvider, LoggerConsole, createProvider } from './provider';
 import { DiagnosticsProvider } from './diagnostics';
@@ -117,6 +117,12 @@ function mapFromObject(stuff: any) {
     return m;
 }
 
+const fileChangeTypeNames: { [key: number]: string } = {
+    [lsp.FileChangeType.Created]: 'Created',
+    [lsp.FileChangeType.Changed]: 'Changed',
+    [lsp.FileChangeType.Deleted]: 'Deleted',
+};
+
 interface PlaxtonyConfig {
     logLevel: string;
     localization: string;
@@ -182,6 +188,7 @@ export class Server {
         this.documents.onDidOpen(this.onDidOpen.bind(this));
         this.documents.onDidClose(this.onDidClose.bind(this));
         this.documents.onDidSave(this.onDidSave.bind(this));
+        this.connection.onDidChangeWatchedFiles(this.onDidChangeWatchedFiles.bind(this));
 
         this.connection.onInitialize(this.onInitialize.bind(this));
         this.connection.onInitialized(this.onInitialized.bind(this));
@@ -199,8 +206,11 @@ export class Server {
         return this.connection;
     }
 
-    public log(msg: string) {
+    public log(msg: string, ...params: any[]) {
         this.connection.console.log(msg);
+        if (params.length) {
+            this.connection.console.log(util.inspect(params));
+        }
     }
 
     private async flushDocument(documentUri: string, isDirty = true) {
@@ -401,7 +411,7 @@ export class Server {
     @wrapRequest('Closed', true, (payload: lsp.TextDocumentChangeEvent) => payload.document.uri)
     private onDidClose(ev: lsp.TextDocumentChangeEvent) {
         this.store.openDocuments.delete(ev.document.uri);
-        if (!this.store.isDocumentInWorkspace(ev.document.uri)) {
+        if (!this.store.isUriInWorkspace(ev.document.uri)) {
             this.store.removeDocument(ev.document.uri)
             this.log('removed from store');
         }
@@ -414,6 +424,29 @@ export class Server {
     @wrapRequest()
     private async onDidSave(ev: lsp.TextDocumentChangeEvent) {
         await this.flushDocument(ev.document.uri, true);
+    }
+
+    @wrapRequest()
+    private async onDidChangeWatchedFiles(ev: lsp.DidChangeWatchedFilesParams) {
+        for (const x of ev.changes) {
+            if (!this.store.isUriInWorkspace(x.uri)) continue;
+            this.log(`${fileChangeTypeNames[x.type]} ${x.uri}`);
+            switch (x.type) {
+                case lsp.FileChangeType.Created:
+                case lsp.FileChangeType.Changed:
+                {
+                    if (!this.store.openDocuments.has(x.uri)) {
+                        this.onDidFindInWorkspace({document: createTextDocumentFromUri(x.uri)});
+                    }
+                    break;
+                }
+                case lsp.FileChangeType.Deleted:
+                {
+                    this.store.removeDocument(x.uri)
+                    break;
+                }
+            }
+        }
     }
 
     @wrapRequest('Indexing', true, (payload: lsp.TextDocumentChangeEvent) => {

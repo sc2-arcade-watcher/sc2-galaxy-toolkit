@@ -28,6 +28,10 @@ export function createTextDocumentFromFs(filepath: string): lsp.TextDocument {
     return createTextDocument(Uri.file(filepath).toString(), fs.readFileSync(filepath, 'utf8'));
 }
 
+export function createTextDocumentFromUri(uri: string): lsp.TextDocument {
+    return createTextDocument(uri, fs.readFileSync(Uri.parse(uri).fsPath, 'utf8'));
+}
+
 export class IndexedDocument {
     textDocument: lsp.TextDocument;
     sourceNode: SourceFile;
@@ -186,7 +190,7 @@ export class Store {
         await this.s2metadata.build(lang);
     }
 
-    public isDocumentInWorkspace(documentUri: string, includeDepds = true) {
+    public isUriInWorkspace(documentUri: string, includeDepds = true) {
         const documentPath = URI.parse(documentUri).fsPath;
         if (this.rootPath && documentPath.startsWith(this.rootPath)) {
             return true;
