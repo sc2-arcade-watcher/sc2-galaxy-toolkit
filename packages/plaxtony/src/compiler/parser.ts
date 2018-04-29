@@ -25,7 +25,12 @@ export class Parser {
     }
 
     private nextToken(): SyntaxKind {
-        return this.currentToken = this.scanner.scan();
+        this.currentToken = this.scanner.scan();
+        if (this.currentToken === SyntaxKind.SingleLineCommentTrivia) {
+            const commentToken = <Types.Token<Types.SyntaxKind.SingleLineCommentTrivia>>this.parseTokenNode();
+            this.sourceFile.commentsLineMap.set(commentToken.line, commentToken);
+        }
+        return this.currentToken;
     }
 
     private parseErrorAtCurrentToken(message: string, arg0?: any): void {
@@ -242,12 +247,6 @@ export class Parser {
         const result = this.createNodeArray<T>();
 
         while (!this.isListTerminator(kind)) {
-            if (this.token() === SyntaxKind.SingleLineCommentTrivia) {
-                const commentToken = <Types.Token<Types.SyntaxKind.SingleLineCommentTrivia>>this.parseTokenNode();
-                this.sourceFile.commentsLineMap.set(commentToken.line, commentToken);
-                continue;
-            }
-
             if (this.isListElement(kind, false)) {
                 result.push(parseElement());
                 continue;
