@@ -346,17 +346,28 @@ export class CompletionsProvider extends AbstractProvider {
                 flags &= ~CompletionItemDataFlags.CanExpand;
             }
 
-            if (position >= currentToken.end) {
-                flags |= CompletionItemDataFlags.CanAppendSemicolon;
-            }
-            else if (currentToken.parent) {
+            if (currentToken.parent) {
                 switch (currentToken.parent.kind) {
                     case gt.SyntaxKind.ExpressionStatement: {
-                        flags |= currentToken.parent.syntaxTokens.findIndex(value => value.kind === gt.SyntaxKind.SemicolonToken) === -1 ? CompletionItemDataFlags.CanAppendSemicolon : 0;
+                        if (position >= currentToken.end) {
+                            flags |= CompletionItemDataFlags.CanAppendSemicolon;
+                        }
+                        else {
+                            flags |= currentToken.parent.syntaxTokens.findIndex(value => value.kind === gt.SyntaxKind.SemicolonToken) === -1 ? CompletionItemDataFlags.CanAppendSemicolon : 0;
+                        }
                         break;
                     }
-                    case gt.SyntaxKind.Block: {
-                        flags |= CompletionItemDataFlags.CanAppendSemicolon;
+                    case gt.SyntaxKind.Block:
+                    case gt.SyntaxKind.SourceFile:
+                    {
+                        if (position >= currentToken.end) {
+                            flags |= CompletionItemDataFlags.CanAppendSemicolon;
+                        }
+                        break;
+                    }
+                    case gt.SyntaxKind.FunctionDeclaration:
+                    {
+                        flags &= ~CompletionItemDataFlags.CanExpand;
                         break;
                     }
                 }
