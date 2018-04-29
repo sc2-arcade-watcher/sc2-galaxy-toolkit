@@ -302,19 +302,30 @@ class CompletionsProvider extends provider_1.AbstractProvider {
             if (currentToken.kind === 111 /* Identifier */ && position < currentToken.end) {
                 flags &= ~2 /* CanExpand */;
             }
-            if (position >= currentToken.end) {
-                flags |= 4 /* CanAppendSemicolon */;
-            }
-            else if (currentToken.parent) {
+            if (currentToken.parent) {
                 switch (currentToken.parent.kind) {
                     case 135 /* ExpressionStatement */: {
-                        flags |= currentToken.parent.syntaxTokens.findIndex(value => value.kind === 11 /* SemicolonToken */) === -1 ? 4 /* CanAppendSemicolon */ : 0;
+                        if (position >= currentToken.end) {
+                            flags |= 4 /* CanAppendSemicolon */;
+                        }
+                        else {
+                            flags |= currentToken.parent.syntaxTokens.findIndex(value => value.kind === 11 /* SemicolonToken */) === -1 ? 4 /* CanAppendSemicolon */ : 0;
+                        }
                         break;
                     }
-                    case 126 /* Block */: {
-                        flags |= 4 /* CanAppendSemicolon */;
-                        break;
-                    }
+                    case 126 /* Block */:
+                    case 125 /* SourceFile */:
+                        {
+                            if (position >= currentToken.end) {
+                                flags |= 4 /* CanAppendSemicolon */;
+                            }
+                            break;
+                        }
+                    case 139 /* FunctionDeclaration */:
+                        {
+                            flags &= ~2 /* CanExpand */;
+                            break;
+                        }
                 }
             }
         }
