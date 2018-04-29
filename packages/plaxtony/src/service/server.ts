@@ -267,18 +267,28 @@ export class Server {
         }
 
         this.log('Indexing s2workspace: ' + archivePath);
+        this.connection.sendNotification('indexProgress', 'Indexing SC2 archives..');
         await this.store.updateS2Workspace(workspace, this.config.localization);
+
+        this.connection.sendNotification('indexProgress', `Indexing Galaxy files..`);
         for (const modArchive of workspace.dependencies) {
             for (const extSrc of await modArchive.findFiles('**/*.galaxy')) {
+                // this.connection.sendNotification('indexProgress', `Indexing: ${extSrc}`);
                 this.onDidFindInWorkspace({document: createTextDocumentFromFs(path.join(modArchive.directory, extSrc))});
             }
         }
 
         if (this.workspaceWatcher) {
-            this.workspaceWatcher.onDidOpen(this.onDidFindInWorkspace.bind(this));
+            this.workspaceWatcher.onDidOpen((ev) => {
+                const extSrc = URI.parse(ev.document.uri).fsPath.substr(this.workspaceWatcher.workspacePath.length);
+                // this.connection.sendNotification('indexProgress', `Indexing: ${extSrc}`);
+                this.onDidFindInWorkspace(ev);
+            });
             // workspace.onDidOpenS2Archive(this.onDidFindS2Workspace.bind(this));
             await this.workspaceWatcher.watch();
         }
+
+        this.connection.sendNotification('indexProgress', 'Finalizing..');
 
         for (const documentUri of this.documentUpdateRequests.keys()) {
             await this.flushDocument(documentUri);
