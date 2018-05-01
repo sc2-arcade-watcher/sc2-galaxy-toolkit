@@ -63,11 +63,9 @@ export function activate(context: ExtensionContext) {
             indexingProgress.progress.report({message: params});
         });
         client.onNotification('indexEnd', async (params: any) => {
-            indexingProgress.progress.report({message: 'Done!'});
-            await new Promise((resolve) => setTimeout(() => resolve(), 1000));
             if (indexingProgress) indexingProgress.done();
             indexingProgress = null;
-            window.setStatusBarMessage('Indexing of SC2 archives completed!', 3000);
+            window.setStatusBarMessage('Indexing of SC2 archives completed!', 2000);
         });
     })();
 
