@@ -2,6 +2,7 @@ import * as lsp from 'vscode-languageserver';
 import * as Types from '../compiler/types';
 import * as util from 'util';
 import * as path from 'path';
+import * as fs from 'fs';
 import { findAncestor } from '../compiler/utils';
 import { Store, WorkspaceWatcher, S2WorkspaceWatcher, findWorkspaceArchive, S2WorkspaceChangeEvent, createTextDocumentFromFs, createTextDocumentFromUri } from './store';
 import { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition } from './utils';
@@ -14,7 +15,7 @@ import { DefinitionProvider } from './definitions';
 import { HoverProvider } from './hover';
 import { ReferencesProvider, ReferencesConfig } from './references';
 import { RenameProvider } from './rename';
-import { SC2Archive, SC2Workspace, resolveArchiveDirectory, openArchiveWorkspace } from '../sc2mod/archive';
+import { SC2Archive, SC2Workspace, resolveArchiveDirectory, openArchiveWorkspace, isSC2Archive } from '../sc2mod/archive';
 import { setTimeout, clearTimeout } from 'timers';
 import URI from 'vscode-uri';
 
@@ -128,6 +129,7 @@ interface PlaxtonyConfig {
     localization: string;
     documentUpdateDelay: number;
     documentDiagnosticsDelay: number;
+    archivePath: string;
     s2mod: {
         sources: string[],
         overrides: {},
@@ -236,7 +238,24 @@ export class Server {
         this.connection.sendNotification("indexStart");
 
         this.store.rootPath = rootPath;
-        if (rootPath) {
+        if (this.config.archivePath) {
+            if (path.isAbsolute(this.config.archivePath)) {
+                archivePath = this.config.archivePath;
+            }
+            else if (rootPath) {
+                archivePath = path.join(rootPath, this.config.archivePath);
+            }
+
+            if (!fs.existsSync(archivePath)) {
+                this.connection.window.showErrorMessage(`Specified archivePath '${this.config.archivePath}' resolved to '${archivePath}', but it doesn't exist.`);
+                archivePath = null;
+            }
+            else if (!isSC2Archive(archivePath)) {
+                this.connection.window.showErrorMessage(`Specified archivePath '${archivePath}', doesn't appear to be valid archive.`);
+                archivePath = null;
+            }
+        }
+        if (!archivePath && rootPath) {
             archivePath = await findWorkspaceArchive(rootPath);
         }
 
@@ -256,7 +275,7 @@ export class Server {
                 }).join('\n'));
             }
             catch (e) {
-                this.connection.console.error('SC2 data couldn\'t be loaded: ' + e.message);
+                this.connection.window.showErrorMessage(`SC2 data couldn't be loaded: ${e.message}`);
                 workspace = null;
             }
         }
