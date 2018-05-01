@@ -177,12 +177,12 @@ class Store {
     }
     isUriInWorkspace(documentUri, includeDepds = true) {
         const documentPath = vscode_uri_2.default.parse(documentUri).fsPath;
-        if (this.rootPath && documentPath.startsWith(this.rootPath)) {
+        if (this.rootPath && !this.s2workspace && documentPath.startsWith(this.rootPath)) {
             return true;
         }
         if (includeDepds && this.s2workspace) {
             for (const archive of this.s2workspace.allArchives) {
-                if (documentPath.startsWith(archive.directory))
+                if (documentPath.startsWith(archive.directory + path.sep))
                     return true;
             }
         }

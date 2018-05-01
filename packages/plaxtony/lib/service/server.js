@@ -17,6 +17,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const lsp = require("vscode-languageserver");
 const util = require("util");
 const path = require("path");
+const fs = require("fs");
 const utils_1 = require("../compiler/utils");
 const store_1 = require("./store");
 const utils_2 = require("./utils");
@@ -200,10 +201,28 @@ class Server {
             this.indexing = true;
             this.connection.sendNotification("indexStart");
             this.store.rootPath = rootPath;
-            if (rootPath) {
+            if (this.config.archivePath) {
+                if (path.isAbsolute(this.config.archivePath)) {
+                    archivePath = this.config.archivePath;
+                }
+                else if (rootPath) {
+                    archivePath = path.join(rootPath, this.config.archivePath);
+                }
+                if (!fs.existsSync(archivePath)) {
+                    this.connection.window.showErrorMessage(`Specified archivePath '${this.config.archivePath}' resolved to '${archivePath}', but it doesn't exist.`);
+                    archivePath = null;
+                }
+                else if (!archive_1.isSC2Archive(archivePath)) {
+                    this.connection.window.showErrorMessage(`Specified archivePath '${archivePath}', doesn't appear to be valid archive.`);
+                    archivePath = null;
+                }
+            }
+            if (!archivePath && rootPath) {
                 archivePath = yield store_1.findWorkspaceArchive(rootPath);
             }
             if (archivePath) {
+                this.log('s2workspace: ' + archivePath);
+                this.connection.sendNotification('indexProgress', `Resolving dependencies of '${archivePath}'`);
                 this.workspaceWatcher = new store_1.WorkspaceWatcher(archivePath);
                 try {
                     workspace = yield archive_1.openArchiveWorkspace(new archive_1.SC2Archive(path.basename(archivePath), archivePath), modSources, mapFromObject(this.config.s2mod.overrides), mapFromObject(this.config.s2mod.extra));
@@ -212,7 +231,7 @@ class Server {
                     }).join('\n'));
                 }
                 catch (e) {
-                    this.connection.console.error('SC2 data couldn\'t be loaded: ' + e.message);
+                    this.connection.window.showErrorMessage(`SC2 data couldn't be loaded: ${e.message}`);
                     workspace = null;
                 }
             }
@@ -222,8 +241,7 @@ class Server {
             if (!workspace) {
                 workspace = new archive_1.SC2Workspace(null, [new archive_1.SC2Archive('untitled.sc2mod', archive_1.resolveArchiveDirectory('mods/core.sc2mod', modSources))]);
             }
-            this.log('Indexing s2workspace: ' + archivePath);
-            this.connection.sendNotification('indexProgress', 'Indexing SC2 archives..');
+            this.connection.sendNotification('indexProgress', 'Indexing trigger libraries and data catalogs..');
             yield this.store.updateS2Workspace(workspace, this.config.localization);
             this.connection.sendNotification('indexProgress', `Indexing Galaxy files..`);
             for (const modArchive of workspace.dependencies) {
@@ -385,6 +403,8 @@ class Server {
     onDidChangeWatchedFiles(ev) {
         return __awaiter(this, void 0, void 0, function* () {
             for (const x of ev.changes) {
+                if (vscode_uri_1.default.parse(x.uri).fsPath.match(/sc2map\.(temp|orig)/gi))
+                    continue;
                 if (!this.store.isUriInWorkspace(x.uri))
                     continue;
                 this.log(`${fileChangeTypeNames[x.type]} ${x.uri}`);
