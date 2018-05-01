@@ -192,12 +192,12 @@ export class Store {
 
     public isUriInWorkspace(documentUri: string, includeDepds = true) {
         const documentPath = URI.parse(documentUri).fsPath;
-        if (this.rootPath && documentPath.startsWith(this.rootPath)) {
+        if (this.rootPath && !this.s2workspace && documentPath.startsWith(this.rootPath)) {
             return true;
         }
         if (includeDepds && this.s2workspace) {
             for (const archive of this.s2workspace.allArchives) {
-                if (documentPath.startsWith(archive.directory)) return true;
+                if (documentPath.startsWith(archive.directory + path.sep)) return true;
             }
         }
         return false;

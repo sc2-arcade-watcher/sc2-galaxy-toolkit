@@ -241,6 +241,8 @@ export class Server {
         }
 
         if (archivePath) {
+            this.log('s2workspace: ' + archivePath);
+            this.connection.sendNotification('indexProgress', `Resolving dependencies of '${archivePath}'`);
             this.workspaceWatcher = new WorkspaceWatcher(archivePath);
             try {
                 workspace = await openArchiveWorkspace(
@@ -266,8 +268,7 @@ export class Server {
             workspace = new SC2Workspace(null, [new SC2Archive('untitled.sc2mod', resolveArchiveDirectory('mods/core.sc2mod', modSources))]);
         }
 
-        this.log('Indexing s2workspace: ' + archivePath);
-        this.connection.sendNotification('indexProgress', 'Indexing SC2 archives..');
+        this.connection.sendNotification('indexProgress', 'Indexing trigger libraries and data catalogs..');
         await this.store.updateS2Workspace(workspace, this.config.localization);
 
         this.connection.sendNotification('indexProgress', `Indexing Galaxy files..`);
@@ -442,6 +443,7 @@ export class Server {
     @wrapRequest()
     private async onDidChangeWatchedFiles(ev: lsp.DidChangeWatchedFilesParams) {
         for (const x of ev.changes) {
+            if (URI.parse(x.uri).fsPath.match(/sc2map\.(temp|orig)/gi)) continue;
             if (!this.store.isUriInWorkspace(x.uri)) continue;
             this.log(`${fileChangeTypeNames[x.type]} ${x.uri}`);
             switch (x.type) {
