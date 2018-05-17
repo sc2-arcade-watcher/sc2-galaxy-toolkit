@@ -232,7 +232,7 @@ export class SC2Archive {
     directory: string;
 
     constructor(name: string, directory: string) {
-        this.name = name.toLowerCase();
+        this.name = name.replace(/\\/g, '/').toLowerCase();
         // this.directory = directory;
         this.directory = path.resolve(directory);
     }
@@ -273,10 +273,10 @@ export class SC2Archive {
         }
 
         let matches: RegExpExecArray;
-        if (matches = /^campaigns\/(liberty|swarm|void)story\.sc2campaign$/.exec(this.name)) {
+        if (matches = /^campaigns\/(liberty|swarm|void)story\.sc2campaign$/i.exec(this.name)) {
             list.push('campaigns/' + matches[1] + '.sc2campaign');
         }
-        else if (matches = /^campaigns\/(liberty|swarm|void)\.sc2campaign$/.exec(this.name)) {
+        else if (matches = /^campaigns\/(liberty|swarm|void)\.sc2campaign$/i.exec(this.name)) {
             if (matches[1] === 'void') {
                 list.push('campaigns/swarm.sc2campaign');
             }
@@ -285,7 +285,7 @@ export class SC2Archive {
             }
             list.push('mods/' + matches[1] + '.sc2mod');
         }
-        else if (matches = /^mods\/(liberty|swarm|void)\.sc2mod/.exec(this.name)) {
+        else if (matches = /^mods\/(liberty|swarm|void)\.sc2mod$/i.exec(this.name)) {
             if (matches[1] === 'void') {
                 list.push('mods/swarm.sc2mod');
             }
@@ -312,9 +312,10 @@ export class SC2Archive {
                 });
             });
 
-            let depValue: string;
-            for (depValue of data.DocInfo.Dependencies[0].Value) {
-                list.push(depValue.substr(depValue.indexOf('file:') + 5).replace('\\', '/').toLowerCase());
+            if (data.DocInfo.Dependencies) {
+                for (const depValue of data.DocInfo.Dependencies[0].Value) {
+                    list.push(depValue.substr(depValue.indexOf('file:') + 5).replace(/\\/g, '/').toLowerCase());
+                }
             }
         }
         return list;
