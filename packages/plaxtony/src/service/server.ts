@@ -15,7 +15,7 @@ import { DefinitionProvider } from './definitions';
 import { HoverProvider } from './hover';
 import { ReferencesProvider, ReferencesConfig } from './references';
 import { RenameProvider } from './rename';
-import { SC2Archive, SC2Workspace, resolveArchiveDirectory, openArchiveWorkspace, isSC2Archive } from '../sc2mod/archive';
+import { SC2Archive, SC2Workspace, resolveArchiveDirectory, openArchiveWorkspace, isSC2Archive, resolveArchiveDependencyList } from '../sc2mod/archive';
 import { setTimeout, clearTimeout } from 'timers';
 import URI from 'vscode-uri';
 
@@ -215,6 +215,11 @@ export class Server {
         }
     }
 
+    public showErrorMessage(msg: string) {
+        this.log(`[ERROR MSG]\n${msg}`);
+        this.connection.window.showErrorMessage(msg);
+    }
+
     private async flushDocument(documentUri: string, isDirty = true) {
         if (!this.ready) return false;
         const req = this.documentUpdateRequests.get(documentUri);
@@ -247,11 +252,11 @@ export class Server {
             }
 
             if (!fs.existsSync(archivePath)) {
-                this.connection.window.showErrorMessage(`Specified archivePath '${this.config.archivePath}' resolved to '${archivePath}', but it doesn't exist.`);
+                this.showErrorMessage(`Specified archivePath '${this.config.archivePath}' resolved to '${archivePath}', but it doesn't exist.`);
                 archivePath = null;
             }
             else if (!isSC2Archive(archivePath)) {
-                this.connection.window.showErrorMessage(`Specified archivePath '${archivePath}', doesn't appear to be valid archive.`);
+                this.showErrorMessage(`Specified archivePath '${archivePath}', doesn't appear to be valid archive.`);
                 archivePath = null;
             }
         }
@@ -260,31 +265,45 @@ export class Server {
         }
 
         if (archivePath) {
-            this.log('s2workspace: ' + archivePath);
-            this.connection.sendNotification('indexProgress', `Resolving dependencies of '${archivePath}'`);
+            const wsArchive = new SC2Archive(path.basename(archivePath), archivePath);
             this.workspaceWatcher = new WorkspaceWatcher(archivePath);
-            try {
-                workspace = await openArchiveWorkspace(
-                    new SC2Archive(path.basename(archivePath), archivePath),
-                    modSources,
-                    mapFromObject(this.config.s2mod.overrides),
-                    mapFromObject(this.config.s2mod.extra)
+
+            this.log(`SC2 archive for this workspace set to: ${archivePath}`);
+            this.connection.sendNotification('indexProgress', `Resolving dependencies of [${wsArchive.name}]`);
+
+            const depList = await resolveArchiveDependencyList(
+                wsArchive,
+                modSources,
+                mapFromObject(this.config.s2mod.overrides)
+            );
+            for (const [name, src] of mapFromObject(this.config.s2mod.extra)) {
+                if (!fs.existsSync(src)) {
+                    this.showErrorMessage(`Extra archive [${name}] '${src}' doesn't exist. Skipping.`);
+                    continue;
+                }
+                depList.list.push({
+                    name: name,
+                    src: src
+                });
+            }
+            if (depList.unresolvedNames.length > 0) {
+                this.showErrorMessage(
+                    `Some SC2 archives couldn't be found [${depList.unresolvedNames.map((s) => `'${s}'`).join(', ')}]. By a result certain intellisense capabilities might not function properly.`
                 );
-                this.log('Resolved archives:\n' + workspace.allArchives.map(item => {
-                    return `${item.name}: ${item.directory}`;
-                }).join('\n'));
             }
-            catch (e) {
-                this.connection.window.showErrorMessage(`SC2 data couldn't be loaded: ${e.message}`);
-                workspace = null;
-            }
+
+            workspace = new SC2Workspace(wsArchive, depList.list.map((item) => new SC2Archive(item.name, item.src)));
+            this.log('Resolved archives:\n' + workspace.allArchives.map(item => {
+                return `${item.name} => ${item.directory}`;
+            }).join('\n'));
         }
         else if (rootPath) {
+            this.log(`SC2 workspace set to project root`);
             this.workspaceWatcher = new WorkspaceWatcher(rootPath);
         }
 
         if (!workspace) {
-            workspace = new SC2Workspace(null, [new SC2Archive('untitled.sc2mod', resolveArchiveDirectory('mods/core.sc2mod', modSources))]);
+            workspace = new SC2Workspace(null, [new SC2Archive('mods/core.sc2mod', resolveArchiveDirectory('mods/core.sc2mod', modSources))]);
         }
 
         this.connection.sendNotification('indexProgress', 'Indexing trigger libraries and data catalogs..');

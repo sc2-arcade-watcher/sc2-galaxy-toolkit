@@ -181,37 +181,54 @@ export function resolveArchiveDirectory(name: string, sources: string[]) {
     }
 }
 
-export async function resolveArchiveDependencyList(archive: SC2Archive, sources: string[], overrides: Map<string,string> = null, list: ArchiveLink[] = []) {
-    for (const entry of await archive.getDependencyList()) {
-        if (list.findIndex((item) => item.name === entry) !== -1) {
-            continue;
-        }
-        const link = <ArchiveLink>{
-            name: entry,
-        };
+export async function resolveArchiveDependencyList(rootArchive: SC2Archive, sources: string[], overrides: Map<string,string> = null) {
+    const list: ArchiveLink[] = [];
+    const unresolvedNames: string[] = [];
 
-        let dir: string;
-        if (overrides && overrides.has(entry)) {
-            dir = overrides.get(entry);
+    async function resolveWorker(archive: SC2Archive) {
+        for (const entry of await archive.getDependencyList()) {
+            if (list.findIndex((item) => item.name === entry) !== -1) {
+                continue;
+            }
+            const link = <ArchiveLink>{
+                name: entry,
+            };
+
+            let dir: string;
+            if (overrides && overrides.has(entry)) {
+                dir = overrides.get(entry);
+            }
+            else {
+                dir = resolveArchiveDirectory(entry, sources);
+            }
+            if (dir) {
+                await resolveWorker(new SC2Archive(entry, dir));
+                link.src = dir;
+                list.push(link);
+            }
+            else {
+                unresolvedNames.push(entry);
+            }
         }
-        else {
-            dir = resolveArchiveDirectory(entry, sources);
-        }
-        if (!dir) {
-            throw new Error('couldn\'t resolve "' + entry + '".\n Sources: ' + util.inspect(sources) + '\nOverrides: ' + util.inspect(overrides));
-        }
-        await resolveArchiveDependencyList(new SC2Archive(entry, dir), sources, overrides, list);
-        link.src = dir;
-        list.push(link);
     }
-    return list;
+
+    await resolveWorker(rootArchive);
+
+    return {
+        list,
+        unresolvedNames,
+    };
 }
 
 export async function openArchiveWorkspace(archive: SC2Archive, sources: string[], overrides: Map<string,string> = null, extra: Map<string,string> = null) {
     const dependencyArchives: SC2Archive[] = [];
-    const list = await resolveArchiveDependencyList(archive, sources, overrides);
+    const result = await resolveArchiveDependencyList(archive, sources, overrides);
 
-    for (const link of list) {
+    if (result.unresolvedNames.length > 0) {
+        throw new Error(`couldn\'t resolve ${util.inspect(result.unresolvedNames)}\nSources: ${util.inspect(sources)}\nOverrides: ${util.inspect(overrides)}`);
+    }
+
+    for (const link of result.list) {
         dependencyArchives.push(new SC2Archive(link.name, link.src));
     }
 

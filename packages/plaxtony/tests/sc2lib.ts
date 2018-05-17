@@ -50,15 +50,15 @@ describe('SC2Mod', () => {
                 'campaigns/voidstory.sc2campaign',
                 path.resolve(path.join(resourcesPath, 'campaigns', 'voidstory.sc2campaign'))
             );
-            const list = await resolveArchiveDependencyList(s2archive, [resourcesPath]);
-            assert.equal(list.length, 7);
-            assert.equal(list[0].name, 'mods/core.sc2mod');
-            assert.equal(list[1].name, 'mods/liberty.sc2mod');
-            assert.equal(list[2].name, 'campaigns/liberty.sc2campaign');
-            assert.equal(list[3].name, 'mods/swarm.sc2mod');
-            assert.equal(list[4].name, 'campaigns/swarm.sc2campaign');
-            assert.equal(list[5].name, 'mods/void.sc2mod');
-            assert.equal(list[6].name, 'campaigns/void.sc2campaign');
+            const result = await resolveArchiveDependencyList(s2archive, [resourcesPath]);
+            assert.equal(result.list.length, 7);
+            assert.equal(result.list[0].name, 'mods/core.sc2mod');
+            assert.equal(result.list[1].name, 'mods/liberty.sc2mod');
+            assert.equal(result.list[2].name, 'campaigns/liberty.sc2campaign');
+            assert.equal(result.list[3].name, 'mods/swarm.sc2mod');
+            assert.equal(result.list[4].name, 'campaigns/swarm.sc2campaign');
+            assert.equal(result.list[5].name, 'mods/void.sc2mod');
+            assert.equal(result.list[6].name, 'campaigns/void.sc2campaign');
         });
 
         it('void mod dependency list', async () => {
@@ -66,11 +66,11 @@ describe('SC2Mod', () => {
                 'mods/void.sc2mod',
                 path.resolve(path.join(resourcesPath, 'mods', 'void.sc2mod'))
             );
-            const list = await resolveArchiveDependencyList(s2archive, [resourcesPath]);
-            assert.equal(list.length, 3);
-            assert.equal(list[0].name, 'mods/core.sc2mod');
-            assert.equal(list[1].name, 'mods/liberty.sc2mod');
-            assert.equal(list[2].name, 'mods/swarm.sc2mod');
+            const result = await resolveArchiveDependencyList(s2archive, [resourcesPath]);
+            assert.equal(result.list.length, 3);
+            assert.equal(result.list[0].name, 'mods/core.sc2mod');
+            assert.equal(result.list[1].name, 'mods/liberty.sc2mod');
+            assert.equal(result.list[2].name, 'mods/swarm.sc2mod');
         });
     });
 
