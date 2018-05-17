@@ -190,16 +190,23 @@ export class Store {
         await this.s2metadata.build(lang);
     }
 
-    public isUriInWorkspace(documentUri: string, includeDepds = true) {
-        const documentPath = URI.parse(documentUri).fsPath;
-        if (this.rootPath && !this.s2workspace && documentPath.startsWith(this.rootPath)) {
+    public isUriInWorkspace(documentUri: string) {
+        let documentPath = URI.parse(documentUri).fsPath;
+        const isWin = process.platform === 'win32';
+        if (isWin) {
+            documentPath = documentPath.toLowerCase();
+        }
+
+        if (this.rootPath && !this.s2workspace.rootArchive && documentPath.startsWith((isWin ? this.rootPath.toLowerCase() : this.rootPath) + path.sep)) {
             return true;
         }
-        if (includeDepds && this.s2workspace) {
+
+        if (this.s2workspace) {
             for (const archive of this.s2workspace.allArchives) {
-                if (documentPath.startsWith(archive.directory + path.sep)) return true;
+                if (documentPath.startsWith((isWin ? archive.directory.toLowerCase() : archive.directory) + path.sep)) return true;
             }
         }
+
         return false;
     }
 
