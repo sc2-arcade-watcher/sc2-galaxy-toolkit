@@ -221,6 +221,7 @@ export class Server {
     }
 
     private async flushDocument(documentUri: string, isDirty = true) {
+        this.log('Busy indexing..');
         if (!this.ready) return false;
         const req = this.documentUpdateRequests.get(documentUri);
         if (!req) return;
@@ -543,11 +544,13 @@ export class Server {
 
     @wrapRequest()
     private onDocumentSymbol(params: lsp.DocumentSymbolParams): lsp.SymbolInformation[] {
+        if (!this.ready) return null;
         return translateDeclaratons(this.navigationProvider.getDocumentSymbols(params.textDocument.uri));
     }
 
     @wrapRequest()
     private onWorkspaceSymbol(params: lsp.WorkspaceSymbolParams): lsp.SymbolInformation[] {
+        if (!this.ready) return null;
         return translateDeclaratons(this.navigationProvider.getWorkspaceSymbols(params.query));
     }
 
