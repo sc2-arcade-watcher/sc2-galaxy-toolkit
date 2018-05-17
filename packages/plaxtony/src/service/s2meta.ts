@@ -5,6 +5,7 @@ import * as trig from '../sc2mod/trigger';
 import * as cat from '../sc2mod/datacatalog';
 import { SC2Workspace } from '../sc2mod/archive';
 import * as lsp from 'vscode-languageserver';
+import { getLineAndCharacterOfPosition } from './utils';
 
 const elementNotValidCharsRE = /[^a-zA-Z0-9_]+/g;
 const elementValidCharsRE = /[a-zA-Z]+/g;
@@ -257,6 +258,30 @@ export class S2WorkspaceMetadata {
 }
 
 export function getDocumentationOfSymbol(store: Store, symbol: gt.Symbol, extended: boolean = true) {
-    if (!store.s2metadata) return null;
-    return store.s2metadata.getSymbolDoc(symbol.escapedName, extended);
+    if (store.s2metadata) {
+        const r = store.s2metadata.getSymbolDoc(symbol.escapedName, extended);
+        if (r) return r;
+    }
+
+    for (const decl of symbol.declarations) {
+        const sourceFile = getSourceFileOfNode(decl);
+        const linesTxt: string[] = [];
+        let currLine = decl.line;
+
+        if (!sourceFile.commentsLineMap.has(currLine)) {
+            --currLine;
+        }
+        while (currLine > 0 && sourceFile.commentsLineMap.has(currLine)) {
+            const ctoken = sourceFile.commentsLineMap.get(currLine);
+            const cpos = getLineAndCharacterOfPosition(sourceFile, ctoken.pos);
+            if (ctoken.line !== decl.line && cpos.character > 0) break;
+            linesTxt.push(sourceFile.text.substring(ctoken.pos + 2, ctoken.end));
+            --currLine;
+        }
+        if (linesTxt.length) {
+            return linesTxt.reverse().map((line) => line.replace(/^ /, '')).join('  \n');
+        }
+    }
+
+    return null;
 }

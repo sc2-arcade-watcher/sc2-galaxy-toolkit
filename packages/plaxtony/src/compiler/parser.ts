@@ -26,9 +26,12 @@ export class Parser {
 
     private nextToken(): SyntaxKind {
         this.currentToken = this.scanner.scan();
-        if (this.currentToken === SyntaxKind.SingleLineCommentTrivia) {
-            const commentToken = <Types.Token<Types.SyntaxKind.SingleLineCommentTrivia>>this.parseTokenNode();
+        while (this.currentToken === SyntaxKind.SingleLineCommentTrivia) {
+            const commentToken = <Types.Token<Types.SyntaxKind.SingleLineCommentTrivia>>this.createNode(this.token(), undefined, false);
+            this.currentToken = this.scanner.scan();
+            this.finishNode(commentToken, undefined, false);
             this.sourceFile.commentsLineMap.set(commentToken.line, commentToken);
+
         }
         return this.currentToken;
     }
