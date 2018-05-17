@@ -25,8 +25,10 @@ class Parser {
     }
     nextToken() {
         this.currentToken = this.scanner.scan();
-        if (this.currentToken === 1 /* SingleLineCommentTrivia */) {
-            const commentToken = this.parseTokenNode();
+        while (this.currentToken === 1 /* SingleLineCommentTrivia */) {
+            const commentToken = this.createNode(this.token(), undefined, false);
+            this.currentToken = this.scanner.scan();
+            this.finishNode(commentToken, undefined, false);
             this.sourceFile.commentsLineMap.set(commentToken.line, commentToken);
         }
         return this.currentToken;

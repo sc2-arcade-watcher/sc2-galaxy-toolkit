@@ -180,38 +180,53 @@ function resolveArchiveDirectory(name, sources) {
     }
 }
 exports.resolveArchiveDirectory = resolveArchiveDirectory;
-function resolveArchiveDependencyList(archive, sources, overrides = null, list = []) {
+function resolveArchiveDependencyList(rootArchive, sources, overrides = null) {
     return __awaiter(this, void 0, void 0, function* () {
-        for (const entry of yield archive.getDependencyList()) {
-            if (list.findIndex((item) => item.name === entry) !== -1) {
-                continue;
-            }
-            const link = {
-                name: entry,
-            };
-            let dir;
-            if (overrides && overrides.has(entry)) {
-                dir = overrides.get(entry);
-            }
-            else {
-                dir = resolveArchiveDirectory(entry, sources);
-            }
-            if (!dir) {
-                throw new Error('couldn\'t resolve "' + entry + '".\n Sources: ' + util.inspect(sources) + '\nOverrides: ' + util.inspect(overrides));
-            }
-            yield resolveArchiveDependencyList(new SC2Archive(entry, dir), sources, overrides, list);
-            link.src = dir;
-            list.push(link);
+        const list = [];
+        const unresolvedNames = [];
+        function resolveWorker(archive) {
+            return __awaiter(this, void 0, void 0, function* () {
+                for (const entry of yield archive.getDependencyList()) {
+                    if (list.findIndex((item) => item.name === entry) !== -1) {
+                        continue;
+                    }
+                    const link = {
+                        name: entry,
+                    };
+                    let dir;
+                    if (overrides && overrides.has(entry)) {
+                        dir = overrides.get(entry);
+                    }
+                    else {
+                        dir = resolveArchiveDirectory(entry, sources);
+                    }
+                    if (dir) {
+                        yield resolveWorker(new SC2Archive(entry, dir));
+                        link.src = dir;
+                        list.push(link);
+                    }
+                    else {
+                        unresolvedNames.push(entry);
+                    }
+                }
+            });
         }
-        return list;
+        yield resolveWorker(rootArchive);
+        return {
+            list,
+            unresolvedNames,
+        };
     });
 }
 exports.resolveArchiveDependencyList = resolveArchiveDependencyList;
 function openArchiveWorkspace(archive, sources, overrides = null, extra = null) {
     return __awaiter(this, void 0, void 0, function* () {
         const dependencyArchives = [];
-        const list = yield resolveArchiveDependencyList(archive, sources, overrides);
-        for (const link of list) {
+        const result = yield resolveArchiveDependencyList(archive, sources, overrides);
+        if (result.unresolvedNames.length > 0) {
+            throw new Error(`couldn\'t resolve ${util.inspect(result.unresolvedNames)}\nSources: ${util.inspect(sources)}\nOverrides: ${util.inspect(overrides)}`);
+        }
+        for (const link of result.list) {
             dependencyArchives.push(new SC2Archive(link.name, link.src));
         }
         if (extra) {
@@ -225,7 +240,7 @@ function openArchiveWorkspace(archive, sources, overrides = null, extra = null) 
 exports.openArchiveWorkspace = openArchiveWorkspace;
 class SC2Archive {
     constructor(name, directory) {
-        this.name = name.toLowerCase();
+        this.name = name.replace(/\\/g, '/').toLowerCase();
         // this.directory = directory;
         this.directory = path.resolve(directory);
     }
@@ -267,10 +282,10 @@ class SC2Archive {
                 list.push('mods/core.sc2mod');
             }
             let matches;
-            if (matches = /^campaigns\/(liberty|swarm|void)story\.sc2campaign$/.exec(this.name)) {
+            if (matches = /^campaigns\/(liberty|swarm|void)story\.sc2campaign$/i.exec(this.name)) {
                 list.push('campaigns/' + matches[1] + '.sc2campaign');
             }
-            else if (matches = /^campaigns\/(liberty|swarm|void)\.sc2campaign$/.exec(this.name)) {
+            else if (matches = /^campaigns\/(liberty|swarm|void)\.sc2campaign$/i.exec(this.name)) {
                 if (matches[1] === 'void') {
                     list.push('campaigns/swarm.sc2campaign');
                 }
@@ -279,7 +294,7 @@ class SC2Archive {
                 }
                 list.push('mods/' + matches[1] + '.sc2mod');
             }
-            else if (matches = /^mods\/(liberty|swarm|void)\.sc2mod/.exec(this.name)) {
+            else if (matches = /^mods\/(liberty|swarm|void)\.sc2mod$/i.exec(this.name)) {
                 if (matches[1] === 'void') {
                     list.push('mods/swarm.sc2mod');
                 }
@@ -304,9 +319,10 @@ class SC2Archive {
                         }
                     });
                 });
-                let depValue;
-                for (depValue of data.DocInfo.Dependencies[0].Value) {
-                    list.push(depValue.substr(depValue.indexOf('file:') + 5).replace('\\', '/').toLowerCase());
+                if (data.DocInfo.Dependencies) {
+                    for (const depValue of data.DocInfo.Dependencies[0].Value) {
+                        list.push(depValue.substr(depValue.indexOf('file:') + 5).replace(/\\/g, '/').toLowerCase());
+                    }
                 }
             }
             return list;

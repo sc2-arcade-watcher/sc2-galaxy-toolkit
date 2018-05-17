@@ -41,6 +41,6 @@ export declare class Store {
     getFirstMatchingDocument(partialname: string): gt.SourceFile;
     updateDocument(document: lsp.TextDocument, check?: boolean): void;
     updateS2Workspace(workspace: SC2Workspace, lang: string): Promise<void>;
-    isUriInWorkspace(documentUri: string, includeDepds?: boolean): boolean;
+    isUriInWorkspace(documentUri: string): boolean;
     resolveGlobalSymbol(name: string): gt.Symbol | undefined;
 }

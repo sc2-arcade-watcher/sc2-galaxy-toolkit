@@ -177,8 +177,13 @@ class Server {
             this.connection.console.log(util.inspect(params));
         }
     }
+    showErrorMessage(msg) {
+        this.log(`[ERROR MSG]\n${msg}`);
+        this.connection.window.showErrorMessage(msg);
+    }
     flushDocument(documentUri, isDirty = true) {
         return __awaiter(this, void 0, void 0, function* () {
+            this.log('Busy indexing..');
             if (!this.ready)
                 return false;
             const req = this.documentUpdateRequests.get(documentUri);
@@ -209,11 +214,11 @@ class Server {
                     archivePath = path.join(rootPath, this.config.archivePath);
                 }
                 if (!fs.existsSync(archivePath)) {
-                    this.connection.window.showErrorMessage(`Specified archivePath '${this.config.archivePath}' resolved to '${archivePath}', but it doesn't exist.`);
+                    this.showErrorMessage(`Specified archivePath '${this.config.archivePath}' resolved to '${archivePath}', but it doesn't exist.`);
                     archivePath = null;
                 }
                 else if (!archive_1.isSC2Archive(archivePath)) {
-                    this.connection.window.showErrorMessage(`Specified archivePath '${archivePath}', doesn't appear to be valid archive.`);
+                    this.showErrorMessage(`Specified archivePath '${archivePath}', doesn't appear to be valid archive.`);
                     archivePath = null;
                 }
             }
@@ -221,25 +226,35 @@ class Server {
                 archivePath = yield store_1.findWorkspaceArchive(rootPath);
             }
             if (archivePath) {
-                this.log('s2workspace: ' + archivePath);
-                this.connection.sendNotification('indexProgress', `Resolving dependencies of '${archivePath}'`);
+                const wsArchive = new archive_1.SC2Archive(path.basename(archivePath), archivePath);
                 this.workspaceWatcher = new store_1.WorkspaceWatcher(archivePath);
-                try {
-                    workspace = yield archive_1.openArchiveWorkspace(new archive_1.SC2Archive(path.basename(archivePath), archivePath), modSources, mapFromObject(this.config.s2mod.overrides), mapFromObject(this.config.s2mod.extra));
-                    this.log('Resolved archives:\n' + workspace.allArchives.map(item => {
-                        return `${item.name}: ${item.directory}`;
-                    }).join('\n'));
+                this.log(`SC2 archive for this workspace set to: ${archivePath}`);
+                this.connection.sendNotification('indexProgress', `Resolving dependencies of [${wsArchive.name}]`);
+                const depList = yield archive_1.resolveArchiveDependencyList(wsArchive, modSources, mapFromObject(this.config.s2mod.overrides));
+                for (const [name, src] of mapFromObject(this.config.s2mod.extra)) {
+                    if (!fs.existsSync(src)) {
+                        this.showErrorMessage(`Extra archive [${name}] '${src}' doesn't exist. Skipping.`);
+                        continue;
+                    }
+                    depList.list.push({
+                        name: name,
+                        src: src
+                    });
                 }
-                catch (e) {
-                    this.connection.window.showErrorMessage(`SC2 data couldn't be loaded: ${e.message}`);
-                    workspace = null;
+                if (depList.unresolvedNames.length > 0) {
+                    this.showErrorMessage(`Some SC2 archives couldn't be found [${depList.unresolvedNames.map((s) => `'${s}'`).join(', ')}]. By a result certain intellisense capabilities might not function properly.`);
                 }
+                workspace = new archive_1.SC2Workspace(wsArchive, depList.list.map((item) => new archive_1.SC2Archive(item.name, item.src)));
+                this.log('Resolved archives:\n' + workspace.allArchives.map(item => {
+                    return `${item.name} => ${item.directory}`;
+                }).join('\n'));
             }
             else if (rootPath) {
+                this.log(`SC2 workspace set to project root`);
                 this.workspaceWatcher = new store_1.WorkspaceWatcher(rootPath);
             }
             if (!workspace) {
-                workspace = new archive_1.SC2Workspace(null, [new archive_1.SC2Archive('untitled.sc2mod', archive_1.resolveArchiveDirectory('mods/core.sc2mod', modSources))]);
+                workspace = new archive_1.SC2Workspace(null, [new archive_1.SC2Archive('mods/core.sc2mod', archive_1.resolveArchiveDirectory('mods/core.sc2mod', modSources))]);
             }
             this.connection.sendNotification('indexProgress', 'Indexing trigger libraries and data catalogs..');
             yield this.store.updateS2Workspace(workspace, this.config.localization);
@@ -454,9 +469,13 @@ class Server {
         return this.completionsProvider.resolveCompletion(params);
     }
     onDocumentSymbol(params) {
+        if (!this.ready)
+            return null;
         return translateDeclaratons(this.navigationProvider.getDocumentSymbols(params.textDocument.uri));
     }
     onWorkspaceSymbol(params) {
+        if (!this.ready)
+            return null;
         return translateDeclaratons(this.navigationProvider.getWorkspaceSymbols(params.query));
     }
     onSignatureHelp(params) {

@@ -8,7 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const utils_1 = require("../compiler/utils");
 const trig = require("../sc2mod/trigger");
+const utils_2 = require("./utils");
 const elementNotValidCharsRE = /[^a-zA-Z0-9_]+/g;
 const elementValidCharsRE = /[a-zA-Z]+/g;
 const quationMarkRE = /"/g;
@@ -234,9 +236,31 @@ class S2WorkspaceMetadata {
 }
 exports.S2WorkspaceMetadata = S2WorkspaceMetadata;
 function getDocumentationOfSymbol(store, symbol, extended = true) {
-    if (!store.s2metadata)
-        return null;
-    return store.s2metadata.getSymbolDoc(symbol.escapedName, extended);
+    if (store.s2metadata) {
+        const r = store.s2metadata.getSymbolDoc(symbol.escapedName, extended);
+        if (r)
+            return r;
+    }
+    for (const decl of symbol.declarations) {
+        const sourceFile = utils_1.getSourceFileOfNode(decl);
+        const linesTxt = [];
+        let currLine = decl.line;
+        if (!sourceFile.commentsLineMap.has(currLine)) {
+            --currLine;
+        }
+        while (currLine > 0 && sourceFile.commentsLineMap.has(currLine)) {
+            const ctoken = sourceFile.commentsLineMap.get(currLine);
+            const cpos = utils_2.getLineAndCharacterOfPosition(sourceFile, ctoken.pos);
+            if (ctoken.line !== decl.line && cpos.character > 0)
+                break;
+            linesTxt.push(sourceFile.text.substring(ctoken.pos + 2, ctoken.end));
+            --currLine;
+        }
+        if (linesTxt.length) {
+            return linesTxt.reverse().map((line) => line.replace(/^ /, '')).join('  \n');
+        }
+    }
+    return null;
 }
 exports.getDocumentationOfSymbol = getDocumentationOfSymbol;
 //# sourceMappingURL=s2meta.js.map

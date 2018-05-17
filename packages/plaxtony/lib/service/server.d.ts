@@ -20,6 +20,7 @@ export declare class Server {
     private createProvider<T>(cls);
     createConnection(connection?: lsp.IConnection): lsp.IConnection;
     log(msg: string, ...params: any[]): void;
+    showErrorMessage(msg: string): void;
     private flushDocument(documentUri, isDirty?);
     private reindex(rootPath, modSources);
     private onInitialize(params);
