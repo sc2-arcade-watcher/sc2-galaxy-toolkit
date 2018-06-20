@@ -221,8 +221,10 @@ export class Server {
     }
 
     private async flushDocument(documentUri: string, isDirty = true) {
-        this.log('Busy indexing..');
-        if (!this.ready) return false;
+        if (!this.ready) {
+            this.log('Busy indexing..');
+            return false;
+        }
         const req = this.documentUpdateRequests.get(documentUri);
         if (!req) return;
         if (req.promise) {
