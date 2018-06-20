@@ -41,15 +41,15 @@ function getNodeRange(node) {
 }
 function translateNodeKind(node) {
     switch (node.kind) {
-        case 138 /* VariableDeclaration */:
+        case 139 /* VariableDeclaration */:
             const variable = node;
             const isConstant = variable.modifiers.some((value) => {
                 return value.kind === 53 /* ConstKeyword */;
             });
             return isConstant ? lsp.SymbolKind.Constant : lsp.SymbolKind.Variable;
-        case 139 /* FunctionDeclaration */:
+        case 140 /* FunctionDeclaration */:
             return lsp.SymbolKind.Function;
-        case 137 /* StructDeclaration */:
+        case 138 /* StructDeclaration */:
             return lsp.SymbolKind.Class;
         default:
             return lsp.SymbolKind.Field;
@@ -60,7 +60,7 @@ function translateDeclaratons(origDeclarations) {
     let kind;
     for (let node of origDeclarations) {
         const sourceFile = utils_1.findAncestor(node, (element) => {
-            return element.kind === 125 /* SourceFile */;
+            return element.kind === 126 /* SourceFile */;
         });
         symbols.push({
             kind: translateNodeKind(node),
@@ -183,9 +183,10 @@ class Server {
     }
     flushDocument(documentUri, isDirty = true) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.log('Busy indexing..');
-            if (!this.ready)
+            if (!this.ready) {
+                this.log('Busy indexing..');
                 return false;
+            }
             const req = this.documentUpdateRequests.get(documentUri);
             if (!req)
                 return;

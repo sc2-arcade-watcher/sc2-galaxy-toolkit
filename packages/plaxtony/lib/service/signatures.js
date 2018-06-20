@@ -83,7 +83,7 @@ class SignaturesProvider extends provider_1.AbstractProvider {
         }
         let node = currentToken.parent;
         const callNode = utils_1.findAncestor(node, (element) => {
-            if (element.kind !== 119 /* CallExpression */) {
+            if (element.kind !== 120 /* CallExpression */) {
                 return false;
             }
             // we don't want to provide signature for left side of CallExpression

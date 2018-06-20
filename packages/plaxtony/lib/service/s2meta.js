@@ -184,10 +184,10 @@ class S2WorkspaceMetadata {
     }
     getElementTypeOfNode(node) {
         // if (node.kind !== gt.SyntaxKind.StringLiteral) return null;
-        if (node.parent.kind !== 119 /* CallExpression */)
+        if (node.parent.kind !== 120 /* CallExpression */)
             return null;
         const callExpr = node.parent;
-        if (callExpr.expression.kind !== 111 /* Identifier */)
+        if (callExpr.expression.kind !== 112 /* Identifier */)
             return null;
         const el = this.findElementByName(callExpr.expression.name);
         if (!el)

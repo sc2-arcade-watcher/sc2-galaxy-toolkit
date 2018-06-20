@@ -34,36 +34,37 @@ const textToTokenTable = new Map([
     ["camerainfo", 82 /* CamerainfoKeyword */],
     ["char", 72 /* CharKeyword */],
     ["color", 83 /* ColorKeyword */],
-    ["doodad", 84 /* DoodadKeyword */],
+    ["doodad", 85 /* DoodadKeyword */],
+    ["datetime", 84 /* DatetimeKeyword */],
     ["fixed", 74 /* FixedKeyword */],
-    ["handle", 85 /* HandleKeyword */],
-    ["generichandle", 86 /* GenerichandleKeyword */],
-    ["effecthistory", 87 /* EffecthistoryKeyword */],
+    ["handle", 86 /* HandleKeyword */],
+    ["generichandle", 87 /* GenerichandleKeyword */],
+    ["effecthistory", 88 /* EffecthistoryKeyword */],
     ["int", 73 /* IntKeyword */],
-    ["marker", 88 /* MarkerKeyword */],
-    ["order", 89 /* OrderKeyword */],
-    ["playergroup", 90 /* PlayergroupKeyword */],
-    ["point", 91 /* PointKeyword */],
-    ["region", 92 /* RegionKeyword */],
-    ["revealer", 93 /* RevealerKeyword */],
-    ["sound", 94 /* SoundKeyword */],
-    ["soundlink", 95 /* SoundlinkKeyword */],
+    ["marker", 89 /* MarkerKeyword */],
+    ["order", 90 /* OrderKeyword */],
+    ["playergroup", 91 /* PlayergroupKeyword */],
+    ["point", 92 /* PointKeyword */],
+    ["region", 93 /* RegionKeyword */],
+    ["revealer", 94 /* RevealerKeyword */],
+    ["sound", 95 /* SoundKeyword */],
+    ["soundlink", 96 /* SoundlinkKeyword */],
     ["string", 75 /* StringKeyword */],
-    ["text", 96 /* TextKeyword */],
-    ["timer", 97 /* TimerKeyword */],
-    ["transmissionsource", 98 /* TransmissionsourceKeyword */],
-    ["trigger", 99 /* TriggerKeyword */],
-    ["unit", 100 /* UnitKeyword */],
-    ["unitfilter", 101 /* UnitfilterKeyword */],
-    ["unitgroup", 102 /* UnitgroupKeyword */],
-    ["unitref", 103 /* UnitrefKeyword */],
-    ["void", 104 /* VoidKeyword */],
-    ["wave", 105 /* WaveKeyword */],
-    ["waveinfo", 106 /* WaveinfoKeyword */],
-    ["wavetarget", 107 /* WavetargetKeyword */],
-    ["arrayref", 108 /* ArrayrefKeyword */],
-    ["structref", 109 /* StructrefKeyword */],
-    ["funcref", 110 /* FuncrefKeyword */],
+    ["text", 97 /* TextKeyword */],
+    ["timer", 98 /* TimerKeyword */],
+    ["transmissionsource", 99 /* TransmissionsourceKeyword */],
+    ["trigger", 100 /* TriggerKeyword */],
+    ["unit", 101 /* UnitKeyword */],
+    ["unitfilter", 102 /* UnitfilterKeyword */],
+    ["unitgroup", 103 /* UnitgroupKeyword */],
+    ["unitref", 104 /* UnitrefKeyword */],
+    ["void", 105 /* VoidKeyword */],
+    ["wave", 106 /* WaveKeyword */],
+    ["waveinfo", 107 /* WaveinfoKeyword */],
+    ["wavetarget", 108 /* WavetargetKeyword */],
+    ["arrayref", 109 /* ArrayrefKeyword */],
+    ["structref", 110 /* StructrefKeyword */],
+    ["funcref", 111 /* FuncrefKeyword */],
     ["{", 4 /* OpenBraceToken */],
     ["}", 5 /* CloseBraceToken */],
     ["(", 6 /* OpenParenToken */],
@@ -384,7 +385,7 @@ class Scanner {
                 return token;
             }
         }
-        return 111 /* Identifier */;
+        return 112 /* Identifier */;
     }
     setText(text) {
         this.text = text;
@@ -400,7 +401,7 @@ class Scanner {
             this.tokenPos = this.pos;
             this.tokenValue = null;
             if (this.pos >= this.end) {
-                return 112 /* EndOfFileToken */;
+                return 113 /* EndOfFileToken */;
             }
             let ch = this.text.charCodeAt(this.pos);
             switch (ch) {

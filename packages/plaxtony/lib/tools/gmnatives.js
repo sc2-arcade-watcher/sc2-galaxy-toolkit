@@ -13,12 +13,17 @@ const path = require("path");
 const glob = require("glob");
 const store_1 = require("../service/store");
 const trig = require("../sc2mod/trigger");
+const loc = require("../sc2mod/localization");
 (function () {
     return __awaiter(this, void 0, void 0, function* () {
         const store = new store_1.Store();
         const tstore = new trig.TriggerStore();
         const treader = new trig.XMLReader(tstore);
-        const ntveLib = yield treader.loadLibrary(fs.readFileSync(process.argv[2], 'utf8'));
+        const locStrings = new loc.LocalizationTriggers();
+        const ntveLib = yield treader.loadLibrary(fs.readFileSync(`${process.argv[2]}/base.sc2data/TriggerLibs/NativeLib.TriggerLib`, 'utf8'));
+        const ntveStrings = new loc.LocalizationFile();
+        ntveStrings.readFromFile(`${process.argv[2]}/enus.sc2data/LocalizedData/TriggerStrings.txt`);
+        locStrings.merge(ntveStrings);
         function trigTypeToGalaxy(type) {
             switch (type.type) {
                 case 'gamelink':
@@ -38,7 +43,7 @@ const trig = require("../sc2mod/trigger");
                     return type.type;
             }
         }
-        for (let filepath of glob.sync(path.join(path.resolve(process.argv[3]), '**/*.galaxy'))) {
+        for (let filepath of glob.sync(path.join(path.resolve(process.argv[2]), 'base.sc2data', 'TriggerLibs', '**/*.galaxy'))) {
             store.updateDocument(store_1.createTextDocumentFromFs(filepath));
         }
         const ntveElements = [];
@@ -47,13 +52,14 @@ const trig = require("../sc2mod/trigger");
                 continue;
             if (!(curEl instanceof trig.FunctionDef))
                 continue;
-            if (store.resolveGlobalSymbol(curEl.name))
+            const name = curEl.name || locStrings.elementName('Name', curEl).replace(/[^a-zA-Z0-9_]+/g, '');
+            if (store.resolveGlobalSymbol(name))
                 continue;
             let out = [];
             out.push('native ');
             out.push(curEl.returnType ? trigTypeToGalaxy(curEl.returnType) : 'void');
             out.push(' ');
-            out.push(curEl.name);
+            out.push(name);
             out.push('(');
             for (const [key, param] of curEl.getParameters().entries()) {
                 out.push(trigTypeToGalaxy(param.type));

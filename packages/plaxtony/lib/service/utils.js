@@ -125,10 +125,10 @@ function getTokenAtPositionWorker(position, sourceFile, includePrecedingTokenAtE
 }
 function getAdjacentIdentfier(position, sourceFile) {
     let token = getTokenAtPosition(position, sourceFile);
-    if (token && token.kind === 111 /* Identifier */)
+    if (token && token.kind === 112 /* Identifier */)
         return token;
     token = findPrecedingToken(position, sourceFile);
-    if (token && token.kind === 111 /* Identifier */)
+    if (token && token.kind === 112 /* Identifier */)
         return token;
     return null;
 }
