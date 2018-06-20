@@ -1045,6 +1045,7 @@ export class Parser {
             case SyntaxKind.CharKeyword:
             case SyntaxKind.ColorKeyword:
             case SyntaxKind.DoodadKeyword:
+            case SyntaxKind.DatetimeKeyword:
             case SyntaxKind.FixedKeyword:
             case SyntaxKind.HandleKeyword:
             case SyntaxKind.GenerichandleKeyword:

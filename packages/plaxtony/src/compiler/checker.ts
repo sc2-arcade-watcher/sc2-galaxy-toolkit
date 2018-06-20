@@ -207,6 +207,7 @@ export class ComplexType extends AbstractType implements gt.ComplexType {
             case gt.SyntaxKind.BankKeyword:
             case gt.SyntaxKind.BitmaskKeyword:
             case gt.SyntaxKind.CamerainfoKeyword:
+            case gt.SyntaxKind.DatetimeKeyword:
             case gt.SyntaxKind.GenerichandleKeyword:
             case gt.SyntaxKind.EffecthistoryKeyword:
             case gt.SyntaxKind.MarkerKeyword:

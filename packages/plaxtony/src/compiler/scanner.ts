@@ -38,6 +38,7 @@ const textToTokenTable: ReadonlyMap<string, SyntaxKind> = new Map([
     ["char", SyntaxKind.CharKeyword],
     ["color", SyntaxKind.ColorKeyword],
     ["doodad", SyntaxKind.DoodadKeyword],
+    ["datetime", SyntaxKind.DatetimeKeyword],
     ["fixed", SyntaxKind.FixedKeyword],
     ["handle", SyntaxKind.HandleKeyword],
     ["generichandle", SyntaxKind.GenerichandleKeyword],

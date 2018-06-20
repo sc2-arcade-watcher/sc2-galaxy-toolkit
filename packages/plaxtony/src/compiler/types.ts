@@ -235,6 +235,7 @@ export const enum SyntaxKind {
     BitmaskKeyword,
     CamerainfoKeyword,
     ColorKeyword,
+    DatetimeKeyword,
     DoodadKeyword,
     HandleKeyword,
     GenerichandleKeyword,
