@@ -401,7 +401,7 @@ export class Parser {
                     return true;
                 }
 
-                return this.token() === SyntaxKind.Identifier;
+                return false;
         }
     }
 
@@ -787,13 +787,6 @@ export class Parser {
 
         const expression = this.parseLeftHandSideExpressionOrHigher();
 
-        if (!isLeftHandSideExpression(expression)) {
-            console.log(expression.kind);
-            console.log(SyntaxKind.ParenthesizedExpression);
-            console.log(expression.kind === SyntaxKind.ParenthesizedExpression);
-            throw new Error('isLeftHandSideExpression = false');
-        }
-
         if ((this.token() === SyntaxKind.PlusPlusToken || this.token() === SyntaxKind.MinusMinusToken)) {
             this.parseErrorAtCurrentToken('unary increment operators not supported');
             const node = <Types.PostfixUnaryExpression>this.createNode(SyntaxKind.PostfixUnaryExpression, expression.pos);
@@ -1104,11 +1097,15 @@ export class Parser {
                 else if (this.isStartOfVariableDeclaration()) {
                     return this.parseVariableDeclaration();
                 }
-                return this.parseExpressionStatement();
+                else if (this.isStartOfExpression()) {
+                    return this.parseExpressionStatement();
+                }
 
             default:
-                return this.parseExpressionStatement();
-                // throw new Error("unexpected: " + getKindName(this.currentToken) + ": " + tokenToString(this.currentToken));
+                this.parseErrorAtCurrentToken(`Unexpected ${getKindName(this.token())}`);
+                const node = this.createMissingNode(SyntaxKind.ExpressionStatement);
+                this.nextToken();
+                return node;
         }
     }
 
