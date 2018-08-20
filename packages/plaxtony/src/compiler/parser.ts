@@ -589,8 +589,9 @@ export class Parser {
     }
 
     private parseBlock(allowVarDeclarations = false): Types.Block {
-        const node = <Types.Block>this.createNode(SyntaxKind.Block);
-        if (this.parseExpected(SyntaxKind.OpenBraceToken)) {
+        if (this.parseExpected(SyntaxKind.OpenBraceToken, null, false)) {
+            const node = <Types.Block>this.createNode(SyntaxKind.Block);
+            this.parseExpected(SyntaxKind.OpenBraceToken);
             node.statements = this.parseList(ParsingContext.BlockStatements, () => {
                 const child = this.parseStatement();
                 if (child.kind === SyntaxKind.VariableDeclaration) {

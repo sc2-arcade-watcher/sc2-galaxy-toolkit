@@ -468,6 +468,7 @@ export interface Node extends TextRange {
     // token: Token;
     id?: number;
     kind: SyntaxKind;
+    /* @internal */ kindName?: string; // debug purposes
     parent?: Node;
     syntaxTokens: Node[];
 }

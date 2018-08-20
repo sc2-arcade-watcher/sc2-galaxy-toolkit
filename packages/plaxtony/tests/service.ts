@@ -33,6 +33,13 @@ describe('Service', () => {
             assert.equal(findPrecedingToken(20, sourceFile).kind, gt.SyntaxKind.OpenBraceToken);
             assert.equal(findPrecedingToken(0, sourceFile), undefined);
         });
+
+        it('findPrecedingToken "incomplete_if_identifier"', () => {
+            const sourceFile = mockupSourceFile(path.join('type_checker', 'find', 'incomplete_if_identifier.galaxy'));
+            const t = findPrecedingToken(getPositionOfLineAndCharacter(sourceFile, 2, 25), sourceFile);
+            assert.equal(t.kind, gt.SyntaxKind.Identifier, `not expected ${t.kindName}`);
+            assert.equal((<gt.Identifier>t).name, 'UserDataGetFixed');
+        });
     });
 
     describe('Diagnostics', () => {
