@@ -390,6 +390,7 @@ export interface Token<TKind extends SyntaxKind> extends Node {
 export interface Node extends TextRange {
     id?: number;
     kind: SyntaxKind;
+    kindName?: string;
     parent?: Node;
     syntaxTokens: Node[];
 }

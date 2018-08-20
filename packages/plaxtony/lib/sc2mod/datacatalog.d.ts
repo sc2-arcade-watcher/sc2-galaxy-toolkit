@@ -1,4 +1,3 @@
-import * as sax from 'sax';
 import { SC2Archive, SC2Workspace } from './archive';
 export declare type CatalogEntryKind = string;
 export declare type CatalogFileKind = string;
@@ -29,13 +28,11 @@ export declare class GameCatalogStore {
     private processDataKind(kind, workspace);
     loadData(workspace: SC2Workspace): Promise<boolean>;
 }
-export declare class CatalogParser extends sax.SAXParser {
+export declare class CatalogParser {
     protected catalogMap: CatalogFileMap;
-    protected depth: number;
     constructor();
-    onready(): void;
-    onend(): void;
-    onopentag(tag: sax.Tag): void;
-    onclosetag(tagName: string): void;
+    write(s: string): void;
+    close(): void;
+    flush(): void;
     toCatalog(): Map<string, CatalogEntry>;
 }

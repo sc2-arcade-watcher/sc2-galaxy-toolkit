@@ -37,7 +37,8 @@ export declare class Parser {
     private isStartOfParameter();
     private parseLiteral(kind?);
     private parseInclude();
-    private parseIdentifier(diagnosticMessage?);
+    private parseIdentifier(alwaysAdvance?);
+    private parseExpectedIdentifier();
     private parseTypeDefinition();
     private parseParameter();
     private parsePropertyDeclaration();
@@ -64,7 +65,8 @@ export declare class Parser {
     private parseBinaryExpressionOrHigher(precedence);
     private parseBinaryExpressionRest(precedence, leftOperand);
     private parseAssignmentExpressionOrHigher();
-    private parseExpression();
+    private parseExpression(allowAssignment?);
+    private parseExpectedExpression(allowAssignment?);
     private parseTypedefDeclaration();
     private parseReturnStatement();
     private parseBreakOrContinueStatement(kind);

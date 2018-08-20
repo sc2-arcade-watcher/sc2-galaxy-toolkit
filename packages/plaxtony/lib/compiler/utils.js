@@ -48,6 +48,17 @@ function isAssignmentOperator(token) {
     return token >= 39 /* EqualsToken */ && token <= 49 /* CaretEqualsToken */;
 }
 exports.isAssignmentOperator = isAssignmentOperator;
+function isAssignmentExpression(node) {
+    switch (node.kind) {
+        case 123 /* BinaryExpression */:
+            return isAssignmentOperator(node.operatorToken.kind);
+        case 125 /* ParenthesizedExpression */:
+            return isAssignmentExpression(node.expression);
+        default:
+            return false;
+    }
+}
+exports.isAssignmentExpression = isAssignmentExpression;
 function isLeftHandSideExpressionKind(kind) {
     return kind === 119 /* PropertyAccessExpression */
         || kind === 118 /* ElementAccessExpression */

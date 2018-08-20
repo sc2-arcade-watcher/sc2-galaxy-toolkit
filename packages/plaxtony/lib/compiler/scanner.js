@@ -130,8 +130,7 @@ function tokenToString(t) {
 exports.tokenToString = tokenToString;
 function isIdentifierStart(ch) {
     return (ch >= 65 /* A */ && ch <= 90 /* Z */)
-        || (ch >= 97 /* a */ && ch <= 122 /* z */)
-        || (ch === 95 /* _ */);
+        || (ch >= 97 /* a */ && ch <= 122 /* z */);
 }
 exports.isIdentifierStart = isIdentifierStart;
 function isIdentifierPart(ch) {

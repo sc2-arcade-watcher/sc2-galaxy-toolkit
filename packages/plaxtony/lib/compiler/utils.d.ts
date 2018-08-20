@@ -10,6 +10,7 @@ export declare function isComplexTypeKind(token: gt.SyntaxKind): boolean;
 export declare function isReferenceKeywordKind(token: gt.SyntaxKind): boolean;
 export declare function isComparisonOperator(token: gt.SyntaxKind): boolean;
 export declare function isAssignmentOperator(token: gt.SyntaxKind): boolean;
+export declare function isAssignmentExpression(node: gt.Node): boolean;
 export declare function isLeftHandSideExpressionKind(kind: gt.SyntaxKind): boolean;
 export declare function isContainerKind(kind: gt.SyntaxKind): boolean;
 export declare function isNamedDeclarationKind(kind: gt.SyntaxKind): boolean;

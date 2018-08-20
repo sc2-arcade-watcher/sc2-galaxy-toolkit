@@ -8,7 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const sax = require("sax");
 const path = require("path");
 class CatalogFile {
     constructor(archive, kind) {
@@ -97,35 +96,47 @@ class GameCatalogStore {
     }
 }
 exports.GameCatalogStore = GameCatalogStore;
-const reDataEntry = /^C([A-Za-z0-9]+)$/;
-class CatalogParser extends sax.SAXParser {
+const reDataElement = /<C([A-Z][A-Za-z0-9]+)\s([^>]+)\/?>/g;
+const reAttrs = /([\w-]+)\s?=\s?"([^"]+)"/g;
+class CatalogParser {
     constructor() {
-        super(true, {
-            position: false,
-        });
-        this.depth = 0;
+        this.flush();
     }
-    onready() {
-        this.catalogMap = new Map();
-    }
-    onend() {
-        this.catalogMap = new Map();
-    }
-    onopentag(tag) {
-        if (this.depth === 1 && tag.name.startsWith('C')) {
-            if (tag.attributes['id']) {
-                this.catalogMap.set(tag.attributes['id'], {
-                    kind: tag.name,
-                    id: tag.attributes['id'],
-                    default: tag.attributes['default'] ? true : false,
-                    parent: tag.attributes['parent'] || null,
-                });
+    write(s) {
+        let matchedElement;
+        while (matchedElement = reDataElement.exec(s)) {
+            const entry = {
+                kind: matchedElement[1],
+            };
+            let matchedAttr;
+            while (matchedAttr = reAttrs.exec(matchedElement[2])) {
+                switch (matchedAttr[1]) {
+                    case 'id':
+                    case 'parent':
+                    case 'default':
+                        entry[matchedAttr[1]] = matchedAttr[2];
+                        break;
+                }
             }
+            reAttrs.lastIndex = 0;
+            if (!entry.id)
+                continue;
+            if (s.charCodeAt(reDataElement.lastIndex - 2) !== 47) { // '/'
+                reDataElement.lastIndex = s.indexOf(`</C${entry.kind}>`, reDataElement.lastIndex);
+                if (reDataElement.lastIndex === -1) {
+                    reDataElement.lastIndex = 0;
+                    break;
+                }
+            }
+            this.catalogMap.set(entry.id, entry);
         }
-        this.depth++;
+        reDataElement.lastIndex = 0;
     }
-    onclosetag(tagName) {
-        this.depth--;
+    close() {
+        this.flush();
+    }
+    flush() {
+        this.catalogMap = new Map();
     }
     toCatalog() {
         return this.catalogMap;

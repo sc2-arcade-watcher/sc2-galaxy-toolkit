@@ -139,9 +139,8 @@ class Parser {
         return array;
     }
     createMissingNode(kind) {
-        this.parseErrorAtCurrentToken('Missing node: {0}', utils_1.getKindName(kind));
-        const result = this.createNode(0 /* Unknown */);
-        return this.finishNode(result);
+        this.parseErrorAtCurrentToken(`Missing node: ${utils_1.getKindName(kind)}`);
+        return this.createNode(0 /* Unknown */, undefined, false);
     }
     createMissingList() {
         return this.createNodeArray();
@@ -215,10 +214,10 @@ class Parser {
                 result.push(parseElement());
                 continue;
             }
-            const start = this.scanner.getStartPos();
+            const start = this.scanner.getTokenPos();
             this.nextToken();
             this.parseErrorAtPosition(start, this.scanner.getTokenPos() - start, this.parsingContextErrors(kind));
-            if (kind !== 0 /* SourceElements */) {
+            if (kind !== 0 /* SourceElements */ && kind !== 1 /* BlockStatements */) {
                 break;
             }
         }
@@ -262,6 +261,7 @@ class Parser {
             }
             this.parseErrorAtCurrentToken(this.parsingContextErrors(kind));
             this.nextToken();
+            break;
         }
         if (commaStart >= 0) {
             this.parseErrorAtPosition(commaStart, 1, 'trailing comma');
@@ -397,12 +397,17 @@ class Parser {
         node.path = this.parseLiteral(3 /* StringLiteral */);
         return this.finishNode(node);
     }
-    parseIdentifier(diagnosticMessage) {
+    parseIdentifier(alwaysAdvance = true) {
         const identifier = this.createNode(112 /* Identifier */);
-        this.parseExpected(112 /* Identifier */, diagnosticMessage, false);
+        this.parseExpected(112 /* Identifier */, null, false);
         identifier.name = this.scanner.getTokenValue() || '';
-        this.nextToken();
+        if (alwaysAdvance || this.token() === 112 /* Identifier */) {
+            this.nextToken();
+        }
         return this.finishNode(identifier);
+    }
+    parseExpectedIdentifier() {
+        return this.parseIdentifier(false);
     }
     parseTypeDefinition() {
         let baseType;
@@ -427,7 +432,7 @@ class Parser {
         while (this.token() === 8 /* OpenBracketToken */) {
             let arrayType = this.createNode(116 /* ArrayType */, baseType.pos);
             this.parseExpected(8 /* OpenBracketToken */);
-            arrayType.size = this.parseExpression();
+            arrayType.size = this.parseExpectedExpression();
             arrayType.elementType = baseType;
             this.parseExpected(9 /* CloseBracketToken */);
             baseType = this.finishNode(arrayType);
@@ -492,8 +497,9 @@ class Parser {
         return this.finishNode(variable);
     }
     parseBlock(allowVarDeclarations = false) {
-        const node = this.createNode(127 /* Block */);
-        if (this.parseExpected(4 /* OpenBraceToken */)) {
+        if (this.parseExpected(4 /* OpenBraceToken */, null, false)) {
+            const node = this.createNode(127 /* Block */);
+            this.parseExpected(4 /* OpenBraceToken */);
             node.statements = this.parseList(1 /* BlockStatements */, () => {
                 const child = this.parseStatement();
                 if (child.kind === 139 /* VariableDeclaration */) {
@@ -596,13 +602,16 @@ class Parser {
                 return this.parseTokenNode();
             case 6 /* OpenParenToken */:
                 return this.parseParenthesizedExpression();
+            case 112 /* Identifier */:
+                return this.parseIdentifier();
         }
-        return this.parseIdentifier('expression expected');
+        this.parseErrorAtCurrentToken(`Invalid expression`);
+        return this.createNode(0 /* Unknown */, undefined, false);
     }
     parseParenthesizedExpression() {
         const node = this.createNode(125 /* ParenthesizedExpression */);
         this.parseExpected(6 /* OpenParenToken */);
-        node.expression = this.parseExpression();
+        node.expression = this.parseExpectedExpression();
         this.parseExpected(7 /* CloseParenToken */);
         return this.finishNode(node);
     }
@@ -616,7 +625,7 @@ class Parser {
                 const propertyAccess = this.createNode(119 /* PropertyAccessExpression */, expression.pos);
                 this.parseExpected(10 /* DotToken */);
                 propertyAccess.expression = expression;
-                propertyAccess.name = this.parseIdentifier();
+                propertyAccess.name = this.parseExpectedIdentifier();
                 expression = this.finishNode(propertyAccess);
                 continue;
             }
@@ -624,7 +633,7 @@ class Parser {
                 const indexedAccess = this.createNode(118 /* ElementAccessExpression */, expression.pos);
                 this.parseExpected(8 /* OpenBracketToken */);
                 indexedAccess.expression = expression;
-                indexedAccess.argumentExpression = this.parseExpression();
+                indexedAccess.argumentExpression = this.parseExpectedExpression();
                 this.parseExpected(9 /* CloseBracketToken */);
                 expression = this.finishNode(indexedAccess);
                 continue;
@@ -639,7 +648,7 @@ class Parser {
                 const callExpr = this.createNode(120 /* CallExpression */, expression.pos);
                 callExpr.expression = expression;
                 this.parseExpected(6 /* OpenParenToken */);
-                callExpr.arguments = this.parseDelimitedList(5 /* ArgumentExpressions */, this.parseAssignmentExpressionOrHigher.bind(this));
+                callExpr.arguments = this.parseDelimitedList(5 /* ArgumentExpressions */, this.parseExpression.bind(this));
                 this.parseExpected(7 /* CloseParenToken */);
                 expression = this.finishNode(callExpr);
                 continue;
@@ -750,8 +759,21 @@ class Parser {
         }
         return expr;
     }
-    parseExpression() {
-        return this.parseAssignmentExpressionOrHigher();
+    parseExpression(allowAssignment = false) {
+        const expr = this.parseAssignmentExpressionOrHigher();
+        if (!allowAssignment && utils_1.isAssignmentExpression(expr)) {
+            this.parseErrorAtPosition(expr.pos, expr.end - expr.pos, `Assignment expression not allowed in this context`);
+        }
+        return expr;
+    }
+    parseExpectedExpression(allowAssignment = false) {
+        if (this.isStartOfExpression()) {
+            return this.parseExpression(allowAssignment);
+        }
+        else {
+            this.parseErrorAtCurrentToken('Expected expression');
+            return this.createNode(0 /* Unknown */, undefined, false);
+        }
     }
     parseTypedefDeclaration() {
         const node = this.createNode(143 /* TypedefDeclaration */);
@@ -764,7 +786,7 @@ class Parser {
         const node = this.createNode(135 /* ReturnStatement */);
         this.parseExpected(57 /* ReturnKeyword */);
         if (this.token() !== 11 /* SemicolonToken */) {
-            node.expression = this.parseExpression();
+            node.expression = this.parseExpectedExpression();
         }
         this.parseExpected(11 /* SemicolonToken */);
         return this.finishNode(node);
@@ -777,7 +799,7 @@ class Parser {
     }
     parseExpressionStatement() {
         const node = this.createNode(136 /* ExpressionStatement */);
-        node.expression = this.parseExpression();
+        node.expression = this.parseAssignmentExpressionOrHigher();
         this.parseExpected(11 /* SemicolonToken */);
         this.finishNode(node);
         switch (node.expression.kind) {
@@ -801,7 +823,7 @@ class Parser {
         const node = this.createNode(128 /* IfStatement */);
         this.parseExpected(64 /* IfKeyword */);
         this.parseExpected(6 /* OpenParenToken */);
-        node.expression = this.parseExpression();
+        node.expression = this.parseExpectedExpression();
         this.parseExpected(7 /* CloseParenToken */);
         node.thenStatement = this.parseBlock();
         if (this.parseOptional(65 /* ElseKeyword */)) {
@@ -815,7 +837,7 @@ class Parser {
         node.statement = this.parseBlock();
         this.parseExpected(63 /* WhileKeyword */);
         this.parseExpected(6 /* OpenParenToken */);
-        node.expression = this.parseExpression();
+        node.expression = this.parseExpectedExpression();
         this.parseExpected(7 /* CloseParenToken */);
         this.parseExpected(11 /* SemicolonToken */);
         return this.finishNode(node);
@@ -824,7 +846,7 @@ class Parser {
         const node = this.createNode(130 /* WhileStatement */);
         this.parseExpected(63 /* WhileKeyword */);
         this.parseExpected(6 /* OpenParenToken */);
-        node.expression = this.parseExpression();
+        node.expression = this.parseExpectedExpression();
         this.parseExpected(7 /* CloseParenToken */);
         node.statement = this.parseBlock();
         return this.finishNode(node);
@@ -834,15 +856,15 @@ class Parser {
         this.parseExpected(62 /* ForKeyword */);
         this.parseExpected(6 /* OpenParenToken */);
         if (this.token() !== 11 /* SemicolonToken */ && this.token() !== 7 /* CloseParenToken */) {
-            node.initializer = this.parseExpression();
+            node.initializer = this.parseExpectedExpression(true);
         }
         this.parseExpected(11 /* SemicolonToken */);
         if (this.token() !== 11 /* SemicolonToken */ && this.token() !== 7 /* CloseParenToken */) {
-            node.condition = this.parseExpression();
+            node.condition = this.parseExpectedExpression();
         }
         this.parseExpected(11 /* SemicolonToken */);
         if (this.token() !== 7 /* CloseParenToken */) {
-            node.incrementor = this.parseExpression();
+            node.incrementor = this.parseExpectedExpression(true);
         }
         this.parseExpected(7 /* CloseParenToken */);
         node.statement = this.parseBlock();
