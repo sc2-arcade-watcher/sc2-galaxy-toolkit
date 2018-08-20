@@ -47,6 +47,17 @@ export function isAssignmentOperator(token: gt.SyntaxKind): boolean {
     return token >= gt.SyntaxKind.EqualsToken && token <= gt.SyntaxKind.CaretEqualsToken;
 }
 
+export function isAssignmentExpression(node: gt.Node): boolean {
+    switch (node.kind) {
+        case gt.SyntaxKind.BinaryExpression:
+            return isAssignmentOperator((<gt.BinaryExpression>node).operatorToken.kind);
+        case gt.SyntaxKind.ParenthesizedExpression:
+            return isAssignmentExpression((<gt.ParenthesizedExpression>node).expression);
+        default:
+            return false;
+    }
+}
+
 export function isLeftHandSideExpressionKind(kind: gt.SyntaxKind): boolean {
     return kind === gt.SyntaxKind.PropertyAccessExpression
         || kind === gt.SyntaxKind.ElementAccessExpression

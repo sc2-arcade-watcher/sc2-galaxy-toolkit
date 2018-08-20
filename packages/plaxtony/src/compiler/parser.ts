@@ -1,7 +1,7 @@
 import * as Types from './types';
 import { SyntaxKind, Node, NodeArray, MutableNodeArray } from './types';
 import { Scanner, tokenToString } from './scanner';
-import { getKindName, isModifierKind, isKeywordTypeKind, isLeftHandSideExpression, isAssignmentOperator, fixupParentReferences, isReferenceKeywordKind } from './utils';
+import { getKindName, isModifierKind, isKeywordTypeKind, isLeftHandSideExpression, isAssignmentOperator, fixupParentReferences, isReferenceKeywordKind, isAssignmentExpression } from './utils';
 import { createFileDiagnostic } from './diagnostics';
 
 const enum ParsingContext {
@@ -752,7 +752,7 @@ export class Parser {
                 const callExpr = <Types.CallExpression>this.createNode(SyntaxKind.CallExpression, expression.pos);
                 callExpr.expression = expression;
                 this.parseExpected(SyntaxKind.OpenParenToken);
-                callExpr.arguments = this.parseDelimitedList(ParsingContext.ArgumentExpressions, this.parseAssignmentExpressionOrHigher.bind(this));
+                callExpr.arguments = this.parseDelimitedList(ParsingContext.ArgumentExpressions, this.parseExpression.bind(this));
                 this.parseExpected(SyntaxKind.CloseParenToken);
                 expression = this.finishNode(callExpr);
                 continue;
@@ -885,8 +885,12 @@ export class Parser {
         return expr;
     }
 
-    private parseExpression(): Types.Expression {
-        return this.parseAssignmentExpressionOrHigher();
+    private parseExpression(allowAssignment: boolean = false): Types.Expression {
+        const expr = this.parseAssignmentExpressionOrHigher();
+        if (!allowAssignment && isAssignmentExpression(expr)) {
+            this.parseErrorAtPosition(expr.pos, expr.end - expr.pos, `Assignment expression not allowed in this context`);
+        }
+        return expr;
     }
 
     private parseTypedefDeclaration(): Types.TypedefDeclaration {
@@ -917,7 +921,7 @@ export class Parser {
 
     private parseExpressionStatement(): Types.ExpressionStatement {
         const node = <Types.ExpressionStatement>this.createNode(SyntaxKind.ExpressionStatement);
-        node.expression = this.parseExpression();
+        node.expression = this.parseAssignmentExpressionOrHigher();
         this.parseExpected(SyntaxKind.SemicolonToken);
         this.finishNode(node);
 
@@ -980,7 +984,7 @@ export class Parser {
         this.parseExpected(SyntaxKind.ForKeyword);
         this.parseExpected(SyntaxKind.OpenParenToken);
         if (this.token() !== SyntaxKind.SemicolonToken && this.token() !== SyntaxKind.CloseParenToken) {
-            node.initializer = this.parseExpression();
+            node.initializer = this.parseExpression(true);
         }
         this.parseExpected(SyntaxKind.SemicolonToken);
         if (this.token() !== SyntaxKind.SemicolonToken && this.token() !== SyntaxKind.CloseParenToken) {
@@ -988,7 +992,7 @@ export class Parser {
         }
         this.parseExpected(SyntaxKind.SemicolonToken);
         if (this.token() !== SyntaxKind.CloseParenToken) {
-            node.incrementor = this.parseExpression();
+            node.incrementor = this.parseExpression(true);
         }
         this.parseExpected(SyntaxKind.CloseParenToken);
         node.statement = this.parseBlock();
