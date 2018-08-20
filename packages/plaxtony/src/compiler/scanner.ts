@@ -137,8 +137,7 @@ export function tokenToString(t: SyntaxKind): string | undefined {
 
 export function isIdentifierStart(ch: number): boolean {
     return (ch >= CharacterCodes.A && ch <= CharacterCodes.Z)
-        || (ch >= CharacterCodes.a && ch <= CharacterCodes.z)
-        || (ch === CharacterCodes._);
+        || (ch >= CharacterCodes.a && ch <= CharacterCodes.z);
 }
 
 export function isIdentifierPart(ch: number): boolean {
