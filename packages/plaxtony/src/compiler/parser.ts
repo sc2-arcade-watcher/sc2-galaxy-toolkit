@@ -168,11 +168,9 @@ export class Parser {
     }
 
     private createMissingNode<T extends Node>(kind: T['kind']): T {
-        this.parseErrorAtCurrentToken('Missing node: {0}', getKindName(kind));
+        this.parseErrorAtCurrentToken(`Missing node: ${getKindName(kind)}`);
 
-        const result = this.createNode(SyntaxKind.Unknown);
-
-        return this.finishNode(result) as T;
+        return this.createNode(SyntaxKind.Unknown, undefined, false) as T;
     }
 
     private createMissingList<T extends Node>(): NodeArray<T> {
@@ -255,10 +253,10 @@ export class Parser {
                 continue;
             }
 
-            const start = this.scanner.getStartPos();
+            const start = this.scanner.getTokenPos();
             this.nextToken();
             this.parseErrorAtPosition(start, this.scanner.getTokenPos() - start, this.parsingContextErrors(kind));
-            if (kind !== ParsingContext.SourceElements) {
+            if (kind !== ParsingContext.SourceElements && kind !== ParsingContext.BlockStatements) {
                 break;
             }
         }
@@ -313,6 +311,7 @@ export class Parser {
 
             this.parseErrorAtCurrentToken(this.parsingContextErrors(kind));
             this.nextToken();
+            break;
         }
 
         if (commaStart >= 0) {
@@ -480,12 +479,18 @@ export class Parser {
         return this.finishNode(node);
     }
 
-    private parseIdentifier(diagnosticMessage?: string): Types.Identifier {
+    private parseIdentifier(alwaysAdvance: boolean = true): Types.Identifier {
         const identifier = <Types.Identifier>this.createNode(SyntaxKind.Identifier);
-        this.parseExpected(SyntaxKind.Identifier, diagnosticMessage, false);
+        this.parseExpected(SyntaxKind.Identifier, null, false);
         identifier.name = this.scanner.getTokenValue() || '';
-        this.nextToken();
+        if (alwaysAdvance || this.token() === SyntaxKind.Identifier) {
+            this.nextToken();
+        }
         return this.finishNode(identifier);
+    }
+
+    private parseExpectedIdentifier(): Types.Identifier {
+        return this.parseIdentifier(false);
     }
 
     private parseTypeDefinition(): Types.TypeNode {
@@ -514,7 +519,7 @@ export class Parser {
         while (this.token() === SyntaxKind.OpenBracketToken) {
             let arrayType = <Types.ArrayTypeNode>this.createNode(SyntaxKind.ArrayType, baseType.pos);
             this.parseExpected(SyntaxKind.OpenBracketToken)
-            arrayType.size = this.parseExpression();
+            arrayType.size = this.parseExpectedExpression();
             arrayType.elementType = baseType;
             this.parseExpected(SyntaxKind.CloseBracketToken);
             baseType = this.finishNode(arrayType)
@@ -701,15 +706,18 @@ export class Parser {
                 return this.parseTokenNode<Types.PrimaryExpression>();
             case SyntaxKind.OpenParenToken:
                 return this.parseParenthesizedExpression();
+            case SyntaxKind.Identifier:
+                return this.parseIdentifier();
         }
 
-        return this.parseIdentifier('expression expected');
+        this.parseErrorAtCurrentToken(`Invalid expression`);
+        return this.createNode(SyntaxKind.Unknown, undefined, false);
     }
 
     private parseParenthesizedExpression(): Types.ParenthesizedExpression {
         const node = <Types.ParenthesizedExpression>this.createNode(SyntaxKind.ParenthesizedExpression);
         this.parseExpected(SyntaxKind.OpenParenToken);
-        node.expression = this.parseExpression();
+        node.expression = this.parseExpectedExpression();
         this.parseExpected(SyntaxKind.CloseParenToken);
         return this.finishNode(node);
     }
@@ -725,7 +733,7 @@ export class Parser {
                 const propertyAccess = <Types.PropertyAccessExpression>this.createNode(SyntaxKind.PropertyAccessExpression, expression.pos);
                 this.parseExpected(SyntaxKind.DotToken);
                 propertyAccess.expression = expression;
-                propertyAccess.name = this.parseIdentifier();
+                propertyAccess.name = this.parseExpectedIdentifier();
                 expression = this.finishNode(propertyAccess);
                 continue;
             }
@@ -734,7 +742,7 @@ export class Parser {
                 const indexedAccess = <Types.ElementAccessExpression>this.createNode(SyntaxKind.ElementAccessExpression, expression.pos);
                 this.parseExpected(SyntaxKind.OpenBracketToken);
                 indexedAccess.expression = expression;
-                indexedAccess.argumentExpression = this.parseExpression();
+                indexedAccess.argumentExpression = this.parseExpectedExpression();
                 this.parseExpected(SyntaxKind.CloseBracketToken);
                 expression = this.finishNode(indexedAccess);
                 continue;
@@ -893,6 +901,16 @@ export class Parser {
         return expr;
     }
 
+    private parseExpectedExpression(allowAssignment: boolean = false): Types.Expression | null {
+        if (this.isStartOfExpression()) {
+            return this.parseExpression(allowAssignment);
+        }
+        else {
+            this.parseErrorAtCurrentToken('Expected expression');
+            return this.createNode(SyntaxKind.Unknown, undefined, false);
+        }
+    }
+
     private parseTypedefDeclaration(): Types.TypedefDeclaration {
         const node = <Types.TypedefDeclaration>this.createNode(SyntaxKind.TypedefDeclaration);
         this.parseExpected(SyntaxKind.TypedefKeyword);
@@ -905,7 +923,7 @@ export class Parser {
         const node = <Types.ReturnStatement>this.createNode(SyntaxKind.ReturnStatement);
         this.parseExpected(SyntaxKind.ReturnKeyword);
         if (this.token() !== SyntaxKind.SemicolonToken) {
-            node.expression = this.parseExpression();
+            node.expression = this.parseExpectedExpression();
         }
         this.parseExpected(SyntaxKind.SemicolonToken);
         return this.finishNode(node);
@@ -948,7 +966,7 @@ export class Parser {
         const node = <Types.IfStatement>this.createNode(SyntaxKind.IfStatement);
         this.parseExpected(SyntaxKind.IfKeyword);
         this.parseExpected(SyntaxKind.OpenParenToken);
-        node.expression = this.parseExpression();
+        node.expression = this.parseExpectedExpression();
         this.parseExpected(SyntaxKind.CloseParenToken);
         node.thenStatement = this.parseBlock();
         if (this.parseOptional(SyntaxKind.ElseKeyword)) {
@@ -963,7 +981,7 @@ export class Parser {
         node.statement = this.parseBlock();
         this.parseExpected(SyntaxKind.WhileKeyword);
         this.parseExpected(SyntaxKind.OpenParenToken);
-        node.expression = this.parseExpression();
+        node.expression = this.parseExpectedExpression();
         this.parseExpected(SyntaxKind.CloseParenToken);
         this.parseExpected(SyntaxKind.SemicolonToken);
         return this.finishNode(node);
@@ -973,7 +991,7 @@ export class Parser {
         const node = <Types.WhileStatement>this.createNode(SyntaxKind.WhileStatement);
         this.parseExpected(SyntaxKind.WhileKeyword);
         this.parseExpected(SyntaxKind.OpenParenToken);
-        node.expression = this.parseExpression();
+        node.expression = this.parseExpectedExpression();
         this.parseExpected(SyntaxKind.CloseParenToken);
         node.statement = this.parseBlock();
         return this.finishNode(node);
@@ -984,15 +1002,15 @@ export class Parser {
         this.parseExpected(SyntaxKind.ForKeyword);
         this.parseExpected(SyntaxKind.OpenParenToken);
         if (this.token() !== SyntaxKind.SemicolonToken && this.token() !== SyntaxKind.CloseParenToken) {
-            node.initializer = this.parseExpression(true);
+            node.initializer = this.parseExpectedExpression(true);
         }
         this.parseExpected(SyntaxKind.SemicolonToken);
         if (this.token() !== SyntaxKind.SemicolonToken && this.token() !== SyntaxKind.CloseParenToken) {
-            node.condition = this.parseExpression();
+            node.condition = this.parseExpectedExpression();
         }
         this.parseExpected(SyntaxKind.SemicolonToken);
         if (this.token() !== SyntaxKind.CloseParenToken) {
-            node.incrementor = this.parseExpression(true);
+            node.incrementor = this.parseExpectedExpression(true);
         }
         this.parseExpected(SyntaxKind.CloseParenToken);
         node.statement = this.parseBlock();
