@@ -947,6 +947,7 @@ export class TypeChecker {
 
     private checkVariableDeclaration(node: gt.VariableDeclaration) {
         this.checkSourceElement(node.type);
+        this.checkIdentifier(node.name);
 
         if (node.initializer) {
             const varType = this.getTypeFromTypeNode(node.type);
@@ -1174,6 +1175,12 @@ export class TypeChecker {
         if (!symbol) {
             this.report(node, `Undeclared symbol: '${node.name}'`);
             return unknownType;
+        }
+        if ((symbol.flags & gt.SymbolFlags.FunctionScopedVariable)) {
+            const globalSym = this.resolveName(null, node.name);
+            if (globalSym) {
+                this.report(node, `Name clash for '${node.name}'. Name already in use in global scope.`);
+            }
         }
         if ((symbol.flags & gt.SymbolFlags.Static)) {
             const sourceFile = <gt.SourceFile>findAncestorByKind(node, gt.SyntaxKind.SourceFile);
