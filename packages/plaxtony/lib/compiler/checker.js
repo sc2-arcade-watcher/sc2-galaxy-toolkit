@@ -834,6 +834,7 @@ class TypeChecker {
     }
     checkVariableDeclaration(node) {
         this.checkSourceElement(node.type);
+        this.checkIdentifier(node.name);
         if (node.initializer) {
             const varType = this.getTypeFromTypeNode(node.type);
             const exprType = this.checkExpression(node.initializer);
@@ -1035,6 +1036,12 @@ class TypeChecker {
         if (!symbol) {
             this.report(node, `Undeclared symbol: '${node.name}'`);
             return unknownType;
+        }
+        if ((symbol.flags & 6 /* FunctionScopedVariable */)) {
+            const globalSym = this.resolveName(null, node.name);
+            if (globalSym) {
+                this.report(node, `Name clash for '${node.name}'. Name already in use in global scope.`);
+            }
         }
         if ((symbol.flags & 1024 /* Static */)) {
             const sourceFile = utils_2.findAncestorByKind(node, 126 /* SourceFile */);

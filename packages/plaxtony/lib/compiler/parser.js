@@ -331,7 +331,7 @@ class Parser {
                 if (this.isBinaryOperator()) {
                     return true;
                 }
-                return this.token() === 112 /* Identifier */;
+                return false;
         }
     }
     isStartOfStatement() {
@@ -670,12 +670,6 @@ class Parser {
             return this.finishNode(node);
         }
         const expression = this.parseLeftHandSideExpressionOrHigher();
-        if (!utils_1.isLeftHandSideExpression(expression)) {
-            console.log(expression.kind);
-            console.log(125 /* ParenthesizedExpression */);
-            console.log(expression.kind === 125 /* ParenthesizedExpression */);
-            throw new Error('isLeftHandSideExpression = false');
-        }
         if ((this.token() === 25 /* PlusPlusToken */ || this.token() === 26 /* MinusMinusToken */)) {
             this.parseErrorAtCurrentToken('unary increment operators not supported');
             const node = this.createNode(122 /* PostfixUnaryExpression */, expression.pos);
@@ -946,10 +940,14 @@ class Parser {
                 else if (this.isStartOfVariableDeclaration()) {
                     return this.parseVariableDeclaration();
                 }
-                return this.parseExpressionStatement();
+                else if (this.isStartOfExpression()) {
+                    return this.parseExpressionStatement();
+                }
             default:
-                return this.parseExpressionStatement();
-            // throw new Error("unexpected: " + getKindName(this.currentToken) + ": " + tokenToString(this.currentToken));
+                this.parseErrorAtCurrentToken(`Unexpected ${utils_1.getKindName(this.token())}`);
+                const node = this.createMissingNode(136 /* ExpressionStatement */);
+                this.nextToken();
+                return node;
         }
     }
     setText(text) {
