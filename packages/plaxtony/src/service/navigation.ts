@@ -32,7 +32,7 @@ function collectDeclarations(sourceFile: SourceFile): NamedDeclaration[] {
 export class NavigationProvider extends AbstractProvider {
     public getDocumentSymbols(uri: string): NamedDeclaration[] {
         const sourceFile = this.store.documents.get(uri);
-        if (!sourceFile) return;
+        if (!sourceFile) return [];
         return collectDeclarations(sourceFile);
     }
 
