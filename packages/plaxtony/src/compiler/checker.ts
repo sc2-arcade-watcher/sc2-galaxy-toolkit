@@ -947,7 +947,7 @@ export class TypeChecker {
 
     private checkVariableDeclaration(node: gt.VariableDeclaration) {
         this.checkSourceElement(node.type);
-        this.checkIdentifier(node.name);
+        this.checkIdentifier(node.name, true);
 
         if (node.initializer) {
             const varType = this.getTypeFromTypeNode(node.type);
@@ -1170,15 +1170,15 @@ export class TypeChecker {
         return this.checkExpression(node.operand);
     }
 
-    private checkIdentifier(node: gt.Identifier): AbstractType {
+    private checkIdentifier(node: gt.Identifier, checkSymbol = false): AbstractType {
         const symbol = this.getSymbolOfEntityNameOrPropertyAccessExpression(node);
         if (!symbol) {
             this.report(node, `Undeclared symbol: '${node.name}'`);
             return unknownType;
         }
-        if ((symbol.flags & gt.SymbolFlags.FunctionScopedVariable)) {
+        if (checkSymbol && (symbol.flags & gt.SymbolFlags.FunctionScopedVariable)) {
             const globalSym = this.resolveName(null, node.name);
-            if (globalSym) {
+            if (globalSym && (globalSym.flags & gt.SymbolFlags.Function)) {
                 this.report(node, `Name clash for '${node.name}'. Name already in use in global scope.`);
             }
         }
