@@ -11,7 +11,7 @@ export type DiagnosticsCallback = (a: string) => void;
 export class DiagnosticsProvider extends AbstractProvider {
     private reporter?: DiagnosticsCallback;
 
-    private translateDiagnostics(sourceFile: gt.SourceFile, origDiagnostics: gt.Diagnostic[]): lsp.Diagnostic[] {
+    private translateDiagnostics(sourceFile: gt.SourceFile, origDiagnostics: gt.Diagnostic[], source: string): lsp.Diagnostic[] {
         let lspDiagnostics: lsp.Diagnostic[] = [];
 
         for (let dg of origDiagnostics) {
@@ -22,6 +22,7 @@ export class DiagnosticsProvider extends AbstractProvider {
                     end: getLineAndCharacterOfPosition(sourceFile, dg.start + dg.length)
                 },
                 message: dg.messageText,
+                source,
             });
         }
 
@@ -39,17 +40,38 @@ export class DiagnosticsProvider extends AbstractProvider {
     }
 
     public provideDiagnostics(uri: string): lsp.Diagnostic[] {
-        let diagnostics: Diagnostic[] = [];
         const sourceFile = this.store.documents.get(uri);
 
-        const parseDiag = sourceFile.parseDiagnostics;
-        diagnostics = diagnostics.concat(parseDiag);
+        let parseDiag = sourceFile.parseDiagnostics;
+        let checkerDiag = sourceFile.additionalSyntacticDiagnostics;
 
-        const checkerDiag = sourceFile.additionalSyntacticDiagnostics;
-        diagnostics = diagnostics.concat(checkerDiag);
+        this.console.log(`${uri} - ${parseDiag.length} - ${checkerDiag.length}`);
 
-        this.console.info(`${uri} - ${parseDiag.length} - ${checkerDiag.length}`);
+        if (parseDiag.length > 100) parseDiag = parseDiag.slice(0, 100);
+        if (checkerDiag.length > 100) checkerDiag = checkerDiag.slice(0, 100);
 
-        return this.translateDiagnostics(sourceFile, diagnostics);
+        return [].concat(
+            this.translateDiagnostics(sourceFile, parseDiag, 'parser'),
+            this.translateDiagnostics(sourceFile, checkerDiag, 'typecheck')
+        );
+    }
+
+    public checkFileRecursively(documentUri: string) {
+        const checker = new TypeChecker(this.store);
+        const sourceFile = this.store.documents.get(documentUri);
+        const result = checker.checkSourceFileRecursively(sourceFile);
+
+        const ld: lsp.PublishDiagnosticsParams[] = [];
+        for (const [itUri, itDg] of result.diagnostics) {
+            ld.push({
+                uri: itUri,
+                diagnostics: this.translateDiagnostics(this.store.documents.get(itUri), itDg, 'verify'),
+            })
+        }
+
+        return {
+            success: result.success,
+            diagnostics: ld,
+        };
     }
 }

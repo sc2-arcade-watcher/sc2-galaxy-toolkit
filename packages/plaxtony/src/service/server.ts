@@ -205,6 +205,8 @@ export class Server {
         this.connection.onRenameRequest(this.onRenameRequest.bind(this));
         this.connection.onPrepareRename(this.onPrepareRename.bind(this));
 
+        this.connection.onRequest('document/checkRecursively', this.onDiagnoseDocumentRecursively.bind(this));
+
         return this.connection;
     }
 
@@ -611,6 +613,16 @@ export class Server {
     private async onRenamePrefetch(params: lsp.TextDocumentPositionParams) {
         await this.flushDocument(params.textDocument.uri);
         return this.renameProvider.prefetchLocations();
+    }
+
+    @wrapRequest()
+    private async onDiagnoseDocumentRecursively(params: lsp.TextDocumentIdentifier) {
+        await this.flushDocument(params.uri);
+        const dg = this.diagnosticsProvider.checkFileRecursively(params.uri);
+        for (const item of dg.diagnostics) {
+            this.connection.sendDiagnostics(item);
+        }
+        return dg.success;
     }
 }
 

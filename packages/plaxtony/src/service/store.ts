@@ -145,7 +145,11 @@ export interface SourceFileMeta {
     archive?: SC2Archive;
 }
 
-export class Store {
+export interface IStoreSymbols {
+    resolveGlobalSymbol(name: string): gt.Symbol | undefined;
+}
+
+export class Store implements IStoreSymbols {
     private parser = new Parser();
     public rootPath?: string;
     public documents = new Map<string, SourceFile>();

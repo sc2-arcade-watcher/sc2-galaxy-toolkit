@@ -2,7 +2,7 @@ import { Parser } from './parser';
 import * as gt from './types';
 import { SyntaxKind, SourceFile, Node, Symbol, SymbolTable, NamedDeclaration } from './types';
 import { forEachChild, isNamedDeclarationKind, isDeclarationKind, isContainerKind, getSourceFileOfNode } from './utils';
-import { Store } from '../service/store';
+import { IStoreSymbols } from '../service/store';
 // import { SignatureMeta, TypeChecker } from './checker';
 
 export function getDeclarationName(node: Node): string {
@@ -55,7 +55,7 @@ export function getDeclarationName(node: Node): string {
 //     return result;
 // }
 
-export function declareSymbol(node: gt.Declaration, store: Store, parentSymbol?: Symbol): Symbol {
+export function declareSymbol(node: gt.Declaration, store: IStoreSymbols, parentSymbol?: Symbol): Symbol {
     let scopedSymbolTable: Symbol;
     let nodeSymbol: Symbol;
     let name: string;
@@ -143,7 +143,7 @@ export function declareSymbol(node: gt.Declaration, store: Store, parentSymbol?:
     return nodeSymbol;
 }
 
-export function bindSourceFile(sourceFile: SourceFile, store: Store) {
+export function bindSourceFile(sourceFile: SourceFile, store: IStoreSymbols) {
     let currentScope: gt.Declaration;
     let currentContainer: gt.NamedDeclaration;
 
@@ -182,7 +182,7 @@ export function bindSourceFile(sourceFile: SourceFile, store: Store) {
     }
 }
 
-export function unbindSourceFile(sourceFile: SourceFile, store: Store) {
+export function unbindSourceFile(sourceFile: SourceFile, store: IStoreSymbols) {
     function unbindSymbol(parentSymbol: Symbol) {
         for (const symbol of parentSymbol.members.values()) {
             symbol.declarations = symbol.declarations.filter((decl) => {

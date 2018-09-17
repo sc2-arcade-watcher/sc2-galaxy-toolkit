@@ -41,6 +41,7 @@ export function mockupStoreFromDirectory(directory: string) {
     return new Promise<Store>((resolve, reject) => {
         try {
             const store = new Store();
+            store.rootPath = directory;
             const ws = new WorkspaceWatcher(directory);
             ws.onDidOpen((ev) => {
                 store.updateDocument(ev.document);

@@ -1,11 +1,13 @@
 import * as util from 'util';
+import * as path from 'path';
+import URI from 'vscode-uri';
 import * as gt from './types';
 import { isComplexTypeKind } from '../compiler/utils';
 import { isDeclarationKind, forEachChild, isPartOfExpression, isRightSideOfPropertyAccess, findAncestor, createDiagnosticForNode, isAssignmentOperator, isComparisonOperator, isReferenceKeywordKind, findAncestorByKind } from './utils';
 import { Store } from '../service/store';
 import { tokenToString } from './scanner';
 import { Printer } from './printer';
-import { declareSymbol } from './binder';
+import { declareSymbol, unbindSourceFile } from './binder';
 import { getLineAndCharacterOfPosition } from '../service/utils';
 
 let nextSymbolId = 1;
@@ -614,15 +616,19 @@ function generateComplexTypes() {
 export class TypeChecker {
     private store: Store;
     private nodeLinks: gt.NodeLinks[] = [];
-    private diagnostics: gt.Diagnostic[] = [];
+    private diagnostics = new Map<string, gt.Diagnostic[]>();
     private currentSymbolContainer: gt.Symbol = null;
+    private currentDocuments = new Map<string, gt.SourceFile>();
 
     constructor(store: Store) {
         this.store = store;
+        this.currentDocuments = this.store.documents;
     }
 
     private report(location: gt.Node, msg: string, category: gt.DiagnosticCategory = gt.DiagnosticCategory.Error): void {
-        this.diagnostics.push(createDiagnosticForNode(location, category, msg));
+        const d = createDiagnosticForNode(location, category, msg);
+        const c = this.diagnostics.get(d.file.fileName);
+        if (c) c.push(d);
     }
 
     private getNodeLinks(node: gt.Node): gt.NodeLinks {
@@ -809,21 +815,67 @@ export class TypeChecker {
     }
 
     public checkSourceFile(sourceFile: gt.SourceFile, bindSymbols = false) {
-        this.diagnostics = [];
+        this.diagnostics.clear();
+        this.diagnostics.set(sourceFile.fileName, []);
+        this.currentDocuments = this.store.documents;
         if (bindSymbols) {
-            this.currentSymbolContainer = declareSymbol(sourceFile, this.store, null);
+            this.currentSymbolContainer = declareSymbol(sourceFile, {resolveGlobalSymbol: this.resolveGlobalSymbol.bind(this)}, null);
         }
+        sourceFile.statements.forEach(this.checkSourceElement.bind(this));
+        return Array.from(this.diagnostics.values()).pop();
+    }
+
+    protected checkSourceFileRecursivelyWorker(sourceFile: gt.SourceFile) {
+        unbindSourceFile(sourceFile, {resolveGlobalSymbol: this.resolveGlobalSymbol.bind(this)});
+        this.currentSymbolContainer = declareSymbol(sourceFile, {resolveGlobalSymbol: this.resolveGlobalSymbol.bind(this)}, null);
+        this.diagnostics.set(sourceFile.fileName, []);
+        this.currentDocuments.set(sourceFile.fileName, sourceFile);
+
         for (const statement of sourceFile.statements) {
+            if (statement.kind === gt.SyntaxKind.IncludeStatement) {
+                const docUri = this.checkIncludeStatement(<gt.IncludeStatement>statement);
+                if (docUri && !this.currentDocuments.has(docUri)) {
+                    const inclFile = this.store.documents.get(docUri);
+                    if (inclFile) {
+                        const currentSymbolContainer = this.currentSymbolContainer;
+                        this.checkSourceFileRecursivelyWorker(inclFile);
+                        this.currentSymbolContainer = currentSymbolContainer;
+                    }
+                }
+                continue;
+            }
             this.checkSourceElement(statement);
         }
-        return this.diagnostics;
+    }
+
+    public checkSourceFileRecursively(sourceFile: gt.SourceFile) {
+        this.diagnostics.clear();
+        this.currentDocuments = new Map<string, gt.SourceFile>();
+
+        if (this.store.s2workspace) {
+            const coreMod = this.store.s2workspace.allArchives.find((archive) => archive.name === 'mods/core.sc2mod');
+            if (coreMod) {
+                const fsp = path.join(coreMod.directory, 'base.sc2data', 'TriggerLibs', 'natives_missing.galaxy');
+                const smNatives = this.store.documents.get(URI.file(fsp).toString());
+                if (smNatives) {
+                    this.checkSourceFileRecursivelyWorker(smNatives);
+                }
+            }
+        }
+
+        this.checkSourceFileRecursivelyWorker(sourceFile);
+
+        return {
+            success: Array.from(this.diagnostics.values()).findIndex((value, index) => value.length > 0) === -1,
+            diagnostics: this.diagnostics,
+        };
     }
 
     private checkSourceElement(node: gt.Node) {
         let prevSymbolContainer = null;
         if (this.currentSymbolContainer && isDeclarationKind(node.kind)) {
             prevSymbolContainer = this.currentSymbolContainer;
-            this.currentSymbolContainer = declareSymbol(node, this.store, prevSymbolContainer);
+            this.currentSymbolContainer = declareSymbol(node, {resolveGlobalSymbol: this.resolveGlobalSymbol.bind(this)}, prevSymbolContainer);
             if (this.currentSymbolContainer.declarations.length > 1) {
                 let previousDeclaration: gt.Declaration;
                 if (node.kind === gt.SyntaxKind.FunctionDeclaration) {
@@ -859,6 +911,9 @@ export class TypeChecker {
         }
 
         switch (node.kind) {
+            case gt.SyntaxKind.IncludeStatement:
+                this.checkIncludeStatement(<gt.IncludeStatement>node);
+                break;
             case gt.SyntaxKind.Block:
                 this.checkBlock(<gt.Block>node);
                 break;
@@ -909,6 +964,22 @@ export class TypeChecker {
         if (prevSymbolContainer) {
             this.currentSymbolContainer = prevSymbolContainer;
         }
+    }
+
+    private checkIncludeStatement(node: gt.IncludeStatement) {
+        const path = node.path.value.replace(/\.galaxy$/i, '').toLowerCase();
+        for (const docUri of this.store.documents.keys()) {
+            const meta = this.store.getDocumentMeta(docUri);
+            if (!meta.relativeName) continue;
+            if (meta.relativeName.toLowerCase() != path) continue;
+            const sourceFile = <gt.SourceFile>findAncestorByKind(node, gt.SyntaxKind.SourceFile);
+            if (this.store.documents.get(docUri) === sourceFile) {
+                this.report(node.path, `Self-include`, gt.DiagnosticCategory.Warning);
+                return;
+            }
+            return docUri;
+        }
+        this.report(node.path, `Given filename couldn't be matched`);
     }
 
     private checkFunction(node: gt.FunctionDeclaration) {
@@ -1283,7 +1354,11 @@ export class TypeChecker {
             }
         }
 
-        for (const document of this.store.documents.values()) {
+        return this.resolveGlobalSymbol(name);
+    }
+
+    private resolveGlobalSymbol(name: string) {
+        for (const document of this.currentDocuments.values()) {
             const symbol = document.symbol.members.get(name);
             if (symbol) {
                 return symbol;

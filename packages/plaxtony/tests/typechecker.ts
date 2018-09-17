@@ -4,11 +4,12 @@ import * as path from 'path';
 import { assert } from 'chai';
 import * as tc from '../src/compiler/checker';
 import { TypeChecker } from '../src/compiler/checker';
-import { mockupStoreDocument, mockupStore, mockupSourceFile, mockupTextDocument } from './helpers';
+import { mockupStoreDocument, mockupStore, mockupSourceFile, mockupTextDocument, mockupStoreFromDirectory } from './helpers';
 import { getPositionOfLineAndCharacter, findPrecedingToken, getTokenAtPosition } from '../src/service/utils';
 import * as lsp from 'vscode-languageserver';
 import * as gt from './../src/compiler/types';
 import { unbindSourceFile } from '../src/compiler/binder';
+import URI from 'vscode-uri';
 
 function getSymbolAt(checker: TypeChecker, sourceFile: gt.SourceFile, line: number, character: number): gt.Symbol | undefined {
     const token = getTokenAtPosition(getPositionOfLineAndCharacter(sourceFile, line, character), sourceFile);
@@ -328,6 +329,16 @@ describe('Checker', () => {
                     assert.equal(checkFile(path.join('pass', filename)).length, 0);
                 });
             }
+        });
+    });
+
+    describe('Diagnostics Recursive', () => {
+        it('simple', async () => {
+            const store = await mockupStoreFromDirectory(path.resolve('tests/fixtures/type_checker/diagnostics_recursive/simple'));
+            const checker = new TypeChecker(store);
+            const sourceFile = store.documents.get(URI.file(path.join(store.rootPath, 'MapScript.galaxy')).toString());
+            const diagnostics = checker.checkSourceFileRecursively(sourceFile);
+            assert.isTrue(diagnostics.success);
         });
     });
 });
