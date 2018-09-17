@@ -1,0 +1,11 @@
+import { SourceFile } from './../src/compiler/types';
+import { TextDocument } from 'vscode-languageserver';
+import { Store } from '../src/service/store';
+export declare function fixtureFilePath(...filepath: string[]): string;
+export declare function mockupTextDocument(...filepath: string[]): TextDocument;
+export declare function mockupSourceFile(...filepath: string[]): SourceFile;
+export declare function mockupStoreDocument(...filepath: string[]): SourceFile;
+export declare function mockupStore(...documents: TextDocument[]): Store;
+export declare function mockupStoreFromDirectory(directory: string): Promise<Store>;
+export declare function mockupStoreFromS2Workspace(directory: string, modSources: string[]): Promise<Store>;
+export declare function mapStoreFilesByBasename(store: Store): Map<string, SourceFile>;
