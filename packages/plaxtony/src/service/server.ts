@@ -75,13 +75,19 @@ var formatElapsed = function(start: [number, number], end: [number, number]): st
     return out;
 }
 
-function wrapRequest(msg?: string, showArg?: boolean, argFormatter?: (payload: any) => any) {
+let reqDepth = 0;
+function wrapRequest(showArg = false, argFormatter?: (payload: any) => any, msg?: string) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         const method = (<Function>descriptor.value);
         descriptor.value = async function(...args: any[]) {
             const server = <Server>this;
-            let log = [];
-            log.push('### ' + (msg ? msg : propertyKey));
+            server.connection.console.info('>'.repeat(++reqDepth) + ' ' + (msg ? msg : propertyKey));
+            if (showArg) {
+                server.connection.console.log(util.inspect(args[0], true, 1, false));
+            }
+            else if (argFormatter) {
+                server.connection.console.log(util.inspect(argFormatter(args[0])));
+            }
 
             var start = process.hrtime();
             let ret;
@@ -92,18 +98,11 @@ function wrapRequest(msg?: string, showArg?: boolean, argFormatter?: (payload: a
                 }
             }
             catch (e) {
+                ret = null;
                 server.connection.console.error('[' + (<Error>e).name + '] ' + (<Error>e).message + '\n' + (<Error>e).stack);
             }
 
-            log.push(formatElapsed(start, process.hrtime()));
-            if (ret && ret[Symbol.iterator]) {
-                log.push(`results: ${ret.length}`)
-            }
-            server.log(log.join(' | '));
-
-            if (argFormatter) {
-                server.log(util.inspect(argFormatter(arguments[0])));
-            }
+            server.connection.console.info('='.repeat(reqDepth--) + ' ' + `${formatElapsed(start, process.hrtime())}`);
 
             return ret;
         }
@@ -458,12 +457,12 @@ export class Server {
         });
     }
 
-    @wrapRequest('Opened', true, (payload: lsp.TextDocumentChangeEvent) => payload.document.uri)
+    @wrapRequest(false, (payload: lsp.TextDocumentChangeEvent) => { return {document: payload.document.uri}})
     private onDidOpen(ev: lsp.TextDocumentChangeEvent) {
         this.store.openDocuments.set(ev.document.uri, true);
     }
 
-    @wrapRequest('Closed', true, (payload: lsp.TextDocumentChangeEvent) => payload.document.uri)
+    @wrapRequest(false, (payload: lsp.TextDocumentChangeEvent) => { return {document: payload.document.uri}})
     private onDidClose(ev: lsp.TextDocumentChangeEvent) {
         this.store.openDocuments.delete(ev.document.uri);
         if (!this.store.isUriInWorkspace(ev.document.uri)) {
@@ -476,12 +475,12 @@ export class Server {
         })
     }
 
-    @wrapRequest()
+    @wrapRequest(false, (payload: lsp.TextDocumentChangeEvent) => { return {document: payload.document.uri}})
     private async onDidSave(ev: lsp.TextDocumentChangeEvent) {
         await this.flushDocument(ev.document.uri, true);
     }
 
-    @wrapRequest()
+    @wrapRequest(true)
     private async onDidChangeWatchedFiles(ev: lsp.DidChangeWatchedFilesParams) {
         for (const x of ev.changes) {
             if (URI.parse(x.uri).fsPath.match(/sc2map\.(temp|orig)/gi)) continue;
@@ -505,9 +504,7 @@ export class Server {
         }
     }
 
-    @wrapRequest('Indexing', true, (payload: lsp.TextDocumentChangeEvent) => {
-        return payload.document.uri;
-    })
+    @wrapRequest(false, (payload: lsp.TextDocumentChangeEvent) => { return {document: payload.document.uri}})
     private onDidFindInWorkspace(ev: lsp.TextDocumentChangeEvent) {
         this.store.updateDocument(ev.document);
     }
@@ -519,7 +516,7 @@ export class Server {
     //     this.log('Archives: ' + util.inspect(ev.workspace.allArchives, false, 1));
     // }
 
-    @wrapRequest()
+    @wrapRequest(true)
     private async onCompletion(params: lsp.TextDocumentPositionParams) {
         if (!this.store.documents.has(params.textDocument.uri)) return null;
         await this.flushDocument(params.textDocument.uri);
@@ -539,24 +536,24 @@ export class Server {
         );
     }
 
-    @wrapRequest()
+    @wrapRequest(true)
     private onCompletionResolve(params: lsp.CompletionItem): lsp.CompletionItem {
         return this.completionsProvider.resolveCompletion(params);
     }
 
-    @wrapRequest()
+    @wrapRequest(true)
     private onDocumentSymbol(params: lsp.DocumentSymbolParams): lsp.SymbolInformation[] {
         if (!this.ready) return null;
         return translateDeclaratons(this.navigationProvider.getDocumentSymbols(params.textDocument.uri));
     }
 
-    @wrapRequest()
+    @wrapRequest(true)
     private onWorkspaceSymbol(params: lsp.WorkspaceSymbolParams): lsp.SymbolInformation[] {
         if (!this.ready) return null;
         return translateDeclaratons(this.navigationProvider.getWorkspaceSymbols(params.query));
     }
 
-    @wrapRequest()
+    @wrapRequest(true)
     private async onSignatureHelp(params: lsp.TextDocumentPositionParams): Promise<lsp.SignatureHelp> {
         if (!this.store.documents.has(params.textDocument.uri)) return null;
         await this.flushDocument(params.textDocument.uri);
@@ -566,7 +563,7 @@ export class Server {
         );
     }
 
-    @wrapRequest()
+    @wrapRequest(true)
     private async onDefinition(params: lsp.TextDocumentPositionParams): Promise<lsp.Definition> {
         if (!this.store.documents.has(params.textDocument.uri)) return null;
         await this.flushDocument(params.textDocument.uri);
@@ -577,19 +574,19 @@ export class Server {
         );
     }
 
-    @wrapRequest()
+    @wrapRequest(true)
     private async onHover(params: lsp.TextDocumentPositionParams): Promise<lsp.Hover> {
         await this.flushDocument(params.textDocument.uri);
         return this.hoverProvider.getHoverAt(params);
     }
 
-    @wrapRequest()
+    @wrapRequest(true)
     private async onReferences(params: lsp.ReferenceParams): Promise<lsp.Location[]> {
         await this.flushDocument(params.textDocument.uri);
         return this.referenceProvider.onReferences(params);
     }
 
-    @wrapRequest()
+    @wrapRequest(true)
     private async onRenameRequest(params: lsp.RenameParams) {
         await this.flushDocument(params.textDocument.uri);
         return this.renameProvider.onRenameRequest(params);
