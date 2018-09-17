@@ -464,12 +464,12 @@ export class Parser {
         if (!kind) {
             kind = this.token();
         }
-        const node = <Types.Literal>this.createNode(kind);
-        this.parseExpected(kind, undefined, false);
-        node.value = this.scanner.getTokenValue();
-        node.text = this.scanner.getTokenText();
-        this.nextToken();
-        return this.finishNode(node);
+        const node = <Types.Literal>this.createNode(kind, undefined, false);
+        node.end = this.scanner.getCurrentPos();
+        node.value = this.scanner.getTokenValue() || '';
+        node.text = this.scanner.getTokenText() || '';
+        this.parseExpected(kind);
+        return node;
     }
 
     private parseInclude(): Types.IncludeStatement {

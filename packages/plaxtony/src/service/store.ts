@@ -139,6 +139,12 @@ export async function findWorkspaceArchive(rootPath: string) {
     return null;
 }
 
+export interface SourceFileMeta {
+    absoluteName: string;
+    relativeName?: string;
+    archive?: SC2Archive;
+}
+
 export class Store {
     private parser = new Parser();
     public rootPath?: string;
@@ -190,24 +196,43 @@ export class Store {
         await this.s2metadata.build(lang);
     }
 
-    public isUriInWorkspace(documentUri: string) {
+    public getDocumentMeta(documentUri: string) {
         let documentPath = URI.parse(documentUri).fsPath;
+        let meta: SourceFileMeta = {
+            absoluteName: documentPath,
+        };
+
         const isWin = process.platform === 'win32';
         if (isWin) {
             documentPath = documentPath.toLowerCase();
         }
 
-        if (this.rootPath && !this.s2workspace.rootArchive && documentPath.startsWith((isWin ? this.rootPath.toLowerCase() : this.rootPath) + path.sep)) {
-            return true;
+        if (this.rootPath && (!this.s2workspace || !this.s2workspace.rootArchive) && documentPath.startsWith((isWin ? this.rootPath.toLowerCase() : this.rootPath) + path.sep)) {
+            meta.relativeName = documentPath.substr(this.rootPath.length + 1);
         }
-
-        if (this.s2workspace) {
+        else if (this.s2workspace) {
             for (const archive of this.s2workspace.allArchives) {
-                if (documentPath.startsWith((isWin ? archive.directory.toLowerCase() : archive.directory) + path.sep)) return true;
+                if (documentPath.startsWith((isWin ? archive.directory.toLowerCase() : archive.directory) + path.sep)) {
+                    meta.relativeName = documentPath.substr(archive.directory.length + 1);
+                    meta.relativeName = meta.relativeName.replace(/^base\.sc2data[\/\\]/i, '');
+                    meta.archive = archive;
+                    break;
+                }
             }
         }
 
-        return false;
+        if (meta.relativeName) {
+            meta.relativeName = meta.relativeName.replace(/\.galaxy$/i, '');
+            if (isWin) {
+                meta.relativeName = meta.relativeName.replace(/\\/g, '/');
+            }
+        }
+
+        return meta;
+    }
+
+    public isUriInWorkspace(documentUri: string) {
+        return typeof this.getDocumentMeta(documentUri).relativeName !== 'undefined';
     }
 
     public resolveGlobalSymbol(name: string): gt.Symbol | undefined {

@@ -12,7 +12,7 @@ import * as trig from '../sc2mod/trigger';
 
 function isInComment(sourceFile: gt.SourceFile, pos: number) {
     const comment = sourceFile.commentsLineMap.get(getLineAndCharacterOfPosition(sourceFile, pos).line);
-    return comment && pos > comment.pos;
+    return comment && pos >= comment.pos;
 }
 
 export const enum CompletionFunctionExpand {
@@ -230,16 +230,54 @@ export class CompletionsProvider extends AbstractProvider {
         }
 
         // trigger handlers
-        if (currentToken && currentToken.kind === gt.SyntaxKind.StringLiteral) {
+        if (currentToken && currentToken.kind === gt.SyntaxKind.StringLiteral && currentToken.parent.kind === gt.SyntaxKind.CallExpression) {
             const callExpr = <gt.CallExpression>currentToken.parent;
-            // trigger handlers
             if (
-                callExpr.kind === gt.SyntaxKind.CallExpression &&
                 callExpr.expression.kind === gt.SyntaxKind.Identifier &&
                 (<gt.Identifier>(callExpr.expression)).name === "TriggerCreate"
             ) {
                 return {
                     items: this.provideTriggerHandlers(),
+                    isIncomplete: false,
+                };
+            }
+        }
+
+        // include
+        if (currentToken && currentToken.kind === gt.SyntaxKind.StringLiteral && currentToken.pos <= position && currentToken.end >= position && currentToken.parent.kind === gt.SyntaxKind.IncludeStatement) {
+            const inclStmt = <gt.IncludeStatement>currentToken.parent;
+            const offset = position - currentToken.pos;
+            query = (<gt.StringLiteral>currentToken).text.substr(1, offset - 1).replace(/(\/*)[^\/]+$/, '$1');
+            const imap = new Map<string,lsp.CompletionItem>();
+
+            if ((<gt.StringLiteral>currentToken).text.match(/[^"]$/) || currentToken.end != position) {
+                for (const uri of this.store.documents.keys()) {
+                    const meta = this.store.getDocumentMeta(uri);
+                    if (!meta.relativeName) continue;
+                    if (query && !meta.relativeName.toLowerCase().startsWith(query.toLowerCase())) continue;
+                    const itemPart = meta.relativeName.substr(query.length).split('/');
+                    if (itemPart.length > 1) {
+                        imap.set(itemPart[0], {
+                            kind: lsp.CompletionItemKind.Folder,
+                            label: itemPart[0],
+                            insertText: itemPart[0] + '/',
+                            detail: meta.archive ? meta.archive.name : null,
+                            data: {},
+                        });
+                    }
+                    else {
+                        imap.set(itemPart[0], {
+                            kind: lsp.CompletionItemKind.File,
+                            label: itemPart[0] + '.galaxy',
+                            insertText: itemPart[0],
+                            detail: meta.relativeName + '.galaxy',
+                            documentation: meta.archive ? meta.archive.name : null,
+                            data: {},
+                        });
+                    }
+                }
+                return {
+                    items: Array.from(imap.values()),
                     isIncomplete: false,
                 };
             }

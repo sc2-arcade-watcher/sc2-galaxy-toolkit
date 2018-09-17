@@ -721,6 +721,10 @@ export class Scanner {
         return this.pos - this.char;
     }
 
+    public getCurrentPos(): number {
+        return this.pos;
+    }
+
     public getStartPos(): number {
         return this.startPos;
     }
