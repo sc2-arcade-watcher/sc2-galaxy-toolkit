@@ -227,6 +227,12 @@ export class Printer {
                 break;
             }
 
+            case gt.SyntaxKind.Unknown:
+            {
+                // TODO: throw exception?
+                break;
+            }
+
             default:
             {
                 if (isToken(node)) {
