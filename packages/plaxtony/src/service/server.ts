@@ -203,6 +203,7 @@ export class Server {
         this.connection.onHover(this.onHover.bind(this));
         this.connection.onReferences(this.onReferences.bind(this));
         this.connection.onRenameRequest(this.onRenameRequest.bind(this));
+        this.connection.onPrepareRename(this.onPrepareRename.bind(this));
 
         return this.connection;
     }
@@ -361,7 +362,9 @@ export class Server {
                 definitionProvider: true,
                 hoverProvider: true,
                 referencesProvider: true,
-                renameProvider: true,
+                renameProvider: {
+                    prepareProvider: true,
+                },
             }
         }
     }
@@ -590,6 +593,24 @@ export class Server {
     private async onRenameRequest(params: lsp.RenameParams) {
         await this.flushDocument(params.textDocument.uri);
         return this.renameProvider.onRenameRequest(params);
+    }
+
+    @wrapRequest(true)
+    private async onPrepareRename(params: lsp.TextDocumentPositionParams) {
+        await this.flushDocument(params.textDocument.uri);
+        const r = this.renameProvider.onPrepareRename(params);
+        if (r && (<any>r).range) {
+            setTimeout(() => {
+                this.onRenamePrefetch(params);
+            }, 5);
+        }
+        return r;
+    }
+
+    @wrapRequest()
+    private async onRenamePrefetch(params: lsp.TextDocumentPositionParams) {
+        await this.flushDocument(params.textDocument.uri);
+        return this.renameProvider.prefetchLocations();
     }
 }
 
