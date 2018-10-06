@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<map>
+    <complexType name="AnimationEvent">
+        <attribute name="event" type="String" use="required"/>
+        <attribute name="action" type="AnimationEventAction" use="required"/>
+        <attribute name="frame" type="FrameReference"/>
+    </complexType>
+
+    <complexType name="Animation">
+        <attribute name="name" type="ElementName" use="required"/>
+        <attribute name="template" type="String"/>
+        <attribute name="speed" type="Real32"/>
+        <attribute name="flags" type="String"/>
+    </complexType>
+
+    <simpleType name="AnimationEventActionList" kind="enum">
+        <pattern value="^([\w]+)(\s*,\s*[\w]+)*$"/>
+    </simpleType>
+
+    <simpleType name="AnimationEventAction" kind="enum">
+        <union value="EAnimationEventAction"/>
+        <union value="AnimationEventActionList"/>
+    </simpleType>
+
+    <complexType name="AnimationController">
+        <attribute name="type" type="EAnimationControllerType" use="required"/>
+        <attribute name="end" type="EAnimationEndAction" use="required"/>
+        <attribute name="frame" type="FrameReference"/>
+        <attribute name="name" type="String"/>
+        <!-- CFrameControllerVisibility -->
+        <!-- CFrameControllerUV -->
+        <attribute name="relative" type="FrameReference"/> <!-- also on [dimension,vskew,hskew] -->
+        <attribute name="layer" type="Uint8"/>
+        <attribute name="side" type="AnchorSide"/> <!-- also on anchor -->
+        <attribute name="sidelock" type="Boolean"/>
+        <!-- CFrameControllerTooltip -->
+        <!-- CFrameControllerTexture -->
+        <!-- CFrameControllerText -->
+        <!-- CFrameControllerState -->
+        <attribute name="stateGroup" type="String"/>
+        <!-- CFrameControllerStartingAngle -->
+        <!-- CFrameControllerSound -->
+        <!-- CFrameControllerSkew -->
+        <!-- CFrameControllerProperty -->
+        <attribute name="property" type="String"/>
+        <attribute name="curve" type="Boolean"/>
+        <attribute name="index" type="Uint8"/>
+        <!-- CFrameControllerLayerColor -->
+        <!-- CFrameControllerImageRotation -->
+        <!-- CFrameControllerVSkew -->
+        <!-- CFrameControllerHSkew -->
+        <!-- CFrameControllerFontStyle -->
+        <attribute name="style1" type="Style"/>
+        <attribute name="style2" type="Style"/>
+        <!-- CFrameControllerField -->
+        <!-- CFrameControllerFade -->
+        <!-- CFrameControllerEvent -->
+        <!-- CFrameControllerEndAngleOffset -->
+        <!-- CFrameControllerEnabled -->
+        <!-- CFrameControllerDimension -->
+        <attribute name="dimension" type="EAnimationDimension"/>
+        <attribute name="percentage" type="Boolean"/>
+        <attribute name="unclip" type="Boolean"/>
+        <!-- +layer? -->
+        <!-- CFrameControllerDesaturation -->
+        <!-- CFrameControllerCutscenePropertyReal -->
+        <!-- CFrameControllerCutsceneProperty -->
+        <!-- CFrameControllerCutscene -->
+        <!-- CFrameControllerCurveReal -->
+        <!-- CFrameControllerCurveColor -->
+        <!-- CFrameControllerCurve -->
+        <!-- CFrameControllerCounter -->
+        <!-- CFrameControllerCommand -->
+        <!-- CFrameControllerColor -->
+        <!-- CFrameControllerBlur -->
+        <!-- CFrameControllerAnimationSpeed -->
+        <!-- CFrameControllerAnimation -->
+        <attribute name="animation" type="String"/>
+        <!-- CFrameControllerAnchor -->
+        <attribute name="relativeFrame" type="FrameReference"/>
+        <attribute name="pos" type="AnchorPosPreset"/>
+        <!-- CFrameControllerAdjustmentColor -->
+        <!-- CFrameControllerActorMsg -->
+        <attribute name="ModelFrameName" type="String"/>
+        <attribute name="SendToScope" type="String"/>
+    </complexType>
+
+    <simpleType name="AnimationEasingInOutPattern" data="string">
+        <pattern value="^([\w]+)(\s*,\s*[\w]+)?$"/>
+    </simpleType>
+
+    <simpleType name="AnimationEasingInOut" kind="enum">
+        <union value="EAnimationEasing"/>
+        <union value="AnimationEasingInOutPattern"/>
+    </simpleType>
+
+    <complexType name="AnimationControllerKey">
+        <attribute name="type" type="EAnimationControllerKeyType" use="required"/>
+        <attribute name="time" type="Real32"/>
+        <attribute name="timeinc" type="Real32"/>
+        <attribute name="value" type="String"/>
+        
+        <!-- Curve -->
+        <!-- <attribute name="value" type="Int32"/> -->
+        <!-- CurveReal -->
+        <!-- <attribute name="value" type="Real32"/> -->
+        <!-- CurveColor -->
+        <!-- <attribute name="value" type="Color"/> -->
+        <!-- Sound -->
+        <attribute name="sound" type="Sound"/>
+        <!-- Identifier -->
+        <!-- <attribute name="value" type="String"/> -->
+        <!-- Animation -->
+        <!-- <attribute name="action" type="EAnimationEventAction"/> -->
+        <!-- Bool -->
+        <!-- <attribute name="value" type="Boolean"/> -->
+        <!-- Event -->
+        <attribute name="event" type="String"/>
+        <!-- Image -->
+        <attribute name="image" type="Image"/>
+        <!-- Text -->
+        <attribute name="text" type="Text"/>
+        <!-- Cutscene -->
+        <attribute name="action" type="ECutsceneAction"/>
+        <attribute name="file" type="String"/>
+        <attribute name="bookmark" type="String"/>
+        <attribute name="filter" type="String"/>
+        <!-- Property -->
+        <!-- <attribute name="value" type="String"/> -->
+
+        <attribute name="in" type="EAnimationEasing"/>
+        <attribute name="out" type="EAnimationEasing"/>
+        <attribute name="inout" type="AnimationEasingInOut"/>
+        <attribute name="direction" type="EAnimationDirection"/>
+    </complexType>
+
+    <!--
+    ========================================
+    => ANIMATION CONTROLLERS
+    ========================================
+    -->
+
+    <!-- <animationController name="AnimationController:Property"/> -->
+    <!-- <complexType name="AnimationController:Property">
+        <attribute name="property" type="String"/>
+        <attribute name="curve" type="String"/>
+        <attribute name="index" type="Uint8"/>
+    </complexType> -->
+
+    <!--
+    ========================================
+    => ANIMATION CONTROLLERS
+    ========================================
+    -->
+    <!-- <animCtrlKey name="AnimCtrlKey:"/> -->
+</map>

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<map>
+    <!--
+    ========================================
+    => STRUCT
+    ========================================
+    -->
+
+    <!-- 
+     - Common
+    -->
+
+    <complexType name="Include">
+        <attribute name="path" type="String" use="required"/>
+        <attribute name="requiredtoload" type="String"/>
+    </complexType>
+
+    <complexType name="DescFlags">
+        <attribute name="val" type="EDescFlags" use="required"/>
+    </complexType>
+
+    <complexType name="RequiredDefines">
+        <attribute name="val" type="String" use="required"/>
+    </complexType>
+
+    <complexType name="Constant">
+        <attribute name="name" type="ElementName" use="required"/>
+        <attribute name="val" type="String" use="required"/>
+    </complexType>
+
+    <complexType name="Frame">
+        <attribute name="type" type="EFrameType" use="required"/>
+        <attribute name="name" type="FrameName" use="required"/>
+        <attribute name="template" type="FrameDescName"/>
+        <attribute name="file" type="FileDescName"/>
+        <attribute name="requiredtoload" type="String"/>
+    </complexType>
+
+    <!-- 
+     - Anim Desc
+    -->
+
+    <complexType name="CAnimationControllerKeyDesc">
+        <extend value="AnimationControllerKey"/>
+    </complexType>
+
+    <complexType name="CAnimationControllerDesc">
+        <extend value="AnimationController"/>
+        <element name="Key" type="CAnimationControllerKeyDesc"/>
+    </complexType>
+
+    <complexType name="CAnimationDesc">
+        <extend value="Animation"/>
+        <element name="Event" type="AnimationEvent"/>
+        <element name="Controller" type="CAnimationControllerDesc"/>
+    </complexType>
+
+    <!-- 
+     - StateGroup Desc
+    -->
+
+    <complexType name="CStateDesc">
+        <extend value="StateGroupState"/>
+        <element name="When" type="StateGroupStateWhen"/>
+        <element name="Action" type="StateGroupStateAction"/>
+    </complexType>
+
+    <complexType name="CStateGroupDesc">
+        <extend value="StateGroup"/>
+        <element name="DefaultState" type="StateGroupDefaultState"/>
+        <element name="State" type="CStateDesc"/>
+    </complexType>
+
+    <!-- 
+     - CDesc
+    -->
+
+    <complexType name="CDesc">
+        <element name="DescFlags" type="DescFlags"/>
+        <element name="RequiredDefines" type="RequiredDefines"/>
+        <element name="Constant" type="Constant"/>
+        <element name="Frame" type="Frame"/>
+        <element name="Animation" type="CAnimationDesc"/>
+    </complexType>
+
+    <complexType name="CRootDesc">
+        <attribute name="locked" type="Boolean"/>
+        <extend value="CDesc"/>
+        <element name="Include" type="Include"/>
+    </complexType>
+
+    <complexType name="CFileDesc">
+        <element name="Desc" type="CRootDesc"/>
+    </complexType>
+
+    <!-- 
+     - Primary Frame Desc
+    -->
+
+    <complexType name="CFrameDesc">
+        <extend value="CDesc"/>
+        <element name="Animation" type="CAnimationDesc"/>
+        <element name="StateGroup" type="CStateGroupDesc"/>
+    </complexType>
+
+    <!-- 
+     - Custom Frames Desc
+    -->
+
+    <complexType name="CGameResultDialogDesc">
+        <extend value="CFrameDesc"/>
+        <element name="AutoDismissTime" type="Field:Unknown"/>
+        <element name="ShowOnDefeat" type="Field:Unknown"/>
+        <element name="ShowOnVictory" type="Field:Unknown"/>
+        <element name="ShowWhenReplaying" type="Field:Unknown"/>
+        <element name="UsedSoundCategories" type="Field:Unknown"/>
+    </complexType>
+
+    <complexType name="CGlueUIDesc">
+        <extend value="CFrameDesc"/>
+    </complexType>
+
+    <complexType name="CImageDesc">
+        <extend value="CFrameDesc"/>
+        <!-- <element name="LayerCount" type="Field:Unknown"/>
+        <element name="Texture" type="Field:Unknown"/>
+        <element name="TextureType" type="Field:Unknown"/>
+        <element name="Tiled" type="Field:Unknown"/> -->
+    </complexType>
+
+    <complexType name="CModelFrameDesc">
+        <extend value="CFrameDesc"/>
+        <element name="Camera" type="Field:Unknown"/>
+        <element name="ClipCameraToViewport" type="Field:Unknown"/>
+        <element name="Model" type="Field:Unknown"/>
+        <element name="Projection" type="Field:Unknown"/>
+        <element name="UseAspectScaling" type="Field:Unknown"/>
+        <element name="UseShadows" type="Field:Unknown"/>
+        <element name="UseStandardCoordinates" type="Field:Unknown"/>
+    </complexType>
+
+    <complexType name="CPortraitFrameDesc">
+        <extend value="CFrameDesc"/>
+        <element name="MovieFrame" type="Field:Unknown"/>
+        <element name="ActorLink" type="Field:Unknown"/>
+        <element name="ModelLink" type="Field:Unknown"/>
+        <element name="BackgroundImage" type="Field:Unknown"/>
+        <element name="BorderImage" type="Field:Unknown"/>
+        <element name="RenderType" type="Field:Unknown"/>
+        <element name="UseTransition" type="Field:Unknown"/>
+    </complexType>
+
+    <complexType name="CSegmentedBarDesc">
+        <extend value="CFrameDesc"/>
+        <element name="DisplayBar" type="Field:Unknown"/>
+    </complexType>
+
+    <complexType name="CUnitStatusElementDesc">
+        <extend value="CFrameDesc"/>
+        <element name="DisplayPriority" type="Field:Unknown"/>
+    </complexType>
+
+    <complexType name="CUnitStatusBarDesc">
+        <extend value="CFrameDesc"/>
+        <extend value="CUnitStatusElementDesc"/>
+        <element name="DisplayBar" type="Field:Unknown"/>
+        <element name="DisplayPriority" type="Field:Unknown"/>
+        <element name="ShowStatusTooltip" type="Field:Unknown"/>
+    </complexType>
+
+    <complexType name="CUnitStatusBehaviorDesc">
+        <extend value="CFrameDesc"/>
+        <extend value="CUnitStatusElementDesc"/>
+        <element name="Behavior" type="Field:Unknown"/>
+        <element name="DisplayPriority" type="Field:Unknown"/>
+    </complexType>
+
+    <complexType name="CUnitStatusBehaviorLabelDesc">
+        <extend value="CFrameDesc"/>
+        <extend value="CUnitStatusElementDesc"/>
+        <extend value="CUnitStatusBehaviorDesc"/>
+        <element name="HideMax" type="Field:Unknown"/>
+    </complexType>
+
+    <complexType name="CUnitStatusFrameDesc">
+        <extend value="CFrameDesc"/>
+        <element name="AllyRenderPriority" type="Field:Unknown"/>
+        <element name="EnemyRenderPriority" type="Field:Unknown"/>
+        <element name="OwnerRenderPriority" type="Field:Unknown"/>
+        <element name="Persistent" type="Field:Unknown"/>
+        <element name="VisibilityControlledByUnitAlliances" type="Field:Unknown"/>
+        <element name="VisibleToAlly" type="Field:Unknown"/>
+        <element name="VisibleToEnemy" type="Field:Unknown"/>
+        <element name="VisibleToOwner" type="Field:Unknown"/>
+    </complexType>
+
+    <complexType name="CUnitStatusLabelDesc">
+        <extend value="CFrameDesc"/>
+        <extend value="CUnitStatusElementDesc"/>
+        <element name="DisplayPriority" type="Field:Unknown"/>
+        <element name="FractionDigits" type="Field:Unknown"/>
+        <element name="HideMax" type="Field:Unknown"/>
+        <element name="RoundMode" type="Field:Unknown"/>
+        <element name="ShowGrouping" type="Field:Unknown"/>
+        <element name="ShowMaxZero" type="Field:Unknown"/>
+        <element name="ShowPercent" type="Field:Unknown"/>
+        <element name="ShowWhileInvulnerable" type="Field:Unknown"/>
+    </complexType>
+
+    <complexType name="CUnitStatusNameDesc">
+        <extend value="CFrameDesc"/>
+        <extend value="CUnitStatusElementDesc"/>
+        <element name="DisplayPriority" type="Field:Unknown"/>
+        <element name="UseNameTypeVisibilityRules" type="Field:Unknown"/>
+    </complexType>
+
+    <complexType name="CUnitStatusValidatorAnimElementDesc">
+        <extend value="CFrameDesc"/>
+        <extend value="CUnitStatusElementDesc"/>
+        <element name="DisplayPriority" type="Field:Unknown"/>
+        <element name="Validator" type="Field:Unknown"/>
+    </complexType>
+</map>

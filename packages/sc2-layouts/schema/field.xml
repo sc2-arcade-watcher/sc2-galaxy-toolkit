@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<map>
+    <!--
+    ========================================
+    => FIELD TYPES FOR COMPLEX PROPERTIES/ELEMENTS AND SUCH
+    ========================================
+    -->
+
+    <simpleType name="AnchorSide" kind="enum">
+        <enumeration value="Top"/>
+        <enumeration value="Left"/>
+        <enumeration value="Right"/>
+        <enumeration value="Bottom"/>
+    </simpleType>
+
+    <simpleType name="AnchorPosPreset" kind="enum">
+        <enumeration value="Min"/>
+        <enumeration value="Mid"/>
+        <enumeration value="Max"/>
+    </simpleType>
+
+    <simpleType name="AnchorPosOffset" data="number">
+    </simpleType>
+
+    <simpleType name="AnchorPos">
+        <union value="AnchorPosPreset"/>
+        <union value="AnchorPosOffset"/>
+    </simpleType>
+
+    <!--  -->
+
+    <complexType name="Field:Anchor">
+        <attribute name="side" type="AnchorSide">
+            <documentation>Side of the frame.</documentation>
+        </attribute>
+        <attribute name="relative" type="FrameReference" use="required">
+            <documentation>Path to an Frame where it will anchor.</documentation>
+        </attribute>
+        <attribute name="pos" type="AnchorPos">
+            <documentation>
+                <![CDATA[
+                The area of the target frame where it will anchor to.
+
+                - Using reals moves it a % of the way across that distance
+                - `Min` is a constant of `0`, `Mid` is a constant of `.5`, and `Max` is a constant of `1.0`.
+                - Range is not limited to `0.0 - 1.0`. You can position it out of the bounds.
+                ]]>
+            </documentation>
+        </attribute>
+        <attribute name="offset" type="Int32">
+            <documentation>Extra distance (expressed by number of *UI* pixels) that's applied to anchored position.</documentation>
+        </attribute>
+    </complexType>
+
+    <complexType name="Field:AliasTable">
+        <attribute name="alias" type="String" use="required"/>
+        <attribute name="original" type="String" use="required"/>
+    </complexType>
+
+    <complexType name="Field:AttachPointTable">
+        <attribute name="alias" type="String"/>
+        <attribute name="attachment" type="String" use="required"/>
+        <attribute name="finderTag" type="String" use="required"/>
+        <attribute name="frame" type="String" use="required"/>
+    </complexType>
+
+    <complexType name="Field:AutoSizeClamp">
+        <attribute name="maxheight" type="Int32"/>
+        <attribute name="maxwidth" type="Int32"/>
+        <attribute name="minheight" type="Int32"/>
+        <attribute name="minwidth" type="Int32"/>
+        <attribute name="val" type="String"/>
+    </complexType>
+
+    <complexType name="Field:Cutscene">
+        <attribute name="val" type="String" use="required"/>
+        <attribute name="preloadFilters" type="String"/>
+    </complexType>
+
+    <complexType name="Field:DataRefArgTable">
+        <attribute name="name" type="EDataRefType" use="required"/>
+        <attribute name="val" type="String" use="required"/>
+    </complexType>
+
+    <complexType name="Field:DesignRect">
+        <attribute name="bottom" type="Int32"/>
+        <attribute name="left" type="Int32"/>
+        <attribute name="right" type="Int32"/>
+        <attribute name="top" type="Int32"/>
+        <attribute name="val" type="String"/>
+    </complexType>
+
+    <complexType name="Field:Rect">
+        <attribute name="bottom" type="Real32"/>
+        <attribute name="left" type="Real32"/>
+        <attribute name="right" type="Real32"/>
+        <attribute name="top" type="Real32"/>
+        <attribute name="val" type="String"/>
+    </complexType>
+
+    <complexType name="Table:Field:Rect">
+        <attribute name="index" type="Uint8"/>
+        <extend value="Field:Rect"/>
+    </complexType>
+
+    <complexType name="Field:ScoreValue">
+        <attribute name="index" type="Uint8"/>
+        <attribute name="val" type="String" use="required"/>
+    </complexType>
+
+    <complexType name="Field:StringTable">
+        <attribute name="val" type="String" use="required"/>
+    </complexType>
+
+    <complexType name="Field:LayerCount">
+        <attribute name="val" type="Uint8" use="required"/>
+    </complexType>
+
+    <complexType name="Field:PlayerColorArray">
+        <attribute name="index" type="Uint8"/>
+        <attribute name="val" type="Color" use="required"/>
+    </complexType>
+
+    <!--  -->
+
+    <complexType name="Field:Internal:CButton">
+        <attribute name="val" type="String" use="required"/>
+    </complexType>
+    <complexType name="Field:Internal:CFrame">
+        <attribute name="val" type="String" use="required"/>
+    </complexType>
+    <complexType name="Field:Internal:CImage">
+        <attribute name="val" type="String" use="required"/>
+    </complexType>
+    <complexType name="Field:Internal:CLabel">
+        <attribute name="val" type="String" use="required"/>
+    </complexType>
+    <complexType name="Field:Internal:CListBox">
+        <attribute name="val" type="String" use="required"/>
+    </complexType>
+    <complexType name="Field:Internal:CScrollBar">
+        <attribute name="val" type="String" use="required"/>
+    </complexType>
+    <complexType name="Field:Internal:CSlider">
+        <attribute name="val" type="String" use="required"/>
+    </complexType>
+
+    <!--  -->
+
+    <complexType name="Field:Unknown">
+        <attribute name="val" type="String"/>
+        <flag name="AllowExtraAttrs" value="true"/>
+    </complexType>
+</map>

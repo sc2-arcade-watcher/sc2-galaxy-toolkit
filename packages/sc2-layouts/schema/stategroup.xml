@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<map>
+    <complexType name="StateGroup">
+        <attribute name="name" type="ElementName" use="required"/>
+    </complexType>
+
+    <complexType name="StateGroupDefaultState">
+        <attribute name="val" type="ElementName" use="required"/>
+    </complexType>
+
+    <complexType name="StateGroupState">
+        <attribute name="name" type="ElementName" use="required"/>
+    </complexType>
+
+    <complexType name="StateGroupStateWhen">
+        <attribute name="type" type="EStateWhen" use="required"/>
+        <attribute name="frame" type="FrameReference"/>
+
+        <!-- Property -->
+        <attribute name="operator" type="EStatePropertyOperator"/>
+
+        <!-- AnimationState -->
+
+        <!-- StateGroup -->
+        <attribute name="stateGroupName" type="String"/>
+
+        <!-- Option -->
+        <attribute name="localeiddata" type="String"/>
+        
+        <flag name="AllowExtraAttrs" value="true"/>
+    </complexType>
+
+    <complexType name="StateGroupStateAction">
+        <attribute name="type" type="EStateAction" use="required"/>
+        <attribute name="frame" type="FrameReference"/>
+
+        <!-- SetProperty -->
+        <attribute name="index" type="Uint8"/>
+        <attribute name="layer" type="Uint8"/>
+
+        <!-- SendEvent -->
+        <attribute name="event" type="String"/>
+        
+        <!-- ApplyTemplate -->
+        <attribute name="template" type="FrameDescName"/>
+
+        <!-- SetState -->
+        <attribute name="group" type="String"/>
+        <attribute name="state" type="String"/>
+
+        <!-- SetAnchor -->
+        <attribute name="side" type="AnchorSide"/>
+        <attribute name="relative" type="FrameReference"/>
+        <attribute name="pos" type="AnchorPos"/>
+        <attribute name="offset" type="Int32"/>
+
+        <!-- PlaySound -->
+        <attribute name="sound" type="Sound"/>
+
+        <!-- SetAnimationProperty -->
+        <attribute name="animation" type="String"/>
+        <attribute name="enabled" type="Boolean"/>
+        <!-- <attribute name="animationSpeed" type="Real32"/> -->
+
+        <flag name="AllowExtraAttrs" value="true"/>
+    </complexType>
+</map>
