@@ -1,0 +1,106 @@
+{
+    "name": "sc2layouts",
+    "displayName": "StarCraft II Layouts",
+    "description": "",
+    "version": "0.1.0",
+    "publisher": "talv",
+    "license": "MIT",
+    "engines": {
+        "vscode": "^1.27.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Talv/sc2-layouts.git"
+    },
+    "keywords": [
+        "sc2",
+        "starcraft",
+        "layouts",
+        "sc2layout"
+    ],
+    "categories": [
+        "Programming Languages"
+    ],
+    "preview": true,
+    "activationEvents": [
+        "onLanguage:sc2layout"
+    ],
+    "main": "./out/src/extension",
+    "contributes": {
+        "languages": [
+            {
+                "id": "sc2layout",
+                "aliases": [
+                    "SC2 Layout",
+                    "sc2layout"
+                ],
+                "extensions": [
+                    ".SC2Layout"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "sc2layout",
+                "scopeName": "text.xml.sc2layout",
+                "path": "./syntaxes/sc2layout.tmLanguage.json"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "sc2layout",
+                "path": "./snippets/base.json"
+            }
+        ],
+        "configurationDefaults": {
+            "[sc2layout]": {
+                "editor.quickSuggestions": true
+            }
+        },
+        "configuration": {
+            "title": "sc2layout",
+            "properties": {
+                "sc2layout.builtinMods": {
+                    "scope": "window",
+                    "type": "object",
+                    "default": {
+                        "mods/core.sc2mod": true,
+                        "mods/war3data.sc2mod": false,
+                        "mods/novastoryassets.sc2mod": false,
+                        "mods/voidprologue.sc2mod": false,
+                        "mods/alliedcommanders.sc2mod": false,
+                        "mods/missionpacks/novacampaign.sc2mod": false,
+                        "campaigns/liberty.sc2campaign": false,
+                        "campaigns/swarm.sc2campaign": false,
+                        "campaigns/swarmstory.sc2campaign": false,
+                        "campaigns/void.sc2campaign": false,
+                        "campaigns/voidstory.sc2campaign": false
+                    }
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "tsc -p ./",
+        "build:watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "node ./node_modules/vscode/bin/test"
+    },
+    "dependencies": {
+        "chai": "^4.1.2",
+        "glob": "^7.1.3",
+        "vscode-languageserver": "^5.0.3",
+        "vscode-uri": "^1.0.6",
+        "xml2js": "^0.4.19"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.1.4",
+        "@types/glob": "^7.1.1",
+        "@types/node": "^10.1.0",
+        "@types/xml2js": "^0.4.3",
+        "ts-node": "^6.1.2",
+        "typescript": "^2.8.3",
+        "vscode": "^1.1.21"
+    }
+}
