@@ -56,22 +56,6 @@
     </complexType>
 
     <!-- 
-     - StateGroup Desc
-    -->
-
-    <complexType name="CStateDesc">
-        <extend value="StateGroupState"/>
-        <element name="When" type="StateGroupStateWhen"/>
-        <element name="Action" type="StateGroupStateAction"/>
-    </complexType>
-
-    <complexType name="CStateGroupDesc">
-        <extend value="StateGroup"/>
-        <element name="DefaultState" type="StateGroupDefaultState"/>
-        <element name="State" type="CStateDesc"/>
-    </complexType>
-
-    <!-- 
      - CDesc
     -->
 
@@ -100,7 +84,7 @@
     <complexType name="CFrameDesc">
         <extend value="CDesc"/>
         <element name="Animation" type="CAnimationDesc"/>
-        <element name="StateGroup" type="CStateGroupDesc"/>
+        <element name="StateGroup" type="CFrameStateGroupDesc"/>
     </complexType>
 
     <!-- 
