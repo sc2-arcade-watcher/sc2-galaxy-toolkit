@@ -3,9 +3,8 @@ import { DiagnosticReport, XMLElement, AttrValueKind, DiagnosticCategory, XMLAtt
 import { DescIndex } from './desc';
 import { LayoutDocument, Store } from './store';
 import { SchemaValidator } from '../schema/validation';
-import { getAttrValueKind } from '../parser/parser';
 import { CharacterCodes } from '../parser/scanner';
-import { parseFramePropBinding } from '../parser/selector';
+import { parseFramePropBinding, getAttrValueKind } from '../parser/selector';
 
 export class LayoutProcessor {
     protected diagnostics: DiagnosticReport[] = [];
@@ -74,7 +73,7 @@ export class LayoutProcessor {
 
                 if (!vstype) {
                     if (!(el.stype.flags & sch.ComplexTypeFlags.AllowExtraAttrs)) {
-                        this.reportAtAttr(nattr, `Unexpected attribute "${nattr.name}"`);
+                        this.reportAtAttr(nattr, `Unknown attribute "${nattr.name}"`, DiagnosticCategory.Message);
                     }
                     continue outer;
                 }

@@ -1,5 +1,5 @@
 import * as util from 'util';
-import { oentries } from '../util';
+import { oentries } from '../common';
 import { LayoutDocument, Store } from './store';
 import { XMLElement, XMLNode, DiagnosticReport } from '../types';
 import * as sch from '../schema/base';

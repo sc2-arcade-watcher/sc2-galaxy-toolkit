@@ -4,7 +4,7 @@ import { AbstractProvider, svcRequest } from './provider';
 import { createDocumentFromVS } from '../service';
 import { createScanner, CharacterCodes } from '../parser/scanner';
 import { TokenType, XMLElement, AttrValueKind } from '../types';
-import { getAttrValueKind } from '../parser/parser';
+import { getAttrValueKind } from '../parser/selector';
 
 export class DefinitionProvider extends AbstractProvider implements vs.DefinitionProvider {
     @svcRequest(false)

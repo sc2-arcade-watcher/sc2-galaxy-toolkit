@@ -1,9 +1,17 @@
 # Change Log
 
-All notable changes to the "sc2layouts" extension will be documented in this file.
-
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
 ## [Unreleased]
+
+### Added
+
+* Code suggestions for each side of `<Anchor>`
+* Code suggestions within property bind context
+* Basic validation of property binding
+
+### Fixed
+
+* Schema: missing elements on UnitStatusBar
+
+## [0.1.0] - 2018-10-07
 
 * Initial release

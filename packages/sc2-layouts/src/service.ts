@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as glob from 'glob';
 import * as vs from 'vscode';
 import * as lsp from 'vscode-languageserver';
+import URI from 'vscode-uri';
 import { Store, createTextDocumentFromFs } from './index/store';
 import { CompletionsProvider } from './services/completions';
 import { languageId, DiagnosticCategory, XMLNode, languageExt } from './types';
@@ -10,8 +11,8 @@ import { HoverProvider } from './services/hover';
 import { ElementDefKind } from './schema/base';
 import { generateSchema } from './schema/map';
 import { DefinitionProvider } from './services/definition';
-import { objventries } from './util';
-import URI from 'vscode-uri';
+import { objventries } from './common';
+import * as s2 from './index/s2mod';
 
 // const builtinMods = [
 //     'campaigns/liberty.sc2campaign',
@@ -116,7 +117,7 @@ export class ServiceContext implements IService {
                     return new vs.Diagnostic(
                         new vs.Range(e.document.positionAt(item.start), e.document.positionAt(item.end)),
                         item.message,
-                        item.category === DiagnosticCategory.Error ? vs.DiagnosticSeverity.Error : vs.DiagnosticSeverity.Warning,
+                        <any>item.category,
                     );
                 }));
             }
@@ -161,13 +162,22 @@ export class ServiceContext implements IService {
 
     @svcRequest(false)
     protected async initialize() {
+        const archives: s2.Archive[] = [];
+
         // -
-        const mods = <S2LConfig.builtinMods>vs.workspace.getConfiguration(languageId).get('builtinMods');
-        for (const [mod, enabled] of objventries(mods)) {
+        const builtinMods = <S2LConfig.builtinMods>vs.workspace.getConfiguration(languageId).get('builtinMods');
+        for (const [mod, enabled] of objventries(builtinMods)) {
             if (!enabled) continue;
-            await this.indexDirectory(URI.file(path.join(this.extContext.extensionPath, 'sc2-data', <string>mod)));
+            const uri = URI.file(path.join(this.extContext.extensionPath, 'sc2-data', <string>mod));
+            archives.push(new s2.Archive(<string>mod, uri));
         }
 
+        // -
+        this.store.s2work = new s2.Workspace(archives);
+        await this.store.s2work.reload();
+        for (const sa of archives) {
+            await this.indexDirectory(sa.uri);
+        }
 
         // -
         if (vs.workspace.workspaceFolders) {

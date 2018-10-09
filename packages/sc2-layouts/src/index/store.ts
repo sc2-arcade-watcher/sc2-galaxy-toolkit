@@ -8,6 +8,7 @@ import { languageId, XMLElement, DiagnosticReport, XMLDocument } from '../types'
 import { parse } from '../parser/parser';
 import { DescIndex } from './desc';
 import { LayoutProcessor } from './processor';
+import * as s2 from '../index/s2mod';
 
 export function createTextDocument(uri: string, text: string): lsp.TextDocument {
     return <lsp.TextDocument>{
@@ -43,6 +44,7 @@ export class SWorkspace {
 export class Store {
     protected workspaces = new Map<string, SWorkspace>();
     protected workspaceDocUri = new Map<string, SWorkspace>();
+    s2work = new s2.Workspace([]);
 
     documents = new Map<string, XMLDocument>();
     index = new DescIndex();

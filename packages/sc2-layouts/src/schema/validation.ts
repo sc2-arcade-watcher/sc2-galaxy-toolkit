@@ -80,47 +80,7 @@ export class SchemaValidator {
         for (const sattr of node.stype.attributes.values()) {
             if (!sattr.required) continue;
             if (node.attributes[sattr.name]) continue;
-            this.appendDiagnostics(node, `Required attribute "${sattr.name}" not specified`);
+            this.appendDiagnostics(node, `Required attribute "${sattr.name}" not specified`, {category: DiagnosticCategory.Message});
         }
-    }
-
-    public validateNode(node: XMLElement) {
-        if (!node.stype) return false;
-
-        const sdlen = this.diagnostics.length;
-
-        this.checkRequiredAttr(node);
-
-        outer: for (const attrKey in node.attributes) {
-            const nodeAttr = node.attributes[attrKey];
-
-            if (!node.stype.attributes.has(attrKey)) {
-                if (node.stype.flags & sch.ComplexTypeFlags.AllowExtraAttrs) continue;
-                this.appendDiagnostics(node, `Unexpected attribute "${attrKey}"`, {
-                    start: nodeAttr.start,
-                    end: nodeAttr.end,
-                    category: DiagnosticCategory.Warning,
-                });
-                continue;
-            }
-
-            if (typeof nodeAttr.value === 'undefined') continue;
-
-            switch (nodeAttr.value.charCodeAt(0)) {
-                case 0x23: // constant
-                case 0x7B: // prop bind
-                    continue outer;
-            }
-
-            const vr = this.validateAttrValue(nodeAttr.value, node.stype.attributes.get(attrKey).type);
-            if (typeof vr === 'string') {
-                this.appendDiagnostics(node, vr, {
-                    start: nodeAttr.start,
-                    end: nodeAttr.end,
-                });
-            }
-        }
-
-        return sdlen === this.diagnostics.length;
     }
 }

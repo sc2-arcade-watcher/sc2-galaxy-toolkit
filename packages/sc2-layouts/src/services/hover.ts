@@ -25,7 +25,7 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
 
         // console.log(util.inspect(node, {depth: 1}));
 
-        if (node instanceof XMLElement) {
+        if (node instanceof XMLElement && node.stype) {
             if (node.start <= offset && (node.start + node.tag.length + 1) > offset) {
                 if (node.sdef) {
                     hv = <vs.Hover>{

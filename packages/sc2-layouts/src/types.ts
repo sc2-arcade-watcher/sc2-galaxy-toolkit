@@ -1,7 +1,7 @@
 import * as path from 'path';
 import URI from 'vscode-uri';
 import * as sch from './schema/base';
-import { findFirst } from './util';
+import { findFirst } from './common';
 
 export const languageId = 'sc2layout';
 export const languageExt = 'SC2Layout';
@@ -14,6 +14,7 @@ export const enum XMLNodeKind {
 export abstract class XMLNode {
     readonly kind: XMLNodeKind;
     stype?: sch.ComplexType;
+    altTypeNotMatched?: true;
     children: XMLElement[] = [];
 
     constructor(public start: number, public end: number, public parent?: XMLNode) {
@@ -128,6 +129,10 @@ export interface XMLAttr {
 export const enum AttrValueKind {
     Generic,
     Constant,
+    ConstantRacial,
+    Asset,
+    AssetRacial,
+    PtrAsset,
     PropertyBind,
 }
 
@@ -178,9 +183,10 @@ export interface Scanner {
 }
 
 export enum DiagnosticCategory {
-    Warning,
     Error,
+    Warning,
     Message,
+    Hint,
 }
 
 export interface DiagnosticReport {

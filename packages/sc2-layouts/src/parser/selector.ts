@@ -1,4 +1,6 @@
 import { CharacterCodes } from './scanner';
+import { AttrValueKind } from '../types';
+import { reverseMap } from '../common';
 
 export const enum BuiltinHandleKind {
     This,
@@ -18,6 +20,8 @@ export const builtinHandlesTable = new Map<string, BuiltinHandleKind>([
     ['ancestor', BuiltinHandleKind.Ancestor],
 ]);
 
+export const builtinHandlesNameTable = new Map<BuiltinHandleKind, string>(reverseMap(builtinHandlesTable));
+
 export const enum SelectionFragmentKind {
     Unknown,
     BuiltinHandle,
@@ -25,18 +29,24 @@ export const enum SelectionFragmentKind {
     Identifier,
 }
 
+enum AncestorArgName {
+    'name',
+    'type',
+    'oftype',
+}
 type AncestorArguments = 'name' | 'type' | 'oftype';
 
 export interface SelectionFragment {
     kind: SelectionFragmentKind;
+    len: number;
     builtinHandle?: BuiltinHandleKind;
     customHandle?: string;
     identifier?: string;
-    arguments?: {
-        name?: string;
-        type?: string;
-        oftype?: string;
+    argument?: {
+        name: AncestorArguments;
+        value: string;
     };
+    siblingIndex?: number;
     error?: string;
 }
 
@@ -60,8 +70,13 @@ function isIdentifierPart(ch: number): boolean {
     ;
 }
 
+const reSelArg = /^@([^=]+)=(\w*)$/;
+const reSibling = /^([-+][0-9]+)$/;
+
 function parseSelectorFragment(input: string): SelectionFragment {
-    const frag = <SelectionFragment>{};
+    const frag = <SelectionFragment>{
+        len: input.length,
+    };
 
     if (!input.length) {
         frag.kind = SelectionFragmentKind.Unknown;
@@ -84,8 +99,44 @@ function parseSelectorFragment(input: string): SelectionFragment {
             if (typeof inBuiltHandle !== 'undefined') {
                 frag.kind = SelectionFragmentKind.BuiltinHandle;
                 frag.builtinHandle = inBuiltHandle;
+
                 if (offset < input.length) {
-                    // TODO: parse arguments
+                    if (frag.builtinHandle === BuiltinHandleKind.Ancestor) {
+                        if (
+                            input.charCodeAt(offset) !== CharacterCodes.openBracket ||
+                            input.charCodeAt(input.length - 1) !== CharacterCodes.closeBracket
+                        ) {
+                            frag.error = 'expected []'
+                        }
+                        else {
+                            const args = input.substring(offset + 1, input.length - 1);
+                            const m = args.match(reSelArg);
+                            if (m) {
+                                if ((<any>AncestorArgName)[m[1]] === void 0) {
+                                    frag.error = 'expected ';
+                                }
+                                frag.argument = {
+                                    name: <AncestorArguments>m[1],
+                                    value: m[2],
+                                };
+                            }
+                            else {
+                                frag.error = '$ancestor syntax err';
+                            }
+                        }
+                    }
+                    else if (frag.builtinHandle === BuiltinHandleKind.Sibling) {
+                        const m = input.substr(offset).match(reSibling);
+                        if (m) {
+                            frag.siblingIndex = Number(m[1]);
+                        }
+                        else {
+                            frag.error = `$sibling expected relative index, found "${input.substr(offset)}"`;
+                        }
+                    }
+                    else {
+                        frag.error = `unexpected "${input.substr(offset)}"`;
+                    }
                 }
             }
             else {
@@ -143,16 +194,18 @@ export function parseFramePropBinding(input: string): FramePropSelect {
         input = input.substr(1, input.length - 2);
     }
     else {
-        result.errors = ['invalid property bind'];
+        result.errors = ['invalid property bind - missing closing curly bracket?'];
     }
-    for (const p of input.split('/')) {
-        if (p.length && p.charCodeAt(0) === CharacterCodes.at) {
+    const sl = input.split('/');
+
+    for (const [k, p] of sl.entries()) {
+        if (k === sl.length - 1 && p.length && p.charCodeAt(0) === CharacterCodes.at) {
             const openBracketPos = p.indexOf('[');
             result.propertyName = p.substr(1, openBracketPos !== -1 ? openBracketPos - 1 : p.length)
             if (openBracketPos !== -1) {
                 const closeBracketPos = p.indexOf(']', openBracketPos);
                 if (closeBracketPos === -1 || closeBracketPos <= p.length - 2) {
-                    result.errors = ['invalid property bind'];
+                    result.errors = ['invalid property bind - missing closing bracket?'];
                 }
                 else {
                     result.propertyIndex = p.substring(openBracketPos + 1, closeBracketPos);
@@ -172,5 +225,59 @@ export function parseFramePropBinding(input: string): FramePropSelect {
             }
         }
     }
+
+    if (result.propertyName === void 0) {
+        if (!result.errors) result.errors = [];
+        result.errors.push('invalid bind - missing property name');
+    }
+
     return result;
+}
+
+export function getAttrValueKind(value: string): AttrValueKind {
+    if (value.length >= 1) {
+        switch (value.charCodeAt(0)) {
+            case CharacterCodes.hash:
+                if (value.charCodeAt(1) === CharacterCodes.hash) return AttrValueKind.ConstantRacial;
+                return AttrValueKind.Constant;
+            case CharacterCodes.at:
+                if (value.charCodeAt(1) === CharacterCodes.at) return AttrValueKind.AssetRacial;
+                return AttrValueKind.Asset;
+            case CharacterCodes.openBrace:
+                if (value.charCodeAt(value.length - 1) !== CharacterCodes.closeBrace) break;
+                return AttrValueKind.PropertyBind;
+            case CharacterCodes.asterisk:
+                if (value.charCodeAt(1) !== CharacterCodes.at) break;
+                return AttrValueKind.PtrAsset;
+        }
+    }
+    return AttrValueKind.Generic;
+}
+
+export interface AttrProcessedValue {
+    kind: AttrValueKind;
+    value: string | FramePropSelect;
+}
+
+export function parseAttrValue(value: string): AttrProcessedValue {
+    const r = <AttrProcessedValue>{};
+    r.kind = getAttrValueKind(value);
+    switch (r.kind) {
+        case AttrValueKind.Constant:
+        case AttrValueKind.Asset:
+            r.value = value.substr(1);
+            break;
+        case AttrValueKind.ConstantRacial:
+        case AttrValueKind.AssetRacial:
+        case AttrValueKind.PtrAsset:
+            r.value = value.substr(2);
+            break;
+        case AttrValueKind.PropertyBind:
+            r.value = parseFramePropBinding(value);
+            break;
+        default:
+            r.value = value;
+            break;
+    }
+    return r;
 }

@@ -1,3 +1,9 @@
+import * as fs from 'fs';
+import * as util from 'util';
+
+export const readFileAsync = util.promisify(fs.readFile);
+export const fileExistsAsync = util.promisify(fs.exists);
+
 /**
  * Takes a sorted array and a function p. The array is sorted in such a way that all elements where p(x) is false
  * are located before all elements where p(x) is true.
@@ -64,5 +70,12 @@ export function* oentries<T>(obj: T[]) {
 export function* objventries<T>(obj: {[name: string]: T}) {
     for (const key in obj) {
         yield [key, obj[key]];
+    }
+}
+
+export function *reverseMap<T>(source: ReadonlyMap<string, T>): Iterable<[T,string]> {
+    const result: string[] = [];
+    for (const [k,v] of source.entries()) {
+        yield [v, k];
     }
 }

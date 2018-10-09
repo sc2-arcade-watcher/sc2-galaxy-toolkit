@@ -59,6 +59,7 @@ namespace smp {
         }[];
         enumeration?: {
             value: string;
+            label: string;
         }[];
         union?: {
             value: string;
@@ -81,7 +82,9 @@ namespace smp {
         }[];
         element?: {
             name: string;
-            type: string;
+            simpleType?: string;
+            table?: 'true';
+            type?: string;
             alternative?: {
                 test: string;
                 type: string;
@@ -297,6 +300,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
                 entries.set(ctype.name, ctype);
             }
         }
+        return <sch.ComplexType>entries.get(prop.elementType);;
     }
 
     // ===
@@ -323,6 +327,8 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
         }
         if (item.enumeration) {
             rt.evalues = item.enumeration.map(item => item.value);
+            rt.emap = new Map();
+            item.enumeration.forEach(item => {rt.emap.set(item.value, {name: item.value, label: item.label})})
             rt.kind = sch.SimpleTypeKind.Enumaration;
             if (item.kind === 'flags') rt.kind = sch.SimpleTypeKind.Flags;
         }
@@ -378,12 +384,25 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
         if (item.element) {
             for (const el of item.element) {
                 assert.isNotEmpty(el.name);
-                assert.isNotEmpty(el.type);
+                let elComplexType: sch.ComplexType;
+                if (el.type) {
+                    elComplexType = resolveSchType<sch.ComplexType>(el.type)
+                }
+                else if (el.simpleType) {
+                    elComplexType = createFieldType({
+                        name: el.name,
+                        valueType: el.simpleType,
+                        table: el.table,
+                    });
+                }
+                else {
+                    throw new Error('type not specified');
+                }
 
                 const scEl = <sch.ElementDef>{
                     flags: 0,
                     name: el.name,
-                    type: resolveSchType<sch.ComplexType>(el.type),
+                    type: elComplexType,
                 };
 
                 if (el.alternative) {
@@ -486,21 +505,6 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
 
 
     // ===
-    // - Frame type: alt
-    // ===
-    const cdesc = <sch.ComplexType>entries.get('CDesc');
-    const cfrmEl = cdesc.struct.get('Frame');
-    const sFrameEnum = <sch.SimpleType>entries.get('EFrameType');
-    sFrameEnum.evalues = [];
-    cfrmEl.flags |= sch.ElementDefFlags.TypeAlternation;
-    cfrmEl.alternateTypes = new Map();
-    processSM((item: smp.FrameType) => {
-        cfrmEl.alternateTypes.set(item.frameType, <sch.ComplexType>entries.get(item.name));
-        sFrameEnum.evalues.push(item.frameType);
-    }, MDefs.FrameType);
-
-
-    // ===
     // - generate lookup tables
     // ===
 
@@ -565,9 +569,42 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
         mapFrameType.set(<sch.ComplexType>entries.get(item.name), scFrameType);
     }, MDefs.FrameType);
 
+
+    // ===
+    // - Frame type: alt
+    // ===
+    const cdesc = <sch.ComplexType>entries.get('CDesc');
+    const cfrmEl = cdesc.struct.get('Frame');
+    const sFrameEnum = <sch.SimpleType>entries.get('EFrameType');
+    sFrameEnum.evalues = [];
+    sFrameEnum.emap = new Map();
+    cfrmEl.flags |= sch.ElementDefFlags.TypeAlternation;
+    cfrmEl.alternateTypes = new Map();
+    processSM((item: smp.FrameType) => {
+        cfrmEl.alternateTypes.set(item.frameType, <sch.ComplexType>entries.get(item.name));
+        sFrameEnum.evalues.push(item.frameType);
+        sFrameEnum.emap.set(item.frameType, {
+            name: item.frameType,
+            label: item.blizzOnly === 'true' ? 'Blizz restricted' : void 0,
+        });
+    }, MDefs.FrameType);
+
+    //
+    const frameClasses = new Map<string, sch.FrameClass>();
+    for (const t of mapFrameClass.values()) {
+        frameClasses.set(t.name, t);
+    }
+    const frameTypes = new Map<string, sch.FrameType>();
+    for (const t of mapFrameType.values()) {
+        frameTypes.set(t.name, t);
+    }
+
     return {
         stypes: entries,
         fileRootType: <sch.ComplexType>entries.get('CFileDesc'),
+        frameClasses: frameClasses,
+        frameClassProps: mapFramePropName,
+        frameTypes: frameTypes,
         getFrameType: (scComplexType: sch.ComplexType): sch.FrameType => {
             return mapFrameType.get(scComplexType);
         },

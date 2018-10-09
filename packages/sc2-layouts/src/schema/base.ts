@@ -1,5 +1,3 @@
-import { oentries } from '../util';
-
 export enum BuiltinTypeKind {
     Unknown,
     //
@@ -87,6 +85,11 @@ export enum SimpleTypeFlags {
     CanBeEmpty            = 1 << 0,
 }
 
+export interface SEnumInfo {
+    name: string;
+    label?: string;
+}
+
 export interface SimpleType extends SModel {
     kind: SimpleTypeKind;
     builtinType: BuiltinTypeKind;
@@ -94,6 +97,7 @@ export interface SimpleType extends SModel {
     flags: SimpleTypeFlags;
     union?: SimpleType[];
     evalues?: string[];
+    emap?: Map<string, SEnumInfo>;
     patterns?: RegExp[];
 }
 
@@ -182,6 +186,9 @@ export interface FrameType {
 export interface SchemaRegistry {
     readonly stypes: ReadonlyMap<string, SModel>;
     readonly fileRootType: ComplexType;
+    readonly frameClasses: ReadonlyMap<string, FrameClass>;
+    readonly frameClassProps: ReadonlyMap<string, FrameProperty[]>;
+    readonly frameTypes: ReadonlyMap<string, FrameType>;
 
     getFrameType(scComplexType: ComplexType): FrameType;
     getFrameProperty(scElementDef: ElementDef): FrameProperty;

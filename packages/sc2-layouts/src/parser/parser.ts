@@ -1,6 +1,5 @@
 import { createScanner, CharacterCodes } from './scanner';
-import { findFirst } from '../util';
-import { TokenType, ScannerState, XMLElement, DiagnosticReport, DiagnosticCategory, XMLDocument, XMLNode, AttrValueKind } from '../types';
+import { TokenType, ScannerState, XMLElement, DiagnosticReport, DiagnosticCategory, XMLDocument, XMLNode } from '../types';
 import * as sch from '../schema/base';
 import { SchemaValidator } from '../schema/validation';
 
@@ -31,7 +30,7 @@ export function parse(text: string, options: ParserOptions) {
     }
 
     function matchElementType(el: XMLElement, parentNode: XMLNode) {
-        if (parentNode.stype) {
+        if (parentNode.stype && !el.altTypeNotMatched) {
             const csel = parentNode.stype.struct.get(el.tag);
             if (csel) {
                 el.sdef = csel;
@@ -48,17 +47,19 @@ export function parse(text: string, options: ParserOptions) {
 
     function matchNodeAlt(el: XMLElement) {
         if (el.sdef && el.sdef.flags & sch.ElementDefFlags.TypeAlternation) {
-            if (el.attributes['type'] && el.attributes['type'].value) {
-                const altType = el.sdef.alternateTypes.get(el.attributes['type'].value);
-                if (altType) {
-                    el.stype = altType;
-                }
-                else {
-                    printDiagnosticsAtCurrentToken(`Couldn't find matching type for ${el.tag}[type=${el.attributes['type'].value}]`, el.start);
-                    el.sdef = void 0;
-                    el.stype = void 0;
-                }
+            const valType = el.getAttributeValue('type');
+            const altType = el.sdef.alternateTypes.get(valType);
+            if (altType) {
+                el.stype = altType;
             }
+            else {
+                printDiagnosticsAtCurrentToken(`Couldn't find matching type for ${el.tag}[type=${valType}]`, el.start);
+                el.altTypeNotMatched = true;
+                // el.sdef = void 0;
+                // el.stype = void 0;
+            }
+            // if (el.attributes['type'] && el.attributes['type'].startValue) {
+            // }
         }
     }
 
@@ -177,13 +178,3 @@ export function parse(text: string, options: ParserOptions) {
 // export function parseDocument(text: string, options: ParserOptions = {}) {
 //     return parse(text, options);
 // }
-
-export function getAttrValueKind(value: string): AttrValueKind {
-    if (value.length > 0) {
-        switch (value.charCodeAt(0)) {
-            case CharacterCodes.hash: return AttrValueKind.Constant;
-            case CharacterCodes.openBrace: return AttrValueKind.PropertyBind;
-        }
-    }
-    return AttrValueKind.Generic;
-}

@@ -111,7 +111,11 @@ export function svcRequest(showArg = false, argFormatter?: (payload: any) => any
                 server.console.error('[' + (<Error>e).name + '] ' + (<Error>e).message + '\n' + (<Error>e).stack);
             }
 
-            server.console.info('='.repeat(reqDepth--) + ' ' + (msg ? msg : propertyKey) + ' ' + `${formatElapsed(start, process.hrtime())} [${typeof ret}]`);
+            server.console.info(
+                '='.repeat(reqDepth--) + ' ' + (msg ? msg : propertyKey)
+                + ' ' + `${formatElapsed(start, process.hrtime())}`
+                // + (Array.isArray(ret) ? ` [${ret.length}]` : '')
+            );
 
             return ret;
         }
