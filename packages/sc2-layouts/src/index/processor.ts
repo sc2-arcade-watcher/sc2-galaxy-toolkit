@@ -1,18 +1,93 @@
 import * as sch from '../schema/base';
 import { DiagnosticReport, XMLElement, AttrValueKind, DiagnosticCategory, XMLAttr } from '../types';
-import { DescIndex } from './desc';
+import { DescIndex, FileDesc, DescItemContainer, FrameDesc } from './desc';
 import { LayoutDocument, Store } from './store';
 import { SchemaValidator } from '../schema/validation';
 import { CharacterCodes } from '../parser/scanner';
 import { parseFramePropBinding, getAttrValueKind } from '../parser/selector';
 
 export class LayoutProcessor {
-    protected diagnostics: DiagnosticReport[] = [];
     protected svalidator: SchemaValidator;
 
     constructor(protected store: Store, protected index: DescIndex) {
         this.svalidator = new SchemaValidator(this.store.schema);
     }
+
+    determineFrameDescContext(el: XMLElement, fileDesc: FileDesc) {
+        let dcontext: DescItemContainer;
+        try {
+            switch (el.sdef.nodeKind) {
+                case sch.ElementDefKind.StateGroupStateCondition:
+                case sch.ElementDefKind.StateGroupStateAction:
+                {
+                    dcontext = fileDesc.mappedNodes.get(<XMLElement>el.parent.parent.parent);
+                    break;
+                }
+
+                case sch.ElementDefKind.AnimationController:
+                case sch.ElementDefKind.AnimationEvent:
+                {
+                    dcontext = fileDesc.mappedNodes.get(<XMLElement>el.parent.parent);
+                    break;
+                }
+
+                case sch.ElementDefKind.FrameProperty:
+                {
+                    dcontext = fileDesc.mappedNodes.get(<XMLElement>el.parent);
+                    break;
+                }
+
+                case sch.ElementDefKind.Frame:
+                {
+                    dcontext = fileDesc.mappedNodes.get(<XMLElement>el);
+                    break;
+                }
+            }
+            return <FrameDesc>dcontext;
+        }
+        catch (e) {
+            return void 0;
+        }
+    }
+
+    getFClassPropertyType(el: XMLElement, attrName: string) {
+        switch (el.sdef.nodeKind) {
+            case sch.ElementDefKind.FrameProperty:
+            {
+                if (attrName !== 'val') break;
+                const tmpa = el.stype.attributes.get(attrName);
+                if (!tmpa) break;
+                return tmpa.type;
+            }
+
+            case sch.ElementDefKind.StateGroupStateCondition:
+            case sch.ElementDefKind.StateGroupStateAction:
+            {
+                switch (el.stype.name) {
+                    case 'CFrameStateConditionProperty':
+                    case 'CFrameStateSetPropertyAction':
+                    {
+                        const cprop = this.store.schema.getPropertyByName(attrName);
+                        if (!cprop) break;
+                        try {
+                            return cprop.etype.type.attributes.get('val').type;
+                        }
+                        catch (e) {
+                            break;
+                        }
+                    }
+                }
+
+                break;
+            }
+        }
+
+        return void 0;
+    }
+}
+
+export class LayoutChecker extends LayoutProcessor {
+    protected diagnostics: DiagnosticReport[] = [];
 
     protected reportAt(msg: string, options: {start: number, end: number, category?: DiagnosticCategory}) {
         this.diagnostics.push({

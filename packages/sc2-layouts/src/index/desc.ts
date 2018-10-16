@@ -215,7 +215,7 @@ export class DescIndex {
         // }
         this.constants.purgeByRootNode(doc.getDescNode());
         this.handles.purgeByRootNode(doc.getDescNode());
-        // this.docmap.delete(doc.getDescName());
+        this.docmap.delete(doc.getDescName());
     }
 
     clear() {

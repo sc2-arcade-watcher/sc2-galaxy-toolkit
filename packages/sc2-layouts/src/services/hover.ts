@@ -2,7 +2,6 @@ import * as util from 'util';
 import * as vs from 'vscode';
 import * as sch from '../schema/base';
 import { AbstractProvider, svcRequest } from './provider';
-import { createDocumentFromVS } from '../service';
 import { XMLElement } from '../types';
 
 function attrSchDocs(sAttr: sch.Attribute)  {
@@ -15,7 +14,16 @@ function attrSchDocs(sAttr: sch.Attribute)  {
 }
 
 export class HoverProvider extends AbstractProvider implements vs.HoverProvider {
-    @svcRequest(false)
+    @svcRequest(
+        false,
+        (document: vs.TextDocument, position: vs.Position) => {
+            return {
+                filename: document.uri.fsPath,
+                position: {line: position.line, char: position.character},
+            };
+        },
+        (r: vs.Hover) => typeof r
+    )
     async provideHover(document: vs.TextDocument, position: vs.Position, token: vs.CancellationToken) {
         const sourceFile = await this.svcContext.syncVsDocument(document);
 
@@ -57,10 +65,6 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
         }
 
         if (token.isCancellationRequested) return void 0;
-
-        if (hv) {
-            hv.range = document.getWordRangeAtPosition(position);
-        }
 
         return hv;
     }

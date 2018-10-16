@@ -7,7 +7,7 @@ import * as sch from '../schema/base';
 import { languageId, XMLElement, DiagnosticReport, XMLDocument } from '../types';
 import { parse } from '../parser/parser';
 import { DescIndex } from './desc';
-import { LayoutProcessor } from './processor';
+import { LayoutChecker } from './processor';
 import * as s2 from '../index/s2mod';
 
 export function createTextDocument(uri: string, text: string): lsp.TextDocument {
@@ -44,14 +44,14 @@ export class SWorkspace {
 export class Store {
     protected workspaces = new Map<string, SWorkspace>();
     protected workspaceDocUri = new Map<string, SWorkspace>();
-    s2work = new s2.Workspace([]);
+    s2ws = new s2.Workspace([]);
 
     documents = new Map<string, XMLDocument>();
     index = new DescIndex();
-    processor: LayoutProcessor;
+    processor: LayoutChecker;
 
     constructor(public readonly schema: sch.SchemaRegistry) {
-        this.processor = new LayoutProcessor(this, this.index);
+        this.processor = new LayoutChecker(this, this.index);
     }
 
     protected parseLayout(uri: string, text: string) {

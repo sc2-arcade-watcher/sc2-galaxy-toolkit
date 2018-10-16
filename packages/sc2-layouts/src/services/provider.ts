@@ -3,73 +3,55 @@ import * as vs from 'vscode';
 import { Store } from '../index/store';
 import { ServiceContext } from '../service';
 
-export interface LoggerConsole {
-    /**
-     * Show an error message.
-     *
-     * @param message The message to show.
-     */
-    error(message: string): void;
-    /**
-     * Show a warning message.
-     *
-     * @param message The message to show.
-     */
-    warn(message: string): void;
-    /**
-     * Show an information message.
-     *
-     * @param message The message to show.
-     */
-    info(message: string): void;
-    /**
-     * Log a message.
-     *
-     * @param message The message to log.
-     */
-    log(message: string): void;
+export interface ILoggerConsole {
+    error(msg: string, ...params: any[]): void;
+    warn(msg: string, ...params: any[]): void;
+    info(msg: string, ...params: any[]): void;
+    log(msg: string, ...params: any[]): void;
+    debug(msg: string, ...params: any[]): void;
+}
+
+export enum LoggerLevel {
+    error,
+    warn,
+    info,
+    log,
+    debug,
+}
+// type LoggerLevelKey = keyof typeof LoggerLevel;
+// type LoggerConfig = { [K in LoggerLevelKey]: boolean };
+type LoggerConsoleEmit = (msg: string, ...params: any[]) => void;
+
+export function createLogger(emitter?: LoggerConsoleEmit): ILoggerConsole {
+    if (!emitter) emitter = (msg: string, ...params: any[]) => {};
+    return {
+        error: (msg: string, ...params: any[]) => emitter(msg, params),
+        warn: (msg: string, ...params: any[]) => emitter(msg, params),
+        info: (msg: string, ...params: any[]) => emitter(msg, params),
+        log: (msg: string, ...params: any[]) => emitter(msg, params),
+        debug: (msg: string, ...params: any[]) => emitter(msg, params),
+    };
 }
 
 export interface IService {
-    console: LoggerConsole;
+    console: ILoggerConsole;
 }
 
 export abstract class AbstractProvider implements IService {
     protected svcContext: ServiceContext;
     protected store: Store;
-    console: LoggerConsole;
+    console: ILoggerConsole;
 
-    public init(svcContext: ServiceContext, store: Store, console: LoggerConsole) {
+    public init(svcContext: ServiceContext, store: Store, console: ILoggerConsole) {
         this.svcContext = svcContext;
         this.store = store;
         this.console = console;
     }
 }
 
-export function createProvider<T extends AbstractProvider>(cls: new () => T, svcContext: ServiceContext, store: Store, logger?: LoggerConsole): T {
+export function createProvider<T extends AbstractProvider>(cls: new () => T, svcContext: ServiceContext, store: Store, logger: ILoggerConsole): T {
     const provider = new cls();
-    if (!logger) {
-        logger = <LoggerConsole>{
-            error: (msg) => {},
-            warn: (msg) => {},
-            info: (msg) => {},
-            log: (msg) => {},
-        };
-    }
-    provider.init(svcContext, store, <LoggerConsole>{
-        error: (message) => {
-            logger.error(/* '[' + cls.name + '] ' +  */message);
-        },
-        warn: (message) => {
-            logger.warn(/* '[' + cls.name + '] ' +  */message);
-        },
-        info: (message) => {
-            logger.info(/* '[' + cls.name + '] ' +  */message);
-        },
-        log: (message) => {
-            logger.log(/* '[' + cls.name + '] ' +  */message);
-        },
-    });
+    provider.init(svcContext, store, logger);
     return provider;
 }
 
@@ -85,17 +67,17 @@ function formatElapsed(start: [number, number], end: [number, number]): string {
 }
 
 let reqDepth = 0;
-export function svcRequest(showArg = false, argFormatter?: (payload: any) => any, msg?: string) {
+export function svcRequest(showArg = false, argFormatter?: (...payload: any[]) => any, resultFormatter?: (payload: any) => any) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         const method = (<Function>descriptor.value);
         descriptor.value = async function(...args: any[]) {
             const server = <IService>this;
-            server.console.info('>'.repeat(++reqDepth) + ' ' + (msg ? msg : propertyKey));
+            server.console.info('>'.repeat(++reqDepth) + ' ' + propertyKey);
             if (showArg) {
                 server.console.log(util.inspect(args[0], true, 1, false));
             }
             else if (argFormatter) {
-                server.console.log(util.inspect(argFormatter(args[0])));
+                server.console.log(util.inspect(argFormatter(...args)));
             }
 
             var start = process.hrtime();
@@ -107,15 +89,23 @@ export function svcRequest(showArg = false, argFormatter?: (payload: any) => any
                 }
             }
             catch (e) {
-                ret = null;
+                ret = void 0;
                 server.console.error('[' + (<Error>e).name + '] ' + (<Error>e).message + '\n' + (<Error>e).stack);
             }
 
-            server.console.info(
-                '='.repeat(reqDepth--) + ' ' + (msg ? msg : propertyKey)
-                + ' ' + `${formatElapsed(start, process.hrtime())}`
-                // + (Array.isArray(ret) ? ` [${ret.length}]` : '')
-            );
+            if (ret !== void 0 && resultFormatter) {
+                server.console.log(
+                    '='.repeat(reqDepth--) + ' ' + propertyKey
+                    + ' ' + `${formatElapsed(start, process.hrtime())}`
+                    + ' r = ' + util.inspect(resultFormatter(ret))
+                );
+            }
+            else {
+                server.console.info(
+                    '='.repeat(reqDepth--) + ' ' + propertyKey
+                    + ' ' + `${formatElapsed(start, process.hrtime())}`
+                );
+            }
 
             return ret;
         }

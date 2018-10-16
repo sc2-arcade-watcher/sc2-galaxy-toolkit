@@ -1960,7 +1960,7 @@
         <property name="Muted" valueType="Boolean" readonly="true" constant="true"/>
         <property name="Pushed" valueType="Boolean" readonly="true" constant="true"/>
         <property name="RejectsFocus" valueType="Boolean" readonly="true" constant="true"/>
-        <property name="Shortcut" valueType="Real32" readonly="false" constant="false"/>
+        <property name="Shortcut" valueType="Hotkey" readonly="false" constant="false"/>
     </frameClass>
 
     <!--
@@ -2573,7 +2573,7 @@
             <documentation>
                 <![CDATA[
                 If not set, mouse events will propagate further among covered frames. If none of the frames will grab the input, events will be handled out to GameWorld.
-                
+
                 - Frame will accept mouse inputs. Good use for frames like Frame or Image is to block tooltips underneath images.
 
                 **Mouse Input Types**
@@ -2718,7 +2718,7 @@
 
                 Caveats:
                 - **This property will take effect only among sibling elements**. To sort out issues with render priority across the frame hierarchy, you must inspect all affected nodes and set them up appropriately.
-                - Cannot be used to re-order elements that use different `RenderType`. 
+                - Cannot be used to re-order elements that use different `RenderType`.
                 ]]>
             </documentation>
         </property>
@@ -2730,7 +2730,7 @@
                 - `LDR` = low dynamic range the UI will render as is no lighting gets added.
                 - `Offscreen` = Won't render the frame at all
                 - `RTT` = Render To Texture
-                
+
                 __`LDR` always renders above `HDR`__
                 ]]>
             </documentation>
@@ -2745,8 +2745,8 @@
             <label>Allows a frame to be rendered outside its parent countainer bounds.</label>
             <documentation>
                 <![CDATA[
-                Normally if a Frame were to render part or all of it outside the parent bounds, it will only display what fits inside the bounds. Unclipped frames will render in its entirety on the screens regardless of any of its parents. 
-                
+                Normally if a Frame were to render part or all of it outside the parent bounds, it will only display what fits inside the bounds. Unclipped frames will render in its entirety on the screens regardless of any of its parents.
+
                 **This has a performance cost, so use with caution.**
                 ]]>
             </documentation>
@@ -4592,7 +4592,7 @@
                 If the value is Negate, the result is -1 * A
 
                 If the value is Absolute, the result is the absolute value of A
-                
+
                 If it's random, the result is a random value between A and B. This value will change only if the input values change.
                 ]]>
             </documentation>

@@ -1,3 +1,4 @@
+import * as util from 'util';
 import * as path from 'path';
 import * as glob from 'glob';
 import * as vs from 'vscode';
@@ -6,7 +7,7 @@ import URI from 'vscode-uri';
 import { Store, createTextDocumentFromFs } from './index/store';
 import { CompletionsProvider } from './services/completions';
 import { languageId, DiagnosticCategory, XMLNode, languageExt } from './types';
-import { AbstractProvider, createProvider, LoggerConsole, IService, svcRequest } from './services/provider';
+import { AbstractProvider, createProvider, ILoggerConsole, IService, svcRequest } from './services/provider';
 import { HoverProvider } from './services/hover';
 import { ElementDefKind } from './schema/base';
 import { generateSchema } from './schema/map';
@@ -48,9 +49,10 @@ export function createDocumentFromVS(vdocument: vs.TextDocument): lsp.TextDocume
 }
 
 export class ServiceContext implements IService {
-    console: LoggerConsole;
+    console: ILoggerConsole;
     protected store: Store;
     protected output: vs.OutputChannel;
+    protected fsWatcher: vs.FileSystemWatcher;
     protected diagnosticCollection: vs.DiagnosticCollection;
 
     protected completionsProvider: CompletionsProvider;
@@ -76,11 +78,22 @@ export class ServiceContext implements IService {
         // -
         this.output = vs.window.createOutputChannel(languageId);
         context.subscriptions.push(this.output);
+        const emitOutput = (msg: string, ...params: any[]) => {
+            if (params.length) {
+                msg += ' ' + util.inspect(params.length > 1 ? params : params[0], {
+                    depth: 1,
+                    colors: false,
+                    showHidden: false,
+                });
+            }
+            this.output.appendLine(msg);
+        };
         this.console = {
-            error: (msg: string) => { this.output.appendLine(msg); },
-            warn: (msg: string) => { this.output.appendLine(msg); },
-            info: (msg: string) => { this.output.appendLine(msg); },
-            log: (msg: string) => { this.output.appendLine(msg); },
+            error: emitOutput,
+            warn: emitOutput,
+            info: emitOutput,
+            log: emitOutput,
+            debug: emitOutput,
         };
         // this.output.show();
 
@@ -110,7 +123,7 @@ export class ServiceContext implements IService {
             if (e.document.languageId !== languageId) return;
             if (e.document.isDirty) return;
             this.console.info(`onDidChangeTextDocument ${e.document.uri.fsPath} [${e.document.version}]`);
-            await this.syncDocument(createDocumentFromVS(e.document));
+            await this.syncVsDocument(e.document);
             const diag = this.store.validateDocument(e.document.uri.toString());
             if (diag.length) {
                 this.diagnosticCollection.set(e.document.uri, diag.map(item => {
@@ -129,7 +142,7 @@ export class ServiceContext implements IService {
         // -
         context.subscriptions.push(vs.workspace.onDidOpenTextDocument(async document => {
             if (document.languageId !== languageId) return;
-            await this.syncDocument(createDocumentFromVS(document));
+            await this.syncVsDocument(document);
         }));
 
         // -
@@ -154,15 +167,21 @@ export class ServiceContext implements IService {
     }
 
     public dispose() {
+        if (this.fsWatcher) {
+            this.fsWatcher.dispose();
+            this.fsWatcher = void 0;
+        }
     }
 
     protected reinitialize() {
+        this.dispose();
         this.initialize();
     }
 
     @svcRequest(false)
     protected async initialize() {
         const archives: s2.Archive[] = [];
+        const wsArchives: s2.Archive[] = [];
 
         // -
         const builtinMods = <S2LConfig.builtinMods>vs.workspace.getConfiguration(languageId).get('builtinMods');
@@ -173,8 +192,6 @@ export class ServiceContext implements IService {
         }
 
         // -
-        this.store.s2work = new s2.Workspace(archives);
-        await this.store.s2work.reload();
         for (const sa of archives) {
             await this.indexDirectory(sa.uri);
         }
@@ -184,8 +201,19 @@ export class ServiceContext implements IService {
             for (const wsFolder of vs.workspace.workspaceFolders) {
                 // const r = await vs.workspace.findFiles(`**/*.${languageExt}`, uri.fsPath);
                 await this.indexDirectory(wsFolder.uri);
+
+                for (const fsPath of (await s2.findArchiveDirectories(wsFolder.uri.fsPath))) {
+                    wsArchives.push(new s2.Archive(`${wsFolder.name}/${path.basename(fsPath)}`, URI.file(fsPath)));
+                }
             }
+            this.console.info('S2Archives in workspace:', wsArchives.map(item => {
+                return {name: item.name, fsPath: item.uri.fsPath};
+            }));
         }
+
+        // -
+        this.store.s2ws = new s2.Workspace(archives.concat(wsArchives), this.console);
+        await this.store.s2ws.reload();
 
         // -
         // vs.workspace.findFiles(`**/*.${languageExt}`).then(e => {
@@ -196,17 +224,11 @@ export class ServiceContext implements IService {
         // });
 
         // -
-        // const fwatcher = vs.workspace.createFileSystemWatcher('**/*.SC2Layout');
-        // fwatcher.onDidDelete(e => {
-        //     console.log('onDidDelete', e);
-        // });
-        // fwatcher.onDidCreate(e => {
-        //     console.log('onDidCreate', e);
-        // });
-        // fwatcher.onDidChange(e => {
-        //     console.log('onDidChange', e);
-        // });
-        // context.subscriptions.push(fwatcher);
+        this.fsWatcher = vs.workspace.createFileSystemWatcher('**/{GameStrings.txt,GameHotkeys.txt,Assets.txt,AssetsProduct.txt,FontStyles.SC2Style,*.SC2Layout}');
+        this.fsWatcher.onDidCreate(e => this.onFileChange({type: vs.FileChangeType.Created, uri: e}));
+        this.fsWatcher.onDidDelete(e => this.onFileChange({type: vs.FileChangeType.Deleted, uri: e}));
+        this.fsWatcher.onDidChange(e => this.onFileChange({type: vs.FileChangeType.Changed, uri: e}));
+        this.extContext.subscriptions.push(this.fsWatcher);
     }
 
     @svcRequest(false, (uri: vs.Uri) => uri.fsPath)
@@ -232,6 +254,30 @@ export class ServiceContext implements IService {
         const ldoc = this.store.updateDocument(doc);
         // if (vs.workspace.textDocuments.find())
         return ldoc;
+    }
+
+    @svcRequest(
+        false,
+        (ev: vs.FileChangeEvent) => `${vs.FileChangeType[ev.type]}: ${ev.uri.fsPath}`,
+        (r: boolean) => r
+    )
+    protected async onFileChange(ev: vs.FileChangeEvent) {
+        if (path.extname(ev.uri.fsPath) === '.SC2Layout') {
+            switch (ev.type) {
+                case vs.FileChangeType.Deleted:
+                {
+                    if (!this.store.documents.has(ev.uri.toString())) break;
+                    this.store.removeDocument(ev.uri.toString());
+                    return true;
+                }
+            }
+        }
+        else {
+            if (ev.type === vs.FileChangeType.Changed) {
+                return await this.store.s2ws.handleFileUpdate(ev.uri);
+            }
+        }
+        return false;
     }
 
     public async syncVsDocument(vdoc: vs.TextDocument) {

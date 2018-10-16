@@ -3,21 +3,21 @@ import * as path from 'path';
 import * as glob from 'glob';
 import { readFileAsync } from '../common';
 import URI from 'vscode-uri';
+import { ILoggerConsole, createLogger } from '../services/provider';
 
-const reKeyString = /^\s*([^=]+)=(.+)$/gmu;
+if (!Symbol.asyncIterator) (<any>Symbol).asyncIterator = Symbol.for('Symbol.asyncIterator');
+
 type KeyStringMap = Map<string, string>;
 
-async function readKeyStringsFile(filename: string) {
-    const sm = new Map<string, string>();
+async function *readKeyStringsFile(filename: string) {
+    const reKeyString = /^\n?([^\/][^=\s]*)=(.+)$/gm;
     let content = await readFileAsync(filename, 'utf8');
     content = content.replace(/^\uFEFF/, ''); // remove UTF8 BOM
 
     let result: RegExpExecArray;
     while (result = reKeyString.exec(content)) {
-        sm.set(result[1], result[2]);
+        yield [result[1], result[2]];
     }
-
-    return sm;
 }
 
 // ===
@@ -37,15 +37,28 @@ export interface StringFileMatch {
 }
 
 export class StringFile {
+    protected relativePaths: string[];
     protected src = new Map<Archive, KeyStringMap>();
 
-    constructor(public relativePath: string) {}
+    constructor(relativePath: string | string[]) {
+        if (typeof relativePath === 'string') {
+            this.relativePaths = [relativePath];
+        }
+        else {
+            this.relativePaths = relativePath;
+        }
+    }
 
     async reload(archive: Archive) {
-        const fname = await archive.resolveFilename(this.relativePath)
-        if (!fname) return;
-        const r = await readKeyStringsFile(fname)
-        this.src.set(archive, r);
+        const sm = new Map<string, string>();
+        for (const fpath of this.relativePaths) {
+            const fname = await archive.resolveFilename(fpath);
+            if (!fname) continue;
+            for await (const [ikey, ival] of readKeyStringsFile(fname)) {
+                sm.set(ikey, ival);
+            }
+        }
+        this.src.set(archive, sm);
     }
 
     *entries() {
@@ -65,6 +78,7 @@ export class StringFile {
             const segments = s.split('/');
             if (segments.length) segments.pop();
             s = segments.join('/');
+            if (segments.length) s += '/';
         }
 
         const res = new Map<string, StringFileMatch>();
@@ -77,7 +91,7 @@ export class StringFile {
                 const pkey = key.substring(s.length, slashIdx);
 
                 if (res.has(pkey)) continue;
-                if (slashIdx === s.length) {
+                if (slashIdx === key.length) {
                     res.set(pkey, {
                         partial: false,
                         result: {
@@ -100,13 +114,13 @@ export class StringFile {
 
 export class StringsComponent {
     protected lang = 'enUS';
-    public files: Map<StringFileKind, StringFile>;
+    protected files: Map<StringFileKind, StringFile>;
 
     constructor(protected workspace: Workspace) {
         this.files = new Map([
-            [StringFileKind.Assets, new StringFile('base.SC2Data/GameData/Assets.txt')],
-            [StringFileKind.GameStrings, new StringFile('enUS.SC2Data/LocalizedData/GameStrings.txt')],
-            [StringFileKind.GameHotkeys, new StringFile('enUS.SC2Data/LocalizedData/GameHotkeys.txt')],
+            [StringFileKind.Assets, new StringFile(['base.SC2Data/GameData/Assets.txt', 'base.SC2Data/GameData/AssetsProduct.txt'])],
+            [StringFileKind.GameStrings, new StringFile(`${this.lang}.SC2Data/LocalizedData/GameStrings.txt`)],
+            [StringFileKind.GameHotkeys, new StringFile(`${this.lang}.SC2Data/LocalizedData/GameHotkeys.txt`)],
         ]);
     }
 
@@ -114,6 +128,76 @@ export class StringsComponent {
         for (const sf of this.files.values()) {
             await sf.reload(archive);
         }
+    }
+
+    file(fkind: StringFileKind) {
+        return this.files.get(fkind);
+    }
+}
+
+// ===
+
+async function *readStyleFile(filename: string) {
+    const reStyleDecl = /<(Style|Constant)\s+name="([^"]+)"/gm;
+
+    let content = await readFileAsync(filename, 'utf8');
+
+    let matches: RegExpExecArray;
+    while (matches = reStyleDecl.exec(content)) {
+        yield [matches[1], matches[2]];
+    }
+}
+
+export class FontStyleEntry {
+    readonly archives = new Set<Archive>();
+
+    constructor(public readonly name: string, archive?: Archive) {
+        if (archive) {
+            this.archives.add(archive);
+        }
+    }
+}
+
+export class FontStyleComponent {
+    protected stylesMap = new Map<string, FontStyleEntry>();
+
+    constructor(protected workspace: Workspace) {
+    }
+
+    async reload(archive: Archive) {
+        const fname = await archive.resolveFilename('base.SC2Data/UI/FontStyles.SC2Style');
+        if (!fname) return;
+
+        for (const decl of this.stylesMap.values()) {
+            if (!decl.archives.has(archive)) continue;
+            if (decl.archives.size > 1) {
+                decl.archives.delete(archive);
+            }
+            else {
+                this.stylesMap.delete(decl.name);
+            }
+        }
+
+        for await (const [dkind, name] of readStyleFile(fname)) {
+            switch (dkind) {
+                case 'Style':
+                    let dfs = this.stylesMap.get(name);
+                    if (!dfs) {
+                        dfs = new FontStyleEntry(name);
+                        this.stylesMap.set(name, dfs);
+                    }
+                    dfs.archives.add(archive);
+                    break;
+            }
+        }
+    }
+
+    entries() {
+        return <ReadonlyMap<string, FontStyleEntry>>this.stylesMap;
+    }
+
+    get values() {
+        return this.stylesMap.values();
     }
 }
 
@@ -125,8 +209,7 @@ export function isS2Archive(fsPath: string) {
     return /\.(SC2Mod|SC2Map|SC2Campaign)$/i.exec(path.basename(fsPath));
 }
 
-export function findS2ArchiveDirectories(fsPath: string, cwd = process.cwd()) {
-    fsPath = path.relative(cwd, path.resolve(fsPath));
+export function findArchiveDirectories(fsPath: string) {
     return new Promise<string[]>((resolve, reject) => {
         if (isS2Archive(fsPath)) {
             resolve([path.resolve(fsPath)]);
@@ -169,30 +252,20 @@ export class Archive {
 
     public async findFiles(pattern: string) {
         return await findSC2File(this.uri.fsPath, pattern);
-        // return r.map((item) => {
-        //     return item.substr(fs.realpathSync(this.uri.fsPath).length + 1);
-        // });
     }
 
     public async resolveFilename(fname: string) {
         const r = await this.findFiles(fname);
         return r.length ? r[0] : void 0;
     }
-
-    // public async hasFile(filename: string) {
-    //     return new Promise<boolean>((resolve) => {
-    //         fs.exists(path.join(this.uri.fsPath, filename), (result) => {
-    //             resolve(result);
-    //         })
-    //     });
-    // }
 }
 
 export class Workspace {
     protected archives = new Map<string, Archive>();
     strings = new StringsComponent(this);
+    styles = new FontStyleComponent(this);
 
-    constructor (archives: Archive[]) {
+    constructor (archives: Archive[], public logger: ILoggerConsole = createLogger()) {
         for (const sa of archives) {
             this.archives.set(sa.name, sa);
         }
@@ -200,10 +273,21 @@ export class Workspace {
 
     async reload() {
         for (const sa of this.archives.values()) {
+            this.logger.info(`Indexing s2mod: ${sa.name}`);
             await this.strings.reload(sa);
+            await this.styles.reload(sa);
         }
     }
 
     async handleFileUpdate(uri: URI) {
+        const archiveMatch = Array.from(this.archives.values()).find(item => uri.fsPath.startsWith(item.uri.fsPath));
+        if (!archiveMatch) return false;
+        if (uri.fsPath.match(/\/(GameStrings|GameHotkeys|Assets|AssetsProduct)\.txt$/i)) {
+            await this.strings.reload(archiveMatch);
+        }
+        else if (uri.fsPath.match(/\/FontStyles\.SC2Style$/i)) {
+            await this.styles.reload(archiveMatch);
+        }
+        return true;
     }
 }

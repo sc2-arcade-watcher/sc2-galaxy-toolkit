@@ -78,6 +78,7 @@ namespace smp {
             name: string;
             type: string;
             use?: 'required' | 'optional';
+            default?: string;
             documentation?: string;
         }[];
         element?: {
@@ -374,6 +375,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
                     name: attr.name,
                     type: resolveSchType<sch.SimpleType>(attr.type),
                     required: (attr.use && attr.use === 'required') ? true : false,
+                    default: attr.default,
                 };
                 if (attr.documentation) {
                     scAttr.documentation = attr.documentation;
@@ -419,6 +421,8 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
                     case 'Constant': scEl.nodeKind = sch.ElementDefKind.Constant; break;
                     case 'Frame': scEl.nodeKind = sch.ElementDefKind.Frame; break;
                     case 'Animation': scEl.nodeKind = sch.ElementDefKind.Animation; break;
+                    case 'Event': scEl.nodeKind = sch.ElementDefKind.AnimationEvent; break;
+                    case 'Controller': scEl.nodeKind = sch.ElementDefKind.AnimationController; break;
                     case 'StateGroup': scEl.nodeKind = sch.ElementDefKind.StateGroup; break;
                     case 'State': scEl.nodeKind = sch.ElementDefKind.StateGroupState; break;
                     case 'When': scEl.nodeKind = sch.ElementDefKind.StateGroupStateCondition; break;

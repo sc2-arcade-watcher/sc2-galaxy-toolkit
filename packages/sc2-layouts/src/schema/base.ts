@@ -16,10 +16,15 @@ export enum BuiltinTypeKind {
     DescReference,
     FileDescName,
     FrameName,
-    FrameDescName,
+    DescTemplateName,
     FrameReference,
     //
+    Image,
     Color,
+    Text,
+    Hotkey,
+    Sound,
+    Style,
     Handle,
 }
 
@@ -107,6 +112,7 @@ export interface Attribute {
     name: string;
     type: SimpleType;
     required: boolean;
+    default?: string;
     documentation?: string;
 }
 
@@ -136,8 +142,8 @@ export enum ElementDefKind {
     Frame,
     FrameProperty,
     Animation,
-    // AnimationEvent,
-    // AnimationController,
+    AnimationEvent,
+    AnimationController,
     // AnimationControllerKey,
     StateGroup,
     // StateGroupDefaultState,

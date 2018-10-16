@@ -126,7 +126,7 @@ export interface XMLAttr {
     startValue?: number;
 }
 
-export const enum AttrValueKind {
+export enum AttrValueKind {
     Generic,
     Constant,
     ConstantRacial,
