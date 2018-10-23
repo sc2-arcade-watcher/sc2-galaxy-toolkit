@@ -499,3 +499,15 @@ export function createScanner(input: string, initialOffset = 0, initialState: Sc
     };
 }
 
+export function buildLineMap(input: string) {
+    const lineMap = [0];
+    let offset = 0;
+
+    while (offset < input.length) {
+        if (input.charCodeAt(offset++) === CharacterCodes.lineFeed) {
+            lineMap.push(offset);
+        }
+    }
+
+    return lineMap;
+}

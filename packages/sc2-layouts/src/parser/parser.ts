@@ -1,5 +1,5 @@
 import { createScanner, CharacterCodes } from './scanner';
-import { TokenType, ScannerState, XMLElement, DiagnosticReport, DiagnosticCategory, XMLDocument, XMLNode } from '../types';
+import { TokenType, ScannerState, XMLElement, DiagnosticReport, DiagnosticCategory, XMLDocument, XMLNode, TextDocument } from '../types';
 import * as sch from '../schema/base';
 import { SchemaValidator } from '../schema/validation';
 
@@ -175,6 +175,13 @@ export function parse(text: string, options: ParserOptions) {
     };
 }
 
-// export function parseDocument(text: string, options: ParserOptions = {}) {
-//     return parse(text, options);
-// }
+export function parseDocument(doc: TextDocument, options: ParserOptions) {
+    const r = parse(doc.getText(), options);
+    r.root.parseDiagnostics = r.diagnostics;
+    r.root.tdoc = doc;
+    const m = doc.uri.match(/([^\/\\]+)\.[^\.]+$/);
+    if (m) {
+        r.root.descName = m[1];
+    }
+    return r.root;
+}

@@ -2,9 +2,89 @@ import * as path from 'path';
 import URI from 'vscode-uri';
 import * as sch from './schema/base';
 import { findFirst } from './common';
+import { buildLineMap } from './parser/scanner';
+import * as lsp from 'vscode-languageserver';
 
 export const languageId = 'sc2layout';
 export const languageExt = 'SC2Layout';
+
+// ===
+
+export class TextDocument implements lsp.TextDocument {
+    protected _uri: URI;
+    protected _content: string;
+    protected _version: number;
+    protected _lineMap: number[];
+    readonly languageId = languageId;
+
+    constructor(uri: string, text: string) {
+        this._uri = URI.parse(uri);
+        this.updateContent(text, 0);
+    }
+
+    updateLineMap() {
+        this._lineMap = buildLineMap(this._content);
+    }
+
+    updateContent(text: string, nver: number = null) {
+        this._content = text;
+        this._version = nver === null ? 0 : nver;
+        this._lineMap = void 0;
+        if (nver === null) {
+            this.updateLineMap();
+        }
+    }
+
+    getText(range?: lsp.Range): string {
+        if (range) {
+            return this._content.substring(
+                this.offsetAt(range.start),
+                this.offsetAt(range.end)
+            );
+        }
+        return this._content;
+    }
+
+    positionAt(offset: number): lsp.Position {
+        let low = 1, high = this.lineMap.length;
+        const lineOffsets = this.lineMap;
+
+        while (low < high) {
+            let mid = Math.floor((low + high) / 2);
+            if (lineOffsets[mid] > offset) {
+                high = mid;
+            }
+            else {
+                low = mid + 1;
+            }
+        }
+
+        return lsp.Position.create(low - 1, offset - lineOffsets[low - 1]);
+    }
+
+    offsetAt(position: lsp.Position): number {
+        return this.lineMap[position.line] + position.character;
+    }
+
+    get uri() {
+        return this._uri.toString();
+    }
+
+    get version() {
+        return this._version;
+    }
+
+    get lineCount() {
+        return this.lineMap.length;
+    }
+
+    get lineMap() {
+        if (!this._lineMap) this.updateLineMap();
+        return this._lineMap;
+    }
+}
+
+// ===
 
 export const enum XMLNodeKind {
     Document,
@@ -69,16 +149,13 @@ export abstract class XMLNode {
 
 export class XMLDocument extends XMLNode {
     kind = XMLNodeKind.Document;
-    uri?: URI;
     text: string;
+    descName: string = 'untitled';
+    tdoc?: TextDocument;
     parseDiagnostics: DiagnosticReport[];
 
     getDescNode() {
         return <XMLElement>this.firstChild;
-    }
-
-    getDescName() {
-        return path.basename(this.uri.fsPath).replace(/\.[^\.]+$/, '');
     }
 }
 

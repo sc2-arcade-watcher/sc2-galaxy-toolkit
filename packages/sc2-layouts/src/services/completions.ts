@@ -565,7 +565,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
             citems: items,
             offset: offset,
             node: node,
-            fileDesc: this.store.index.docmap.get(sourceFile.getDescName()),
+            fileDesc: this.store.index.docmap.get(sourceFile.descName),
             xtoken: token,
             xstate: scanner.getScannerState(),
             xtokenText: scanner.getTokenText(),

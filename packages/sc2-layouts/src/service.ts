@@ -103,7 +103,7 @@ export class ServiceContext implements IService {
 
         // -
         this.completionsProvider = this.createProvider(CompletionsProvider);
-        context.subscriptions.push(vs.languages.registerCompletionItemProvider(lselector, this.completionsProvider, '<', '\"', '#', '$', '@', '\/'));
+        context.subscriptions.push(vs.languages.registerCompletionItemProvider(lselector, this.completionsProvider, '<', '"', '#', '$', '@', '/'));
 
         // -
         this.hoverProvider = this.createProvider(HoverProvider);
@@ -251,7 +251,7 @@ export class ServiceContext implements IService {
 
     @svcRequest(false, (doc: lsp.TextDocument) => vs.Uri.parse(doc.uri).fsPath)
     protected async syncDocument(doc: lsp.TextDocument) {
-        const ldoc = this.store.updateDocument(doc);
+        const ldoc = this.store.updateDocument(doc.uri, doc.getText(), doc.version);
         // if (vs.workspace.textDocuments.find())
         return ldoc;
     }
@@ -289,9 +289,9 @@ export class ServiceContext implements IService {
     }
 
     @svcRequest(false, (doc: lsp.TextDocument) => vs.Uri.parse(doc.uri).fsPath)
-    protected provideDocumentSymbols(document: vs.TextDocument, token: vs.CancellationToken): vs.SymbolInformation[] {
+    protected async provideDocumentSymbols(document: vs.TextDocument, token: vs.CancellationToken): Promise<vs.SymbolInformation[]> {
         const symbols: vs.SymbolInformation[] = [];
-        const sfile = this.store.updateDocument(createDocumentFromVS(document));
+        const sfile = await this.syncVsDocument(document);
 
         function processNode(node: XMLNode, parentName?: string) {
             if (!node.children) return;

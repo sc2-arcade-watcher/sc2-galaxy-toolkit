@@ -4,24 +4,16 @@ import * as path from 'path';
 import * as lsp from 'vscode-languageserver';
 import URI from 'vscode-uri';
 import * as sch from '../schema/base';
-import { languageId, XMLElement, DiagnosticReport, XMLDocument } from '../types';
-import { parse } from '../parser/parser';
+import { languageId, XMLElement, DiagnosticReport, XMLDocument, TextDocument } from '../types';
+import { parse, parseDocument } from '../parser/parser';
 import { DescIndex } from './desc';
 import { LayoutChecker } from './processor';
 import * as s2 from '../index/s2mod';
 
-export function createTextDocument(uri: string, text: string): lsp.TextDocument {
-    return <lsp.TextDocument>{
-        uri: uri,
-        languageId: languageId,
-        version: 0,
-        getText: () => text,
-    };
-}
-
 export function createTextDocumentFromFs(filepath: string): lsp.TextDocument {
     filepath = path.resolve(filepath);
-    return createTextDocument(URI.file(filepath).toString(), fs.readFileSync(filepath, 'utf8'));
+    const tdoc = new TextDocument(URI.file(filepath).toString(), fs.readFileSync(filepath, 'utf8'));
+    return tdoc;
 }
 
 // export function createTextDocumentFromUri(uri: string): lsp.TextDocument {
@@ -54,13 +46,6 @@ export class Store {
         this.processor = new LayoutChecker(this, this.index);
     }
 
-    protected parseLayout(uri: string, text: string) {
-        const r = parse(text, {schema: this.schema});
-        r.root.uri = URI.parse(uri);
-        r.root.parseDiagnostics = r.diagnostics;
-        return r.root;
-    }
-
     protected addWorkspace(uri: URI, name?: string) {
         if (!name) name = uri.fragment;
         const wsp = new SWorkspace(uri, name);
@@ -81,24 +66,33 @@ export class Store {
         this.documents.clear();
     }
 
-    public updateDocument(document: lsp.TextDocument, forceBind = false) {
-        if (this.documents.has(document.uri)) {
-            const ldoc = this.documents.get(document.uri);
+    public updateDocument(documentUri: string, text: string, version: number = null, forceBind = false) {
+        let xdoc = this.documents.get(documentUri);
+        let tdoc: TextDocument;
 
-            if (document.getText().length === ldoc.text.length && document.getText().valueOf() === ldoc.text.valueOf()) {
+        if (xdoc) {
+            if (text.length === xdoc.text.length && text.valueOf() === xdoc.text.valueOf()) {
                 if (forceBind) {
-                    this.index.unbindDocument(ldoc);
-                    this.index.bindDocument(ldoc);
+                    this.index.unbindDocument(xdoc);
+                    this.index.bindDocument(xdoc);
                 }
-                return ldoc;
+                return xdoc;
             }
 
-            this.removeDocument(document.uri);
+            this.index.unbindDocument(xdoc);
+
+            tdoc = xdoc.tdoc;
+            tdoc.updateContent(text, version);
         }
-        let ldoc = this.parseLayout(document.uri, document.getText());
-        this.documents.set(document.uri, ldoc);
-        this.index.bindDocument(ldoc);
-        return ldoc;
+        else {
+            tdoc = new TextDocument(documentUri, text);
+        }
+
+        xdoc = parseDocument(tdoc, {schema: this.schema});
+        this.documents.set(documentUri, xdoc);
+        this.index.bindDocument(xdoc);
+
+        return xdoc;
     }
 
     public validateDocument(documentUri: string) {

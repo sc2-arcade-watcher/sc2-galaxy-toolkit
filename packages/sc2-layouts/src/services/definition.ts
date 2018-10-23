@@ -5,6 +5,7 @@ import { createDocumentFromVS } from '../service';
 import { createScanner, CharacterCodes } from '../parser/scanner';
 import { TokenType, XMLElement, AttrValueKind } from '../types';
 import { getAttrValueKind } from '../parser/selector';
+import URI from 'vscode-uri';
 
 export class DefinitionProvider extends AbstractProvider implements vs.DefinitionProvider {
     @svcRequest(false)
@@ -12,7 +13,7 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
         const sourceFile = await this.svcContext.syncVsDocument(document);
         const dlinks: vs.DefinitionLink[] = [];
 
-        const offset = document.offsetAt(position);
+        const offset = sourceFile.tdoc.offsetAt(position);
         const node = <XMLElement>sourceFile.findNodeAt(offset);
 
         if (!node || !(node instanceof XMLElement) || !node.stype) return void 0;
@@ -31,64 +32,21 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
                 const citem = this.store.index.constants.get(name);
                 if (citem) {
                     for (const decl of citem.declarations) {
-                        const cdoc = decl.getDocument();
-                        if (cdoc === sourceFile) {
-                            dlinks.push({
-                                targetUri: cdoc.uri,
-                                targetRange: new vs.Range(
-                                    document.positionAt(decl.start),
-                                    document.positionAt(decl.end)
-                                ),
-                            });
-                        }
-                        else {
-                            dlinks.push({
-                                targetUri: cdoc.uri,
-                                targetRange: new vs.Range(
-                                    document.positionAt(0),
-                                    document.positionAt(0)
-                                ),
-                            });
-                        }
+                        const xdoc = decl.getDocument();
+                        const posSta = xdoc.tdoc.positionAt(decl.start);
+                        const posEnd = xdoc.tdoc.positionAt(decl.end);
+                        dlinks.push({
+                            targetUri: URI.parse(xdoc.tdoc.uri),
+                            targetRange: new vs.Range(
+                                new vs.Position(posSta.line, posSta.character),
+                                new vs.Position(posEnd.line, posEnd.character),
+                            ),
+                        });
                     }
                 }
                 break;
             }
         }
-
-        // let startOffset = node.start;
-        // let scanner = createScanner(document.getText(), startOffset);
-        // let token = scanner.scan();
-        // let currentAttrName: string;
-        // outer: while (token !== TokenType.EOS) {
-        //     // console.log(scanner.getTokenOffset(), scanner.getTokenEnd(), TokenType[token], ScannerState[scanner.getScannerState()], scanner.getTokenText());
-        //     if (token === TokenType.AttributeName) {
-        //         currentAttrName = scanner.getTokenText();
-        //     }
-        //     if (scanner.getTokenEnd() > offset) break;
-        //     // if (scanner.getTokenEnd() === offset) {
-        //     //     switch (token) {
-        //     //         case TokenType.StartTagOpen:
-        //     //         case TokenType.StartTag:
-        //     //         case TokenType.EndTag:
-        //     //         case TokenType.Content:
-        //     //         case TokenType.AttributeName:
-        //     //         case TokenType.DelimiterAssign:
-        //     //             break outer;
-        //     //         default:
-        //     //             break;
-        //     //     }
-        //     // }
-        //     token = scanner.scan();
-        // }
-        // const tokenText = scanner.getTokenText();
-
-        // switch (token) {
-        //     case TokenType.AttributeValue:
-        //     {
-        //         break;
-        //     }
-        // }
 
         return dlinks.length ? dlinks : void 0;
     }

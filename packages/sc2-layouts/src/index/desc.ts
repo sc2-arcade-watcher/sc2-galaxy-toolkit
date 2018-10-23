@@ -142,7 +142,7 @@ export class DescIndex {
     }
 
     bindDocument(doc: LayoutDocument) {
-        const dcFile = new FileDesc(doc.getDescName());
+        const dcFile = new FileDesc(doc.descName);
         dcFile.declarations.add(doc.getDescNode());
         this.docmap.set(dcFile.name, dcFile);
 
@@ -215,7 +215,7 @@ export class DescIndex {
         // }
         this.constants.purgeByRootNode(doc.getDescNode());
         this.handles.purgeByRootNode(doc.getDescNode());
-        this.docmap.delete(doc.getDescName());
+        this.docmap.delete(doc.descName);
     }
 
     clear() {
