@@ -416,6 +416,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
                 }
 
                 switch (el.name) {
+                    case 'Desc': scEl.nodeKind = sch.ElementDefKind.Desc; break;
                     case 'DescFlags': scEl.nodeKind = sch.ElementDefKind.DescFlags; break;
                     case 'Include': scEl.nodeKind = sch.ElementDefKind.Include; break;
                     case 'Constant': scEl.nodeKind = sch.ElementDefKind.Constant; break;

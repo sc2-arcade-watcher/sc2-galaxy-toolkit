@@ -6,7 +6,7 @@ import { createDocumentFromVS, ServiceContext } from '../service';
 import { createScanner, CharacterCodes } from '../parser/scanner';
 import { TokenType, ScannerState, XMLElement, AttrValueKind } from '../types';
 import { parseDescSelector, SelectionFragmentKind, builtinHandlesTable, parseAttrValue, FramePropSelect, SelectionFragment, BuiltinHandleKind, builtinHandlesNameTable, getAttrValueKind, FrameSelect } from '../parser/selector';
-import { DescIndex, DescItemContainer, FrameDesc, FileDesc } from '../index/desc';
+import { DescIndex, DescNamespace, DescKind } from '../index/desc';
 import * as s2 from '../index/s2mod';
 import { Store } from '../index/store';
 
@@ -40,7 +40,6 @@ interface ComplContext {
     xtokenText: string;
     xtoken: TokenType;
     xstate: ScannerState;
-    fileDesc: FileDesc;
 }
 
 interface AtComplContext extends ComplContext {
@@ -81,20 +80,20 @@ class AttrValueProvider extends SuggestionsProvider {
         }
     }
 
-    protected suggestDescNames(ctx: AtComplContext, dcontext: DescItemContainer) {
+    protected suggestDescNames(ctx: AtComplContext, dcontext: DescNamespace) {
         for (const item of dcontext.children.values()) {
             const r = <vs.CompletionItem>{
                 kind: vs.CompletionItemKind.Struct,
                 label: `${item.name}`,
             };
-            if (item.constructor === FrameDesc) {
-                r.detail = `Frame[${(<FrameDesc>item).ctype}]`;
+            if (item.kind !== DescKind.File) {
+                r.detail = `[${item.stype.name}]`;
             }
             ctx.citems.push(r);
         }
     }
 
-    protected suggestSelectionFragment(ctx: AtValComplContext, fsel: FrameSelect, selStartOffset: number, dframe: FrameDesc) {
+    protected suggestSelectionFragment(ctx: AtValComplContext, fsel: FrameSelect, selStartOffset: number, dframe: DescNamespace) {
         let slOffset = 0;
         let sfrag: SelectionFragment;
         let skey: number;
@@ -132,12 +131,12 @@ class AttrValueProvider extends SuggestionsProvider {
                                 case 'name':
                                 {
                                     let cparent = dframe;
-                                    while (cparent = <FrameDesc>cparent.parent) {
-                                        if (cparent.constructor !== FrameDesc) break;
+                                    while (cparent = cparent.parent) {
+                                        if (cparent.kind !== DescKind.Frame) break;
                                         ctx.citems.push({
                                             kind: vs.CompletionItemKind.Struct,
                                             label: `${cparent.name}`,
-                                            detail: `Frame[${(<FrameDesc>cparent).ctype}]`,
+                                            detail: `[${cparent.stype.name}]`,
                                         });
                                     }
                                     break;
@@ -159,7 +158,7 @@ class AttrValueProvider extends SuggestionsProvider {
         let sepOffset = ctx.atOffsetRelative - 1 + selStartOffset;
         while (sepOffset >= selStartOffset && ctx.attrValue.charCodeAt(sepOffset) !== CharacterCodes.slash) --sepOffset;
 
-        let scontext: DescItemContainer = dframe;
+        let scontext = dframe;
         if (sepOffset > selStartOffset) {
             const sel = parseDescSelector(ctx.attrValue.substr(selStartOffset, sepOffset - selStartOffset));
             scontext = this.store.index.resolveSelection(sel, dframe);
@@ -172,7 +171,7 @@ class AttrValueProvider extends SuggestionsProvider {
         }
     }
 
-    protected suggestPropBind(ctx: AtValComplContext, sbind: FramePropSelect, dframe: FrameDesc) {
+    protected suggestPropBind(ctx: AtValComplContext, sbind: FramePropSelect, dframe: DescNamespace) {
         let slOffset = 0;
         let sfrag: SelectionFragment;
         let skey: number;
@@ -248,12 +247,11 @@ class AttrValueProvider extends SuggestionsProvider {
         }
         const pvKind = getAttrValueKind(ctx.attrValue);
         const isAssetRef = (pvKind === AttrValueKind.Asset || pvKind === AttrValueKind.AssetRacial);
-        const frameDescContext = this.store.processor.determineFrameDescContext(ctx.node, ctx.fileDesc);
-        let dcontext = <DescItemContainer>frameDescContext;
+        const frameDesc = this.store.index.resolveElementDesc(ctx.node, DescKind.Frame);
 
         if (isFClassProperty && pvKind === AttrValueKind.PropertyBind) {
             const pv = parseAttrValue(ctx.attrValue);
-            this.suggestPropBind(ctx, <FramePropSelect>pv.value, frameDescContext);
+            this.suggestPropBind(ctx, <FramePropSelect>pv.value, frameDesc);
             return;
         }
 
@@ -276,18 +274,17 @@ class AttrValueProvider extends SuggestionsProvider {
 
             case sch.BuiltinTypeKind.FrameName:
             {
-                dcontext = ctx.fileDesc.mappedNodes.get(ctx.node);
-                if (!dcontext) break;
-                if (!(<FrameDesc>dcontext).fileDesc) break;
-                dcontext = this.store.index.docmap.get((<FrameDesc>dcontext).fileDesc);
-                // pass-through
+                if (!frameDesc || !frameDesc.file) break;
+                const pointedContext = this.store.index.rootNs.get(frameDesc.file);
+                if (!pointedContext) break;
+                this.suggestSelectionFragment(ctx, parseDescSelector(ctx.attrValue), 0, pointedContext);
+                break;
             }
 
             case sch.BuiltinTypeKind.FrameReference:
             {
-                if (dcontext) {
-                    this.suggestSelectionFragment(ctx, parseDescSelector(ctx.attrValue), 0, <FrameDesc>dcontext);
-                }
+                if (!frameDesc) break;
+                this.suggestSelectionFragment(ctx, parseDescSelector(ctx.attrValue), 0, frameDesc);
                 break;
             }
 
@@ -316,7 +313,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
     }
 
     protected provideFileDescName(compls: vs.CompletionItem[]) {
-        for (const item of this.store.index.docmap.values()) {
+        for (const item of this.store.index.rootNs.children.values()) {
             compls.push(<vs.CompletionItem>{
                 kind: vs.CompletionItemKind.Folder,
                 label: `${item.name}`,
@@ -324,14 +321,14 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
         }
     }
 
-    protected *provideDescName(dcontext: DescItemContainer) {
+    protected *provideDescName(dcontext: DescNamespace) {
         for (const item of dcontext.children.values()) {
             const r = <vs.CompletionItem>{
                 kind: vs.CompletionItemKind.Struct,
                 label: `${item.name}`,
             };
-            if (item.constructor === FrameDesc) {
-                r.detail = `Frame[${(<FrameDesc>item).ctype}]`;
+            if (item.kind !== DescKind.File) {
+                r.detail = `[${item.stype.name}]`;
             }
             yield r;
         }
@@ -370,7 +367,6 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
             if (!sAttrType) return;
             isFClassProperty = true;
         }
-        let dcontext: DescItemContainer = this.store.processor.determineFrameDescContext(ctx.node, ctx.fileDesc);
 
         this.atValueProvider.provide(ctx);
 
@@ -387,7 +383,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                 if (sepOffset !== -1 && sepOffset > 0 && ctx.atOffsetRelative > sepOffset) {
                     const sel = parseDescSelector(ctx.attrValue.substring(0, sepOffset));
                     if (sel.fragments[0].kind === SelectionFragmentKind.Identifier) {
-                        const tmpcontext = this.store.index.docmap.get(sel.fragments[0].identifier);
+                        const tmpcontext = this.store.index.rootNs.get(sel.fragments[0].identifier);
                         if (tmpcontext) {
                             ctx.citems = ctx.citems.concat(Array.from(this.provideDescName(tmpcontext)));
                         }
@@ -565,7 +561,6 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
             citems: items,
             offset: offset,
             node: node,
-            fileDesc: this.store.index.docmap.get(sourceFile.descName),
             xtoken: token,
             xstate: scanner.getScannerState(),
             xtokenText: scanner.getTokenText(),

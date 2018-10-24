@@ -134,7 +134,7 @@ export const enum ElementDefFlags {
 
 export enum ElementDefKind {
     Unknown,
-    // Desc,
+    Desc,
     // RequiredDefines,
     DescFlags,
     Include,

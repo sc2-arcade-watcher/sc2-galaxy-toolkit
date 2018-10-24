@@ -1,53 +1,63 @@
 import * as sch from '../schema/base';
 import { DiagnosticReport, XMLElement, AttrValueKind, DiagnosticCategory, XMLAttr } from '../types';
-import { DescIndex, FileDesc, DescItemContainer, FrameDesc } from './desc';
+import { DescIndex, DescNamespace } from './desc';
 import { LayoutDocument, Store } from './store';
 import { SchemaValidator } from '../schema/validation';
 import { CharacterCodes } from '../parser/scanner';
 import { parseFramePropBinding, getAttrValueKind } from '../parser/selector';
+
+export class UINode {
+    readonly children = new Map<string, UINode>();
+
+    constructor(public readonly desc: DescNamespace, public readonly parent: UINode = null) {
+        if (parent) {
+            parent.children.set(this.desc.name, this);
+        }
+    }
+}
+
+export function buildPartialTree(rootNs: DescNamespace, contextDesc: DescNamespace, tpath: string[] = null) {
+    function processDesc(frDesc: DescNamespace, uNode: UINode, tpath: string[] = null) {
+        const tplpath = frDesc.template;
+        if (tplpath !== null) {
+            const tplDesc = rootNs.getDeep(tplpath);
+            if (tplDesc) {
+                processDesc(tplDesc, uNode, tpath);
+            }
+            else {
+                // console.warn('miss', frDesc.name, tplpath);
+            }
+        }
+
+        for (const childDesc of frDesc.children.values()) {
+            if (tpath && tpath.length > 0 && tpath[0] !== childDesc.name) continue;
+
+            let childUNode: UINode;
+            childUNode = uNode.children.get(childDesc.name);
+            if (!childUNode) {
+                childUNode = new UINode(childDesc, uNode);
+            }
+
+            if (tpath) {
+                if (!tpath.length) continue;
+                processDesc(childDesc, childUNode, tpath.slice(1));
+            }
+            else {
+                processDesc(childDesc, childUNode);
+            }
+        }
+
+        return uNode;
+    }
+
+    return processDesc(contextDesc, new UINode(contextDesc), tpath);
+}
 
 export class LayoutProcessor {
     protected svalidator: SchemaValidator;
 
     constructor(protected store: Store, protected index: DescIndex) {
         this.svalidator = new SchemaValidator(this.store.schema);
-    }
-
-    determineFrameDescContext(el: XMLElement, fileDesc: FileDesc) {
-        let dcontext: DescItemContainer;
-        try {
-            switch (el.sdef.nodeKind) {
-                case sch.ElementDefKind.StateGroupStateCondition:
-                case sch.ElementDefKind.StateGroupStateAction:
-                {
-                    dcontext = fileDesc.mappedNodes.get(<XMLElement>el.parent.parent.parent);
-                    break;
-                }
-
-                case sch.ElementDefKind.AnimationController:
-                case sch.ElementDefKind.AnimationEvent:
-                {
-                    dcontext = fileDesc.mappedNodes.get(<XMLElement>el.parent.parent);
-                    break;
-                }
-
-                case sch.ElementDefKind.FrameProperty:
-                {
-                    dcontext = fileDesc.mappedNodes.get(<XMLElement>el.parent);
-                    break;
-                }
-
-                case sch.ElementDefKind.Frame:
-                {
-                    dcontext = fileDesc.mappedNodes.get(<XMLElement>el);
-                    break;
-                }
-            }
-            return <FrameDesc>dcontext;
-        }
-        catch (e) {
-            return void 0;
-        }
     }
 
     getFClassPropertyType(el: XMLElement, attrName: string) {

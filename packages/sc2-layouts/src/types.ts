@@ -191,6 +191,12 @@ export class XMLElement extends XMLNode {
         if (!attr || !attr.startValue) return defValue;
         return attr.value;
     }
+
+    public hasAttribute(name: string) {
+        const attr = this.attributes[name];
+        if (!attr || !attr.startValue) return false;
+        return true;
+    }
 }
 
 export interface XMLAttr {

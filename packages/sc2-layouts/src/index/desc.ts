@@ -1,25 +1,11 @@
 import * as util from 'util';
 import { oentries } from '../common';
 import { LayoutDocument, Store } from './store';
-import { XMLElement, XMLNode, DiagnosticReport } from '../types';
+import { XMLElement, XMLNode, DiagnosticReport, XMLDocument } from '../types';
 import * as sch from '../schema/base';
 import { DescSelect, SelectionFragment, SelectionFragmentKind, BuiltinHandleKind } from '../parser/selector';
 
-export function forEachChild(rootNode: XMLNode, visitor: (child: XMLNode) => boolean | void) {
-    for (const child of oentries(rootNode.children)) {
-        if (visitor(child) !== false) {
-            forEachChild(child, visitor);
-        }
-    }
-}
-
-// export enum DescKind {
-//     File,
-//     Frame,
-//     Animation,
-// }
-
-export class DescEntry {
+export class DescXRef {
     readonly name: string;
     declarations = new Set<XMLElement>();
 
@@ -36,22 +22,15 @@ export class DescEntry {
     // }
 }
 
-export class DescNamespaceMap<T extends DescEntry> extends Map<string, T> {
-    protected descGroup = new Map<XMLElement, Set<XMLElement>>();
+export class DescXRefMap<T extends DescXRef> extends Map<string, T> {
+    protected descGroup = new Map<XMLDocument, Set<XMLElement>>();
     protected nodeIndex = new Map<XMLElement, T>();
 
     constructor(protected itemType: { new (name: string): T; }, protected indexAttrKey = 'name') {
         super();
     }
 
-    // flush(key: string) {
-    //     const item = this.get(key);
-    //     if (item.isOrphan()) {
-    //         this.delete(key);
-    //     }
-    // }
-
-    appendOrCreate(el: XMLElement) {
+    appendOrCreate(el: XMLElement, xdoc: XMLDocument) {
         const key = el.getAttributeValue(this.indexAttrKey);
         let item = this.get(key);
         if (!item) {
@@ -63,11 +42,11 @@ export class DescNamespaceMap<T extends DescEntry> extends Map<string, T> {
         this.nodeIndex.set(el, item);
 
         //
-        const descKey = el.getDocumentDesc();
-        let descGroupEntry = this.descGroup.get(descKey);
+        if (!xdoc) xdoc = el.getDocument();
+        let descGroupEntry = this.descGroup.get(xdoc);
         if (!descGroupEntry) {
             descGroupEntry = new Set<XMLElement>();
-            this.descGroup.set(descKey, descGroupEntry);
+            this.descGroup.set(xdoc, descGroupEntry);
         }
         descGroupEntry.add(el);
     }
@@ -85,146 +64,253 @@ export class DescNamespaceMap<T extends DescEntry> extends Map<string, T> {
         }
     }
 
-    purgeByRootNode(root: XMLElement) {
-        const entries = this.descGroup.get(root);
+    purgeDocumentDecls(xdoc: XMLDocument) {
+        const entries = this.descGroup.get(xdoc);
         if (!entries) return;
         for (const item of entries) {
             this.removeOrDestroy(item);
         }
-        this.descGroup.delete(root);
+        this.descGroup.delete(xdoc);
     }
 }
 
-export abstract class DescItemContainer {
-    name: string;
-    parent?: DescItemContainer;
-    children = new Map<string, DescItemContainer>();
-    declarations = new Set<XMLElement>();
+export class ConstantItem extends DescXRef {}
+export class HandleItem extends DescXRef {}
 
-    constructor(name: string, parent?: DescItemContainer) {
+// ===
+
+export const enum DescKind {
+    Undeclared,
+    Root,
+    File,
+    Frame,
+    Animation,
+    StateGroup,
+}
+
+export class DescNamespace {
+    kind: DescKind;
+    parent?: DescNamespace;
+    readonly name: string;
+    readonly children = new Map<string, DescNamespace>();
+    readonly xDecls = new Set<XMLNode>();
+
+    constructor(name: string, kind = DescKind.Undeclared, parent?: DescNamespace) {
         this.name = name;
-        if (this.parent) this.parent = parent;
+        this.kind = kind;
+        if (parent) {
+            this.parent = parent;
+            parent.children.set(name, this);
+        }
+    }
+
+    getOrCreate(name: string, kind: DescKind) {
+        let tmp = this.children.get(name);
+        if (!tmp) {
+            tmp = new DescNamespace(name, kind, this);
+        }
+        return tmp;
+    }
+
+    purgeOrphansDeep() {
+        for (const tmp of this.children.values()) {
+            tmp.purgeOrphansDeep();
+        }
+        if (this.children.size) return;
+        this.parent.children.delete(this.name);
+        this.parent = void 0;
+    }
+
+    get(name: string) {
+        return this.children.get(name);
+    }
+
+    getDeep(name: string) {
+        const parts = name.split('/');
+        if (parts.length === 0) return void 0;
+
+        let tmp: DescNamespace = this;
+        let i = 0;
+        while (tmp && i < parts.length) {
+            tmp = tmp.children.get(parts[i]);
+            ++i;
+        }
+        return tmp;
+    }
+
+    get fqn(): string {
+        return (this.parent && this.parent.kind !== DescKind.Root) ? `${this.parent.fqn}/${this.name}` : this.name;
+    }
+
+    get stype() {
+        return Array.from(this.xDecls.values())[0].stype;
+    }
+
+    get template() {
+        const tmp = Array.from(this.xDecls.values())[0];
+        return (<XMLElement>tmp).getAttributeValue('template', null);
+    }
+
+    get file() {
+        const tmp = Array.from(this.xDecls.values())[0];
+        return (<XMLElement>tmp).getAttributeValue('file', null);
     }
 }
 
-export class ConstantItem extends DescEntry {
-}
+export class DocumentState {
+    readonly xdeclDescMap = new Map<XMLNode, DescNamespace>();
 
-export class HandleItem extends DescEntry {
-}
-
-export interface DescContext {
-    file: string;
-    name: string;
-}
-
-export class FrameDesc extends DescItemContainer {
-    ctype: string;
-    fileDesc?: string;
-    template?: string;
-
-    constructor(name: string, parent?: DescItemContainer) {
-        super(name, parent);
+    constructor(public readonly xdoc: XMLDocument) {
     }
 }
 
-export class FileDesc extends DescItemContainer {
-    mappedNodes = new Map<XMLElement, FrameDesc>();
+function getDeclDescKind(xdecl: XMLElement) {
+    switch (xdecl.sdef.nodeKind) {
+        case sch.ElementDefKind.Frame:
+            return DescKind.Frame;
+        case sch.ElementDefKind.Animation:
+            return DescKind.Animation;
+        case sch.ElementDefKind.StateGroup:
+            return DescKind.StateGroup;
+    }
+    throw new Error();
 }
 
 export class DescIndex {
-    docmap: Map<string, FileDesc>;
-    constants: DescNamespaceMap<ConstantItem>;
-    handles: DescNamespaceMap<HandleItem>;
+    protected xdocState: Map<XMLDocument, DocumentState>;
+    rootNs: DescNamespace;
+    tplRefs: Map<string, Set<DescNamespace>>;
+
+    constants: DescXRefMap<ConstantItem>;
+    handles: DescXRefMap<HandleItem>;
 
     constructor() {
         this.clear();
     }
 
-    bindDocument(doc: LayoutDocument) {
-        const dcFile = new FileDesc(doc.descName);
-        dcFile.declarations.add(doc.getDescNode());
-        this.docmap.set(dcFile.name, dcFile);
+    public clear() {
+        this.xdocState = new Map<XMLDocument, DocumentState>();
+        this.rootNs = new DescNamespace('$root', DescKind.Root);
+        this.tplRefs = new Map();
 
-        const bind = (parentContainer: DescItemContainer, currNode: XMLNode) => {
-            const currEl = <XMLElement>currNode;
-            if (!currEl.sdef || !currEl.stype) return false;
-            let currentContainer: DescItemContainer = parentContainer;
+        this.constants = new DescXRefMap<ConstantItem>(ConstantItem, 'name');
+        this.handles = new DescXRefMap<HandleItem>(HandleItem, 'val');
+    }
 
-            switch (currEl.sdef.nodeKind) {
-                case sch.ElementDefKind.Constant:
-                {
-                    this.constants.appendOrCreate(currEl);
-                    return;
-                }
+    protected bindWorker(parentNs: DescNamespace, currXNode: XMLElement, docState: DocumentState) {
+        if (!currXNode.sdef || !currXNode.stype) return;
 
-                case sch.ElementDefKind.FrameProperty:
-                {
-                    const natVal = currEl.stype.attributes.get('val');
-                    switch (natVal && natVal.type.builtinType) {
-                        case sch.BuiltinTypeKind.Handle:
-                        {
-                            this.handles.appendOrCreate(currEl);
-                            break;
-                        }
+        const isInFDesc = parentNs.kind === DescKind.File;
+
+        switch (currXNode.sdef.nodeKind) {
+            case sch.ElementDefKind.Animation:
+            case sch.ElementDefKind.StateGroup:
+            case sch.ElementDefKind.Frame:
+            {
+                const name = currXNode.getAttributeValue('name', null);
+                if (name === null) break;
+                const currDesc = parentNs.getOrCreate(name, getDeclDescKind(currXNode));
+                currDesc.xDecls.add(currXNode);
+                docState.xdeclDescMap.set(currXNode, currDesc);
+
+                // TODO: validate type
+                // currEl.getAttributeValue('type')
+                // currEl.getAttributeValue('file')
+
+                // track templates
+                const tpl = currXNode.getAttributeValue('template', null);
+                if (tpl) {
+                    let trefs = this.tplRefs.get(tpl);
+                    if (!trefs) {
+                        trefs = new Set();
+                        this.tplRefs.set(tpl, trefs);
                     }
-                    return;
+                    trefs.add(currDesc);
                 }
 
-                case sch.ElementDefKind.Frame:
-                {
-                    const dcFrame = new FrameDesc(currEl.getAttributeValue('name'));
-                    currentContainer = dcFrame;
-                    dcFrame.ctype = currEl.getAttributeValue('type');
-                    dcFrame.fileDesc = currEl.attributes['file'] ? currEl.getAttributeValue('file') : void 0;
-                    dcFrame.declarations.add(currEl);
-                    dcFrame.parent = parentContainer;
-                    parentContainer.children.set(dcFrame.name, dcFrame);
-                    dcFile.mappedNodes.set(currEl, dcFrame);
-                    break;
+                //
+                if (currXNode.sdef.nodeKind === sch.ElementDefKind.Frame) {
+                    for (const xsub of currXNode.children) {
+                        this.bindWorker(currDesc, xsub, docState);
+                    }
                 }
 
-                case sch.ElementDefKind.Animation:
-                case sch.ElementDefKind.StateGroup:
-                case sch.ElementDefKind.DescFlags:
-                case sch.ElementDefKind.Include:
-                {
-                    return;
-                    break;
-                }
-
-                default: {
-                    // console.log(`# unknown ${currEl.tag}[${currEl.stype.name}]`);
-                    return;
-                    break;
-                }
+                break;
             }
 
-            currNode.children.forEach(bind.bind(this, currentContainer));
-        }
+            case sch.ElementDefKind.Constant:
+            {
+                this.constants.appendOrCreate(currXNode, docState.xdoc);
+                return;
+            }
 
-        doc.getDescNode().children.forEach(bind.bind(this, dcFile));
+            case sch.ElementDefKind.FrameProperty:
+            {
+                const natVal = currXNode.stype.attributes.get('val');
+                if (!natVal) return;
+                switch (natVal.type.builtinType) {
+                    case sch.BuiltinTypeKind.Handle:
+                    {
+                        this.handles.appendOrCreate(currXNode, docState.xdoc);
+                        break;
+                    }
+                }
+                return;
+            }
+
+            default:
+            {
+                // console.log(`# unknown ${currXNode.tag}[${currXNode.stype.name}]`);
+                return;
+            }
+        }
+    }
+
+    bindDocument(doc: LayoutDocument) {
+        const docState = new DocumentState(doc);
+        this.xdocState.set(doc, docState);
+
+        const fiDesc = this.rootNs.getOrCreate(doc.descName, DescKind.File);
+        docState.xdeclDescMap.set(doc, fiDesc);
+
+        for (const xsub of doc.getDescNode().children) {
+            this.bindWorker(fiDesc, xsub, docState);
+        }
     }
 
     unbindDocument(doc: LayoutDocument) {
-        // switch (currEl.sdef.nodeKind) {
-        //     case sch.ElementDefKind.Constant:
-        //     {
-        //         break;
-        //     }
-        // }
-        this.constants.purgeByRootNode(doc.getDescNode());
-        this.handles.purgeByRootNode(doc.getDescNode());
-        this.docmap.delete(doc.descName);
+        this.constants.purgeDocumentDecls(doc);
+        this.handles.purgeDocumentDecls(doc);
+
+        const docState = this.xdocState.get(doc);
+        for (const [xDecl, descNode] of docState.xdeclDescMap) {
+            descNode.xDecls.delete(xDecl);
+
+            switch (descNode.kind) {
+                case DescKind.Frame:
+                case DescKind.Animation:
+                {
+                    const tpl = (<XMLElement>xDecl).getAttributeValue('template', null);
+                    if (tpl) {
+                        const trefs = this.tplRefs.get(tpl)
+                        trefs.delete(descNode);
+                        if (!trefs.size) {
+                            this.tplRefs.delete(tpl);
+                        }
+                    }
+                }
+            }
+        }
+
+        for (const descNode of docState.xdeclDescMap.values()) {
+            if (descNode.xDecls.size) continue;
+            if (!descNode.parent) continue;
+            descNode.purgeOrphansDeep();
+        }
+        this.xdocState.delete(doc);
     }
 
-    clear() {
-        this.docmap = new Map<string, FileDesc>();
-        this.constants = new DescNamespaceMap<ConstantItem>(ConstantItem, 'name');
-        this.handles = new DescNamespaceMap<HandleItem>(HandleItem, 'val');
-    }
-
-    resolveSelectionFragment(sef: SelectionFragment, dcontext: DescItemContainer, first = false): DescItemContainer {
+    resolveSelectionFragment(sef: SelectionFragment, dcontext: DescNamespace, first = false): DescNamespace {
         switch (sef.kind) {
             case SelectionFragmentKind.BuiltinHandle:
             {
@@ -276,7 +362,7 @@ export class DescIndex {
         return void 0;
     }
 
-    resolveSelection(sel: DescSelect, dcontext: DescItemContainer): DescItemContainer {
+    resolveSelection(sel: DescSelect, dcontext: DescNamespace): DescNamespace {
         let currd = dcontext;
         for (const slfrag of sel.fragments) {
             currd = this.resolveSelectionFragment(slfrag, currd, currd === dcontext);
@@ -285,11 +371,11 @@ export class DescIndex {
         return currd;
     }
 
-    // *constants() {
-    //     for (const doc of this.docmap.values()) {
-    //         for (const item of doc.constants.values()) {
-    //             yield item;
-    //         }
-    //     }
-    // }
+    resolveElementDesc(xEl: XMLElement, kind: DescKind = null) {
+        const docState = this.xdocState.get(xEl.getDocument());
+        do {
+            const elDesc = docState.xdeclDescMap.get(xEl)
+            if (elDesc && (kind === null || elDesc.kind === kind)) return elDesc;
+        } while(xEl = <XMLElement>xEl.parent);
+    }
 }
