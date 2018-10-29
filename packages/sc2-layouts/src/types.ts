@@ -30,7 +30,7 @@ export class TextDocument implements lsp.TextDocument {
         this._content = text;
         this._version = nver === null ? 0 : nver;
         this._lineMap = void 0;
-        if (nver === null) {
+        if (nver === null || nver === 0) {
             this.updateLineMap();
         }
     }
@@ -72,6 +72,10 @@ export class TextDocument implements lsp.TextDocument {
 
     get version() {
         return this._version;
+    }
+
+    set version(nver: number) {
+        this._version = nver;
     }
 
     get lineCount() {

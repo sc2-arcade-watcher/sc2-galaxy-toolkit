@@ -78,6 +78,20 @@
                         "campaigns/void.sc2campaign": false,
                         "campaigns/voidstory.sc2campaign": false
                     }
+                },
+                "sc2layout.documentUpdateDelay": {
+                    "scope": "window",
+                    "type": "number",
+                    "default": 100,
+                    "minimum": 10,
+                    "description": "Minimum idle time (ms) required before reindexing dirty files"
+                },
+                "sc2layout.documentDiagnosticsDelay": {
+                    "scope": "window",
+                    "type": "number",
+                    "default": 300,
+                    "minimum": -1,
+                    "description": "Minimum idle time (ms) required before providing code diagnostics for dirty files (value from *documentUpdateDelay* is contributed). -1 to disable - in which case diagnostics will be provided only on save."
                 }
             }
         }

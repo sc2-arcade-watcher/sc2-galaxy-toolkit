@@ -29,9 +29,17 @@ import * as s2 from './index/s2mod';
 //     'mods/war3data.sc2mod',
 // ];
 
-namespace S2LConfig {
+namespace ExtCfgSect {
     export type builtinMods = {[name: string]: boolean};
 }
+
+interface ExtConfig {
+    builtinMods: ExtCfgSect.builtinMods;
+    documentUpdateDelay: number;
+    documentDiagnosticsDelay: number;
+}
+
+type ExtCfgKey = keyof ExtConfig;
 
 export function createDocumentFromVS(vdocument: vs.TextDocument): lsp.TextDocument {
     return <lsp.TextDocument>{
@@ -48,12 +56,54 @@ export function createDocumentFromVS(vdocument: vs.TextDocument): lsp.TextDocume
     };
 }
 
+class DocumentUpdateRequest {
+    updateTimer: NodeJS.Timer;
+    diagnosticsTimer: NodeJS.Timer;
+    completed = false;
+    protected funcs: (() => void)[] = [];
+
+    constructor(public readonly uri: string, public readonly version: number) {}
+
+    wait() {
+        if (this.completed) {
+            return Promise.resolve();
+        }
+        return new Promise((resolve, reject) => {
+            this.funcs.push(resolve);
+        });
+    }
+
+    resolve() {
+        this.completed = true;
+        for (const tmp of this.funcs) {
+            tmp();
+        }
+        this.funcs = [];
+    }
+
+    cancel() {
+        if (this.updateTimer) {
+            clearTimeout(this.updateTimer);
+            this.updateTimer = void 0;
+            this.completed = true;
+            return;
+        }
+        if (this.diagnosticsTimer) {
+            clearTimeout(this.diagnosticsTimer);
+            this.diagnosticsTimer = void 0;
+            return;
+        }
+    }
+};
+
 export class ServiceContext implements IService {
     console: ILoggerConsole;
     protected store: Store;
     protected output: vs.OutputChannel;
     protected fsWatcher: vs.FileSystemWatcher;
     protected diagnosticCollection: vs.DiagnosticCollection;
+    protected documentUpdateRequests = new Map<string, DocumentUpdateRequest>();
+    config: ExtConfig;
 
     protected completionsProvider: CompletionsProvider;
     protected hoverProvider: HoverProvider;
@@ -119,44 +169,40 @@ export class ServiceContext implements IService {
         }));
 
         // -
-        context.subscriptions.push(vs.workspace.onDidChangeTextDocument(async e => {
-            if (e.document.languageId !== languageId) return;
-            if (e.document.isDirty) return;
-            this.console.info(`onDidChangeTextDocument ${e.document.uri.fsPath} [${e.document.version}]`);
-            await this.syncVsDocument(e.document);
-            const diag = this.store.validateDocument(e.document.uri.toString());
-            if (diag.length) {
-                this.diagnosticCollection.set(e.document.uri, diag.map(item => {
-                    return new vs.Diagnostic(
-                        new vs.Range(e.document.positionAt(item.start), e.document.positionAt(item.end)),
-                        item.message,
-                        <any>item.category,
-                    );
-                }));
-            }
-            else {
-                this.diagnosticCollection.delete(e.document.uri);
-            }
+        context.subscriptions.push(vs.workspace.onDidChangeTextDocument(async ev => {
+            if (ev.document.languageId !== languageId) return;
+            this.debounceDocumentSync(ev.document);
         }));
 
         // -
         context.subscriptions.push(vs.workspace.onDidOpenTextDocument(async document => {
             if (document.languageId !== languageId) return;
             await this.syncVsDocument(document);
+            await this.provideDiagnostics(document.uri.toString());
         }));
 
         // -
-        context.subscriptions.push(vs.workspace.onDidCloseTextDocument(document => {
+        context.subscriptions.push(vs.workspace.onDidSaveTextDocument(async document => {
             if (document.languageId !== languageId) return;
-            // this.syncDocument(createDocumentFromVS(document));
-            this.diagnosticCollection.delete(document.uri);
+            await this.syncVsDocument(document);
+            await this.provideDiagnostics(document.uri.toString());
         }));
 
         // -
-        context.subscriptions.push(vs.workspace.onDidChangeConfiguration(e => {
-            if (!e.affectsConfiguration(`${languageId}.builtinMods`)) return;
-            this.store.clear();
-            this.reinitialize();
+        context.subscriptions.push(vs.workspace.onDidCloseTextDocument(async document => {
+            if (document.languageId !== languageId) return;
+            this.diagnosticCollection.delete(document.uri);
+            await this.syncDocument(createTextDocumentFromFs(document.uri.fsPath), true);
+        }));
+
+        // -
+        context.subscriptions.push(vs.workspace.onDidChangeConfiguration(async e => {
+            if (!e.affectsConfiguration(`${languageId}`)) return;
+            this.readConfig();
+            if (e.affectsConfiguration(`${languageId}.builtinMods`)) {
+                this.store.clear();
+                await this.reinitialize();
+            }
         }));
 
         // -
@@ -173,9 +219,91 @@ export class ServiceContext implements IService {
         }
     }
 
-    protected reinitialize() {
+    protected async reinitialize() {
         this.dispose();
-        this.initialize();
+        await this.initialize();
+    }
+
+    protected getOpenDocument(uri: string) {
+        return vs.workspace.textDocuments.find((item) => {
+            if (item.uri.toString() !== uri) return false;
+            if (item.isClosed) return false;
+            return true;
+        });
+    }
+
+    protected debounceDocumentSync(vsDocument: vs.TextDocument) {
+        const uri = vsDocument.uri.toString();
+        const prevReq = this.documentUpdateRequests.get(uri);
+
+        if (prevReq && (prevReq.updateTimer || prevReq.diagnosticsTimer)) {
+            prevReq.cancel();
+        }
+
+        const req = new DocumentUpdateRequest(uri, vsDocument.version);
+        req.updateTimer = setTimeout(async () => {
+            req.updateTimer = void 0;
+            if (this.documentUpdateRequests.get(uri) !== req) {
+                this.console.log(`[debounceDocumentSync] discarded`, {uri: prevReq.uri, version: prevReq.version});
+                return;
+            }
+            const currVsDoc = this.getOpenDocument(uri);
+            if (!currVsDoc || currVsDoc.version !== req.version) {
+                this.console.log(`[debounceDocumentSync] discarded (corrupted state?)`, {
+                    uri: prevReq.uri, version: prevReq.version, currVer: currVsDoc ? currVsDoc.version : null
+                });
+                return;
+            }
+            const xDoc = await this.syncVsDocument(currVsDoc);
+            req.resolve();
+            if (this.documentUpdateRequests.get(uri) !== req) return;
+
+            req.diagnosticsTimer = setTimeout(() => {
+                req.diagnosticsTimer = void 0;
+                this.provideDiagnostics(req.uri);
+                this.documentUpdateRequests.delete(uri);
+            }, this.config.documentDiagnosticsDelay);
+        }, this.config.documentUpdateDelay);
+        this.documentUpdateRequests.set(uri, req);
+    }
+
+    @svcRequest(false)
+    protected async provideDiagnostics(uri: string) {
+        const req = this.documentUpdateRequests.get(uri);
+        if (req && req.diagnosticsTimer) {
+            req.cancel();
+            this.documentUpdateRequests.delete(uri);
+        }
+
+        const xDoc = this.store.documents.get(uri);
+        this.console.log('state', {uri: uri, version: xDoc.tdoc.version});
+        const diag = this.store.validateDocument(uri);
+        if (diag.length) {
+            this.diagnosticCollection.set(vs.Uri.parse(uri), diag.map(item => {
+                const tmp = [xDoc.tdoc.positionAt(item.start) , xDoc.tdoc.positionAt(item.end)];
+                return new vs.Diagnostic(
+                    new vs.Range(
+                        new vs.Position(tmp[0].line, tmp[0].character),
+                        new vs.Position(tmp[1].line, tmp[1].character)
+                    ),
+                    item.message,
+                    <any>item.category,
+                );
+            }));
+        }
+        else {
+            this.diagnosticCollection.delete(vs.Uri.parse(uri));
+        }
+    }
+
+    protected readConfig() {
+        const wsConfig = vs.workspace.getConfiguration(languageId);
+        this.config = {
+            builtinMods: wsConfig.get<ExtCfgSect.builtinMods>('builtinMods', {}),
+            documentUpdateDelay: wsConfig.get<number>('documentUpdateDelay', 100),
+            documentDiagnosticsDelay: wsConfig.get<number>('documentDiagnosticsDelay', -1),
+        };
+        this.console.log('[readConfig]', this.config);
     }
 
     @svcRequest(false)
@@ -184,8 +312,10 @@ export class ServiceContext implements IService {
         const wsArchives: s2.Archive[] = [];
 
         // -
-        const builtinMods = <S2LConfig.builtinMods>vs.workspace.getConfiguration(languageId).get('builtinMods');
-        for (const [mod, enabled] of objventries(builtinMods)) {
+        this.readConfig();
+
+        // -
+        for (const [mod, enabled] of objventries(this.config.builtinMods)) {
             if (!enabled) continue;
             const uri = URI.file(path.join(this.extContext.extensionPath, 'sc2-data', <string>mod));
             archives.push(new s2.Archive(<string>mod, uri));
@@ -228,7 +358,6 @@ export class ServiceContext implements IService {
         this.fsWatcher.onDidCreate(e => this.onFileChange({type: vs.FileChangeType.Created, uri: e}));
         this.fsWatcher.onDidDelete(e => this.onFileChange({type: vs.FileChangeType.Deleted, uri: e}));
         this.fsWatcher.onDidChange(e => this.onFileChange({type: vs.FileChangeType.Changed, uri: e}));
-        this.extContext.subscriptions.push(this.fsWatcher);
     }
 
     @svcRequest(false, (uri: vs.Uri) => uri.fsPath)
@@ -250,10 +379,15 @@ export class ServiceContext implements IService {
     }
 
     @svcRequest(false, (doc: lsp.TextDocument) => vs.Uri.parse(doc.uri).fsPath)
-    protected async syncDocument(doc: lsp.TextDocument) {
-        const ldoc = this.store.updateDocument(doc.uri, doc.getText(), doc.version);
-        // if (vs.workspace.textDocuments.find())
-        return ldoc;
+    protected async syncDocument(doc: lsp.TextDocument, force = false) {
+        const req = this.documentUpdateRequests.get(doc.uri);
+        if (req && (doc.version > req.version || doc.version === 0 || force)) {
+            req.cancel();
+            this.documentUpdateRequests.delete(doc.uri);
+        }
+
+        const xDoc = this.store.updateDocument(doc.uri, doc.getText(), doc.version);
+        return xDoc;
     }
 
     @svcRequest(
@@ -262,12 +396,26 @@ export class ServiceContext implements IService {
         (r: boolean) => r
     )
     protected async onFileChange(ev: vs.FileChangeEvent) {
-        if (path.extname(ev.uri.fsPath) === '.SC2Layout') {
+        if (ev.uri.fsPath.match(/(sc2map|sc2mod)\.(temp|orig)/gi)) return false;
+        if (!this.store.s2ws.matchFileWorkspace(ev.uri)) {
+            this.console.log('not in workspace');
+            return false;
+        }
+
+        if (path.extname(ev.uri.fsPath).toLowerCase() === '.sc2layout') {
             switch (ev.type) {
                 case vs.FileChangeType.Deleted:
                 {
                     if (!this.store.documents.has(ev.uri.toString())) break;
                     this.store.removeDocument(ev.uri.toString());
+                    return true;
+                }
+                case vs.FileChangeType.Created:
+                case vs.FileChangeType.Changed:
+                {
+                    const vsDoc = this.getOpenDocument(ev.uri.toString());
+                    if (vsDoc) break;
+                    this.syncVsDocument(vsDoc);
                     return true;
                 }
             }
@@ -282,7 +430,7 @@ export class ServiceContext implements IService {
 
     public async syncVsDocument(vdoc: vs.TextDocument) {
         let ndoc = this.store.documents.get(vdoc.uri.toString());
-        if (!ndoc || ndoc.text.length !== vdoc.getText().length || ndoc.text !== vdoc.getText()) {
+        if (!ndoc || ndoc.tdoc.version < vdoc.version) {
             ndoc = await this.syncDocument(createDocumentFromVS(vdoc));
         }
         return ndoc;

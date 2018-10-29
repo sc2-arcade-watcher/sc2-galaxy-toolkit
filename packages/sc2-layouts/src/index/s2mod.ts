@@ -290,4 +290,12 @@ export class Workspace {
         }
         return true;
     }
+
+    matchFileWorkspace(uri: URI) {
+        for (const sa of this.archives.values()) {
+            if (uri.fsPath.toString().startsWith(sa.uri.fsPath.toString())) {
+                return sa;
+            }
+        }
+    }
 }

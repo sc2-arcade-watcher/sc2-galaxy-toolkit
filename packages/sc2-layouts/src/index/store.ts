@@ -76,6 +76,7 @@ export class Store {
                     this.index.unbindDocument(xdoc);
                     this.index.bindDocument(xdoc);
                 }
+                xdoc.tdoc.version = version;
                 return xdoc;
             }
 
