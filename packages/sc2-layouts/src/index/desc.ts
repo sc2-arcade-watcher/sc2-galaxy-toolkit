@@ -324,6 +324,7 @@ export class DescIndex {
         this.xdocState.set(doc, docState);
 
         const fiDesc = this.rootNs.getOrCreate(doc.descName, DescKind.File);
+        fiDesc.xDecls.add(doc);
         docState.xdeclDescMap.set(doc, fiDesc);
 
         for (const xsub of doc.getDescNode().children) {

@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as util from 'util';
+import { CharacterCodes } from './parser/scanner';
 
 export const readFileAsync = util.promisify(fs.readFile);
 export const fileExistsAsync = util.promisify(fs.exists);
@@ -72,4 +73,51 @@ export function *reverseMap<T>(source: ReadonlyMap<string, T>): Iterable<[T,stri
     for (const [k,v] of source.entries()) {
         yield [v, k];
     }
+}
+
+export function fuzzysearch (needle: string, haystack: string) {
+    var hlen = haystack.length;
+    var nlen = needle.length;
+    if (nlen > hlen) {
+        return false;
+    }
+    if (nlen === hlen && needle === haystack) {
+        return true;
+    }
+    outer: for (let i = 0, j = 0; i < nlen; i++) {
+        let nch = needle.charCodeAt(i);
+        while (j < hlen) {
+            let hch = haystack.charCodeAt(j++);
+
+            // case sensitive
+            if (hch === nch) {
+                continue outer;
+            }
+
+            // try case insensitive
+            if (nch >= 65 && nch <= 90) {
+                nch += 32;
+            }
+            else if (nch >= 97 && nch <= 122) {
+                nch -= 32;
+            }
+            else {
+                switch (nch) {
+                    case CharacterCodes.space:
+                    // case CharacterCodes.slash:
+                    // case CharacterCodes.backslash:
+                    // case CharacterCodes.minus:
+                    // case CharacterCodes._:
+                        continue outer;
+                }
+
+                continue;
+            }
+            if (hch === nch) {
+                continue outer;
+            }
+        }
+        return false;
+    }
+    return true;
 }

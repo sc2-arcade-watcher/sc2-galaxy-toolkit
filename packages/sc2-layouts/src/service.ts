@@ -14,6 +14,7 @@ import { generateSchema } from './schema/map';
 import { DefinitionProvider } from './services/definition';
 import { objventries } from './common';
 import * as s2 from './index/s2mod';
+import { NavigationProvider } from './services/navigation';
 
 // const builtinMods = [
 //     'campaigns/liberty.sc2campaign',
@@ -108,6 +109,7 @@ export class ServiceContext implements IService {
     protected completionsProvider: CompletionsProvider;
     protected hoverProvider: HoverProvider;
     protected definitionProvider: DefinitionProvider;
+    protected navigationProvider: NavigationProvider;
 
     extContext: vs.ExtensionContext
 
@@ -164,9 +166,9 @@ export class ServiceContext implements IService {
         context.subscriptions.push(vs.languages.registerDefinitionProvider(lselector, this.definitionProvider));
 
         // -
-        context.subscriptions.push(vs.languages.registerDocumentSymbolProvider(lselector, {
-            provideDocumentSymbols: this.provideDocumentSymbols.bind(this),
-        }));
+        this.navigationProvider = this.createProvider(NavigationProvider);
+        context.subscriptions.push(vs.languages.registerDocumentSymbolProvider(lselector, this.navigationProvider));
+        context.subscriptions.push(vs.languages.registerWorkspaceSymbolProvider(this.navigationProvider));
 
         // -
         context.subscriptions.push(vs.workspace.onDidChangeTextDocument(async ev => {
@@ -434,68 +436,5 @@ export class ServiceContext implements IService {
             ndoc = await this.syncDocument(createDocumentFromVS(vdoc));
         }
         return ndoc;
-    }
-
-    @svcRequest(false, (doc: lsp.TextDocument) => vs.Uri.parse(doc.uri).fsPath)
-    protected async provideDocumentSymbols(document: vs.TextDocument, token: vs.CancellationToken): Promise<vs.SymbolInformation[]> {
-        const symbols: vs.SymbolInformation[] = [];
-        const sfile = await this.syncVsDocument(document);
-
-        function processNode(node: XMLNode, parentName?: string) {
-            if (!node.children) return;
-            outer: for (const child of node.children) {
-                if (!child.sdef) continue;
-
-                let tsym: vs.SymbolInformation = <vs.SymbolInformation>{};
-
-                switch (child.sdef.nodeKind) {
-                    case ElementDefKind.Constant:
-                        tsym.kind = vs.SymbolKind.Constant;
-                        break;
-                    case ElementDefKind.Frame:
-                        tsym.kind = vs.SymbolKind.Struct;
-                        break;
-                    case ElementDefKind.Animation:
-                        tsym.kind = vs.SymbolKind.Object;
-                        break;
-                    case ElementDefKind.StateGroup:
-                        tsym.kind = vs.SymbolKind.Class;
-                        break;
-                    case ElementDefKind.StateGroupState:
-                        tsym.kind = vs.SymbolKind.Function;
-                        break;
-                    default:
-                        continue outer;
-                }
-
-                tsym.name = `${child.getAttributeValue('name')}`;
-                if (child.sdef.nodeKind === ElementDefKind.StateGroupState) {
-                    tsym.name = `${parentName} - ${tsym.name}`;
-                }
-                // if (parentName) {
-                //     tsym.name = `${parentName}/${tsym.name}`;
-                // }
-                tsym.location = new vs.Location(document.uri, new vs.Range(
-                    document.positionAt(child.start),
-                    document.positionAt(typeof child.startTagEnd !== 'undefined' ? child.startTagEnd : child.end)
-                ));
-                tsym.containerName = parentName;
-                symbols.push(tsym);
-
-                switch (child.sdef.nodeKind) {
-                    case ElementDefKind.Frame:
-                    case ElementDefKind.StateGroup:
-                    {
-                        // processNode(child, parentName ? `${parentName}/${tsym.name}` : tsym.name);
-                        processNode(child, tsym.name);
-                        break;
-                    }
-                }
-            }
-        }
-
-        processNode(sfile.getDescNode());
-
-        return symbols;
     }
 }
