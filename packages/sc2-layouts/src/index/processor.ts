@@ -1,57 +1,10 @@
 import * as sch from '../schema/base';
 import { DiagnosticReport, XMLElement, AttrValueKind, DiagnosticCategory, XMLAttr } from '../types';
-import { DescIndex, DescNamespace } from './desc';
+import { DescIndex } from './desc';
 import { LayoutDocument, Store } from './store';
 import { SchemaValidator } from '../schema/validation';
 import { CharacterCodes } from '../parser/scanner';
 import { parseFramePropBinding, getAttrValueKind } from '../parser/selector';
-
-export class UINode {
-    readonly children = new Map<string, UINode>();
-
-    constructor(public readonly desc: DescNamespace, public readonly parent: UINode = null) {
-        if (parent) {
-            parent.children.set(this.desc.name, this);
-        }
-    }
-}
-
-export function buildPartialTree(rootNs: DescNamespace, contextDesc: DescNamespace, tpath: string[] = null) {
-    function processDesc(frDesc: DescNamespace, uNode: UINode, tpath: string[] = null) {
-        const tplpath = frDesc.template;
-        if (tplpath !== null) {
-            const tplDesc = rootNs.getDeep(tplpath);
-            if (tplDesc) {
-                processDesc(tplDesc, uNode, tpath);
-            }
-            else {
-                // console.warn('miss', frDesc.name, tplpath);
-            }
-        }
-
-        for (const childDesc of frDesc.children.values()) {
-            if (tpath && tpath.length > 0 && tpath[0] !== childDesc.name) continue;
-
-            let childUNode: UINode;
-            childUNode = uNode.children.get(childDesc.name);
-            if (!childUNode) {
-                childUNode = new UINode(childDesc, uNode);
-            }
-
-            if (tpath) {
-                if (!tpath.length) continue;
-                processDesc(childDesc, childUNode, tpath.slice(1));
-            }
-            else {
-                processDesc(childDesc, childUNode);
-            }
-        }
-
-        return uNode;
-    }
-
-    return processDesc(contextDesc, new UINode(contextDesc), tpath);
-}
 
 export class LayoutProcessor {
     protected svalidator: SchemaValidator;

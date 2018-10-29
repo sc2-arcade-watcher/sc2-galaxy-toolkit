@@ -94,6 +94,7 @@ export class DescNamespace {
     readonly name: string;
     readonly children = new Map<string, DescNamespace>();
     readonly xDecls = new Set<XMLNode>();
+    readonly descExtensions?: Map<string, Set<DescNamespace>>; // FileDesc
 
     constructor(name: string, kind = DescKind.Undeclared, parent?: DescNamespace) {
         this.name = name;
@@ -101,6 +102,10 @@ export class DescNamespace {
         if (parent) {
             this.parent = parent;
             parent.children.set(name, this);
+        }
+
+        if (this.kind === DescKind.File) {
+            this.descExtensions = new Map();
         }
     }
 
@@ -125,6 +130,15 @@ export class DescNamespace {
         return this.children.get(name);
     }
 
+    getMulti(...names: string[]) {
+        let current: DescNamespace = this;
+        for (const tmp of names) {
+            current = current.children.get(tmp);
+            if (!current) break;
+        }
+        return current;
+    }
+
     getDeep(name: string) {
         const parts = name.split('/');
         if (parts.length === 0) return void 0;
@@ -138,8 +152,19 @@ export class DescNamespace {
         return tmp;
     }
 
+    public ancestorOfKind(kind: DescKind) {
+        let tmp: DescNamespace = this;
+        while (tmp = tmp.parent) {
+            if (tmp.kind === kind) return tmp;
+        }
+    }
+
     get fqn(): string {
         return (this.parent && this.parent.kind !== DescKind.Root) ? `${this.parent.fqn}/${this.name}` : this.name;
+    }
+
+    get descRelativeName(): string {
+        return (this.parent && (this.parent.kind !== DescKind.Root && this.parent.kind !== DescKind.File)) ? `${this.parent.descRelativeName}/${this.name}` : this.name;
     }
 
     get stype() {
@@ -180,6 +205,7 @@ export class DescIndex {
     protected xdocState: Map<XMLDocument, DocumentState>;
     rootNs: DescNamespace;
     tplRefs: Map<string, Set<DescNamespace>>;
+    fileRefs: Map<string, Map<string, Set<DescNamespace>>>;
 
     constants: DescXRefMap<ConstantItem>;
     handles: DescXRefMap<HandleItem>;
@@ -192,6 +218,7 @@ export class DescIndex {
         this.xdocState = new Map<XMLDocument, DocumentState>();
         this.rootNs = new DescNamespace('$root', DescKind.Root);
         this.tplRefs = new Map();
+        this.fileRefs = new Map();
 
         this.constants = new DescXRefMap<ConstantItem>(ConstantItem, 'name');
         this.handles = new DescXRefMap<HandleItem>(HandleItem, 'val');
@@ -207,19 +234,45 @@ export class DescIndex {
             case sch.ElementDefKind.StateGroup:
             case sch.ElementDefKind.Frame:
             {
-                const name = currXNode.getAttributeValue('name', null);
-                if (name === null) break;
+                let name = currXNode.getAttributeValue('name', null);
+                if (name === null) {
+                    for (let i = 0;; ++i) {
+                        name = `${currXNode.stype.name}_${i}`;
+                        if (!parentNs.get(name)) break;
+                        if (i < 50) {
+                            name = null;
+                            break;
+                        }
+                    }
+                    if (name === null) break;
+                }
                 const currDesc = parentNs.getOrCreate(name, getDeclDescKind(currXNode));
+
+                // TODO: validate type?
+                if (currDesc.xDecls.size > 0) {
+                }
                 currDesc.xDecls.add(currXNode);
                 docState.xdeclDescMap.set(currXNode, currDesc);
 
-                // TODO: validate type
-                // currEl.getAttributeValue('type')
-                // currEl.getAttributeValue('file')
+                // desc extension
+                const file = currXNode.getAttributeValue('file', null);
+                if (file !== null) {
+                    let fdmap = this.fileRefs.get(file);
+                    if (!fdmap) {
+                        fdmap = new Map();
+                        this.fileRefs.set(file, fdmap);
+                    }
+                    let frefs = fdmap.get(currDesc.name)
+                    if (!frefs) {
+                        frefs = new Set();
+                        fdmap.set(currDesc.name, frefs);
+                    }
+                    frefs.add(currDesc);
+                }
 
                 // track templates
                 const tpl = currXNode.getAttributeValue('template', null);
-                if (tpl) {
+                if (tpl !== null) {
                     let trefs = this.tplRefs.get(tpl);
                     if (!trefs) {
                         trefs = new Set();
@@ -289,13 +342,29 @@ export class DescIndex {
             switch (descNode.kind) {
                 case DescKind.Frame:
                 case DescKind.Animation:
+                case DescKind.StateGroup:
                 {
                     const tpl = (<XMLElement>xDecl).getAttributeValue('template', null);
-                    if (tpl) {
+                    if (tpl !== null) {
                         const trefs = this.tplRefs.get(tpl)
                         trefs.delete(descNode);
                         if (!trefs.size) {
                             this.tplRefs.delete(tpl);
+                        }
+                    }
+
+                    const file = (<XMLElement>xDecl).getAttributeValue('file', null);
+                    if (file !== null) {
+                        let fdmap = this.fileRefs.get(file);
+                        if (fdmap) {
+                            let frefs = fdmap.get(descNode.name);
+                            frefs.delete(descNode);
+                            if (frefs.size <= 0) {
+                                fdmap.delete(descNode.name);
+                                if (fdmap.size <= 0) {
+                                    this.fileRefs.delete(file);
+                                }
+                            }
                         }
                     }
                 }
@@ -307,6 +376,7 @@ export class DescIndex {
             if (!descNode.parent) continue;
             descNode.purgeOrphansDeep();
         }
+
         this.xdocState.delete(doc);
     }
 
