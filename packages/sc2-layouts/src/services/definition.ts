@@ -7,6 +7,7 @@ import { getAttrValueKind, getSelectionFragmentAtPosition, getSelectionIndexAtPo
 import URI from 'vscode-uri';
 import { ExpressionParser } from '../parser/expressions';
 import { UINavigator, UIBuilder } from '../index/hierarchy';
+import { LayoutProcessor } from '../index/processor';
 
 interface DefinitionLinkXNodeOptions {
     originXDoc?: XMLDocument;
@@ -45,10 +46,12 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
     protected exParser = new ExpressionParser();
     protected uNavigator: UINavigator;
     protected uBuilder: UIBuilder;
+    protected processor: LayoutProcessor;
 
     protected prepare() {
         this.uNavigator = new UINavigator(this.store.schema, this.store.index);
         this.uBuilder = new UIBuilder(this.store.schema, this.store.index);
+        this.processor = new LayoutProcessor(this.store, this.store.index);
     }
 
     @svcRequest(false)
@@ -67,7 +70,7 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
 
         const nattr = node.findAttributeAt(offset);
         if (!nattr || !nattr.startValue || nattr.startValue > offset) return void 0;
-        const sAttrType = this.store.processor.getFClassPropertyType(node, nattr.name);
+        const sAttrType = this.processor.getElPropertyType(node, nattr.name);
 
         if (sAttrType) {
             switch (sAttrType.builtinType) {

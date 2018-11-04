@@ -3,7 +3,6 @@ import { oentries } from '../common';
 import { LayoutDocument, Store } from './store';
 import { XMLElement, XMLNode, DiagnosticReport, XMLDocument } from '../types';
 import * as sch from '../schema/base';
-import { DescSelect, SelectionFragment, SelectionFragmentKind, BuiltinHandleKind } from '../parser/selector';
 
 export class DescXRef {
     declarations = new Set<XMLElement>();
@@ -330,6 +329,7 @@ export class DescIndex {
         fiDesc.xDecls.add(doc);
         docState.xdeclDescMap.set(doc, fiDesc);
 
+        if (!doc.getDescNode()) return;
         for (const xsub of doc.getDescNode().children) {
             this.bindWorker(fiDesc, xsub, docState);
         }
@@ -382,67 +382,6 @@ export class DescIndex {
         }
 
         this.xdocState.delete(doc);
-    }
-
-    resolveSelectionFragment(sef: SelectionFragment, dcontext: DescNamespace, first = false): DescNamespace {
-        switch (sef.kind) {
-            case SelectionFragmentKind.BuiltinHandle:
-            {
-                switch (sef.builtinHandle) {
-                    case BuiltinHandleKind.Root:
-                    {
-                        if (!first) return void 0;
-                        let currd = dcontext;
-                        while (currd.parent) {
-                            currd = currd.parent;
-                        }
-                        return currd;
-                    }
-
-                    case BuiltinHandleKind.This:
-                    {
-                        return dcontext;
-                    }
-
-                    case BuiltinHandleKind.Parent:
-                    {
-                        return dcontext.parent;
-                    }
-
-                    case BuiltinHandleKind.Layer:
-                    case BuiltinHandleKind.Ancestor:
-                    case BuiltinHandleKind.Sibling:
-                    {
-                        // TODO:
-                        return void 0;
-                    }
-                }
-                break;
-            }
-
-            case SelectionFragmentKind.CustomHandle:
-            {
-                if (!first) return void 0;
-                // TODO:
-                break;
-            }
-
-            case SelectionFragmentKind.Identifier:
-            {
-                return dcontext.children.get(sef.identifier);
-                break;
-            }
-        }
-        return void 0;
-    }
-
-    resolveSelection(sel: DescSelect, dcontext: DescNamespace): DescNamespace {
-        let currd = dcontext;
-        for (const slfrag of sel.fragments) {
-            currd = this.resolveSelectionFragment(slfrag, currd, currd === dcontext);
-            if (!currd) break;
-        }
-        return currd;
     }
 
     resolveElementDesc(xEl: XMLElement, kind: DescKind = null) {

@@ -580,15 +580,16 @@ export class ExpressionParser {
         propBind.path = this.parseSelectionPath(false);
 
         // this.parseExpected(SyntaxKind.SlashToken);
-        this.parseExpected(SyntaxKind.AtToken);
-        this.parseExpected(SyntaxKind.Identifier);
+        if (this.parseExpected(SyntaxKind.AtToken)) {
+            propBind.property = this.parseExpectedIdentifier();
 
-        if (this.token() === SyntaxKind.OpenBracketToken) {
-            this.parseExpected(SyntaxKind.OpenBracketToken);
-            this.parseExpectedMany([SyntaxKind.NumericLiteral, SyntaxKind.Identifier], void 0, true);
-            // TODO: save index
-            // propBind.propertyIndex = this.createNode(this.token(), void 0, false);
-            this.parseExpected(SyntaxKind.CloseBracketToken);
+            if (this.token() === SyntaxKind.OpenBracketToken) {
+                this.parseExpected(SyntaxKind.OpenBracketToken);
+                this.parseExpectedMany([SyntaxKind.NumericLiteral, SyntaxKind.Identifier], void 0, true);
+                // TODO: save index
+                // propBind.propertyIndex = this.createNode(this.token(), void 0, false);
+                this.parseExpected(SyntaxKind.CloseBracketToken);
+            }
         }
 
         this.parseExpected(SyntaxKind.CloseBraceToken);

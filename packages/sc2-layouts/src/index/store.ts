@@ -7,7 +7,6 @@ import * as sch from '../schema/base';
 import { languageId, XMLElement, DiagnosticReport, XMLDocument, TextDocument } from '../types';
 import { parse, parseDocument } from '../parser/parser';
 import { DescIndex } from './desc';
-import { LayoutChecker } from './processor';
 import * as s2 from '../index/s2mod';
 
 export function createTextDocumentFromFs(filepath: string): lsp.TextDocument {
@@ -40,10 +39,8 @@ export class Store {
 
     documents = new Map<string, XMLDocument>();
     index = new DescIndex();
-    processor: LayoutChecker;
 
     constructor(public readonly schema: sch.SchemaRegistry) {
-        this.processor = new LayoutChecker(this, this.index);
     }
 
     protected addWorkspace(uri: URI, name?: string) {
@@ -94,11 +91,5 @@ export class Store {
         this.index.bindDocument(xdoc);
 
         return xdoc;
-    }
-
-    public validateDocument(documentUri: string) {
-        const ldoc = this.documents.get(documentUri);
-        const pdiag = this.processor.checkFile(ldoc);
-        return ldoc.parseDiagnostics.concat(pdiag);
     }
 }

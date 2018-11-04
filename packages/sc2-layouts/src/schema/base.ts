@@ -200,5 +200,7 @@ export interface SchemaRegistry {
     getFrameProperty(scElementDef: ElementDef): FrameProperty;
 
     getPropertyByName(name: string): FrameProperty;
+
+    isPropertyBindAllowed(scElementDef: ElementDef, scComplexType: ComplexType, attrName: string): boolean;
 }
 

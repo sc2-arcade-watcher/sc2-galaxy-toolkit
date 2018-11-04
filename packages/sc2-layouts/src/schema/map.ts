@@ -604,21 +604,66 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
         frameTypes.set(t.name, t);
     }
 
+    // ===
+
+    function getFrameType(scComplexType: sch.ComplexType): sch.FrameType {
+        return mapFrameType.get(scComplexType);
+    }
+
+    function getFrameProperty(scElementDef: sch.ElementDef): sch.FrameProperty {
+        return mapFrameProperty.get(scElementDef);
+    }
+
+    function getPropertyByName(name: string): sch.FrameProperty {
+        const r = mapFramePropName.get(name.toLowerCase());
+        return r ? r[0] : void 0;
+    }
+
+    function isPropertyBindAllowed(scElementDef: sch.ElementDef, scComplexType: sch.ComplexType, attrName: string) {
+        switch (scElementDef.nodeKind) {
+            case sch.ElementDefKind.FrameProperty:
+            {
+                if (attrName !== 'val') break;
+                const tmpa = scComplexType.attributes.get(attrName);
+                if (!tmpa) break;
+                return tmpa.type ? true : false;
+            }
+
+            case sch.ElementDefKind.StateGroupStateCondition:
+            case sch.ElementDefKind.StateGroupStateAction:
+            {
+                switch (scComplexType.name) {
+                    case 'CFrameStateConditionProperty':
+                    case 'CFrameStateSetPropertyAction':
+                    {
+                        const cprop = getPropertyByName(attrName);
+                        if (!cprop) break;
+                        try {
+                            return cprop.etype.type.attributes.get('val').type ? true : false;
+                        }
+                        catch (e) {
+                            break;
+                        }
+                    }
+                }
+
+                break;
+            }
+        }
+
+        return false;
+    }
+
     return {
         stypes: entries,
         fileRootType: <sch.ComplexType>entries.get('CFileDesc'),
         frameClasses: frameClasses,
         frameClassProps: mapFramePropName,
         frameTypes: frameTypes,
-        getFrameType: (scComplexType: sch.ComplexType): sch.FrameType => {
-            return mapFrameType.get(scComplexType);
-        },
-        getFrameProperty: (scElementDef: sch.ElementDef): sch.FrameProperty => {
-            return mapFrameProperty.get(scElementDef);
-        },
-        getPropertyByName: (name: string): sch.FrameProperty => {
-            const r = mapFramePropName.get(name.toLowerCase());
-            return r ? r[0] : void 0;
-        }
-    };
+
+        getFrameType,
+        getFrameProperty,
+        getPropertyByName,
+        isPropertyBindAllowed,
+    }
 }

@@ -15,6 +15,7 @@ import { DefinitionProvider } from './services/definition';
 import { objventries } from './common';
 import * as s2 from './index/s2mod';
 import { NavigationProvider } from './services/navigation';
+import { DiagnosticsProvider } from './services/diagnostics';
 
 // const builtinMods = [
 //     'campaigns/liberty.sc2campaign',
@@ -110,6 +111,7 @@ export class ServiceContext implements IService {
     protected hoverProvider: HoverProvider;
     protected definitionProvider: DefinitionProvider;
     protected navigationProvider: NavigationProvider;
+    protected diagnosticsProvider: DiagnosticsProvider;
 
     extContext: vs.ExtensionContext
 
@@ -171,26 +173,21 @@ export class ServiceContext implements IService {
         context.subscriptions.push(vs.languages.registerWorkspaceSymbolProvider(this.navigationProvider));
 
         // -
+        this.diagnosticsProvider = this.createProvider(DiagnosticsProvider);
         context.subscriptions.push(vs.workspace.onDidChangeTextDocument(async ev => {
             if (ev.document.languageId !== languageId) return;
             this.debounceDocumentSync(ev.document);
         }));
-
-        // -
         context.subscriptions.push(vs.workspace.onDidOpenTextDocument(async document => {
             if (document.languageId !== languageId) return;
             await this.syncVsDocument(document);
             await this.provideDiagnostics(document.uri.toString());
         }));
-
-        // -
         context.subscriptions.push(vs.workspace.onDidSaveTextDocument(async document => {
             if (document.languageId !== languageId) return;
             await this.syncVsDocument(document);
             await this.provideDiagnostics(document.uri.toString());
         }));
-
-        // -
         context.subscriptions.push(vs.workspace.onDidCloseTextDocument(async document => {
             if (document.languageId !== languageId) return;
             this.diagnosticCollection.delete(document.uri);
@@ -202,7 +199,6 @@ export class ServiceContext implements IService {
             if (!e.affectsConfiguration(`${languageId}`)) return;
             this.readConfig();
             if (e.affectsConfiguration(`${languageId}.builtinMods`)) {
-                this.store.clear();
                 await this.reinitialize();
             }
         }));
@@ -222,6 +218,7 @@ export class ServiceContext implements IService {
     }
 
     protected async reinitialize() {
+        this.store.clear();
         this.dispose();
         await this.initialize();
     }
@@ -269,7 +266,6 @@ export class ServiceContext implements IService {
         this.documentUpdateRequests.set(uri, req);
     }
 
-    @svcRequest(false)
     protected async provideDiagnostics(uri: string) {
         const req = this.documentUpdateRequests.get(uri);
         if (req && req.diagnosticsTimer) {
@@ -277,25 +273,8 @@ export class ServiceContext implements IService {
             this.documentUpdateRequests.delete(uri);
         }
 
-        const xDoc = this.store.documents.get(uri);
-        this.console.log('state', {uri: uri, version: xDoc.tdoc.version});
-        const diag = this.store.validateDocument(uri);
-        if (diag.length) {
-            this.diagnosticCollection.set(vs.Uri.parse(uri), diag.map(item => {
-                const tmp = [xDoc.tdoc.positionAt(item.start) , xDoc.tdoc.positionAt(item.end)];
-                return new vs.Diagnostic(
-                    new vs.Range(
-                        new vs.Position(tmp[0].line, tmp[0].character),
-                        new vs.Position(tmp[1].line, tmp[1].character)
-                    ),
-                    item.message,
-                    <any>item.category,
-                );
-            }));
-        }
-        else {
-            this.diagnosticCollection.delete(vs.Uri.parse(uri));
-        }
+        this.diagnosticCollection.set(vs.Uri.parse(uri), await this.diagnosticsProvider.provideDiagnostics(uri));
+        // this.diagnosticCollection.delete(vs.Uri.parse(uri));
     }
 
     protected readConfig() {

@@ -11,6 +11,7 @@ import { Store } from '../index/store';
 import { ExpressionParser, SelHandleKind, SelectorFragment, PathSelector } from '../parser/expressions';
 import { UINavigator, UIBuilder } from '../index/hierarchy';
 import { getSelectionIndexAtPosition, getAttrValueKind } from '../parser/utils';
+import { LayoutProcessor } from '../index/processor';
 
 function completionsForSimpleType(smType: sch.SimpleType) {
     let items = <vs.CompletionItem[]> [];
@@ -72,11 +73,13 @@ class SuggestionsProvider {
     protected exParser = new ExpressionParser();
     protected uNavigator: UINavigator;
     protected uBuilder: UIBuilder;
+    protected processor: LayoutProcessor;
     protected dIndex: DescIndex;
 
     protected prepare() {
         this.uNavigator = new UINavigator(this.store.schema, this.store.index);
         this.uBuilder = new UIBuilder(this.store.schema, this.store.index);
+        this.processor = new LayoutProcessor(this.store, this.store.index);
         this.dIndex = this.store.index;
     }
 
@@ -310,22 +313,18 @@ class AttrValueProvider extends SuggestionsProvider {
     public provide(ctx: AtValComplContext) {
         const sAttrItem = ctx.node.stype.attributes.get(ctx.attrName);
         let sAttrType: sch.SimpleType;
-        let isFClassProperty = false;
         if (sAttrItem) {
             sAttrType = sAttrItem.type;
-            isFClassProperty = ctx.node.sdef.nodeKind === sch.ElementDefKind.FrameProperty && sAttrItem.name === 'val';
         }
         else {
-            sAttrType = this.store.processor.getFClassPropertyType(ctx.node, ctx.attrName);
+            sAttrType = this.processor.getElPropertyType(ctx.node, ctx.attrName);
             if (!sAttrType) return;
-            isFClassProperty = true;
         }
         const pvKind = getAttrValueKind(ctx.attrValue);
         const isAssetRef = (pvKind === AttrValueKind.Asset || pvKind === AttrValueKind.AssetRacial);
-        const frameDesc = this.store.index.resolveElementDesc(ctx.node, DescKind.Frame);
         const currentDesc = this.store.index.resolveElementDesc(ctx.node);
 
-        if (isFClassProperty && pvKind === AttrValueKind.PropertyBind) {
+        if (this.store.schema.isPropertyBindAllowed(ctx.node.sdef, ctx.node.stype, ctx.attrName) && pvKind === AttrValueKind.PropertyBind) {
             this.suggestPropertyBind(ctx, currentDesc);
             return;
         }
@@ -385,7 +384,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
         for (const [sAttrKey, sAttrItem] of ctx.node.stype.attributes) {
             if (
                 (ctx.node.attributes[sAttrKey] && ctx.node.attributes[sAttrKey].startValue) &&
-                (ctx.xtoken !== TokenType.AttributeName || ctx.attrName !== sAttrKey)
+                (ctx.xtoken !== TokenType.AttributeName || ctx.attrName !== sAttrItem.name)
             ) {
                 continue;
             }

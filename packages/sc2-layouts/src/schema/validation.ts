@@ -1,6 +1,13 @@
 import * as sch from './base';
 import { DiagnosticReport, XMLElement, XMLAttr, DiagnosticCategory } from '../types';
 
+const reBool = /^(true|false)$/i;
+const reUint = /^\+?[0-9]+\s*$/;
+const reInt = /^(\+|\-)?[0-9]+\s*$/;
+const reReal = /^(\+|\-)?(([0-9]*\.[0-9]+)|[0-9]+)\s*$/;
+// const reFlag = /^([\w \|\!]+)$/i;
+const reColor = /^([a-f0-9]{6,8}|\s*[0-9]{1,3},\s*[0-9]{1,3},\s*[0-9]{1,3}(,\s*[0-9]{1,3})?)$/i;
+
 export class SchemaValidator {
     diagnostics: DiagnosticReport[] = [];
 
@@ -16,11 +23,38 @@ export class SchemaValidator {
         });
     }
 
-    public validateSimpleType(value: string, stype: sch.SimpleType): undefined | string {
+    protected validateBuiltinType(value: string, stype: sch.SimpleType): undefined | string {
         switch (stype.builtinType) {
-            case sch.BuiltinTypeKind.Unknown:
-                return this.validateAttrValue(value, stype);
+            // case sch.BuiltinTypeKind.Unknown:
+            //     return this.validateAttrValue(value, stype);
+            //     break;
+
+            case sch.BuiltinTypeKind.Boolean:
+                if (reBool.test(value)) break;
+                return `Expected "true" or "false" [${stype.name}]`;
                 break;
+
+            case sch.BuiltinTypeKind.Uint8:
+            case sch.BuiltinTypeKind.Uint16:
+            case sch.BuiltinTypeKind.Uint32:
+            case sch.BuiltinTypeKind.Uint64:
+                if (reUint.test(value)) break;
+                return `Expected numeric value [${stype.name}]`;
+
+            case sch.BuiltinTypeKind.Int8:
+            case sch.BuiltinTypeKind.Int16:
+            case sch.BuiltinTypeKind.Int32:
+            case sch.BuiltinTypeKind.Int64:
+                if (reInt.test(value)) break;
+                return `Expected numeric value [${stype.name}]`;
+
+            case sch.BuiltinTypeKind.Real32:
+                if (reReal.test(value)) break;
+                return `Expected fixed numeric value [${stype.name}]`;
+
+            case sch.BuiltinTypeKind.Color:
+                if (reColor.test(value)) break;
+                return `Expected RGB color value in hex format (\`FF00FF\`) or decimal (\`255,0,255\`) [${stype.name}]`;
         }
         return void 0;
     }
@@ -30,6 +64,7 @@ export class SchemaValidator {
         switch (stype.kind) {
             case sch.SimpleTypeKind.Default:
             {
+                return this.validateBuiltinType(atValue, stype);
                 break;
             }
             case sch.SimpleTypeKind.Enumaration:
@@ -77,9 +112,9 @@ export class SchemaValidator {
     }
 
     public checkRequiredAttr(node: XMLElement) {
-        for (const sattr of node.stype.attributes.values()) {
+        for (const [sname, sattr] of node.stype.attributes) {
             if (!sattr.required) continue;
-            if (node.attributes[sattr.name]) continue;
+            if (node.attributes[sname]) continue;
             this.appendDiagnostics(node, `Required attribute "${sattr.name}" not specified`, {category: DiagnosticCategory.Message});
         }
     }

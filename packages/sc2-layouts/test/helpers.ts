@@ -25,7 +25,13 @@ export function buildStore(opts: MockupStoreOptions = {}, ...filenames: string[]
     const store = new Store(getSchema());
     opts.fprefix = opts.fprefix ? path.join(getFixturePath(), opts.fprefix) : getFixturePath();
     for (const tmp of filenames) {
-        const uri = URI.file(path.join(opts.fprefix, `${tmp}.SC2Layout`));
+        let uri: URI;
+        if (path.isAbsolute(tmp)) {
+            uri = URI.file(tmp);
+        }
+        else {
+            uri = URI.file(path.join(opts.fprefix, `${tmp}.SC2Layout`));
+        }
         store.updateDocument(uri.toString(), fs.readFileSync(uri.fsPath, 'utf8'));
     }
     return store;
