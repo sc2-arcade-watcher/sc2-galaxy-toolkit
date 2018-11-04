@@ -6,11 +6,9 @@ import * as sch from '../schema/base';
 import { DescSelect, SelectionFragment, SelectionFragmentKind, BuiltinHandleKind } from '../parser/selector';
 
 export class DescXRef {
-    readonly name: string;
     declarations = new Set<XMLElement>();
 
-    constructor(name: string) {
-        this.name = name;
+    constructor(public readonly name: string, protected readonly dIndex: DescIndex) {
     }
 
     isOrphan() {
@@ -26,7 +24,7 @@ export class DescXRefMap<T extends DescXRef> extends Map<string, T> {
     protected descGroup = new Map<XMLDocument, Set<XMLElement>>();
     protected nodeIndex = new Map<XMLElement, T>();
 
-    constructor(protected itemType: { new (name: string): T; }, protected indexAttrKey = 'name') {
+    constructor(protected dIndex: DescIndex, protected itemType: { new (name: string, dIndex: DescIndex): T; }, protected indexAttrKey = 'name') {
         super();
     }
 
@@ -34,7 +32,7 @@ export class DescXRefMap<T extends DescXRef> extends Map<string, T> {
         const key = el.getAttributeValue(this.indexAttrKey);
         let item = this.get(key);
         if (!item) {
-            item = new this.itemType(key);
+            item = new this.itemType(key, this.dIndex);
             this.set(key, item);
         }
 
@@ -75,7 +73,12 @@ export class DescXRefMap<T extends DescXRef> extends Map<string, T> {
 }
 
 export class ConstantItem extends DescXRef {}
-export class HandleItem extends DescXRef {}
+export class HandleItem extends DescXRef {
+    get desc() {
+        const parentEl = Array.from(this.declarations)[0].parent as XMLElement;
+        return this.dIndex.resolveElementDesc(parentEl);
+    }
+}
 
 // ===
 
@@ -220,8 +223,8 @@ export class DescIndex {
         this.tplRefs = new Map();
         this.fileRefs = new Map();
 
-        this.constants = new DescXRefMap<ConstantItem>(ConstantItem, 'name');
-        this.handles = new DescXRefMap<HandleItem>(HandleItem, 'val');
+        this.constants = new DescXRefMap<ConstantItem>(this, ConstantItem, 'name');
+        this.handles = new DescXRefMap<HandleItem>(this, HandleItem, 'val');
     }
 
     protected bindWorker(parentNs: DescNamespace, currXNode: XMLElement, docState: DocumentState) {
