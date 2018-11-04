@@ -296,4 +296,18 @@ export class UINavigator {
 
         return resSel;
     }
+
+    getContextFrameNode(uNode: FrameNode) {
+        if (uNode.constructor !== FrameNode) {
+            if (uNode.parent && uNode.parent.constructor === FrameNode) {
+                uNode = uNode.parent;
+                this.uBuilder.expandNode(uNode, []);
+                return uNode;
+            }
+            else {
+                return;
+            }
+        }
+        return uNode;
+    }
 }

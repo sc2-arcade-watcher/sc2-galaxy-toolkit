@@ -6,7 +6,7 @@ import { TokenType, XMLElement, AttrValueKind, XMLDocument } from '../types';
 import { getAttrValueKind, getSelectionFragmentAtPosition, getSelectionIndexAtPosition } from '../parser/utils';
 import URI from 'vscode-uri';
 import { ExpressionParser } from '../parser/expressions';
-import { UINavigator, UIBuilder } from '../index/hierarchy';
+import { UINavigator, UIBuilder, FrameNode } from '../index/hierarchy';
 import { LayoutProcessor } from '../index/processor';
 
 interface DefinitionLinkXNodeOptions {
@@ -81,7 +81,9 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
                     if (pathIndex === void 0) break;
 
                     const currentDesc = this.store.index.resolveElementDesc(node);
-                    const uNode = this.uBuilder.buildNodeFromDesc(currentDesc);
+                    let uNode = this.uBuilder.buildNodeFromDesc(currentDesc);
+                    uNode = this.uNavigator.getContextFrameNode(uNode);
+                    if (!uNode) break;
                     const resolvedSel = this.uNavigator.resolveSelection(uNode, pathSel.path);
                     if (resolvedSel.chain.length <= pathIndex) break;
 

@@ -26,16 +26,12 @@ export class LayoutProcessor {
                         }
                     }
                 }
-
                 break;
             }
-
-            default:
-            {
-                const tmpa = el.stype.attributes.get(attrName);
-                if (!tmpa) break;
-                return tmpa.type;
-            }
         }
+
+        const tmpa = el.stype.attributes.get(attrName);
+        if (!tmpa) return;
+        return tmpa.type;
     }
 }

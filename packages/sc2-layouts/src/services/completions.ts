@@ -9,7 +9,7 @@ import { DescIndex, DescNamespace, DescKind } from '../index/desc';
 import * as s2 from '../index/s2mod';
 import { Store } from '../index/store';
 import { ExpressionParser, SelHandleKind, SelectorFragment, PathSelector } from '../parser/expressions';
-import { UINavigator, UIBuilder } from '../index/hierarchy';
+import { UINavigator, UIBuilder, FrameNode } from '../index/hierarchy';
 import { getSelectionIndexAtPosition, getAttrValueKind } from '../parser/utils';
 import { LayoutProcessor } from '../index/processor';
 
@@ -180,15 +180,10 @@ class AttrValueProvider extends SuggestionsProvider {
 
             case sch.BuiltinTypeKind.FrameReference:
             {
-                switch (currentDesc.kind) {
-                    case DescKind.Frame:
-                        break;
-                    default:
-                        // TODO:
-                        return;
-                }
+                let uNode = this.uBuilder.buildNodeFromDesc(currentDesc);
+                uNode = this.uNavigator.getContextFrameNode(uNode);
+                if (!uNode) break;
 
-                const uNode = this.uBuilder.buildNodeFromDesc(currentDesc);
                 let uTargetNode = uNode;
                 if (pathIndex !== void 0 && pathIndex > 0) {
                     const resolvedSel = this.uNavigator.resolveSelection(uNode, pathSel.path);
@@ -460,7 +455,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
             };
             let i = 0;
             complItem.insertText = (ctx.xtoken === TokenType.Content ? '<' : '') + `${category} name="\$${++i}">\n`;
-            complItem.insertText += `\t<DefaultState val="\${${l+1}:${itemList[l-1]}}"/>\n`;
+            complItem.insertText += `\t<DefaultState val="\${2:${itemList[0]}}"/>\n`;
             for (let j = 1; j <= l; ++j) {
                 complItem.insertText += `\n\t<State name="\${${j+1}:${itemList[j-1]}}">\n\t</State>\n`;
             }
