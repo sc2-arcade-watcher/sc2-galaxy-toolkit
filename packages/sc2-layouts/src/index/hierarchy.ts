@@ -126,7 +126,9 @@ export class UIBuilder {
                 }
             }
 
-            uNode.build = true;
+            if (tpath === null || tpath.length === 0) {
+                uNode.build = true;
+            }
         }
 
         processDesc(initialNode, initialNode.mainDesc, tpath);
@@ -149,7 +151,7 @@ export class UIBuilder {
             if (topDesc) {
                 hierarchyRoot = topDesc;
                 if (mount.length > 1) {
-                    tpath = tpath.concat(mount.slice(1));
+                    tpath = mount.slice(1).concat(tpath);
                 }
             }
         }

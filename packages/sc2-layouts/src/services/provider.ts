@@ -2,6 +2,7 @@ import * as util from 'util';
 import * as vs from 'vscode';
 import { Store } from '../index/store';
 import { ServiceContext } from '../service';
+import { DescIndex } from '../index/desc';
 
 export interface ILoggerConsole {
     error(msg: string, ...params: any[]): void;
@@ -39,14 +40,19 @@ export interface IService {
 
 export abstract class AbstractProvider implements IService {
     protected svcContext: ServiceContext;
-    protected store: Store;
     console: ILoggerConsole;
+    protected store: Store;
+    protected dIndex: DescIndex;
 
     public init(svcContext: ServiceContext, store: Store, console: ILoggerConsole) {
         this.svcContext = svcContext;
-        this.store = store;
         this.console = console;
+        this.store = store;
+        this.dIndex = this.store.index;
+        this.prepare();
     }
+
+    protected prepare() {}
 }
 
 export function createProvider<T extends AbstractProvider>(cls: new () => T, svcContext: ServiceContext, store: Store, logger: ILoggerConsole): T {

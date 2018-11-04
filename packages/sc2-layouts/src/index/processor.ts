@@ -17,7 +17,6 @@ export class LayoutProcessor {
         switch (el.sdef.nodeKind) {
             case sch.ElementDefKind.FrameProperty:
             {
-                if (attrName !== 'val') break;
                 const tmpa = el.stype.attributes.get(attrName);
                 if (!tmpa) break;
                 return tmpa.type;
