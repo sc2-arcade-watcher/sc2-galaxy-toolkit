@@ -79,7 +79,7 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
 
                     const currentDesc = this.store.index.resolveElementDesc(node);
                     const uNode = this.uBuilder.buildNodeFromDesc(currentDesc);
-                    const resolvedSel = this.uNavigator.resolveSelection(uNode, pathSel);
+                    const resolvedSel = this.uNavigator.resolveSelection(uNode, pathSel.path);
                     if (resolvedSel.chain.length <= pathIndex) break;
 
                     for (const xDecl of resolvedSel.chain[pathIndex].mainDesc.xDecls) {

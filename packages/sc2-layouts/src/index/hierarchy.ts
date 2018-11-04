@@ -1,6 +1,6 @@
 import { DescIndex, DescNamespace, DescKind } from './desc';
 import { SchemaRegistry } from '../schema/base';
-import { PathSelector, SelectorFragment, SelHandleKind } from '../parser/expressions';
+import { PathSelector, SelectorFragment, SelHandleKind, NodeArray } from '../parser/expressions';
 
 export class UINode {
     readonly name: string;
@@ -59,11 +59,11 @@ function createNodeFromDesc(desc: DescNamespace, parent?: UINode) {
 class ResolvedSelection {
     public readonly chain: FrameNode[] = [];
 
-    constructor(public topNode: FrameNode, protected psel: PathSelector) {
+    constructor(public topNode: FrameNode, protected path: SelectorFragment[]) {
     }
 
     get isValid() {
-        return this.chain.length === this.psel.path.length;
+        return this.chain.length === this.path.length;
     }
 
     get target() {
@@ -276,11 +276,11 @@ export class UINavigator {
         return;
     }
 
-    resolveSelection(uNode: FrameNode, psel: PathSelector) {
-        const resSel = new ResolvedSelection(uNode, psel);
+    resolveSelection(uNode: FrameNode, path: SelectorFragment[]) {
+        const resSel = new ResolvedSelection(uNode, path);
         if (!uNode.build) this.uBuilder.expandNode(uNode, []);
 
-        for (const selFrag of psel.path) {
+        for (const selFrag of path) {
             switch (selFrag.selKind) {
                 case SelHandleKind.Identifier:
                 {

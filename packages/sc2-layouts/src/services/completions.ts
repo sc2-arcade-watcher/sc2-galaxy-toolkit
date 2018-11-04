@@ -2,13 +2,15 @@ import * as util from 'util';
 import * as vs from 'vscode';
 import * as sch from '../schema/base';
 import { AbstractProvider, svcRequest, ILoggerConsole } from './provider';
-import { createDocumentFromVS, ServiceContext } from '../service';
+import { ServiceContext } from '../service';
 import { createScanner, CharacterCodes } from '../parser/scanner';
 import { TokenType, ScannerState, XMLElement, AttrValueKind } from '../types';
-import { parseDescSelector, SelectionFragmentKind, builtinHandlesTable, parseAttrValue, FramePropSelect, SelectionFragment, BuiltinHandleKind, builtinHandlesNameTable, getAttrValueKind, FrameSelect } from '../parser/selector';
 import { DescIndex, DescNamespace, DescKind } from '../index/desc';
 import * as s2 from '../index/s2mod';
 import { Store } from '../index/store';
+import { ExpressionParser, SelHandleKind, SelectorFragment, PathSelector } from '../parser/expressions';
+import { UINavigator, UIBuilder } from '../index/hierarchy';
+import { getSelectionIndexAtPosition, getAttrValueKind } from '../parser/utils';
 
 function completionsForSimpleType(smType: sch.SimpleType) {
     let items = <vs.CompletionItem[]> [];
@@ -33,6 +35,21 @@ function completionsForSimpleType(smType: sch.SimpleType) {
     return items;
 }
 
+function descKindToCompletionKind(dkind: DescKind) {
+    switch (dkind) {
+        case DescKind.Root:
+        case DescKind.File:
+            return vs.CompletionItemKind.Module;
+        case DescKind.Frame:
+            return vs.CompletionItemKind.Struct;
+        case DescKind.Animation:
+            return vs.CompletionItemKind.Event;
+        case DescKind.StateGroup:
+            return vs.CompletionItemKind.Class;
+    }
+    return vs.CompletionItemKind.Folder;
+}
+
 interface ComplContext {
     citems: vs.CompletionItem[];
     node: XMLElement;
@@ -52,7 +69,19 @@ interface AtValComplContext extends AtComplContext {
 }
 
 class SuggestionsProvider {
+    protected exParser = new ExpressionParser();
+    protected uNavigator: UINavigator;
+    protected uBuilder: UIBuilder;
+    protected dIndex: DescIndex;
+
+    protected prepare() {
+        this.uNavigator = new UINavigator(this.store.schema, this.store.index);
+        this.uBuilder = new UIBuilder(this.store.schema, this.store.index);
+        this.dIndex = this.store.index;
+    }
+
     constructor(protected store: Store, protected console: ILoggerConsole) {
+        this.prepare();
     }
 }
 
@@ -70,51 +99,114 @@ class AttrValueProvider extends SuggestionsProvider {
         }
     }
 
-    protected suggestBuiltinFrameHandles(ctx: AtComplContext) {
-        for (const item of builtinHandlesTable.keys()) {
-            if (item === 'root') continue;
-            ctx.citems.push({
-                kind: vs.CompletionItemKind.Reference,
-                label: `\$${item}`,
-            });
+    protected suggestPropertyBind(ctx: AtValComplContext, currentDesc: DescNamespace) {
+        const pbindSel = this.exParser.parsePropertyBind(ctx.attrValue);
+
+        if (pbindSel.path.pos <= ctx.atOffsetRelative && pbindSel.path.end >= ctx.atOffsetRelative) {
+            this.suggestSelection(ctx, <any>pbindSel, sch.BuiltinTypeKind.FrameReference, currentDesc);
+        }
+        else {
+            this.suggestPropNames(ctx);
         }
     }
 
-    protected suggestDescNames(ctx: AtComplContext, dcontext: DescNamespace) {
-        for (const item of dcontext.children.values()) {
-            const r = <vs.CompletionItem>{
-                kind: vs.CompletionItemKind.Struct,
-                label: `${item.name}`,
-            };
-            if (item.kind !== DescKind.File) {
-                r.detail = `[${item.stype.name}]`;
-            }
-            ctx.citems.push(r);
-        }
-    }
+    protected suggestSelection(ctx: AtValComplContext, pathSel: PathSelector, smType: sch.BuiltinTypeKind, currentDesc: DescNamespace) {
+        let pathIndex = getSelectionIndexAtPosition(pathSel, ctx.atOffsetRelative);
 
-    protected suggestSelectionFragment(ctx: AtValComplContext, fsel: FrameSelect, selStartOffset: number, dframe: DescNamespace) {
-        let slOffset = 0;
-        let sfrag: SelectionFragment;
-        let skey: number;
-        for ([skey, sfrag] of fsel.fragments.entries()) {
-            slOffset += sfrag.len + 1;
-            if (ctx.atOffsetRelative < slOffset) {
+        switch (smType) {
+            case sch.BuiltinTypeKind.FileDescName:
+            case sch.BuiltinTypeKind.DescTemplateName:
+            {
+                if (pathIndex === void 0) pathIndex = 0;
+                if (smType === sch.BuiltinTypeKind.FileDescName && pathIndex > 0) break
+
+                const fragments = pathSel.path.map(item => item.name.name).slice(0, pathIndex);
+
+                for (const item of this.dIndex.rootNs.getMulti(...fragments).children.values()) {
+                    const compl = <vs.CompletionItem>{
+                        kind: descKindToCompletionKind(item.kind),
+                        label: `${item.name}`,
+                        detail: item.stype.name,
+                    };
+                    ctx.citems.push(compl);
+                }
                 break;
             }
-        }
 
-        if (!fsel.fragments.length) return;
-        if (!sfrag) sfrag = fsel.fragments[fsel.fragments.length - 1];
-
-        switch (sfrag.kind) {
-            case SelectionFragmentKind.BuiltinHandle:
+            case sch.BuiltinTypeKind.FrameName:
             {
-                const hlen = (builtinHandlesNameTable.get(sfrag.builtinHandle).length + selStartOffset);
-                if (sfrag.builtinHandle === BuiltinHandleKind.Ancestor && sfrag.len > hlen) {
-                    if (sfrag.len - hlen > 2 && ctx.attrValue.charCodeAt(slOffset - (sfrag.len - hlen) + 1) === CharacterCodes.at) {
-                        if (sfrag.argument && (slOffset - (sfrag.len - hlen) + 1 + sfrag.argument.name.length + 1) <= ctx.atOffsetRelative) {
-                            switch (sfrag.argument.name) {
+                if (!currentDesc.file) break;
+                const fileDesc = this.dIndex.rootNs.get(currentDesc.file);
+                if (!fileDesc) break;
+
+                if (pathIndex === void 0 || pathIndex === 0) {
+                    for (const item of fileDesc.children.values()) {
+                        ctx.citems.push(<vs.CompletionItem>{
+                            kind: descKindToCompletionKind(item.kind),
+                            label: `${item.name}`,
+                            detail: item.stype.name,
+                        });
+                    }
+                    break;
+                }
+
+                const topDesc = fileDesc.get(pathSel.path[0].name.name);
+                if (!topDesc) break;
+                const fragments = pathSel.path.map(item => item).slice(1);
+
+                const uNode = this.uBuilder.buildNodeFromDesc(topDesc);
+                let uTargetNode = uNode;
+                if (pathIndex !== void 0 && pathIndex > 1) {
+                    const resolvedSel = this.uNavigator.resolveSelection(uNode, fragments);
+                    if (resolvedSel.chain.length <= pathIndex - 2) break;
+                    uTargetNode = resolvedSel.chain[pathIndex - 2];
+                }
+
+                for (const item of uTargetNode.children.values()) {
+                    const mDesc = item.mainDesc;
+                    if (mDesc.kind !== DescKind.Frame) continue;
+                    const compl = <vs.CompletionItem>{
+                        kind: descKindToCompletionKind(mDesc.kind),
+                        label: `${item.name}`,
+                        detail: mDesc.stype.name,
+                    };
+                    ctx.citems.push(compl);
+                }
+                break;
+            }
+
+            case sch.BuiltinTypeKind.FrameReference:
+            {
+                switch (currentDesc.kind) {
+                    case DescKind.Frame:
+                        break;
+                    default:
+                        // TODO:
+                        return;
+                }
+
+                const uNode = this.uBuilder.buildNodeFromDesc(currentDesc);
+                let uTargetNode = uNode;
+                if (pathIndex !== void 0 && pathIndex > 0) {
+                    const resolvedSel = this.uNavigator.resolveSelection(uNode, pathSel.path);
+                    if (resolvedSel.chain.length <= pathIndex - 1) break;
+                    uTargetNode = resolvedSel.chain[pathIndex - 1];
+                }
+
+                let selFrag: SelectorFragment;
+                if (pathIndex !== void 0) {
+                    selFrag = pathSel.path[pathIndex];
+                    if (
+                        (selFrag.selKind === SelHandleKind.Ancestor && selFrag.parameter) &&
+                        (selFrag.parameter.pos <= ctx.atOffsetRelative && selFrag.parameter.end >= ctx.atOffsetRelative)
+                    ) {
+                        if (selFrag.parameter.key && selFrag.parameter.key.pos <= ctx.atOffsetRelative && selFrag.parameter.key.end >= ctx.atOffsetRelative) {
+                            ctx.citems.push({kind: vs.CompletionItemKind.Operator, label: 'type',});
+                            ctx.citems.push({kind: vs.CompletionItemKind.Operator, label: 'oftype',});
+                            ctx.citems.push({kind: vs.CompletionItemKind.Operator, label: 'name',});
+                        }
+                        else if (selFrag.parameter.value && selFrag.parameter.value.pos <= ctx.atOffsetRelative && selFrag.parameter.value.end >= ctx.atOffsetRelative) {
+                            switch (selFrag.parameter.key.name) {
                                 case 'oftype':
                                 case 'type':
                                 {
@@ -122,7 +214,7 @@ class AttrValueProvider extends SuggestionsProvider {
                                         ctx.citems.push({
                                             kind: vs.CompletionItemKind.EnumMember,
                                             label: tmp.name,
-                                            detail: Array.from(tmp.fclasses.values()).map(fc => `[${fc.name}]`).join(' <- '),
+                                            detail: Array.from(tmp.fclasses.values()).map(fc => `${fc.name}`).join(' :: '),
                                         });
                                     }
                                     break;
@@ -130,70 +222,53 @@ class AttrValueProvider extends SuggestionsProvider {
 
                                 case 'name':
                                 {
-                                    let cparent = dframe;
+                                    let cparent = uTargetNode;
                                     while (cparent = cparent.parent) {
-                                        if (cparent.kind !== DescKind.Frame) break;
+                                        if (cparent.mainDesc.kind !== DescKind.Frame) break;
                                         ctx.citems.push({
-                                            kind: vs.CompletionItemKind.Struct,
+                                            kind: descKindToCompletionKind(cparent.mainDesc.kind),
                                             label: `${cparent.name}`,
-                                            detail: `[${cparent.stype.name}]`,
+                                            detail: `[${cparent.mainDesc.stype.name}]\n${cparent.mainDesc.fqn}`,
                                         });
                                     }
                                     break;
                                 }
                             }
                         }
-                        else {
-                            ctx.citems.push({kind: vs.CompletionItemKind.Operator, label: 'type',});
-                            ctx.citems.push({kind: vs.CompletionItemKind.Operator, label: 'oftype',});
-                            ctx.citems.push({kind: vs.CompletionItemKind.Operator, label: 'name',});
+                        break;
+                    }
+                }
+
+                for (const item of uTargetNode.children.values()) {
+                    const mDesc = item.mainDesc;
+                    if (mDesc.kind !== DescKind.Frame) continue;
+                    const compl = <vs.CompletionItem>{
+                        kind: descKindToCompletionKind(mDesc.kind),
+                        label: `${item.name}`,
+                        detail: mDesc.stype.name,
+                    };
+                    ctx.citems.push(compl);
+                }
+
+                ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$parent'});
+                ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$this'});
+                ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$sibling'});
+                ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$ancestor'});
+                if (pathIndex === 0) {
+                    ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$layer'});
+
+                    if (selFrag.selKind !== SelHandleKind.Identifier) {
+                        for (const item of this.dIndex.handles.values()) {
+                            ctx.citems.push({
+                                kind: vs.CompletionItemKind.Variable,
+                                label: `$${item.name}`,
+                                detail: `[${item.desc.stype.name}]\n${item.desc.fqn}`,
+                            });
                         }
                     }
-                    return;
                 }
-            }
-        }
-
-        //
-        let sepOffset = ctx.atOffsetRelative - 1 + selStartOffset;
-        while (sepOffset >= selStartOffset && ctx.attrValue.charCodeAt(sepOffset) !== CharacterCodes.slash) --sepOffset;
-
-        let scontext = dframe;
-        if (sepOffset > selStartOffset) {
-            const sel = parseDescSelector(ctx.attrValue.substr(selStartOffset, sepOffset - selStartOffset));
-            scontext = this.store.index.resolveSelection(sel, dframe);
-        }
-        if (ctx.attrValue.charCodeAt(sepOffset + 1) === CharacterCodes.$) {
-            this.suggestBuiltinFrameHandles(ctx);
-        }
-        if (scontext) {
-            this.suggestDescNames(ctx, scontext);
-        }
-    }
-
-    protected suggestPropBind(ctx: AtValComplContext, sbind: FramePropSelect, dframe: DescNamespace) {
-        let slOffset = 0;
-        let sfrag: SelectionFragment;
-        let skey: number;
-        for ([skey, sfrag] of sbind.fragments.entries()) {
-            slOffset += sfrag.len + 1;
-            if (ctx.atOffsetRelative < slOffset) {
                 break;
             }
-        }
-
-        if (
-            (sbind.fragments.length > 0 && skey === sbind.fragments.length - 1) &&
-            (ctx.atOffsetRelative > slOffset && ctx.attrValue.charCodeAt(slOffset + 1) === CharacterCodes.at)
-        ) {
-            if (ctx.atOffsetRelative <= (slOffset + 2 + sbind.propertyName.length)) {
-                this.suggestPropNames(ctx);
-            }
-            else if (sbind.propertyIndex !== void 0) {
-            }
-        }
-        else {
-            this.suggestSelectionFragment(ctx, sbind, 1, dframe)
         }
     }
 
@@ -248,10 +323,10 @@ class AttrValueProvider extends SuggestionsProvider {
         const pvKind = getAttrValueKind(ctx.attrValue);
         const isAssetRef = (pvKind === AttrValueKind.Asset || pvKind === AttrValueKind.AssetRacial);
         const frameDesc = this.store.index.resolveElementDesc(ctx.node, DescKind.Frame);
+        const currentDesc = this.store.index.resolveElementDesc(ctx.node);
 
         if (isFClassProperty && pvKind === AttrValueKind.PropertyBind) {
-            const pv = parseAttrValue(ctx.attrValue);
-            this.suggestPropBind(ctx, <FramePropSelect>pv.value, frameDesc);
+            this.suggestPropertyBind(ctx, currentDesc);
             return;
         }
 
@@ -272,19 +347,13 @@ class AttrValueProvider extends SuggestionsProvider {
                 if (isAssetRef) this.suggestStrings(ctx, s2.StringFileKind.GameHotkeys);
                 break;
 
+            case sch.BuiltinTypeKind.DescTemplateName:
+            case sch.BuiltinTypeKind.FileDescName:
             case sch.BuiltinTypeKind.FrameName:
-            {
-                if (!frameDesc || !frameDesc.file) break;
-                const pointedContext = this.store.index.rootNs.get(frameDesc.file);
-                if (!pointedContext) break;
-                this.suggestSelectionFragment(ctx, parseDescSelector(ctx.attrValue), 0, pointedContext);
-                break;
-            }
-
             case sch.BuiltinTypeKind.FrameReference:
             {
-                if (!frameDesc) break;
-                this.suggestSelectionFragment(ctx, parseDescSelector(ctx.attrValue), 0, frameDesc);
+                if (!currentDesc) break;
+                this.suggestSelection(ctx, this.exParser.parsePathSelector(ctx.attrValue), sAttrType.builtinType, currentDesc);
                 break;
             }
 
@@ -312,28 +381,6 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
         }
     }
 
-    protected provideFileDescName(compls: vs.CompletionItem[]) {
-        for (const item of this.store.index.rootNs.children.values()) {
-            compls.push(<vs.CompletionItem>{
-                kind: vs.CompletionItemKind.Folder,
-                label: `${item.name}`,
-            });
-        }
-    }
-
-    protected *provideDescName(dcontext: DescNamespace) {
-        for (const item of dcontext.children.values()) {
-            const r = <vs.CompletionItem>{
-                kind: vs.CompletionItemKind.Struct,
-                label: `${item.name}`,
-            };
-            if (item.kind !== DescKind.File) {
-                r.detail = `[${item.stype.name}]`;
-            }
-            yield r;
-        }
-    }
-
     protected processAttrName(ctx: AtComplContext) {
         for (const [sAttrKey, sAttrItem] of ctx.node.stype.attributes) {
             if (
@@ -352,48 +399,6 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                 command: sAttrItem.type.builtinType !== sch.BuiltinTypeKind.String ? {command: 'editor.action.triggerSuggest'} : void 0,
             };
             ctx.citems.push(tmpc);
-        }
-    }
-
-    protected processAttrValue(ctx: AtValComplContext) {
-        const sAttrItem = ctx.node.stype.attributes.get(ctx.attrName);
-        let sAttrType: sch.SimpleType;
-        let isFClassProperty = false;
-        if (sAttrItem) {
-            sAttrType = sAttrItem.type;
-        }
-        else {
-            sAttrType = this.store.processor.getFClassPropertyType(ctx.node, ctx.attrName);
-            if (!sAttrType) return;
-            isFClassProperty = true;
-        }
-
-        this.atValueProvider.provide(ctx);
-
-        switch (sAttrType.builtinType) {
-            case sch.BuiltinTypeKind.FileDescName:
-            {
-                this.provideFileDescName(ctx.citems);
-                break;
-            }
-
-            case sch.BuiltinTypeKind.DescTemplateName:
-            {
-                let sepOffset = ctx.attrValue.indexOf('\/');
-                if (sepOffset !== -1 && sepOffset > 0 && ctx.atOffsetRelative > sepOffset) {
-                    const sel = parseDescSelector(ctx.attrValue.substring(0, sepOffset));
-                    if (sel.fragments[0].kind === SelectionFragmentKind.Identifier) {
-                        const tmpcontext = this.store.index.rootNs.get(sel.fragments[0].identifier);
-                        if (tmpcontext) {
-                            ctx.citems = ctx.citems.concat(Array.from(this.provideDescName(tmpcontext)));
-                        }
-                    }
-                }
-                else {
-                    this.provideFileDescName(ctx.citems);
-                }
-                break;
-            }
         }
     }
 
@@ -616,7 +621,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                 cmAtCtx.attrName = currentAttrName;
                 cmAtCtx.attrValue = arVal;
                 cmAtCtx.atOffsetRelative = aOffset;
-                this.processAttrValue(cmAtCtx);
+                this.atValueProvider.provide(cmAtCtx);
 
                 break;
             }

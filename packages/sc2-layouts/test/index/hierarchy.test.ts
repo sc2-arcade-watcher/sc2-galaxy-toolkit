@@ -163,7 +163,7 @@ describe('hierarchy navigator', function () {
 
         it('[GameUI] WorldPanel/$parent/Group/FillImageContainer/Background', function () {
             const psel = exParser.parsePathSelector('WorldPanel/$parent/Group/FillImageContainer/Background');
-            const resolvedSel = navigator.resolveSelection(uGameNode, psel);
+            const resolvedSel = navigator.resolveSelection(uGameNode, psel.path);
             assert.isDefined(resolvedSel.target)
             assert.equal(resolvedSel.target.fqn, 'GameUI/Group/FillImageContainer/Background');
         });

@@ -533,14 +533,15 @@ export class ExpressionParser {
         }
         else {
             selFrag.selKind = SelHandleKind.Identifier;
-            selFrag.name = this.parseIdentifier();
+            selFrag.name = this.parseExpectedIdentifier();
         }
         return this.finishNode(selFrag);
     }
 
-    private parseSelectionPath() {
+    private parseSelectionPath(parseTrailingSlash = true) {
         const selPath = this.createNodeArray<SelectorFragment>();
 
+        let hasSeparator = false;
         while (this.token() !== SyntaxKind.EndOfStreamToken) {
             if (this.isSelectorFragment()) {
                 selPath.push(this.parseSelectorFragment());
@@ -551,10 +552,16 @@ export class ExpressionParser {
 
             if (this.token() === SyntaxKind.SlashToken) {
                 this.parseExpected(SyntaxKind.SlashToken)
+                hasSeparator = true;
             }
             else {
+                hasSeparator = false;
                 break;
             }
+        }
+
+        if (hasSeparator && parseTrailingSlash) {
+            selPath.push(this.parseSelectorFragment());
         }
 
         selPath.end = this.scanner.getStartPos();
@@ -570,7 +577,7 @@ export class ExpressionParser {
 
         this.parseExpected(SyntaxKind.OpenBraceToken);
 
-        propBind.path = this.parseSelectionPath();
+        propBind.path = this.parseSelectionPath(false);
 
         // this.parseExpected(SyntaxKind.SlashToken);
         this.parseExpected(SyntaxKind.AtToken);

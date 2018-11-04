@@ -39,7 +39,7 @@ export function getSelectionIndexAtPosition(pathSel: exp.PathSelector, pos: numb
     for (const idx of pathSel.path.keys()) {
         const selFrag = pathSel.path[idx];
         if (selFrag.end < pos) continue;
-        if (selFrag.pos >= pos) continue;
+        if (selFrag.pos > pos) continue;
         return idx;
     }
 }
