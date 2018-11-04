@@ -99,6 +99,32 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
 
                     break;
                 }
+
+                case sch.BuiltinTypeKind.FileDescName:
+                {
+                    const fileDesc = this.dIndex.rootNs.get(nattr.value);
+                    if (!fileDesc) break;
+                    for (const xDecl of fileDesc.xDecls) {
+                        dlinks.push(createDefinitionLinkFromXNode(<XMLElement>xDecl));
+                    }
+                    break;
+                }
+
+                case sch.BuiltinTypeKind.DescTemplateName:
+                {
+                    const cDesc = this.dIndex.rootNs.getDeep(nattr.value);
+                    if (!cDesc) break;
+                    for (const xDecl of cDesc.xDecls) {
+                        dlinks.push(createDefinitionLinkFromXNode(<XMLElement>xDecl, {
+                            originXDoc: sourceFile,
+                            originRange: {
+                                pos: (nattr.startValue + 1),
+                                end: (nattr.end - 1),
+                            }
+                        }));
+                    }
+                    break;
+                }
             }
         }
 
