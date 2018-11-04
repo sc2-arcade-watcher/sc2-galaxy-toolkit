@@ -35,10 +35,20 @@ namespace ExtCfgSect {
     export type builtinMods = {[name: string]: boolean};
 }
 
-interface ExtConfig {
+export enum ExtConfigCompletionTabStopKind {
+    EOL,
+    Attr,
+}
+
+export interface ExtConfigCompletion {
+    tabStop: ExtConfigCompletionTabStopKind;
+}
+
+export interface ExtConfig {
     builtinMods: ExtCfgSect.builtinMods;
     documentUpdateDelay: number;
     documentDiagnosticsDelay: number;
+    completion: ExtConfigCompletion;
 }
 
 type ExtCfgKey = keyof ExtConfig;
@@ -283,6 +293,9 @@ export class ServiceContext implements IService {
             builtinMods: wsConfig.get<ExtCfgSect.builtinMods>('builtinMods', {}),
             documentUpdateDelay: wsConfig.get<number>('documentUpdateDelay', 100),
             documentDiagnosticsDelay: wsConfig.get<number>('documentDiagnosticsDelay', -1),
+            completion: {
+                tabStop: <any>ExtConfigCompletionTabStopKind[<any>wsConfig.get<string>('completion.tabStop')],
+            }
         };
         this.console.log('[readConfig]', this.config);
     }

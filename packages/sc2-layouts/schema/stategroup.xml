@@ -11,7 +11,7 @@
 
     <complexType name="CFrameStateConditionProperty">
         <extend value="CFrameStateCondition"/>
-        <attribute name="operator" type="EStatePropertyOperator"/>
+        <attribute name="operator" type="EStatePropertyOperator" default="Equal"/>
         <!-- property name validated in code -->
     </complexType>
 
@@ -44,8 +44,8 @@
 
     <complexType name="CFrameStateSetStateAction">
         <extend value="CFrameStateAction"/>
-        <attribute name="group" type="String"/>
-        <attribute name="state" type="String"/>
+        <attribute name="group" type="String" use="required"/>
+        <attribute name="state" type="String" use="required"/>
     </complexType>
 
     <complexType name="CFrameStateSetPropertyAction">
@@ -57,32 +57,32 @@
 
     <complexType name="CFrameStateSetAnimationPropAction">
         <extend value="CFrameStateAction"/>
-        <attribute name="animation" type="String"/>
-        <attribute name="enabled" type="Boolean"/>
+        <attribute name="animation" type="String" use="required"/>
+        <attribute name="enabled" type="Boolean" use="required"/>
         <!-- <attribute name="animationSpeed" type="Real32"/> -->
     </complexType>
 
     <complexType name="CFrameStateSetAnchorAction">
         <extend value="CFrameStateAction"/>
-        <attribute name="side" type="AnchorSide"/>
-        <attribute name="relative" type="FrameReference"/>
-        <attribute name="pos" type="AnchorPos"/>
-        <attribute name="offset" type="Int32"/>
+        <attribute name="side" type="AnchorSide" use="required"/>
+        <attribute name="relative" type="FrameReference" default="$parent"/>
+        <attribute name="pos" type="AnchorPos" use="required"/>
+        <attribute name="offset" type="Int32" default="0"/>
     </complexType>
 
     <complexType name="CFrameStateSendEventAction">
         <extend value="CFrameStateAction"/>
-        <attribute name="event" type="String"/>
+        <attribute name="event" type="String" use="required"/>
     </complexType>
 
     <complexType name="CFrameStatePlaySoundAction">
         <extend value="CFrameStateAction"/>
-        <attribute name="sound" type="Sound"/>
+        <attribute name="sound" type="Sound" use="required"/>
     </complexType>
 
     <complexType name="CFrameStateApplyTemplateAction">
         <extend value="CFrameStateAction"/>
-        <attribute name="template" type="DescTemplateName"/>
+        <attribute name="template" type="DescTemplateName" use="required"/>
     </complexType>
 
     <!--

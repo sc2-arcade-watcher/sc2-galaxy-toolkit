@@ -2,7 +2,7 @@
 <map>
     <complexType name="AnimationEvent">
         <attribute name="event" type="String" use="required"/>
-        <attribute name="action" type="AnimationEventAction" use="required"/>
+        <attribute name="action" type="AnimationEventAction" use="required" default="Reset,Play"/>
         <attribute name="frame" type="FrameReference" default="$this"/>
     </complexType>
 
@@ -49,7 +49,7 @@
     <complexType name="CFrameControllerKeyCurveColor">
         <extend value="CFrameControllerKey"/>
         <attribute name="type" type="EAnimationControllerKeyType" use="required" default="Curve"/>
-        <attribute name="value" type="Color" use="required"/>
+        <attribute name="value" type="Color" use="required" default="FFFFFF"/>
     </complexType>
 
     <complexType name="CFrameControllerKeyCommand">
@@ -153,7 +153,7 @@
         <attribute name="relative" type="Boolean" default="False"/>
         <attribute name="layer" type="Uint8" default="0"/>
         <attribute name="side" type="AnchorSide" use="required"/>
-        <attribute name="sidelock" type="Boolean" use="required"/>
+        <attribute name="sidelock" type="Boolean" default="False"/>
         <element name="Key" type="CFrameControllerKeyCurveReal"/>
     </complexType>
 
@@ -322,7 +322,7 @@
 
     <complexType name="CFrameAnimationDesc">
         <attribute name="name" type="ElementName" use="required"/>
-        <attribute name="template" type="String"/>
+        <attribute name="template" type="DescTemplateName"/>
         <attribute name="speed" type="Real32"/>
         <attribute name="flags" type="String"/>
         <attribute name="file" type="FileDescName"/>

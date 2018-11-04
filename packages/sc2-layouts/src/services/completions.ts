@@ -2,7 +2,7 @@ import * as util from 'util';
 import * as vs from 'vscode';
 import * as sch from '../schema/base';
 import { AbstractProvider, svcRequest, ILoggerConsole } from './provider';
-import { ServiceContext } from '../service';
+import { ServiceContext, ExtConfigCompletionTabStopKind } from '../service';
 import { createScanner, CharacterCodes } from '../parser/scanner';
 import { TokenType, ScannerState, XMLElement, AttrValueKind } from '../types';
 import { DescIndex, DescNamespace, DescKind } from '../index/desc';
@@ -447,6 +447,123 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
         }
     }
 
+    protected suggestStateGroup(ctx: ComplContext, nodeCtx: XMLElement) {
+        const category = 'StateGroup';
+        const itemSch = nodeCtx.stype.struct.get(category);
+        for (let l = 1; l <= 5; ++l) {
+            const itemList = ['One', 'Two', 'Three', 'Four', 'Five'];
+            const itemType = itemList[l - 1];
+            const complItem = <vs.CompletionItem>{
+                label: `${category}:${itemType}`,
+                kind: vs.CompletionItemKind.Interface,
+                detail: itemSch.name,
+            };
+            let i = 0;
+            complItem.insertText = (ctx.xtoken === TokenType.Content ? '<' : '') + `${category} name="\$${++i}">\n`;
+            complItem.insertText += `\t<DefaultState val="\${${l+1}:${itemList[l-1]}}"/>\n`;
+            for (let j = 1; j <= l; ++j) {
+                complItem.insertText += `\n\t<State name="\${${j+1}:${itemList[j-1]}}">\n\t</State>\n`;
+            }
+            complItem.insertText += `</${category}>`;
+            complItem.insertText = new vs.SnippetString(complItem.insertText);
+            ctx.citems.push(complItem);
+        }
+    }
+
+    protected suggestStateGroupInstruction(ctx: ComplContext, nodeCtx: XMLElement) {
+        for (const category of ['When', 'Action']) {
+            for (const [itemType, itemSch] of nodeCtx.stype.struct.get(category).alternateTypes) {
+                const complItem = <vs.CompletionItem>{
+                    label: `${category}:${itemType}`,
+                    kind: vs.CompletionItemKind.Method,
+                    detail: itemSch.name,
+                };
+                complItem.insertText = (ctx.xtoken === TokenType.Content ? '<' : '') + `${category}`;
+                let i = 0;
+                outer: for (const stInfo of itemSch.attributes.values()) {
+                    let val: string;
+                    switch (stInfo.name) {
+                        case 'type':
+                        {
+                            val = itemType;
+                            break;
+                        }
+
+                        default:
+                        {
+                            if (!stInfo.required && !stInfo.default) continue outer;
+                            if (stInfo.default) {
+                                complItem.insertText += ` ${stInfo.name}="\${${++i}:${stInfo.default.replace('$', '\\$')}}"`;
+                            }
+                            else {
+                                complItem.insertText += ` ${stInfo.name}="\$${++i}"`;
+                            }
+                            continue outer;
+                        }
+                    }
+                    complItem.insertText += ` ${stInfo.name}="${val}"`;
+                }
+                switch (itemSch.name) {
+                    case 'CFrameStateConditionProperty':
+                    case 'CFrameStateSetPropertyAction':
+                        complItem.insertText += ` \${${++i}:Property}="\$${++i}"`;
+                        break;
+                    case 'CFrameStateConditionAnimationState':
+                        complItem.insertText += ` \${${++i}:AnimState}="\$${++i}"`;
+                        break;
+                    case 'CFrameStateConditionStateGroup':
+                        complItem.insertText += ` \${${++i}:StateGroup}="\$${++i}"`;
+                        break;
+                    case 'CFrameStateConditionOption':
+                        complItem.insertText += ` \${${++i}:Option}="\$${++i}"`;
+                        break;
+                }
+                complItem.insertText += '/>';
+                complItem.insertText = new vs.SnippetString(complItem.insertText);
+                ctx.citems.push(complItem);
+            }
+        }
+    }
+
+    protected suggestAnimationController(ctx: ComplContext, nodeCtx: XMLElement) {
+        const category = 'Controller';
+        for (const [itemType, itemSch] of nodeCtx.stype.struct.get(category).alternateTypes) {
+            const complItem = <vs.CompletionItem>{
+                label: `${category}:${itemType}`,
+                kind: vs.CompletionItemKind.Method,
+                detail: itemSch.name,
+            };
+            complItem.insertText = (ctx.xtoken === TokenType.Content ? '<' : '') + `${category}`;
+            let i = 0;
+            outer: for (const stInfo of itemSch.attributes.values()) {
+                let val: string;
+                switch (stInfo.name) {
+                    case 'type':
+                    {
+                        val = itemType;
+                        break;
+                    }
+
+                    default:
+                    {
+                        if (!stInfo.required && !stInfo.default) continue outer;
+                        if (stInfo.default) {
+                            complItem.insertText += ` ${stInfo.name}="\${${++i}:${stInfo.default.replace('$', '\\$')}}"`;
+                        }
+                        else {
+                            complItem.insertText += ` ${stInfo.name}="\$${++i}"`;
+                        }
+                        continue outer;
+                    }
+                }
+                complItem.insertText += ` ${stInfo.name}="${val}"`;
+            }
+            complItem.insertText += `>\$0</${category}>`;
+            complItem.insertText = new vs.SnippetString(complItem.insertText);
+            ctx.citems.push(complItem);
+        }
+    }
+
     protected suggestElements(ctx: ComplContext) {
         let nodeCtx = ctx.node;
         if (ctx.offset < ctx.node.startTagEnd || ctx.offset >= ctx.node.end) {
@@ -454,8 +571,19 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
         }
         if (!nodeCtx.stype) return;
 
-        if (nodeCtx.sdef.nodeKind === sch.ElementDefKind.Frame && (ctx.xtoken === TokenType.Content || !ctx.node.closed)) {
-            this.suggestAnchors(ctx, nodeCtx);
+        if (ctx.xtoken === TokenType.Content || !ctx.node.closed) {
+            switch (nodeCtx.sdef.nodeKind) {
+                case sch.ElementDefKind.Frame:
+                    this.suggestAnchors(ctx, nodeCtx);
+                    this.suggestStateGroup(ctx, nodeCtx);
+                    break;
+                case sch.ElementDefKind.StateGroupState:
+                    this.suggestStateGroupInstruction(ctx, nodeCtx);
+                    break;
+                case sch.ElementDefKind.Animation:
+                    this.suggestAnimationController(ctx, nodeCtx);
+                    break;
+            }
         }
 
         for (const [sElKey, sElItem] of nodeCtx.stype.struct) {
@@ -489,7 +617,9 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                     }
                 }
                 if (!sElItem.type.struct.size && sElItem.nodeKind !== sch.ElementDefKind.Frame) {
-                    if (i === 1) complItem.insertText = complItem.insertText.replace('$1', '$0');
+                    if (i === 1 && this.svcContext.config.completion.tabStop === ExtConfigCompletionTabStopKind.Attr) {
+                        complItem.insertText = complItem.insertText.replace('$1', '$0');
+                    }
                     complItem.insertText += '/>';
                 }
                 else {
