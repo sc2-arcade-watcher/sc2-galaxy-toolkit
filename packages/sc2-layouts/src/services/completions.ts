@@ -649,7 +649,21 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
         const offset = document.offsetAt(position);
         const node = sourceFile.findNodeAt(offset);
 
-        if (!node || !(node instanceof XMLElement)) return;
+        if (!node || !(node instanceof XMLElement)) {
+            if (!sourceFile.getDescNode()) {
+                items.push({
+                    kind: vs.CompletionItemKind.Snippet,
+                    label: 'fdesc',
+                    detail: 'Desc template',
+                    insertText: new vs.SnippetString(
+                        '<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n' +
+                        '<Desc>$0\n</Desc>'
+                    ),
+                });
+                return {items};
+            }
+            return;
+        }
 
         let startOffset = offset;
         if (node) {
