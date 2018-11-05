@@ -2,11 +2,56 @@
 
 Visual Studio Code extension introducing support for SC2Layouts language, utilized in games like StarCraft II and Heroes of the Storm.
 
-> NOTE: This is pre-release - extension should be quite handy and usable at this momemt. But there's lot of code that needs refactoring etc. before it will be possible to implement all planned features.
+* [x] Real time code diagnostics
+  * Syntax validation.
+  * Schema validation.
+  * Post-process binding of the DescTree.
+* [x] Rich context aware code completions.
+  * XML declarations based on the schema.
+  * Frame selection expressions
+  * Property bidings
+  * Constants
+  * External assets.txt files
+* [x] Document and workspace symbols navigation list.
+* [x] Definitions provider (`<kbd>Ctrl</kbd>` + **Click**)
+  * Resolving contextual selectors such as `$ancestor` to its matching declaration within document
+  * FileDescName, Templates..
+* [x] Tooltips on hover
+  * Documentation of UI properties
+  * Listing of element attributes and their types
+* .. and much more
 
-...
+## Showcase
 
-quick video preview: https://gfycat.com/TinyAngelicFirecrest
+### Code completions
+
+![completions-tooltips](./assets/completions-tooltips.png)
+
+![completions-enum](./assets/completions-enum.png)
+
+![completions-frametype](./assets/completions-frametype.png)
+
+![completions-assets](./assets/completions-assets.png)
+
+![completions-selectors](./assets/completions-selectors.png)
+
+![completions-templates](./assets/completions-templates.png)
+
+### Goto definition
+
+![image](./assets/definition-selectors.png)
+
+### Document and workspace navigation
+
+![image](./assets/document-navigation.png)
+
+![image](./assets/workspace-navigation-constants.png)
+
+### Code diagnostics
+
+![image](./assets/diagnostics-overview.png)
+
+---
 
 ## TODO
 
@@ -15,23 +60,13 @@ quick video preview: https://gfycat.com/TinyAngelicFirecrest
     * State groups `CFrameStateConditionProperty`, `CFrameStateSetPropertyAction` as attr names
     * Animation keys `CFrameControllerProperty` in `property` attr value
   * Suggest animation names
+  * Suggest animation events
   * Suggest state group names and their states
-  * Suggest `@` asset references
+  * `@` and `*@` catalog ids - `CSound`, `CActorSound`
   * Suggest filenames of .dds textures. Filelist from standard mods should be pre-built and distributed with extension. Additionally filewatcher on project workspace for local assets.
   * Suggest layout filenames in `<Include>`
 * Goto definition (ctrl-click):
-  * Frame names - when overriden by `file=` or extended from `template=`
-  * Desc selection:
-    * `template=` and `file=` on `Frame` | `Animation`
-    * In elements that specify `ItemDesc`; support `$root` aswell as relative selection
-  * Frame selectors - each fragment within selection should be treaten separate, and deduce targeted Desc declaration (support `$ancestor` etc.). Unless target of selection cannot be deduced from the current context.
-  * `@` Asset references from txt files
-  * `@` and `*@` catalog ids - `CSound`, `CActorSound`
-* Schema:
-  * Add type alternations for `<Controller>` and its `<Key>`s
-* Internal improvements:
-  * Add support for `template` and `file` when building `DescTree`. So that we can offer better completions and target deduction in regards to frame selectors and property binding.
-  * Attempt to keep track of elements that are result of extending from `template`, or `file` override. In order to be able to incrementally update the state of `DescTree`, without having to pre-process all layouts again.
+  * `@` Asset refs
 * Add a treeview for layout files and their content:
   * Categorize files based on origin (mod/map name)
   * Add exclusive top-level node `GameUI`. Attempt to include all elements contributed from foreign templates and desc overrides.
@@ -52,4 +87,4 @@ Long term goals (_maybe_):
   * Write labels/documentation for frame properties aswell as other layout elements.
   * Improve formatting of documentation displayed on hover and in code suggestion list.
   * Update http://mapster.talv.space/layouts/frame using new schema made for this extension. Including all documentation and any extra information available.
-* Split core code to separate package, implement LSP. Add unit tests & cleanup code.
+* Split core code to separate package, implement LSP.
