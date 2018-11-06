@@ -87,7 +87,7 @@ export enum SimpleTypeKind {
 }
 
 export enum SimpleTypeFlags {
-    CanBeEmpty            = 1 << 0,
+    Nullable            = 1 << 0,
 }
 
 export interface SEnumInfo {

@@ -25,10 +25,6 @@ export class SchemaValidator {
 
     protected validateBuiltinType(value: string, stype: sch.SimpleType): undefined | string {
         switch (stype.builtinType) {
-            // case sch.BuiltinTypeKind.Unknown:
-            //     return this.validateAttrValue(value, stype);
-            //     break;
-
             case sch.BuiltinTypeKind.Boolean:
                 if (reBool.test(value)) break;
                 return `Expected "true" or "false" [${stype.name}]`;
@@ -54,13 +50,17 @@ export class SchemaValidator {
 
             case sch.BuiltinTypeKind.Color:
                 if (reColor.test(value)) break;
-                return `Expected RGB color value in hex format (\`FF00FF\`) or decimal (\`255,0,255\`) [${stype.name}]`;
+                return `Expected RGB or RGBA color value in hex format (i.e. "FF00FF") or decimal (i.e. "255,0,255,127") [${stype.name}]`;
         }
         return void 0;
     }
 
     public validateAttrValue(atValue: string, stype: sch.SimpleType): undefined | string {
-        if (!atValue.length && stype.flags & sch.SimpleTypeFlags.CanBeEmpty) return void 0;
+        if (!atValue.length) {
+            if (stype.flags & sch.SimpleTypeFlags.Nullable) return void 0;
+            if (stype.kind === sch.SimpleTypeKind.Flags) return void 0;
+        }
+
         switch (stype.kind) {
             case sch.SimpleTypeKind.Default:
             {

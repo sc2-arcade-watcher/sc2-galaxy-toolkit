@@ -340,8 +340,8 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
         if (item.flag) {
             for (const fl of item.flag) {
                 switch (fl.name) {
-                    case 'CanBeEmpty':
-                        rt.flags |= sch.SimpleTypeFlags.CanBeEmpty;
+                    case 'Nullable':
+                        rt.flags |= sch.SimpleTypeFlags.Nullable;
                         break;
                 }
             }
