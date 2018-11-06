@@ -1,5 +1,17 @@
 # Change Log
 
+## [0.4.1] - 2018-11-06
+
+* Bugfixes:
+  * Parser: `CFrame` will be used as fallback, for unknown frame types
+  * Schema: fix too restrictive regex on `<constant>` name
+  * Schema: added `Nullable` option to schema of simple type. Nullable indicates that value of the field can be set to an empty string
+    which is as a way for nulling out anything that was set previously
+    * Fields that take flags have this set implicitly
+    * Color is now assumed to be nullable property
+  * Added support for backslash as expression delimeter.
+  * Added `.SC2Interface` to list of valid archive extensions (in order of external files to be recognized - `Assets.txt` etc.)
+
 ## [0.4.0] - 2018-11-05
 
 * Implemented FrameTree builder
