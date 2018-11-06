@@ -37,7 +37,7 @@ export function parse(text: string, options: ParserOptions) {
                 el.stype = el.sdef.type;
             }
             else {
-                printDiagnosticsAtCurrentToken(`Not expected element "${el.tag}"`);
+                printDiagnosticsAtCurrentToken(`Not expected element "${el.tag}" under [${parentNode.stype.name}]`);
             }
         }
         else {
@@ -55,11 +55,7 @@ export function parse(text: string, options: ParserOptions) {
             else {
                 printDiagnosticsAtCurrentToken(`Couldn't find matching type for ${el.tag}[type=${valType}]`, el.start);
                 el.altTypeNotMatched = true;
-                // el.sdef = void 0;
-                // el.stype = void 0;
             }
-            // if (el.attributes['type'] && el.attributes['type'].startValue) {
-            // }
         }
     }
 
@@ -67,7 +63,7 @@ export function parse(text: string, options: ParserOptions) {
         switch (token) {
             case TokenType.StartTagOpen:
             {
-                if (curr.parent && (curr.stype && !curr.stype.struct.size && !((<XMLElement>curr).sdef.flags & sch.ElementDefFlags.TypeAlternation))) {
+                if (curr.parent && (curr.stype && !curr.stype.struct.size)) {
                     printDiagnosticsAtCurrentToken(`?Missing end tag for "${(<XMLElement>curr).tag}"`, (<XMLElement>curr).start, (<XMLElement>curr).startTagEnd);
                     curr.end = endTagStart;
                     (<XMLElement>curr).closed = false;

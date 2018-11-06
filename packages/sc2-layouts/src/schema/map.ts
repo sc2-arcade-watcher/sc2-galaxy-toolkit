@@ -593,6 +593,10 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
             label: item.blizzOnly === 'true' ? 'Blizz restricted' : void 0,
         });
     }, MDefs.FrameType);
+    // use CFrame as default - missmatched type
+    for (const [extStructName, extStructType] of (<sch.ComplexType>entries.get('Frame:Frame')).struct) {
+        cfrmEl.type.struct.set(extStructName, extStructType);
+    }
 
     //
     const frameClasses = new Map<string, sch.FrameClass>();
