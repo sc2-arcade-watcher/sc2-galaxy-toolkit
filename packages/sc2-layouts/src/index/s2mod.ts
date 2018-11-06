@@ -203,10 +203,12 @@ export class FontStyleComponent {
 
 // ===
 
-// export const S2ArchiveExts = ['SC2Mod', 'SC2Map', 'SC2Campaign'];
+export const S2ArchiveExts = ['SC2Mod', 'SC2Map', 'SC2Campaign', 'SC2Interface'];
+export const S2ArchiveExtsStr = S2ArchiveExts.join('|');
+const reIsS2Archive = new RegExp(`^\\.(${S2ArchiveExtsStr})$`, 'i');
 
 export function isS2Archive(fsPath: string) {
-    return /\.(SC2Mod|SC2Map|SC2Campaign)$/i.exec(path.basename(fsPath));
+    return reIsS2Archive.exec(path.extname(fsPath));
 }
 
 export function findArchiveDirectories(fsPath: string) {
@@ -215,7 +217,7 @@ export function findArchiveDirectories(fsPath: string) {
             resolve([path.resolve(fsPath)]);
             return;
         }
-        glob(path.join(fsPath, '**/*.+(SC2Mod|SC2Map|SC2Campaign)'), {nocase: true, realpath: true} , (err, matches) => {
+        glob(path.join(fsPath, `**/*.+(${S2ArchiveExtsStr})`), {nocase: true, realpath: true} , (err, matches) => {
             if (err) {
                 reject(err);
             }
