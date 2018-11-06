@@ -3,6 +3,7 @@ import { oentries } from '../common';
 import { LayoutDocument, Store } from './store';
 import { XMLElement, XMLNode, DiagnosticReport, XMLDocument } from '../types';
 import * as sch from '../schema/base';
+import { splitSlashDelimetedStr } from '../parser/utils';
 
 export class DescXRef {
     declarations = new Set<XMLElement>();
@@ -142,7 +143,7 @@ export class DescNamespace {
     }
 
     getDeep(name: string) {
-        const parts = name.split('/');
+        const parts = splitSlashDelimetedStr(name);
         if (parts.length === 0) return void 0;
 
         let tmp: DescNamespace = this;

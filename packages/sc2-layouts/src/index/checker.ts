@@ -5,7 +5,7 @@ import { LayoutDocument, Store } from './store';
 import { SchemaValidator } from '../schema/validation';
 import { CharacterCodes } from '../parser/scanner';
 import { getAttrValueKind } from '../parser/utils';
-import { ExpressionParser } from '../parser/expressions';
+import { ExpressionParser, NodeExpr } from '../parser/expressions';
 
 export class LayoutChecker {
     protected exParser = new ExpressionParser();
@@ -31,6 +31,22 @@ export class LayoutChecker {
 
     protected reportAtAttr(nattr: XMLAttr, msg: string, category?: DiagnosticCategory) {
         this.reportAt(msg, { start: nattr.start, end: nattr.end, category: category });
+    }
+
+    protected forwardExpressionDiagnostics(nattr: XMLAttr, expr: NodeExpr) {
+        this.diagnostics.push(...expr.diagnostics.map(item => {
+            item.start += nattr.startValue + 1;
+            item.end += nattr.startValue + 1;
+            return item;
+        }));
+    }
+
+    protected parseAndCheckPathSelector(nattr: XMLAttr) {
+        const pathSel = this.exParser.parsePathSelector(nattr.value);
+        if (pathSel.diagnostics.length) {
+            this.forwardExpressionDiagnostics(nattr, pathSel);
+        }
+        return pathSel;
     }
 
     protected checkElement(el: XMLElement) {
@@ -104,11 +120,12 @@ export class LayoutChecker {
 
             switch (getAttrValueKind(nattr.value)) {
                 case AttrValueKind.Constant:
+                case AttrValueKind.ConstantRacial:
                 {
                     const name = nattr.value.substr(nattr.value.charCodeAt(1) === CharacterCodes.hash ? 2 : 1);
                     const citem = this.index.constants.get(name);
                     if (!citem) {
-                        this.reportAtAttr(nattr, `Undeclared constant "${nattr.value}"`)
+                        this.reportAtAttr(nattr, `Undeclared constant "${nattr.value}"`);
                         continue outer;
                     }
                     break;
@@ -136,7 +153,19 @@ export class LayoutChecker {
                 case AttrValueKind.Generic:
                 {
                     const r = this.svalidator.validateAttrValue(nattr.value, vstype.type);
-                    if (r) this.reportAtAttr(nattr, r);
+                    if (r) {
+                        this.reportAtAttr(nattr, r);
+                        break;
+                    }
+
+                    switch (vstype.type.builtinType) {
+                        case sch.BuiltinTypeKind.DescTemplateName:
+                        {
+                            this.parseAndCheckPathSelector(nattr);
+                            break;
+                        }
+                    }
+
                     break;
                 }
             }

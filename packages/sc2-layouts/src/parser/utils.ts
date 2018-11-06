@@ -43,3 +43,8 @@ export function getSelectionIndexAtPosition(pathSel: exp.PathSelector, pos: numb
         return idx;
     }
 }
+
+const reSlashDelimeterRe = /[\/\\]/;
+export function splitSlashDelimetedStr(s: string) {
+    return s.split(reSlashDelimeterRe);
+}

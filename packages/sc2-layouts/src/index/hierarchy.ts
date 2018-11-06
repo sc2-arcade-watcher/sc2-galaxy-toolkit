@@ -1,6 +1,7 @@
 import { DescIndex, DescNamespace, DescKind } from './desc';
 import { SchemaRegistry } from '../schema/base';
 import { PathSelector, SelectorFragment, SelHandleKind, NodeArray } from '../parser/expressions';
+import { splitSlashDelimetedStr } from '../parser/utils';
 
 export class UINode {
     readonly name: string;
@@ -146,7 +147,7 @@ export class UIBuilder {
         let hierarchyRoot = current;
         tpath = tpath.reverse();
         if (current.file) {
-            let mount = current.name.split('/');
+            let mount = splitSlashDelimetedStr(current.name);
             const topDesc = this.dIndex.rootNs.getMulti(current.file, mount[0]);
             if (topDesc) {
                 hierarchyRoot = topDesc;

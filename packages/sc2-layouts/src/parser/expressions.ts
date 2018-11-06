@@ -5,7 +5,9 @@ import { reverseMap } from '../common';
 
 export function isIdentifierStart(ch: number): boolean {
     return (ch >= CharacterCodes.A && ch <= CharacterCodes.Z)
-        || (ch >= CharacterCodes.a && ch <= CharacterCodes.z);
+        || (ch >= CharacterCodes.a && ch <= CharacterCodes.z)
+        || (ch === CharacterCodes._)
+    ;
 }
 
 export function isIdentifierPart(ch: number): boolean {
@@ -124,7 +126,7 @@ export class Scanner {
                     return this.token = SyntaxKind.DotToken;
                 }
 
-                // case CharacterCodes.backslash:
+                case CharacterCodes.backslash:
                 case CharacterCodes.slash:
                 {
                     this.pos++;
@@ -185,7 +187,7 @@ export class Scanner {
                         return this.token = SyntaxKind.Identifier;
                     }
 
-                    this.report(`Unexpected character: 0x${ch.toString(16)}`);
+                    this.report(`Unexpected character: "${String.fromCharCode(ch).trim()}" [0x${ch.toString(16)}]`);
                     this.pos++;
                     return this.token = SyntaxKind.Unknown;
                 }
