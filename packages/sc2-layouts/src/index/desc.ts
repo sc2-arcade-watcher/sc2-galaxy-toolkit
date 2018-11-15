@@ -265,7 +265,7 @@ export class DescIndex {
                         fdmap = new Map();
                         this.fileRefs.set(file, fdmap);
                     }
-                    let frefs = fdmap.get(currDesc.name)
+                    let frefs = fdmap.get(currDesc.name);
                     if (!frefs) {
                         frefs = new Set();
                         fdmap.set(currDesc.name, frefs);
@@ -351,7 +351,7 @@ export class DescIndex {
                 {
                     const tpl = (<XMLElement>xDecl).getAttributeValue('template', null);
                     if (tpl !== null) {
-                        const trefs = this.tplRefs.get(tpl)
+                        const trefs = this.tplRefs.get(tpl);
                         trefs.delete(descNode);
                         if (!trefs.size) {
                             this.tplRefs.delete(tpl);
@@ -388,8 +388,8 @@ export class DescIndex {
     resolveElementDesc(xEl: XMLElement, kind: DescKind = null) {
         const docState = this.xdocState.get(xEl.getDocument());
         do {
-            const elDesc = docState.xdeclDescMap.get(xEl)
+            const elDesc = docState.xdeclDescMap.get(xEl);
             if (elDesc && (kind === null || elDesc.kind === kind)) return elDesc;
-        } while(xEl = <XMLElement>xEl.parent);
+        } while (xEl = <XMLElement>xEl.parent);
     }
 }

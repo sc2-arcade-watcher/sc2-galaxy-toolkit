@@ -203,7 +203,7 @@ export class Scanner {
             while (isDigit(this.text.charCodeAt(this.pos))) this.pos++;
         }
         let end = this.pos;
-        return this.text.substring(start, end)
+        return this.text.substring(start, end);
     }
 
     public getCurrentPos(): number {
@@ -553,7 +553,7 @@ export class ExpressionParser {
             }
 
             if (this.token() === SyntaxKind.SlashToken) {
-                this.parseExpected(SyntaxKind.SlashToken)
+                this.parseExpected(SyntaxKind.SlashToken);
                 hasSeparator = true;
             }
             else {
@@ -597,7 +597,7 @@ export class ExpressionParser {
         this.parseExpected(SyntaxKind.CloseBraceToken);
         this.parseExpected(SyntaxKind.EndOfStreamToken);
 
-        this.finishNode(propBind)
+        this.finishNode(propBind);
         this.finalizeExpr(propBind);
         return propBind;
     }
@@ -610,7 +610,7 @@ export class ExpressionParser {
         this.nextToken();
         pathSel.path = this.parseSelectionPath();
 
-        this.finishNode(pathSel)
+        this.finishNode(pathSel);
         this.finalizeExpr(pathSel);
         return pathSel;
     }

@@ -22,7 +22,7 @@ function checkFiles(fpath: string) {
     function printReports(xDoc: XMLDocument, reports: DiagnosticReport[], source: string) {
         for (const item of reports) {
             const tPos = xDoc.tdoc.positionAt(item.start);
-            console.log(` [${tPos.line+1}:${tPos.character}] - ${DiagnosticCategory[item.category]} (${source}) ${item.message}`);
+            console.log(` [${tPos.line + 1}:${tPos.character}] - ${DiagnosticCategory[item.category]} (${source}) ${item.message}`);
         }
     }
 

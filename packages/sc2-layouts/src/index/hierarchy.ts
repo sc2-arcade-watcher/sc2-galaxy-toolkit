@@ -68,7 +68,7 @@ class ResolvedSelection {
     }
 
     get target() {
-        if (!this.isValid) return
+        if (!this.isValid) return;
         return this.chain[this.chain.length - 1];
     }
 }
@@ -163,7 +163,7 @@ export class UIBuilder {
     buildNodeFromDesc(selectedDesc: DescNamespace) {
         const context = this.determineContextOfDesc(selectedDesc);
         const parentNode = createNodeFromDesc(context.hierarchyRoot);
-        this.expandNode(parentNode, context.tpath)
+        this.expandNode(parentNode, context.tpath);
         return parentNode.getChild(...context.tpath);
     }
 }
@@ -242,7 +242,7 @@ export class UINavigator {
             {
                 // TODO:
                 // selFrag.offset.value
-                return uNode
+                return uNode;
             }
 
             case SelHandleKind.Identifier:
@@ -254,7 +254,7 @@ export class UINavigator {
             {
                 const handle = this.dIndex.handles.get(selFrag.name.name);
                 if (!handle) break;
-                return this.uBuilder.buildNodeFromDesc(handle.desc)
+                return this.uBuilder.buildNodeFromDesc(handle.desc);
             }
 
             case SelHandleKind.Layer:

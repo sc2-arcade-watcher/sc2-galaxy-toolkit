@@ -17,29 +17,29 @@ describe('hierarchy builder', function () {
     describe('determineContextOfDesc', function () {
         it('childs', function () {
             const pDescInfo = uBuilder.determineContextOfDesc(rootNs.getMulti('GameUI', 'GameUI', 'WorldPanel', 'UnitStatusPanel'));
-            assert.isDefined(pDescInfo)
+            assert.isDefined(pDescInfo);
             assert.equal(pDescInfo.hierarchyRoot.descRelativeName, 'GameUI');
         });
 
         it('direct child of FileDesc', function () {
             const pDescInfo = uBuilder.determineContextOfDesc(rootNs.getMulti('GameUI', 'GameUI'));
-            assert.isDefined(pDescInfo)
+            assert.isDefined(pDescInfo);
             assert.equal(pDescInfo.hierarchyRoot.descRelativeName, 'GameUI');
         });
 
         it('file override', function () {
             const pDescInfo = uBuilder.determineContextOfDesc(rootNs.getMulti('Extension', 'GameUI', 'WorldPanel'));
-            assert.isDefined(pDescInfo)
+            assert.isDefined(pDescInfo);
 
             assert.equal(pDescInfo.hierarchyRoot.descRelativeName, 'GameUI');
         });
 
         it('fail nicely if not found', function () {
             let pDescInfo = uBuilder.determineContextOfDesc(rootNs.getMulti('Extension', 'GameUI', 'WorldPanela'));
-            assert.isUndefined(pDescInfo)
+            assert.isUndefined(pDescInfo);
 
             pDescInfo = uBuilder.determineContextOfDesc(rootNs.getMulti('GameUI', 'GameUI', 'WorldPanelTemplaTEE', 'ContainerA'));
-            assert.isUndefined(pDescInfo)
+            assert.isUndefined(pDescInfo);
         });
     });
 
@@ -164,7 +164,7 @@ describe('hierarchy navigator', function () {
         it('[GameUI] WorldPanel/$parent/Group/FillImageContainer/Background', function () {
             const psel = exParser.parsePathSelector('WorldPanel/$parent/Group/FillImageContainer/Background');
             const resolvedSel = navigator.resolveSelection(uGameNode, psel.path);
-            assert.isDefined(resolvedSel.target)
+            assert.isDefined(resolvedSel.target);
             assert.equal(resolvedSel.target.fqn, 'GameUI/Group/FillImageContainer/Background');
         });
     });

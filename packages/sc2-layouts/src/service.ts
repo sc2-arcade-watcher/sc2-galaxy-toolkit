@@ -106,7 +106,7 @@ class DocumentUpdateRequest {
             return;
         }
     }
-};
+}
 
 export class ServiceContext implements IService {
     console: ILoggerConsole;
@@ -123,7 +123,7 @@ export class ServiceContext implements IService {
     protected navigationProvider: NavigationProvider;
     protected diagnosticsProvider: DiagnosticsProvider;
 
-    extContext: vs.ExtensionContext
+    extContext: vs.ExtensionContext;
 
     protected createProvider<T extends AbstractProvider>(cls: new () => T): T {
         return createProvider(cls, this, this.store, this.console);
@@ -362,11 +362,11 @@ export class ServiceContext implements IService {
                 absolute: true,
                 nodir: true,
             }, (err, matches) => {
-                if (err) reject(err)
+                if (err) reject(err);
                 else resolve(matches);
-            })
+            });
         });
-        this.output.appendLine(`results ${r.length}`)
+        this.output.appendLine(`results ${r.length}`);
         for (const item of r) {
             await this.syncDocument(createTextDocumentFromFs(item));
         }

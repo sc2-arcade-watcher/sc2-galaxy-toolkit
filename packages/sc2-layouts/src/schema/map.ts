@@ -301,7 +301,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
                 entries.set(ctype.name, ctype);
             }
         }
-        return <sch.ComplexType>entries.get(prop.elementType);;
+        return <sch.ComplexType>entries.get(prop.elementType);
     }
 
     // ===
@@ -329,7 +329,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
         if (item.enumeration) {
             rt.evalues = item.enumeration.map(item => item.value);
             rt.emap = new Map();
-            item.enumeration.forEach(item => {rt.emap.set(item.value, {name: item.value, label: item.label})})
+            item.enumeration.forEach(item => {rt.emap.set(item.value, {name: item.value, label: item.label}); });
             rt.kind = sch.SimpleTypeKind.Enumaration;
             if (item.kind === 'flags') rt.kind = sch.SimpleTypeKind.Flags;
         }
@@ -388,7 +388,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
                 assert.isNotEmpty(el.name);
                 let elComplexType: sch.ComplexType;
                 if (el.type) {
-                    elComplexType = resolveSchType<sch.ComplexType>(el.type)
+                    elComplexType = resolveSchType<sch.ComplexType>(el.type);
                 }
                 else if (el.simpleType) {
                     elComplexType = createFieldType({
@@ -669,5 +669,5 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
         getFrameProperty,
         getPropertyByName,
         isPropertyBindAllowed,
-    }
+    };
 }

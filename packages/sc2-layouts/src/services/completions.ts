@@ -121,7 +121,7 @@ class AttrValueProvider extends SuggestionsProvider {
             case sch.BuiltinTypeKind.DescTemplateName:
             {
                 if (pathIndex === void 0) pathIndex = 0;
-                if (smType === sch.BuiltinTypeKind.FileDescName && pathIndex > 0) break
+                if (smType === sch.BuiltinTypeKind.FileDescName && pathIndex > 0) break;
 
                 const fragments = pathSel.path.map(item => item.name.name).slice(0, pathIndex);
 
@@ -199,9 +199,9 @@ class AttrValueProvider extends SuggestionsProvider {
                         (selFrag.parameter.pos <= ctx.atOffsetRelative && selFrag.parameter.end >= ctx.atOffsetRelative)
                     ) {
                         if (selFrag.parameter.key && selFrag.parameter.key.pos <= ctx.atOffsetRelative && selFrag.parameter.key.end >= ctx.atOffsetRelative) {
-                            ctx.citems.push({kind: vs.CompletionItemKind.Operator, label: 'type',});
-                            ctx.citems.push({kind: vs.CompletionItemKind.Operator, label: 'oftype',});
-                            ctx.citems.push({kind: vs.CompletionItemKind.Operator, label: 'name',});
+                            ctx.citems.push({kind: vs.CompletionItemKind.Operator, label: 'type', });
+                            ctx.citems.push({kind: vs.CompletionItemKind.Operator, label: 'oftype', });
+                            ctx.citems.push({kind: vs.CompletionItemKind.Operator, label: 'name', });
                         }
                         else if (selFrag.parameter.value && selFrag.parameter.value.pos <= ctx.atOffsetRelative && selFrag.parameter.value.end >= ctx.atOffsetRelative) {
                             switch (selFrag.parameter.key.name) {
@@ -353,7 +353,7 @@ class AttrValueProvider extends SuggestionsProvider {
 
             default:
             {
-                completionsForSimpleType(sAttrType).forEach(r => { ctx.citems.push(r) })
+                completionsForSimpleType(sAttrType).forEach(r => { ctx.citems.push(r); });
                 break;
             }
         }
@@ -457,7 +457,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
             complItem.insertText = (ctx.xtoken === TokenType.Content ? '<' : '') + `${category} name="\$${++i}">\n`;
             complItem.insertText += `\t<DefaultState val="\${2:${itemList[0]}}"/>\n`;
             for (let j = 1; j <= l; ++j) {
-                complItem.insertText += `\n\t<State name="\${${j+1}:${itemList[j-1]}}">\n\t</State>\n`;
+                complItem.insertText += `\n\t<State name="\${${j + 1}:${itemList[j - 1]}}">\n\t</State>\n`;
             }
             complItem.insertText += `</${category}>`;
             complItem.insertText = new vs.SnippetString(complItem.insertText);

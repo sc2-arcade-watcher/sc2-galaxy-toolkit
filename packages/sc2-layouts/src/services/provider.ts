@@ -63,12 +63,12 @@ export function createProvider<T extends AbstractProvider>(cls: new () => T, svc
 
 function formatElapsed(start: [number, number], end: [number, number]): string {
     const diff = process.hrtime(start);
-    var elapsed = diff[1] / 1000000; // divide by a million to get nano to milli
+    let elapsed = diff[1] / 1000000; // divide by a million to get nano to milli
     let out = '';
     if (diff[0] > 0) {
-        out += diff[0] + "s ";
+        out += diff[0] + 's ';
     }
-    out += elapsed.toFixed(3) + "ms";
+    out += elapsed.toFixed(3) + 'ms';
     return out;
 }
 
@@ -86,7 +86,7 @@ export function svcRequest(showArg = false, argFormatter?: (...payload: any[]) =
                 server.console.log(util.inspect(argFormatter(...args)));
             }
 
-            var start = process.hrtime();
+            let start = process.hrtime();
             let ret;
             try {
                 ret = method.bind(this)(...arguments);
@@ -114,6 +114,6 @@ export function svcRequest(showArg = false, argFormatter?: (...payload: any[]) =
             }
 
             return ret;
-        }
-    }
+        };
+    };
 }

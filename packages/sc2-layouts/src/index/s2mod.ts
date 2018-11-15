@@ -68,7 +68,7 @@ export class StringFile {
                     archive: sa,
                     key,
                     val,
-                }
+                };
             }
         }
     }

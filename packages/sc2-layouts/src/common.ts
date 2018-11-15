@@ -68,16 +68,16 @@ export function* objventries<T>(obj: {[name: string]: T}) {
     }
 }
 
-export function *reverseMap<T>(source: ReadonlyMap<string, T>): Iterable<[T,string]> {
+export function *reverseMap<T>(source: ReadonlyMap<string, T>): Iterable<[T, string]> {
     const result: string[] = [];
-    for (const [k,v] of source.entries()) {
+    for (const [k, v] of source.entries()) {
         yield [v, k];
     }
 }
 
 export function fuzzysearch (needle: string, haystack: string) {
-    var hlen = haystack.length;
-    var nlen = needle.length;
+    let hlen = haystack.length;
+    let nlen = needle.length;
     if (nlen > hlen) {
         return false;
     }
