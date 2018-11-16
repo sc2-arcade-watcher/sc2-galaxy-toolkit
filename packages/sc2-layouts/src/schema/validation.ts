@@ -4,7 +4,7 @@ import { DiagnosticReport, XMLElement, XMLAttr, DiagnosticCategory } from '../ty
 const reBool = /^(true|false)$/i;
 const reUint = /^\+?[0-9]+\s*$/;
 const reInt = /^(\+|\-)?[0-9]+\s*$/;
-const reReal = /^(\+|\-)?(([0-9]*\.[0-9]+)|[0-9]+)\s*$/;
+const reReal = /^(\+|\-)?(([0-9]+\.[0-9]*)|([0-9]*\.?[0-9]+))\s*$/;
 // const reFlag = /^([\w \|\!]+)$/i;
 const reColor = /^([a-f0-9]{6,8}|\s*[0-9]{1,3},\s*[0-9]{1,3},\s*[0-9]{1,3}(,\s*[0-9]{1,3})?)$/i;
 
@@ -50,7 +50,7 @@ export class SchemaValidator {
 
             case sch.BuiltinTypeKind.Color:
                 if (reColor.test(value)) break;
-                return `Expected RGB or RGBA color value in hex format (i.e. "FF00FF") or decimal (i.e. "255,0,255,127") [${stype.name}]`;
+                return `Expected RGB or ARGB color value in hex format (i.e. "FF00FF") or decimal (i.e. "127,255,0,255") [${stype.name}]`;
         }
         return void 0;
     }
