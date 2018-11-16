@@ -14,6 +14,40 @@
     <!-- dynamically populated -->
     <simpleType name="EFrameType" kind="enum"/>
 
+    <simpleType name="EAnimationEventNative" kind="enum">
+        <!-- CFrame -->
+        <enumeration value="OnShown" label="When the target frame becomes `Visible`. This can occur by the frame itself becoming visible or a parent of this frame becoming visible as visibility is inherited."/>
+        <enumeration value="OnHidden" label="When the target frame becomes not visible. This can occur by the frame itself becoming not visible or a parent of this frame becoming not visible as visibility is inherited."/>
+        <enumeration value="OnEnabled" label="When the target frame becomes `Enabled`. This can occur by the frame itself becoming enabled or a parent of this frame becoming enabled as enabling/disabling is inherited."/>
+        <enumeration value="OnDisabled" label="When the target frame becomes `Disabled`. This can occur by the frame itself becoming disabled or a parent of this frame becoming disabled as enabling/disabling is inherited."/>
+        <enumeration value="OnMouseDown" label="When the user clicks down on the mouse on the target frame (fires immediately when they click, does not wait for release)."/>
+        <enumeration value="OnMouseUp" label="When the user releases the mouse button after clicking down on the target frame."/>
+        <enumeration value="OnMouseEnter" label="When the user's mouse enters the clickable area of the target frame (no clicking or releasing required, just hovering over)."/>
+        <enumeration value="OnMouseExit" label="When the user's mouse exits the clickable area of the target frame (no clicking or releasing required, just hovering)."/>
+        <enumeration value="OnMouseWheelIncrement" label="-"/>
+        <enumeration value="OnMouseWheelDecrement" label="-"/>
+
+        <!-- CControl -->
+        <enumeration value="OnClick" label="When the user clicks the target frame. Can only target `Control` frames or subtypes such as `Button`."/>
+        <enumeration value="OnDoubleClick" label="When the user doubleclicks the target frame. Can only target `Control` frames or subtypes such as `Button`."/>
+        <enumeration value="OnDragStart" label="Fires off the first time the user moves the mouse while holding down a click on the target control frame. Can only target `Control` frames or subtypes such as `Button`."/>
+        <enumeration value="OnDrag" label="Fires off every time the user moves the mouse while holding down a click on the target control frame. Can only target `Control` frames or subtypes such as `Button`."/>
+        <enumeration value="OnDragEnd" label="Fires off once the user lets go of the mouse click after executing a drag on the target control frame. Can only target `Control` frames or subtypes such as `Button`."/>
+        <enumeration value="OnKeyDown" label="NMI. Can only target `Control` frames or subtypes such as `Button`."/>
+        <enumeration value="OnKeyUp" label="NMI. Can only target `Control` frames or subtypes such as `Button`."/>
+        <enumeration value="OnKeyRepeat" label="NMI. Can only target `Control` frames or subtypes such as `Button`."/>
+        <enumeration value="OnFocusGained" label="-"/>
+        <enumeration value="OnFocusLost" label="-"/>
+
+        <!-- CButton -->
+        <enumeration value="Toggled" label="When the target frame's `Toggled` property enters the `True` state. Can only target frames with the `Toggled` property such as `Button`."/>
+        <enumeration value="Normal" label="When the target frame's `Toggled` property enters the `False` state. Can only target frames with the `Toggled` property such as `Button`."/>
+        <enumeration value="Pushed" label="When the target frame's `Pushed` property enters the `True` state. Can only target frames with the `Pushed` property such as `Button`."/>
+
+        <!-- CEditbox -->
+        <enumeration value="OnEnterPressed" label="`CEditBox` only"/>
+    </simpleType>
+
     <simpleType name="EAnimationControllerType" kind="enum">
         <enumeration value="Visibility"/>
         <enumeration value="VSkew"/>

@@ -18,6 +18,7 @@ export enum BuiltinTypeKind {
     FrameName,
     DescTemplateName,
     FrameReference,
+    EventName,
     //
     Image,
     Color,
@@ -135,7 +136,7 @@ export const enum ElementDefFlags {
 export enum ElementDefKind {
     Unknown,
     Desc,
-    // RequiredDefines,
+    RequiredDefines,
     DescFlags,
     Include,
     Constant,
@@ -144,9 +145,9 @@ export enum ElementDefKind {
     Animation,
     AnimationEvent,
     AnimationController,
-    // AnimationControllerKey,
+    AnimationControllerKey,
     StateGroup,
-    // StateGroupDefaultState,
+    StateGroupDefaultState,
     StateGroupState,
     StateGroupStateCondition,
     StateGroupStateAction,

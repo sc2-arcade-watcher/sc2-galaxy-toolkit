@@ -6,8 +6,9 @@ import { TokenType, XMLElement, AttrValueKind, XMLDocument } from '../types';
 import { getAttrValueKind, getSelectionFragmentAtPosition, getSelectionIndexAtPosition } from '../parser/utils';
 import URI from 'vscode-uri';
 import { ExpressionParser } from '../parser/expressions';
-import { UINavigator, UIBuilder, FrameNode } from '../index/hierarchy';
+import { UINavigator, UIBuilder, FrameNode, AnimationNode } from '../index/hierarchy';
 import { LayoutProcessor } from '../index/processor';
+import { DescKind } from '../index/desc';
 
 interface DefinitionLinkXNodeOptions {
     originXDoc?: XMLDocument;
@@ -124,6 +125,19 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
                         }));
                     }
                     break;
+                }
+
+                case sch.BuiltinTypeKind.EventName:
+                {
+                    const uNode = this.xray.determineTargetFrameNode(node);
+                    if (!uNode) return;
+                    for (const uAnim of this.uNavigator.getChildrenOfType<AnimationNode>(uNode, DescKind.Animation).values()) {
+                        const matchingEvs = uAnim.getEvents().get(nattr.value);
+                        if (!matchingEvs) continue;
+                        for (const xDecl of matchingEvs) {
+                            dlinks.push(createDefinitionLinkFromXNode(xDecl));
+                        }
+                    }
                 }
             }
         }

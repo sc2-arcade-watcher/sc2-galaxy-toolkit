@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Desc>
+    <Animation name="ATpl1">
+        <Event event="EventTemplate" action="Reset,Play" frame="$this"/>
+    </Animation>
+
+    <Frame type="Frame" name="Frame">
+        <Animation name="Primary" template="Animation/ATpl1">
+            <Event event="EventDefault" action="Reset,Play" frame="$this"/>
+            <Event event="EventSecondary" action="Reset" frame="$this"/>
+
+            <Controller type="Event" end="Stop" frame="$this">
+                <Key type="Event" time="0.0" event="EventDefault"/>
+            </Controller>
+        </Animation>
+
+        <Animation name="Secondary" template="Animation/ATpl1">
+        </Animation>
+    </Frame>
+</Desc>

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <map>
-    <complexType name="AnimationEvent">
-        <attribute name="event" type="String" use="required"/>
-        <attribute name="action" type="AnimationEventAction" use="required" default="Reset,Play"/>
-        <attribute name="frame" type="FrameReference" default="$this"/>
-    </complexType>
+    <simpleType name="AnimationEventType" data="string">
+        <union value="EAnimationEventNative"/>
+        <union value="EventName"/>
+    </simpleType>
 
     <simpleType name="AnimationEventActionList" kind="enum">
         <pattern value="^([\w]+)(\s*,\s*[\w]+)*$"/>
@@ -23,6 +22,18 @@
         <union value="EAnimationEasing"/>
         <union value="AnimationEasingInOutPattern"/>
     </simpleType>
+
+    <!--
+    ========================================
+    => EVENT
+    ========================================
+    -->
+
+    <complexType name="AnimationEvent">
+        <attribute name="event" type="AnimationEventType" use="required"/>
+        <attribute name="action" type="AnimationEventAction" use="required" default="Reset,Play"/>
+        <attribute name="frame" type="FrameReference" default="$this"/>
+    </complexType>
 
     <!--
     ========================================
@@ -85,7 +96,7 @@
     <complexType name="CFrameControllerKeyEvent">
         <extend value="CFrameControllerKey"/>
         <attribute name="type" type="EAnimationControllerKeyType" use="required" default="Event"/>
-        <attribute name="event" type="String" use="required"/>
+        <attribute name="event" type="EventName" use="required"/>
     </complexType>
 
     <complexType name="CFrameControllerKeyImage">

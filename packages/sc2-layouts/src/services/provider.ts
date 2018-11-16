@@ -3,6 +3,7 @@ import * as vs from 'vscode';
 import { Store } from '../index/store';
 import { ServiceContext } from '../service';
 import { DescIndex } from '../index/desc';
+import { XRay } from '../index/xray';
 
 export interface ILoggerConsole {
     error(msg: string, ...params: any[]): void;
@@ -43,12 +44,14 @@ export abstract class AbstractProvider implements IService {
     console: ILoggerConsole;
     protected store: Store;
     protected dIndex: DescIndex;
+    protected xray: XRay;
 
     public init(svcContext: ServiceContext, store: Store, console: ILoggerConsole) {
         this.svcContext = svcContext;
         this.console = console;
         this.store = store;
         this.dIndex = this.store.index;
+        this.xray = new XRay(this.store);
         this.prepare();
     }
 

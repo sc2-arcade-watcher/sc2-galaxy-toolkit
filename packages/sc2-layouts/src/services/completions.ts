@@ -9,9 +9,10 @@ import { DescIndex, DescNamespace, DescKind } from '../index/desc';
 import * as s2 from '../index/s2mod';
 import { Store } from '../index/store';
 import { ExpressionParser, SelHandleKind, SelectorFragment, PathSelector } from '../parser/expressions';
-import { UINavigator, UIBuilder, FrameNode } from '../index/hierarchy';
+import { UINavigator, UIBuilder, FrameNode, AnimationNode } from '../index/hierarchy';
 import { getSelectionIndexAtPosition, getAttrValueKind } from '../parser/utils';
 import { LayoutProcessor } from '../index/processor';
+import { XRay } from '../index/xray';
 
 function completionsForSimpleType(smType: sch.SimpleType) {
     let items = <vs.CompletionItem[]> [];
@@ -75,12 +76,14 @@ class SuggestionsProvider {
     protected uBuilder: UIBuilder;
     protected processor: LayoutProcessor;
     protected dIndex: DescIndex;
+    protected xray: XRay;
 
     protected prepare() {
         this.uNavigator = new UINavigator(this.store.schema, this.store.index);
         this.uBuilder = new UIBuilder(this.store.schema, this.store.index);
         this.processor = new LayoutProcessor(this.store, this.store.index);
         this.dIndex = this.store.index;
+        this.xray = new XRay(this.store);
     }
 
     constructor(protected store: Store, protected console: ILoggerConsole) {
@@ -305,6 +308,32 @@ class AttrValueProvider extends SuggestionsProvider {
         }
     }
 
+    protected suggestEventNames(ctx: AtValComplContext, sAttrType: sch.SimpleType) {
+        switch (ctx.node.sdef.nodeKind) {
+            case sch.ElementDefKind.AnimationControllerKey:
+            {
+                const uNode = this.xray.determineTargetFrameNode(ctx.node);
+                if (!uNode) return;
+                for (const aNode of this.uNavigator.getChildrenOfType<AnimationNode>(uNode, DescKind.Animation).values()) {
+                    for (const [evName, evXEl] of aNode.getEvents()) {
+                        ctx.citems.push({
+                            kind: vs.CompletionItemKind.Event,
+                            label: evName,
+                            detail: `[${aNode.name}] ${evXEl.map(item => item.getAttributeValue('action')).join(' | ')}`,
+                        });
+                    }
+                }
+                return;
+            }
+
+            case sch.ElementDefKind.AnimationEvent: break;
+        }
+        ctx.citems = ctx.citems.concat(completionsForSimpleType(sAttrType).map(item => {
+            item.preselect = true;
+            return item;
+        }));
+    }
+
     public provide(ctx: AtValComplContext) {
         const sAttrItem = ctx.node.stype.attributes.get(ctx.attrName);
         let sAttrType: sch.SimpleType;
@@ -348,6 +377,12 @@ class AttrValueProvider extends SuggestionsProvider {
             {
                 if (!currentDesc) break;
                 this.suggestSelection(ctx, this.exParser.parsePathSelector(ctx.attrValue), sAttrType.builtinType, currentDesc);
+                break;
+            }
+
+            case sch.BuiltinTypeKind.EventName:
+            {
+                this.suggestEventNames(ctx, sAttrType);
                 break;
             }
 

@@ -336,6 +336,10 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
         if (item.union) {
             rt.union = item.union.map(item => resolveSchType<sch.SimpleType>(item.value));
             rt.kind = sch.SimpleTypeKind.Union;
+            if (!rt.builtinType) {
+                const r = rt.union.find(item => item.builtinType !== sch.BuiltinTypeKind.Unknown);
+                if (r) rt.builtinType = r.builtinType;
+            }
         }
         if (item.flag) {
             for (const fl of item.flag) {
@@ -417,6 +421,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
 
                 switch (el.name) {
                     case 'Desc': scEl.nodeKind = sch.ElementDefKind.Desc; break;
+                    case 'RequiredDefines': scEl.nodeKind = sch.ElementDefKind.RequiredDefines; break;
                     case 'DescFlags': scEl.nodeKind = sch.ElementDefKind.DescFlags; break;
                     case 'Include': scEl.nodeKind = sch.ElementDefKind.Include; break;
                     case 'Constant': scEl.nodeKind = sch.ElementDefKind.Constant; break;
@@ -424,7 +429,9 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
                     case 'Animation': scEl.nodeKind = sch.ElementDefKind.Animation; break;
                     case 'Event': scEl.nodeKind = sch.ElementDefKind.AnimationEvent; break;
                     case 'Controller': scEl.nodeKind = sch.ElementDefKind.AnimationController; break;
+                    case 'Key': scEl.nodeKind = sch.ElementDefKind.AnimationControllerKey; break;
                     case 'StateGroup': scEl.nodeKind = sch.ElementDefKind.StateGroup; break;
+                    case 'DefaultState': scEl.nodeKind = sch.ElementDefKind.StateGroupDefaultState; break;
                     case 'State': scEl.nodeKind = sch.ElementDefKind.StateGroupState; break;
                     case 'When': scEl.nodeKind = sch.ElementDefKind.StateGroupStateCondition; break;
                     case 'Action': scEl.nodeKind = sch.ElementDefKind.StateGroupStateAction; break;

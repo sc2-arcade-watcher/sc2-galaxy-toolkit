@@ -1,8 +1,9 @@
 import { assert } from 'chai';
 import 'mocha';
 import { buildStore, getSchema } from '../helpers';
-import { FrameNode, UINavigator, UIBuilder } from '../../src/index/hierarchy';
+import { FrameNode, UINavigator, UIBuilder, AnimationNode } from '../../src/index/hierarchy';
 import { ExpressionParser } from '../../src/parser/expressions';
+import { DescKind } from '../../src/index/desc';
 
 function mockupIndex(...src: string[]) {
     const store = buildStore({fprefix: 'hierarchy'}, ...src);
@@ -85,7 +86,7 @@ describe('hierarchy builder', function () {
 });
 
 describe('hierarchy navigator', function () {
-    const dIndex = mockupIndex('Extension', 'GameUI', 'Control');
+    const dIndex = mockupIndex('Extension', 'GameUI', 'Control', 'Animation');
     const gameFrameDesc = dIndex.rootNs.getMulti('GameUI', 'GameUI');
 
     const navigator = new UINavigator(getSchema(), dIndex);
@@ -166,6 +167,22 @@ describe('hierarchy navigator', function () {
             const resolvedSel = navigator.resolveSelection(uGameNode, psel.path);
             assert.isDefined(resolvedSel.target);
             assert.equal(resolvedSel.target.fqn, 'GameUI/Group/FillImageContainer/Background');
+        });
+    });
+
+    describe('AnimationNode', function () {
+        const uFrame = <FrameNode>uBuilder.buildNodeFromDesc(dIndex.rootNs.getMulti('Animation', 'Frame'));
+        const uAnims = navigator.getChildrenOfType<AnimationNode>(uFrame, DescKind.Animation);
+
+        it('valid', function () {
+            assert.equal(uAnims.size, 2);
+        });
+
+        it('getEvents', function () {
+            const animPrimary = <AnimationNode>navigator.resolveChild(uFrame, 'Primary');
+            assert.isDefined(animPrimary);
+            assert.equal(animPrimary.getEvents().size, 3);
+            assert.isDefined(animPrimary.getEvents().has('EventTemplate'));
         });
     });
 });

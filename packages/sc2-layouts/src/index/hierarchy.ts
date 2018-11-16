@@ -2,18 +2,33 @@ import { DescIndex, DescNamespace, DescKind } from './desc';
 import { SchemaRegistry } from '../schema/base';
 import { PathSelector, SelectorFragment, SelHandleKind, NodeArray } from '../parser/expressions';
 import { splitSlashDelimetedStr } from '../parser/utils';
+import * as sch from '../schema/base';
+import { XMLElement } from '../types';
 
 export class UINode {
     readonly name: string;
     readonly children = new Map<string, UINode>();
     readonly descs = new Set<DescNamespace>();
     public build = false;
+    protected _elements: XMLElement[];
 
     constructor(public readonly mainDesc: DescNamespace, public readonly parent: UINode = null) {
         this.name = mainDesc.name;
         if (parent) parent.children.set(this.name, this);
 
         this.descs.add(mainDesc);
+    }
+
+    protected collectElements() {
+        const mElements: XMLElement[] = [];
+        for (const currDesc of Array.from(this.descs).reverse()) {
+            for (const xDecl of currDesc.xDecls) {
+                for (const xCurrEl of xDecl.children) {
+                    mElements.push(xCurrEl);
+                }
+            }
+        }
+        return mElements;
     }
 
     getChild(...names: string[]) {
@@ -24,6 +39,28 @@ export class UINode {
         }
         return current;
     }
+
+    findElements(predicate: (itemEl: XMLElement) => boolean) {
+        if (!this._elements) this._elements = this.collectElements();
+
+        const mElements: XMLElement[] = [];
+        for (const currEl of this._elements) {
+            if (!predicate(currEl)) continue;
+            mElements.push(currEl);
+        }
+
+        return mElements;
+    }
+
+    // childrenOfType<T>(tp: typeof UINode) {
+    //     const rm = new Map<string, T>();
+    //     for (const [key, item] of this.children) {
+    //         if (item instanceof tp) {
+    //             rm.set(key, <any>item);
+    //         }
+    //     }
+    //     return rm;
+    // }
 
     get topNode() {
         let tmp: UINode = this;
@@ -36,14 +73,36 @@ export class UINode {
     get fqn(): string {
         return (this.parent) ? `${this.parent.fqn}/${this.name}` : this.name;
     }
-
-    // get originDesc()
 }
 
 export class FrameNode extends UINode {
+    // get animations() {
+    //     return this.childrenOfType<AnimationNode>(AnimationNode);
+    // }
+
+    // get stateGroups() {
+    //     return this.childrenOfType<StateGroupNode>(StateGroupNode);
+    // }
 }
 
 export class StateGroupNode extends UINode {
+}
+
+export class AnimationNode extends UINode {
+    getEvents() {
+        const r = new Map<string, XMLElement[]>();
+        for (const item of this.findElements(item => item.sdef.nodeKind === sch.ElementDefKind.AnimationEvent)) {
+            const val = item.getAttributeValue('event', void 0);
+            if (!val) continue;
+            let entry = r.get(val);
+            if (!entry) {
+                entry = [];
+                r.set(val, entry);
+            }
+            entry.push(item);
+        }
+        return r;
+    }
 }
 
 function createNodeFromDesc(desc: DescNamespace, parent?: UINode) {
@@ -52,15 +111,17 @@ function createNodeFromDesc(desc: DescNamespace, parent?: UINode) {
             return new FrameNode(desc, parent);
         case DescKind.StateGroup:
             return new StateGroupNode(desc, parent);
+        case DescKind.Animation:
+            return new AnimationNode(desc, parent);
         default:
             return new UINode(desc, parent);
     }
 }
 
 class ResolvedSelection {
-    public readonly chain: FrameNode[] = [];
+    public readonly chain: UINode[] = [];
 
-    constructor(public topNode: FrameNode, protected path: SelectorFragment[]) {
+    constructor(public topNode: UINode, protected path: SelectorFragment[]) {
     }
 
     get isValid() {
@@ -85,6 +146,8 @@ export class UIBuilder {
         const rootNs = this.rootNs;
 
         function processDesc(uNode: UINode, frDesc: DescNamespace, tpath: string[] | null) {
+            uNode.descs.add(frDesc);
+
             // apply template
             const tplpath = frDesc.template;
             if (tplpath !== null) {
@@ -175,7 +238,7 @@ export class UINavigator {
         this.uBuilder = new UIBuilder(schema, dIndex);
     }
 
-    resolveSelectorFragment(uNode: FrameNode, selFrag: SelectorFragment) {
+    resolveSelectorFragment(uNode: UINode, selFrag: SelectorFragment) {
         switch (selFrag.selKind) {
             case SelHandleKind.Ancestor:
             {
@@ -277,7 +340,7 @@ export class UINavigator {
         return;
     }
 
-    resolveSelection(uNode: FrameNode, path: SelectorFragment[]) {
+    resolveSelection(uNode: UINode, path: SelectorFragment[]) {
         const resSel = new ResolvedSelection(uNode, path);
         if (!uNode.build) this.uBuilder.expandNode(uNode, []);
 
@@ -298,7 +361,30 @@ export class UINavigator {
         return resSel;
     }
 
-    getContextFrameNode(uNode: FrameNode) {
+    resolveChild(uNode: UINode, name: string) {
+        const childNode = uNode.getChild(name);
+        if (!childNode) return;
+        if (!childNode.build) this.uBuilder.expandNode(childNode, []);
+        return childNode;
+    }
+
+    getChildrenOfType<T extends UINode>(uNode: UINode, dkind: DescKind) {
+        const rm = new Map<string, T>();
+        outer: for (const item of Array.from(uNode.children.values())) {
+            switch (dkind) {
+                case DescKind.Frame:
+                    if (!(item instanceof FrameNode)) continue outer;
+                case DescKind.StateGroup:
+                    if (!(item instanceof StateGroupNode)) continue outer;
+                case DescKind.Animation:
+                    if (!(item instanceof AnimationNode)) continue outer;
+            }
+            rm.set(item.name, <any>item);
+        }
+        return rm;
+    }
+
+    getContextFrameNode(uNode: UINode) {
         if (uNode.constructor !== FrameNode) {
             if (uNode.parent && uNode.parent.constructor === FrameNode) {
                 uNode = uNode.parent;
