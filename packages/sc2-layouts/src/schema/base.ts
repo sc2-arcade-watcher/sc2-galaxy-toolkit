@@ -1,4 +1,4 @@
-export enum BuiltinTypeKind {
+export const enum BuiltinTypeKind {
     Unknown,
     //
     Uint8,
@@ -18,7 +18,10 @@ export enum BuiltinTypeKind {
     FrameName,
     DescTemplateName,
     FrameReference,
+    AnimationName,
     EventName,
+    PropertyName,
+    PropertyValue,
     //
     Image,
     Color,
@@ -29,35 +32,22 @@ export enum BuiltinTypeKind {
     Handle,
 }
 
-// const reBool = /^(true|false)$/i;
-// const reUint = /^\+?[0-9]+$/;
-// const reInt = /^(\+|\-)?[0-9]+$/;
-// const reReal = /^(\+|\-)?[0-9]+(\.[0-9]+)?[0-9]*$/;
-// const reFlag = /^([\w \|\!]+)$/i;
-// const reColor = /^([a-f0-9]{6}|\s*[0-9]{3},\s*[0-9]{3},\s*[0-9]{3})$/i;
+export const enum MappedComplexKind {
+    Unknown,
 
-// function validateBuiltinType(typeKind: BuiltinTypeKind, value: string) {
-//     switch (typeKind) {
-//         case BuiltinTypeKind.Boolean:
-//             return reBool.test(value);
-//         case BuiltinTypeKind.Uint8:
-//         case BuiltinTypeKind.Uint16:
-//         case BuiltinTypeKind.Uint32:
-//         case BuiltinTypeKind.Uint64:
-//             return reUint.test(value);
-//         case BuiltinTypeKind.Int8:
-//         case BuiltinTypeKind.Int16:
-//         case BuiltinTypeKind.Int32:
-//         case BuiltinTypeKind.Int64:
-//             return reInt.test(value);
-//         case BuiltinTypeKind.Real32:
-//             return reReal.test(value);
-//         case BuiltinTypeKind.Color:
-//             return reColor.test(value);
-//         case BuiltinTypeKind.String:
-//             return true;
-//     }
-// }
+    // StateGroup
+    CFrameStateConditionProperty,
+    CFrameStateConditionAnimationState,
+    CFrameStateConditionStateGroup,
+    CFrameStateConditionOption,
+    CFrameStateSetStateAction,
+    CFrameStateSetPropertyAction,
+    CFrameStateSetAnimationPropAction,
+    CFrameStateSetAnchorAction,
+    CFrameStateSendEventAction,
+    CFrameStatePlaySoundAction,
+    CFrameStateApplyTemplateAction,
+}
 
 //
 
@@ -117,6 +107,11 @@ export interface Attribute {
     documentation?: string;
 }
 
+export interface IndeterminateAttr {
+    key: SimpleType;
+    value: SimpleType;
+}
+
 export const enum ComplexTypeFlags {
     IsStruct            = 1 << 0,
     ReadOnly            = 1 << 2,
@@ -124,8 +119,10 @@ export const enum ComplexTypeFlags {
 }
 
 export interface ComplexType extends SModel {
+    mpKind: MappedComplexKind;
     flags: ComplexTypeFlags;
     attributes: Map<string, Attribute>;
+    indeterminateAttributes: Map<string, IndeterminateAttr>;
     struct: Map<string, ElementDef>;
 }
 

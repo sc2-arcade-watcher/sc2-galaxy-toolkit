@@ -81,6 +81,10 @@ namespace smp {
             default?: string;
             documentation?: string;
         }[];
+        indeterminateAttribute: {
+            key: string;
+            value: string;
+        }[],
         element?: {
             name: string;
             simpleType?: string;
@@ -151,6 +155,7 @@ function readMap(schDir: string) {
         },
         [MDefs.ComplexType]: (data: smp.ComplexType) => {
             if (typeof data.attribute === 'undefined') data.attribute = [];
+            if (typeof data.indeterminateAttribute === 'undefined') data.indeterminateAttribute = [];
             if (typeof data.flag === 'undefined') data.flag = [];
             if (typeof data.element === 'undefined') data.element = [];
             for (const attr of data.attribute) {
@@ -260,11 +265,13 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
         if (!prop.elementType) {
             prop.elementType = `Field:${prop.valueType}`;
             if (!entries.has(prop.elementType)) {
-                const ctype = <sch.ComplexType>{
+                const ctype: sch.ComplexType = {
                     name: prop.elementType,
+                    mpKind: sch.MappedComplexKind.Unknown,
                     flags: 0,
                     attributes: new Map(),
                     struct: new Map(),
+                    indeterminateAttributes: new Map(),
                 };
                 ctype.attributes.set('val', <sch.Attribute>{
                     name: 'val',
@@ -286,11 +293,13 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
             }
 
             if (!entries.has(prop.elementType)) {
-                const ctype = <sch.ComplexType>{
+                const ctype: sch.ComplexType = {
                     name: prop.elementType,
+                    mpKind: sch.MappedComplexKind.Unknown,
                     flags: 0,
                     attributes: new Map(),
                     struct: new Map(),
+                    indeterminateAttributes: new Map(),
                 };
                 extendComplexType(ctype, <sch.ComplexType>entries.get(cpElementType));
                 ctype.attributes.set(prop.tableKey, <sch.Attribute>{
@@ -315,7 +324,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
             kind: sch.SimpleTypeKind.Default,
             data: sch.SimpleTypeData.String,
         };
-        const builtinId: sch.BuiltinTypeKind = <any>sch.BuiltinTypeKind[<any>item.name];
+        const builtinId: sch.BuiltinTypeKind = (<any>sch).BuiltinTypeKind[item.name];
         if (builtinId) {
             rt.builtinType = builtinId;
         }
@@ -358,12 +367,18 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
     // - Complex type
     // ===
     processSM((item: smp.ComplexType) => {
-        const ct = <sch.ComplexType>{
+        const ct: sch.ComplexType = {
             name: item.name,
+            mpKind: sch.MappedComplexKind.Unknown,
             flags: 0,
             attributes: new Map(),
             struct: new Map(),
+            indeterminateAttributes: new Map(),
         };
+        const mappedKind: sch.MappedComplexKind = (<any>sch).MappedComplexKind[item.name];
+        if (mappedKind) {
+            ct.mpKind = mappedKind;
+        }
         if (item.extend) {
             for (const extension of item.extend) {
                 assert.isNotEmpty(extension.value);
@@ -386,6 +401,14 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
                 }
                 ct.attributes.set(attr.name.toLowerCase(), scAttr);
             }
+        }
+        for (const currImAttr of item.indeterminateAttribute) {
+            assert.isNotEmpty(currImAttr.key);
+            assert.isNotEmpty(currImAttr.value);
+            ct.indeterminateAttributes.set(currImAttr.key, {
+                key: resolveSchType(currImAttr.key),
+                value: resolveSchType(currImAttr.value),
+            });
         }
         if (item.element) {
             for (const el of item.element) {
@@ -461,11 +484,13 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
     // - Frame class
     // ===
     processSM((item: smp.FrameClass) => {
-        const ct = <sch.ComplexType>{
+        const ct: sch.ComplexType = {
             name: item.name,
+            mpKind: sch.MappedComplexKind.Unknown,
             flags: 0,
             attributes: new Map(),
             struct: new Map(),
+            indeterminateAttributes: new Map(),
         };
 
         for (const prop of item.property) {
@@ -494,11 +519,13 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
     // - Frame type
     // ===
     processSM((item: smp.FrameType) => {
-        const ct = <sch.ComplexType>{
+        const ct: sch.ComplexType = {
             name: item.name,
+            mpKind: sch.MappedComplexKind.Unknown,
             flags: 0,
             attributes: new Map(),
             struct: new Map(),
+            indeterminateAttributes: new Map(),
         };
 
         extendComplexType(ct, resolveSchType('Frame'));

@@ -334,6 +334,17 @@ class AttrValueProvider extends SuggestionsProvider {
         }));
     }
 
+    protected suggestAnimNames(ctx: AtValComplContext) {
+        const uNode = this.xray.determineTargetFrameNode(ctx.node);
+        if (!uNode) return;
+        for (const aNode of this.uNavigator.getChildrenOfType<AnimationNode>(uNode, DescKind.Animation).values()) {
+            ctx.citems.push({
+                label: aNode.name,
+                kind: vs.CompletionItemKind.Variable,
+            });
+        }
+    }
+
     public provide(ctx: AtValComplContext) {
         const sAttrItem = ctx.node.stype.attributes.get(ctx.attrName);
         let sAttrType: sch.SimpleType;
@@ -386,6 +397,12 @@ class AttrValueProvider extends SuggestionsProvider {
                 break;
             }
 
+            case sch.BuiltinTypeKind.AnimationName:
+            {
+                this.suggestAnimNames(ctx);
+                break;
+            }
+
             default:
             {
                 completionsForSimpleType(sAttrType).forEach(r => { ctx.citems.push(r); });
@@ -397,20 +414,44 @@ class AttrValueProvider extends SuggestionsProvider {
 
 // ====
 
-export class CompletionsProvider extends AbstractProvider implements vs.CompletionItemProvider {
-    protected atValueProvider: AttrValueProvider;
+class AttrNameProvider extends SuggestionsProvider {
+    protected matchIndeterminateAttr(ctx: AtComplContext) {
+        if (!ctx.node.stype.indeterminateAttributes.size) return;
 
-    protected provideConstants(compls: vs.CompletionItem[], dblSlash = false) {
-        for (const item of this.store.index.constants.values()) {
-            compls.push(<vs.CompletionItem>{
-                kind: vs.CompletionItemKind.Constant,
-                label: (dblSlash ? '##' : '#') + `${item.name}`,
-                detail: Array.from(item.declarations.values()).map(decl => decl.getAttributeValue('val')).join('\n'),
-            });
+        for (const [sname, sattr] of ctx.node.stype.attributes) {
+            if (!sattr.required) continue;
+            if (!ctx.node.attributes[sname]) return;
         }
+
+        for (const atKey in ctx.node.attributes) {
+            if (ctx.node.stype.attributes.has(atKey)) continue;
+            if (ctx.node.attributes[atKey].name !== ctx.attrName) {
+                return;
+            }
+            break;
+        }
+
+        return Array.from(ctx.node.stype.indeterminateAttributes.values())[0];
     }
 
-    protected processAttrName(ctx: AtComplContext) {
+    public provide(ctx: AtComplContext) {
+        let atHasValue = false;
+        if (ctx.attrName && ctx.node.attributes[ctx.attrName]) {
+            atHasValue = ctx.node.attributes[ctx.attrName].startValue !== void 0;
+        }
+
+        function createCompletion(name: string, detail?: string) {
+            const tmpc = <vs.CompletionItem>{
+                label: name,
+                kind: vs.CompletionItemKind.Field,
+                detail: detail,
+            };
+            if (!atHasValue) {
+                tmpc.insertText = new vs.SnippetString(`${name}="\$0"`);
+            }
+            return tmpc;
+        }
+
         for (const [sAttrKey, sAttrItem] of ctx.node.stype.attributes) {
             if (
                 (ctx.node.attributes[sAttrKey] && ctx.node.attributes[sAttrKey].startValue) &&
@@ -424,10 +465,61 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                 kind: vs.CompletionItemKind.Field,
                 detail: sAttrItem.type.name,
                 documentation: new vs.MarkdownString(sAttrItem.documentation),
-                insertText: new vs.SnippetString(`${sAttrItem.name}="\$0"`),
-                command: sAttrItem.type.builtinType !== sch.BuiltinTypeKind.String ? {command: 'editor.action.triggerSuggest'} : void 0,
+                insertText: sAttrItem.name,
             };
+            if (!atHasValue) {
+                tmpc.insertText = new vs.SnippetString(`${sAttrItem.name}="\$0"`);
+                tmpc.command = sAttrItem.type.builtinType !== sch.BuiltinTypeKind.String ? {command: 'editor.action.triggerSuggest', title: ''} : void 0;
+            }
             ctx.citems.push(tmpc);
+        }
+
+        const indAttr = this.matchIndeterminateAttr(ctx);
+        if (indAttr) {
+            const uFrame = this.xray.determineTargetFrameNode(ctx.node);
+
+            switch (indAttr.key.builtinType) {
+                case sch.BuiltinTypeKind.AnimationName:
+                {
+                    for (const uAnim of this.uNavigator.getChildrenOfType(uFrame, DescKind.Animation).values()) {
+                        ctx.citems.push(createCompletion(uAnim.name, `[${indAttr.key.name}]`));
+                    }
+                    break;
+                }
+
+                case sch.BuiltinTypeKind.PropertyName:
+                {
+                    let sfType: sch.FrameType;
+                    if (uFrame) {
+                        sfType = this.store.schema.getFrameType(Array.from(uFrame.mainDesc.xDecls)[0].stype);
+                    }
+                    for (const currSfType of this.store.schema.frameTypes.values()) {
+                        if (sfType !== void 0 && sfType !== currSfType) continue;
+                        for (const currScProp of currSfType.fprops.values()) {
+                            ctx.citems.push(createCompletion(currScProp.name, `[${indAttr.key.name}] belongs to ${currScProp.fclass.name}`));
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+    }
+}
+
+// ====
+
+export class CompletionsProvider extends AbstractProvider implements vs.CompletionItemProvider {
+    protected atValueProvider: AttrValueProvider;
+    protected atNameProvider: AttrNameProvider;
+
+    protected provideConstants(compls: vs.CompletionItem[], dblSlash = false) {
+        for (const item of this.store.index.constants.values()) {
+            compls.push(<vs.CompletionItem>{
+                kind: vs.CompletionItemKind.Constant,
+                label: (dblSlash ? '##' : '#') + `${item.name}`,
+                detail: Array.from(item.declarations.values()).map(decl => decl.getAttributeValue('val')).join('\n'),
+            });
         }
     }
 
@@ -536,16 +628,16 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                 switch (itemSch.name) {
                     case 'CFrameStateConditionProperty':
                     case 'CFrameStateSetPropertyAction':
-                        complItem.insertText += ` \${${++i}:Property}="\$${++i}"`;
+                        complItem.insertText += ` \${${++i}:Property}`;
                         break;
                     case 'CFrameStateConditionAnimationState':
-                        complItem.insertText += ` \${${++i}:AnimState}="\$${++i}"`;
+                        complItem.insertText += ` \${${++i}:Animation}`;
                         break;
                     case 'CFrameStateConditionStateGroup':
-                        complItem.insertText += ` \${${++i}:StateGroup}="\$${++i}"`;
+                        complItem.insertText += ` \${${++i}:StateGroup}`;
                         break;
                     case 'CFrameStateConditionOption':
-                        complItem.insertText += ` \${${++i}:Option}="\$${++i}"`;
+                        complItem.insertText += ` \${${++i}:Option}`;
                         break;
                 }
                 complItem.insertText += '/>';
@@ -665,6 +757,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
     public init(svcContext: ServiceContext, store: Store, console: ILoggerConsole) {
         super.init(svcContext, store, console);
         this.atValueProvider = new AttrValueProvider(this.store, console);
+        this.atNameProvider = new AttrNameProvider(this.store, console);
     }
 
     @svcRequest(
@@ -764,8 +857,15 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                 if (scanner.getScannerState() === ScannerState.AfterOpeningEndTag) break;
                 if (!node.stype) return;
                 const cmAtCtx = <AtComplContext>cmCtx;
-                cmAtCtx.attrName = currentAttrName;
-                this.processAttrName(cmAtCtx);
+                switch (cmCtx.xtoken) {
+                    case TokenType.AttributeName:
+                    case TokenType.StartTag:
+                    {
+                        cmAtCtx.attrName = currentAttrName;
+                        break;
+                    }
+                }
+                this.atNameProvider.provide(cmAtCtx);
                 break;
             }
 

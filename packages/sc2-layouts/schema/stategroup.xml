@@ -12,23 +12,23 @@
     <complexType name="CFrameStateConditionProperty">
         <extend value="CFrameStateCondition"/>
         <attribute name="operator" type="EStatePropertyOperator" default="Equal"/>
-        <!-- property name validated in code -->
+        <attribute name="index" type="Uint8"/>
+        <indeterminateAttribute key="PropertyName" value="PropertyValue"/>
     </complexType>
 
     <complexType name="CFrameStateConditionAnimationState">
         <extend value="CFrameStateCondition"/>
-        <flag name="AllowExtraAttrs" value="true"/>
+        <indeterminateAttribute key="AnimationName" value="EventName"/>
     </complexType>
 
     <complexType name="CFrameStateConditionStateGroup">
         <extend value="CFrameStateCondition"/>
-        <flag name="AllowExtraAttrs" value="true"/>
+        <indeterminateAttribute key="String" value="String"/>
     </complexType>
 
     <complexType name="CFrameStateConditionOption">
         <extend value="CFrameStateCondition"/>
-        <attribute name="localeiddata" type="String"/>
-        <flag name="AllowExtraAttrs" value="true"/>
+        <indeterminateAttribute key="String" value="String"/>
     </complexType>
 
     <!--
@@ -52,14 +52,13 @@
         <extend value="CFrameStateAction"/>
         <attribute name="index" type="Uint8"/>
         <attribute name="layer" type="Uint8"/>
-        <!-- property name validated in code -->
+        <indeterminateAttribute key="PropertyName" value="PropertyValue"/>
     </complexType>
 
     <complexType name="CFrameStateSetAnimationPropAction">
         <extend value="CFrameStateAction"/>
-        <attribute name="animation" type="String" use="required"/>
+        <attribute name="animation" type="AnimationName" use="required"/>
         <attribute name="enabled" type="Boolean" use="required"/>
-        <!-- <attribute name="animationSpeed" type="Real32"/> -->
     </complexType>
 
     <complexType name="CFrameStateSetAnchorAction">
@@ -72,7 +71,7 @@
 
     <complexType name="CFrameStateSendEventAction">
         <extend value="CFrameStateAction"/>
-        <attribute name="event" type="String" use="required"/>
+        <attribute name="event" type="EventName" use="required"/>
     </complexType>
 
     <complexType name="CFrameStatePlaySoundAction">

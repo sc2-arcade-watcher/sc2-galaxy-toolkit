@@ -36,6 +36,8 @@ export class XRay {
         switch (xEl.sdef.nodeKind) {
             case sch.ElementDefKind.AnimationController:
             case sch.ElementDefKind.AnimationEvent:
+            case sch.ElementDefKind.StateGroupStateCondition:
+            case sch.ElementDefKind.StateGroupStateAction:
             {
                 const av = xEl.getAttributeValue('frame', void 0);
                 if (!av) break;

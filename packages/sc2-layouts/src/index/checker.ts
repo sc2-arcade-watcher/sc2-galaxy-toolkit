@@ -33,6 +33,14 @@ export class LayoutChecker {
         this.reportAt(msg, { start: nattr.start, end: nattr.end, category: category });
     }
 
+    protected reportAtAttrName(nattr: XMLAttr, msg: string, category?: DiagnosticCategory) {
+        this.reportAt(msg, { start: nattr.start, end: nattr.start + nattr.name.length, category: category });
+    }
+
+    protected reportAtAttrVal(nattr: XMLAttr, msg: string, category?: DiagnosticCategory) {
+        this.reportAt(msg, { start: nattr.startValue || nattr.start, end: nattr.end, category: category });
+    }
+
     protected forwardExpressionDiagnostics(nattr: XMLAttr, expr: NodeExpr) {
         this.diagnostics.push(...expr.diagnostics.map(item => {
             item.start += nattr.startValue + 1;
@@ -74,45 +82,27 @@ export class LayoutChecker {
             }
         }
 
+        const indAtProcessed = new Set<string>();
         outer: for (const atName in el.attributes) {
             const nattr = el.attributes[atName];
             if (!nattr.startValue) continue;
-            let vstype = el.stype.attributes.get(atName);
+            let asType: sch.SimpleType;
 
-            if (!vstype) {
-                switch (el.sdef.nodeKind) {
-                    case sch.ElementDefKind.StateGroupStateCondition:
-                    case sch.ElementDefKind.StateGroupStateAction:
-                    {
-                        switch (el.stype.name) {
-                            case 'CFrameStateConditionProperty':
-                            case 'CFrameStateSetPropertyAction':
-                            {
-                                const sprop = this.store.schema.getPropertyByName(nattr.name);
-                                if (!sprop) {
-                                    this.reportAtAttr(nattr, `Expected valid property name, found "${nattr.name}"`, DiagnosticCategory.Warning);
-                                    continue outer;
-                                }
-                                vstype = sprop.etype.type.attributes.get('val');
-                                if (!vstype) vstype = sprop.etype.type.attributes.values().next().value;
-                                if (!vstype) {
-                                    this.reportAtAttr(nattr, `Internal type unknown [${sprop.etype.name}]`, DiagnosticCategory.Warning);
-                                    continue outer;
-                                }
-                                break;
-                            }
-                        }
-                        break;
-                    }
+            const vstype = el.stype.attributes.get(atName);
+            if (vstype) {
+                asType = vstype.type;
+            }
 
-                    default:
-                    {
-                    }
+            if (!asType) {
+                for (const [indKey, indItem] of el.stype.indeterminateAttributes) {
+                    if (indAtProcessed.has(indKey)) continue;
+                    asType = indItem.value;
+                    indAtProcessed.add(indKey);
                 }
 
-                if (!vstype) {
+                if (!asType) {
                     if (!(el.stype.flags & sch.ComplexTypeFlags.AllowExtraAttrs)) {
-                        this.reportAtAttr(nattr, `Unknown attribute "${nattr.name}"`, DiagnosticCategory.Message);
+                        this.reportAtAttrName(nattr, `Unknown attribute "${nattr.name}"`, DiagnosticCategory.Message);
                     }
                     continue outer;
                 }
@@ -125,7 +115,7 @@ export class LayoutChecker {
                     const name = nattr.value.substr(nattr.value.charCodeAt(1) === CharacterCodes.hash ? 2 : 1);
                     const citem = this.index.constants.get(name);
                     if (!citem) {
-                        this.reportAtAttr(nattr, `Undeclared constant "${nattr.value}"`);
+                        this.reportAtAttrVal(nattr, `Undeclared constant "${nattr.value}"`);
                         continue outer;
                     }
                     break;
@@ -144,7 +134,7 @@ export class LayoutChecker {
                     }
                     const sprop = this.store.schema.getPropertyByName(propBind.property.name);
                     if (!sprop) {
-                        this.reportAtAttr(nattr, `Invalid property name`, DiagnosticCategory.Warning);
+                        this.reportAtAttrVal(nattr, `Invalid property name`, DiagnosticCategory.Warning);
                         continue outer;
                     }
                     break;
@@ -152,13 +142,13 @@ export class LayoutChecker {
 
                 case AttrValueKind.Generic:
                 {
-                    const r = this.svalidator.validateAttrValue(nattr.value, vstype.type);
+                    const r = this.svalidator.validateAttrValue(nattr.value, asType);
                     if (r) {
-                        this.reportAtAttr(nattr, r);
+                        this.reportAtAttrVal(nattr, r);
                         break;
                     }
 
-                    switch (vstype.type.builtinType) {
+                    switch (asType.builtinType) {
                         case sch.BuiltinTypeKind.DescTemplateName:
                         {
                             this.parseAndCheckPathSelector(nattr);
@@ -168,6 +158,14 @@ export class LayoutChecker {
 
                     break;
                 }
+            }
+        }
+
+        //
+        if (el.stype.indeterminateAttributes.size) {
+            for (const indAttr of el.stype.indeterminateAttributes.values()) {
+                if (indAtProcessed.has(indAttr.key.name)) continue;
+                this.reportAtNode(el, `Missing special attribute [${indAttr.key.name}]`);
             }
         }
 
