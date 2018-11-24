@@ -12,7 +12,7 @@ import { HoverProvider } from './services/hover';
 import { ElementDefKind } from './schema/base';
 import { generateSchema } from './schema/map';
 import { DefinitionProvider } from './services/definition';
-import { objventries } from './common';
+import { objventries, globify } from './common';
 import * as s2 from './index/s2mod';
 import { NavigationProvider } from './services/navigation';
 import { DiagnosticsProvider } from './services/diagnostics';
@@ -356,15 +356,11 @@ export class ServiceContext implements IService {
 
     @svcRequest(false, (uri: vs.Uri) => uri.fsPath)
     protected async indexDirectory(uri: vs.Uri) {
-        const r = await new Promise<string[]>((resolve, reject) => {
-            glob(`**/*.${languageExt}`, {
-                cwd: uri.fsPath,
-                absolute: true,
-                nodir: true,
-            }, (err, matches) => {
-                if (err) reject(err);
-                else resolve(matches);
-            });
+        const r = await globify(`**/*.${languageExt}`, {
+            cwd: uri.fsPath,
+            absolute: true,
+            nodir: true,
+            nocase: true,
         });
         this.output.appendLine(`results ${r.length}`);
         for (const item of r) {

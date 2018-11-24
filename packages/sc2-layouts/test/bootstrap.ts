@@ -1,6 +1,3 @@
-import 'mocha';
-import { getSchema } from './helpers';
+import { generateSchema } from '../src/schema/map';
 
-before(function() {
-    getSchema();
-});
+(<any>global)._cachedSchema = generateSchema('schema');
