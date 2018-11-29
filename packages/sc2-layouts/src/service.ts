@@ -16,6 +16,7 @@ import { objventries, globify } from './common';
 import * as s2 from './index/s2mod';
 import { NavigationProvider } from './services/navigation';
 import { DiagnosticsProvider } from './services/diagnostics';
+import { TreeViewProvider } from './services/dtree';
 
 // const builtinMods = [
 //     'campaigns/liberty.sc2campaign',
@@ -44,11 +45,16 @@ export interface ExtConfigCompletion {
     tabStop: ExtConfigCompletionTabStopKind;
 }
 
+export interface ExtTreeView {
+    visible: boolean;
+}
+
 export interface ExtConfig {
     builtinMods: ExtCfgSect.builtinMods;
     documentUpdateDelay: number;
     documentDiagnosticsDelay: number;
     completion: ExtConfigCompletion;
+    treeview: ExtTreeView;
 }
 
 type ExtCfgKey = keyof ExtConfig;
@@ -121,6 +127,7 @@ export class ServiceContext implements IService {
     protected hoverProvider: HoverProvider;
     protected definitionProvider: DefinitionProvider;
     protected navigationProvider: NavigationProvider;
+    protected treeviewProvider: TreeViewProvider;
     protected diagnosticsProvider: DiagnosticsProvider;
 
     extContext: vs.ExtensionContext;
@@ -132,6 +139,7 @@ export class ServiceContext implements IService {
     activate(context: vs.ExtensionContext) {
         this.extContext = context;
         this.store = new Store(generateSchema(path.join(context.extensionPath, 'schema')));
+        this.store.s2ws.logger = this.console;
 
         // -
         const lselector = <vs.DocumentSelector>{
@@ -159,7 +167,13 @@ export class ServiceContext implements IService {
             log: emitOutput,
             debug: emitOutput,
         };
-        // this.output.show();
+        if (process.env.SC2LDEBUG) {
+            this.output.show();
+        }
+
+        // -
+        this.readConfig();
+
 
         // -
         this.diagnosticCollection = vs.languages.createDiagnosticCollection(languageId);
@@ -167,7 +181,7 @@ export class ServiceContext implements IService {
 
         // -
         this.completionsProvider = this.createProvider(CompletionsProvider);
-        context.subscriptions.push(vs.languages.registerCompletionItemProvider(lselector, this.completionsProvider, '<', '"', '#', '$', '@', '/'));
+        context.subscriptions.push(vs.languages.registerCompletionItemProvider(lselector, this.completionsProvider, '<', '"', '#', '$', '@', '/', '\\'));
 
         // -
         this.hoverProvider = this.createProvider(HoverProvider);
@@ -181,6 +195,12 @@ export class ServiceContext implements IService {
         this.navigationProvider = this.createProvider(NavigationProvider);
         context.subscriptions.push(vs.languages.registerDocumentSymbolProvider(lselector, this.navigationProvider));
         context.subscriptions.push(vs.languages.registerWorkspaceSymbolProvider(this.navigationProvider));
+
+        // -
+        this.treeviewProvider = this.createProvider(TreeViewProvider);
+        if (this.config.treeview.visible) {
+            context.subscriptions.push(this.treeviewProvider.register());
+        }
 
         // -
         this.diagnosticsProvider = this.createProvider(DiagnosticsProvider);
@@ -201,13 +221,16 @@ export class ServiceContext implements IService {
         context.subscriptions.push(vs.workspace.onDidCloseTextDocument(async document => {
             if (document.languageId !== languageId) return;
             this.diagnosticCollection.delete(document.uri);
-            await this.syncDocument(createTextDocumentFromFs(document.uri.fsPath), true);
+            if (document.isDirty) {
+                await this.syncDocument(await createTextDocumentFromFs(document.uri.fsPath), true);
+            }
         }));
 
         // -
         context.subscriptions.push(vs.workspace.onDidChangeConfiguration(async e => {
             if (!e.affectsConfiguration(`${languageId}`)) return;
             this.readConfig();
+
             if (e.affectsConfiguration(`${languageId}.builtinMods`)) {
                 await this.reinitialize();
             }
@@ -215,6 +238,7 @@ export class ServiceContext implements IService {
 
         // -
         context.subscriptions.push(this);
+        this.store.s2ws.logger = this.console;
 
         // -
         this.initialize();
@@ -228,8 +252,8 @@ export class ServiceContext implements IService {
     }
 
     protected async reinitialize() {
-        this.store.clear();
         this.dispose();
+        await this.store.clear();
         await this.initialize();
     }
 
@@ -295,6 +319,9 @@ export class ServiceContext implements IService {
             documentDiagnosticsDelay: wsConfig.get<number>('documentDiagnosticsDelay', -1),
             completion: {
                 tabStop: <any>ExtConfigCompletionTabStopKind[<any>wsConfig.get<string>('completion.tabStop')],
+            },
+            treeview: {
+                visible: wsConfig.get('treeview.visible'),
             }
         };
         this.console.log('[readConfig]', this.config);
@@ -306,55 +333,65 @@ export class ServiceContext implements IService {
         const wsArchives: s2.Archive[] = [];
 
         // -
-        this.readConfig();
-
-        // -
         for (const [mod, enabled] of objventries(this.config.builtinMods)) {
             if (!enabled) continue;
             const uri = URI.file(path.join(this.extContext.extensionPath, 'sc2-data', <string>mod));
-            archives.push(new s2.Archive(<string>mod, uri));
+            archives.push(new s2.Archive(<string>mod, uri, true));
         }
 
         // -
-        for (const sa of archives) {
-            await this.indexDirectory(sa.uri);
-        }
-
-        // -
-        if (vs.workspace.workspaceFolders) {
+        if (vs.workspace.workspaceFolders.length) {
             for (const wsFolder of vs.workspace.workspaceFolders) {
-                // const r = await vs.workspace.findFiles(`**/*.${languageExt}`, uri.fsPath);
-                await this.indexDirectory(wsFolder.uri);
-
                 for (const fsPath of (await s2.findArchiveDirectories(wsFolder.uri.fsPath))) {
-                    wsArchives.push(new s2.Archive(`${wsFolder.name}/${path.basename(fsPath)}`, URI.file(fsPath)));
+                    let name = path.basename(fsPath);
+                    if (name !== wsFolder.name) {
+                        name = `${wsFolder.name}/${path.basename(fsPath)}`;
+                    }
+                    wsArchives.push(new s2.Archive(name, URI.file(fsPath)));
                 }
             }
-            this.console.info('S2Archives in workspace:', wsArchives.map(item => {
+        }
+
+        // -
+        if (wsArchives.length) {
+            this.console.info('s2mods found in workspace:', wsArchives.map(item => {
                 return {name: item.name, fsPath: item.uri.fsPath};
             }));
         }
+        else if (!vs.workspace.workspaceFolders.length) {
+            this.console.info('No folders in workspace.');
+        }
+        else {
+            this.console.info('No s2mods found in workspace folders. Using workspace rootPath as a base for indexing.');
+            wsArchives.push(new s2.Archive(path.basename(vs.workspace.rootPath), URI.file(vs.workspace.rootPath)));
+        }
 
         // -
-        this.store.s2ws = new s2.Workspace(archives.concat(wsArchives), this.console);
+        const mArchives = archives.concat(wsArchives);
+        this.store.presetArchives(...mArchives);
+        this.console.info(`Indexing layouts files..`);
+        await Promise.all(mArchives.map(sa => this.indexDirectory(sa.uri)));
+
+        // -
+        this.console.info(`Indexing s2mods metadata..`);
         await this.store.s2ws.reload();
-
-        // -
-        // vs.workspace.findFiles(`**/*.${languageExt}`).then(e => {
-        //     this.output.appendLine(`findFiles ${e.length}`)
-        //     for (const item of e) {
-        //         this.indexDocument(createTextDocumentFromFs(item.fsPath));
-        //     }
-        // });
 
         // -
         this.fsWatcher = vs.workspace.createFileSystemWatcher('**/{GameStrings.txt,GameHotkeys.txt,Assets.txt,AssetsProduct.txt,FontStyles.SC2Style,*.SC2Layout}');
         this.fsWatcher.onDidCreate(e => this.onFileChange({type: vs.FileChangeType.Created, uri: e}));
         this.fsWatcher.onDidDelete(e => this.onFileChange({type: vs.FileChangeType.Deleted, uri: e}));
         this.fsWatcher.onDidChange(e => this.onFileChange({type: vs.FileChangeType.Changed, uri: e}));
+
+        // -
+        for (const item of vs.window.visibleTextEditors) {
+            if (item.document.languageId !== languageId) continue;
+            if (item.document.isClosed) continue;
+            if (!this.store.s2ws.matchFileWorkspace(item.document.uri)) continue;
+            await this.syncVsDocument(item.document);
+            await this.provideDiagnostics(item.document.uri.toString());
+        }
     }
 
-    @svcRequest(false, (uri: vs.Uri) => uri.fsPath)
     protected async indexDirectory(uri: vs.Uri) {
         const r = await globify(`**/*.${languageExt}`, {
             cwd: uri.fsPath,
@@ -362,9 +399,9 @@ export class ServiceContext implements IService {
             nodir: true,
             nocase: true,
         });
-        this.output.appendLine(`results ${r.length}`);
+        this.output.appendLine(`${uri.fsPath} [${r.length}]`);
         for (const item of r) {
-            await this.syncDocument(createTextDocumentFromFs(item));
+            await this.syncDocument(await createTextDocumentFromFs(item));
         }
     }
 

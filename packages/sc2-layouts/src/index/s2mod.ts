@@ -61,6 +61,14 @@ export class StringFile {
         this.src.set(archive, sm);
     }
 
+    async add(archive: Archive) {
+        await this.reload(archive);
+    }
+
+    async delete(archive: Archive) {
+        this.src.delete(archive);
+    }
+
     *entries() {
         for (const [sa, kstr] of this.src) {
             for (const [key, val] of kstr) {
@@ -130,6 +138,18 @@ export class StringsComponent {
         }
     }
 
+    async add(archive: Archive) {
+        for (const sf of this.files.values()) {
+            await sf.add(archive);
+        }
+    }
+
+    async delete(archive: Archive) {
+        for (const sf of this.files.values()) {
+            await sf.delete(archive);
+        }
+    }
+
     file(fkind: StringFileKind) {
         return this.files.get(fkind);
     }
@@ -165,18 +185,10 @@ export class FontStyleComponent {
     }
 
     async reload(archive: Archive) {
+        this.delete(archive);
+
         const fname = await archive.resolveFilename('base.SC2Data/UI/FontStyles.SC2Style');
         if (!fname) return;
-
-        for (const decl of this.stylesMap.values()) {
-            if (!decl.archives.has(archive)) continue;
-            if (decl.archives.size > 1) {
-                decl.archives.delete(archive);
-            }
-            else {
-                this.stylesMap.delete(decl.name);
-            }
-        }
 
         for await (const [dkind, name] of readStyleFile(fname)) {
             switch (dkind) {
@@ -188,6 +200,22 @@ export class FontStyleComponent {
                     }
                     dfs.archives.add(archive);
                     break;
+            }
+        }
+    }
+
+    async add(archive: Archive) {
+        await this.reload(archive);
+    }
+
+    async delete(archive: Archive) {
+        for (const decl of this.stylesMap.values()) {
+            if (!decl.archives.has(archive)) continue;
+            if (decl.archives.size > 1) {
+                decl.archives.delete(archive);
+            }
+            else {
+                this.stylesMap.delete(decl.name);
             }
         }
     }
@@ -244,12 +272,7 @@ function findSC2File(directory: string, pattern: string) {
 }
 
 export class Archive {
-    readonly name: string;
-    readonly uri: URI;
-
-    constructor(name: string, uri: URI) {
-        this.name = name;
-        this.uri = uri;
+    constructor(public readonly name: string, public readonly uri: URI, public readonly native: boolean = false) {
     }
 
     public async findFiles(pattern: string) {
@@ -263,21 +286,46 @@ export class Archive {
 }
 
 export class Workspace {
-    protected archives = new Map<string, Archive>();
-    strings = new StringsComponent(this);
-    styles = new FontStyleComponent(this);
+    readonly archives = new Set<Archive>();
+    readonly strings = new StringsComponent(this);
+    readonly styles = new FontStyleComponent(this);
 
-    constructor (archives: Archive[], public logger: ILoggerConsole = createLogger()) {
-        for (const sa of archives) {
-            this.archives.set(sa.name, sa);
+    constructor (public logger: ILoggerConsole = createLogger()) {
+    }
+
+    async clear() {
+        for (const sa of Array.from(this.archives)) {
+            await this.deleteArchive(sa);
         }
+    }
+
+    async presetArchives(...sas: Archive[]) {
+        sas.forEach(sa => this.archives.add(sa));
+    }
+
+    async addArchive(sa: Archive) {
+        this.archives.add(sa);
+        await Promise.all([
+            this.strings.add(sa),
+            this.styles.add(sa)
+        ]);
+    }
+
+    async deleteArchive(sa: Archive) {
+        this.archives.delete(sa);
+        await this.strings.delete(sa);
+        await this.styles.delete(sa);
+    }
+
+    async reloadArchive(sa: Archive) {
+        this.logger.info(`processing s2mod: ${sa.name}`);
+        await this.strings.reload(sa);
+        await this.styles.reload(sa);
     }
 
     async reload() {
         for (const sa of this.archives.values()) {
-            this.logger.info(`Indexing s2mod: ${sa.name}`);
-            await this.strings.reload(sa);
-            await this.styles.reload(sa);
+            await this.reloadArchive(sa);
         }
     }
 

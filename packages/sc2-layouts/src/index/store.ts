@@ -1,95 +1,159 @@
-import * as util from 'util';
-import * as fs from 'fs';
 import * as path from 'path';
 import * as lsp from 'vscode-languageserver';
 import URI from 'vscode-uri';
 import * as sch from '../schema/base';
-import { languageId, XMLElement, DiagnosticReport, XMLDocument, TextDocument } from '../types';
-import { parse, parseDocument } from '../parser/parser';
-import { DescIndex } from './desc';
+import { XMLDocument, TextDocument } from '../types';
+import { parseDocument } from '../parser/parser';
+import { DescIndex, DescNamespace } from './desc';
 import * as s2 from '../index/s2mod';
+import { readFileAsync } from '../common';
 
-export function createTextDocumentFromFs(filepath: string): lsp.TextDocument {
-    filepath = path.resolve(filepath);
-    const tdoc = new TextDocument(URI.file(filepath).toString(), fs.readFileSync(filepath, 'utf8'));
-    return tdoc;
+export async function createTextDocumentFromFs(filepath: string): Promise<lsp.TextDocument> {
+    return new TextDocument(URI.file(path.resolve(filepath)).toString(), await readFileAsync(filepath, 'utf8'));
 }
-
-// export function createTextDocumentFromUri(uri: string): lsp.TextDocument {
-//     return createTextDocument(uri, fs.readFileSync(Uri.parse(uri).fsPath, 'utf8'));
-// }
 
 export type LayoutDocument = XMLDocument;
 
-export class SWorkspace {
-    protected docmap = new Map<string, XMLDocument>();
-
-    constructor(public readonly uri: URI, public readonly name: string) {
-    }
-
-    get documents() {
-        return <ReadonlyMap<string, XMLDocument>>this.docmap;
-    }
+export interface FileDescEventData {
+    archive: s2.Archive;
+    xDoc: XMLDocument;
+    fDesc: DescNamespace;
 }
 
-export class Store {
-    protected workspaces = new Map<string, SWorkspace>();
-    protected workspaceDocUri = new Map<string, SWorkspace>();
-    s2ws = new s2.Workspace([]);
+export interface IStoreEvents {
+    readonly onDidFileDescCreate: lsp.Event<FileDescEventData>;
+    readonly onDidFileDescChange: lsp.Event<FileDescEventData>;
+    readonly onDidFileDescDelete: lsp.Event<FileDescEventData>;
 
-    documents = new Map<string, XMLDocument>();
-    index = new DescIndex();
+    readonly onDidArchiveAdd: lsp.Event<s2.Archive>;
+    readonly onDidArchiveDelete: lsp.Event<s2.Archive>;
+}
+
+export class Store implements IStoreEvents {
+    protected _onDidFileDescCreate = new lsp.Emitter<FileDescEventData>();
+    protected _onDidFileDescChange = new lsp.Emitter<FileDescEventData>();
+    protected _onDidFileDescDelete = new lsp.Emitter<FileDescEventData>();
+    readonly onDidFileDescCreate = this._onDidFileDescCreate.event;
+    readonly onDidFileDescChange = this._onDidFileDescChange.event;
+    readonly onDidFileDescDelete = this._onDidFileDescDelete.event;
+
+    protected _onDidArchiveAdd = new lsp.Emitter<s2.Archive>();
+    protected _onDidArchiveDelete = new lsp.Emitter<s2.Archive>();
+    readonly onDidArchiveAdd = this._onDidArchiveAdd.event;
+    readonly onDidArchiveDelete = this._onDidArchiveDelete.event;
+
+    readonly s2ws = new s2.Workspace();
+    readonly documents = new Map<string, XMLDocument>();
+    readonly index = new DescIndex();
 
     constructor(public readonly schema: sch.SchemaRegistry) {
     }
 
-    protected addWorkspace(uri: URI, name?: string) {
-        if (!name) name = uri.fragment;
-        const wsp = new SWorkspace(uri, name);
-    }
-
-    // protected removeWorkspace(uri: URI) {
-    // }
-
-    public removeDocument(documentUri: string) {
-        const currSorceFile = this.documents.get(documentUri);
-        if (!currSorceFile) return;
-        this.index.unbindDocument(currSorceFile);
-        this.documents.delete(documentUri);
-    }
-
-    public clear() {
+    async clear() {
+        for (const sa of this.s2ws.archives) {
+            this._onDidArchiveDelete.fire(sa);
+        }
+        await this.s2ws.clear();
         this.index.clear();
         this.documents.clear();
     }
 
-    public updateDocument(documentUri: string, text: string, version: number = null, forceBind = false) {
-        let xdoc = this.documents.get(documentUri);
-        let tdoc: TextDocument;
+    async presetArchives(...archives: s2.Archive[]) {
+        this.s2ws.presetArchives(...archives);
+        archives.forEach(sa => this._onDidArchiveAdd.fire(sa));
+    }
 
-        if (xdoc) {
-            if (text.length === xdoc.text.length && text.valueOf() === xdoc.text.valueOf()) {
+    async addArchive(...archives: s2.Archive[]) {
+        for (const sa of archives) {
+            await this.s2ws.addArchive(sa);
+            this._onDidArchiveAdd.fire(sa);
+        }
+    }
+
+    async deleteArchive(...archives: s2.Archive[]) {
+        for (const sa of archives) {
+            await this.s2ws.deleteArchive(sa);
+            this._onDidArchiveDelete.fire(sa);
+        }
+    }
+
+    public updateDocument(documentUri: string, text: string, version: number = null, forceBind = false) {
+        let xDoc = this.documents.get(documentUri);
+        let tdoc: TextDocument;
+        const alreadyExists = xDoc !== void 0;
+
+        if (xDoc) {
+            if (text.length === xDoc.text.length && text.valueOf() === xDoc.text.valueOf()) {
                 if (forceBind) {
-                    this.index.unbindDocument(xdoc);
-                    this.index.bindDocument(xdoc);
+                    this.index.unbindDocument(xDoc);
+                    this.index.bindDocument(xDoc);
                 }
-                xdoc.tdoc.version = version;
-                return xdoc;
+                xDoc.tdoc.version = version;
+                return xDoc;
             }
 
-            this.index.unbindDocument(xdoc);
+            this.index.unbindDocument(xDoc);
 
-            tdoc = xdoc.tdoc;
+            tdoc = xDoc.tdoc;
             tdoc.updateContent(text, version);
         }
         else {
             tdoc = new TextDocument(documentUri, text);
         }
 
-        xdoc = parseDocument(tdoc, {schema: this.schema});
-        this.documents.set(documentUri, xdoc);
-        this.index.bindDocument(xdoc);
+        xDoc = parseDocument(tdoc, {schema: this.schema});
+        this.documents.set(documentUri, xDoc);
+        const fDesc = this.index.bindDocument(xDoc);
+        const sa = this.s2ws.matchFileWorkspace(URI.parse(xDoc.tdoc.uri));
 
-        return xdoc;
+        if (sa) {
+            if (alreadyExists) {
+                this._onDidFileDescChange.fire({
+                    archive: sa,
+                    fDesc: fDesc,
+                    xDoc: xDoc,
+                });
+            }
+            else {
+                this._onDidFileDescCreate.fire({
+                    archive: sa,
+                    fDesc: fDesc,
+                    xDoc: xDoc,
+                });
+            }
+        }
+
+        return xDoc;
+    }
+
+    public removeDocument(documentUri: string) {
+        const xDoc = this.documents.get(documentUri);
+        if (!xDoc) return;
+
+        const fDesc = this.index.resolveElementDesc(xDoc.getDescNode());
+        if (fDesc) {
+            const sa = this.s2ws.matchFileWorkspace(URI.parse(xDoc.tdoc.uri));
+            if (sa) {
+                this._onDidFileDescDelete.fire({
+                    archive: sa,
+                    fDesc: fDesc,
+                    xDoc: xDoc,
+                });
+            }
+        }
+
+        this.index.unbindDocument(xDoc);
+        this.documents.delete(documentUri);
+    }
+
+    public getDocumentsInArchive(sa: s2.Archive) {
+        const docList: XMLDocument[] = [];
+
+        for (const xDoc of this.documents.values()) {
+            if (!xDoc.tdoc.uri.startsWith(sa.uri.toString())) continue;
+            docList.push(xDoc);
+        }
+
+        return docList;
     }
 }

@@ -334,6 +334,8 @@ export class DescIndex {
         for (const xsub of doc.getDescNode().children) {
             this.bindWorker(fiDesc, xsub, docState);
         }
+
+        return fiDesc;
     }
 
     unbindDocument(doc: LayoutDocument) {

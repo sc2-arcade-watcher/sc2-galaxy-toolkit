@@ -61,6 +61,7 @@
                     "type": "object",
                     "default": {
                         "mods/core.sc2mod": true,
+                        "mods/liberty.sc2mod": true,
                         "mods/war3data.sc2mod": false,
                         "mods/novastoryassets.sc2mod": false,
                         "mods/voidprologue.sc2mod": false,
@@ -96,8 +97,107 @@
                     ],
                     "default": "EOL",
                     "description": "Whether to insert tab-stop at end of line, or within the last placeholded attribute."
+                },
+                "sc2layout.treeview.visible": {
+                    "scope": "window",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether to display the Treeview?"
                 }
             }
+        },
+        "keybindings":[
+            {
+                "command": "workbench.view.extension.sc2layout",
+                "linux": "ctrl+shift+w",
+                "win": "ctrl+shift+w"
+            }
+        ],
+        "commands": [
+            {
+                "command": "sc2layout.gameReload",
+                "title": "SC2 Layouts: Game Reload"
+            },
+            {
+                "command": "sc2layout.dtree.gameReload",
+                "title": "Reload layouts in game",
+                "icon": {
+                    "light": "resources/light/refresh.svg",
+                    "dark": "resources/dark/refresh.svg"
+                }
+            },
+            {
+                "command": "sc2layout.dtree.previewInGame",
+                "title": "Preview frame in game",
+                "icon": {
+                    "light": "resources/light/boolean.svg",
+                    "dark": "resources/dark/boolean.svg"
+                }
+            },
+            {
+                "command": "sc2layout.dtree.newLayout",
+                "title": "New layout",
+                "icon": {
+                    "light": "resources/light/document.svg",
+                    "dark": "resources/dark/document.svg"
+                }
+            },
+            {
+                "command": "sc2layout.dtree.showInTextEditor",
+                "title": "Show in text editor"
+            }
+        ],
+        "menus": {
+            "commandPalette": [
+                {
+                    "command": "sc2layout.gameReload",
+                    "when": "0"
+                }
+            ],
+            "view/title": [
+                {
+                    "command": "sc2layout.dtree.gameReload",
+                    "when": "view == sc2layoutDesc && 0",
+                    "group": "navigation"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "sc2layout.dtree.newLayout",
+                    "when": "view == sc2layoutDesc && viewItem == archive && 0",
+                    "group": "inline"
+                },
+                {
+                    "command": "sc2layout.dtree.newLayout",
+                    "when": "view == sc2layoutDesc && viewItem == archive && 0"
+                },
+                {
+                    "command": "sc2layout.dtree.previewInGame",
+                    "when": "view == sc2layoutDesc && viewItem == desc && 0",
+                    "group": "inline"
+                },
+                {
+                    "command": "sc2layout.dtree.showInTextEditor",
+                    "when": "view == sc2layoutDesc && viewItem == desc"
+                }
+            ]
+        },
+        "views": {
+            "sc2layout": [
+                {
+                    "id": "sc2layoutDesc",
+                    "name": "Desc Tree"
+                }
+            ]
+        },
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "sc2layout",
+                    "title": "StarCraft II Layouts",
+                    "icon": "resources/layout.svg"
+                }
+            ]
         }
     },
     "scripts": {

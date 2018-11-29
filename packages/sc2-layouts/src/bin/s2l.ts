@@ -6,7 +6,7 @@ import { createTextDocumentFromFs } from '../index/store';
 import { buildStore } from '../../test/helpers';
 import { LayoutChecker } from '../index/checker';
 
-function checkFiles(fpath: string) {
+async function checkFiles(fpath: string) {
     const store = buildStore();
 
     const files = glob.sync(path.join(fpath, `**/*.${languageExt}`), {
@@ -15,7 +15,7 @@ function checkFiles(fpath: string) {
 
     for (const item of files) {
         console.log(`Indexing: ${item}`);
-        const tdoc = createTextDocumentFromFs(item);
+        const tdoc = await createTextDocumentFromFs(item);
         store.updateDocument(tdoc.uri, tdoc.getText());
     }
 

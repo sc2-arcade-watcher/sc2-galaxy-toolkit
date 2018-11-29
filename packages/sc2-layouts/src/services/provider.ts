@@ -41,6 +41,7 @@ export interface IService {
 
 export abstract class AbstractProvider implements IService {
     protected svcContext: ServiceContext;
+    protected extContext: vs.ExtensionContext;
     console: ILoggerConsole;
     protected store: Store;
     protected dIndex: DescIndex;
@@ -48,6 +49,7 @@ export abstract class AbstractProvider implements IService {
 
     public init(svcContext: ServiceContext, store: Store, console: ILoggerConsole) {
         this.svcContext = svcContext;
+        this.extContext = svcContext.extContext;
         this.console = console;
         this.store = store;
         this.dIndex = this.store.index;
