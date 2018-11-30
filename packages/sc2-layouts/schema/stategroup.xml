@@ -7,11 +7,11 @@
     <complexType name="CFrameStateCondition">
         <attribute name="type" type="EStateWhen" use="required"/>
         <attribute name="frame" type="FrameReference" default="$this"/>
+        <attribute name="operator" type="EStatePropertyOperator" default="Equal"/>
     </complexType>
 
     <complexType name="CFrameStateConditionProperty">
         <extend value="CFrameStateCondition"/>
-        <attribute name="operator" type="EStatePropertyOperator" default="Equal"/>
         <attribute name="index" type="Uint8"/>
         <indeterminateAttribute key="PropertyName" value="PropertyValue"/>
     </complexType>
@@ -112,7 +112,8 @@
     </complexType>
 
     <complexType name="CFrameStateGroupDesc">
-        <attribute name="name" type="ElementName" use="required"/>
+        <extend value="RequiredtoloadTrait"/>
+        <attribute name="name" type="ElementName" use="required" default="StateGroup"/>
         <attribute name="template" type="DescTemplateName"/>
         <attribute name="file" type="FileDescName"/>
         <element name="DefaultState" type="CFrameStateDefault"/>

@@ -2,9 +2,9 @@ import * as sch from './base';
 import { DiagnosticReport, XMLElement, XMLAttr, DiagnosticCategory } from '../types';
 
 const reBool = /^(true|false)$/i;
-const reUint = /^\+?[0-9]+\s*$/;
-const reInt = /^(\+|\-)?[0-9]+\s*$/;
-const reReal = /^(\+|\-)?(([0-9]+\.[0-9]*)|([0-9]*\.?[0-9]+))\s*$/;
+const reUint = /^\s*\+?[0-9]+\s*$/;
+const reInt = /^\s*(\+|\-)?[0-9]+\s*$/;
+const reReal = /^\s*(\+|\-)?(([0-9]+\.[0-9]*)|([0-9]*\.?[0-9]+))\s*$/;
 // const reFlag = /^([\w \|\!]+)$/i;
 const reColor = /^([a-f0-9]{6,8}|\s*[0-9]{1,3},\s*[0-9]{1,3},\s*[0-9]{1,3}(,\s*[0-9]{1,3})?)$/i;
 

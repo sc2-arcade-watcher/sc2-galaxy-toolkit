@@ -1,6 +1,6 @@
 import * as sch from '../schema/base';
 import { DiagnosticReport, XMLElement, AttrValueKind, DiagnosticCategory, XMLAttr } from '../types';
-import { DescIndex } from './desc';
+import { DescIndex, DescKind } from './desc';
 import { LayoutDocument, Store } from './store';
 import { SchemaValidator } from '../schema/validation';
 import { CharacterCodes } from '../parser/scanner';
@@ -68,13 +68,17 @@ export class LayoutChecker {
             {
                 const cDesc = this.index.resolveElementDesc(el);
 
-                if (cDesc.file && !this.index.rootNs.get(cDesc.file)) {
-                    this.reportAtNode(el, `Failed to locate specified Desc "${cDesc.file}"`);
+                if (cDesc.file !== null && !this.index.rootNs.get(cDesc.file)) {
+                    this.reportAtAttrVal(el.attributes['file'], `Failed to locate specified Desc "${cDesc.file}"`);
                 }
 
-                if (cDesc.template) {
-                    if (!this.index.rootNs.getDeep(cDesc.template)) {
-                        this.reportAtNode(el, `Could not find template "${cDesc.template}"`);
+                if (cDesc.template !== null) {
+                    const dItem = this.index.rootNs.getDeep(cDesc.template);
+                    if (!dItem) {
+                        this.reportAtAttrVal(el.attributes['template'], `Could not find template "${cDesc.template}"`);
+                    }
+                    else if (dItem.kind === DescKind.File) {
+                        this.reportAtAttrVal(el.attributes['template'], `Cannot use FileDsc as template - "${cDesc.template}"`);
                     }
                 }
 

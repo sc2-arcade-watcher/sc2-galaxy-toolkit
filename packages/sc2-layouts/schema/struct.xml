@@ -11,8 +11,8 @@
     -->
 
     <complexType name="Include">
+        <extend value="RequiredtoloadTrait"/>
         <attribute name="path" type="String" use="required"/>
-        <attribute name="requiredtoload" type="String"/>
     </complexType>
 
     <complexType name="DescFlags">
@@ -29,11 +29,11 @@
     </complexType>
 
     <complexType name="Frame">
-        <attribute name="type" type="EFrameType" use="required"/>
-        <attribute name="name" type="FrameName" use="required"/>
+        <extend value="RequiredtoloadTrait"/>
+        <attribute name="type" type="EFrameType" use="required" default="Frame"/>
+        <attribute name="name" type="FrameName" use="required" default="Frame"/>
         <attribute name="template" type="DescTemplateName"/>
         <attribute name="file" type="FileDescName"/>
-        <attribute name="requiredtoload" type="String"/>
     </complexType>
 
     <!--

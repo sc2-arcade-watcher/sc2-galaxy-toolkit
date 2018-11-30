@@ -333,11 +333,14 @@
     -->
 
     <complexType name="CFrameAnimationDesc">
-        <attribute name="name" type="ElementName" use="required"/>
+        <extend value="RequiredtoloadTrait"/>
+        <attribute name="name" type="ElementName" use="required" default="Animation"/>
         <attribute name="template" type="DescTemplateName"/>
-        <attribute name="speed" type="Real32"/>
-        <attribute name="flags" type="String"/>
         <attribute name="file" type="FileDescName"/>
+        <attribute name="speed" type="Real32">
+            <documentation>Speed factor (defaults to `1`). Can be a negative value, which makes it play in reverse.</documentation>
+        </attribute>
+        <attribute name="flags" type="EAnimationFlags"/>
         <element name="Event" type="AnimationEvent"/>
         <element name="Controller" type="CFrameController">
             <alternative test="Visibility" type="CFrameControllerVisibility"/>

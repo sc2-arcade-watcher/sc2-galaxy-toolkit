@@ -5,6 +5,7 @@ import { languageExt, DiagnosticReport, XMLDocument, DiagnosticCategory } from '
 import { createTextDocumentFromFs } from '../index/store';
 import { buildStore } from '../../test/helpers';
 import { LayoutChecker } from '../index/checker';
+require('../../test/bootstrap');
 
 async function checkFiles(fpath: string) {
     const store = buildStore();

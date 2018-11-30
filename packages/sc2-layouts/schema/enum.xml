@@ -81,9 +81,11 @@
         <enumeration value="ActorMsg"/>
     </simpleType>
 
-    <simpleType name="EAnimationFlags" kind="enum">
-        <enumeration value="NoEventsWhileHidden"/>
-        <!-- <enumeration value="Log"/> -->
+    <simpleType name="EAnimationFlags" kind="flags">
+        <enumeration value="NoEventsWhileHidden" label="Animation won't respond to its events if it's being hosted on a frame that is hidden."/>
+        <!-- TODO: test these: -->
+        <enumeration value="Log"/>
+        <enumeration value="Disabled"/>
     </simpleType>
 
     <simpleType name="EAnimationEventAction" kind="enum">
@@ -290,9 +292,9 @@
     </simpleType>
 
     <simpleType name="EBehaviorAlignment" kind="enum">
-        <!-- TODO: anything missing? -->
         <enumeration value="Positive"/>
         <enumeration value="Negative"/>
+        <enumeration value="Neutral"/>
     </simpleType>
 
     <simpleType name="EBehaviorBarSort" kind="enum">

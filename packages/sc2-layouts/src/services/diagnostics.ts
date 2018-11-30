@@ -34,8 +34,8 @@ export class DiagnosticsProvider extends AbstractProvider {
             }
         }
 
-        processReports(xDoc.parseDiagnostics, 'parse');
-        processReports(validationReports, 'valid');
+        processReports(xDoc.parseDiagnostics, 'pars');
+        processReports(validationReports, 'vald');
 
         return vdiag;
     }
