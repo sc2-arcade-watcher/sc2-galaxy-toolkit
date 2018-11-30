@@ -387,6 +387,11 @@ export function createScanner(input: string, initialOffset = 0, initialState: Sc
                     return finishToken(offset, TokenType.EndTag);
                 }
                 if (stream.skipWhitespace()) { // white space is not valid here
+                    // exit early instead of attempting to process sequences like this one `< <`
+                    if (stream.peekChar() === _LAN) {
+                        state = ScannerState.WithinContent;
+                    }
+
                     return finishToken(offset, TokenType.Whitespace, localize('error.unexpectedWhitespace', 'Tag name must directly follow the open bracket.'));
                 }
                 state = ScannerState.WithinEndTag;
@@ -404,6 +409,12 @@ export function createScanner(input: string, initialOffset = 0, initialState: Sc
                     return finishToken(offset, TokenType.EndTagClose);
                 }
                 errorMessage = localize('error.tagNameExpected', 'Closing bracket expected.');
+                // if `>` was omitted, avoid consuming upcoming `<` that belongs to another element
+                if (stream.peekChar() === _LAN) {
+                    state = ScannerState.WithinContent;
+                    finishToken(offset, TokenType.Unknown, errorMessage);
+                    return internalScan();
+                }
                 break;
             case ScannerState.AfterOpeningStartTag:
                 lastTag = nextElementName();
@@ -414,8 +425,14 @@ export function createScanner(input: string, initialOffset = 0, initialState: Sc
                     return finishToken(offset, TokenType.StartTag);
                 }
                 if (stream.skipWhitespace()) { // white space is not valid here
+                    // exit early instead of attempting to process sequences like this one `< <`
+                    if (stream.peekChar() === _LAN) {
+                        state = ScannerState.WithinContent;
+                    }
+
                     return finishToken(offset, TokenType.Whitespace, localize('error.unexpectedWhitespace', 'Tag name must directly follow the open bracket.'));
                 }
+
                 state = ScannerState.WithinTag;
                 stream.advanceUntilChar(_RAN);
                 if (offset < stream.pos()) {

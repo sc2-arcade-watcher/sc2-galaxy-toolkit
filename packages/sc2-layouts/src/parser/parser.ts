@@ -1,5 +1,5 @@
 import { createScanner, CharacterCodes } from './scanner';
-import { TokenType, ScannerState, XMLElement, DiagnosticReport, DiagnosticCategory, XMLDocument, XMLNode, TextDocument } from '../types';
+import { TokenType, ScannerState, XMLElement, DiagnosticReport, DiagnosticCategory, XMLDocument, XMLNode, TextDocument, XMLNodeKind } from '../types';
 import * as sch from '../schema/base';
 import { SchemaValidator } from '../schema/validation';
 
@@ -63,20 +63,24 @@ export function parse(text: string, options: ParserOptions) {
         switch (token) {
             case TokenType.StartTagOpen:
             {
-                if (curr.parent && (curr.stype && !curr.stype.struct.size)) {
-                    printDiagnosticsAtCurrentToken(`?Missing end tag for "${(<XMLElement>curr).tag}"`, (<XMLElement>curr).start, (<XMLElement>curr).startTagEnd);
-                    curr.end = endTagStart;
-                    (<XMLElement>curr).closed = false;
-                    curr = curr.parent;
+                if (curr.parent) {
+                    if ((<XMLElement>curr).tag === void 0) {
+                        curr = curr.parent;
+                    }
+                    else if (curr.stype && !curr.stype.struct.size) {
+                        printDiagnosticsAtCurrentToken(`?Missing end tag for "${(<XMLElement>curr).tag}"`, (<XMLElement>curr).start, (<XMLElement>curr).startTagEnd);
+                        curr.end = endTagStart;
+                        (<XMLElement>curr).closed = false;
+                        curr = curr.parent;
+                    }
                 }
-                let child = new XMLElement(scanner.getTokenOffset(), text.length, curr);
-                curr.children.push(child);
-                curr = child;
+                curr = new XMLElement(scanner.getTokenOffset(), text.length, curr);
                 break;
             }
             case TokenType.StartTag:
             {
                 (<XMLElement>curr).tag = scanner.getTokenText();
+                curr.parent.children.push(<XMLElement>curr);
                 matchElementType(<XMLElement>curr, curr.parent);
                 break;
             }
@@ -84,11 +88,16 @@ export function parse(text: string, options: ParserOptions) {
             {
                 (<XMLElement>curr).startTagEnd = (<XMLElement>curr).end = scanner.getTokenEnd(); // might be later set to end tag position
                 matchNodeAlt(<XMLElement>curr);
-                // validator.validateNode((<XMLElement>curr));
                 break;
             }
             case TokenType.EndTagOpen:
             {
+                if (!curr.parent) {
+                    break;
+                }
+                if ((<XMLElement>curr).tag === void 0) {
+                    curr = curr.parent;
+                }
                 endTagStart = scanner.getTokenOffset();
                 break;
             }
@@ -103,7 +112,7 @@ export function parse(text: string, options: ParserOptions) {
                         curr.end = endTagStart;
                         (<XMLElement>curr).closed = false;
                         if (curr.parent !== docElement && (<XMLElement>curr.parent).isSameTag(closeTag)) {
-                            printDiagnosticsAtCurrentToken(`Missing end tag for "${(<XMLElement>curr).tag}"`, (<XMLElement>curr).start, (<XMLElement>curr).startTagEnd);
+                            printDiagnosticsAtCurrentToken(`Missing end tag for "${(<XMLElement>curr).tag}"`, (<XMLElement>curr).start, (<XMLElement>curr).start + (<XMLElement>curr).tag.length + 1);
                             curr = curr.parent;
                         }
                         else {
@@ -161,8 +170,21 @@ export function parse(text: string, options: ParserOptions) {
         token = scanner.scan();
     }
     while (curr.parent) {
+        if (curr.kind === XMLNodeKind.Element) {
+            const currEl = <XMLElement>curr;
+            if (!currEl.closed) {
+                printDiagnosticsAtCurrentToken(`Expected end tag for "${currEl.tag}", EOS.`);
+            }
+            else {
+                printDiagnosticsAtCurrentToken(`End tag hasn't been closed appropriately for "${currEl.tag}"`);
+            }
+        }
         curr.end = text.length;
         curr = curr.parent;
+    }
+
+    if (docElement.children.length > 1) {
+        printDiagnosticsAtCurrentToken('Encountered a second root tag. There can be only one root tag per file.');
     }
 
     return {

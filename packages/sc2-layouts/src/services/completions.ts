@@ -4,7 +4,7 @@ import * as sch from '../schema/base';
 import { AbstractProvider, svcRequest, ILoggerConsole } from './provider';
 import { ServiceContext, ExtConfigCompletionTabStopKind } from '../service';
 import { createScanner, CharacterCodes } from '../parser/scanner';
-import { TokenType, ScannerState, XMLElement, AttrValueKind } from '../types';
+import { TokenType, ScannerState, XMLElement, AttrValueKind, XMLNodeKind } from '../types';
 import { DescIndex, DescNamespace, DescKind } from '../index/desc';
 import * as s2 from '../index/s2mod';
 import { Store } from '../index/store';
@@ -688,12 +688,17 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
 
     protected suggestElements(ctx: ComplContext) {
         let nodeCtx = ctx.node;
-        if (ctx.offset < ctx.node.startTagEnd || ctx.offset >= ctx.node.end) {
+        if (ctx.offset < ctx.node.startTagEnd || (ctx.offset >= ctx.node.end && ctx.node.parent.kind === XMLNodeKind.Element)) {
             nodeCtx = <XMLElement>ctx.node.parent;
         }
         if (!nodeCtx.stype) return;
 
-        if (ctx.xtoken === TokenType.Content || !ctx.node.closed) {
+        const isNewTag =
+            ((ctx.xtoken === TokenType.Content || ctx.xtoken === TokenType.StartTagOpen) || !ctx.node.closed) &&
+            (ctx.node.getDocument().tdoc.getText().charCodeAt(ctx.offset)) !== CharacterCodes.greaterThan
+        ;
+
+        if (isNewTag) {
             switch (nodeCtx.sdef.nodeKind) {
                 case sch.ElementDefKind.Frame:
                     this.suggestAnchors(ctx, nodeCtx);
@@ -726,7 +731,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                 }
             }
 
-            if (ctx.xtoken === TokenType.Content || !ctx.node.closed) {
+            if (isNewTag) {
                 complItem.insertText = (ctx.xtoken === TokenType.Content ? '<' : '') + `${sElKey}`;
                 let i = 0;
                 for (const stInfo of sElItem.type.attributes.values()) {
@@ -816,10 +821,13 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                 switch (token) {
                     case TokenType.StartTagOpen:
                     case TokenType.StartTag:
+                    case TokenType.StartTagClose:
                     case TokenType.EndTag:
+                    case TokenType.EndTagOpen:
                     case TokenType.Content:
                     case TokenType.AttributeName:
                     case TokenType.DelimiterAssign:
+                    case TokenType.Whitespace:
                         break outer;
                     default:
                         break;
@@ -838,14 +846,12 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
         };
 
         if (scanner.getScannerState() === ScannerState.AfterOpeningEndTag || scanner.getScannerState() === ScannerState.WithinEndTag) {
-            if (!node.closed && node.tag) {
-                items.push(<vs.CompletionItem>{
-                    label: `/${node.tag}`,
-                    kind: vs.CompletionItemKind.Struct,
-                    insertText: `${node.tag}>`,
-                    command: { command: 'editor.action.reindentselectedlines' },
-                });
-            }
+            items.push(<vs.CompletionItem>{
+                label: `/${node.tag}`,
+                kind: vs.CompletionItemKind.Struct,
+                insertText: node.tag + (document.getText().charCodeAt(scanner.getTokenEnd()) === CharacterCodes.greaterThan ? '' : '>'),
+                command: { command: 'editor.action.reindentselectedlines' },
+            });
         }
 
         switch (token) {
@@ -855,6 +861,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
             case TokenType.StartTagSelfClose:
             {
                 if (scanner.getScannerState() === ScannerState.AfterOpeningEndTag) break;
+                if (scanner.getScannerState() === ScannerState.WithinContent) break;
                 if (!node.stype) return;
                 const cmAtCtx = <AtComplContext>cmCtx;
                 switch (cmCtx.xtoken) {

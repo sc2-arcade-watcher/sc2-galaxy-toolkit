@@ -330,9 +330,10 @@ export class DescIndex {
         fiDesc.xDecls.add(doc);
         docState.xdeclDescMap.set(doc, fiDesc);
 
-        if (!doc.getDescNode()) return;
-        for (const xsub of doc.getDescNode().children) {
-            this.bindWorker(fiDesc, xsub, docState);
+        if (doc.getDescNode()) {
+            for (const xsub of doc.getDescNode().children) {
+                this.bindWorker(fiDesc, xsub, docState);
+            }
         }
 
         return fiDesc;
