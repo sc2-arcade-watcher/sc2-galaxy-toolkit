@@ -86,19 +86,21 @@ export class SchemaValidator {
                 break;
             }
             case sch.SimpleTypeKind.Pattern:
-            {
-                if (!stype.patterns[0].test(atValue)) {
-                    return `Incorrect value; expected pattern ${stype.patterns[0]}`;
-                }
-                break;
-            }
             case sch.SimpleTypeKind.Union:
             {
-                for (const subType of stype.union) {
-                    const rv = this.validateAttrValue(atValue, subType);
-                    if (!rv) return void 0;
+                if (stype.patterns) {
+                    if (!stype.patterns[0].test(atValue)) {
+                        return `Incorrect value; expected pattern ${stype.patterns[0]}`;
+                    }
                 }
-                return `Attribute value couldn't be validated by any of the union types: ${stype.union.map(item => `"${item.name}"`).join(', ')}`;
+
+                if (stype.union) {
+                    for (const subType of stype.union) {
+                        const rv = this.validateAttrValue(atValue, subType);
+                        if (!rv) return void 0;
+                    }
+                    return `Attribute value couldn't be validated by any of the union types: ${stype.union.map(item => `"${item.name}"`).join(', ')}`;
+                }
                 break;
             }
             default:
