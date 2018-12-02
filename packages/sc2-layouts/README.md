@@ -13,7 +13,7 @@ Visual Studio Code extension introducing support for SC2Layouts language, utiliz
   * Constants
   * External assets.txt files
 * [x] Document and workspace symbols navigation list.
-* [x] Definitions provider (`<kbd>Ctrl</kbd>` + **Click**)
+* [x] Definitions provider (<kbd>CTRL+Click</kbd>)
   * Resolving contextual selectors such as `$ancestor` to its matching declaration within document
   * FileDescName, Templates..
 * [x] Tooltips on hover

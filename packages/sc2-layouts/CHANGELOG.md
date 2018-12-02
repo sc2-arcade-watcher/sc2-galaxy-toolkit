@@ -1,5 +1,33 @@
 # Change Log
 
+## [0.5.0] - 2018-12-02
+
+* General
+  * Campaign dependencies will be indexed as default alongside of `Core.SC2Mod`
+  * Improvements to the parser - it should now be more tolerant and verbose when dealing with XML syntax errors.
+  * Added some rules to schema and code checker - it should be able to spot more mistakes.
+* Tree view
+  * Added dedicated Desc Tree for indexed layout files. It can be accessed in separate tab in `Activity Bar` [<kbd>CTRL-SHIFT-W</kbd>].
+  * Added command `Reveal Active File in Desc Tree`
+  * It's functionality is currently limited to serving as an overview for browsing indexed elements, further features may be added in future updates.
+* Code completions:
+  * Added suggestions for in-built event names in animations (`OnShown` etc.)
+  * Custom defined events will be suggested in
+    * `CFrameControllerKeyEvent`
+    * `CFrameStateSendEventAction`
+  * Property names as attributes in
+    * `CFrameStateConditionProperty`
+    * `CFrameStateSetPropertyAction`
+  * Animation names in
+    * `CFrameStateConditionAnimationState`
+    * `CFrameStateSetAnimationPropAction`
+    * `CFrameControllerAnimationSpeed`
+    * `CFrameControllerAnimation`
+* Goto definition
+  * For events referenced in
+    * `CFrameControllerKeyEvent`
+    * `CFrameStateSendEventAction`
+
 ## [0.4.1] - 2018-11-06
 
 * Bugfixes:
