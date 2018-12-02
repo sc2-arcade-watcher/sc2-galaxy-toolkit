@@ -31,8 +31,8 @@ interface DescTreeNode {
 export class DescTreeDataProvider implements vs.TreeDataProvider<DescTreeNode> {
     protected _onDidChangeTreeData: vs.EventEmitter<DescTreeNode> = new vs.EventEmitter<DescTreeNode>();
     readonly onDidChangeTreeData: vs.Event<DescTreeNode | undefined | null> = this._onDidChangeTreeData.event;
-    protected topNodes = new Map<string, DescTreeNode>();
-    protected fileNodes = new Map<string, DescTreeNode>();
+    readonly topNodes = new Map<string, DescTreeNode>();
+    readonly fileNodes = new Map<string, DescTreeNode>();
 
     constructor(private readonly store: Store, private readonly dIndex: DescIndex, private readonly extPath: string) {
         this.store.onDidArchiveAdd((sa) => {
@@ -152,7 +152,7 @@ export class DescTreeDataProvider implements vs.TreeDataProvider<DescTreeNode> {
         return ritem;
     }
 
-    public getChildren(dParentNode?: DescTreeNode): DescTreeNode[] | Thenable<DescTreeNode[]> {
+    public getChildren(dParentNode?: DescTreeNode): vs.ProviderResult<DescTreeNode[]> {
         if (!dParentNode) {
             return Array.from(this.topNodes.values());
         }
@@ -187,11 +187,20 @@ export class DescTreeDataProvider implements vs.TreeDataProvider<DescTreeNode> {
 
         return children;
     }
+
+    getParent(dtNode: DescTreeNode): vs.ProviderResult<DescTreeNode> {
+        if (dtNode.kind === DescTreeNodeKind.File) {
+            return this.topNodes.get(dtNode.archive.uri.toString());
+        }
+
+        return null;
+    }
 }
 
 export class TreeViewProvider extends AbstractProvider implements vs.Disposable {
     protected uNavigator: UINavigator;
     protected uBuilder: UIBuilder;
+    protected dTreeDataProvider: DescTreeDataProvider;
     protected descViewer: vs.TreeView<DescTreeNode>;
     protected commands: vs.Disposable[] = [];
 
@@ -201,10 +210,12 @@ export class TreeViewProvider extends AbstractProvider implements vs.Disposable 
     }
 
     register(): vs.Disposable {
-        const treeDataProvider = new DescTreeDataProvider(this.store, this.dIndex, this.svcContext.extContext.extensionPath);
-        this.descViewer = vs.window.createTreeView('sc2layoutDesc', { treeDataProvider });
+        this.dTreeDataProvider = new DescTreeDataProvider(this.store, this.dIndex, this.svcContext.extContext.extensionPath);
+        this.descViewer = vs.window.createTreeView('sc2layoutDesc', { treeDataProvider: this.dTreeDataProvider });
 
-        vs.commands.registerCommand('sc2layout.dtree.showInTextEditor', async (dNode: DescTreeNode) => {
+        this.commands = [];
+
+        this.commands.push(vs.commands.registerCommand('sc2layout.dtree.showInTextEditor', async (dNode: DescTreeNode) => {
             const xEl = <XMLElement>Array.from(dNode.dsItem.xDecls)[0];
             const posSta = dNode.xDoc.tdoc.positionAt(xEl.start);
             const posEnd = dNode.xDoc.tdoc.positionAt(xEl.startTagEnd ? xEl.startTagEnd : xEl.end);
@@ -216,7 +227,18 @@ export class TreeViewProvider extends AbstractProvider implements vs.Disposable 
                     new vs.Position(posEnd.line, posEnd.character),
                 ),
             });
-        });
+        }));
+
+        this.commands.push(vs.commands.registerTextEditorCommand('sc2layout.dtree.revealActiveFile', (textEditor: vs.TextEditor, edit: vs.TextEditorEdit) => {
+            const dtItem = this.dTreeDataProvider.fileNodes.get(textEditor.document.uri.toString());
+
+            if (!dtItem) {
+                vs.window.showErrorMessage(`Currently active file doesn't appear to be part of the workspace.`);
+                return;
+            }
+
+            this.descViewer.reveal(dtItem);
+        }));
 
         return this.descViewer;
     }
@@ -224,6 +246,7 @@ export class TreeViewProvider extends AbstractProvider implements vs.Disposable 
     dispose() {
         this.descViewer.dispose();
         this.descViewer = void 0;
+        // TODO: dispose DescTreeDataProvider
 
         this.commands.forEach(item => item.dispose());
         this.commands = [];
