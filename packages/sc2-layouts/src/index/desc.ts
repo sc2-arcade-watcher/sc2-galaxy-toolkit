@@ -366,11 +366,16 @@ export class DescIndex {
                         let fdmap = this.fileRefs.get(file);
                         if (fdmap) {
                             let frefs = fdmap.get(descNode.name);
-                            frefs.delete(descNode);
-                            if (frefs.size <= 0) {
-                                fdmap.delete(descNode.name);
-                                if (fdmap.size <= 0) {
-                                    this.fileRefs.delete(file);
+
+                            // elements with the same name are grouped under the same DescNamespace
+                            // so we have to double check whether the reference wasn't already deleted
+                            if (frefs) {
+                                frefs.delete(descNode);
+                                if (frefs.size <= 0) {
+                                    fdmap.delete(descNode.name);
+                                    if (fdmap.size <= 0) {
+                                        this.fileRefs.delete(file);
+                                    }
                                 }
                             }
                         }
