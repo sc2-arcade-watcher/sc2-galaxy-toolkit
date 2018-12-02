@@ -117,7 +117,7 @@ class DocumentUpdateRequest {
 export class ServiceContext implements IService {
     console: ILoggerConsole;
     protected store: Store;
-    protected output: vs.OutputChannel;
+    errorOutputChannel: vs.OutputChannel;
     protected fsWatcher: vs.FileSystemWatcher;
     protected diagnosticCollection: vs.DiagnosticCollection;
     protected documentUpdateRequests = new Map<string, DocumentUpdateRequest>();
@@ -148,8 +148,8 @@ export class ServiceContext implements IService {
         };
 
         // -
-        this.output = vs.window.createOutputChannel(languageId);
-        context.subscriptions.push(this.output);
+        this.errorOutputChannel = vs.window.createOutputChannel(languageId);
+        context.subscriptions.push(this.errorOutputChannel);
         const emitOutput = (msg: string, ...params: any[]) => {
             if (params.length) {
                 msg += ' ' + util.inspect(params.length > 1 ? params : params[0], {
@@ -158,7 +158,7 @@ export class ServiceContext implements IService {
                     showHidden: false,
                 });
             }
-            this.output.appendLine(msg);
+            this.errorOutputChannel.appendLine(msg);
         };
         this.console = {
             error: emitOutput,
@@ -168,7 +168,7 @@ export class ServiceContext implements IService {
             debug: emitOutput,
         };
         if (process.env.SC2LDEBUG) {
-            this.output.show();
+            this.errorOutputChannel.show();
         }
 
         // -
@@ -399,7 +399,7 @@ export class ServiceContext implements IService {
             nodir: true,
             nocase: true,
         });
-        this.output.appendLine(`${uri.fsPath} [${r.length}]`);
+        this.errorOutputChannel.appendLine(`${uri.fsPath} [${r.length}]`);
         for (const item of r) {
             await this.syncDocument(await createTextDocumentFromFs(item));
         }
