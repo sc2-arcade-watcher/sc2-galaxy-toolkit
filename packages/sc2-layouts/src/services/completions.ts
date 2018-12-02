@@ -311,6 +311,7 @@ class AttrValueProvider extends SuggestionsProvider {
     protected suggestEventNames(ctx: AtValComplContext, sAttrType: sch.SimpleType) {
         switch (ctx.node.sdef.nodeKind) {
             case sch.ElementDefKind.AnimationControllerKey:
+            case sch.ElementDefKind.StateGroupStateAction:
             {
                 const uNode = this.xray.determineTargetFrameNode(ctx.node);
                 if (!uNode) return;
