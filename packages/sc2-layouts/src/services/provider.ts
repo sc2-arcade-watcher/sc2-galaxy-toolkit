@@ -93,15 +93,24 @@ export function svcRequest(showArg = false, argFormatter?: (...payload: any[]) =
 
             let start = process.hrtime();
             let ret;
-            try {
+
+            if (process.env.SC2LDEBUG) {
                 ret = method.bind(this)(...arguments);
                 if (ret instanceof Promise) {
                     ret = await ret;
                 }
             }
-            catch (e) {
-                ret = void 0;
-                server.console.error('[' + (<Error>e).name + '] ' + (<Error>e).message + '\n' + (<Error>e).stack);
+            else {
+                try {
+                    ret = method.bind(this)(...arguments);
+                    if (ret instanceof Promise) {
+                        ret = await ret;
+                    }
+                }
+                catch (e) {
+                    ret = void 0;
+                    server.console.error('[' + (<Error>e).name + '] ' + (<Error>e).message + '\n' + (<Error>e).stack);
+                }
             }
 
             if (ret !== void 0 && resultFormatter) {
