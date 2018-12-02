@@ -6,14 +6,19 @@ import { SchemaValidator } from '../schema/validation';
 import { CharacterCodes } from '../parser/scanner';
 import { getAttrValueKind } from '../parser/utils';
 import { ExpressionParser, NodeExpr } from '../parser/expressions';
+import { UINavigator, UIBuilder } from './hierarchy';
 
 export class LayoutChecker {
     protected exParser = new ExpressionParser();
     protected svalidator: SchemaValidator;
     protected diagnostics: DiagnosticReport[] = [];
+    protected uNavigator: UINavigator;
+    protected uBuilder: UIBuilder;
 
     constructor(protected store: Store, protected index: DescIndex) {
         this.svalidator = new SchemaValidator(this.store.schema);
+        this.uNavigator = new UINavigator(this.store.schema, this.store.index);
+        this.uBuilder = new UIBuilder(this.store.schema, this.store.index);
     }
 
     protected reportAt(msg: string, options: {start: number, end: number, category?: DiagnosticCategory}) {
@@ -68,8 +73,17 @@ export class LayoutChecker {
             {
                 const cDesc = this.index.resolveElementDesc(el);
 
-                if (cDesc.file !== null && !this.index.rootNs.get(cDesc.file)) {
-                    this.reportAtAttrVal(el.attributes['file'], `Failed to locate specified Desc "${cDesc.file}"`);
+                if (cDesc.file !== null) {
+                    const fDesc = this.index.rootNs.get(cDesc.file);
+                    if (!fDesc) {
+                        this.reportAtAttrVal(el.attributes['file'], `Failed to locate specified File Desc "${cDesc.file}"`);
+                    }
+                    else {
+                        const ufNode = this.uBuilder.buildNodeFromDesc(cDesc);
+                        if (!ufNode) {
+                            this.reportAtAttrVal(el.attributes['name'], `Failed to locate specified Desc "${cDesc.name}" in File Desc "${cDesc.file}"`);
+                        }
+                    }
                 }
 
                 if (cDesc.template !== null) {

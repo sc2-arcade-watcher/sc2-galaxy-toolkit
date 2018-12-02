@@ -218,6 +218,9 @@ export class UIBuilder {
                     tpath = mount.slice(1).concat(tpath);
                 }
             }
+            else {
+                return;
+            }
         }
 
         return {hierarchyRoot, tpath};
@@ -225,6 +228,9 @@ export class UIBuilder {
 
     buildNodeFromDesc(selectedDesc: DescNamespace) {
         const context = this.determineContextOfDesc(selectedDesc);
+        if (!context) {
+            return;
+        }
         const parentNode = createNodeFromDesc(context.hierarchyRoot);
         this.expandNode(parentNode, context.tpath);
         return parentNode.getChild(...context.tpath);
