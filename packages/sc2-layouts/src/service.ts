@@ -340,7 +340,7 @@ export class ServiceContext implements IService {
         }
 
         // -
-        if (vs.workspace.workspaceFolders.length) {
+        if (vs.workspace.workspaceFolders !== void 0) {
             for (const wsFolder of vs.workspace.workspaceFolders) {
                 for (const fsPath of (await s2.findArchiveDirectories(wsFolder.uri.fsPath))) {
                     let name = path.basename(fsPath);
@@ -350,20 +350,20 @@ export class ServiceContext implements IService {
                     wsArchives.push(new s2.Archive(name, URI.file(fsPath)));
                 }
             }
-        }
 
-        // -
-        if (wsArchives.length) {
-            this.console.info('s2mods found in workspace:', wsArchives.map(item => {
-                return {name: item.name, fsPath: item.uri.fsPath};
-            }));
-        }
-        else if (!vs.workspace.workspaceFolders.length) {
-            this.console.info('No folders in workspace.');
+            // -
+            if (wsArchives.length) {
+                this.console.info('s2mods found in workspace:', wsArchives.map(item => {
+                    return {name: item.name, fsPath: item.uri.fsPath};
+                }));
+            }
+            else {
+                this.console.info('No s2mods found in workspace folders. Using workspace rootPath as a base for indexing.');
+                wsArchives.push(new s2.Archive(path.basename(vs.workspace.rootPath), URI.file(vs.workspace.rootPath)));
+            }
         }
         else {
-            this.console.info('No s2mods found in workspace folders. Using workspace rootPath as a base for indexing.');
-            wsArchives.push(new s2.Archive(path.basename(vs.workspace.rootPath), URI.file(vs.workspace.rootPath)));
+            this.console.info('No folders in workspace.');
         }
 
         // -
