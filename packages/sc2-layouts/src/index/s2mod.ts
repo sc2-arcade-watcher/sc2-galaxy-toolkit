@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as glob from 'glob';
-import { readFileAsync } from '../common';
+import { readFileAsync, globify } from '../common';
 import URI from 'vscode-uri';
 import { ILoggerConsole, createLogger } from '../services/provider';
 
@@ -239,22 +239,14 @@ export function isS2Archive(fsPath: string) {
     return reIsS2Archive.exec(path.extname(fsPath));
 }
 
-export function findArchiveDirectories(fsPath: string) {
-    return new Promise<string[]>((resolve, reject) => {
-        if (isS2Archive(fsPath)) {
-            resolve([path.resolve(fsPath)]);
-            return;
-        }
-        glob(path.join(fsPath, `**/*.+(${S2ArchiveExtsStr})`), {nocase: true, realpath: true} , (err, matches) => {
-            if (err) {
-                reject(err);
-            }
-            else {
-                resolve(matches.filter((value) => {
-                    return fs.lstatSync(value).isDirectory();
-                }));
-            }
-        });
+export async function findArchiveDirectories(fsPath: string) {
+    if (isS2Archive(fsPath)) {
+        return [path.resolve(fsPath)];
+    }
+    return await globify(`**/*.+(${S2ArchiveExtsStr})/`, {
+        cwd: fsPath,
+        absolute: true,
+        nocase: true,
     });
 }
 
