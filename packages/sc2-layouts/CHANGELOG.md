@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.5.1] - 2018-12-03
+
+* Bugfixes:
+  * Fixed error occuring when opening layout file without any folders in the workspace
+  * Fixed detecting nested sc2mod/sc2map directories inside workspace folders (Windows specific issue).
+
 ## [0.5.0] - 2018-12-02
 
 * General
