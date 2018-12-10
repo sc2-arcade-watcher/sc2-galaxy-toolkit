@@ -94,7 +94,7 @@ export interface SimpleType extends SModel {
     data: SimpleTypeData;
     flags: SimpleTypeFlags;
     union?: SimpleType[];
-    evalues?: string[];
+    /* @deprecated */ evalues?: string[];
     emap?: Map<string, SEnumInfo>;
     patterns?: RegExp[];
 }

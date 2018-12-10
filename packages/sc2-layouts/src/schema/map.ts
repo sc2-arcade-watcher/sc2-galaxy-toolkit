@@ -615,6 +615,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
     const cdesc = <sch.ComplexType>entries.get('CDesc');
     const cfrmEl = cdesc.struct.get('Frame');
     const sFrameEnum = <sch.SimpleType>entries.get('EFrameType');
+    sFrameEnum.kind = sch.SimpleTypeKind.Enumaration;
     sFrameEnum.evalues = [];
     sFrameEnum.emap = new Map();
     cfrmEl.flags |= sch.ElementDefFlags.TypeAlternation;

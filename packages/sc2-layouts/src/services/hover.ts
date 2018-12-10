@@ -5,12 +5,12 @@ import { AbstractProvider, svcRequest } from './provider';
 import { XMLElement } from '../types';
 
 function attrSchDocs(sAttr: sch.Attribute)  {
-    const ms: vs.MarkdownString[] = [];
-    ms.push(new vs.MarkdownString(`&nbsp;**@**${sAttr.name}${(sAttr.required ? '' : '?')} — \`${sAttr.type.name}\``));
+    let s = '';
+    s += `&nbsp;**@**${sAttr.name}${(sAttr.required ? '' : '?')} — \`${sAttr.type.name}\``;
     if (sAttr.documentation) {
-        ms[0].appendMarkdown(' — ' + sAttr.documentation);
+        s += ' — ' + sAttr.documentation;
     }
-    return ms;
+    return s;
 }
 
 export class HoverProvider extends AbstractProvider implements vs.HoverProvider {
@@ -31,34 +31,58 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
         const node = sourceFile.findNodeAt(offset);
         let hv: vs.Hover;
 
-        // console.log(util.inspect(node, {depth: 1}));
-
         if (node instanceof XMLElement && node.stype) {
             if (node.start <= offset && (node.start + node.tag.length + 1) > offset) {
                 if (node.sdef) {
-                    hv = <vs.Hover>{
-                        contents: [],
-                    };
-                    hv.contents.push(new vs.MarkdownString(`**${node.sdef.name}** — [${node.sdef.type.name}]`));
+                    let contents = '';
+                    contents += `**${node.sdef.name}** — [${node.sdef.type.name}]`;
                     if (node.sdef.label) {
-                        hv.contents.push(new vs.MarkdownString('\n' + node.sdef.label));
+                        contents += '\\\n' + node.sdef.label;
                     }
                     for (const sAttr of node.stype.attributes.values()) {
-                        hv.contents = hv.contents.concat(attrSchDocs(sAttr));
+                        contents += '\n\n' + attrSchDocs(sAttr);
                     }
                     if (node.sdef.documentation) {
-                        hv.contents.push(new vs.MarkdownString('---\n' + node.sdef.documentation));
+                        contents += '\n\n---\n\n' + node.sdef.documentation;
                     }
+                    hv = new vs.Hover(contents);
                 }
             }
             else {
                 const attr = node.findAttributeAt(offset);
-                if (attr && attr.startValue && attr.startValue >= offset) {
-                    const scAttr = node.stype.attributes.get(attr.name);
+                if (attr) {
+                    let scAttr = node.stype.attributes.get(attr.name.toLowerCase());
+                    if (!scAttr) {
+                        const indType = this.xray.matchIndeterminateAttr(node, attr.name);
+                        if (indType) {
+                            scAttr = {
+                                name: indType.key.name,
+                                type: indType.value,
+                                required: true,
+                            };
+                        }
+                    }
+
                     if (scAttr) {
-                        hv = <vs.Hover>{
-                            contents: attrSchDocs(scAttr),
-                        };
+                        if ((attr.start + attr.name.length) > offset) {
+                            let contents = attrSchDocs(scAttr);
+                            if (scAttr.type.kind === sch.SimpleTypeKind.Enumaration || scAttr.type.kind === sch.SimpleTypeKind.Flags) {
+                                contents += '\n\n**Values / Flags**:\n\n';
+                                for (const item of scAttr.type.emap.values()) {
+                                    contents += `\`${item.name}\``;
+                                    if (item.label) {
+                                        contents += ` — ${item.label}`;
+                                    }
+                                    contents += '\\\n';
+                                }
+                            }
+                            hv = new vs.Hover(
+                                new vs.MarkdownString(contents),
+                            );
+                        }
+                        else if (attr.startValue && attr.startValue <= offset) {
+                            // TODO:
+                        }
                     }
                 }
             }
