@@ -20,6 +20,8 @@ export const enum BuiltinTypeKind {
     FrameReference,
     AnimationName,
     EventName,
+    StateGroupName,
+    StateGroupStateName,
     PropertyName,
     PropertyValue,
     //

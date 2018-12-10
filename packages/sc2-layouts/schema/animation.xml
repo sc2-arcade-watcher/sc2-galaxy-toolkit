@@ -82,6 +82,11 @@
         <attribute name="value" type="String" use="required"/>
     </complexType>
 
+    <complexType name="CFrameControllerKeyIdentifierState">
+        <extend value="CFrameControllerKeyIdentifier"/>
+        <attribute name="value" type="StateGroupStateName" use="required"/>
+    </complexType>
+
     <complexType name="CFrameControllerKeyAnimation">
         <extend value="CFrameControllerKey"/>
         <attribute name="type" type="EAnimationControllerKeyType" use="required" default="Animation"/>
@@ -188,8 +193,8 @@
 
     <complexType name="CFrameControllerState">
         <extend value="CFrameController"/>
-        <attribute name="stateGroup" type="String" use="required"/>
-        <element name="Key" type="CFrameControllerKeyIdentifier"/>
+        <attribute name="stateGroup" type="StateGroupName" use="required"/>
+        <element name="Key" type="CFrameControllerKeyIdentifierState"/>
     </complexType>
 
     <complexType name="CFrameControllerStartingAngle">

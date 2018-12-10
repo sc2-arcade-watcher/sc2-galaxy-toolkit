@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <map>
+    <simpleType name="StateGroupStateNameOptional">
+        <union value="StateGroupStateName"/>
+        <flag name="Nullable" value="true"/>
+    </simpleType>
+
     <!--
      - CFrameStateCondition
     -->
@@ -23,7 +28,7 @@
 
     <complexType name="CFrameStateConditionStateGroup">
         <extend value="CFrameStateCondition"/>
-        <indeterminateAttribute key="String" value="String"/>
+        <indeterminateAttribute key="StateGroupName" value="StateGroupStateName"/>
     </complexType>
 
     <complexType name="CFrameStateConditionOption">
@@ -44,8 +49,8 @@
 
     <complexType name="CFrameStateSetStateAction">
         <extend value="CFrameStateAction"/>
-        <attribute name="group" type="String" use="required"/>
-        <attribute name="state" type="String" use="required"/>
+        <attribute name="group" type="StateGroupName" use="required"/>
+        <attribute name="state" type="StateGroupStateName" use="required"/>
     </complexType>
 
     <complexType name="CFrameStateSetPropertyAction">
@@ -108,7 +113,7 @@
     </complexType>
 
     <complexType name="CFrameStateDefault">
-        <attribute name="val" type="ElementName" use="required"/>
+        <attribute name="val" type="StateGroupStateNameOptional" use="required"/>
     </complexType>
 
     <complexType name="CFrameStateGroupDesc">

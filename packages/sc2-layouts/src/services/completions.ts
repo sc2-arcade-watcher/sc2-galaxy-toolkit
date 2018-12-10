@@ -9,7 +9,7 @@ import { DescIndex, DescNamespace, DescKind } from '../index/desc';
 import * as s2 from '../index/s2mod';
 import { Store } from '../index/store';
 import { ExpressionParser, SelHandleKind, SelectorFragment, PathSelector } from '../parser/expressions';
-import { UINavigator, UIBuilder, FrameNode, AnimationNode } from '../index/hierarchy';
+import { UINavigator, UIBuilder, FrameNode, AnimationNode, StateGroupNode } from '../index/hierarchy';
 import { getSelectionIndexAtPosition, getAttrValueKind } from '../parser/utils';
 import { LayoutProcessor } from '../index/processor';
 import { XRay } from '../index/xray';
@@ -63,6 +63,7 @@ interface ComplContext {
 
 interface AtComplContext extends ComplContext {
     attrName: string;
+    attrNameLower: string;
 }
 
 interface AtValComplContext extends AtComplContext {
@@ -346,16 +347,49 @@ class AttrValueProvider extends SuggestionsProvider {
         }
     }
 
+    protected suggestStateGroupNames(ctx: AtValComplContext) {
+        const uNode = this.xray.determineTargetFrameNode(ctx.node);
+        if (!uNode) return;
+        for (const aNode of this.uNavigator.getChildrenOfType<StateGroupNode>(uNode, DescKind.StateGroup).values()) {
+            let docs = '';
+            docs += `**DefaultState:** ${aNode.defaultState ? `\`${aNode.defaultState}\`` : '* - None - *'}\\\n`;
+            docs += '**States:** ' + Array.from(aNode.states.values()).map((item, key) => {
+                return `\`${item[0].getAttributeValue('name', '-')}\``;
+            }).join(', ') + '\\\n';
+            docs += `**Context:**\\\n${aNode.parentNodes.map(item => `\\- ${item.name} \`[${item.constructor.name}]\``).join('\\\n')}`;
+            ctx.citems.push({
+                label: aNode.name,
+                kind: vs.CompletionItemKind.Class,
+                detail: aNode.parent ? `${aNode.parent.name} [parent]` : void 0,
+                documentation: new vs.MarkdownString(docs),
+            });
+        }
+    }
+
+    protected suggestStateGroupStateNames(ctx: AtValComplContext) {
+        const sgNode = this.xray.determineTargetStateGroup(ctx.node);
+        if (!sgNode) return;
+        for (const xElState of sgNode.states.values()) {
+            ctx.citems.push({
+                label: xElState[0].getAttributeValue('name'),
+                kind: vs.CompletionItemKind.Interface,
+                detail: sgNode.parent ? `${sgNode.name} — ${sgNode.parent.name} [parent]` : void 0,
+            });
+        }
+    }
+
     public provide(ctx: AtValComplContext) {
-        const sAttrItem = ctx.node.stype.attributes.get(ctx.attrName);
+        const sAttrItem = ctx.node.stype.attributes.get(ctx.attrNameLower);
         let sAttrType: sch.SimpleType;
         if (sAttrItem) {
             sAttrType = sAttrItem.type;
         }
         else {
-            sAttrType = this.processor.getElPropertyType(ctx.node, ctx.attrName);
-            if (!sAttrType) return;
+            const indType = this.xray.matchIndeterminateAttr(ctx.node, ctx.attrName);
+            if (!indType) return;
+            sAttrType = indType.value;
         }
+
         const pvKind = getAttrValueKind(ctx.attrValue);
         const isAssetRef = (pvKind === AttrValueKind.Asset || pvKind === AttrValueKind.AssetRacial);
         const currentDesc = this.store.index.resolveElementDesc(ctx.node);
@@ -404,6 +438,25 @@ class AttrValueProvider extends SuggestionsProvider {
                 break;
             }
 
+            case sch.BuiltinTypeKind.StateGroupName:
+            {
+                this.suggestStateGroupNames(ctx);
+                break;
+            }
+
+            case sch.BuiltinTypeKind.StateGroupStateName:
+            {
+                this.suggestStateGroupStateNames(ctx);
+                break;
+            }
+
+            case sch.BuiltinTypeKind.PropertyValue:
+            {
+                const propListType = this.processor.getElPropertyType(ctx.node, ctx.attrNameLower);
+                completionsForSimpleType(propListType).forEach(r => { ctx.citems.push(r); });
+                break;
+            }
+
             default:
             {
                 completionsForSimpleType(sAttrType).forEach(r => { ctx.citems.push(r); });
@@ -437,18 +490,21 @@ class AttrNameProvider extends SuggestionsProvider {
 
     public provide(ctx: AtComplContext) {
         let atHasValue = false;
-        if (ctx.attrName && ctx.node.attributes[ctx.attrName]) {
-            atHasValue = ctx.node.attributes[ctx.attrName].startValue !== void 0;
+        if (ctx.attrNameLower && ctx.node.attributes[ctx.attrNameLower]) {
+            atHasValue = ctx.node.attributes[ctx.attrNameLower].startValue !== void 0;
         }
 
-        function createCompletion(name: string, detail?: string) {
+        function createCompletion(name: string, opts: { detail?: string, triggerSuggest?: boolean } = {}) {
             const tmpc = <vs.CompletionItem>{
                 label: name,
-                kind: vs.CompletionItemKind.Field,
-                detail: detail,
+                kind: vs.CompletionItemKind.Variable,
+                detail: opts.detail ? opts.detail : void 0,
             };
             if (!atHasValue) {
                 tmpc.insertText = new vs.SnippetString(`${name}="\$0"`);
+                if (opts.triggerSuggest) {
+                    tmpc.command = {command: 'editor.action.triggerSuggest', title: ''};
+                }
             }
             return tmpc;
         }
@@ -456,7 +512,7 @@ class AttrNameProvider extends SuggestionsProvider {
         for (const [sAttrKey, sAttrItem] of ctx.node.stype.attributes) {
             if (
                 (ctx.node.attributes[sAttrKey] && ctx.node.attributes[sAttrKey].startValue) &&
-                (ctx.xtoken !== TokenType.AttributeName || ctx.attrName !== sAttrItem.name)
+                (ctx.xtoken !== TokenType.AttributeName || ctx.attrNameLower !== sAttrKey)
             ) {
                 continue;
             }
@@ -483,7 +539,23 @@ class AttrNameProvider extends SuggestionsProvider {
                 case sch.BuiltinTypeKind.AnimationName:
                 {
                     for (const uAnim of this.uNavigator.getChildrenOfType(uFrame, DescKind.Animation).values()) {
-                        ctx.citems.push(createCompletion(uAnim.name, `[${indAttr.key.name}]`));
+                        ctx.citems.push(createCompletion(uAnim.name, {
+                            detail: `[${indAttr.key.name}]`,
+                            triggerSuggest: true,
+                        }));
+                    }
+                    break;
+                }
+
+                case sch.BuiltinTypeKind.StateGroupName:
+                {
+                    const uNode = this.xray.determineTargetFrameNode(ctx.node);
+                    if (!uNode) return;
+                    for (const sgNode of this.uNavigator.getChildrenOfType<StateGroupNode>(uNode, DescKind.StateGroup).values()) {
+                        ctx.citems.push(createCompletion(sgNode.name, {
+                            detail: `[${indAttr.key.name}]`,
+                            triggerSuggest: true,
+                        }));
                     }
                     break;
                 }
@@ -497,7 +569,10 @@ class AttrNameProvider extends SuggestionsProvider {
                     for (const currSfType of this.store.schema.frameTypes.values()) {
                         if (sfType !== void 0 && sfType !== currSfType) continue;
                         for (const currScProp of currSfType.fprops.values()) {
-                            ctx.citems.push(createCompletion(currScProp.name, `[${indAttr.key.name}] belongs to ${currScProp.fclass.name}`));
+                            ctx.citems.push(createCompletion(currScProp.name, {
+                                detail: `Property of ${currScProp.fclass.name}`,
+                                triggerSuggest: true,
+                            }));
                         }
                     }
                     break;
@@ -626,20 +701,8 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                     }
                     complItem.insertText += ` ${stInfo.name}="${val}"`;
                 }
-                switch (itemSch.name) {
-                    case 'CFrameStateConditionProperty':
-                    case 'CFrameStateSetPropertyAction':
-                        complItem.insertText += ` \${${++i}:Property}`;
-                        break;
-                    case 'CFrameStateConditionAnimationState':
-                        complItem.insertText += ` \${${++i}:Animation}`;
-                        break;
-                    case 'CFrameStateConditionStateGroup':
-                        complItem.insertText += ` \${${++i}:StateGroup}`;
-                        break;
-                    case 'CFrameStateConditionOption':
-                        complItem.insertText += ` \${${++i}:Option}`;
-                        break;
+                if (itemSch.indeterminateAttributes.size > 0) {
+                    complItem.insertText += ` $0`;
                 }
                 complItem.insertText += '/>';
                 complItem.insertText = new vs.SnippetString(complItem.insertText);
@@ -836,6 +899,9 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
             }
             token = scanner.scan();
         }
+        // if (currentAttrName !== void 0) {
+        //     currentAttrName = currentAttrName.toLowerCase();
+        // }
         const tokenText = scanner.getTokenText();
         const cmCtx = <ComplContext>{
             citems: items,
@@ -870,6 +936,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                     case TokenType.StartTag:
                     {
                         cmAtCtx.attrName = currentAttrName;
+                        cmAtCtx.attrNameLower = currentAttrName.toLowerCase();
                         break;
                     }
                 }
@@ -900,6 +967,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
 
                 const cmAtCtx = <AtValComplContext>cmCtx;
                 cmAtCtx.attrName = currentAttrName;
+                cmAtCtx.attrNameLower = currentAttrName.toLowerCase();
                 cmAtCtx.attrValue = arVal;
                 cmAtCtx.atOffsetRelative = aOffset;
                 this.atValueProvider.provide(cmAtCtx);

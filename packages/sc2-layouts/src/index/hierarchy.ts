@@ -73,6 +73,18 @@ export class UINode {
     get fqn(): string {
         return (this.parent) ? `${this.parent.fqn}/${this.name}` : this.name;
     }
+
+    get parentNodes(): UINode[] {
+        const plist: UINode[] = [];
+        let current: UINode = this;
+
+        while (current) {
+            plist.push(current);
+            current = current.parent;
+        }
+
+        return plist;
+    }
 }
 
 export class FrameNode extends UINode {
@@ -86,14 +98,36 @@ export class FrameNode extends UINode {
 }
 
 export class StateGroupNode extends UINode {
+    get defaultState() {
+        const defs = this.findElements(item => item.sdef.nodeKind === sch.ElementDefKind.StateGroupDefaultState);
+        if (!defs.length) return;
+        const val = defs.pop().getAttributeValue('val');
+        if (!val) return;
+        return val;
+    }
+
+    get states() {
+        const r = new Map<string, XMLElement[]>();
+        for (const item of this.findElements(item => item.sdef.nodeKind === sch.ElementDefKind.StateGroupState)) {
+            const val = item.getAttributeValue('name', null);
+            if (val === null || val === '') continue;
+            let entry = r.get(val);
+            if (!entry) {
+                entry = [];
+                r.set(val, entry);
+            }
+            entry.push(item);
+        }
+        return r;
+    }
 }
 
 export class AnimationNode extends UINode {
     getEvents() {
         const r = new Map<string, XMLElement[]>();
         for (const item of this.findElements(item => item.sdef.nodeKind === sch.ElementDefKind.AnimationEvent)) {
-            const val = item.getAttributeValue('event', void 0);
-            if (!val) continue;
+            const val = item.getAttributeValue('event', null);
+            if (val === null || val === '') continue;
             let entry = r.get(val);
             if (!entry) {
                 entry = [];
@@ -141,7 +175,7 @@ export class UIBuilder {
         this.rootNs = dIndex.rootNs;
     }
 
-    expandNode(initialNode: UINode, tpath: string[] | null) {
+    expandNode(initialNode: UINode, tpath: string[] | null = []) {
         const dIndex = this.dIndex;
         const rootNs = this.rootNs;
 
@@ -195,7 +229,9 @@ export class UIBuilder {
             }
         }
 
-        processDesc(initialNode, initialNode.mainDesc, tpath);
+        for (const cDesc of Array.from(initialNode.descs)) {
+            processDesc(initialNode, cDesc, tpath);
+        }
     }
 
     determineContextOfDesc(selectedDesc: DescNamespace) {
@@ -380,10 +416,13 @@ export class UINavigator {
             switch (dkind) {
                 case DescKind.Frame:
                     if (!(item instanceof FrameNode)) continue outer;
+                    break;
                 case DescKind.StateGroup:
                     if (!(item instanceof StateGroupNode)) continue outer;
+                    break;
                 case DescKind.Animation:
                     if (!(item instanceof AnimationNode)) continue outer;
+                    break;
             }
             rm.set(item.name, <any>item);
         }
