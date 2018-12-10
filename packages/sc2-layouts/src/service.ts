@@ -114,6 +114,38 @@ class DocumentUpdateRequest {
     }
 }
 
+interface ProgressProxy {
+    done: () => void;
+    progress: vs.Progress<{ message?: string; increment?: number }>;
+}
+
+function createProgressNotification(options: vs.ProgressOptions) {
+    let r = <ProgressProxy>{};
+    vs.window.withProgress(
+        options,
+        (progress, token) => {
+            r.progress = progress;
+
+            return new Promise((resolve) => {
+                r.done = resolve;
+            });
+        }
+    );
+    return r;
+}
+
+const enum ServiceStateFlags {
+    IndexingInProgress         = 1 << 0,
+
+    StepWorkspaceDiscoveryDone = 1 << 1,
+    StepModsDiscoveryDone      = 1 << 2,
+    StepFilesDone              = 1 << 3,
+    StepMetadataDone           = 1 << 4,
+
+    StatusReady                = StepWorkspaceDiscoveryDone | StepModsDiscoveryDone | StepFilesDone | StepMetadataDone,
+    StatusBusy                 = IndexingInProgress,
+}
+
 export class ServiceContext implements IService {
     console: ILoggerConsole;
     protected store: Store;
@@ -122,6 +154,7 @@ export class ServiceContext implements IService {
     protected diagnosticCollection: vs.DiagnosticCollection;
     protected documentUpdateRequests = new Map<string, DocumentUpdateRequest>();
     config: ExtConfig;
+    state: ServiceStateFlags = 0;
 
     protected completionsProvider: CompletionsProvider;
     protected hoverProvider: HoverProvider;
@@ -160,8 +193,17 @@ export class ServiceContext implements IService {
             }
             this.errorOutputChannel.appendLine(msg);
         };
+        let errorCounter = 0;
         this.console = {
-            error: emitOutput,
+            error: (msg, ...params: string[]) => {
+                if (errorCounter === 0) {
+                    this.errorOutputChannel.show(true);
+                    vs.window.showErrorMessage(`Whoops! An unhandled exception occurred within SC2Layouts extension. Please consider reporting it with the log included. You'll not be notified about further errors within this session. However, it is possible that index state has been corrupted, and restat might be required if extension will stop function properly.`, { modal : false });
+
+                }
+                ++errorCounter;
+                emitOutput(msg, params);
+            },
             warn: emitOutput,
             info: emitOutput,
             log: emitOutput,
@@ -206,32 +248,46 @@ export class ServiceContext implements IService {
         this.diagnosticsProvider = this.createProvider(DiagnosticsProvider);
         context.subscriptions.push(vs.workspace.onDidChangeTextDocument(async ev => {
             if (ev.document.languageId !== languageId) return;
+            if (!(this.state & ServiceStateFlags.StepFilesDone)) return;
             this.debounceDocumentSync(ev.document);
         }));
         context.subscriptions.push(vs.workspace.onDidOpenTextDocument(async document => {
             if (document.languageId !== languageId) return;
+            if (!(this.state & ServiceStateFlags.StepFilesDone)) return;
             await this.syncVsDocument(document);
             await this.provideDiagnostics(document.uri.toString());
         }));
         context.subscriptions.push(vs.workspace.onDidSaveTextDocument(async document => {
             if (document.languageId !== languageId) return;
+            if (!(this.state & ServiceStateFlags.StepFilesDone)) return;
             await this.syncVsDocument(document);
             await this.provideDiagnostics(document.uri.toString());
         }));
         context.subscriptions.push(vs.workspace.onDidCloseTextDocument(async document => {
             if (document.languageId !== languageId) return;
             this.diagnosticCollection.delete(document.uri);
+            if (!(this.state & ServiceStateFlags.StepFilesDone)) return;
             if (document.isDirty) {
                 await this.syncDocument(await createTextDocumentFromFs(document.uri.fsPath), true);
             }
         }));
 
         // -
+        context.subscriptions.push(vs.workspace.onDidChangeWorkspaceFolders(async e => {
+            this.console.debug('[onDidChangeWorkspaceFolders]', e);
+            await this.reinitialize();
+        }));
+
+
+        // -
         context.subscriptions.push(vs.workspace.onDidChangeConfiguration(async e => {
             if (!e.affectsConfiguration(`${languageId}`)) return;
+            const affectsMods = e.affectsConfiguration(`${languageId}.builtinMods`);
+            this.console.debug('[onDidChangeConfiguration]', {affectsMods});
+
             this.readConfig();
 
-            if (e.affectsConfiguration(`${languageId}.builtinMods`)) {
+            if (affectsMods) {
                 await this.reinitialize();
             }
         }));
@@ -252,7 +308,12 @@ export class ServiceContext implements IService {
     }
 
     protected async reinitialize() {
+        const choice = await vs.window.showInformationMessage(`Workspace configuration has changed, reindex might be required. Would you like to do that now?`, 'Yes', 'No');
+        if (choice !== 'Yes') return;
+        if ((this.state & ServiceStateFlags.StatusReady) !== ServiceStateFlags.StatusReady) return;
+        this.console.log('[reinitialize]');
         this.dispose();
+        this.state = 0;
         await this.store.clear();
         await this.initialize();
     }
@@ -332,6 +393,9 @@ export class ServiceContext implements IService {
         const archives: s2.Archive[] = [];
         const wsArchives: s2.Archive[] = [];
 
+        const progressCtrl = createProgressNotification({ title: 'Indexing layouts', location: vs.ProgressLocation.Notification });
+        this.state = ServiceStateFlags.IndexingInProgress;
+
         // -
         for (const [mod, enabled] of objventries(this.config.builtinMods)) {
             if (!enabled) continue;
@@ -340,7 +404,9 @@ export class ServiceContext implements IService {
         }
 
         // -
-        if (vs.workspace.workspaceFolders !== void 0) {
+        if (vs.workspace.workspaceFolders !== void 0 && vs.workspace.workspaceFolders.length) {
+            this.console.info('processing workspace folders..', vs.workspace.workspaceFolders);
+
             for (const wsFolder of vs.workspace.workspaceFolders) {
                 for (const fsPath of (await s2.findArchiveDirectories(wsFolder.uri.fsPath))) {
                     let name = path.basename(fsPath);
@@ -359,7 +425,7 @@ export class ServiceContext implements IService {
             }
             else {
                 this.console.info('No s2mods found in workspace folders. Using workspace rootPath as a base for indexing.');
-                wsArchives.push(new s2.Archive(path.basename(vs.workspace.rootPath), URI.file(vs.workspace.rootPath)));
+                wsArchives.push(new s2.Archive(vs.workspace.workspaceFolders[0].name, vs.workspace.workspaceFolders[0].uri));
             }
         }
         else {
@@ -367,14 +433,52 @@ export class ServiceContext implements IService {
         }
 
         // -
+        progressCtrl.progress.report({ message: 'Workspace discovery' });
         const mArchives = archives.concat(wsArchives);
         this.store.presetArchives(...mArchives);
-        this.console.info(`Indexing layouts files..`);
-        await Promise.all(mArchives.map(sa => this.indexDirectory(sa.uri)));
+        this.state |= ServiceStateFlags.StepWorkspaceDiscoveryDone;
+        const fileList: string[] = [].concat(...await Promise.all(mArchives.map(async (sa) => {
+            const tmp = await this.fetchFilelist(sa.uri);
+            this.console.debug(`${sa.uri.fsPath} [${tmp.length}]`);
+            return tmp;
+        })));
+        this.state |= ServiceStateFlags.StepModsDiscoveryDone;
 
         // -
+        this.console.info(`Indexing layouts files..`);
+        let index = 0;
+        let partialFileList: string[];
+        const chunkLength = 25;
+        while ((partialFileList = fileList.slice(index, index + chunkLength)).length) {
+            index += chunkLength;
+            progressCtrl.progress.report({
+                increment: 0,
+                message: path.basename(partialFileList[0])
+            });
+            await Promise.all(partialFileList.map(async fsPath => {
+                const content = await createTextDocumentFromFs(fsPath);
+                await this.syncDocument(content);
+            }));
+            progressCtrl.progress.report({
+                increment: 50.0 / (fileList.length - 1) * chunkLength,
+            });
+        }
+        this.state |= ServiceStateFlags.StepFilesDone;
+
+        // -
+        progressCtrl.progress.report({ message: 's2mods metadata' });
         this.console.info(`Indexing s2mods metadata..`);
-        await this.store.s2ws.reload();
+        for (const sa of this.store.s2ws.archives.values()) {
+            progressCtrl.progress.report({
+                message: sa.name,
+                increment: 0,
+            });
+            await this.store.s2ws.reloadArchive(sa);
+            progressCtrl.progress.report({
+                increment: 50.0 / (this.store.s2ws.archives.size - 1),
+            });
+        }
+        this.state |= ServiceStateFlags.StepMetadataDone;
 
         // -
         this.fsWatcher = vs.workspace.createFileSystemWatcher('**/{GameStrings.txt,GameHotkeys.txt,Assets.txt,AssetsProduct.txt,FontStyles.SC2Style,*.SC2Layout}');
@@ -390,19 +494,19 @@ export class ServiceContext implements IService {
             await this.syncVsDocument(item.document);
             await this.provideDiagnostics(item.document.uri.toString());
         }
+
+        progressCtrl.done();
+        this.state &= ~ServiceStateFlags.IndexingInProgress;
     }
 
-    protected async indexDirectory(uri: vs.Uri) {
+    protected async fetchFilelist(uri: vs.Uri) {
         const r = await globify(`**/*.${languageExt}`, {
             cwd: uri.fsPath,
             absolute: true,
             nodir: true,
             nocase: true,
         });
-        this.errorOutputChannel.appendLine(`${uri.fsPath} [${r.length}]`);
-        for (const item of r) {
-            await this.syncDocument(await createTextDocumentFromFs(item));
-        }
+        return r;
     }
 
     @svcRequest(false, (doc: lsp.TextDocument) => vs.Uri.parse(doc.uri).fsPath)
@@ -428,6 +532,8 @@ export class ServiceContext implements IService {
             this.console.log('not in workspace');
             return false;
         }
+
+        if (!(this.state & ServiceStateFlags.StepFilesDone)) return false;
 
         if (path.extname(ev.uri.fsPath).toLowerCase() === '.sc2layout') {
             switch (ev.type) {

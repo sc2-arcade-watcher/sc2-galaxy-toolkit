@@ -37,14 +37,12 @@ export function createLogger(emitter?: LoggerConsoleEmit): ILoggerConsole {
 
 export interface IService {
     console: ILoggerConsole;
-    errorOutputChannel: vs.OutputChannel;
 }
 
 export abstract class AbstractProvider implements IService {
     protected svcContext: ServiceContext;
     protected extContext: vs.ExtensionContext;
     console: ILoggerConsole;
-    errorOutputChannel: vs.OutputChannel;
     protected store: Store;
     protected dIndex: DescIndex;
     protected xray: XRay;
@@ -56,7 +54,6 @@ export abstract class AbstractProvider implements IService {
         this.store = store;
         this.dIndex = this.store.index;
         this.xray = new XRay(this.store);
-        this.errorOutputChannel = this.svcContext.errorOutputChannel;
         this.prepare();
     }
 
@@ -81,7 +78,6 @@ function formatElapsed(start: [number, number], end: [number, number]): string {
 }
 
 let reqDepth = 0;
-let errorCounter = 0;
 export function svcRequest(showArg = false, argFormatter?: (...payload: any[]) => any, resultFormatter?: (payload: any) => any) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         const method = (<Function>descriptor.value);
@@ -113,15 +109,7 @@ export function svcRequest(showArg = false, argFormatter?: (...payload: any[]) =
                 }
                 catch (e) {
                     ret = void 0;
-                    server.console.error('[' + (<Error>e).name + '][' + errorCounter.toString() + '] ' + (<Error>e).message + '\n' + (<Error>e).stack);
-
-                    if (errorCounter === 0) {
-                        server.errorOutputChannel.show(true);
-                        vs.window.showErrorMessage(`Whoops! An unhandled exception occurred within SC2Layouts extension - "${(<Error>e).message}". Please consider reporting it with the log included. You'll not be notified about further errors within this session. However, it is possible that index state has been corrupted, and restat might be required if extension will stop function properly.`, {modal
-                        : false});
-
-                    }
-                    ++errorCounter;
+                    server.console.error('[' + (<Error>e).name + '] ' + (<Error>e).message + '\n' + (<Error>e).stack);
                 }
             }
 
