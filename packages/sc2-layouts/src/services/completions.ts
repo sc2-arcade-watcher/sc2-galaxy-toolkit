@@ -380,6 +380,23 @@ class AttrValueProvider extends SuggestionsProvider {
         }
     }
 
+    protected suggestPropertyNames(ctx: AtValComplContext) {
+        const uFrame = this.xray.determineTargetFrameNode(ctx.node);
+        if (!uFrame) return;
+
+        const sfType = this.store.schema.getFrameType(Array.from(uFrame.mainDesc.xDecls)[0].stype);
+        for (const currSfType of this.store.schema.frameTypes.values()) {
+            if (sfType !== void 0 && sfType !== currSfType) continue;
+            for (const currScProp of currSfType.fprops.values()) {
+                ctx.citems.push({
+                    label: currScProp.name,
+                    kind: vs.CompletionItemKind.Variable,
+                    detail: `Property of ${currScProp.fclass.name}`,
+                });
+            }
+        }
+    }
+
     public provide(ctx: AtValComplContext) {
         const sAttrItem = ctx.node.stype.attributes.get(ctx.attrNameLower);
         let sAttrType: sch.SimpleType;
@@ -449,6 +466,12 @@ class AttrValueProvider extends SuggestionsProvider {
             case sch.BuiltinTypeKind.StateGroupStateName:
             {
                 this.suggestStateGroupStateNames(ctx);
+                break;
+            }
+
+            case sch.BuiltinTypeKind.PropertyName:
+            {
+                this.suggestPropertyNames(ctx);
                 break;
             }
 
