@@ -2378,6 +2378,8 @@
     ========================================
     -->
     <frameClass name="CDownloadPanel" parent="CFrame">
+        <property name="FullDownloadKBCurrent" valueType="Int32" readonly="true" constant="true"/>
+        <property name="FullDownloadKBTotal" valueType="Int32" readonly="true" constant="true"/>
     </frameClass>
 
     <!--
@@ -4745,6 +4747,8 @@
         <property name="PausedImage" elementType="Field:Internal:CImage" readonly="false" constant="false"/>
         <property name="ProgressSlider" elementType="Field:Internal:CSlider" readonly="false" constant="false"/>
         <property name="StreamingAllowed" valueType="Boolean" readonly="false" constant="false"/>
+        <property name="IsPlaying" valueType="Boolean" readonly="false" constant="false"/>
+        <property name="MuteBgMusicWhilePlaying" valueType="Boolean" readonly="false" constant="false"/>
     </frameClass>
 
     <!--
@@ -9001,5 +9005,9 @@
     -->
     <frameClass name="CBrowser" parent="CLayer">
         <property name="Address" valueType="String" readonly="false" constant="true"/>
+        <property name="Error" valueType="Boolean" readonly="true" constant="true"/>
+        <property name="Loading" valueType="Boolean" readonly="true" constant="true"/>
+        <property name="CanGoForward" valueType="Boolean" readonly="true" constant="true"/>
+        <property name="CanGoBackward" valueType="Boolean" readonly="true" constant="true"/>
     </frameClass>
 </map>
