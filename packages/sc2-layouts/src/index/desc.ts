@@ -355,9 +355,14 @@ export class DescIndex {
                     const tpl = (<XMLElement>xDecl).getAttributeValue('template', null);
                     if (tpl !== null) {
                         const trefs = this.tplRefs.get(tpl);
-                        trefs.delete(descNode);
-                        if (!trefs.size) {
-                            this.tplRefs.delete(tpl);
+
+                        // elements with the same name are grouped under the same DescNamespace
+                        // so we have to double check whether the reference wasn't already deleted
+                        if (trefs) {
+                            trefs.delete(descNode);
+                            if (!trefs.size) {
+                                this.tplRefs.delete(tpl);
+                            }
                         }
                     }
 
