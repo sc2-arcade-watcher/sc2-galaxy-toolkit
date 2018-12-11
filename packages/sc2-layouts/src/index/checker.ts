@@ -73,26 +73,28 @@ export class LayoutChecker {
             {
                 const cDesc = this.index.resolveElementDesc(el);
 
-                if (cDesc.file !== null) {
-                    const fDesc = this.index.rootNs.get(cDesc.file);
+                if (el.hasAttribute('file')) {
+                    const fileName = el.getAttributeValue('file');
+                    const fDesc = this.index.rootNs.get(fileName);
                     if (!fDesc) {
-                        this.reportAtAttrVal(el.attributes['file'], `Failed to locate specified File Desc "${cDesc.file}"`);
+                        this.reportAtAttrVal(el.attributes['file'], `Failed to locate specified File Desc "${fileName}"`);
                     }
                     else {
                         const ufNode = this.uBuilder.buildNodeFromDesc(cDesc);
                         if (!ufNode) {
-                            this.reportAtAttrVal(el.attributes['name'], `Failed to locate specified Desc "${cDesc.name}" in File Desc "${cDesc.file}"`);
+                            this.reportAtAttrVal(el.attributes['name'], `Failed to locate specified Desc "${cDesc.name}" in File Desc "${fileName}"`);
                         }
                     }
                 }
 
-                if (cDesc.template !== null) {
-                    const dItem = this.index.rootNs.getDeep(cDesc.template);
+                if (el.hasAttribute('template')) {
+                    const tplName = el.getAttributeValue('template');
+                    const dItem = this.index.rootNs.getDeep(tplName);
                     if (!dItem) {
-                        this.reportAtAttrVal(el.attributes['template'], `Could not find template "${cDesc.template}"`);
+                        this.reportAtAttrVal(el.attributes['template'], `Could not find template "${tplName}"`);
                     }
                     else if (dItem.kind === DescKind.File) {
-                        this.reportAtAttrVal(el.attributes['template'], `Cannot use FileDsc as template - "${cDesc.template}"`);
+                        this.reportAtAttrVal(el.attributes['template'], `Cannot use FileDsc as template - "${tplName}"`);
                     }
                 }
 

@@ -128,8 +128,10 @@ class AttrValueProvider extends SuggestionsProvider {
                 if (smType === sch.BuiltinTypeKind.FileDescName && pathIndex > 0) break;
 
                 const fragments = pathSel.path.map(item => item.name.name).slice(0, pathIndex);
+                const dsItem = this.dIndex.rootNs.getMulti(...fragments);
+                if (!dsItem) break;
 
-                for (const item of this.dIndex.rootNs.getMulti(...fragments).children.values()) {
+                for (const item of dsItem.children.values()) {
                     const compl = <vs.CompletionItem>{
                         kind: descKindToCompletionKind(item.kind),
                         label: `${item.name}`,
