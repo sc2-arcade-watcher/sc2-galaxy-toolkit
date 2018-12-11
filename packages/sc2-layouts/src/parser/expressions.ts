@@ -4,10 +4,7 @@ import { getKindName } from './utils';
 import { reverseMap } from '../common';
 
 export function isIdentifierStart(ch: number): boolean {
-    return (ch >= CharacterCodes.A && ch <= CharacterCodes.Z)
-        || (ch >= CharacterCodes.a && ch <= CharacterCodes.z)
-        || (ch === CharacterCodes._)
-    ;
+    return isIdentifierPart(ch);
 }
 
 export function isIdentifierPart(ch: number): boolean {
@@ -163,23 +160,20 @@ export class Scanner {
                     return this.token = SyntaxKind.MinusToken;
                 }
 
-                case CharacterCodes._0:
-                case CharacterCodes._1:
-                case CharacterCodes._2:
-                case CharacterCodes._3:
-                case CharacterCodes._4:
-                case CharacterCodes._5:
-                case CharacterCodes._6:
-                case CharacterCodes._7:
-                case CharacterCodes._8:
-                case CharacterCodes._9:
-                {
-                    this.tokenValue = this.scanNumber();
-                    return this.token = SyntaxKind.NumericLiteral;
-                }
-
                 default:
                 {
+                    if (ch >= CharacterCodes._0 && ch <= CharacterCodes._9) {
+                        this.pos++;
+                        while (this.pos < this.end && isDigit(this.text.charCodeAt(this.pos))) {
+                            this.pos++;
+                        }
+
+                        if (!isIdentifierPart(this.text.charCodeAt(this.pos))) {
+                            this.tokenValue = this.text.substring(this.tokenPos, this.pos);
+                            return this.token = SyntaxKind.NumericLiteral;
+                        }
+                    }
+
                     if (isIdentifierStart(ch)) {
                         this.pos++;
                         while (this.pos < this.end && isIdentifierPart(ch = this.text.charCodeAt(this.pos))) this.pos++;
@@ -193,17 +187,6 @@ export class Scanner {
                 }
             }
         }
-    }
-
-    private scanNumber(): string {
-        const start = this.pos;
-        while (isDigit(this.text.charCodeAt(this.pos))) this.pos++;
-        if (this.text.charCodeAt(this.pos) === CharacterCodes.dot) {
-            this.pos++;
-            while (isDigit(this.text.charCodeAt(this.pos))) this.pos++;
-        }
-        let end = this.pos;
-        return this.text.substring(start, end);
     }
 
     public getCurrentPos(): number {
