@@ -117,7 +117,7 @@ export class SchemaValidator {
         for (const [sname, sattr] of node.stype.attributes) {
             if (!sattr.required) continue;
             if (node.attributes[sname]) continue;
-            this.appendDiagnostics(node, `Required attribute "${sattr.name}" not specified`, {category: DiagnosticCategory.Message});
+            this.appendDiagnostics(node, `Required attribute "${sattr.name}" not specified`, {category: DiagnosticCategory.Error});
         }
     }
 }

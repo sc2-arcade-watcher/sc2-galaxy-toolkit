@@ -128,12 +128,22 @@ export class LayoutChecker {
                 }
             }
 
-            switch (getAttrValueKind(nattr.value)) {
+            const vkind = getAttrValueKind(nattr.value);
+            switch (vkind) {
                 case AttrValueKind.Constant:
                 case AttrValueKind.ConstantRacial:
                 {
-                    const name = nattr.value.substr(nattr.value.charCodeAt(1) === CharacterCodes.hash ? 2 : 1);
-                    const citem = this.index.constants.get(name);
+                    const name = nattr.value.substr(vkind === AttrValueKind.ConstantRacial ? 2 : 1);
+                    let citem = this.index.constants.get(name);
+
+                    // TODO: dirty hack to not report racial constants as undedclared when there's a match for one of known races
+                    if (!citem && vkind === AttrValueKind.ConstantRacial) {
+                        for (const race of ['Prot', 'Zerg', 'Terr']) {
+                            citem = this.index.constants.get(`${name}_${race}`);
+                            if (citem) break;
+                        }
+                    }
+
                     if (!citem) {
                         this.reportAtAttrVal(nattr, `Undeclared constant "${nattr.value}"`);
                         continue outer;
@@ -154,7 +164,7 @@ export class LayoutChecker {
                     }
                     const sprop = this.store.schema.getPropertyByName(propBind.property.name);
                     if (!sprop) {
-                        this.reportAtAttrVal(nattr, `Invalid property name`, DiagnosticCategory.Warning);
+                        this.reportAtAttrVal(nattr, `Unknown property "${propBind.property.name}" in property bind expression`, DiagnosticCategory.Message);
                         continue outer;
                     }
                     break;
