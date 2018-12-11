@@ -1,5 +1,19 @@
 # Change Log
 
+## [0.6.0] - 2018-12-11
+
+* General
+  * Improvements to initial indexing process:
+    * Added notification window with progress bar & info what is being currently processed
+    * Code diagnostics won't be provided untill all files have been indexed
+    * After making changes to the workspace reindexing won't be triggered automatically. Instead confirmation from the user will be requested.
+* Code completions:
+  * State group names and their states will be suggested in various places (`<When type="StateGroup">`, animation controllers etc.)
+  * Property names will be suggested in `CFrameControllerProperty` (`<Controller type="Property" property="">`)
+* Bugfixes:
+  * Fixed leak in indexer that could cause a soft-lock of the extension in certain conditions.
+  * [Diagnostics] Fixed expression parser refusing to accept identifiers that begin with digits (in templates and property bind expressions)
+
 ## [0.5.1] - 2018-12-03
 
 * Bugfixes:
