@@ -338,7 +338,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
         if (item.enumeration) {
             rt.evalues = item.enumeration.map(item => item.value);
             rt.emap = new Map();
-            item.enumeration.forEach(item => {rt.emap.set(item.value, {name: item.value, label: item.label}); });
+            item.enumeration.forEach(item => {rt.emap.set(item.value.toLowerCase(), {name: item.value, label: item.label}); });
             rt.kind = sch.SimpleTypeKind.Enumaration;
             if (item.kind === 'flags') rt.kind = sch.SimpleTypeKind.Flags;
         }
@@ -623,7 +623,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
     processSM((item: smp.FrameType) => {
         cfrmEl.alternateTypes.set(item.frameType, <sch.ComplexType>entries.get(item.name));
         sFrameEnum.evalues.push(item.frameType);
-        sFrameEnum.emap.set(item.frameType, {
+        sFrameEnum.emap.set(item.frameType.toLowerCase(), {
             name: item.frameType,
             label: item.blizzOnly === 'true' ? 'Blizz restricted' : void 0,
         });

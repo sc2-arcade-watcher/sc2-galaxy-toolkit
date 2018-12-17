@@ -14,6 +14,31 @@ function attrSchDocs(sAttr: sch.Attribute)  {
 }
 
 export class HoverProvider extends AbstractProvider implements vs.HoverProvider {
+    protected matchAttrValueEnum(smType: sch.SimpleType, value: string) {
+        value = value.toLowerCase();
+
+        function processSmType(smType: sch.SimpleType): { type: sch.SimpleType, name: string, label?: string } | undefined {
+            if (smType.emap) {
+                const r = smType.emap.get(value);
+                if (!r) return void 0;
+                return {
+                    type: smType,
+                    name: r.name,
+                    label: r.label,
+                };
+            }
+
+            if (smType.union) {
+                for (const unSmType of smType.union) {
+                    const r = processSmType(unSmType);
+                    if (r) return r;
+                }
+            }
+        }
+
+        return processSmType(smType);
+    }
+
     @svcRequest(
         false,
         (document: vs.TextDocument, position: vs.Position) => {
@@ -81,7 +106,24 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
                             );
                         }
                         else if (attr.startValue && attr.startValue <= offset) {
-                            // TODO:
+                            switch (scAttr.type.builtinType) {
+                                default:
+                                {
+                                    const wordRange = document.getWordRangeAtPosition(position);
+                                    const matchedEn = this.matchAttrValueEnum(scAttr.type, document.getText(wordRange));
+                                    if (matchedEn) {
+                                        let contents = `**${matchedEn.name}** — \`[${matchedEn.type.name}]\``;
+                                        if (matchedEn.label) {
+                                            contents += `\n\n${matchedEn.label}`;
+                                        }
+                                        hv = new vs.Hover(
+                                            new vs.MarkdownString(contents),
+                                            wordRange
+                                        );
+                                    }
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
