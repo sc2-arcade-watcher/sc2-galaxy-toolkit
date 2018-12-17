@@ -96,7 +96,7 @@ export class DescTreeDataProvider implements vs.TreeDataProvider<DescTreeNode> {
             case DescTreeNodeKind.Archive:
             {
                 if (dNode.archive.native) {
-                    ritem.label += `<small> — [native]</small>`;
+                    ritem.description = `[native]`;
                     ritem.tooltip = dNode.archive.name;
                     ritem.contextValue = void 0;
                 }
@@ -126,7 +126,7 @@ export class DescTreeDataProvider implements vs.TreeDataProvider<DescTreeNode> {
                     arguments: [dNode],
                 };
 
-                ritem.label += `<small> — [${dNode.dsItem.stype.name.replace('Frame:', '')}]</small>`;
+                ritem.description = `[${dNode.dsItem.stype.name.replace('Frame:', '')}]`;
                 ritem.tooltip = `${dNode.dsItem.fqn}\n[${dNode.dsItem.stype.name}]\n`;
                 if (dNode.dsItem.template) {
                     ritem.tooltip += `template = ${dNode.dsItem.template}\n`;
@@ -211,7 +211,7 @@ export class TreeViewProvider extends AbstractProvider implements vs.Disposable 
 
     register(): vs.Disposable {
         this.dTreeDataProvider = new DescTreeDataProvider(this.store, this.dIndex, this.svcContext.extContext.extensionPath);
-        this.descViewer = vs.window.createTreeView('sc2layoutDesc', { treeDataProvider: this.dTreeDataProvider });
+        this.descViewer = vs.window.createTreeView('sc2layoutDesc', { treeDataProvider: this.dTreeDataProvider, showCollapseAll: true });
 
         this.commands = [];
 
