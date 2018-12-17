@@ -60,12 +60,14 @@ export class XRay {
             {
                 const av = xEl.getAttributeValue('frame', void 0);
                 if (!av) break;
+
                 const pathSel = this.exParser.parsePathSelector(av);
                 uTargetNode = this.uNavigator.resolveSelection(uNode, pathSel.path).target;
-                this.uBuilder.expandNode(uTargetNode);
+                if (!uTargetNode) return;
             }
         }
 
+        this.uBuilder.expandNode(uTargetNode);
         return <FrameNode>uTargetNode;
     }
 

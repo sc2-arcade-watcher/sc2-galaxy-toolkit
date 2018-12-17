@@ -382,18 +382,26 @@ class AttrValueProvider extends SuggestionsProvider {
 
     protected suggestPropertyNames(ctx: AtValComplContext) {
         const uFrame = this.xray.determineTargetFrameNode(ctx.node);
-        if (!uFrame) return;
-
-        const sfType = this.store.schema.getFrameType(Array.from(uFrame.mainDesc.xDecls)[0].stype);
-        for (const currSfType of this.store.schema.frameTypes.values()) {
-            if (sfType !== void 0 && sfType !== currSfType) continue;
-            for (const currScProp of currSfType.fprops.values()) {
-                ctx.citems.push({
-                    label: currScProp.name,
-                    kind: vs.CompletionItemKind.Variable,
-                    detail: `Property of ${currScProp.fclass.name}`,
-                });
+        if (uFrame) {
+            const sfType = this.store.schema.getFrameType(Array.from(uFrame.mainDesc.xDecls)[0].stype);
+            if (sfType) {
+                for (const currScProp of sfType.fprops.values()) {
+                    ctx.citems.push({
+                        label: currScProp.name,
+                        kind: vs.CompletionItemKind.Variable,
+                        detail: `Property of ${currScProp.fclass.name}`,
+                    });
+                }
+                return;
             }
+        }
+
+        for (const props of this.store.schema.frameClassProps.values()) {
+            ctx.citems.push({
+                label: props[0].name,
+                kind: vs.CompletionItemKind.Property,
+                detail: `Property of ${props.map(item => item.fclass.name).join(',')}`,
+            });
         }
     }
 
@@ -563,6 +571,7 @@ class AttrNameProvider extends SuggestionsProvider {
             switch (indAttr.key.builtinType) {
                 case sch.BuiltinTypeKind.AnimationName:
                 {
+                    if (!uFrame) return;
                     for (const uAnim of this.uNavigator.getChildrenOfType(uFrame, DescKind.Animation).values()) {
                         ctx.citems.push(createCompletion(uAnim.name, {
                             detail: `[${indAttr.key.name}]`,
@@ -574,9 +583,8 @@ class AttrNameProvider extends SuggestionsProvider {
 
                 case sch.BuiltinTypeKind.StateGroupName:
                 {
-                    const uNode = this.xray.determineTargetFrameNode(ctx.node);
-                    if (!uNode) return;
-                    for (const sgNode of this.uNavigator.getChildrenOfType<StateGroupNode>(uNode, DescKind.StateGroup).values()) {
+                    if (!uFrame) return;
+                    for (const sgNode of this.uNavigator.getChildrenOfType<StateGroupNode>(uFrame, DescKind.StateGroup).values()) {
                         ctx.citems.push(createCompletion(sgNode.name, {
                             detail: `[${indAttr.key.name}]`,
                             triggerSuggest: true,
@@ -590,15 +598,22 @@ class AttrNameProvider extends SuggestionsProvider {
                     let sfType: sch.FrameType;
                     if (uFrame) {
                         sfType = this.store.schema.getFrameType(Array.from(uFrame.mainDesc.xDecls)[0].stype);
-                    }
-                    for (const currSfType of this.store.schema.frameTypes.values()) {
-                        if (sfType !== void 0 && sfType !== currSfType) continue;
-                        for (const currScProp of currSfType.fprops.values()) {
-                            ctx.citems.push(createCompletion(currScProp.name, {
-                                detail: `Property of ${currScProp.fclass.name}`,
-                                triggerSuggest: true,
-                            }));
+                        if (sfType) {
+                            for (const currScProp of sfType.fprops.values()) {
+                                ctx.citems.push(createCompletion(currScProp.name, {
+                                    detail: `Property of ${currScProp.fclass.name}`,
+                                    triggerSuggest: true,
+                                }));
+                            }
                         }
+                        break;
+                    }
+
+                    for (const props of this.store.schema.frameClassProps.values()) {
+                        ctx.citems.push(createCompletion(props[0].name, {
+                            detail: `Property of ${props.map(item => item.fclass.name).join(',')}`,
+                            triggerSuggest: true,
+                        }));
                     }
                     break;
                 }
