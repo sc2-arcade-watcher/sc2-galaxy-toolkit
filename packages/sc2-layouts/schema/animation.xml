@@ -31,9 +31,15 @@
     -->
 
     <complexType name="AnimationEvent">
-        <attribute name="event" type="AnimationEventType" use="required"/>
-        <attribute name="action" type="AnimationEventAction" use="required" default="Reset,Play"/>
-        <attribute name="frame" type="FrameReference" default="$this"/>
+        <attribute name="event" type="AnimationEventType" use="required">
+            <label>Name of the event. In-built or custom event name.</label>
+        </attribute>
+        <attribute name="action" type="AnimationEventAction" use="required" default="Reset,Play">
+            <label>List of actions to perform when event fires.</label>
+        </attribute>
+        <attribute name="frame" type="FrameReference" default="$this">
+            <label>Target frame where event will be listened for.</label>
+        </attribute>
     </complexType>
 
     <!--
@@ -314,10 +320,18 @@
 
     <complexType name="CFrameControllerAnchor">
         <extend value="CFrameController"/>
-        <attribute name="side" type="AnchorSide" use="required"/>
-        <attribute name="relative" type="Boolean" default="False"/>
+        <label>Anchor controllers allow to move a frame's anchor point. This is used to smoothly change position of the frame.</label>
+        <attribute name="side" type="AnchorSide" use="required">
+            <documentation>The anchor side to move.</documentation>
+        </attribute>
+        <attribute name="relative" type="Boolean" default="True">
+            <documentation>When true, interpret the value as relative to the anchor point’s original offset.</documentation>
+        </attribute>
         <attribute name="relativeFrame" type="FrameReference"/>
         <attribute name="pos" type="AnchorPosPreset"/>
+        <attribute name="unclip" type="Boolean">
+            <documentation>When true, the frame will be unclipped from its parent. When false it will remain clipped by its parent.</documentation>
+        </attribute>
         <element name="Key" type="CFrameControllerKeyCurveReal"/>
     </complexType>
 
@@ -328,8 +342,8 @@
 
     <complexType name="CFrameControllerActorMsg">
         <extend value="CFrameController"/>
-        <attribute name="ModelFrameName" type="String"/>
-        <attribute name="SendToScope" type="Boolean"/>
+        <attribute name="modelFrameName" type="String"/>
+        <attribute name="sendToScope" type="Boolean"/>
         <element name="Key" type="CFrameControllerKeyIdentifier"/>
     </complexType>
 
@@ -348,8 +362,16 @@
             <documentation>Speed factor (defaults to `1`). Can be a negative value, which makes it play in reverse.</documentation>
         </attribute>
         <attribute name="flags" type="EAnimationFlags"/>
-        <element name="Event" type="AnimationEvent"/>
+        <element name="Event" type="AnimationEvent">
+            <label>Specifies to what events animation will respond to, and what actions to perform.</label>
+        </element>
         <element name="Controller" type="CFrameController">
+            <label>Executive part of animation. It can alter various properties depending on the type of controller.</label>
+            <documentation>
+                <![CDATA[
+                Controllers drive what the animation actually does, whether it shows/hides something, moves it around the screen or changes its color. There are many different controllers to achieve different things and the list continues to grow over time. There are quite a few components to individual controllers, but the primary attributes are `Type`, `End` and `Frame`. You can also give controllers a `Name` which is useful for overriding templated animations. Many controllers will have additional attributes specific to that type of controller. Inside a controller you will find a sequence of "Keys" which perform specific actions at specific times in the controller's timeline.
+                ]]>
+            </documentation>
             <alternative test="Visibility" type="CFrameControllerVisibility"/>
             <alternative test="VSkew" type="CFrameControllerVSkew"/>
             <alternative test="HSkew" type="CFrameControllerHSkew"/>

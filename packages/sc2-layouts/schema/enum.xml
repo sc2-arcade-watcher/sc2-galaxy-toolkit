@@ -6,7 +6,7 @@
     ========================================
     -->
     <simpleType name="EDescFlags" kind="flags">
-        <enumeration value="Internal" label="Indicates that following frame is being heavily managed by SC2 internals. Mostly deprecated."/>
+        <enumeration value="Internal" label="Indicates that following Desc shouldn't be automatically constructed. Instead it should serve as some sort of template for special frames that specify `CInternalField` for its sub-elements. It's mostly deprecated and used on old frame types."/>
         <enumeration value="Locked" label="Indicates that following FileDesc is locked and cannot be extended by another layout."/>
         <enumeration value="CreationDeferred" label=""/>
     </simpleType>
@@ -83,32 +83,31 @@
 
     <simpleType name="EAnimationFlags" kind="flags">
         <enumeration value="NoEventsWhileHidden" label="Animation won't respond to its events if it's being hosted on a frame that is hidden."/>
-        <!-- TODO: test these: -->
-        <enumeration value="Log"/>
+        <enumeration value="Log" label="Enables debug logging."/>
         <enumeration value="Disabled"/>
     </simpleType>
 
     <simpleType name="EAnimationEventAction" kind="enum">
-        <enumeration value="Play"/>
-        <enumeration value="Stop"/>
-        <enumeration value="Pause"/>
-        <enumeration value="ToggleDirection"/>
-        <enumeration value="RefreshBaseValue"/>
-        <enumeration value="Reset"/>
-        <enumeration value="TogglePause"/>
-        <enumeration value="DirectionForward"/>
-        <enumeration value="DirectionReverse"/>
-        <enumeration value="Restart"/>
-        <enumeration value="Breakpoint"/>
+        <enumeration value="Play" label="Start playing the animation from its current position."/>
+        <enumeration value="Stop" label="Stop playing the animation and reset all values to the frame’s original values."/>
+        <enumeration value="Pause" label="Stop playing the animation and hold all values."/>
+        <enumeration value="ToggleDirection" label="Flip the direction the animation is playing."/>
+        <enumeration value="RefreshBaseValue" label="Resets the *starting value* of a controller. This is normally the original value that is reset to when an animation stops and the value used as the base for relative anchors."/>
+        <enumeration value="Reset" label="Set the animation’s time to 0 and direction to forward and sets the original value back onto the frame."/>
+        <enumeration value="TogglePause" label="Toggles the paused state of the animation."/>
+        <enumeration value="DirectionForward" label="Set the animation’s direction to forward."/>
+        <enumeration value="DirectionReverse" label="Set the animation’s direction to reverse."/>
+        <enumeration value="Restart" label="Sets the animation's time to 0 and direction to forward."/>
+        <enumeration value="Breakpoint" label=""/>
     </simpleType>
 
     <simpleType name="EAnimationEndAction" kind="enum">
-        <enumeration value="Stop"/>
-        <enumeration value="Pause"/>
-        <enumeration value="Clamp"/>
-        <enumeration value="Loop"/>
-        <enumeration value="PingPong"/>
-        <enumeration value="Reset"/>
+        <enumeration value="Stop" label="Stop the animation and reset to the original values."/>
+        <enumeration value="Pause" label="Stop the animation and hold the final value."/>
+        <enumeration value="Clamp" label=""/>
+        <enumeration value="Loop" label="Continue playing the animation from the beginning."/>
+        <enumeration value="PingPong" label="Reverse the direction and continue playing."/>
+        <enumeration value="Reset" label="Reset the animation's time and direction then pause."/>
     </simpleType>
 
     <simpleType name="EAnimationControllerKeyType" kind="enum">
@@ -148,14 +147,14 @@
     </simpleType>
 
     <simpleType name="ECutsceneAction" kind="enum">
-        <enumeration value="SetCutscene"/>
-        <enumeration value="Play"/>
-        <enumeration value="Pause"/>
-        <enumeration value="Stop"/>
-        <enumeration value="Bookmark"/>
-        <enumeration value="AddFilter"/>
-        <enumeration value="RemoveFilter"/>
-        <enumeration value="TimeScale"/>
+        <enumeration value="SetCutscene" label="Set the cutscene file path."/>
+        <enumeration value="Play" label="Play the cutscene."/>
+        <enumeration value="Pause" label="Pause the cutscene."/>
+        <enumeration value="Stop" label="Stop the cutscene. A stopped cutscene is no longer loaded and will need a new SetCutscene file to play again."/>
+        <enumeration value="Bookmark" label="Jump the cutscene's time to the specified bookmark."/>
+        <enumeration value="AddFilter" label="Add the filter to the cutscene."/>
+        <enumeration value="RemoveFilter" label="Remove the filter from the cutscene."/>
+        <enumeration value="TimeScale" label="Sets the playback speed of the cutscene where 1.0 is normal speed."/>
     </simpleType>
 
     <!--
