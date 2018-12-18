@@ -75,11 +75,11 @@
 
     <complexType name="CGameResultDialogDesc">
         <extend value="CFrameDesc"/>
-        <element name="AutoDismissTime" type="Field:Unknown"/>
-        <element name="ShowOnDefeat" type="Field:Unknown"/>
-        <element name="ShowOnVictory" type="Field:Unknown"/>
-        <element name="ShowWhenReplaying" type="Field:Unknown"/>
-        <element name="UsedSoundCategories" type="Field:Unknown"/>
+        <element name="AutoDismissTime" simpleType="Int32"/>
+        <element name="ShowOnDefeat" simpleType="Boolean"/>
+        <element name="ShowOnVictory" simpleType="Boolean"/>
+        <element name="ShowWhenReplaying" simpleType="Boolean"/>
+        <element name="UsedSoundCategories" simpleType="String"/>
     </complexType>
 
     <complexType name="CGlueUIDesc">
@@ -88,32 +88,27 @@
 
     <complexType name="CImageDesc">
         <extend value="CFrameDesc"/>
-        <!-- <element name="LayerCount" type="Field:Unknown"/>
-        <element name="Texture" type="Field:Unknown"/>
-        <element name="TextureType" type="Field:Unknown"/>
-        <element name="Tiled" type="Field:Unknown"/> -->
     </complexType>
 
     <complexType name="CModelFrameDesc">
         <extend value="CFrameDesc"/>
-        <element name="Camera" type="Field:Unknown"/>
-        <element name="ClipCameraToViewport" type="Field:Unknown"/>
-        <element name="Model" type="Field:Unknown"/>
-        <element name="Projection" type="Field:Unknown"/>
-        <element name="UseAspectScaling" type="Field:Unknown"/>
-        <element name="UseShadows" type="Field:Unknown"/>
-        <element name="UseStandardCoordinates" type="Field:Unknown"/>
+        <element name="Camera" type="Field:Camera"/>
+        <element name="ClipCameraToViewport" simpleType="Boolean"/>
+        <element name="Model" type="Field:Model"/>
+        <element name="Projection" simpleType="EProjection"/>
+        <element name="UseAspectScaling" simpleType="Boolean"/>
+        <element name="UseShadows" simpleType="Boolean"/>
+        <element name="UseStandardCoordinates" simpleType="Boolean"/>
     </complexType>
 
     <complexType name="CPortraitFrameDesc">
         <extend value="CFrameDesc"/>
-        <element name="MovieFrame" type="Field:Unknown"/>
-        <element name="ActorLink" type="Field:Unknown"/>
-        <element name="ModelLink" type="Field:Unknown"/>
-        <element name="BackgroundImage" type="Field:Unknown"/>
-        <element name="BorderImage" type="Field:Unknown"/>
-        <element name="RenderType" type="Field:Unknown"/>
-        <element name="UseTransition" type="Field:Unknown"/>
+        <element name="MovieFrame" type="Field:Internal:CMovieFrame"/>
+        <element name="ActorLink" simpleType="String"/>
+        <element name="ModelLink" simpleType="String"/>
+        <element name="BackgroundImage" type="Field:Internal:CImage"/>
+        <element name="BorderImage" type="Field:Internal:CImage"/>
+        <element name="UseTransition" simpleType="Boolean"/>
     </complexType>
 
     <complexType name="CSegmentedBarDesc">
@@ -123,79 +118,81 @@
 
     <complexType name="CUnitStatusElementDesc">
         <extend value="CFrameDesc"/>
-        <element name="DisplayPriority" type="Field:Unknown"/>
+        <element name="DisplayPriority" type="Field:DisplayPriority"/>
     </complexType>
 
     <complexType name="CUnitStatusBarDesc">
         <extend value="CFrameDesc"/>
         <extend value="CUnitStatusElementDesc"/>
         <element name="DisplayBar" type="Field:Unknown"/>
-        <element name="DisplayPriority" type="Field:Unknown"/>
-        <element name="ShowStatusTooltip" type="Field:Unknown"/>
+        <element name="DisplayPriority" type="Field:DisplayPriority"/>
+        <element name="ShowStatusTooltip" simpleType="Boolean"/>
 
-        <!-- not sure if these belong exactly here: -->
+        <element name="ColorStyle" simpleType="String" table="true"/>
         <element name="OwnerColor" simpleType="Color" table="true"/>
         <element name="AllyColor" simpleType="Color" table="true"/>
         <element name="EnemyColor" simpleType="Color" table="true"/>
         <element name="ReductionColor" simpleType="Color" table="true"/>
         <element name="ReductionShown" simpleType="Boolean" table="true"/>
+        <element name="ApplyToTotal" simpleType="Boolean" table="true"/>
         <element name="IncreaseDuration" simpleType="Int32" table="true"/>
         <element name="DecreaseDuration" simpleType="Int32" table="true"/>
         <element name="Tiled" simpleType="Boolean" table="true"/>
+        <element name="Sliced" simpleType="Boolean" table="true"/>
         <element name="BarCount" simpleType="Uint8"/>
-        <!-- end -->
     </complexType>
 
     <complexType name="CUnitStatusBehaviorDesc">
         <extend value="CFrameDesc"/>
         <extend value="CUnitStatusElementDesc"/>
-        <element name="Behavior" type="Field:Unknown"/>
-        <element name="DisplayPriority" type="Field:Unknown"/>
+        <element name="Behavior" simpleType="String"/>
+        <element name="DisplayPriority" type="Field:DisplayPriority"/>
+        <element name="ShowStatusTooltip" simpleType="Boolean"/>
     </complexType>
 
     <complexType name="CUnitStatusBehaviorLabelDesc">
         <extend value="CFrameDesc"/>
         <extend value="CUnitStatusElementDesc"/>
         <extend value="CUnitStatusBehaviorDesc"/>
-        <element name="HideMax" type="Field:Unknown"/>
+        <element name="HideMax" simpleType="Boolean"/>
     </complexType>
 
     <complexType name="CUnitStatusFrameDesc">
         <extend value="CFrameDesc"/>
-        <element name="AllyRenderPriority" type="Field:Unknown"/>
-        <element name="EnemyRenderPriority" type="Field:Unknown"/>
-        <element name="OwnerRenderPriority" type="Field:Unknown"/>
-        <element name="Persistent" type="Field:Unknown"/>
-        <element name="VisibilityControlledByUnitAlliances" type="Field:Unknown"/>
-        <element name="VisibleToAlly" type="Field:Unknown"/>
-        <element name="VisibleToEnemy" type="Field:Unknown"/>
-        <element name="VisibleToOwner" type="Field:Unknown"/>
+        <element name="AllyRenderPriority" simpleType="Uint16"/>
+        <element name="EnemyRenderPriority" simpleType="Uint16"/>
+        <element name="OwnerRenderPriority" simpleType="Uint16"/>
+        <element name="Persistent" simpleType="Boolean"/>
+        <element name="VisibilityControlledByUnitAlliances" simpleType="Boolean"/>
+        <element name="VisibleToAlly" simpleType="Boolean"/>
+        <element name="VisibleToEnemy" simpleType="Boolean"/>
+        <element name="VisibleToOwner" simpleType="Boolean"/>
     </complexType>
 
     <complexType name="CUnitStatusLabelDesc">
         <extend value="CFrameDesc"/>
         <extend value="CUnitStatusElementDesc"/>
-        <element name="DisplayPriority" type="Field:Unknown"/>
-        <element name="FractionDigits" type="Field:Unknown"/>
-        <element name="HideMax" type="Field:Unknown"/>
-        <element name="RoundMode" type="Field:Unknown"/>
-        <element name="ShowGrouping" type="Field:Unknown"/>
-        <element name="ShowMaxZero" type="Field:Unknown"/>
-        <element name="ShowPercent" type="Field:Unknown"/>
-        <element name="ShowWhileInvulnerable" type="Field:Unknown"/>
+        <element name="DisplayPriority" type="Field:DisplayPriority"/>
+        <element name="FractionDigits" simpleType="Uint8"/>
+        <element name="HideMax" simpleType="Boolean"/>
+        <element name="RoundMode" simpleType="String"/>
+        <element name="ShowGrouping" simpleType="Boolean"/>
+        <element name="ShowMaxZero" simpleType="Boolean"/>
+        <element name="ShowPercent" simpleType="Boolean"/>
+        <element name="ShowWhileInvulnerable" simpleType="Boolean"/>
     </complexType>
 
     <complexType name="CUnitStatusNameDesc">
         <extend value="CFrameDesc"/>
         <extend value="CUnitStatusElementDesc"/>
-        <element name="DisplayPriority" type="Field:Unknown"/>
-        <element name="UseNameTypeVisibilityRules" type="Field:Unknown"/>
+        <element name="DisplayPriority" type="Field:DisplayPriority"/>
+        <element name="UseNameTypeVisibilityRules" simpleType="Boolean"/>
     </complexType>
 
     <complexType name="CUnitStatusValidatorAnimElementDesc">
         <extend value="CFrameDesc"/>
         <extend value="CUnitStatusElementDesc"/>
-        <element name="DisplayPriority" type="Field:Unknown"/>
-        <element name="Validator" type="Field:Unknown"/>
+        <element name="DisplayPriority" type="Field:DisplayPriority"/>
+        <element name="Validator" simpleType="String"/>
     </complexType>
 </map>

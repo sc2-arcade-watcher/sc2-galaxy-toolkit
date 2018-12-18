@@ -130,6 +130,25 @@
         <attribute name="priority" type="Int32"/>
     </complexType>
 
+    <complexType name="Field:DisplayPriority">
+        <attribute name="name" type="String" default="NameSlot"/>
+        <attribute name="val" type="Uint8" use="required"/>
+    </complexType>
+
+    <complexType name="Field:Camera">
+        <attribute name="position" type="Vector3" default="0.000000,0.000000,10.000000"/>
+        <attribute name="target" type="Vector3" default="0.000000,0.000000,10.000000"/>
+        <attribute name="fov" type="Real32" default="90.000000"/>
+        <attribute name="minz" type="Real32" default="1.000000"/>
+        <attribute name="maxz" type="Real32" default="1000.000000"/>
+    </complexType>
+
+    <complexType name="Field:Model">
+        <attribute name="val" type="String" use="required"/>
+        <element name="Position" simpleType="Vector3" default="0.000000,0.000000,0.000000"/>
+        <element name="Scale" simpleType="Vector3" default="1.000000,1.000000,1.000000"/>
+    </complexType>
+
     <!--  -->
 
     <complexType name="Field:Internal:CButton">
@@ -153,11 +172,13 @@
     <complexType name="Field:Internal:CSlider">
         <attribute name="val" type="String" use="required"/>
     </complexType>
+    <complexType name="Field:Internal:CMovieFrame">
+        <attribute name="val" type="String" use="required"/>
+    </complexType>
 
     <!--  -->
 
     <complexType name="Field:Unknown">
-        <attribute name="val" type="String"/>
         <flag name="AllowExtraAttrs" value="true"/>
     </complexType>
 </map>
