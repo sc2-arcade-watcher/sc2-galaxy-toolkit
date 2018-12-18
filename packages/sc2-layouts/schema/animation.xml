@@ -44,6 +44,32 @@
 
     <!--
     ========================================
+    => DRIVER
+    ========================================
+    -->
+
+    <complexType name="CFrameAnimationDriver">
+        <attribute name="type" type="EAnimationDriverType" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameAnimationDriverMouse">
+        <extend value="CFrameAnimationDriver"/>
+        <label>Animation will be driven by movement of the user's mouse anywhere within viewport.</label>
+        <attribute name="axis" type="EAnimationDriverMouseAxis" use="required"/>
+        <attribute name="acceleration" type="Real32" default="1.0"/>
+        <attribute name="friction" type="Real32" default="1.0"/>
+        <attribute name="maxSpeed" type="Real32" default="10.0"/>
+    </complexType>
+
+    <complexType name="CFrameAnimationDriverMousePosition">
+        <extend value="CFrameAnimationDriverMouse"/>
+        <label>Animation will be driven by movement of the user's mouse inside specified target frame.</label>
+        <attribute name="scale" type="Real32"/>
+        <attribute name="frame" type="FrameReference"/>
+    </complexType>
+
+    <!--
+    ========================================
     => CONTROLLER KEYS
     ========================================
     -->
@@ -364,6 +390,11 @@
         <attribute name="flags" type="EAnimationFlags"/>
         <element name="Event" type="AnimationEvent">
             <label>Specifies to what events animation will respond to, and what actions to perform.</label>
+        </element>
+        <element name="Driver" type="CFrameAnimationDriver">
+            <label>Specifies driver of the animation timeline, as an alternative/addition to standard clock time.</label>
+            <alternative test="Mouse" type="CFrameAnimationDriverMouse"/>
+            <alternative test="MousePos" type="CFrameAnimationDriverMousePosition"/>
         </element>
         <element name="Controller" type="CFrameController">
             <label>Executive part of animation. It can alter various properties depending on the type of controller.</label>
