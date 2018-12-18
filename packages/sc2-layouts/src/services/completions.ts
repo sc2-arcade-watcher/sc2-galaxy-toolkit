@@ -28,7 +28,8 @@ function completionsForSimpleType(smType: sch.SimpleType) {
             const tc = <vs.CompletionItem>{
                 label: e.name,
                 kind: vs.CompletionItemKind.EnumMember,
-                detail: `[${smType.name}]` + (e.label ? ` ${e.label}` : ''),
+                detail: e.label,
+                documentation: `\`[${smType.name}]\``,
             };
             items.push(tc);
         }
@@ -799,7 +800,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
 
         const isNewTag =
             ((ctx.xtoken === TokenType.Content || ctx.xtoken === TokenType.StartTagOpen) || !ctx.node.closed) &&
-            (ctx.node.getDocument().tdoc.getText().charCodeAt(ctx.offset)) !== CharacterCodes.greaterThan
+            [CharacterCodes.greaterThan].find(v => v === ctx.node.getDocument().tdoc.getText().charCodeAt(ctx.offset)) === void 0
         ;
 
         if (isNewTag) {

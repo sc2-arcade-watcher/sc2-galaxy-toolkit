@@ -90,6 +90,8 @@ namespace smp {
             simpleType?: string;
             table?: 'true';
             type?: string;
+            label?: string;
+            documentation?: string;
             alternative?: {
                 test: string;
                 type: string;
@@ -99,6 +101,7 @@ namespace smp {
             name: string;
             value: 'true' | 'false';
         }[];
+        label?: string;
     };
 
     export type MFrameClassProperty = {
@@ -158,16 +161,29 @@ function readMap(schDir: string) {
             if (typeof data.indeterminateAttribute === 'undefined') data.indeterminateAttribute = [];
             if (typeof data.flag === 'undefined') data.flag = [];
             if (typeof data.element === 'undefined') data.element = [];
+            for (const el of data.element) {
+                if (typeof el.label !== 'undefined' && Array.isArray(el.label)) {
+                    el.label = parseDocEl(el.label);
+                }
+                if (typeof el.documentation !== 'undefined' && Array.isArray(el.documentation)) {
+                    el.documentation = parseDocEl(el.documentation);
+                }
+
+                if (typeof el.alternative !== 'undefined') {
+                    for (const alt of el.alternative) {
+                    }
+                }
+            }
             for (const attr of data.attribute) {
                 if (typeof attr.documentation !== 'undefined' && Array.isArray(attr.documentation)) {
                     attr.documentation = parseDocEl(attr.documentation);
                 }
             }
-            // for (const el of data.element) {
-            //     if (el.alternative) {
-            //         console.log(el.alternative);
-            //     }
-            // }
+
+            if (typeof data.label !== 'undefined' && Array.isArray(data.label)) {
+                data.label = parseDocEl(data.label);
+            }
+
             return data;
         },
         [MDefs.FrameClass]: (data: smp.FrameClass) => {
@@ -410,6 +426,9 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
                 value: resolveSchType(currImAttr.value),
             });
         }
+        if (item.label) {
+            ct.label = item.label;
+        }
         if (item.element) {
             for (const el of item.element) {
                 assert.isNotEmpty(el.name);
@@ -433,6 +452,9 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
                     name: el.name,
                     type: elComplexType,
                 };
+
+                if (el.label) scEl.label = el.label;
+                if (el.documentation) scEl.documentation = el.documentation;
 
                 if (el.alternative) {
                     scEl.flags |= sch.ElementDefFlags.TypeAlternation;

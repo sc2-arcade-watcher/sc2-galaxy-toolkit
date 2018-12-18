@@ -6,7 +6,7 @@ import { XMLElement } from '../types';
 
 function attrSchDocs(sAttr: sch.Attribute)  {
     let s = '';
-    s += `&nbsp;**@**${sAttr.name}${(sAttr.required ? '' : '?')} — \`${sAttr.type.name}\``;
+    s += `&nbsp;**@**${sAttr.name}${(sAttr.required ? '' : '?')} — [${sAttr.type.name}](#)`;
     if (sAttr.documentation) {
         s += ' — ' + sAttr.documentation;
     }
@@ -60,17 +60,15 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
             if (node.start <= offset && (node.start + node.tag.length + 1) > offset) {
                 if (node.sdef) {
                     let contents = '';
-                    contents += `**${node.sdef.name}** — [${node.sdef.type.name}]`;
+                    contents += `**<${node.sdef.name}>** — [${node.sdef.type.name}](#)`;
                     if (node.sdef.label) {
-                        contents += '\\\n' + node.sdef.label;
+                        contents += '\n\n' + node.sdef.label;
                     }
-                    for (const sAttr of node.stype.attributes.values()) {
-                        contents += '\n\n' + attrSchDocs(sAttr);
+                    if (node.stype.label) {
+                        contents += `\n\n[${node.stype.name}](#)\\\n` + node.stype.label;
                     }
-                    if (node.sdef.documentation) {
-                        contents += '\n\n---\n\n' + node.sdef.documentation;
-                    }
-                    hv = new vs.Hover(contents);
+                    contents += '\n\n' + Array.from(node.stype.attributes.values()).map(v => attrSchDocs(v)).join('\n\n');
+                    hv = new vs.Hover(contents.trim());
                 }
             }
             else {
@@ -91,16 +89,6 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
                     if (scAttr) {
                         if ((attr.start + attr.name.length) > offset) {
                             let contents = attrSchDocs(scAttr);
-                            if (scAttr.type.kind === sch.SimpleTypeKind.Enumaration || scAttr.type.kind === sch.SimpleTypeKind.Flags) {
-                                contents += '\n\n**Values / Flags**:\n\n';
-                                for (const item of scAttr.type.emap.values()) {
-                                    contents += `\`${item.name}\``;
-                                    if (item.label) {
-                                        contents += ` — ${item.label}`;
-                                    }
-                                    contents += '\\\n';
-                                }
-                            }
                             hv = new vs.Hover(
                                 new vs.MarkdownString(contents),
                             );
@@ -111,11 +99,8 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
                                 {
                                     const wordRange = document.getWordRangeAtPosition(position);
                                     const matchedEn = this.matchAttrValueEnum(scAttr.type, document.getText(wordRange));
-                                    if (matchedEn) {
-                                        let contents = `**${matchedEn.name}** — \`[${matchedEn.type.name}]\``;
-                                        if (matchedEn.label) {
-                                            contents += `\n\n${matchedEn.label}`;
-                                        }
+                                    if (matchedEn && matchedEn.label) {
+                                        let contents = `**${matchedEn.name}** — ${matchedEn.label}\n\n[${matchedEn.type.name}](#)`;
                                         hv = new vs.Hover(
                                             new vs.MarkdownString(contents),
                                             wordRange

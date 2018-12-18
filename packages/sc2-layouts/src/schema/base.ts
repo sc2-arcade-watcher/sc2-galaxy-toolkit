@@ -126,6 +126,7 @@ export interface ComplexType extends SModel {
     attributes: Map<string, Attribute>;
     indeterminateAttributes: Map<string, IndeterminateAttr>;
     struct: Map<string, ElementDef>;
+    label?: string;
 }
 
 export const enum ElementDefFlags {
