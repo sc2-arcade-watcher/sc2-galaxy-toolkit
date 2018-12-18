@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.6.1] - 2018-12-18
+
+* Minor bugfixes & improvements
+* Schema:
+    * Added descriptions to some animation related elements
+    * Added animation drivers
+    * Filled missing type hints around unit status bars and other decorated frames.
+
 ## [0.6.0] - 2018-12-11
 
 * General
