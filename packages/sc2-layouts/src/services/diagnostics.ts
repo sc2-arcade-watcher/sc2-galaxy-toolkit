@@ -18,7 +18,7 @@ export class DiagnosticsProvider extends AbstractProvider {
 
         const vdiag: vs.Diagnostic[] = [];
 
-        function processReports(reports: DiagnosticReport[], source: string) {
+        function processReports(reports: DiagnosticReport[], source?: string) {
             for (const item of reports) {
                 const tmpPos = [xDoc.tdoc.positionAt(item.start) , xDoc.tdoc.positionAt(item.end)];
                 const tmpDiag = new vs.Diagnostic(
@@ -34,8 +34,8 @@ export class DiagnosticsProvider extends AbstractProvider {
             }
         }
 
-        processReports(xDoc.parseDiagnostics, 'pars');
-        processReports(validationReports, 'vald');
+        processReports(xDoc.parseDiagnostics);
+        processReports(validationReports);
 
         return vdiag;
     }

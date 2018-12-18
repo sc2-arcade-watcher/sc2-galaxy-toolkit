@@ -98,6 +98,16 @@ export class LayoutChecker {
                     }
                 }
 
+                if (cDesc.xDecls.size > 1) {
+                    for (const xItem of cDesc.xDecls.values()) {
+                        if (xItem === el) continue;
+                        if (xItem.getDocument() !== el.getDocument()) continue;
+                        if (xItem.start > el.start) continue;
+                        this.reportAtNode(el, `Child redeclared - element with that name already exists: "${cDesc.fqn}"`);
+                        break;
+                    }
+                }
+
                 break;
             }
         }
