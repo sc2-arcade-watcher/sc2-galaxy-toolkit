@@ -74,6 +74,7 @@ export class DocumentColorProvider extends AbstractProvider implements vs.Docume
         const xDoc = await this.svcContext.syncVsDocument(document);
         const xRoot = xDoc.getDescNode();
         if (!xRoot) return;
+        const xray = this.xray;
 
         const colInfo: vs.ColorInformation[] = [];
 
@@ -82,8 +83,21 @@ export class DocumentColorProvider extends AbstractProvider implements vs.Docume
 
             outer: for (const attrName in xEl.attributes) {
                 const schAt = xEl.stype.attributes.get(attrName);
-                if (!schAt) continue;
-                switch (schAt.type.builtinType) {
+                let sType: sch.SimpleType;
+                if (!schAt) {
+                    const indAt = xray.matchIndeterminateAttr(xEl, xEl.attributes[attrName].name);
+                    if (indAt) {
+                        sType = indAt.value;
+                    }
+                    else {
+                        continue;
+                    }
+                }
+                else {
+                    sType = schAt.type;
+                }
+
+                switch (sType.builtinType) {
                     case sch.BuiltinTypeKind.Color:
                     case sch.BuiltinTypeKind.Mixed:
                     case sch.BuiltinTypeKind.PropertyValue:
