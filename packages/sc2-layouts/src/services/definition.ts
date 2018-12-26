@@ -2,7 +2,7 @@ import * as vs from 'vscode';
 import * as sch from '../schema/base';
 import { AbstractProvider, svcRequest } from './provider';
 import { createScanner, CharacterCodes } from '../parser/scanner';
-import { TokenType, XMLElement, AttrValueKind, XMLDocument } from '../types';
+import { TokenType, XMLElement, AttrValueKind, XMLDocument, AttrValueKindOffset } from '../types';
 import { getAttrValueKind, getSelectionFragmentAtPosition, getSelectionIndexAtPosition } from '../parser/utils';
 import URI from 'vscode-uri';
 import { ExpressionParser } from '../parser/expressions';
@@ -142,11 +142,13 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
             }
         }
 
-        switch (getAttrValueKind(nattr.value)) {
+        const vKind = getAttrValueKind(nattr.value);
+        switch (vKind) {
             case AttrValueKind.Constant:
             case AttrValueKind.ConstantRacial:
+            case AttrValueKind.ConstantFactional:
             {
-                const name = nattr.value.substr(nattr.value.charCodeAt(1) === CharacterCodes.hash ? 2 : 1);
+                const name = nattr.value.substr(AttrValueKindOffset[vKind]);
                 const citem = this.store.index.constants.get(name);
                 if (citem) {
                     for (const decl of citem.declarations) {

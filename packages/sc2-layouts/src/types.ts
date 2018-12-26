@@ -217,11 +217,36 @@ export enum AttrValueKind {
     Generic,
     Constant,
     ConstantRacial,
+    ConstantFactional,
     Asset,
     AssetRacial,
+    AssetFactional,
     PtrAsset,
     PropertyBind,
 }
+
+export const AttrValueKindOp = {
+    [AttrValueKind.Generic]: '',
+    [AttrValueKind.Constant]: '#',
+    [AttrValueKind.ConstantRacial]: '##',
+    [AttrValueKind.ConstantFactional]: '###',
+    [AttrValueKind.Asset]: '@',
+    [AttrValueKind.AssetRacial]: '@@',
+    [AttrValueKind.AssetFactional]: '@@@',
+    [AttrValueKind.PtrAsset]: '*@',
+    [AttrValueKind.PropertyBind]: '{}',
+};
+
+export const AttrValueKindOffset = {
+    [AttrValueKind.Generic]: 0,
+    [AttrValueKind.Constant]: 1,
+    [AttrValueKind.ConstantRacial]: 2,
+    [AttrValueKind.ConstantFactional]: 3,
+    [AttrValueKind.Asset]: 1,
+    [AttrValueKind.AssetRacial]: 2,
+    [AttrValueKind.AssetFactional]: 3,
+    [AttrValueKind.PtrAsset]: 2,
+};
 
 export enum TokenType {
     StartCommentTag,

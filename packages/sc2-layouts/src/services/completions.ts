@@ -4,13 +4,13 @@ import * as sch from '../schema/base';
 import { AbstractProvider, svcRequest, ILoggerConsole } from './provider';
 import { ServiceContext, ExtConfigCompletionTabStopKind } from '../service';
 import { createScanner, CharacterCodes } from '../parser/scanner';
-import { TokenType, ScannerState, XMLElement, AttrValueKind, XMLNodeKind } from '../types';
+import { TokenType, ScannerState, XMLElement, AttrValueKind, XMLNodeKind, AttrValueKindOp } from '../types';
 import { DescIndex, DescNamespace, DescKind } from '../index/desc';
 import * as s2 from '../index/s2mod';
 import { Store } from '../index/store';
 import { ExpressionParser, SelHandleKind, SelectorFragment, PathSelector } from '../parser/expressions';
 import { UINavigator, UIBuilder, FrameNode, AnimationNode, StateGroupNode } from '../index/hierarchy';
-import { getSelectionIndexAtPosition, getAttrValueKind } from '../parser/utils';
+import { getSelectionIndexAtPosition, getAttrValueKind, isConstantValue } from '../parser/utils';
 import { LayoutProcessor } from '../index/processor';
 import { XRay } from '../index/xray';
 
@@ -630,11 +630,11 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
     protected atValueProvider: AttrValueProvider;
     protected atNameProvider: AttrNameProvider;
 
-    protected provideConstants(compls: vs.CompletionItem[], dblSlash = false) {
+    protected provideConstants(compls: vs.CompletionItem[], vKind: AttrValueKind) {
         for (const item of this.store.index.constants.values()) {
             compls.push(<vs.CompletionItem>{
                 kind: vs.CompletionItemKind.Constant,
-                label: (dblSlash ? '##' : '#') + `${item.name}`,
+                label: AttrValueKindOp[vKind] + `${item.name}`,
                 detail: Array.from(item.declarations.values()).map(decl => decl.getAttributeValue('val')).join('\n'),
             });
         }
@@ -999,8 +999,8 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                 const arVal = tokenText.substring(1, tokenText.length - 1);
                 const aOffset = offset - (scanner.getTokenOffset() + 1);
 
-                if (arVal.length > 0 && arVal.charCodeAt(0) === CharacterCodes.hash) {
-                    this.provideConstants(items, arVal.length > 1 && arVal.charCodeAt(1) === CharacterCodes.hash);
+                if (isConstantValue(arVal)) {
+                    this.provideConstants(items, getAttrValueKind(arVal));
                     break;
                 }
 

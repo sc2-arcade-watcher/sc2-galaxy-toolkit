@@ -14,10 +14,20 @@ export function getAttrValueKind(value: string): AttrValueKind {
     if (value.length >= 1) {
         switch (value.charCodeAt(0)) {
             case CharacterCodes.hash:
-                if (value.charCodeAt(1) === CharacterCodes.hash) return AttrValueKind.ConstantRacial;
+                if (value.charCodeAt(1) === CharacterCodes.hash) {
+                    if (value.charCodeAt(2) === CharacterCodes.hash) {
+                        return AttrValueKind.ConstantFactional;
+                    }
+                    return AttrValueKind.ConstantRacial;
+                }
                 return AttrValueKind.Constant;
             case CharacterCodes.at:
-                if (value.charCodeAt(1) === CharacterCodes.at) return AttrValueKind.AssetRacial;
+                if (value.charCodeAt(1) === CharacterCodes.at) {
+                    if (value.charCodeAt(2) === CharacterCodes.at) {
+                        return AttrValueKind.AssetFactional;
+                    }
+                    return AttrValueKind.AssetRacial;
+                }
                 return AttrValueKind.Asset;
             case CharacterCodes.openBrace:
                 if (value.charCodeAt(value.length - 1) !== CharacterCodes.closeBrace) break;
@@ -28,6 +38,17 @@ export function getAttrValueKind(value: string): AttrValueKind {
         }
     }
     return AttrValueKind.Generic;
+}
+
+export function isConstantValue(value: string) {
+    switch (getAttrValueKind(value)) {
+        case AttrValueKind.Constant:
+        case AttrValueKind.ConstantRacial:
+        case AttrValueKind.ConstantFactional:
+            return true;
+    }
+
+    return false;
 }
 
 export function getSelectionFragmentAtPosition(pathSel: exp.PathSelector, pos: number) {

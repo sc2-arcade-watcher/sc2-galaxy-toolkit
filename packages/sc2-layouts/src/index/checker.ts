@@ -98,7 +98,7 @@ export class LayoutChecker {
                     }
                 }
 
-                if (cDesc.xDecls.size > 1) {
+                if (cDesc.xDecls.size > 1 && !el.hasAttribute('file')) {
                     for (const xItem of cDesc.xDecls.values()) {
                         if (xItem === el) continue;
                         if (xItem.getDocument() !== el.getDocument()) continue;
@@ -142,6 +142,7 @@ export class LayoutChecker {
             switch (vkind) {
                 case AttrValueKind.Constant:
                 case AttrValueKind.ConstantRacial:
+                // TODO: support ConstantFactional ?
                 {
                     const name = nattr.value.substr(vkind === AttrValueKind.ConstantRacial ? 2 : 1);
                     let citem = this.index.constants.get(name);
