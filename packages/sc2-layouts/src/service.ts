@@ -17,6 +17,7 @@ import * as s2 from './index/s2mod';
 import { NavigationProvider } from './services/navigation';
 import { DiagnosticsProvider } from './services/diagnostics';
 import { TreeViewProvider } from './services/dtree';
+import { DocumentColorProvider } from './services/color';
 
 // const builtinMods = [
 //     'campaigns/liberty.sc2campaign',
@@ -134,7 +135,7 @@ function createProgressNotification(options: vs.ProgressOptions) {
     return r;
 }
 
-const enum ServiceStateFlags {
+export const enum ServiceStateFlags {
     IndexingInProgress         = 1 << 0,
 
     StepWorkspaceDiscoveryDone = 1 << 1,
@@ -160,6 +161,7 @@ export class ServiceContext implements IService {
     protected hoverProvider: HoverProvider;
     protected definitionProvider: DefinitionProvider;
     protected navigationProvider: NavigationProvider;
+    protected colorProvider: DocumentColorProvider;
     protected treeviewProvider: TreeViewProvider;
     protected diagnosticsProvider: DiagnosticsProvider;
 
@@ -237,6 +239,10 @@ export class ServiceContext implements IService {
         this.navigationProvider = this.createProvider(NavigationProvider);
         context.subscriptions.push(vs.languages.registerDocumentSymbolProvider(lselector, this.navigationProvider));
         context.subscriptions.push(vs.languages.registerWorkspaceSymbolProvider(this.navigationProvider));
+
+        // -
+        this.colorProvider = this.createProvider(DocumentColorProvider);
+        context.subscriptions.push(vs.languages.registerColorProvider(lselector, this.colorProvider));
 
         // -
         this.treeviewProvider = this.createProvider(TreeViewProvider);

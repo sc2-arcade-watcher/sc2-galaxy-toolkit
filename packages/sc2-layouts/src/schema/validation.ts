@@ -6,7 +6,7 @@ const reUint = /^\s*\+?[0-9]+\s*$/;
 const reInt = /^\s*(\+|\-)?[0-9]+\s*$/;
 const reReal = /^\s*(\+|\-)?(([0-9]+\.[0-9]*)|([0-9]*\.?[0-9]+))\s*$/;
 // const reFlag = /^([\w \|\!]+)$/i;
-const reColor = /^([a-f0-9]{6,8}|\s*[0-9]{1,3},\s*[0-9]{1,3},\s*[0-9]{1,3}(,\s*[0-9]{1,3})?)$/i;
+export const reValueColor = /^([a-f0-9]{6,8}|\s*[0-9]{1,3},\s*[0-9]{1,3},\s*[0-9]{1,3}(,\s*[0-9]{1,3})?)$/i;
 
 export class SchemaValidator {
     diagnostics: DiagnosticReport[] = [];
@@ -49,7 +49,7 @@ export class SchemaValidator {
                 return `Expected fixed numeric value [${stype.name}]`;
 
             case sch.BuiltinTypeKind.Color:
-                if (reColor.test(value)) break;
+                if (reValueColor.test(value)) break;
                 return `Expected RGB or ARGB color value in hex format (i.e. "FF00FF") or decimal (i.e. "127,255,0,255") [${stype.name}]`;
         }
         return void 0;

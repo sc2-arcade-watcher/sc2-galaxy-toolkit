@@ -24,6 +24,7 @@ export const enum BuiltinTypeKind {
     StateGroupStateName,
     PropertyName,
     PropertyValue,
+    Mixed,
     //
     Image,
     Color,
