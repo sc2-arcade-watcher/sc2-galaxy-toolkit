@@ -203,6 +203,9 @@ export class UIBuilder {
                 if (!childUNode) {
                     childUNode = createNodeFromDesc(childDesc, uNode);
                 }
+                else {
+                    childUNode.descs.add(childDesc);
+                }
 
                 if (tpath) {
                     if (!tpath.length) continue;

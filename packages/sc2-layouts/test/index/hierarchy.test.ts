@@ -86,7 +86,7 @@ describe('hierarchy builder', function () {
 });
 
 describe('hierarchy navigator', function () {
-    const dIndex = mockupIndex('Extension', 'GameUI', 'Control', 'Animation');
+    const dIndex = mockupIndex('Extension', 'GameUI', 'Control', 'Animation', 'Tpl1');
     const gameFrameDesc = dIndex.rootNs.getMulti('GameUI', 'GameUI');
 
     const navigator = new UINavigator(getSchema(), dIndex);
@@ -167,6 +167,13 @@ describe('hierarchy navigator', function () {
             const resolvedSel = navigator.resolveSelection(uGameNode, psel.path);
             assert.isDefined(resolvedSel.target);
             assert.equal(resolvedSel.target.fqn, 'GameUI/Group/FillImageContainer/Background');
+        });
+
+        it('[Tpl1/BTemplate] L1/L2', function () {
+            const tplNode = uBuilder.buildNodeFromDesc(dIndex.rootNs.getMulti('Tpl1', 'BTemplate'));
+            const psel = exParser.parsePathSelector('L1/L2');
+            const resolvedSel = navigator.resolveSelection(tplNode, psel.path);
+            assert.isDefined(resolvedSel.target);
         });
     });
 
