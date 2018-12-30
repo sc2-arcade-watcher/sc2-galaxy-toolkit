@@ -31,7 +31,7 @@ Visual Studio Code extension introducing support for SC2Layouts language, utiliz
 ```
 git clone https://github.com/Talv/sc2-layouts.git
 cd sc2-layouts
-git submodule init
+git submodule update
 yarn install
 ```
 
