@@ -21,6 +21,29 @@ Visual Studio Code extension introducing support for SC2Layouts language, utiliz
   * Listing of element attributes and their types
 * .. and much more
 
+## Contribution guide
+
+**Requirements**
+
+ * yarn: https://yarnpkg.com
+
+**Initial setup**
+```
+git clone https://github.com/Talv/sc2-layouts.git
+cd sc2-layouts
+git submodule init
+yarn install
+```
+
+**Dev tasks**
+
+* `yarn run build:watch` - compile `.ts` files and watch for changes
+* `yarn run test` - run tests
+
+**Testing extension in VSCode**
+
+https://code.visualstudio.com/api/working-with-extensions/testing-extension
+
 ## Showcase
 
 ### Code completions
