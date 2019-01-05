@@ -527,11 +527,12 @@ export class ExpressionParser {
         const selPath = this.createNodeArray<SelectorFragment>();
 
         let hasSeparator = false;
-        while (this.token() !== SyntaxKind.EndOfStreamToken) {
+        while (this.token() !== SyntaxKind.EndOfStreamToken && this.token() !== SyntaxKind.CloseBraceToken) {
             if (this.isSelectorFragment()) {
                 selPath.push(this.parseSelectorFragment());
             }
             else {
+                hasSeparator = false;
                 break;
             }
 
@@ -562,7 +563,7 @@ export class ExpressionParser {
 
         this.parseExpected(SyntaxKind.OpenBraceToken);
 
-        propBind.path = this.parseSelectionPath(false);
+        propBind.path = this.parseSelectionPath(true);
 
         // this.parseExpected(SyntaxKind.SlashToken);
         if (this.parseExpected(SyntaxKind.AtToken)) {

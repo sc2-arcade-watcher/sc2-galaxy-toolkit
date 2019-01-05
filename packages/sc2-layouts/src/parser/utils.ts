@@ -51,12 +51,12 @@ export function isConstantValue(value: string) {
     return false;
 }
 
-export function getSelectionFragmentAtPosition(pathSel: exp.PathSelector, pos: number) {
+export function getSelectionFragmentAtPosition(pathSel: exp.PathSelector | exp.PropertyBindExpr, pos: number) {
     const idx = getSelectionIndexAtPosition(pathSel, pos);
     if (idx !== void 0) return pathSel.path[idx];
 }
 
-export function getSelectionIndexAtPosition(pathSel: exp.PathSelector, pos: number) {
+export function getSelectionIndexAtPosition(pathSel: exp.PathSelector | exp.PropertyBindExpr, pos: number) {
     for (const idx of pathSel.path.keys()) {
         const selFrag = pathSel.path[idx];
         if (selFrag.end < pos) continue;
