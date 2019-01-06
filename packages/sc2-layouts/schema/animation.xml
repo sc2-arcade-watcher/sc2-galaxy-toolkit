@@ -161,6 +161,7 @@
         <attribute name="action" type="ECutsceneAction" use="required"/>
         <attribute name="file" type="String"/>
         <attribute name="bookmark" type="String"/>
+        <attribute name="order" type="String"/>
         <attribute name="filter" type="String"/>
         <attribute name="value" type="String"/>
     </complexType>
@@ -174,7 +175,7 @@
     <complexType name="CFrameController">
         <attribute name="name" type="String"/>
         <attribute name="type" type="EAnimationControllerType" use="required"/>
-        <attribute name="end" type="EAnimationEndAction" default="Stop"/>
+        <attribute name="end" type="EAnimationEndAction" default="Pause"/>
         <attribute name="frame" type="FrameReference" default="$this"/>
         <element name="Key" type="CFrameControllerKey"/>
     </complexType>
@@ -303,12 +304,21 @@
         <element name="Key" type="CFrameControllerKeyBool"/>
     </complexType>
 
-    <!-- CFrameControllerCutscenePropertyReal -->
-    <!-- CFrameControllerCutsceneProperty -->
-    <!-- CFrameControllerCutscene -->
     <complexType name="CFrameControllerCutscene">
         <extend value="CFrameController"/>
         <element name="Key" type="CFrameControllerKeyCutscene"/>
+    </complexType>
+
+    <complexType name="CFrameControllerCutsceneProperty">
+        <extend value="CFrameController"/>
+        <attribute name="property" type="String" use="required"/>
+        <attribute name="finderTag" type="String"/>
+        <element name="Key" type="CFrameControllerKeyIdentifier"/>
+    </complexType>
+
+    <complexType name="CFrameControllerCutscenePropertyReal">
+        <extend value="CFrameControllerCutsceneProperty"/>
+        <element name="Key" type="CFrameControllerKeyCurveReal"/>
     </complexType>
 
     <complexType name="CFrameControllerCounter">
@@ -424,6 +434,8 @@
             <alternative test="Dimension" type="CFrameControllerDimension"/>
             <alternative test="Desaturation" type="CFrameControllerDesaturation"/>
             <alternative test="Cutscene" type="CFrameControllerCutscene"/>
+            <alternative test="CutsceneProperty" type="CFrameControllerCutsceneProperty"/>
+            <alternative test="CutscenePropertyReal" type="CFrameControllerCutscenePropertyReal"/>
             <alternative test="Counter" type="CFrameControllerCounter"/>
             <alternative test="Color" type="CFrameControllerColor"/>
             <alternative test="Blur" type="CFrameControllerBlur"/>

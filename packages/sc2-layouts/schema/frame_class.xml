@@ -773,7 +773,7 @@
     ========================================
     -->
     <frameClass name="CBattleUI" parent="CFrame">
-        <property name="IsOnline" valueType="Boolean" readonly="true" constant="true"/>
+        <property name="IsOnline" valueType="Boolean" readonly="false" constant="false"/>
         <property name="LocalToonCount" valueType="Uint32" readonly="true" constant="true"/>
         <property name="LocalToonPresenceId" valueType="Uint32" readonly="true" constant="true"/>
     </frameClass>
@@ -1628,7 +1628,7 @@
     ========================================
     -->
     <frameClass name="CCommandButton" parent="CGameButton">
-        <property name="HotkeyUse" valueType="EHotkey" readonly="true" constant="true"/>
+        <property name="HotkeyUse" valueType="EHotkey" readonly="false" constant="false"/>
         <property name="Suggested" valueType="Boolean" readonly="true" constant="true"/>
     </frameClass>
 
@@ -1839,6 +1839,13 @@
     ========================================
     -->
     <frameClass name="CConsolePanel" parent="CFrame">
+        <property name="MinimapPanelImage" valueType="String" readonly="true" constant="true"/>
+        <property name="InfoPanelImage" valueType="String" readonly="true" constant="true"/>
+        <property name="CommandPanelImage" valueType="String" readonly="true" constant="true"/>
+        <property name="UsesPanelImages" valueType="Boolean" readonly="true" constant="true"/>
+        <property name="CurrentConsoleSkin" valueType="Identifier" readonly="true" constant="true"/>
+        <property name="UseApm" valueType="Boolean" readonly="false" constant="false"/>
+        <property name="CurrentApm" valueType="Uint32" readonly="true" constant="true"/>
     </frameClass>
 
     <!--
@@ -2991,6 +2998,7 @@
         <property name="FlipVersusModeSides" valueType="Boolean" readonly="true" constant="true"/>
         <property name="SuppressEnemyConnectionEvents" valueType="Boolean" readonly="false" constant="false"/>
         <property name="TradeShow" valueType="Boolean" readonly="true" constant="true"/>
+        <property name="SelectedConsoleSkin" valueType="String" readonly="true" constant="true"/>
     </frameClass>
 
     <!--
@@ -3055,7 +3063,7 @@
     ========================================
     -->
     <frameClass name="CGlueUI" parent="CControl">
-        <property name="CustomSoundtrack" valueType="String" readonly="true" constant="true"/>
+        <property name="CustomSoundtrack" valueType="String" readonly="false" constant="false"/>
         <property name="IsOsVersionAllowed" valueType="Boolean" readonly="true" constant="true"/>
     </frameClass>
 
@@ -4680,6 +4688,7 @@
         <property name="RenderBackground" valueType="Boolean" readonly="false" constant="false"/>
         <property name="RenderBorder" valueType="Boolean" readonly="false" constant="false"/>
         <property name="ScaleAlphaToTerrain" valueType="Boolean" readonly="false" constant="false"/>
+        <property name="MinimapTexCoords" valueType="Field:Rect" readonly="true" constant="true"/>
     </frameClass>
 
     <!--
@@ -7692,7 +7701,7 @@
     <frameClass name="CUnitCacheFrame" parent="CFrame">
         <property name="Icon" valueType="Image" readonly="true" constant="true"/>
         <property name="NameText" valueType="Text" readonly="true" constant="true"/>
-        <property name="Unit" valueType="GameDataLink.EGameCatalog.Artifact" readonly="true" constant="true"/>
+        <property name="Unit" valueType="GameDataLink.EGameCatalog.Unit" readonly="true" constant="true"/>
         <property name="Valid" valueType="Boolean" readonly="true" constant="true"/>
     </frameClass>
 
@@ -7702,7 +7711,7 @@
     ========================================
     -->
     <frameClass name="CUnitCacheTileListItem" parent="CTileListItem">
-        <property name="Unit" valueType="GameDataLink.EGameCatalog.Artifact" readonly="true" constant="true"/>
+        <property name="Unit" valueType="GameDataLink.EGameCatalog.Unit" readonly="true" constant="true"/>
     </frameClass>
 
     <!--
@@ -7741,7 +7750,7 @@
         <property name="StartEnergy" valueType="Real32" readonly="true" constant="true"/>
         <property name="StartHealth" valueType="Real32" readonly="true" constant="true"/>
         <property name="StartShields" valueType="Real32" readonly="true" constant="true"/>
-        <property name="UnitLink" valueType="GameDataLink.EGameCatalog.Artifact" readonly="true" constant="true"/>
+        <property name="UnitLink" valueType="GameDataLink.EGameCatalog.Unit" readonly="true" constant="true"/>
         <property name="UnitTag" valueType="UnitTag" readonly="true" constant="true"/>
     </frameClass>
 
@@ -8036,7 +8045,7 @@
     <frameClass name="CUnitStatusFrame" parent="CFrame">
         <property name="ControlPlayerId" valueType="Uint8" readonly="true" constant="true"/>
         <property name="PlayerRelationship" valueType="EPlayerRelationship" readonly="true" constant="true"/>
-        <property name="Unit" valueType="GameDataLink.EGameCatalog.Artifact" readonly="true" constant="true"/>
+        <property name="Unit" valueType="GameDataLink.EGameCatalog.Unit" readonly="true" constant="true"/>
         <property name="UnitTag" valueType="UnitTag" readonly="false" constant="false"/>
     </frameClass>
 

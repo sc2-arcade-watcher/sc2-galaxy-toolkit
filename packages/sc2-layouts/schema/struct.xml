@@ -113,21 +113,6 @@
 
     <complexType name="CSegmentedBarDesc">
         <extend value="CFrameDesc"/>
-        <element name="DisplayBar" type="Field:Unknown"/>
-    </complexType>
-
-    <complexType name="CUnitStatusElementDesc">
-        <extend value="CFrameDesc"/>
-        <element name="DisplayPriority" type="Field:DisplayPriority"/>
-    </complexType>
-
-    <complexType name="CUnitStatusBarDesc">
-        <extend value="CFrameDesc"/>
-        <extend value="CUnitStatusElementDesc"/>
-        <element name="DisplayBar" type="Field:Unknown"/>
-        <element name="DisplayPriority" type="Field:DisplayPriority"/>
-        <element name="ShowStatusTooltip" simpleType="Boolean"/>
-
         <element name="ColorStyle" simpleType="String" table="true"/>
         <element name="OwnerColor" simpleType="Color" table="true"/>
         <element name="AllyColor" simpleType="Color" table="true"/>
@@ -142,17 +127,34 @@
         <element name="BarCount" simpleType="Uint8"/>
     </complexType>
 
-    <complexType name="CUnitStatusBehaviorDesc">
+    <complexType name="CUnitStatusElementDesc">
         <extend value="CFrameDesc"/>
-        <extend value="CUnitStatusElementDesc"/>
-        <element name="Behavior" simpleType="String"/>
         <element name="DisplayPriority" type="Field:DisplayPriority"/>
+    </complexType>
+
+    <complexType name="CUnitStatusBarDesc">
+        <extend value="CUnitStatusElementDesc"/>
+        <element name="ColorStyle" simpleType="String" table="true"/>
+        <element name="OwnerColor" simpleType="Color" table="true"/>
+        <element name="AllyColor" simpleType="Color" table="true"/>
+        <element name="EnemyColor" simpleType="Color" table="true"/>
+        <element name="ReductionColor" simpleType="Color" table="true"/>
+        <element name="ReductionShown" simpleType="Boolean" table="true"/>
+        <element name="ApplyToTotal" simpleType="Boolean" table="true"/>
+        <element name="IncreaseDuration" simpleType="Int32" table="true"/>
+        <element name="DecreaseDuration" simpleType="Int32" table="true"/>
+        <element name="Tiled" simpleType="Boolean" table="true"/>
+        <element name="Sliced" simpleType="Boolean" table="true"/>
+        <element name="BarCount" simpleType="Uint8"/>
         <element name="ShowStatusTooltip" simpleType="Boolean"/>
     </complexType>
 
-    <complexType name="CUnitStatusBehaviorLabelDesc">
-        <extend value="CFrameDesc"/>
+    <complexType name="CUnitStatusBehaviorDesc">
         <extend value="CUnitStatusElementDesc"/>
+        <element name="Behavior" simpleType="String"/>
+    </complexType>
+
+    <complexType name="CUnitStatusBehaviorLabelDesc">
         <extend value="CUnitStatusBehaviorDesc"/>
         <element name="HideMax" simpleType="Boolean"/>
     </complexType>
@@ -170,12 +172,10 @@
     </complexType>
 
     <complexType name="CUnitStatusLabelDesc">
-        <extend value="CFrameDesc"/>
         <extend value="CUnitStatusElementDesc"/>
-        <element name="DisplayPriority" type="Field:DisplayPriority"/>
         <element name="FractionDigits" simpleType="Uint8"/>
         <element name="HideMax" simpleType="Boolean"/>
-        <element name="RoundMode" simpleType="String"/>
+        <element name="RoundMode" simpleType="CUnitStatusLabelERoundMode"/>
         <element name="ShowGrouping" simpleType="Boolean"/>
         <element name="ShowMaxZero" simpleType="Boolean"/>
         <element name="ShowPercent" simpleType="Boolean"/>
@@ -183,16 +183,12 @@
     </complexType>
 
     <complexType name="CUnitStatusNameDesc">
-        <extend value="CFrameDesc"/>
         <extend value="CUnitStatusElementDesc"/>
-        <element name="DisplayPriority" type="Field:DisplayPriority"/>
         <element name="UseNameTypeVisibilityRules" simpleType="Boolean"/>
     </complexType>
 
     <complexType name="CUnitStatusValidatorAnimElementDesc">
-        <extend value="CFrameDesc"/>
         <extend value="CUnitStatusElementDesc"/>
-        <element name="DisplayPriority" type="Field:DisplayPriority"/>
-        <element name="Validator" simpleType="String"/>
+        <element name="Validator" simpleType="GameDataLink.EGameCatalog.Validator"/>
     </complexType>
 </map>

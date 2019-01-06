@@ -51,6 +51,7 @@
         <extend value="CFrameStateAction"/>
         <attribute name="group" type="StateGroupName" use="required"/>
         <attribute name="state" type="StateGroupStateName" use="required"/>
+        <attribute name="forceSet" type="Boolean"/>
     </complexType>
 
     <complexType name="CFrameStateSetPropertyAction">
@@ -69,7 +70,7 @@
     <complexType name="CFrameStateSetAnchorAction">
         <extend value="CFrameStateAction"/>
         <attribute name="side" type="AnchorSide" use="required"/>
-        <attribute name="relative" type="FrameReference" default="$parent"/>
+        <attribute name="relative" type="FrameReference" use="required" default="$parent"/>
         <attribute name="pos" type="AnchorPos" use="required"/>
         <attribute name="offset" type="Int32" default="0"/>
     </complexType>
@@ -121,6 +122,7 @@
         <attribute name="name" type="ElementName" use="required" default="StateGroup"/>
         <attribute name="template" type="DescTemplateName"/>
         <attribute name="file" type="FileDescName"/>
+        <attribute name="log" type="Boolean"/>
         <element name="DefaultState" type="CFrameStateDefault"/>
         <element name="State" type="CStateDesc"/>
     </complexType>
