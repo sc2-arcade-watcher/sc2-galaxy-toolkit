@@ -36,6 +36,36 @@ export class XRay {
         return Array.from(xEl.stype.indeterminateAttributes.values())[0];
     }
 
+    determineCurrentFrameNode(xEl: XMLElement) {
+        const currentDesc = this.store.index.resolveElementDesc(xEl);
+        let uNode = this.uBuilder.buildNodeFromDesc(currentDesc);
+        if (!uNode) return;
+        uNode = this.uNavigator.getContextFrameNode(uNode);
+        if (!uNode) return;
+        return uNode;
+    }
+
+    determineActionFrameNode(xEl: XMLElement) {
+        let uNode = this.determineCurrentFrameNode(xEl);
+        if (!uNode) return;
+
+        let uTargetNode = uNode;
+        switch (xEl.sdef.nodeKind) {
+            case sch.ElementDefKind.StateGroupStateAction:
+            {
+                const av = xEl.getAttributeValue('frame', void 0);
+                if (!av) break;
+
+                const pathSel = this.exParser.parsePathSelector(av);
+                uTargetNode = this.uNavigator.resolveSelection(uNode, pathSel.path).target;
+                if (!uTargetNode) return;
+            }
+        }
+
+        this.uBuilder.expandNode(uTargetNode);
+        return <FrameNode>uTargetNode;
+    }
+
     determineTargetFrameNode(xEl: XMLElement) {
         switch (xEl.sdef.nodeKind) {
             case sch.ElementDefKind.AnimationControllerKey:
@@ -45,10 +75,7 @@ export class XRay {
             }
         }
 
-        const currentDesc = this.store.index.resolveElementDesc(xEl);
-        let uNode = this.uBuilder.buildNodeFromDesc(currentDesc);
-        if (!uNode) return;
-        uNode = this.uNavigator.getContextFrameNode(uNode);
+        let uNode = this.determineCurrentFrameNode(xEl);
         if (!uNode) return;
 
         let uTargetNode = uNode;

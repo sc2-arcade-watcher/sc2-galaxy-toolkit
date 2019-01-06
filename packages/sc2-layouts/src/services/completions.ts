@@ -8,8 +8,8 @@ import { TokenType, ScannerState, XMLElement, AttrValueKind, XMLNodeKind, AttrVa
 import { DescIndex, DescNamespace, DescKind } from '../index/desc';
 import * as s2 from '../index/s2mod';
 import { Store } from '../index/store';
-import { ExpressionParser, SelHandleKind, SelectorFragment, PathSelector } from '../parser/expressions';
-import { UINavigator, UIBuilder, FrameNode, AnimationNode, StateGroupNode } from '../index/hierarchy';
+import { ExpressionParser, SelHandleKind, SelectorFragment, PathSelector, PropertyBindExpr, SyntaxKind } from '../parser/expressions';
+import { UINavigator, UIBuilder, FrameNode, AnimationNode, StateGroupNode, UINode } from '../index/hierarchy';
 import { getSelectionIndexAtPosition, getAttrValueKind, isConstantValue } from '../parser/utils';
 import { LayoutProcessor } from '../index/processor';
 import { XRay } from '../index/xray';
@@ -111,14 +111,14 @@ class AttrValueProvider extends SuggestionsProvider {
         const pbindSel = this.exParser.parsePropertyBind(ctx.attrValue);
 
         if (pbindSel.path.pos <= ctx.atOffsetRelative && pbindSel.path.end >= ctx.atOffsetRelative) {
-            this.suggestSelection(ctx, <any>pbindSel, sch.BuiltinTypeKind.FrameReference, currentDesc);
+            this.suggestSelection(ctx, pbindSel, sch.BuiltinTypeKind.FrameReference, currentDesc);
         }
         else {
             this.suggestPropNames(ctx);
         }
     }
 
-    protected suggestSelection(ctx: AtValComplContext, pathSel: PathSelector, smType: sch.BuiltinTypeKind, currentDesc: DescNamespace) {
+    protected suggestSelection(ctx: AtValComplContext, pathSel: PathSelector | PropertyBindExpr, smType: sch.BuiltinTypeKind, currentDesc: DescNamespace) {
         let pathIndex = getSelectionIndexAtPosition(pathSel, ctx.atOffsetRelative);
 
         switch (smType) {
@@ -165,6 +165,7 @@ class AttrValueProvider extends SuggestionsProvider {
                 const fragments = pathSel.path.map(item => item).slice(1);
 
                 const uNode = this.uBuilder.buildNodeFromDesc(topDesc);
+                if (!uNode) break;
                 let uTargetNode = uNode;
                 if (pathIndex !== void 0 && pathIndex > 1) {
                     const resolvedSel = this.uNavigator.resolveSelection(uNode, fragments);
@@ -187,8 +188,13 @@ class AttrValueProvider extends SuggestionsProvider {
 
             case sch.BuiltinTypeKind.FrameReference:
             {
-                let uNode = this.uBuilder.buildNodeFromDesc(currentDesc);
-                uNode = this.uNavigator.getContextFrameNode(uNode);
+                let uNode: UINode;
+                if (pathSel.kind === SyntaxKind.PropertyBindExpr) {
+                    uNode = this.xray.determineActionFrameNode(ctx.node);
+                }
+                else {
+                    uNode = this.xray.determineCurrentFrameNode(ctx.node);
+                }
                 if (!uNode) break;
 
                 let uTargetNode = uNode;
