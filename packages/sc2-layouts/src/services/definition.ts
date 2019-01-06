@@ -80,6 +80,19 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
         };
     }
 
+    getSelectedDescFromPath(pathSel: PathSelector, offsRelative: number) {
+        const pathIndex = getSelectionIndexAtPosition(pathSel, offsRelative);
+
+        const fragments = pathSel.path.map(item => item.name.name).slice(0, pathIndex + 1);
+        const dsItem = this.dIndex.rootNs.getMulti(...fragments);
+
+        return {
+            pathIndex: pathIndex,
+            selectedFragment: pathSel.path[pathIndex],
+            selectedDesc: dsItem,
+        };
+    }
+
     @svcRequest(false)
     async provideDefinition(document: vs.TextDocument, position: vs.Position, cancToken: vs.CancellationToken) {
         const sourceFile = await this.svcContext.syncVsDocument(document);
@@ -136,14 +149,16 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
 
                 case sch.BuiltinTypeKind.DescTemplateName:
                 {
-                    const cDesc = this.dIndex.rootNs.getDeep(nattr.value);
-                    if (!cDesc) break;
-                    for (const xDecl of cDesc.xDecls) {
+                    const pathSel = this.exParser.parsePathSelector(nattr.value);
+                    const selectionInfo = this.getSelectedDescFromPath(pathSel, offsRelative);
+                    if (!selectionInfo) break;
+
+                    for (const xDecl of selectionInfo.selectedDesc.xDecls) {
                         dlinks.push(createDefinitionLinkFromXNode(<XMLElement>xDecl, {
                             originXDoc: sourceFile,
                             originRange: {
-                                pos: (nattr.startValue + 1),
-                                end: (nattr.end - 1),
+                                pos: (nattr.startValue + 1) + selectionInfo.selectedFragment.pos,
+                                end: (nattr.startValue + 1) + selectionInfo.selectedFragment.end,
                             }
                         }));
                     }
