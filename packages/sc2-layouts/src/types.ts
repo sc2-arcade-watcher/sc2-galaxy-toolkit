@@ -183,7 +183,7 @@ export class XMLElement extends XMLNode {
 
     public findAttributeAt(offset: number) {
         for (const attrKey in this.attributes) {
-            if (this.attributes[attrKey].end <= offset) continue;
+            if (this.attributes[attrKey].end < offset) continue;
             if (this.attributes[attrKey].start > offset) continue;
             return this.attributes[attrKey];
         }

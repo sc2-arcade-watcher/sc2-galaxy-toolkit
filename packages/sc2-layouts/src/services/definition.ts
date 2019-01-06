@@ -5,10 +5,10 @@ import { createScanner, CharacterCodes } from '../parser/scanner';
 import { TokenType, XMLElement, AttrValueKind, XMLDocument, AttrValueKindOffset } from '../types';
 import { getAttrValueKind, getSelectionFragmentAtPosition, getSelectionIndexAtPosition } from '../parser/utils';
 import URI from 'vscode-uri';
-import { ExpressionParser } from '../parser/expressions';
-import { UINavigator, UIBuilder, FrameNode, AnimationNode } from '../index/hierarchy';
+import { ExpressionParser, PathSelector, PropertyBindExpr, SelectorFragment, SyntaxKind } from '../parser/expressions';
+import { UINavigator, UIBuilder, FrameNode, AnimationNode, UINode } from '../index/hierarchy';
 import { LayoutProcessor } from '../index/processor';
-import { DescKind } from '../index/desc';
+import { DescKind, DescNamespace } from '../index/desc';
 
 interface DefinitionLinkXNodeOptions {
     originXDoc?: XMLDocument;
@@ -55,6 +55,31 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
         this.processor = new LayoutProcessor(this.store, this.store.index);
     }
 
+    getSelectedNodeFromPath(pathSel: PathSelector | PropertyBindExpr, xEl: XMLElement, offsRelative: number, pathIndex?: number) {
+        if (pathIndex === void 0) {
+            pathIndex = getSelectionIndexAtPosition(pathSel, offsRelative);
+        }
+        if (pathIndex === void 0) return;
+
+        let uNode: UINode;
+        if (pathSel.kind === SyntaxKind.PropertyBindExpr) {
+            uNode = this.xray.determineActionFrameNode(xEl);
+        }
+        else {
+            uNode = this.xray.determineCurrentFrameNode(xEl);
+        }
+        if (!uNode) return;
+
+        const resolvedSel = this.uNavigator.resolveSelection(uNode, pathSel.path);
+        if (resolvedSel.chain.length <= pathIndex) return;
+        return {
+            resolvedSel: resolvedSel,
+            pathIndex: pathIndex,
+            selectedFragment: pathSel.path[pathIndex],
+            selectedNode: resolvedSel.chain[pathIndex],
+        };
+    }
+
     @svcRequest(false)
     async provideDefinition(document: vs.TextDocument, position: vs.Position, cancToken: vs.CancellationToken) {
         const sourceFile = await this.svcContext.syncVsDocument(document);
@@ -72,31 +97,29 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
         const nattr = node.findAttributeAt(offset);
         if (!nattr || !nattr.startValue || nattr.startValue > offset) return void 0;
         const sAttrType = this.processor.getElPropertyType(node, nattr.name);
+        const offsRelative = offset - (nattr.startValue + 1);
+
+        function processUNode(uNode: UINode, selFrag: SelectorFragment) {
+            for (const xDecl of uNode.mainDesc.xDecls) {
+                dlinks.push(createDefinitionLinkFromXNode(<XMLElement>xDecl, {
+                    originXDoc: sourceFile,
+                    originRange: {
+                        pos: (nattr.startValue + 1) + selFrag.pos,
+                        end: (nattr.startValue + 1) + selFrag.end,
+                    }
+                }));
+            }
+        }
 
         if (sAttrType) {
             switch (sAttrType.builtinType) {
                 case sch.BuiltinTypeKind.FrameReference:
                 {
                     const pathSel = this.exParser.parsePathSelector(nattr.value);
-                    const pathIndex = getSelectionIndexAtPosition(pathSel, offset - nattr.startValue + 1);
-                    if (pathIndex === void 0) break;
+                    const selectionInfo = this.getSelectedNodeFromPath(pathSel, node, offsRelative);
+                    if (!selectionInfo) break;
 
-                    const currentDesc = this.store.index.resolveElementDesc(node);
-                    let uNode = this.uBuilder.buildNodeFromDesc(currentDesc);
-                    uNode = this.uNavigator.getContextFrameNode(uNode);
-                    if (!uNode) break;
-                    const resolvedSel = this.uNavigator.resolveSelection(uNode, pathSel.path);
-                    if (resolvedSel.chain.length <= pathIndex) break;
-
-                    for (const xDecl of resolvedSel.chain[pathIndex].mainDesc.xDecls) {
-                        dlinks.push(createDefinitionLinkFromXNode(<XMLElement>xDecl, {
-                            originXDoc: sourceFile,
-                            originRange: {
-                                pos: (nattr.startValue + 1) + pathSel.path[pathIndex].pos,
-                                end: (nattr.startValue + 1) + pathSel.path[pathIndex].end,
-                            }
-                        }));
-                    }
+                    processUNode(selectionInfo.selectedNode, selectionInfo.selectedFragment);
 
                     break;
                 }
@@ -153,6 +176,36 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
                 if (citem) {
                     for (const decl of citem.declarations) {
                         dlinks.push(createDefinitionLinkFromXNode(decl));
+                    }
+                }
+                break;
+            }
+
+            case AttrValueKind.PropertyBind:
+            {
+                const pbindSel = this.exParser.parsePropertyBind(nattr.value);
+
+                if (pbindSel.path.pos <= offsRelative && pbindSel.path.end >= offsRelative) {
+                    const selectionInfo = this.getSelectedNodeFromPath(pbindSel, node, offsRelative);
+                    if (!selectionInfo) break;
+
+                    processUNode(selectionInfo.selectedNode, selectionInfo.selectedFragment);
+                }
+                else if (pbindSel.property.pos <= offsRelative && pbindSel.property.end >= offsRelative) {
+                    const selectionInfo = this.getSelectedNodeFromPath(pbindSel, node, offsRelative, pbindSel.path.length - 1);
+                    if (!selectionInfo) break;
+
+                    for (const xDecl of selectionInfo.selectedNode.mainDesc.xDecls) {
+                        for (const xField of xDecl.children) {
+                            if (xField.tag.toLowerCase() !== pbindSel.property.name.toLowerCase()) continue;
+                            dlinks.push(createDefinitionLinkFromXNode(xField, {
+                                originXDoc: sourceFile,
+                                originRange: {
+                                    pos: (nattr.startValue + 1) + pbindSel.property.pos,
+                                    end: (nattr.startValue + 1) + pbindSel.property.end,
+                                }
+                            }));
+                        }
                     }
                 }
                 break;
