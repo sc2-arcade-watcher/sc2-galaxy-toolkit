@@ -29,7 +29,7 @@ function completionsForSimpleType(smType: sch.SimpleType) {
                 label: e.name,
                 kind: vs.CompletionItemKind.EnumMember,
                 detail: e.label,
-                documentation: `\`[${smType.name}]\``,
+                documentation: new vs.MarkdownString(`\`[${smType.name}]\``),
             };
             items.push(tc);
         }
@@ -143,7 +143,7 @@ class AttrValueProvider extends SuggestionsProvider {
                 break;
             }
 
-            case sch.BuiltinTypeKind.FrameName:
+            case sch.BuiltinTypeKind.DescName:
             {
                 if (!currentDesc.file) break;
                 const fileDesc = this.dIndex.rootNs.get(currentDesc.file);
@@ -239,7 +239,8 @@ class AttrValueProvider extends SuggestionsProvider {
                                         ctx.citems.push({
                                             kind: descKindToCompletionKind(cparent.mainDesc.kind),
                                             label: `${cparent.name}`,
-                                            detail: `[${cparent.mainDesc.stype.name}]\n${cparent.mainDesc.fqn}`,
+                                            detail: `[${cparent.mainDesc.stype.name}]`,
+                                            documentation: new vs.MarkdownString(`${cparent.mainDesc.fqn.replace(/\//g, '/\\\n')}`),
                                         });
                                     }
                                     break;
@@ -315,6 +316,43 @@ class AttrValueProvider extends SuggestionsProvider {
                     documentation: item.result.archive.name,
                 });
             }
+        }
+    }
+
+    protected suggestDescNames(ctx: AtValComplContext) {
+        const xElParent = <XMLElement>ctx.node.parent;
+        if (!xElParent.sdef) return;
+        switch (xElParent.sdef.nodeKind) {
+            case sch.ElementDefKind.Frame:
+            case sch.ElementDefKind.Animation:
+            case sch.ElementDefKind.StateGroup:
+                break;
+
+            default:
+                return;
+        }
+
+        const parentDesc = this.store.index.resolveElementDesc(xElParent);
+        const currentDesc = this.store.index.resolveElementDesc(ctx.node);
+
+        const uParentNode = this.uBuilder.buildNodeFromDesc(parentDesc);
+        if (!uParentNode) return;
+
+        for (const uChild of this.uNavigator.getChildrenOfType(uParentNode, currentDesc.kind).values()) {
+            const dscList = Array.from(uChild.descs);
+            const mIndex = dscList.findIndex((value) => {
+                if (value.xDecls.has(ctx.node) && uChild.descs.size > 1) return false;
+                if (value.parent !== parentDesc) return false;
+                return true;
+            });
+            if (mIndex !== -1) continue;
+
+            ctx.citems.push({
+                label: uChild.name,
+                kind: vs.CompletionItemKind.Value,
+                detail: `[${uChild.mainDesc.stype.name}]`,
+                documentation: new vs.MarkdownString(`${uChild.mainDesc.fqn.replace(/\//g, '/\\\n')}`),
+            });
         }
     }
 
@@ -450,9 +488,14 @@ class AttrValueProvider extends SuggestionsProvider {
                 if (isAssetRef) this.suggestStrings(ctx, s2.StringFileKind.GameHotkeys);
                 break;
 
+            case sch.BuiltinTypeKind.DescName:
+                if (!currentDesc.file) {
+                    this.suggestDescNames(ctx);
+                    break;
+                }
+                // pass through
             case sch.BuiltinTypeKind.DescTemplateName:
             case sch.BuiltinTypeKind.FileDescName:
-            case sch.BuiltinTypeKind.FrameName:
             case sch.BuiltinTypeKind.FrameReference:
             {
                 if (!currentDesc) break;

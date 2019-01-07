@@ -15,7 +15,7 @@ export const enum BuiltinTypeKind {
     //
     DescReference,
     FileDescName,
-    FrameName,
+    DescName,
     DescTemplateName,
     FrameReference,
     AnimationName,
