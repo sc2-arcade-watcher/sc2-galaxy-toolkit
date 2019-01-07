@@ -43,6 +43,12 @@ function createDefinitionLinkFromXNode(xdecl: XMLElement, opts: DefinitionLinkXN
     };
 }
 
+interface SelectionInfoDesc {
+    pathIndex: number;
+    selectedFragment: SelectorFragment;
+    selectedDesc: DescNamespace;
+}
+
 export class DefinitionProvider extends AbstractProvider implements vs.DefinitionProvider {
     protected exParser = new ExpressionParser();
     protected uNavigator: UINavigator;
@@ -80,11 +86,15 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
         };
     }
 
-    getSelectedDescFromPath(pathSel: PathSelector, offsRelative: number) {
+    getSelectedDescFromPath(pathSel: PathSelector, offsRelative: number, fileDesc?: DescNamespace): SelectionInfoDesc {
+        if (fileDesc === void 0) {
+            fileDesc = this.dIndex.rootNs;
+        }
+
         const pathIndex = getSelectionIndexAtPosition(pathSel, offsRelative);
 
         const fragments = pathSel.path.map(item => item.name.name).slice(0, pathIndex + 1);
-        const dsItem = this.dIndex.rootNs.getMulti(...fragments);
+        const dsItem = fileDesc.getMulti(...fragments);
 
         return {
             pathIndex: pathIndex,
@@ -124,6 +134,24 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
             }
         }
 
+        function processDesc(cdesc: DescNamespace) {
+            for (const xDecl of cdesc.xDecls) {
+                dlinks.push(createDefinitionLinkFromXNode(<XMLElement>xDecl));
+            }
+        }
+
+        function processSelectionInfoDesc(selectionInfo: SelectionInfoDesc) {
+            for (const xDecl of selectionInfo.selectedDesc.xDecls) {
+                dlinks.push(createDefinitionLinkFromXNode(<XMLElement>xDecl, {
+                    originXDoc: sourceFile,
+                    originRange: {
+                        pos: (nattr.startValue + 1) + selectionInfo.selectedFragment.pos,
+                        end: (nattr.startValue + 1) + selectionInfo.selectedFragment.end,
+                    }
+                }));
+            }
+        }
+
         if (sAttrType) {
             switch (sAttrType.builtinType) {
                 case sch.BuiltinTypeKind.FrameReference:
@@ -134,6 +162,30 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
 
                     processUNode(selectionInfo.selectedNode, selectionInfo.selectedFragment);
 
+                    break;
+                }
+
+                case sch.BuiltinTypeKind.DescName:
+                {
+                    const currentDesc = this.store.index.resolveElementDesc(node);
+                    if (node.hasAttribute('file')) {
+                        const fileDesc = this.store.index.rootNs.get(node.getAttributeValue('file'));
+                        if (!fileDesc) break;
+
+                        const pathSel = this.exParser.parsePathSelector(nattr.value);
+                        const selectionInfo = this.getSelectedDescFromPath(pathSel, offsRelative, fileDesc);
+                        if (!selectionInfo) break;
+
+                        processSelectionInfoDesc(selectionInfo);
+                    }
+                    else {
+                        let uNode = this.uBuilder.buildNodeFromDesc(currentDesc);
+                        if (!uNode) break;
+                        for (const cdesc of uNode.descs) {
+                            if (cdesc === currentDesc) continue;
+                            processDesc(cdesc);
+                        }
+                    }
                     break;
                 }
 
@@ -153,15 +205,7 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
                     const selectionInfo = this.getSelectedDescFromPath(pathSel, offsRelative);
                     if (!selectionInfo) break;
 
-                    for (const xDecl of selectionInfo.selectedDesc.xDecls) {
-                        dlinks.push(createDefinitionLinkFromXNode(<XMLElement>xDecl, {
-                            originXDoc: sourceFile,
-                            originRange: {
-                                pos: (nattr.startValue + 1) + selectionInfo.selectedFragment.pos,
-                                end: (nattr.startValue + 1) + selectionInfo.selectedFragment.end,
-                            }
-                        }));
-                    }
+                    processSelectionInfoDesc(selectionInfo);
                     break;
                 }
 
