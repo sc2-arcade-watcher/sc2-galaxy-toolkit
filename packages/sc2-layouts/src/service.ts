@@ -19,20 +19,6 @@ import { DiagnosticsProvider } from './services/diagnostics';
 import { TreeViewProvider } from './services/dtree';
 import { DocumentColorProvider } from './services/color';
 
-// const builtinMods = [
-//     'campaigns/liberty.sc2campaign',
-//     'campaigns/swarm.sc2campaign',
-//     'campaigns/swarmstory.sc2campaign',
-//     'campaigns/void.sc2campaign',
-//     'campaigns/voidstory.sc2campaign',
-//     'mods/alliedcommanders.sc2mod',
-//     'mods/core.sc2mod',
-//     'mods/missionpacks/novacampaign.sc2mod',
-//     'mods/novastoryassets.sc2mod',
-//     'mods/voidprologue.sc2mod',
-//     'mods/war3data.sc2mod',
-// ];
-
 namespace ExtCfgSect {
     export type builtinMods = {[name: string]: boolean};
 }
