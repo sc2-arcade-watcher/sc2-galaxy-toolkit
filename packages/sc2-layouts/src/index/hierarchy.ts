@@ -217,11 +217,12 @@ export class UIBuilder {
             }
 
             // include parts of hierarchy that extends this node
-            const dExtMap = dIndex.fileRefs.get(frDesc.ancestorOfKind(DescKind.File).name);
+            const dExtMap = dIndex.fileRefs.get(frDesc.targetFile);
             if (dExtMap) {
                 const dExSet = dExtMap.get(frDesc.descRelativeName);
                 if (dExSet) {
                     for (const extDesc of dExSet.values()) {
+                        if (uNode.descs.has(extDesc)) continue;
                         processDesc(uNode, extDesc, tpath);
                     }
                 }

@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import 'mocha';
-import { buildStore, getSchema } from '../helpers';
+import { buildStore, getSchema, tlog } from '../helpers';
 import { FrameNode, UINavigator, UIBuilder, AnimationNode } from '../../src/index/hierarchy';
 import { ExpressionParser } from '../../src/parser/expressions';
 import { DescKind } from '../../src/index/desc';
@@ -11,7 +11,7 @@ function mockupIndex(...src: string[]) {
 }
 
 describe('hierarchy builder', function () {
-    const dIndex = mockupIndex('Extension', 'GameUI');
+    const dIndex = mockupIndex('GameUI', 'Extension', 'Extension2');
     const rootNs =  dIndex.rootNs;
     const uBuilder = new UIBuilder(getSchema(), dIndex);
 
@@ -81,6 +81,13 @@ describe('hierarchy builder', function () {
 
             uBuilder.expandNode(uNode.getChild('WorldPanel', 'UnitStatusPanel'), ['Title']);
             assert.isUndefined(uNode.getChild('Button'));
+        });
+
+        it('handle extension of desc contributed from file override by yet another file', function () {
+            const uNode = uBuilder.buildNodeFromDesc(topDesc);
+            uBuilder.expandNode(uNode, ['WorldPanel', 'ContainerC']);
+            assert.isDefined(uNode.getChild('WorldPanel', 'ContainerC', 'FBNat'));
+            assert.isDefined(uNode.getChild('WorldPanel', 'ContainerC', 'FBExt'));
         });
     });
 });

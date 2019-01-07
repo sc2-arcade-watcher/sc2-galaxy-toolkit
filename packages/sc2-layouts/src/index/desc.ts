@@ -170,6 +170,15 @@ export class DescNamespace {
         return (this.parent && (this.parent.kind !== DescKind.Root && this.parent.kind !== DescKind.File)) ? `${this.parent.descRelativeName}/${this.name}` : this.name;
     }
 
+    get topDescItem() {
+        let tmp: DescNamespace = this;
+        while (tmp.parent) {
+            if (tmp.parent.kind === DescKind.Root || tmp.parent.kind === DescKind.File) break;
+            tmp = tmp.parent;
+        }
+        return tmp;
+    }
+
     get stype() {
         return Array.from(this.xDecls.values())[0].stype;
     }
@@ -182,6 +191,14 @@ export class DescNamespace {
     get file() {
         const tmp = Array.from(this.xDecls.values())[0];
         return (<XMLElement>tmp).getAttributeValue('file', null);
+    }
+
+    get targetFile() {
+        let f = this.topDescItem.file;
+        if (f === null) {
+            f = this.ancestorOfKind(DescKind.File).name;
+        }
+        return f;
     }
 }
 
