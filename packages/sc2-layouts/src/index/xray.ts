@@ -81,7 +81,6 @@ export class XRay {
         let uTargetNode = uNode;
         switch (xEl.sdef.nodeKind) {
             case sch.ElementDefKind.AnimationController:
-            case sch.ElementDefKind.AnimationEvent:
             case sch.ElementDefKind.StateGroupStateCondition:
             case sch.ElementDefKind.StateGroupStateAction:
             {

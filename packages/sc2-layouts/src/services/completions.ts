@@ -262,13 +262,29 @@ class AttrValueProvider extends SuggestionsProvider {
                     ctx.citems.push(compl);
                 }
 
-                ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$parent'});
-                ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$this'});
-                ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$sibling'});
-                ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$ancestor'});
-                if (pathIndex === 0) {
-                    ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$layer'});
+                if (selFrag) {
+                    switch (selFrag.selKind) {
+                        case SelHandleKind.This:
+                        case SelHandleKind.Parent:
+                        case SelHandleKind.Root:
+                        case SelHandleKind.Layer:
+                        case SelHandleKind.Sibling:
+                        case SelHandleKind.Ancestor:
+                        case SelHandleKind.Custom:
+                        {
+                            ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$parent', preselect: true});
+                            ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$this', preselect: true});
+                            ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$sibling', preselect: true});
+                            ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$ancestor', preselect: true});
+                            if (pathIndex === 0) {
+                                ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$layer', preselect: true});
+                            }
+                            break;
+                        }
+                    }
+                }
 
+                if (pathIndex === 0) {
                     if (selFrag.selKind !== SelHandleKind.Identifier) {
                         for (const item of this.dIndex.handles.values()) {
                             ctx.citems.push({
