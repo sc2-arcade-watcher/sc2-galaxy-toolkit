@@ -24,11 +24,17 @@
     </simpleType>
 
     <simpleType name="AnchorPosOffset" data="number">
+        <pattern value="^(\+|\-)?(([0-9]+\.[0-9]*)|([0-9]*\.?[0-9]+))$"/>
+    </simpleType>
+
+    <simpleType name="AnchorPosPercent" data="number">
+        <pattern value="^(\+|\-)?([0-9]+(\.[0-9]+)?)%$"/>
     </simpleType>
 
     <simpleType name="AnchorPos">
         <union value="AnchorPosPreset"/>
         <union value="AnchorPosOffset"/>
+        <union value="AnchorPosPercent"/>
     </simpleType>
 
     <!--  -->
