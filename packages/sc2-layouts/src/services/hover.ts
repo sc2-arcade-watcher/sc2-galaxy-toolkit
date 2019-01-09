@@ -3,10 +3,11 @@ import * as vs from 'vscode';
 import * as sch from '../schema/base';
 import { AbstractProvider, svcRequest } from './provider';
 import { XMLElement } from '../types';
+import { DefinitionProvider, DefinitionItemKind, DefinitionDescNode, DefinitionContainer } from './definition';
 
 function attrSchDocs(sAttr: sch.Attribute)  {
     let s = '';
-    s += `&nbsp;**@**${sAttr.name}${(sAttr.required ? '' : '?')} — [${sAttr.type.name}](#)`;
+    s += `&nbsp;**@**${sAttr.name}${(sAttr.required ? '' : '?')} — [${sAttr.type.name}](https://mapster.talv.space/layouts/frame)`;
     if (sAttr.documentation) {
         s += ' — ' + sAttr.documentation;
     }
@@ -14,6 +15,8 @@ function attrSchDocs(sAttr: sch.Attribute)  {
 }
 
 export class HoverProvider extends AbstractProvider implements vs.HoverProvider {
+    defProvider: DefinitionProvider;
+
     protected matchAttrValueEnum(smType: sch.SimpleType, value: string) {
         value = value.toLowerCase();
 
@@ -39,6 +42,15 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
         return processSmType(smType);
     }
 
+    protected tooltipDefinitionDesc(defContainer: DefinitionContainer, dscNode: DefinitionDescNode): vs.MarkdownString {
+        const contents: string[] = [];
+        contents.push(`**\`${dscNode.selectedDescs[0].name}\`** — [${dscNode.selectedDescs[0].stype.name}](https://mapster.talv.space/layouts/frame)`);
+        for (const desc of dscNode.selectedDescs) {
+            contents.push(desc.fqn);
+        }
+        return new vs.MarkdownString(contents.join('\n\n'));
+    }
+
     @svcRequest(
         false,
         (document: vs.TextDocument, position: vs.Position) => {
@@ -60,12 +72,12 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
             if (node.start <= offset && (node.start + node.tag.length + 1) > offset) {
                 if (node.sdef) {
                     let contents = '';
-                    contents += `**<${node.sdef.name}>** — [${node.sdef.type.name}](#)`;
+                    contents += `**<${node.sdef.name}>** — [${node.sdef.type.name}](https://mapster.talv.space/layouts/frame)`;
                     if (node.sdef.label) {
                         contents += '\n\n' + node.sdef.label;
                     }
                     if (node.stype.label) {
-                        contents += `\n\n[${node.stype.name}](#)\\\n` + node.stype.label;
+                        contents += `\n\n[${node.stype.name}](https://mapster.talv.space/layouts/frame)\\\n` + node.stype.label;
                     }
                     contents += '\n\n' + Array.from(node.stype.attributes.values()).map(v => attrSchDocs(v)).join('\n\n');
                     hv = new vs.Hover(contents.trim());
@@ -93,14 +105,14 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
                                 new vs.MarkdownString(contents),
                             );
                         }
-                        else if (attr.startValue && attr.startValue <= offset) {
+                        else if (attr.startValue && (attr.startValue - 1) <= offset && attr.end >= offset) {
                             switch (scAttr.type.builtinType) {
                                 default:
                                 {
                                     const wordRange = document.getWordRangeAtPosition(position);
                                     const matchedEn = this.matchAttrValueEnum(scAttr.type, document.getText(wordRange));
                                     if (matchedEn && matchedEn.label) {
-                                        let contents = `**${matchedEn.name}** — ${matchedEn.label}\n\n[${matchedEn.type.name}](#)`;
+                                        let contents = `**${matchedEn.name}** — ${matchedEn.label}\n\n[${matchedEn.type.name}](https://mapster.talv.space/layouts/frame)`;
                                         hv = new vs.Hover(
                                             new vs.MarkdownString(contents),
                                             wordRange
@@ -115,7 +127,22 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
             }
         }
 
-        if (token.isCancellationRequested) return void 0;
+        if (!hv) {
+            const defContainer = this.defProvider.getDefinitionAtOffset(sourceFile, offset);
+            if (!defContainer) return;
+
+            switch (defContainer.itemKind) {
+                case DefinitionItemKind.DescNode:
+                case DefinitionItemKind.UINode:
+                {
+                    hv = new vs.Hover(
+                        this.tooltipDefinitionDesc(defContainer, <DefinitionDescNode>defContainer.itemData),
+                        defContainer.srcTextRange
+                    );
+                    break;
+                }
+            }
+        }
 
         return hv;
     }

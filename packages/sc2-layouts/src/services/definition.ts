@@ -89,15 +89,17 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
         };
     }
 
-    protected  getStaticDescFromPath(pathSel: PathSelector, offsRelative: number, fileDesc?: DescNamespace): DefinitionDescNode {
+    protected getStaticDescFromPath(pathSel: PathSelector, offsRelative: number, fileDesc?: DescNamespace): DefinitionDescNode {
         if (fileDesc === void 0) {
             fileDesc = this.dIndex.rootNs;
         }
 
         const pathIndex = getSelectionIndexAtPosition(pathSel, offsRelative);
+        if (pathIndex === void 0) return;
 
         const fragments = pathSel.path.map(item => item.name.name).slice(0, pathIndex + 1);
         const dsItem = fileDesc.getMulti(...fragments);
+        if (!dsItem) return;
 
         return {
             pathIndex: pathIndex,
@@ -106,7 +108,7 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
         };
     }
 
-    protected  getMergedDescFromPath(pathSel: PathSelector, offsRelative: number, fileDesc?: DescNamespace): DefinitionDescNode {
+    protected getMergedDescFromPath(pathSel: PathSelector, offsRelative: number, fileDesc?: DescNamespace): DefinitionDescNode {
         if (fileDesc === void 0) {
             fileDesc = this.dIndex.rootNs;
         }

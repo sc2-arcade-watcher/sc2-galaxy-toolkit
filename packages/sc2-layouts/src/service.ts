@@ -237,6 +237,9 @@ export class ServiceContext implements IService {
         }
 
         // -
+        this.hoverProvider.defProvider = this.definitionProvider;
+
+        // -
         this.diagnosticsProvider = this.createProvider(DiagnosticsProvider);
         context.subscriptions.push(vs.workspace.onDidChangeTextDocument(async ev => {
             if (ev.document.languageId !== languageId) return;
