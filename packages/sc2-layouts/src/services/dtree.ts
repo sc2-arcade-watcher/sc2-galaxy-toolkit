@@ -162,7 +162,7 @@ export class DescTreeDataProvider implements vs.TreeDataProvider<DescTreeNode> {
         switch (dParentNode.kind) {
             case DescTreeNodeKind.Archive:
             {
-                for (const item of this.fileNodes.values()) {
+                for (const item of Array.from(this.fileNodes.values()).sort((a, b) => a.name.localeCompare(b.name))) {
                     if (item.archive !== dParentNode.archive) continue;
                     children.push(item);
                 }
