@@ -2,7 +2,7 @@ import * as vs from 'vscode';
 import * as sch from '../schema/base';
 import { AbstractProvider, svcRequest } from './provider';
 import { createScanner, CharacterCodes } from '../parser/scanner';
-import { TokenType, XMLElement, AttrValueKind, XMLDocument, AttrValueKindOffset } from '../types';
+import { TokenType, XMLElement, AttrValueKind, XMLDocument, AttrValueKindOffset, XMLAttr, XMLNode } from '../types';
 import { getAttrValueKind, getSelectionFragmentAtPosition, getSelectionIndexAtPosition } from '../parser/utils';
 import URI from 'vscode-uri';
 import { ExpressionParser, PathSelector, PropertyBindExpr, SelectorFragment, SyntaxKind } from '../parser/expressions';
@@ -10,43 +10,48 @@ import { UINavigator, UIBuilder, FrameNode, AnimationNode, UINode } from '../ind
 import { LayoutProcessor } from '../index/processor';
 import { DescKind, DescNamespace } from '../index/desc';
 
-interface DefinitionLinkXNodeOptions {
-    originXDoc?: XMLDocument;
-    originRange?: {pos: number, end: number};
-}
-
-function createDefinitionLinkFromXNode(xdecl: XMLElement, opts: DefinitionLinkXNodeOptions = {}) {
-    const xdoc = xdecl.getDocument();
-    const posSta = xdoc.tdoc.positionAt(xdecl.start);
-    const posEnd = xdoc.tdoc.positionAt(xdecl.startTagEnd ? xdecl.startTagEnd : xdecl.end);
-
-    let originSelectionRange;
-    if (opts.originRange) {
-        if (!opts.originXDoc) opts.originXDoc = xdoc;
-        const originPos = {
-            start: opts.originXDoc.tdoc.positionAt(opts.originRange.pos),
-            end: opts.originXDoc.tdoc.positionAt(opts.originRange.end),
-        };
-        originSelectionRange = new vs.Range(
-            new vs.Position(originPos.start.line, originPos.start.character),
-            new vs.Position(originPos.end.line, originPos.end.character)
-        );
-    }
-
-    return <vs.DefinitionLink>{
-        targetUri: URI.parse(xdoc.tdoc.uri),
-        originSelectionRange: originSelectionRange,
-        targetRange: new vs.Range(
-            new vs.Position(posSta.line, posSta.character),
-            new vs.Position(posEnd.line, posEnd.character),
-        ),
+function getVsTextRange(xDoc: XMLDocument, start: number, end: number) {
+    const origin = {
+        start: xDoc.tdoc.positionAt(start),
+        end: xDoc.tdoc.positionAt(end),
     };
+    return new vs.Range(
+        new vs.Position(origin.start.line, origin.start.character),
+        new vs.Position(origin.end.line, origin.end.character)
+    );
 }
 
-interface SelectionInfoDesc {
+export const enum DefinitionItemKind {
+    Unknown,
+    XNode,
+    DescNode,
+    UINode,
+}
+
+export interface DefinitionContainer {
+    xSrcEl: XMLElement;
+    xSrcAttr: XMLAttr;
+    srcTextRange: vs.Range;
+    itemKind: DefinitionItemKind;
+    itemData: DefinitionXNode | DefinitionDescNode | UINode;
+
+    xEl?: DefinitionXNode;
+    descNode?: DefinitionDescNode;
+    uNode?: UINode;
+}
+
+export interface DefinitionXNode {
+    xNodes: XMLElement[];
+}
+
+export interface DefinitionDescNode {
+    selectedDescs: DescNamespace[];
     pathIndex: number;
     selectedFragment: SelectorFragment;
-    selectedDesc: DescNamespace;
+}
+
+export interface DefinitionUINode extends DefinitionDescNode {
+    selectedNode: UINode;
 }
 
 export class DefinitionProvider extends AbstractProvider implements vs.DefinitionProvider {
@@ -61,10 +66,8 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
         this.processor = new LayoutProcessor(this.store, this.store.index);
     }
 
-    getSelectedNodeFromPath(pathSel: PathSelector | PropertyBindExpr, xEl: XMLElement, offsRelative: number, pathIndex?: number) {
-        if (pathIndex === void 0) {
-            pathIndex = getSelectionIndexAtPosition(pathSel, offsRelative);
-        }
+    protected getSelectedNodeFromPath(pathSel: PathSelector | PropertyBindExpr, xEl: XMLElement, offsRelative: number): DefinitionUINode {
+        const pathIndex = getSelectionIndexAtPosition(pathSel, offsRelative);
         if (pathIndex === void 0) return;
 
         let uNode: UINode;
@@ -79,14 +82,14 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
         const resolvedSel = this.uNavigator.resolveSelection(uNode, pathSel.path);
         if (resolvedSel.chain.length <= pathIndex) return;
         return {
-            resolvedSel: resolvedSel,
             pathIndex: pathIndex,
             selectedFragment: pathSel.path[pathIndex],
+            selectedDescs: Array.from(resolvedSel.chain[pathIndex].descs),
             selectedNode: resolvedSel.chain[pathIndex],
         };
     }
 
-    getSelectedDescFromPath(pathSel: PathSelector, offsRelative: number, fileDesc?: DescNamespace): SelectionInfoDesc {
+    protected  getStaticDescFromPath(pathSel: PathSelector, offsRelative: number, fileDesc?: DescNamespace): DefinitionDescNode {
         if (fileDesc === void 0) {
             fileDesc = this.dIndex.rootNs;
         }
@@ -99,92 +102,93 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
         return {
             pathIndex: pathIndex,
             selectedFragment: pathSel.path[pathIndex],
-            selectedDesc: dsItem,
+            selectedDescs: [dsItem],
         };
     }
 
-    @svcRequest(false)
-    async provideDefinition(document: vs.TextDocument, position: vs.Position, cancToken: vs.CancellationToken) {
-        const sourceFile = await this.svcContext.syncVsDocument(document);
-        const dlinks: vs.DefinitionLink[] = [];
-
-        const offset = sourceFile.tdoc.offsetAt(position);
-        const node = <XMLElement>sourceFile.findNodeAt(offset);
-
-        if (!node || !(node instanceof XMLElement) || !node.stype) return void 0;
-        if (node.closed) {
-            if (node.selfClosed && offset > node.end) return void 0;
-            if (!node.selfClosed && offset > node.startTagEnd) return void 0;
+    protected  getMergedDescFromPath(pathSel: PathSelector, offsRelative: number, fileDesc?: DescNamespace): DefinitionDescNode {
+        if (fileDesc === void 0) {
+            fileDesc = this.dIndex.rootNs;
         }
 
-        const nattr = node.findAttributeAt(offset);
+        const pathIndex = getSelectionIndexAtPosition(pathSel, offsRelative);
+
+        const topDesc = fileDesc.get(pathSel.path[0].name.name);
+        if (!topDesc) return;
+
+        const uNode = this.uBuilder.buildNodeFromDesc(topDesc);
+        if (!uNode) return;
+
+        let selectedDescs = Array.from(uNode.descs);
+
+        if (pathIndex > 0) {
+            const fragments = pathSel.path.slice(1, pathIndex + 1);
+            const resolvedSel = this.uNavigator.resolveSelection(uNode, fragments);
+            if (resolvedSel.chain.length <= pathIndex - 1) return;
+            selectedDescs = Array.from(resolvedSel.chain[pathIndex - 1].descs);
+        }
+
+        return {
+            pathIndex: pathIndex,
+            selectedFragment: pathSel.path[pathIndex],
+            selectedDescs: selectedDescs,
+        };
+    }
+
+    getDefinitionAtOffset(xDoc: XMLDocument, offset: number) {
+        const xEl = <XMLElement>xDoc.findNodeAt(offset);
+        if (!xEl || !(xEl instanceof XMLElement) || !xEl.stype) return void 0;
+        if (xEl.closed) {
+            if (xEl.selfClosed && offset > xEl.end) return void 0;
+            if (!xEl.selfClosed && offset > xEl.startTagEnd) return void 0;
+        }
+
+        const nattr = xEl.findAttributeAt(offset);
         if (!nattr || !nattr.startValue || nattr.startValue > offset) return void 0;
-        const sAttrType = this.processor.getElPropertyType(node, nattr.name);
+        const sAttrType = this.processor.getElPropertyType(xEl, nattr.name);
         const offsRelative = offset - (nattr.startValue + 1);
 
-        function processUNode(uNode: UINode, selFrag: SelectorFragment) {
-            for (const xDecl of uNode.mainDesc.xDecls) {
-                dlinks.push(createDefinitionLinkFromXNode(<XMLElement>xDecl, {
-                    originXDoc: sourceFile,
-                    originRange: {
-                        pos: (nattr.startValue + 1) + selFrag.pos,
-                        end: (nattr.startValue + 1) + selFrag.end,
-                    }
-                }));
-            }
-        }
-
-        function processDesc(cdesc: DescNamespace) {
-            for (const xDecl of cdesc.xDecls) {
-                dlinks.push(createDefinitionLinkFromXNode(<XMLElement>xDecl));
-            }
-        }
-
-        function processSelectionInfoDesc(selectionInfo: SelectionInfoDesc) {
-            for (const xDecl of selectionInfo.selectedDesc.xDecls) {
-                dlinks.push(createDefinitionLinkFromXNode(<XMLElement>xDecl, {
-                    originXDoc: sourceFile,
-                    originRange: {
-                        pos: (nattr.startValue + 1) + selectionInfo.selectedFragment.pos,
-                        end: (nattr.startValue + 1) + selectionInfo.selectedFragment.end,
-                    }
-                }));
-            }
-        }
+        const defContainer: DefinitionContainer = {
+            xSrcEl: xEl,
+            xSrcAttr: nattr,
+            srcTextRange: null,
+            itemKind: DefinitionItemKind.Unknown,
+            itemData: null,
+        };
 
         if (sAttrType) {
             switch (sAttrType.builtinType) {
                 case sch.BuiltinTypeKind.FrameReference:
                 {
                     const pathSel = this.exParser.parsePathSelector(nattr.value);
-                    const selectionInfo = this.getSelectedNodeFromPath(pathSel, node, offsRelative);
-                    if (!selectionInfo) break;
-
-                    processUNode(selectionInfo.selectedNode, selectionInfo.selectedFragment);
-
+                    defContainer.itemKind = DefinitionItemKind.UINode;
+                    defContainer.itemData = this.getSelectedNodeFromPath(pathSel, xEl, offsRelative);
                     break;
                 }
 
                 case sch.BuiltinTypeKind.DescName:
                 {
-                    const currentDesc = this.store.index.resolveElementDesc(node);
-                    if (node.hasAttribute('file')) {
-                        const fileDesc = this.store.index.rootNs.get(node.getAttributeValue('file'));
+                    const currentDesc = this.store.index.resolveElementDesc(xEl);
+                    defContainer.itemKind = DefinitionItemKind.DescNode;
+
+                    if (xEl.hasAttribute('file')) {
+                        const fileDesc = this.store.index.rootNs.get(xEl.getAttributeValue('file'));
                         if (!fileDesc) break;
-
                         const pathSel = this.exParser.parsePathSelector(nattr.value);
-                        const selectionInfo = this.getSelectedDescFromPath(pathSel, offsRelative, fileDesc);
-                        if (!selectionInfo) break;
 
-                        processSelectionInfoDesc(selectionInfo);
+                        defContainer.itemData = this.getMergedDescFromPath(pathSel, offsRelative, fileDesc);
                     }
                     else {
                         let uNode = this.uBuilder.buildNodeFromDesc(currentDesc);
                         if (!uNode) break;
-                        for (const cdesc of uNode.descs) {
-                            if (cdesc === currentDesc) continue;
-                            processDesc(cdesc);
-                        }
+                        defContainer.itemData = <DefinitionDescNode>{
+                            pathIndex: 0,
+                            selectedFragment: {
+                                pos: 0,
+                                end: nattr.value.length,
+                            },
+                            selectedDescs: Array.from(uNode.descs),
+                        };
                     }
                     break;
                 }
@@ -193,32 +197,37 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
                 {
                     const fileDesc = this.dIndex.rootNs.get(nattr.value);
                     if (!fileDesc) break;
-                    for (const xDecl of fileDesc.xDecls) {
-                        dlinks.push(createDefinitionLinkFromXNode(<XMLElement>xDecl));
-                    }
+                    defContainer.itemKind = DefinitionItemKind.DescNode;
+                    defContainer.itemData = <DefinitionDescNode>{
+                        pathIndex: 0,
+                        selectedFragment: {
+                            pos: 0,
+                            end: nattr.value.length,
+                        },
+                        selectedDescs: [fileDesc],
+                    };
                     break;
                 }
 
                 case sch.BuiltinTypeKind.DescTemplateName:
                 {
                     const pathSel = this.exParser.parsePathSelector(nattr.value);
-                    const selectionInfo = this.getSelectedDescFromPath(pathSel, offsRelative);
-                    if (!selectionInfo) break;
-
-                    processSelectionInfoDesc(selectionInfo);
+                    defContainer.itemKind = DefinitionItemKind.DescNode;
+                    defContainer.itemData = this.getStaticDescFromPath(pathSel, offsRelative);
                     break;
                 }
 
                 case sch.BuiltinTypeKind.EventName:
                 {
-                    const uNode = this.xray.determineTargetFrameNode(node);
+                    const uNode = this.xray.determineTargetFrameNode(xEl);
                     if (!uNode) return;
                     for (const uAnim of this.uNavigator.getChildrenOfType<AnimationNode>(uNode, DescKind.Animation).values()) {
                         const matchingEvs = uAnim.getEvents().get(nattr.value);
                         if (!matchingEvs) continue;
-                        for (const xDecl of matchingEvs) {
-                            dlinks.push(createDefinitionLinkFromXNode(xDecl));
-                        }
+                        defContainer.itemKind = DefinitionItemKind.XNode;
+                        defContainer.itemData = <DefinitionXNode>{
+                            xNodes: matchingEvs,
+                        };
                     }
                 }
             }
@@ -233,9 +242,10 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
                 const name = nattr.value.substr(AttrValueKindOffset[vKind]);
                 const citem = this.store.index.constants.get(name);
                 if (citem) {
-                    for (const decl of citem.declarations) {
-                        dlinks.push(createDefinitionLinkFromXNode(decl));
-                    }
+                    defContainer.itemKind = DefinitionItemKind.XNode;
+                    defContainer.itemData = <DefinitionXNode>{
+                        xNodes: Array.from(citem.declarations),
+                    };
                 }
                 break;
             }
@@ -243,34 +253,113 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
             case AttrValueKind.PropertyBind:
             {
                 const pbindSel = this.exParser.parsePropertyBind(nattr.value);
+                defContainer.itemKind = DefinitionItemKind.UINode;
 
                 if (pbindSel.path.pos <= offsRelative && pbindSel.path.end >= offsRelative) {
-                    const selectionInfo = this.getSelectedNodeFromPath(pbindSel, node, offsRelative);
-                    if (!selectionInfo) break;
-
-                    processUNode(selectionInfo.selectedNode, selectionInfo.selectedFragment);
+                    defContainer.itemData = this.getSelectedNodeFromPath(pbindSel, xEl, offsRelative);
                 }
                 else if (pbindSel.property.pos <= offsRelative && pbindSel.property.end >= offsRelative) {
-                    const selectionInfo = this.getSelectedNodeFromPath(pbindSel, node, offsRelative, pbindSel.path.length - 1);
-                    if (!selectionInfo) break;
+                    const defUNode = this.getSelectedNodeFromPath(pbindSel, xEl, pbindSel.path[pbindSel.path.length - 1].end - 1);
+                    if (!defUNode) return;
 
-                    for (const xDecl of selectionInfo.selectedNode.mainDesc.xDecls) {
+                    defContainer.itemKind = DefinitionItemKind.XNode;
+                    defContainer.itemData = <DefinitionXNode>{
+                        xNodes: [],
+                    };
+
+                    for (const xDecl of defUNode.selectedNode.mainDesc.xDecls) {
                         for (const xField of xDecl.children) {
                             if (xField.tag.toLowerCase() !== pbindSel.property.name.toLowerCase()) continue;
-                            dlinks.push(createDefinitionLinkFromXNode(xField, {
-                                originXDoc: sourceFile,
-                                originRange: {
-                                    pos: (nattr.startValue + 1) + pbindSel.property.pos,
-                                    end: (nattr.startValue + 1) + pbindSel.property.end,
-                                }
-                            }));
+                            defContainer.itemData.xNodes.push(xField);
                         }
                     }
+
+                    if (!defContainer.itemData.xNodes.length) return;
+
+                    defContainer.srcTextRange = getVsTextRange(
+                        xDoc,
+                        (nattr.startValue + 1) + pbindSel.property.pos,
+                        (nattr.startValue + 1) + pbindSel.property.end,
+                    );
                 }
                 break;
             }
         }
 
-        return dlinks.length ? dlinks : void 0;
+        if (!defContainer.itemData) return;
+
+        switch (defContainer.itemKind) {
+            case DefinitionItemKind.DescNode:
+            case DefinitionItemKind.UINode:
+            {
+                const selFrag = (<DefinitionDescNode>defContainer.itemData).selectedFragment;
+                defContainer.srcTextRange = getVsTextRange(
+                    xDoc,
+                    (nattr.startValue + 1) + selFrag.pos,
+                    (nattr.startValue + 1) + selFrag.end
+                );
+                break;
+            }
+
+            case DefinitionItemKind.XNode:
+            {
+                if (!defContainer.srcTextRange) {
+                    defContainer.srcTextRange = getVsTextRange(xDoc, nattr.startValue + 1, nattr.end - 1);
+                }
+                break;
+            }
+        }
+
+        return defContainer;
+    }
+
+    @svcRequest(false)
+    async provideDefinition(document: vs.TextDocument, position: vs.Position, cancToken: vs.CancellationToken) {
+        const xDoc = await this.svcContext.syncVsDocument(document);
+        const offset = xDoc.tdoc.offsetAt(position);
+        const defContainer = this.getDefinitionAtOffset(xDoc, offset);
+        if (!defContainer) return;
+
+        const defLinks: vs.DefinitionLink[] = [];
+
+        function appendDefLinkFromXNode(xDecl: XMLNode) {
+            if (xDecl === defContainer.xSrcEl) return;
+
+            const xTargetDoc = xDecl.getDocument();
+            const posSta = xTargetDoc.tdoc.positionAt(xDecl.start);
+            const posEnd = xTargetDoc.tdoc.positionAt((<XMLElement>xDecl).startTagEnd ? (<XMLElement>xDecl).startTagEnd : xDecl.end);
+
+            defLinks.push(<vs.DefinitionLink>{
+                originSelectionRange: defContainer.srcTextRange,
+                targetUri: URI.parse(xTargetDoc.tdoc.uri),
+                targetRange: new vs.Range(
+                    new vs.Position(posSta.line, posSta.character),
+                    new vs.Position(posEnd.line, posEnd.character),
+                ),
+            });
+        }
+
+        switch (defContainer.itemKind) {
+            case DefinitionItemKind.DescNode:
+            case DefinitionItemKind.UINode:
+            {
+                for (const cdesc of (<DefinitionDescNode>defContainer.itemData).selectedDescs) {
+                    for (const xDecl of cdesc.xDecls) {
+                        appendDefLinkFromXNode(xDecl);
+                    }
+                }
+                break;
+            }
+
+            case DefinitionItemKind.XNode:
+            {
+                for (const xDecl of (<DefinitionXNode>defContainer.itemData).xNodes) {
+                    appendDefLinkFromXNode(xDecl);
+                }
+                break;
+            }
+        }
+
+        return defLinks;
     }
 }
