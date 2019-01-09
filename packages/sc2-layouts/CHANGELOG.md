@@ -1,5 +1,34 @@
 # Change Log
 
+## [0.7.0] - 2019-01-09
+
+* Added color picker and its visual indicator. It will appear in attributes that accept `Color` type, or have `Mixed` type - such as constants, if applicable. Supports hexadecimal and decimal notation, and optionally an alpha component.
+* Hover provider (mouseover tooltips that will appear for):
+    * Desc/Frame selectors - each part of selection will have different tooltip displaying the name of Desc it resolves to, and a list of definitions from each layout that contributes (templates, overrides etc.).
+* Code completions:
+    * Suggestions of frame/animation/stategroup names in context of their definition (`name` attribute). List includes frames that are either inherited from a specified template, or are already existing - in cases when some top level frame is being overriden with elements inside (`GameUI/UIContainer` etc.).
+    * Fixed incorrect completions provided for property bind expression placed in a `StateSetPropertyAction` that was targetting frame other than `$this`. It would previously suggest the path in relation to where the stategroup was placed, now it will respect the target frame and provide suggestions in its relation.
+* Goto definition (<kbd>CTRL-CLICK</kbd> behavior):
+    * Added support for:
+        * Property bind expressions
+            * Each selector will navigate to definition of the frame it has been resolved to
+            * Property will navigate to the field in a resolved frame where it is being initialized
+        * Frame names:
+            * In case of extending template it will navigate to the definition/definitions from the template
+            * In case of overriding element from another file desc it will navigate to original layout where this element was created, and all other places where that element is being extended - if any (other layouts).
+    * Each fragment of `template` attribute is now treated separate. What allows it to navigate to definition of choosen element in case of nested templates, or simply navigate to the layout file where that template was placed.
+* Schema:
+    * Further corrections/additions to various elements. Primarily concerning `UnitStatusFrame` and its family.
+    * Added missing animation controllers: `CutsceneProperty` and `CutscenePropertyReal`.
+* Other:
+    * Added partial support for newly introduced *ConstantFactional* and *AssetFactional* (`###` and `@@@`)
+    * Updated `sc2-data` to `4.8.0`
+    * Changed default settings of `sc2layout.builtinMods`: all campaign dependencies, as well as coop mod is now indexed by default. This can be overridden globably or per workspace.
+    * Files in Desc Tree will now be ordered alphabetically
+    * Enhanced internal frame hierarchy builder - in order to make code completions concerning frame selections across hierarchy a little more richer:
+        * Better support for multi-level template inclusion.
+        * Overrides targetting the same `FileDesc` will now be merged - in other words layout `C` will now be aware about changes made by layout `B`, where both of them have been extending the same location in layout `A`. Obvious example is `GameUI` that is pretty much always touched from more than one layout.
+
 ## [0.6.1] - 2018-12-18
 
 * Minor bugfixes & improvements
