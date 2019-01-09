@@ -4,6 +4,7 @@ import * as glob from 'glob';
 import { CharacterCodes } from './parser/scanner';
 
 export const readFileAsync = util.promisify(fs.readFile);
+export const readDirAsync = util.promisify(fs.readdir);
 export const fileExistsAsync = util.promisify(fs.exists);
 
 /**

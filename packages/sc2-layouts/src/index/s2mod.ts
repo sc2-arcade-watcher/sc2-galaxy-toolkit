@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as glob from 'glob';
-import { readFileAsync, globify } from '../common';
+import { readFileAsync, globify, readDirAsync } from '../common';
 import URI from 'vscode-uri';
 import { ILoggerConsole, createLogger } from '../services/provider';
 
@@ -243,11 +243,14 @@ export async function findArchiveDirectories(fsPath: string) {
     if (isS2Archive(fsPath)) {
         return [path.resolve(fsPath)];
     }
-    return await globify(`**/*.+(${S2ArchiveExtsStr})/`, {
+    const folders = (await globify(`**/*.+(${S2ArchiveExtsStr})/`, {
         cwd: fsPath,
         absolute: true,
         nocase: true,
+    })).sort().sort((a, b) => {
+        return path.extname(a).toLowerCase() === '.sc2map' ? 1 : -1;
     });
+    return folders;
 }
 
 function findSC2File(directory: string, pattern: string) {
