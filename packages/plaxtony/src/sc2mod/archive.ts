@@ -6,6 +6,7 @@ import * as xml from 'xml2js';
 import * as trig from './trigger';
 import * as cat from './datacatalog';
 import * as loc from './localization';
+import { globify } from '../service/utils';
 
 export function isSC2Archive(directory: string) {
     return /\.(SC2Mod|SC2Map|SC2Campaign)$/i.exec(path.basename(directory));
@@ -168,12 +169,9 @@ export interface ArchiveLink {
     src: string;
 }
 
-export function resolveArchiveDirectory(name: string, sources: string[]) {
+export async function resolveArchiveDirectory(name: string, sources: string[]) {
     for (const src of sources) {
-        if (fs.existsSync(path.join(src, name).toLowerCase())) {
-            return path.join(src, name).toLowerCase();
-        }
-        const results = glob.sync(name, {nocase: true, realpath: true, cwd: src});
+        const results = await globify(`${name}/`, {nocase: true, realpath: true, cwd: src});
 
         if (results.length) {
             return results[0];
@@ -199,7 +197,7 @@ export async function resolveArchiveDependencyList(rootArchive: SC2Archive, sour
                 dir = overrides.get(entry);
             }
             else {
-                dir = resolveArchiveDirectory(entry, sources);
+                dir = await resolveArchiveDirectory(entry, sources);
             }
             if (dir) {
                 await resolveWorker(new SC2Archive(entry, dir));

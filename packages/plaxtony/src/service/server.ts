@@ -308,7 +308,7 @@ export class Server {
         }
 
         if (!workspace) {
-            workspace = new SC2Workspace(null, [new SC2Archive('mods/core.sc2mod', resolveArchiveDirectory('mods/core.sc2mod', modSources))]);
+            workspace = new SC2Workspace(null, [new SC2Archive('mods/core.sc2mod', await resolveArchiveDirectory('mods/core.sc2mod', modSources))]);
         }
 
         this.connection.sendNotification('indexProgress', 'Indexing trigger libraries and data catalogs..');
@@ -372,7 +372,7 @@ export class Server {
     }
 
     @wrapRequest()
-    private async onInitialized(params: lsp.InitializeParams) {
+    private async onInitialized(params: lsp.InitializedParams) {
     }
 
     @wrapRequest()
@@ -455,7 +455,11 @@ export class Server {
         if (this.documentUpdateRequests.has(documentUri)) return;
         if (this.documents.keys().indexOf(documentUri) === -1) return;
         if (this.documents.get(documentUri).version > req.version) return;
-        this.diagnosticsProvider.checkFile(documentUri);
+
+        if (this.store.isUriInWorkspace(documentUri)) {
+            this.diagnosticsProvider.checkFile(documentUri);
+        }
+
         this.connection.sendDiagnostics({
             uri: documentUri,
             diagnostics: this.diagnosticsProvider.provideDiagnostics(documentUri),

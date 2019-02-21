@@ -1,3 +1,5 @@
+import * as util from 'util';
+import * as glob from 'glob';
 import * as gt from '../compiler/types';
 import { isToken, forEachChild, getSourceFileOfNode } from '../compiler/utils';
 import * as lsp from 'vscode-languageserver';
@@ -219,3 +221,5 @@ export function fuzzysearch (needle: string, haystack: string) {
     }
     return true;
 }
+
+export const globify = util.promisify(glob);
