@@ -344,6 +344,7 @@ export const enum SymbolFlags {
     Struct                  = 1 << 6,
     Typedef                 = 1 << 7,
     Static                  = 1 << 10,
+    Native                  = 1 << 11,
 
     Variable = LocalVariable | FunctionParameter | GlobalVariable,
     FunctionScopedVariable = LocalVariable | FunctionParameter,

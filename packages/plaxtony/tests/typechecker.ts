@@ -333,12 +333,38 @@ describe('Checker', () => {
     });
 
     describe('Diagnostics Recursive', () => {
-        it('simple', async () => {
-            const store = await mockupStoreFromDirectory(path.resolve('tests/fixtures/type_checker/diagnostics_recursive/simple'));
-            const checker = new TypeChecker(store);
-            const sourceFile = store.documents.get(URI.file(path.join(store.rootPath, 'MapScript.galaxy')).toString());
-            const diagnostics = checker.checkSourceFileRecursively(sourceFile);
-            assert.isTrue(diagnostics.success);
-        });
+        const drFixturesDir = 'tests/fixtures/type_checker/diagnostics_recursive';
+        for (let nsName of fs.readdirSync(path.resolve(drFixturesDir))) {
+            for (let nsCurrentFilename of fs.readdirSync(path.resolve(drFixturesDir, nsName))) {
+                const matchedTestFile = nsCurrentFilename.match(/^(([\w]+)_(pass|fail))\.galaxy$/);
+                if (!matchedTestFile) continue;
+
+                it(`${nsName}/${matchedTestFile[1]}`, async () => {
+                    const store = await mockupStoreFromDirectory(path.resolve(drFixturesDir, nsName));
+                    const checker = new TypeChecker(store);
+                    const sourceFile = store.documents.get(URI.file(path.resolve(drFixturesDir, nsName, nsCurrentFilename)).toString());
+
+                    const result = checker.checkSourceFileRecursively(sourceFile);
+                    switch (matchedTestFile[3]) {
+                        case 'pass':
+                        {
+                            assert.isTrue(result.success, Array.from(
+                                result.diagnostics.values())[0].map(item => item.messageText).join('\n')
+                            );
+                            break;
+                        }
+                        case 'fail':
+                        {
+                            assert.isFalse(result.success);
+                            break;
+                        }
+                        default:
+                        {
+                            throw new Error();
+                        }
+                    }
+                });
+            }
+        }
     });
 });

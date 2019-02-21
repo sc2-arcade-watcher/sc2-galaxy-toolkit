@@ -120,6 +120,9 @@ export function declareSymbol(node: gt.Declaration, store: IStoreSymbols, parent
                     if (isStatic) {
                         nodeSymbol.flags |= gt.SymbolFlags.Static;
                     }
+                    if (node.modifiers.some((value) => value.kind === gt.SyntaxKind.NativeKeyword)) {
+                        nodeSymbol.flags |= gt.SymbolFlags.Native;
+                    }
                     break;
                 }
             }
@@ -137,7 +140,7 @@ export function declareSymbol(node: gt.Declaration, store: IStoreSymbols, parent
         (node.kind === gt.SyntaxKind.FunctionDeclaration && (<gt.FunctionDeclaration>node).body) ||
         (node.kind === gt.SyntaxKind.VariableDeclaration && (<gt.VariableDeclaration>node).initializer)
     )) {
-        node.symbol.valueDeclaration = node;
+        nodeSymbol.valueDeclaration = node;
     }
 
     return nodeSymbol;
