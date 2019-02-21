@@ -232,7 +232,7 @@ export class Parser {
             case ParsingContext.BlockStatements:
                 return this.isStartOfStatement();
             case ParsingContext.StructMembers:
-                return this.isStartOfVariableDeclaration();
+                return this.isStartOfTypeDefinition();
             case ParsingContext.TypeArguments:
                 return this.isStartOfTypeDefinition();
             case ParsingContext.Parameters:
@@ -538,7 +538,7 @@ export class Parser {
     private parsePropertyDeclaration(): Types.PropertyDeclaration {
         const property = <Types.PropertyDeclaration>this.createNode(SyntaxKind.PropertyDeclaration);
         property.type = this.parseTypeDefinition();
-        property.name = this.parseIdentifier();
+        property.name = this.parseExpectedIdentifier();
         this.parseExpected(SyntaxKind.SemicolonToken);
         return this.finishNode(property)
     }
