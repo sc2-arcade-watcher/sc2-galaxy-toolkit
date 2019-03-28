@@ -12,6 +12,7 @@ const textToTokenTable: ReadonlyMap<string, SyntaxKind> = new Map([
     ["native", SyntaxKind.NativeKeyword],
     ["break", SyntaxKind.BreakKeyword],
     ["continue", SyntaxKind.ContinueKeyword],
+    ["breakpoint", SyntaxKind.BreakpointKeyword],
     ["return", SyntaxKind.ReturnKeyword],
     ["switch", SyntaxKind.SwitchKeyword],
     // ["case", SyntaxKind.CaseKeyword],

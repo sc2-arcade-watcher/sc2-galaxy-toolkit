@@ -204,6 +204,7 @@ export const enum SyntaxKind {
     NativeKeyword,
     BreakKeyword,
     ContinueKeyword,
+    BreakpointKeyword,
     ReturnKeyword,
     SwitchKeyword,
     // CaseKeyword,
@@ -294,6 +295,7 @@ export const enum SyntaxKind {
     ForStatement,
     BreakStatement,
     ContinueStatement,
+    BreakpointStatement,
 
     IncludeStatement,
     ReturnStatement,
@@ -717,6 +719,10 @@ export interface ContinueStatement extends Statement {
 }
 
 export type BreakOrContinueStatement = BreakStatement | ContinueStatement;
+
+export interface BreakpointStatement extends Statement {
+    kind: SyntaxKind.BreakpointStatement;
+}
 
 export interface IfStatement extends Statement {
     kind: SyntaxKind.IfStatement;

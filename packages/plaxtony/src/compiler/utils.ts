@@ -440,6 +440,7 @@ export function forEachChild<T>(node: gt.Node, cbNode: (node: gt.Node) => T | un
                 visitNode(cbNode, (<gt.ForStatement>node).statement);
         case gt.SyntaxKind.ContinueStatement:
         case gt.SyntaxKind.BreakStatement:
+        case gt.SyntaxKind.BreakpointStatement:
             break;
         case gt.SyntaxKind.ReturnStatement:
             return visitNode(cbNode, (<gt.ReturnStatement>node).expression);

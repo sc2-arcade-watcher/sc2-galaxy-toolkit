@@ -417,6 +417,7 @@ export class Parser {
             case SyntaxKind.ContinueKeyword:
             case SyntaxKind.BreakKeyword:
             case SyntaxKind.ReturnKeyword:
+            case SyntaxKind.BreakpointKeyword:
             case SyntaxKind.IncludeKeyword:
                 return true;
 
@@ -930,6 +931,14 @@ export class Parser {
         return this.finishNode(node);
     }
 
+    private parseBreakpointStatement(): Types.BreakpointStatement {
+        const node = <Types.BreakpointStatement>this.createNode(SyntaxKind.BreakpointStatement);
+
+        this.parseExpected(SyntaxKind.BreakpointKeyword);
+        this.parseExpected(SyntaxKind.SemicolonToken);
+        return this.finishNode(node);
+    }
+
     private parseExpressionStatement(): Types.ExpressionStatement {
         const node = <Types.ExpressionStatement>this.createNode(SyntaxKind.ExpressionStatement);
         node.expression = this.parseAssignmentExpressionOrHigher();
@@ -1038,6 +1047,9 @@ export class Parser {
 
             case SyntaxKind.BreakKeyword:
                 return this.parseBreakOrContinueStatement(SyntaxKind.BreakStatement);
+
+            case SyntaxKind.BreakpointKeyword:
+                return this.parseBreakpointStatement();
 
             case SyntaxKind.ReturnKeyword:
                 return this.parseReturnStatement();
