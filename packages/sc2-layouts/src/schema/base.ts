@@ -13,7 +13,6 @@ export const enum BuiltinTypeKind {
     String,
     Boolean,
     //
-    DescReference,
     FileDescName,
     DescName,
     DescTemplateName,

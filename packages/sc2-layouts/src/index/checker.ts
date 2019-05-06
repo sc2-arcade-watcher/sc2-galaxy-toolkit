@@ -62,6 +62,37 @@ export class LayoutChecker {
         return pathSel;
     }
 
+    protected checkGenericAttribute(nattr: XMLAttr, sType: sch.SimpleType) {
+        const validationResult = this.svalidator.validateAttrValue(nattr.value, sType);
+        if (validationResult) {
+            this.reportAtAttrVal(nattr, validationResult);
+            return;
+        }
+
+        switch (sType.builtinType) {
+            case sch.BuiltinTypeKind.DescTemplateName:
+            {
+                const pathSel = this.parseAndCheckPathSelector(nattr);
+                if (pathSel.diagnostics.length > 0) break;
+
+                const pathValues = Array.from(pathSel.path).map(selFrag => nattr.value.substring(selFrag.pos, selFrag.end));
+                if (pathValues.length === 0) {
+                    this.reportAtAttrVal(nattr, `Desc not specified`);
+                    break;
+                }
+
+                const dItem = this.index.rootNs.getMulti(...pathValues);
+                if (!dItem) {
+                    this.reportAtAttrVal(nattr, `Could not find template "${nattr.value}"`);
+                }
+                else if (dItem.kind === DescKind.File) {
+                    this.reportAtAttrVal(nattr, `Cannot use FileDsc as template - "${nattr.value}"`);
+                }
+                break;
+            }
+        }
+    }
+
     protected checkElement(el: XMLElement) {
         if (!el.stype) return;
         this.svalidator.checkRequiredAttr(el);
@@ -84,17 +115,6 @@ export class LayoutChecker {
                         if (!ufNode) {
                             this.reportAtAttrVal(el.attributes['name'], `Failed to locate specified Desc "${cDesc.name}" in File Desc "${fileName}"`);
                         }
-                    }
-                }
-
-                if (el.hasAttribute('template')) {
-                    const tplName = el.getAttributeValue('template');
-                    const dItem = this.index.rootNs.getDeep(tplName);
-                    if (!dItem) {
-                        this.reportAtAttrVal(el.attributes['template'], `Could not find template "${tplName}"`);
-                    }
-                    else if (dItem.kind === DescKind.File) {
-                        this.reportAtAttrVal(el.attributes['template'], `Cannot use FileDsc as template - "${tplName}"`);
                     }
                 }
 
@@ -183,20 +203,7 @@ export class LayoutChecker {
 
                 case AttrValueKind.Generic:
                 {
-                    const r = this.svalidator.validateAttrValue(nattr.value, asType);
-                    if (r) {
-                        this.reportAtAttrVal(nattr, r);
-                        break;
-                    }
-
-                    switch (asType.builtinType) {
-                        case sch.BuiltinTypeKind.DescTemplateName:
-                        {
-                            this.parseAndCheckPathSelector(nattr);
-                            break;
-                        }
-                    }
-
+                    this.checkGenericAttribute(nattr, asType);
                     break;
                 }
             }
