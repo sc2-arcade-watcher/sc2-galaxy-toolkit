@@ -99,7 +99,7 @@ export class DescNamespace {
     readonly xDecls = new Set<XMLNode>();
     readonly descExtensions?: Map<string, Set<DescNamespace>>; // FileDesc
 
-    constructor(name: string, kind = DescKind.Undeclared, parent?: DescNamespace) {
+    constructor(name: string, kind = DescKind.Undeclared, parent?: DescNamespace, protected sInitialType?: sch.ComplexType) {
         this.name = name;
         this.kind = kind;
         if (parent) {
@@ -180,6 +180,9 @@ export class DescNamespace {
     }
 
     get stype() {
+        if (this.xDecls.size === 0) {
+            return this.sInitialType;
+        }
         return Array.from(this.xDecls.values())[0].stype;
     }
 
@@ -230,13 +233,13 @@ export class DescIndex {
     constants: DescXRefMap<ConstantItem>;
     handles: DescXRefMap<HandleItem>;
 
-    constructor() {
+    constructor(protected readonly schema: sch.SchemaRegistry) {
         this.clear();
     }
 
     public clear() {
         this.xdocState = new Map<XMLDocument, DocumentState>();
-        this.rootNs = new DescNamespace('$root', DescKind.Root);
+        this.rootNs = new DescNamespace('$root', DescKind.Root, void 0, this.schema.fileRootType);
         this.tplRefs = new Map();
         this.fileRefs = new Map();
 

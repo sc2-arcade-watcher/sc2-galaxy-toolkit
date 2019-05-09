@@ -9,6 +9,7 @@ import { ExpressionParser, PathSelector, PropertyBindExpr, SelectorFragment, Syn
 import { UINavigator, UIBuilder, FrameNode, AnimationNode, UINode } from '../index/hierarchy';
 import { LayoutProcessor } from '../index/processor';
 import { DescKind, DescNamespace } from '../index/desc';
+import { LayoutChecker } from '../index/checker';
 
 function getVsTextRange(xDoc: XMLDocument, start: number, end: number) {
     const origin = {
@@ -59,11 +60,13 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
     protected uNavigator: UINavigator;
     protected uBuilder: UIBuilder;
     protected processor: LayoutProcessor;
+    protected checker: LayoutChecker;
 
     protected prepare() {
         this.uNavigator = new UINavigator(this.store.schema, this.store.index);
         this.uBuilder = new UIBuilder(this.store.schema, this.store.index);
         this.processor = new LayoutProcessor(this.store, this.store.index);
+        this.checker = new LayoutChecker(this.store, this.store.index);
     }
 
     protected getSelectedNodeFromPath(pathSel: PathSelector | PropertyBindExpr, xEl: XMLElement, offsRelative: number): DefinitionUINode {
@@ -108,32 +111,14 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
         };
     }
 
-    protected getMergedDescFromPath(pathSel: PathSelector, offsRelative: number, fileDesc?: DescNamespace): DefinitionDescNode {
-        if (fileDesc === void 0) {
-            fileDesc = this.dIndex.rootNs;
-        }
-
+    protected getMergedDescFromPath(pathSel: PathSelector, offsRelative: number, relativeDesc: DescNamespace): DefinitionDescNode {
         const pathIndex = getSelectionIndexAtPosition(pathSel, offsRelative);
-
-        const topDesc = fileDesc.get(pathSel.path[0].name.name);
-        if (!topDesc) return;
-
-        const uNode = this.uBuilder.buildNodeFromDesc(topDesc);
-        if (!uNode) return;
-
-        let selectedDescs = Array.from(uNode.descs);
-
-        if (pathIndex > 0) {
-            const fragments = pathSel.path.slice(1, pathIndex + 1);
-            const resolvedSel = this.uNavigator.resolveSelection(uNode, fragments);
-            if (resolvedSel.chain.length <= pathIndex - 1) return;
-            selectedDescs = Array.from(resolvedSel.chain[pathIndex - 1].descs);
-        }
-
+        const resolvedDesc = this.checker.resolveDescPath(relativeDesc, pathSel);
+        if (resolvedDesc.items.length <= pathIndex) return;
         return {
             pathIndex: pathIndex,
             selectedFragment: pathSel.path[pathIndex],
-            selectedDescs: selectedDescs,
+            selectedDescs: resolvedDesc.items[pathIndex]
         };
     }
 
@@ -216,6 +201,15 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
                     const pathSel = this.exParser.parsePathSelector(nattr.value);
                     defContainer.itemKind = DefinitionItemKind.DescNode;
                     defContainer.itemData = this.getStaticDescFromPath(pathSel, offsRelative);
+                    break;
+                }
+
+                case sch.BuiltinTypeKind.DescInternal:
+                {
+                    const currentDesc = this.store.index.resolveElementDesc(xEl);
+                    const pathSel = this.exParser.parsePathSelector(nattr.value);
+                    defContainer.itemKind = DefinitionItemKind.DescNode;
+                    defContainer.itemData = this.getMergedDescFromPath(pathSel, offsRelative, currentDesc);
                     break;
                 }
 

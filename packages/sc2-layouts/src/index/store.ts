@@ -44,7 +44,7 @@ export class Store implements IStoreEvents {
 
     readonly s2ws = new s2.Workspace();
     readonly documents = new Map<string, XMLDocument>();
-    readonly index = new DescIndex();
+    readonly index = new DescIndex(this.schema);
 
     constructor(public readonly schema: sch.SchemaRegistry) {
     }

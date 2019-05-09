@@ -54,6 +54,7 @@ namespace smp {
     export type SimpleType = Definition & {
         data?: string;
         kind?: string;
+        internalType?: string;
         pattern?: {
             value: string;
         }[];
@@ -340,12 +341,15 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
             kind: sch.SimpleTypeKind.Default,
             data: sch.SimpleTypeData.String,
         };
-        const builtinId: sch.BuiltinTypeKind = (<any>sch).BuiltinTypeKind[item.name];
+        const builtinId: sch.BuiltinTypeKind = (<any>sch).BuiltinTypeKind[item.name.split(':')[0]];
         if (builtinId) {
             rt.builtinType = builtinId;
         }
         if (item.data) {
             rt.data = matchEnum(sch.SimpleTypeData, item.data);
+        }
+        if (item.internalType) {
+            rt.internalType = item.internalType;
         }
         if (item.pattern) {
             rt.patterns = item.pattern.map(item => new RegExp(item.value));

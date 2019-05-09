@@ -1,12 +1,32 @@
 import * as sch from '../schema/base';
 import { DiagnosticReport, XMLElement, AttrValueKind, DiagnosticCategory, XMLAttr } from '../types';
-import { DescIndex, DescKind } from './desc';
+import { DescIndex, DescKind, DescNamespace } from './desc';
 import { LayoutDocument, Store } from './store';
 import { SchemaValidator } from '../schema/validation';
 import { CharacterCodes } from '../parser/scanner';
 import { getAttrValueKind } from '../parser/utils';
-import { ExpressionParser, NodeExpr } from '../parser/expressions';
-import { UINavigator, UIBuilder } from './hierarchy';
+import { ExpressionParser, NodeExpr, SelHandleKind, SelectorFragment, PathSelector } from '../parser/expressions';
+import { UINavigator, UIBuilder, UINode } from './hierarchy';
+
+export class DescResolvedSelection {
+    public readonly items: DescNamespace[][] = [];
+
+    constructor(protected pathFrags: SelectorFragment[]) {
+    }
+
+    get isValid() {
+        return this.items.length === this.pathFrags.length && this.pathFrags.length !== 0;
+    }
+
+    get target() {
+        if (!this.isValid) return;
+        return this.items[this.items.length - 1];
+    }
+
+    get firstTarget() {
+        return this.target[0];
+    }
+}
 
 export class LayoutChecker {
     protected exParser = new ExpressionParser();
@@ -62,7 +82,54 @@ export class LayoutChecker {
         return pathSel;
     }
 
-    protected checkGenericAttribute(nattr: XMLAttr, sType: sch.SimpleType) {
+    protected parseAndCheckDescPath(nattr: XMLAttr) {
+        const pathSel = this.parseAndCheckPathSelector(nattr);
+        if (pathSel.diagnostics.length > 0) return;
+
+        if (pathSel.path.length === 0) {
+            this.reportAtAttrVal(nattr, `Path not specified`);
+            return;
+        }
+
+        return pathSel;
+    }
+
+    public resolveDescPath(contextDesc: DescNamespace, pathSel: PathSelector) {
+        let resolvedDesc = new DescResolvedSelection(pathSel.path);
+        let relativeDesc: DescNamespace = void 0;
+        let uNode: UINode;
+
+        for (let i = 0; i < pathSel.path.length; i++) {
+            // resolve top frame node of a layout if $root is used
+            if (pathSel.path[0].selKind === SelHandleKind.Root && i < 3) {
+                if (i === 0) {
+                    relativeDesc = this.store.index.rootNs;
+                }
+                else {
+                    relativeDesc = relativeDesc.get(pathSel.path[i].name.name);
+                }
+
+                if (!relativeDesc) break;
+                resolvedDesc.items.push([relativeDesc]);
+            }
+            else {
+                if (i === 0) {
+                    relativeDesc = contextDesc;
+                }
+                if (!uNode) {
+                    uNode = this.uBuilder.buildNodeFromDesc(relativeDesc);
+                }
+                uNode = this.uNavigator.resolveSelectorFragment(uNode, pathSel.path[i]);
+
+                if (!uNode) break;
+                resolvedDesc.items.push(Array.from(uNode.descs));
+            }
+        }
+
+        return resolvedDesc;
+    }
+
+    protected checkGenericAttribute(cDesc: DescNamespace, nattr: XMLAttr, sType: sch.SimpleType) {
         const validationResult = this.svalidator.validateAttrValue(nattr.value, sType);
         if (validationResult) {
             this.reportAtAttrVal(nattr, validationResult);
@@ -72,23 +139,42 @@ export class LayoutChecker {
         switch (sType.builtinType) {
             case sch.BuiltinTypeKind.DescTemplateName:
             {
-                const pathSel = this.parseAndCheckPathSelector(nattr);
-                if (pathSel.diagnostics.length > 0) break;
-
+                const pathSel = this.parseAndCheckDescPath(nattr);
+                if (!pathSel) break;
                 const pathValues = Array.from(pathSel.path).map(selFrag => nattr.value.substring(selFrag.pos, selFrag.end));
-                if (pathValues.length === 0) {
-                    this.reportAtAttrVal(nattr, `Desc not specified`);
-                    break;
-                }
 
                 const dItem = this.index.rootNs.getMulti(...pathValues);
                 if (!dItem) {
                     this.reportAtAttrVal(nattr, `Could not find template "${nattr.value}"`);
                 }
                 else if (dItem.kind === DescKind.File) {
-                    this.reportAtAttrVal(nattr, `Cannot use FileDsc as template - "${nattr.value}"`);
+                    this.reportAtAttrVal(nattr, `Cannot use FileDesc as template`);
                 }
                 break;
+            }
+
+            case sch.BuiltinTypeKind.DescInternal:
+            {
+                const pathSel = this.parseAndCheckDescPath(nattr);
+                if (!pathSel) break;
+
+                const resolvedSel = this.resolveDescPath(cDesc, pathSel);
+                if (!resolvedSel.isValid) {
+                    const selFrag = pathSel.path[resolvedSel.items.length];
+                    this.reportAt(`Couldn't find matching desc for "${nattr.value}"`, {
+                        start: nattr.startValue + selFrag.pos + 1,
+                        end: nattr.startValue + selFrag.end + 1,
+                    });
+                    break;
+                }
+
+                const frameType = this.store.schema.getFrameType(resolvedSel.firstTarget.stype);
+                if (!frameType || !frameType.fclasses.has(sType.internalType)) {
+                    this.reportAtAttrVal(
+                        nattr,
+                        `Specified desc of type "${frameType ? frameType.name : resolvedSel.firstTarget.stype.name}" is not a descendant of "${sType.internalType}"`
+                    );
+                }
             }
         }
     }
@@ -97,12 +183,13 @@ export class LayoutChecker {
         if (!el.stype) return;
         this.svalidator.checkRequiredAttr(el);
 
+        const cDesc = this.index.resolveElementDesc(el);
+
         switch (el.sdef.nodeKind) {
             case sch.ElementDefKind.Frame:
             case sch.ElementDefKind.StateGroup:
             case sch.ElementDefKind.Animation:
             {
-                const cDesc = this.index.resolveElementDesc(el);
 
                 if (el.hasAttribute('file')) {
                     const fileName = el.getAttributeValue('file');
@@ -203,7 +290,7 @@ export class LayoutChecker {
 
                 case AttrValueKind.Generic:
                 {
-                    this.checkGenericAttribute(nattr, asType);
+                    this.checkGenericAttribute(cDesc, nattr, asType);
                     break;
                 }
             }

@@ -32,6 +32,8 @@ export const enum BuiltinTypeKind {
     Sound,
     Style,
     Handle,
+    //
+    DescInternal,
 }
 
 export const enum MappedComplexKind {
@@ -69,6 +71,7 @@ export enum SimpleTypeData {
     String,
     Number,
     Bool,
+    Internal,
 }
 
 export enum SimpleTypeKind {
@@ -93,6 +96,7 @@ export interface SimpleType extends SModel {
     builtinType: BuiltinTypeKind;
     data: SimpleTypeData;
     flags: SimpleTypeFlags;
+    internalType?: string;
     union?: SimpleType[];
     /* @deprecated */ evalues?: string[];
     emap?: Map<string, SEnumInfo>;

@@ -13,6 +13,7 @@ import { UINavigator, UIBuilder, FrameNode, AnimationNode, StateGroupNode, UINod
 import { getSelectionIndexAtPosition, getAttrValueKind, isConstantValue } from '../parser/utils';
 import { LayoutProcessor } from '../index/processor';
 import { XRay } from '../index/xray';
+import { LayoutChecker } from '../index/checker';
 
 function completionsForSimpleType(smType: sch.SimpleType) {
     let items = <vs.CompletionItem[]> [];
@@ -36,6 +37,20 @@ function completionsForSimpleType(smType: sch.SimpleType) {
     }
 
     return items;
+}
+
+function completionFromDescItem(descItem: DescNamespace) {
+    return <vs.CompletionItem>{
+        kind: descKindToCompletionKind(descItem.kind),
+        label: descItem.name,
+        detail: `${descItem.stype.name} (${descItem.children.size})`,
+    };
+}
+
+function completionFromUNodeItem(uNode: UINode) {
+    const compl = completionFromDescItem(uNode.mainDesc);
+    compl.detail = `${uNode.mainDesc.stype.name} (${uNode.children.size})`;
+    return compl;
 }
 
 function descKindToCompletionKind(dkind: DescKind) {
@@ -77,6 +92,7 @@ class SuggestionsProvider {
     protected uNavigator: UINavigator;
     protected uBuilder: UIBuilder;
     protected processor: LayoutProcessor;
+    protected checker: LayoutChecker;
     protected dIndex: DescIndex;
     protected xray: XRay;
 
@@ -84,6 +100,7 @@ class SuggestionsProvider {
         this.uNavigator = new UINavigator(this.store.schema, this.store.index);
         this.uBuilder = new UIBuilder(this.store.schema, this.store.index);
         this.processor = new LayoutProcessor(this.store, this.store.index);
+        this.checker = new LayoutChecker(this.store, this.store.index);
         this.dIndex = this.store.index;
         this.xray = new XRay(this.store);
     }
@@ -119,6 +136,19 @@ class AttrValueProvider extends SuggestionsProvider {
     }
 
     protected suggestSelection(ctx: AtValComplContext, pathSel: PathSelector | PropertyBindExpr, smType: sch.BuiltinTypeKind, currentDesc: DescNamespace) {
+        function appendDescChildren(descChildren: DescNamespace[] | IterableIterator<DescNamespace>) {
+            for (const item of descChildren) {
+                ctx.citems.push(completionFromDescItem(item));
+            }
+        }
+
+        function appendUNodeChildren(uNodeChildren: UINode[] | IterableIterator<UINode>) {
+            const frameChildren = Array.from(uNodeChildren).filter(item => item.mainDesc.kind === DescKind.Frame);
+            for (const item of frameChildren) {
+                ctx.citems.push(completionFromUNodeItem(item));
+            }
+        }
+
         let pathIndex = getSelectionIndexAtPosition(pathSel, ctx.atOffsetRelative);
 
         switch (smType) {
@@ -132,14 +162,7 @@ class AttrValueProvider extends SuggestionsProvider {
                 const dsItem = this.dIndex.rootNs.getMulti(...fragments);
                 if (!dsItem) break;
 
-                for (const item of dsItem.children.values()) {
-                    const compl = <vs.CompletionItem>{
-                        kind: descKindToCompletionKind(item.kind),
-                        label: `${item.name}`,
-                        detail: item.stype.name,
-                    };
-                    ctx.citems.push(compl);
-                }
+                appendDescChildren(dsItem.children.values());
                 break;
             }
 
@@ -150,13 +173,7 @@ class AttrValueProvider extends SuggestionsProvider {
                 if (!fileDesc) break;
 
                 if (pathIndex === void 0 || pathIndex === 0) {
-                    for (const item of fileDesc.children.values()) {
-                        ctx.citems.push(<vs.CompletionItem>{
-                            kind: descKindToCompletionKind(item.kind),
-                            label: `${item.name}`,
-                            detail: item.stype.name,
-                        });
-                    }
+                    appendDescChildren(fileDesc.children.values());
                     break;
                 }
 
@@ -173,15 +190,23 @@ class AttrValueProvider extends SuggestionsProvider {
                     uTargetNode = resolvedSel.chain[pathIndex - 2];
                 }
 
-                for (const item of uTargetNode.children.values()) {
-                    const mDesc = item.mainDesc;
-                    if (mDesc.kind !== DescKind.Frame) continue;
-                    const compl = <vs.CompletionItem>{
-                        kind: descKindToCompletionKind(mDesc.kind),
-                        label: `${item.name}`,
-                        detail: mDesc.stype.name,
-                    };
-                    ctx.citems.push(compl);
+                appendUNodeChildren(uTargetNode.children.values());
+                break;
+            }
+
+            case sch.BuiltinTypeKind.DescInternal:
+            {
+                if (pathIndex === void 0 || pathIndex === 0) {
+                    ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$root'});
+                    const uNode = this.uBuilder.buildNodeFromDesc(currentDesc);
+                    appendUNodeChildren(uNode.children.values());
+                }
+                else {
+                    const resolvedDesc = this.checker.resolveDescPath(currentDesc, <PathSelector>pathSel);
+                    if (resolvedDesc.items.length < pathIndex - 1) break;
+                    for (const descItem of resolvedDesc.items[pathIndex - 1]) {
+                        appendDescChildren(descItem.children.values());
+                    }
                 }
                 break;
             }
@@ -236,12 +261,9 @@ class AttrValueProvider extends SuggestionsProvider {
                                     let cparent = uTargetNode;
                                     while (cparent = cparent.parent) {
                                         if (cparent.mainDesc.kind !== DescKind.Frame) break;
-                                        ctx.citems.push({
-                                            kind: descKindToCompletionKind(cparent.mainDesc.kind),
-                                            label: `${cparent.name}`,
-                                            detail: `[${cparent.mainDesc.stype.name}]`,
-                                            documentation: new vs.MarkdownString(`${cparent.mainDesc.fqn.replace(/\//g, '/\\\n')}`),
-                                        });
+                                        const compl = completionFromUNodeItem(cparent);
+                                        compl.documentation = new vs.MarkdownString(`\`${cparent.mainDesc.fqn}\``);
+                                        ctx.citems.push(compl);
                                     }
                                     break;
                                 }
@@ -251,16 +273,7 @@ class AttrValueProvider extends SuggestionsProvider {
                     }
                 }
 
-                for (const item of uTargetNode.children.values()) {
-                    const mDesc = item.mainDesc;
-                    if (mDesc.kind !== DescKind.Frame) continue;
-                    const compl = <vs.CompletionItem>{
-                        kind: descKindToCompletionKind(mDesc.kind),
-                        label: `${item.name}`,
-                        detail: mDesc.stype.name,
-                    };
-                    ctx.citems.push(compl);
-                }
+                appendUNodeChildren(uTargetNode.children.values());
 
                 if (selFrag) {
                     switch (selFrag.selKind) {
@@ -274,10 +287,10 @@ class AttrValueProvider extends SuggestionsProvider {
                         {
                             ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$parent', preselect: true});
                             ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$this', preselect: true});
-                            ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$sibling', preselect: true});
-                            ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$ancestor', preselect: true});
+                            ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$sibling', preselect: false});
+                            ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$ancestor', preselect: false});
                             if (pathIndex === 0) {
-                                ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$layer', preselect: true});
+                                ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$layer', preselect: false});
                             }
                             break;
                         }
@@ -505,12 +518,19 @@ class AttrValueProvider extends SuggestionsProvider {
                 break;
 
             case sch.BuiltinTypeKind.DescName:
+            {
+                if (!currentDesc) break;
                 if (!currentDesc.file) {
                     this.suggestDescNames(ctx);
                     break;
                 }
-                // pass through
+                else {
+                    this.suggestSelection(ctx, this.exParser.parsePathSelector(ctx.attrValue), sAttrType.builtinType, currentDesc);
+                }
+            }
+
             case sch.BuiltinTypeKind.DescTemplateName:
+            case sch.BuiltinTypeKind.DescInternal:
             case sch.BuiltinTypeKind.FileDescName:
             case sch.BuiltinTypeKind.FrameReference:
             {
