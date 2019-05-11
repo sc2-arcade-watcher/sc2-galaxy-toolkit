@@ -775,20 +775,35 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
         const category = 'StateGroup';
         const itemSch = nodeCtx.stype.struct.get(category);
         for (let l = 1; l <= 5; ++l) {
-            const itemList = ['One', 'Two', 'Three', 'Four', 'Five'];
-            const itemType = itemList[l - 1];
             const complItem = <vs.CompletionItem>{
-                label: `${category}:${itemType}`,
+                label: `${category}:${l}`,
                 kind: vs.CompletionItemKind.Interface,
                 detail: itemSch.name,
             };
+
+            let defaultStateName: string;
+            if (typeof this.svcContext.config.completion.stategroupDefaultState === 'string') {
+                defaultStateName = this.svcContext.config.completion.stategroupDefaultState;
+            }
+            else if (this.svcContext.config.completion.stategroupDefaultState === true) {
+                defaultStateName = 'Default';
+            }
+
             let i = 0;
-            complItem.insertText = (ctx.xtoken === TokenType.Content ? '<' : '') + `${category} name="\$${++i}">\n`;
-            complItem.insertText += `\t<DefaultState val="\${2:${itemList[0]}}"/>\n`;
+            complItem.insertText = (ctx.xtoken === TokenType.Content ? '<' : '') + `${category} name="\${${++i}:${category + l.toString()}}">`;
+            if (defaultStateName !== void 0) {
+                complItem.insertText += `\n\t<DefaultState val="\${${l + 2}:${defaultStateName}}"/>\n`;
+            }
             for (let j = 1; j <= l; ++j) {
-                complItem.insertText += `\n\t<State name="\${${j + 1}:${itemList[j - 1]}}">\n\t</State>\n`;
+                complItem.insertText += `\n\t<State name="\${${j + 1}:${j}}">\n\t</State>\n`;
+            }
+            if (defaultStateName !== void 0) {
+                complItem.insertText += `\n\t<State name="\${${l + 2}:${defaultStateName}}">\n\t</State>\n`;
             }
             complItem.insertText += `</${category}>`;
+
+            complItem.documentation = new vs.MarkdownString();
+            complItem.documentation.appendCodeblock(complItem.insertText, 'sc2layout');
             complItem.insertText = new vs.SnippetString(complItem.insertText);
             ctx.citems.push(complItem);
         }

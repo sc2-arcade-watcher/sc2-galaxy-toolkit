@@ -30,6 +30,7 @@ export enum ExtConfigCompletionTabStopKind {
 
 export interface ExtConfigCompletion {
     tabStop: ExtConfigCompletionTabStopKind;
+    stategroupDefaultState: boolean | string;
 }
 
 export interface ExtTreeView {
@@ -375,6 +376,7 @@ export class ServiceContext implements IService {
             documentDiagnosticsDelay: wsConfig.get<number>('documentDiagnosticsDelay', -1),
             completion: {
                 tabStop: <any>ExtConfigCompletionTabStopKind[<any>wsConfig.get<string>('completion.tabStop')],
+                stategroupDefaultState: wsConfig.get('completion.stategroupDefaultState'),
             },
             treeview: {
                 visible: wsConfig.get('treeview.visible'),
