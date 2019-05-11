@@ -310,8 +310,8 @@ export class LayoutChecker {
     public checkFile(file: LayoutDocument) {
         this.svalidator.diagnostics = [];
         this.diagnostics = [];
-        if (!file.getDescNode()) return [];
-        this.checkElement(file.getDescNode());
+        if (!file.getRootNode()) return [];
+        this.checkElement(file.getRootNode());
         // return this.diagnostics;
         return this.svalidator.diagnostics.concat(this.diagnostics);
     }

@@ -10,6 +10,7 @@ import { UINavigator, UIBuilder, FrameNode, AnimationNode, UINode } from '../ind
 import { LayoutProcessor } from '../index/processor';
 import { DescKind, DescNamespace } from '../index/desc';
 import { LayoutChecker } from '../index/checker';
+import { getAttrInfoAtPosition } from './helpers';
 
 function getVsTextRange(xDoc: XMLDocument, start: number, end: number) {
     const origin = {
@@ -32,6 +33,7 @@ export const enum DefinitionItemKind {
 export interface DefinitionContainer {
     xSrcEl: XMLElement;
     xSrcAttr: XMLAttr;
+    sAttrType: sch.SimpleType,
     srcTextRange: vs.Range;
     itemKind: DefinitionItemKind;
     itemData: DefinitionXNode | DefinitionDescNode | UINode;
@@ -123,47 +125,43 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
     }
 
     getDefinitionAtOffset(xDoc: XMLDocument, offset: number) {
-        const xEl = <XMLElement>xDoc.findNodeAt(offset);
-        if (!xEl || !(xEl instanceof XMLElement) || !xEl.stype) return void 0;
-        if (xEl.closed) {
-            if (xEl.selfClosed && offset > xEl.end) return void 0;
-            if (!xEl.selfClosed && offset > xEl.startTagEnd) return void 0;
+        const attrInfo = getAttrInfoAtPosition(xDoc, offset);
+        if (!attrInfo) return;
+        if (!attrInfo.sType) {
+            attrInfo.sType = this.processor.getElPropertyType(attrInfo.xEl, attrInfo.xAttr.name);
         }
-
-        const nattr = xEl.findAttributeAt(offset);
-        if (!nattr || !nattr.startValue || nattr.startValue > offset) return void 0;
-        const sAttrType = this.processor.getElPropertyType(xEl, nattr.name);
-        const offsRelative = offset - (nattr.startValue + 1);
+        if (!attrInfo.sType) return;
 
         const defContainer: DefinitionContainer = {
-            xSrcEl: xEl,
-            xSrcAttr: nattr,
+            xSrcEl: attrInfo.xEl,
+            xSrcAttr: attrInfo.xAttr,
+            sAttrType: attrInfo.sType,
             srcTextRange: null,
             itemKind: DefinitionItemKind.Unknown,
             itemData: null,
         };
 
-        if (sAttrType) {
-            switch (sAttrType.builtinType) {
+        if (attrInfo.sType) {
+            switch (attrInfo.sType.builtinType) {
                 case sch.BuiltinTypeKind.FrameReference:
                 {
-                    const pathSel = this.exParser.parsePathSelector(nattr.value);
+                    const pathSel = this.exParser.parsePathSelector(attrInfo.xAttr.value);
                     defContainer.itemKind = DefinitionItemKind.UINode;
-                    defContainer.itemData = this.getSelectedNodeFromPath(pathSel, xEl, offsRelative);
+                    defContainer.itemData = this.getSelectedNodeFromPath(pathSel, attrInfo.xEl, attrInfo.offsetRelative);
                     break;
                 }
 
                 case sch.BuiltinTypeKind.DescName:
                 {
-                    const currentDesc = this.store.index.resolveElementDesc(xEl);
+                    const currentDesc = this.store.index.resolveElementDesc(attrInfo.xEl);
                     defContainer.itemKind = DefinitionItemKind.DescNode;
 
-                    if (xEl.hasAttribute('file')) {
-                        const fileDesc = this.store.index.rootNs.get(xEl.getAttributeValue('file'));
+                    if (attrInfo.xEl.hasAttribute('file')) {
+                        const fileDesc = this.store.index.rootNs.get(attrInfo.xEl.getAttributeValue('file'));
                         if (!fileDesc) break;
-                        const pathSel = this.exParser.parsePathSelector(nattr.value);
+                        const pathSel = this.exParser.parsePathSelector(attrInfo.xAttr.value);
 
-                        defContainer.itemData = this.getMergedDescFromPath(pathSel, offsRelative, fileDesc);
+                        defContainer.itemData = this.getMergedDescFromPath(pathSel, attrInfo.offsetRelative, fileDesc);
                     }
                     else {
                         let uNode = this.uBuilder.buildNodeFromDesc(currentDesc);
@@ -172,7 +170,7 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
                             pathIndex: 0,
                             selectedFragment: {
                                 pos: 0,
-                                end: nattr.value.length,
+                                end: attrInfo.xAttr.value.length,
                             },
                             selectedDescs: Array.from(uNode.descs),
                         };
@@ -182,14 +180,14 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
 
                 case sch.BuiltinTypeKind.FileDescName:
                 {
-                    const fileDesc = this.dIndex.rootNs.get(nattr.value);
+                    const fileDesc = this.dIndex.rootNs.get(attrInfo.xAttr.value);
                     if (!fileDesc) break;
                     defContainer.itemKind = DefinitionItemKind.DescNode;
                     defContainer.itemData = <DefinitionDescNode>{
                         pathIndex: 0,
                         selectedFragment: {
                             pos: 0,
-                            end: nattr.value.length,
+                            end: attrInfo.xAttr.value.length,
                         },
                         selectedDescs: [fileDesc],
                     };
@@ -198,27 +196,27 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
 
                 case sch.BuiltinTypeKind.DescTemplateName:
                 {
-                    const pathSel = this.exParser.parsePathSelector(nattr.value);
+                    const pathSel = this.exParser.parsePathSelector(attrInfo.xAttr.value);
                     defContainer.itemKind = DefinitionItemKind.DescNode;
-                    defContainer.itemData = this.getStaticDescFromPath(pathSel, offsRelative);
+                    defContainer.itemData = this.getStaticDescFromPath(pathSel, attrInfo.offsetRelative);
                     break;
                 }
 
                 case sch.BuiltinTypeKind.DescInternal:
                 {
-                    const currentDesc = this.store.index.resolveElementDesc(xEl);
-                    const pathSel = this.exParser.parsePathSelector(nattr.value);
+                    const currentDesc = this.store.index.resolveElementDesc(attrInfo.xEl);
+                    const pathSel = this.exParser.parsePathSelector(attrInfo.xAttr.value);
                     defContainer.itemKind = DefinitionItemKind.DescNode;
-                    defContainer.itemData = this.getMergedDescFromPath(pathSel, offsRelative, currentDesc);
+                    defContainer.itemData = this.getMergedDescFromPath(pathSel, attrInfo.offsetRelative, currentDesc);
                     break;
                 }
 
                 case sch.BuiltinTypeKind.EventName:
                 {
-                    const uNode = this.xray.determineTargetFrameNode(xEl);
+                    const uNode = this.xray.determineTargetFrameNode(attrInfo.xEl);
                     if (!uNode) return;
                     for (const uAnim of this.uNavigator.getChildrenOfType<AnimationNode>(uNode, DescKind.Animation).values()) {
-                        const matchingEvs = uAnim.getEvents().get(nattr.value);
+                        const matchingEvs = uAnim.getEvents().get(attrInfo.xAttr.value);
                         if (!matchingEvs) continue;
                         defContainer.itemKind = DefinitionItemKind.XNode;
                         defContainer.itemData = <DefinitionXNode>{
@@ -229,13 +227,13 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
             }
         }
 
-        const vKind = getAttrValueKind(nattr.value);
+        const vKind = getAttrValueKind(attrInfo.xAttr.value);
         switch (vKind) {
             case AttrValueKind.Constant:
             case AttrValueKind.ConstantRacial:
             case AttrValueKind.ConstantFactional:
             {
-                const name = nattr.value.substr(AttrValueKindOffset[vKind]);
+                const name = attrInfo.xAttr.value.substr(AttrValueKindOffset[vKind]);
                 const citem = this.store.index.constants.get(name);
                 if (citem) {
                     defContainer.itemKind = DefinitionItemKind.XNode;
@@ -248,14 +246,14 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
 
             case AttrValueKind.PropertyBind:
             {
-                const pbindSel = this.exParser.parsePropertyBind(nattr.value);
+                const pbindSel = this.exParser.parsePropertyBind(attrInfo.xAttr.value);
                 defContainer.itemKind = DefinitionItemKind.UINode;
 
-                if (pbindSel.path.pos <= offsRelative && pbindSel.path.end >= offsRelative) {
-                    defContainer.itemData = this.getSelectedNodeFromPath(pbindSel, xEl, offsRelative);
+                if (pbindSel.path.pos <= attrInfo.offsetRelative && pbindSel.path.end >= attrInfo.offsetRelative) {
+                    defContainer.itemData = this.getSelectedNodeFromPath(pbindSel, attrInfo.xEl, attrInfo.offsetRelative);
                 }
-                else if (pbindSel.property.pos <= offsRelative && pbindSel.property.end >= offsRelative) {
-                    const defUNode = this.getSelectedNodeFromPath(pbindSel, xEl, pbindSel.path[pbindSel.path.length - 1].end - 1);
+                else if (pbindSel.property.pos <= attrInfo.offsetRelative && pbindSel.property.end >= attrInfo.offsetRelative) {
+                    const defUNode = this.getSelectedNodeFromPath(pbindSel, attrInfo.xEl, pbindSel.path[pbindSel.path.length - 1].end - 1);
                     if (!defUNode) return;
 
                     defContainer.itemKind = DefinitionItemKind.XNode;
@@ -274,8 +272,8 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
 
                     defContainer.srcTextRange = getVsTextRange(
                         xDoc,
-                        (nattr.startValue + 1) + pbindSel.property.pos,
-                        (nattr.startValue + 1) + pbindSel.property.end,
+                        (attrInfo.xAttr.startValue + 1) + pbindSel.property.pos,
+                        (attrInfo.xAttr.startValue + 1) + pbindSel.property.end,
                     );
                 }
                 break;
@@ -291,8 +289,8 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
                 const selFrag = (<DefinitionDescNode>defContainer.itemData).selectedFragment;
                 defContainer.srcTextRange = getVsTextRange(
                     xDoc,
-                    (nattr.startValue + 1) + selFrag.pos,
-                    (nattr.startValue + 1) + selFrag.end
+                    (attrInfo.xAttr.startValue + 1) + selFrag.pos,
+                    (attrInfo.xAttr.startValue + 1) + selFrag.end
                 );
                 break;
             }
@@ -300,7 +298,7 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
             case DefinitionItemKind.XNode:
             {
                 if (!defContainer.srcTextRange) {
-                    defContainer.srcTextRange = getVsTextRange(xDoc, nattr.startValue + 1, nattr.end - 1);
+                    defContainer.srcTextRange = getVsTextRange(xDoc, attrInfo.xAttr.startValue + 1, attrInfo.xAttr.end - 1);
                 }
                 break;
             }

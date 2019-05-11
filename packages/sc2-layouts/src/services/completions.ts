@@ -988,7 +988,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
         const node = sourceFile.findNodeAt(offset);
 
         if (!node || !(node instanceof XMLElement)) {
-            if (!sourceFile.getDescNode()) {
+            if (!sourceFile.getRootNode()) {
                 items.push({
                     kind: vs.CompletionItemKind.Snippet,
                     label: 'fdesc',

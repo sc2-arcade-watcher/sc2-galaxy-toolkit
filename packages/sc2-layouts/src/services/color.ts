@@ -72,7 +72,7 @@ export class DocumentColorProvider extends AbstractProvider implements vs.Docume
         if (!(this.svcContext.state & ServiceStateFlags.StepFilesDone)) return;
 
         const xDoc = await this.svcContext.syncVsDocument(document);
-        const xRoot = xDoc.getDescNode();
+        const xRoot = xDoc.getRootNode();
         if (!xRoot) return;
         const xray = this.xray;
 

@@ -158,7 +158,7 @@ export class XMLDocument extends XMLNode {
     tdoc?: TextDocument;
     parseDiagnostics: DiagnosticReport[];
 
-    getDescNode() {
+    getRootNode() {
         return <XMLElement>this.firstChild;
     }
 }

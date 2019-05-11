@@ -78,7 +78,7 @@ export class NavigationProvider extends AbstractProvider implements vs.DocumentS
             return symbolsContainer;
         }
 
-        return processNode(xDoc.getDescNode());
+        return processNode(xDoc.getRootNode());
     }
 
     @svcRequest(false, void 0, (r: vs.SymbolInformation[] | undefined) => r ? r.length : typeof r)

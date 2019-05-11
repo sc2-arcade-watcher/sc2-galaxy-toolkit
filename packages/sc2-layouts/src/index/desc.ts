@@ -350,8 +350,8 @@ export class DescIndex {
         fiDesc.xDecls.add(doc);
         docState.xdeclDescMap.set(doc, fiDesc);
 
-        if (doc.getDescNode()) {
-            for (const xsub of doc.getDescNode().children) {
+        if (doc.getRootNode()) {
+            for (const xsub of doc.getRootNode().children) {
                 this.bindWorker(fiDesc, xsub, docState);
             }
         }
