@@ -1,18 +1,18 @@
 import * as vs from 'vscode';
 import * as sch from '../schema/base';
 import { AbstractProvider, svcRequest } from './provider';
-import { XMLElement } from '../types';
+import { XMLElement, AttrValueKindOffset, AttrValueConstant } from '../types';
 import { ServiceStateFlags } from '../service';
-import { isConstantValue } from '../parser/utils';
+import { getAttrValueKind, isConstantValueKind } from '../parser/utils';
 import { reValueColor } from '../schema/validation';
 
-interface ColorLiteral {
+export interface ColorLiteral {
     vColor: vs.Color;
     ntDecimal: boolean;
     inclAlpha: boolean;
 }
 
-function parseColorLiteral(val: string): ColorLiteral {
+export function parseColorLiteral(val: string): ColorLiteral {
     if (val.indexOf(',') !== -1) {
         const colComponents = val.split(',');
         if (colComponents.length === 4) {
@@ -66,6 +66,36 @@ function parseColorLiteral(val: string): ColorLiteral {
     }
 }
 
+export function getColorAsDecimalARGB(color: vs.Color, includeAlpha = false) {
+    return (
+        ((includeAlpha || color.alpha !== 1.0) ? (Math.round((color.alpha * 255.0)).toString(10) + ',') : '') +
+        Math.round((color.red * 255.0)).toString(10) + ',' +
+        Math.round((color.green * 255.0)).toString(10) + ',' +
+        Math.round((color.blue * 255.0)).toString(10)
+    );
+}
+
+export function getColorAsHexARGB(color: vs.Color, includeAlpha = false) {
+    return (
+        ((includeAlpha || color.alpha !== 1.0) ? (Math.round((color.alpha * 255.0)).toString(16).padStart(2, '0')) : '') +
+        Math.round((color.red * 255.0)).toString(16).padStart(2, '0') +
+        Math.round((color.green * 255.0)).toString(16).padStart(2, '0') +
+        Math.round((color.blue * 255.0)).toString(16).padStart(2, '0')
+    );
+}
+
+function canContainColorValue(sType: sch.SimpleType) {
+    switch (sType.builtinType) {
+        case sch.BuiltinTypeKind.Color:
+        case sch.BuiltinTypeKind.Mixed:
+        case sch.BuiltinTypeKind.PropertyValue:
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 export class DocumentColorProvider extends AbstractProvider implements vs.DocumentColorProvider {
     @svcRequest()
     async provideDocumentColors(document: vs.TextDocument, token: vs.CancellationToken): Promise<vs.ColorInformation[]> {
@@ -75,6 +105,7 @@ export class DocumentColorProvider extends AbstractProvider implements vs.Docume
         const xRoot = xDoc.getRootNode();
         if (!xRoot) return;
         const xray = this.xray;
+        const dIndex = this.dIndex;
 
         const colInfo: vs.ColorInformation[] = [];
 
@@ -97,27 +128,27 @@ export class DocumentColorProvider extends AbstractProvider implements vs.Docume
                     sType = schAt.type;
                 }
 
-                switch (sType.builtinType) {
-                    case sch.BuiltinTypeKind.Color:
-                    case sch.BuiltinTypeKind.Mixed:
-                    case sch.BuiltinTypeKind.PropertyValue:
-                    {
-                        break;
-                    }
-
-                    default:
-                    {
-                        continue outer;
-                    }
-                }
-
                 const xAt = xEl.attributes[attrName];
                 if (!xAt.startValue) continue;
                 if (!xAt.value.length) continue;
-                if (isConstantValue(xAt.value)) continue;
-                if (!reValueColor.test(xAt.value)) continue;
 
-                const iCol = parseColorLiteral(xAt.value.trim());
+                let value: string;
+                const vKind = <AttrValueConstant>getAttrValueKind(xAt.value);
+                if (isConstantValueKind(vKind)) {
+                    const constChain = dIndex.resolveConstantDeep(xAt.value.substr(AttrValueKindOffset[vKind]));
+                    if (!constChain) continue;
+                    value = constChain[constChain.length - 1].value;
+                }
+                else if (canContainColorValue(sType)) {
+                    value = xAt.value;
+                }
+                else {
+                    continue;
+                }
+
+                if (!reValueColor.test(value)) continue;
+
+                const iCol = parseColorLiteral(value.trim());
                 if (!iCol) continue;
 
                 const staOffset = xDoc.tdoc.positionAt(xAt.startValue + 1);
@@ -147,21 +178,11 @@ export class DocumentColorProvider extends AbstractProvider implements vs.Docume
         if (!iCol) return;
 
         const decCP: vs.ColorPresentation = {
-            label: (
-                ((iCol.inclAlpha || color.alpha !== 1.0) ? (Math.round((color.alpha * 255.0)).toString(10) + ',') : '') +
-                Math.round((color.red * 255.0)).toString(10) + ',' +
-                Math.round((color.green * 255.0)).toString(10) + ',' +
-                Math.round((color.blue * 255.0)).toString(10)
-            )
+            label: getColorAsDecimalARGB(color, iCol.inclAlpha),
         };
 
         const hexCP: vs.ColorPresentation = {
-            label: (
-                ((iCol.inclAlpha || color.alpha !== 1.0) ? (Math.round((color.alpha * 255.0)).toString(16).padStart(2, '0')) : '') +
-                Math.round((color.red * 255.0)).toString(16).padStart(2, '0') +
-                Math.round((color.green * 255.0)).toString(16).padStart(2, '0') +
-                Math.round((color.blue * 255.0)).toString(16).padStart(2, '0')
-            )
+            label: getColorAsHexARGB(color, iCol.inclAlpha),
         };
 
         return [decCP, hexCP];

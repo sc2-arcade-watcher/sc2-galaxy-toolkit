@@ -40,15 +40,18 @@ export function getAttrValueKind(value: string): AttrValueKind {
     return AttrValueKind.Generic;
 }
 
-export function isConstantValue(value: string) {
-    switch (getAttrValueKind(value)) {
+export function isConstantValueKind(vKind: AttrValueKind) {
+    switch (vKind) {
         case AttrValueKind.Constant:
         case AttrValueKind.ConstantRacial:
         case AttrValueKind.ConstantFactional:
             return true;
     }
-
     return false;
+}
+
+export function isConstantValue(value: string) {
+    return isConstantValueKind(getAttrValueKind(value));
 }
 
 export function getSelectionFragmentAtPosition(pathSel: exp.PathSelector | exp.PropertyBindExpr, pos: number) {

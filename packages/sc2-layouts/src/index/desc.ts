@@ -1,9 +1,7 @@
-import * as util from 'util';
-import { oentries } from '../common';
 import { LayoutDocument, Store } from './store';
-import { XMLElement, XMLNode, DiagnosticReport, XMLDocument } from '../types';
+import { XMLElement, XMLNode, DiagnosticReport, XMLDocument, AttrValueConstant, AttrValueKindOffset } from '../types';
 import * as sch from '../schema/base';
-import { splitSlashDelimetedStr } from '../parser/utils';
+import { splitSlashDelimetedStr, getAttrValueKind, isConstantValueKind } from '../parser/utils';
 
 export class DescXRef {
     declarations = new Set<XMLElement>();
@@ -72,7 +70,17 @@ export class DescXRefMap<T extends DescXRef> extends Map<string, T> {
     }
 }
 
-export class ConstantItem extends DescXRef {}
+export class ConstantItem extends DescXRef {
+    get value() {
+        let r: string;
+        for (const decl of this.declarations) {
+            r = decl.getAttributeValue('val',  null);
+            if (r !== null) break;
+        }
+        return r;
+    }
+}
+
 export class HandleItem extends DescXRef {
     get desc() {
         const parentEl = Array.from(this.declarations)[0].parent as XMLElement;
@@ -424,5 +432,18 @@ export class DescIndex {
             const elDesc = docState.xdeclDescMap.get(xEl);
             if (elDesc && (kind === null || elDesc.kind === kind)) return elDesc;
         } while (xEl = <XMLElement>xEl.parent);
+    }
+
+    resolveConstantDeep(name: string) {
+        const rs: ConstantItem[] = [];
+        let tmp: ConstantItem;
+        while (tmp = this.constants.get(name)) {
+            rs.push(tmp);
+            const vKind = <AttrValueConstant>getAttrValueKind(tmp.value);
+            if (!isConstantValueKind(vKind)) {
+                return rs;
+            }
+            name = tmp.value.substr(AttrValueKindOffset[vKind]);
+        }
     }
 }

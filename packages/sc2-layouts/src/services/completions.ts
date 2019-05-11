@@ -14,6 +14,8 @@ import { getSelectionIndexAtPosition, getAttrValueKind, isConstantValue } from '
 import { LayoutProcessor } from '../index/processor';
 import { XRay } from '../index/xray';
 import { LayoutChecker } from '../index/checker';
+import { reValueColor } from '../schema/validation';
+import { parseColorLiteral, getColorAsHexARGB } from './color';
 
 function completionsForSimpleType(smType: sch.SimpleType) {
     let items = <vs.CompletionItem[]> [];
@@ -717,11 +719,26 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
 
     protected provideConstants(compls: vs.CompletionItem[], vKind: AttrValueKind) {
         for (const item of this.store.index.constants.values()) {
-            compls.push(<vs.CompletionItem>{
+            const compl = <vs.CompletionItem>{
                 kind: vs.CompletionItemKind.Constant,
                 label: AttrValueKindOp[vKind] + `${item.name}`,
-                detail: Array.from(item.declarations.values()).map(decl => decl.getAttributeValue('val')).join('\n'),
-            });
+                detail: item.value,
+            };
+
+            const constChain = this.dIndex.resolveConstantDeep(item.name);
+            let finalValue: string;
+            if (constChain) {
+                finalValue = constChain[constChain.length - 1].value;
+            }
+            else {
+                finalValue = item.value;
+            }
+
+            if (reValueColor.test(finalValue)) {
+                compl.kind = vs.CompletionItemKind.Color;
+                compl.documentation = `#${getColorAsHexARGB(parseColorLiteral(finalValue.trim()).vColor)}`;
+            }
+            compls.push(compl);
         }
     }
 

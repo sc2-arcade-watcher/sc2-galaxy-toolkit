@@ -225,6 +225,12 @@ export enum AttrValueKind {
     PropertyBind,
 }
 
+export type AttrValueConstant =
+    AttrValueKind.Constant |
+    AttrValueKind.ConstantRacial |
+    AttrValueKind.ConstantFactional
+;
+
 export const AttrValueKindOp = {
     [AttrValueKind.Generic]: '',
     [AttrValueKind.Constant]: '#',
