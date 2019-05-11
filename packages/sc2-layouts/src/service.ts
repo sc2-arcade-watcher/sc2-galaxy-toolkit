@@ -18,6 +18,7 @@ import { NavigationProvider } from './services/navigation';
 import { DiagnosticsProvider } from './services/diagnostics';
 import { TreeViewProvider } from './services/dtree';
 import { DocumentColorProvider } from './services/color';
+import { ReferenceProvider } from './services/reference';
 
 namespace ExtCfgSect {
     export type builtinMods = {[name: string]: boolean};
@@ -147,6 +148,7 @@ export class ServiceContext implements IService {
     protected completionsProvider: CompletionsProvider;
     protected hoverProvider: HoverProvider;
     protected definitionProvider: DefinitionProvider;
+    protected referenceProvider: ReferenceProvider;
     protected navigationProvider: NavigationProvider;
     protected colorProvider: DocumentColorProvider;
     protected treeviewProvider: TreeViewProvider;
@@ -223,6 +225,10 @@ export class ServiceContext implements IService {
         context.subscriptions.push(vs.languages.registerDefinitionProvider(lselector, this.definitionProvider));
 
         // -
+        this.referenceProvider = this.createProvider(ReferenceProvider);
+        context.subscriptions.push(vs.languages.registerReferenceProvider(lselector, this.referenceProvider));
+
+        // -
         this.navigationProvider = this.createProvider(NavigationProvider);
         context.subscriptions.push(vs.languages.registerDocumentSymbolProvider(lselector, this.navigationProvider));
         context.subscriptions.push(vs.languages.registerWorkspaceSymbolProvider(this.navigationProvider));
@@ -239,6 +245,7 @@ export class ServiceContext implements IService {
 
         // -
         this.hoverProvider.defProvider = this.definitionProvider;
+        this.referenceProvider.defProvider = this.definitionProvider;
 
         // -
         this.diagnosticsProvider = this.createProvider(DiagnosticsProvider);

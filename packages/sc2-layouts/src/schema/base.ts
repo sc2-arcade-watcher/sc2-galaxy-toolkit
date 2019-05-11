@@ -33,6 +33,7 @@ export const enum BuiltinTypeKind {
     Style,
     Handle,
     //
+    ConstantName,
     DescInternal,
 }
 
