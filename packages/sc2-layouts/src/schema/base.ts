@@ -52,6 +52,7 @@ export const enum MappedComplexKind {
     CFrameStateSendEventAction,
     CFrameStatePlaySoundAction,
     CFrameStateApplyTemplateAction,
+    CFrameStateCreateFromTemplateAction,
 }
 
 //

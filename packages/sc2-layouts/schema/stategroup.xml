@@ -90,6 +90,11 @@
         <attribute name="template" type="DescTemplateName" use="required"/>
     </complexType>
 
+    <complexType name="CFrameStateCreateFromTemplateAction">
+        <extend value="CFrameStateAction"/>
+        <attribute name="template" type="DescTemplateName" use="required"/>
+    </complexType>
+
     <!--
      - CFrameStateGroup
     -->
@@ -110,6 +115,7 @@
             <alternative test="SendEvent" type="CFrameStateSendEventAction"/>
             <alternative test="PlaySound" type="CFrameStatePlaySoundAction"/>
             <alternative test="ApplyTemplate" type="CFrameStateApplyTemplateAction"/>
+            <alternative test="CreateFromTemplate" type="CFrameStateCreateFromTemplateAction"/>
         </element>
     </complexType>
 
