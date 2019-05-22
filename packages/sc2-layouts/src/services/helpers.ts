@@ -50,7 +50,8 @@ export function getAttrInfoAtPosition(xDoc: XMLDocument, offset: number) {
     const nattr = xEl.findAttributeAt(offset);
     if (!nattr || !nattr.startValue || nattr.startValue > offset) return;
 
-    const sAttrType = xEl.stype.attributes.get(nattr.name);
+    const xAttrNameLower = nattr.name.toLowerCase();
+    const sAttrType = xEl.stype.attributes.get(xAttrNameLower);
     let sType: SimpleType;
     if (sAttrType) {
         sType = sAttrType.type;
@@ -59,6 +60,7 @@ export function getAttrInfoAtPosition(xDoc: XMLDocument, offset: number) {
     return {
         xEl,
         xAttr: nattr,
+        xAttrNameLower,
         sAttrType,
         sType: sType,
         offsetRelative: offset - (nattr.startValue + 1),

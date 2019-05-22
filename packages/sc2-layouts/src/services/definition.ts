@@ -113,6 +113,31 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
         };
     }
 
+    protected getMergedDescFromFilePath(pathSel: PathSelector, offsRelative: number, fileDesc: DescNamespace): DefinitionDescNode {
+        const pathIndex = getSelectionIndexAtPosition(pathSel, offsRelative);
+
+        const topDesc = fileDesc.get(pathSel.path[0].name.name);
+        if (!topDesc) return;
+
+        const uNode = this.uBuilder.buildNodeFromDesc(topDesc);
+        if (!uNode) return;
+
+        let selectedDescs = Array.from(uNode.descs);
+
+        if (pathIndex > 0) {
+            const fragments = pathSel.path.slice(1, pathIndex + 1);
+            const resolvedSel = this.uNavigator.resolveSelection(uNode, fragments);
+            if (resolvedSel.chain.length <= pathIndex - 1) return;
+            selectedDescs = Array.from(resolvedSel.chain[pathIndex - 1].descs);
+        }
+
+        return {
+            pathIndex: pathIndex,
+            selectedFragment: pathSel.path[pathIndex],
+            selectedDescs: selectedDescs,
+        };
+    }
+
     protected getMergedDescFromPath(pathSel: PathSelector, offsRelative: number, relativeDesc: DescNamespace): DefinitionDescNode {
         const pathIndex = getSelectionIndexAtPosition(pathSel, offsRelative);
         const resolvedDesc = this.checker.resolveDescPath(relativeDesc, pathSel);
@@ -129,8 +154,8 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
         if (!attrInfo) return;
         if (!attrInfo.sType) {
             attrInfo.sType = this.processor.getElPropertyType(attrInfo.xEl, attrInfo.xAttr.name);
+            if (!attrInfo.sType) return;
         }
-        if (!attrInfo.sType) return;
 
         const defContainer: DefinitionContainer = {
             xSrcEl: attrInfo.xEl,
@@ -161,7 +186,7 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
                         if (!fileDesc) break;
                         const pathSel = this.exParser.parsePathSelector(attrInfo.xAttr.value);
 
-                        defContainer.itemData = this.getMergedDescFromPath(pathSel, attrInfo.offsetRelative, fileDesc);
+                        defContainer.itemData = this.getMergedDescFromFilePath(pathSel, attrInfo.offsetRelative, fileDesc);
                     }
                     else {
                         let uNode = this.uBuilder.buildNodeFromDesc(currentDesc);
