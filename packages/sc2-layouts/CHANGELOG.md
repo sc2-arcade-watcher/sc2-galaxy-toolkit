@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.8.0] - 2019-05-22
+
+* Added support for `ItemDesc` and `DescInternal` fields (goto definition, code completions etc.)
+* Added basic ReferenceProvider, currently only capable of listing templates usage
+* Improved color decorator to properly handle constants, and colorize them if they hold color value. Works in TextEditor view and on code completions list.
+* Fixed `StateGroup` snippet to include `DefaultState` in more correct order. Added `stategroupDefaultState` config option.
+* Updated `sc2-data` to `4.9.0`
+
 ## [0.7.0] - 2019-01-09
 
 * Added color picker and its visual indicator. It will appear in attributes that accept `Color` type, or have `Mixed` type - such as constants, if applicable. Supports hexadecimal and decimal notation, and optionally an alpha component.
