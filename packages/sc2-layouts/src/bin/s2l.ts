@@ -7,12 +7,16 @@ import { buildStore } from '../../test/helpers';
 import { LayoutChecker } from '../index/checker';
 require('../../test/bootstrap');
 
-async function checkFiles(fpath: string) {
+async function checkFiles(fpaths: string[]) {
     const store = buildStore();
 
-    const files = glob.sync(path.join(fpath, `**/*.${languageExt}`), {
-        nocase: true,
-    });
+    fpaths = fpaths.map(p => path.resolve(p));
+    let files: string[] = [];
+    for (const fp of fpaths) {
+        files = files.concat(glob.sync(path.join(fp, `**/*.${languageExt}`), {
+            nocase: true,
+        }));
+    }
 
     for (const item of files) {
         console.log(`Indexing: ${item}`);
@@ -39,6 +43,6 @@ async function checkFiles(fpath: string) {
     console.log(`Total: ${total}`);
 }
 
-if (!process.argv[2]) process.exit(1);
+if (process.argv.length < 3) process.exit(1);
 
-checkFiles(process.argv[2]);
+checkFiles(process.argv.slice(2));
