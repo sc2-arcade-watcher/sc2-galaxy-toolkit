@@ -178,6 +178,17 @@ export class DescNamespace {
         return (this.parent && (this.parent.kind !== DescKind.Root && this.parent.kind !== DescKind.File)) ? `${this.parent.descRelativeName}/${this.name}` : this.name;
     }
 
+    get descRelativeChain() {
+        let tmp: DescNamespace = this;
+        const chain: DescNamespace[] = [this];
+        while (tmp.parent) {
+            if (tmp.parent.kind === DescKind.Root || tmp.parent.kind === DescKind.File) break;
+            tmp = tmp.parent;
+            chain.push(tmp);
+        }
+        return chain.reverse();
+    }
+
     get topDescItem() {
         let tmp: DescNamespace = this;
         while (tmp.parent) {

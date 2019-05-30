@@ -8,6 +8,10 @@ import * as lsp from 'vscode-languageserver';
 export const languageId = 'sc2layout';
 export const languageExt = 'SC2Layout';
 
+export enum ExtLangIds {
+    SC2Layout = 'sc2layout',
+}
+
 // ===
 
 export class TextDocument implements lsp.TextDocument {

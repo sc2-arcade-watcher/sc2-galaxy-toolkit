@@ -85,7 +85,7 @@ export function svcRequest(showArg = false, argFormatter?: (...payload: any[]) =
             const server = <IService>this;
             server.console.info('>'.repeat(++reqDepth) + ' ' + propertyKey);
             if (showArg) {
-                server.console.log(util.inspect(args[0], true, 1, false));
+                server.console.log(util.inspect(args[0], true, 0, false));
             }
             else if (argFormatter) {
                 server.console.log(util.inspect(argFormatter(...args)));

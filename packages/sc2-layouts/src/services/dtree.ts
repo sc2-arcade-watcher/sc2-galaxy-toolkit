@@ -6,7 +6,7 @@ import { UINavigator, UIBuilder } from '../index/hierarchy';
 import { DescIndex, DescNamespace, DescKind } from '../index/desc';
 import * as s2 from '../index/s2mod';
 import { Store, FileDescEventData } from '../index/store';
-import { XMLDocument, XMLElement } from '../types';
+import { XMLDocument, XMLElement, ExtLangIds } from '../types';
 
 const enum DescTreeNodeKind {
     Archive,
@@ -26,6 +26,7 @@ interface DescTreeNode {
     archive?: s2.Archive;
     dsItem?: DescNamespace;
     xDoc?: XMLDocument;
+    parent?: DescTreeNode;
 }
 
 export class DescTreeDataProvider implements vs.TreeDataProvider<DescTreeNode> {
@@ -152,7 +153,7 @@ export class DescTreeDataProvider implements vs.TreeDataProvider<DescTreeNode> {
         return ritem;
     }
 
-    public getChildren(dParentNode?: DescTreeNode): vs.ProviderResult<DescTreeNode[]> {
+    public getChildren(dParentNode?: DescTreeNode): DescTreeNode[] {
         if (!dParentNode) {
             return Array.from(this.topNodes.values());
         }
@@ -179,6 +180,7 @@ export class DescTreeDataProvider implements vs.TreeDataProvider<DescTreeNode> {
                         name: dChild.name,
                         xDoc: dParentNode.xDoc,
                         dsItem: dChild,
+                        parent: dParentNode,
                     };
                 });
                 break;
@@ -193,7 +195,7 @@ export class DescTreeDataProvider implements vs.TreeDataProvider<DescTreeNode> {
             return this.topNodes.get(dtNode.archive.uri.toString());
         }
 
-        return null;
+        return dtNode.parent;
     }
 }
 
@@ -202,7 +204,7 @@ export class TreeViewProvider extends AbstractProvider implements vs.Disposable 
     protected uBuilder: UIBuilder;
     protected dTreeDataProvider: DescTreeDataProvider;
     protected descViewer: vs.TreeView<DescTreeNode>;
-    protected commands: vs.Disposable[] = [];
+    protected subscriptions: vs.Disposable[] = [];
 
     protected prepare() {
         this.uNavigator = new UINavigator(this.store.schema, this.store.index);
@@ -212,10 +214,11 @@ export class TreeViewProvider extends AbstractProvider implements vs.Disposable 
     register(): vs.Disposable {
         this.dTreeDataProvider = new DescTreeDataProvider(this.store, this.dIndex, this.svcContext.extContext.extensionPath);
         this.descViewer = vs.window.createTreeView('sc2layoutDesc', { treeDataProvider: this.dTreeDataProvider, showCollapseAll: true });
+        this.subscriptions.push(this.descViewer);
 
-        this.commands = [];
+        this.descViewer.onDidChangeSelection(this.onChangeSelection, this, this.subscriptions);
 
-        this.commands.push(vs.commands.registerCommand('sc2layout.dtree.showInTextEditor', async (dNode: DescTreeNode) => {
+        this.subscriptions.push(vs.commands.registerCommand('sc2layout.dtree.showInTextEditor', async (dNode: DescTreeNode) => {
             const xEl = <XMLElement>Array.from(dNode.dsItem.xDecls)[0];
             const posSta = dNode.xDoc.tdoc.positionAt(xEl.start);
             const posEnd = dNode.xDoc.tdoc.positionAt(xEl.startTagEnd ? xEl.startTagEnd : xEl.end);
@@ -229,26 +232,69 @@ export class TreeViewProvider extends AbstractProvider implements vs.Disposable 
             });
         }));
 
-        this.commands.push(vs.commands.registerTextEditorCommand('sc2layout.dtree.revealActiveFile', (textEditor: vs.TextEditor, edit: vs.TextEditorEdit) => {
-            const dtItem = this.dTreeDataProvider.fileNodes.get(textEditor.document.uri.toString());
+        this.subscriptions.push(vs.commands.registerTextEditorCommand('sc2layout.dtree.revealActiveFile', this.revealTextSelectedNode, this));
 
-            if (!dtItem) {
-                vs.window.showErrorMessage(`Currently active file doesn't appear to be part of the workspace.`);
-                return;
-            }
-
-            this.descViewer.reveal(dtItem);
-        }));
+        this.subscriptions.push(
+            vs.commands.registerCommand('sc2layout.dtree.showProperties', this.onShowProperties, this)
+        );
 
         return this.descViewer;
     }
 
-    dispose() {
-        this.descViewer.dispose();
-        this.descViewer = void 0;
-        // TODO: dispose DescTreeDataProvider
+    async revealTextSelectedNode(textEditor: vs.TextEditor, edit: vs.TextEditorEdit) {
+        if (textEditor.document.languageId !== ExtLangIds.SC2Layout) return;
 
-        this.commands.forEach(item => item.dispose());
-        this.commands = [];
+        let dtFile = this.dTreeDataProvider.fileNodes.get(textEditor.document.uri.toString());
+
+        if (!dtFile) {
+            vs.window.showErrorMessage(`Currently active file doesn't appear to be part of the workspace.`);
+            return;
+        }
+
+        const sourceFile = await this.svcContext.syncVsDocument(textEditor.document);
+        const offset = textEditor.document.offsetAt(textEditor.selection.active);
+        const xEl = sourceFile.findNodeAt(offset);
+        if (!(xEl instanceof XMLElement) || !xEl.stype) return;
+        const descItem = this.store.index.resolveElementDesc(xEl);
+
+        let dtResult = dtFile;
+        if (descItem) {
+            switch (descItem.kind) {
+                case DescKind.Frame:
+                case DescKind.Animation:
+                case DescKind.StateGroup:
+                {
+                    const descChain = descItem.descRelativeChain.reverse();
+                    let dcurrent: DescNamespace;
+                    while (dcurrent = descChain.pop()) {
+                        const dtChildren = this.dTreeDataProvider.getChildren(dtResult);
+                        dtResult = dtChildren.find(item => item.dsItem === dcurrent);
+                        if (!dtResult) break;
+                    }
+                    break;
+                }
+            }
+        }
+
+        this.descViewer.reveal(dtResult ? dtResult : dtFile);
+    }
+
+    onChangeSelection(ev: vs.TreeViewSelectionChangeEvent<DescTreeNode>) {
+        let dsItem: DescNamespace;
+        if (ev.selection.length && ev.selection[0].kind === DescTreeNodeKind.Desc) {
+            dsItem = ev.selection[0].dsItem;
+        }
+        this.svcContext.frameViewProvider.showDescItem(dsItem);
+    }
+
+    onShowProperties(dNode: DescTreeNode) {
+        if (dNode.kind !== DescTreeNodeKind.Desc) return;
+        this.svcContext.frameViewProvider.showDescItem(dNode.dsItem);
+    }
+
+    dispose() {
+        // TODO: dispose DescTreeDataProvider
+        this.subscriptions.forEach(item => item.dispose());
+        this.subscriptions = [];
     }
 }

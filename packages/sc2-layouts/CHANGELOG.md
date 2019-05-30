@@ -1,5 +1,9 @@
 # Change Log
 
+## Unreleased
+
+* Added experimental frame properties panel which works in accordance to existing DescTree. Properties panel will display any selected node from DescTree.
+
 ## [0.8.0] - 2019-05-22
 
 * Added support for `ItemDesc` and `DescInternal` fields (goto definition, code completions etc.)

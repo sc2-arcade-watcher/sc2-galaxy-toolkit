@@ -19,6 +19,7 @@ import { DiagnosticsProvider } from './services/diagnostics';
 import { TreeViewProvider } from './services/dtree';
 import { DocumentColorProvider } from './services/color';
 import { ReferenceProvider } from './services/reference';
+import { PropertiesViewProvider } from './services/propertiesTree';
 
 namespace ExtCfgSect {
     export type builtinMods = {[name: string]: boolean};
@@ -151,10 +152,18 @@ export class ServiceContext implements IService {
     protected referenceProvider: ReferenceProvider;
     protected navigationProvider: NavigationProvider;
     protected colorProvider: DocumentColorProvider;
-    protected treeviewProvider: TreeViewProvider;
+    public treeviewProvider: TreeViewProvider;
+    public frameViewProvider: PropertiesViewProvider;
     protected diagnosticsProvider: DiagnosticsProvider;
 
     extContext: vs.ExtensionContext;
+
+    getThemeIcon(name: string) {
+        return {
+            light: path.join(this.extContext.extensionPath, 'resources', 'light', `${name}`),
+            dark: path.join(this.extContext.extensionPath, 'resources', 'dark', `${name}`)
+        };
+    }
 
     protected createProvider<T extends AbstractProvider>(cls: new () => T): T {
         return createProvider(cls, this, this.store, this.console);
@@ -241,6 +250,12 @@ export class ServiceContext implements IService {
         this.treeviewProvider = this.createProvider(TreeViewProvider);
         if (this.config.treeview.visible) {
             context.subscriptions.push(this.treeviewProvider.register());
+        }
+
+        // -
+        if (this.config.treeview.visible) {
+            this.frameViewProvider = this.createProvider(PropertiesViewProvider);
+            context.subscriptions.push(this.frameViewProvider);
         }
 
         // -

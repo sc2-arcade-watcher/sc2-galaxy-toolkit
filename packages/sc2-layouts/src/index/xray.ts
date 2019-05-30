@@ -7,9 +7,9 @@ import { Store } from './store';
 
 export class XRay {
     protected exParser = new ExpressionParser();
-    protected uNavigator: UINavigator;
-    protected uBuilder: UIBuilder;
-    protected dIndex: DescIndex;
+    public readonly uNavigator: UINavigator;
+    public readonly uBuilder: UIBuilder;
+    public readonly dIndex: DescIndex;
 
     constructor(protected store: Store) {
         this.uNavigator = new UINavigator(this.store.schema, this.store.index);
