@@ -315,6 +315,27 @@ export class ServiceContext implements IService {
         }));
 
         // -
+        const workspaceMonitorSB = vs.window.createStatusBarItem(vs.StatusBarAlignment.Left);
+        workspaceMonitorSB.hide();
+        workspaceMonitorSB.text = 'SC2 Layout: Workspace not configured!';
+        workspaceMonitorSB.tooltip = `Couldn't match currently active SC2Layout file to SC2Mod/SC2Map document it belongs to. Due to that certain Intellisense capabilities have been disabled or might not function properly. Use "File: Open folder" and point it to your SC2Mod/SC2Map component folder, or a parent folder that holds SC2Mod/SC2Map documents.`;
+        workspaceMonitorSB.command = 'workbench.action.files.openFolder';
+        workspaceMonitorSB.color = new vs.ThemeColor('errorForeground');
+
+        vs.window.onDidChangeActiveTextEditor(ev => {
+            workspaceMonitorSB.hide();
+            if (!ev || ev.document.languageId !== languageId) return;
+            if (!(this.state & ServiceStateFlags.StepModsDiscoveryDone)) return;
+
+            if (vs.workspace.workspaceFolders !== void 0 && vs.workspace.workspaceFolders.length) {
+                const nonNativeS2Documents = Array.from(this.store.s2ws.archives.values()).filter(i => !i.native)
+                if (nonNativeS2Documents.length) return;
+            }
+
+            workspaceMonitorSB.show();
+        });
+
+        // -
         context.subscriptions.push(vs.workspace.onDidChangeWorkspaceFolders(async e => {
             this.console.debug('[onDidChangeWorkspaceFolders]', e);
             await this.reinitialize();

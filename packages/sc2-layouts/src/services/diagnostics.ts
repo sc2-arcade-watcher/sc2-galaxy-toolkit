@@ -2,6 +2,7 @@ import * as vs from 'vscode';
 import { AbstractProvider, svcRequest } from './provider';
 import { LayoutChecker } from '../index/checker';
 import { DiagnosticReport } from '../types';
+import URI from 'vscode-uri';
 
 export class DiagnosticsProvider extends AbstractProvider {
     protected checker: LayoutChecker;
@@ -14,7 +15,6 @@ export class DiagnosticsProvider extends AbstractProvider {
     public async provideDiagnostics(uri: string) {
         const xDoc = this.store.documents.get(uri);
         this.console.log('state', {uri: uri, version: xDoc.tdoc.version});
-        const validationReports = this.checker.checkFile(xDoc);
 
         const vdiag: vs.Diagnostic[] = [];
 
@@ -35,7 +35,10 @@ export class DiagnosticsProvider extends AbstractProvider {
         }
 
         processReports(xDoc.parseDiagnostics);
-        processReports(validationReports);
+
+        if (this.store.s2ws.matchFileWorkspace(URI.parse(uri))) {
+            processReports(this.checker.checkFile(xDoc));
+        }
 
         return vdiag;
     }
