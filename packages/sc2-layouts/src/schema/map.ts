@@ -263,6 +263,11 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
     const mapFrameType = new Map<sch.ComplexType, sch.FrameType>();
     const smap = readMap(createDefaultSchemaFileProvider(schDir));
 
+    function addModel(model: sch.SModel, smKind: sch.SModelKind) {
+        model.smKind = smKind;
+        entries.set(model.name, model);
+    }
+
     function resolveSchType<T extends sch.SModel>(name: string) {
         const r = entries.get(name) as T;
         assert.isDefined(r, `Couldn't resolve type "${name}"`);
@@ -270,6 +275,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
     }
 
     function extendComplexType(target: sch.ComplexType, src: sch.ComplexType) {
+        target.inherits.push(src);
         for (const [extAttrName, extAttrType] of src.attributes) {
             target.attributes.set(extAttrName, extAttrType);
         }
@@ -295,17 +301,18 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
                 const ctype: sch.ComplexType = {
                     name: prop.elementType,
                     mpKind: sch.MappedComplexKind.Unknown,
-                    flags: 0,
+                    flags: sch.CommonTypeFlags.Virtual,
                     attributes: new Map(),
                     struct: new Map(),
                     indeterminateAttributes: new Map(),
+                    inherits: [],
                 };
                 ctype.attributes.set('val', <sch.Attribute>{
                     name: 'val',
                     type: resolveSchType(prop.valueType),
                     required: true,
                 });
-                entries.set(ctype.name, ctype);
+                addModel(ctype, sch.SModelKind.ComplexType);
             }
         }
         if (prop.table) {
@@ -323,10 +330,11 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
                 const ctype: sch.ComplexType = {
                     name: prop.elementType,
                     mpKind: sch.MappedComplexKind.Unknown,
-                    flags: 0,
+                    flags: sch.CommonTypeFlags.Virtual,
                     attributes: new Map(),
                     struct: new Map(),
                     indeterminateAttributes: new Map(),
+                    inherits: [],
                 };
                 extendComplexType(ctype, <sch.ComplexType>entries.get(cpElementType));
                 ctype.attributes.set(prop.tableKey, <sch.Attribute>{
@@ -334,7 +342,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
                     type: resolveSchType('Uint8'),
                     required: false,
                 });
-                entries.set(ctype.name, ctype);
+                addModel(ctype, sch.SModelKind.ComplexType);
             }
         }
         return <sch.ComplexType>entries.get(prop.elementType);
@@ -394,7 +402,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
                 }
             }
         }
-        entries.set(rt.name, rt);
+        addModel(rt, sch.SModelKind.SimpleType);
     }, MDefs.SimpleType);
 
 
@@ -409,6 +417,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
             attributes: new Map(),
             struct: new Map(),
             indeterminateAttributes: new Map(),
+            inherits: [],
         };
         const mappedKind: sch.MappedComplexKind = (<any>sch).MappedComplexKind[item.name];
         if (mappedKind) {
@@ -517,7 +526,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
                 }
             }
         }
-        entries.set(ct.name, ct);
+        addModel(ct, sch.SModelKind.ComplexType);
     }, MDefs.ComplexType);
 
 
@@ -528,10 +537,11 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
         const ct: sch.ComplexType = {
             name: item.name,
             mpKind: sch.MappedComplexKind.Unknown,
-            flags: 0,
+            flags: sch.CommonTypeFlags.Virtual,
             attributes: new Map(),
             struct: new Map(),
             indeterminateAttributes: new Map(),
+            inherits: [],
         };
 
         for (const prop of item.property) {
@@ -552,7 +562,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
             ct.struct.set(prop.name, cel);
         }
 
-        entries.set(ct.name, ct);
+        addModel(ct, sch.SModelKind.ComplexType);
     }, MDefs.FrameClass);
 
 
@@ -563,10 +573,11 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
         const ct: sch.ComplexType = {
             name: item.name,
             mpKind: sch.MappedComplexKind.Unknown,
-            flags: 0,
+            flags: sch.CommonTypeFlags.Virtual,
             attributes: new Map(),
             struct: new Map(),
             indeterminateAttributes: new Map(),
+            inherits: [],
         };
 
         extendComplexType(ct, resolveSchType('Frame'));
@@ -580,7 +591,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
 
         extendComplexType(ct, resolveSchType(item.descType));
 
-        entries.set(ct.name, ct);
+        addModel(ct, sch.SModelKind.ComplexType);
     }, MDefs.FrameType);
 
 

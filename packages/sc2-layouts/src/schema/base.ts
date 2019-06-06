@@ -63,8 +63,13 @@ export enum SModelKind {
 }
 
 export interface SModel {
-    name?: string;
-    // smtype?: SModelKind;
+    smKind?: SModelKind;
+    name: string;
+    flags: CommonTypeFlags | any;
+}
+
+export enum CommonTypeFlags {
+    Virtual            = 1 << 0,
 }
 
 // ===
@@ -85,7 +90,7 @@ export enum SimpleTypeKind {
 }
 
 export enum SimpleTypeFlags {
-    Nullable            = 1 << 0,
+    Nullable            = 1 << 10,
 }
 
 export interface SEnumInfo {
@@ -97,7 +102,7 @@ export interface SimpleType extends SModel {
     kind: SimpleTypeKind;
     builtinType: BuiltinTypeKind;
     data: SimpleTypeData;
-    flags: SimpleTypeFlags;
+    flags: CommonTypeFlags | SimpleTypeFlags;
     internalType?: string;
     union?: SimpleType[];
     /* @deprecated */ evalues?: string[];
@@ -121,18 +126,19 @@ export interface IndeterminateAttr {
 }
 
 export const enum ComplexTypeFlags {
-    IsStruct            = 1 << 0,
-    ReadOnly            = 1 << 2,
-    AllowExtraAttrs     = 1 << 3,
+    IsStruct            = 1 << 10,
+    ReadOnly            = 1 << 12,
+    AllowExtraAttrs     = 1 << 13,
 }
 
 export interface ComplexType extends SModel {
     mpKind: MappedComplexKind;
-    flags: ComplexTypeFlags;
+    flags: CommonTypeFlags | ComplexTypeFlags;
     attributes: Map<string, Attribute>;
     indeterminateAttributes: Map<string, IndeterminateAttr>;
     struct: Map<string, ElementDef>;
     label?: string;
+    inherits: ComplexType[];
 }
 
 export const enum ElementDefFlags {
