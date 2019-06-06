@@ -1,9 +1,9 @@
-import * as util from 'util';
 import * as vs from 'vscode';
 import * as sch from '../schema/base';
 import { AbstractProvider, svcRequest } from './provider';
 import { XMLElement } from '../types';
-import { DefinitionProvider, DefinitionItemKind, DefinitionDescNode, DefinitionContainer } from './definition';
+import { DefinitionProvider, DefinitionItemKind, DefinitionDescNode, DefinitionContainer, DefinitionXNode } from './definition';
+import { vsRangeOrPositionOfXNode } from './helpers';
 
 function attrSchDocs(sAttr: sch.Attribute)  {
     let s = '';
@@ -140,6 +140,22 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
                         defContainer.srcTextRange
                     );
                     break;
+                }
+
+                case DefinitionItemKind.XNode:
+                {
+                    const mstr = new vs.MarkdownString();
+                    for (const xEl of (<DefinitionXNode>defContainer.itemData).xNodes) {
+                        if ((<vs.Range>vsRangeOrPositionOfXNode(xEl)).contains(position)) continue;
+                        mstr.appendCodeblock(
+                            xEl.getDocument().tdoc.getText(<vs.Range>vsRangeOrPositionOfXNode(xEl)),
+                            'sc2layout'
+                        )
+                    }
+                    hv = new vs.Hover(
+                        mstr,
+                        defContainer.srcTextRange
+                    );
                 }
             }
         }
