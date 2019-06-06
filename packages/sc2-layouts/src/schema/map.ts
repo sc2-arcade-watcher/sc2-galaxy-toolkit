@@ -60,7 +60,7 @@ namespace smp {
         }[];
         enumeration?: {
             value: string;
-            label: string;
+            label?: string;
         }[];
         union?: {
             value: string;
@@ -149,7 +149,7 @@ function parseDocEl(inDoc: string[]) {
     return (<string[]>inDoc).join(`\n---\n`);
 }
 
-function readMap(schDir: string) {
+function readMap(sfProvider: sch.SchemaFileProvider) {
     const smap = new Map<string, [MDefs, {}]>();
 
     const parseItem = {
@@ -212,7 +212,7 @@ function readMap(schDir: string) {
     };
 
     function loadFile(fname: string) {
-        xml.parseString(fs.readFileSync(fname, 'utf8'), {}, (err, result) => {
+        xml.parseString(sfProvider.readFile(fname), {}, (err, result) => {
             // console.log(err);
             // console.log(result.map);
             for (const ecat in result.map) {
@@ -233,16 +233,26 @@ function readMap(schDir: string) {
         });
     }
 
-    loadFile(path.join(schDir, 'type.xml'));
-    loadFile(path.join(schDir, 'enum.xml'));
-    loadFile(path.join(schDir, 'field.xml'));
-    loadFile(path.join(schDir, 'frame_class.xml'));
-    loadFile(path.join(schDir, 'frame_type.xml'));
-    loadFile(path.join(schDir, 'stategroup.xml'));
-    loadFile(path.join(schDir, 'animation.xml'));
-    loadFile(path.join(schDir, 'struct.xml'));
+    loadFile('type.xml');
+    loadFile('enum.xml');
+    loadFile('field.xml');
+    loadFile('frame_class.xml');
+    loadFile('frame_type.xml');
+    loadFile('stategroup.xml');
+    loadFile('animation.xml');
+    loadFile('struct.xml');
 
     return smap;
+}
+
+export function createDefaultSchemaFileProvider(schDir: string): sch.SchemaFileProvider {
+    function readFile(filename: string): string {
+        return fs.readFileSync(path.join(schDir, filename), 'utf8');
+    }
+
+    return {
+        readFile,
+    };
 }
 
 export function generateSchema(schDir: string): sch.SchemaRegistry {
@@ -251,7 +261,7 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
     const mapFrameProperty = new Map<sch.ElementDef, sch.FrameProperty>();
     const mapFramePropName = new Map<string, sch.FrameProperty[]>();
     const mapFrameType = new Map<sch.ComplexType, sch.FrameType>();
-    const smap = readMap(schDir);
+    const smap = readMap(createDefaultSchemaFileProvider(schDir));
 
     function resolveSchType<T extends sch.SModel>(name: string) {
         const r = entries.get(name) as T;
@@ -358,7 +368,12 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
         if (item.enumeration) {
             rt.evalues = item.enumeration.map(item => item.value);
             rt.emap = new Map();
-            item.enumeration.forEach(item => {rt.emap.set(item.value.toLowerCase(), {name: item.value, label: item.label}); });
+            item.enumeration.forEach(item => {
+                rt.emap.set(item.value.toLowerCase(), {
+                    name: item.value,
+                    label: item.label ? item.label[0] : void 0,
+                });
+            });
             rt.kind = sch.SimpleTypeKind.Enumaration;
             if (item.kind === 'flags') rt.kind = sch.SimpleTypeKind.Flags;
         }
@@ -592,7 +607,6 @@ export function generateSchema(schDir: string): sch.SchemaRegistry {
                 etype: scComplexType.struct.get(spProp.name),
                 fclass: scFrameClass,
                 isReadonly: (spProp.readonly && spProp.readonly === 'true') ? true : false,
-                isConstant: (spProp.readonly && spProp.readonly === 'true') ? true : false,
                 isTable: (spProp.table && spProp.table === 'true') ? true : false,
                 tableKey: (spProp.table && !spProp.tableKey) ? 'index' : spProp.tableKey,
             };

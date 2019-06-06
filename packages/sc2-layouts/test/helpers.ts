@@ -8,7 +8,7 @@ import URI from 'vscode-uri';
 import { globify, readFileAsync } from '../src/common';
 import { languageExt } from '../src/types';
 
-export function getSchema() {
+export function getSchema(): SchemaRegistry {
     return (<any>global)._cachedSchema;
 }
 

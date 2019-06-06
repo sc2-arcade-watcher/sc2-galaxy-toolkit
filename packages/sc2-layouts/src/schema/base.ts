@@ -176,7 +176,6 @@ export interface FrameProperty {
     etype: ElementDef;
     fclass: FrameClass;
     isReadonly: boolean;
-    isConstant: boolean;
     isTable: boolean;
     tableKey: string;
 }
@@ -211,3 +210,6 @@ export interface SchemaRegistry {
     isPropertyBindAllowed(scElementDef: ElementDef, scComplexType: ComplexType, attrName: string): boolean;
 }
 
+export interface SchemaFileProvider {
+    readFile(filename: string): string;
+}

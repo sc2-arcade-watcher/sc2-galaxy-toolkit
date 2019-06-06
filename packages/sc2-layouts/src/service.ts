@@ -1,6 +1,5 @@
 import * as util from 'util';
 import * as path from 'path';
-import * as glob from 'glob';
 import * as vs from 'vscode';
 import * as lsp from 'vscode-languageserver';
 import URI from 'vscode-uri';
@@ -9,8 +8,7 @@ import { CompletionsProvider } from './services/completions';
 import { languageId, DiagnosticCategory, XMLNode, languageExt } from './types';
 import { AbstractProvider, createProvider, ILoggerConsole, IService, svcRequest } from './services/provider';
 import { HoverProvider } from './services/hover';
-import { ElementDefKind } from './schema/base';
-import { generateSchema } from './schema/map';
+import { SchemaRegistry } from './schema/base';
 import { DefinitionProvider } from './services/definition';
 import { objventries, globify } from './common';
 import * as s2 from './index/s2mod';
@@ -20,6 +18,17 @@ import { TreeViewProvider } from './services/dtree';
 import { DocumentColorProvider } from './services/color';
 import { ReferenceProvider } from './services/reference';
 import { PropertiesViewProvider } from './services/propertiesTree';
+import { SchemaLoader } from './schemaLoader';
+
+export enum ExtCfgSchemaUpdateMode {
+    Auto = 'auto',
+    Manual = 'auto',
+}
+
+export interface ExtCfgSchema {
+    updateMode: ExtCfgSchemaUpdateMode;
+    localPath: string;
+}
 
 namespace ExtCfgSect {
     export type builtinMods = {[name: string]: boolean};
@@ -40,6 +49,7 @@ export interface ExtTreeView {
 }
 
 export interface ExtConfig {
+    schema: ExtCfgSchema;
     builtinMods: ExtCfgSect.builtinMods;
     documentUpdateDelay: number;
     documentDiagnosticsDelay: number;
@@ -146,6 +156,7 @@ export class ServiceContext implements IService {
     config: ExtConfig;
     state: ServiceStateFlags = 0;
 
+    protected schemaLoader: SchemaLoader;
     protected completionsProvider: CompletionsProvider;
     protected hoverProvider: HoverProvider;
     protected definitionProvider: DefinitionProvider;
@@ -169,10 +180,8 @@ export class ServiceContext implements IService {
         return createProvider(cls, this, this.store, this.console);
     }
 
-    activate(context: vs.ExtensionContext) {
+    async activate(context: vs.ExtensionContext) {
         this.extContext = context;
-        this.store = new Store(generateSchema(path.join(context.extensionPath, 'schema')));
-        this.store.s2ws.logger = this.console;
 
         // -
         const lselector = <vs.DocumentSelector>{
@@ -198,8 +207,7 @@ export class ServiceContext implements IService {
             error: (msg, ...params: string[]) => {
                 if (errorCounter === 0) {
                     this.errorOutputChannel.show(true);
-                    vs.window.showErrorMessage(`Whoops! An unhandled exception occurred within SC2Layouts extension. Please consider reporting it with the log included. You'll not be notified about further errors within this session. However, it is possible that index state has been corrupted, and restat might be required if extension will stop function properly.`, { modal : false });
-
+                    vs.window.showErrorMessage(`Whoops! An unhandled exception occurred within SC2Layouts extension. Please consider [reporting it](https://github.com/Talv/sc2-layouts/issues) with the log included. You'll not be notified about further errors within this session. However, it is possible that index state has been corrupted, and restat might be required if extension will stop function properly.`, { modal : false });
                 }
                 ++errorCounter;
                 emitOutput(msg, params);
@@ -210,12 +218,28 @@ export class ServiceContext implements IService {
             debug: emitOutput,
         };
         if (process.env.SC2LDEBUG) {
-            this.errorOutputChannel.show();
+            this.errorOutputChannel.show(false);
         }
 
         // -
         this.readConfig();
 
+        // -
+        this.schemaLoader = new SchemaLoader(this);
+        context.subscriptions.push(this.schemaLoader);
+        let schemaRegistry: SchemaRegistry;
+        try {
+            schemaRegistry = await this.schemaLoader.prepareSchema();
+        }
+        catch (e) {
+            this.console.error('prepareSchema', e);
+            this.console.error(`Fatal error`);
+            return;
+        }
+
+        // -
+        this.store = new Store(schemaRegistry);
+        this.store.s2ws.logger = this.console;
 
         // -
         this.diagnosticCollection = vs.languages.createDiagnosticCollection(languageId);
@@ -393,6 +417,7 @@ export class ServiceContext implements IService {
     protected readConfig() {
         const wsConfig = vs.workspace.getConfiguration(languageId);
         this.config = {
+            schema: wsConfig.get('schema'),
             builtinMods: wsConfig.get<ExtCfgSect.builtinMods>('builtinMods', {}),
             documentUpdateDelay: wsConfig.get<number>('documentUpdateDelay', 100),
             documentDiagnosticsDelay: wsConfig.get<number>('documentDiagnosticsDelay', -1),

@@ -56,6 +56,21 @@
         "configuration": {
             "title": "sc2layout",
             "properties": {
+                "sc2layout.schema.updateMode": {
+                    "scope": "application",
+                    "type": "string",
+                    "enum": [
+                        "auto",
+                        "manual"
+                    ],
+                    "default": "auto"
+                },
+                "sc2layout.schema.localPath": {
+                    "scope": "application",
+                    "type": "string",
+                    "default": null,
+                    "description": "Custom path to directory with XML schema files. If set extension will use it instead of default one."
+                },
                 "sc2layout.builtinMods": {
                     "scope": "window",
                     "type": "object",
@@ -131,6 +146,11 @@
             }
         ],
         "commands": [
+            {
+                "command": "sc2layout.updateSchemaFiles",
+                "title": "Update Schema Files",
+                "category": "SC2 Layout"
+            },
             {
                 "command": "sc2layout.gameReload",
                 "title": "SC2 Layouts: Game Reload"
@@ -254,17 +274,23 @@
     },
     "dependencies": {
         "chai": "^4.1.2",
+        "extract-zip": "^1.6.7",
+        "fs-extra": "^8.0.1",
         "glob": "^7.1.3",
         "mocha": "^5.2.0",
+        "request-promise-native": "^1.0.7",
         "vscode-languageserver": "^5.0.3",
         "vscode-uri": "^1.0.6",
         "xml2js": "^0.4.19"
     },
     "devDependencies": {
         "@types/chai": "^4.1.4",
+        "@types/extract-zip": "^1.6.2",
+        "@types/fs-extra": "^7.0.0",
         "@types/glob": "^7.1.1",
         "@types/mocha": "^5.2.5",
         "@types/node": "^10.1.0",
+        "@types/request-promise-native": "^1.0.16",
         "@types/xml2js": "^0.4.3",
         "source-map-support": "^0.5.9",
         "ts-node": "^6.1.2",
