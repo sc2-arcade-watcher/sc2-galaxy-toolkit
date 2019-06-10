@@ -132,3 +132,11 @@ export function globify(pattern: string, opts?: glob.IOptions) {
         });
     });
 }
+
+export function dlog(o: any, opts: util.InspectOptions = {}) {
+    console.log(util.inspect(o, Object.assign({
+        colors: true,
+        compact: false,
+        depth: 6,
+    }, opts)));
+}

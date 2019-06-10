@@ -1,5 +1,5 @@
 import { ServiceContext, ExtCfgSchemaUpdateMode } from './service';
-import { generateSchema } from './schema/map';
+import { generateSchema } from './schema/registry';
 import * as vs from 'vscode';
 import * as request from 'request-promise-native';
 import * as fs from 'fs-extra';

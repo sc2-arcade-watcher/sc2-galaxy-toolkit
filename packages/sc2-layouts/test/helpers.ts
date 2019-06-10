@@ -1,7 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as util from 'util';
-import { generateSchema } from '../src/schema/map';
 import { Store } from '../src/index/store';
 import { SchemaRegistry } from '../src/schema/base';
 import URI from 'vscode-uri';

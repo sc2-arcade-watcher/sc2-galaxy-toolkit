@@ -69,7 +69,7 @@ export class SchemaValidator {
             }
             case sch.SimpleTypeKind.Enumaration:
             {
-                if (stype.evalues.indexOf(atValue) === -1 && stype.evalues.findIndex(item => item.length === atValue.length && item.toLowerCase() === atValue.toLowerCase()) === -1) {
+                if (!stype.emap.has(atValue.toLowerCase())) {
                     return `"${atValue}" doesn't match enumeration ${stype.name}`;
                 }
                 break;
@@ -79,7 +79,7 @@ export class SchemaValidator {
                 const vl = atValue.split('|');
                 for (let currValue of vl) {
                     currValue = currValue.trim();
-                    if (stype.evalues.indexOf(currValue) === -1 && stype.evalues.findIndex(item => item.length === currValue.length && item.toLowerCase() === currValue.toLowerCase()) === -1) {
+                    if (!stype.emap.has(currValue.toLowerCase())) {
                         return `"${currValue}" doesn't match enumeration ${stype.name}`;
                     }
                 }

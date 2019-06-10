@@ -57,15 +57,20 @@ export const enum MappedComplexKind {
 
 //
 
-export enum SModelKind {
-    SimpleType,
-    ComplexType,
+export enum ModelKind {
+    SimpleType = 'simpleType',
+    ComplexType = 'complexType',
+    Element = 'element',
+    FrameClass = 'frameClass',
+    FrameType = 'frameType',
 }
 
-export interface SModel {
-    smKind?: SModelKind;
+export type ModelKindT = 'simpleType' | 'complexType' | 'element' | 'frameClass' | 'frameType';
+
+export interface AbstractModel {
+    smKind?: ModelKind;
     name: string;
-    flags: CommonTypeFlags | any;
+    flags?: CommonTypeFlags | any;
 }
 
 export enum CommonTypeFlags {
@@ -91,6 +96,7 @@ export enum SimpleTypeKind {
 
 export enum SimpleTypeFlags {
     Nullable            = 1 << 10,
+    EnumMask            = 1 << 11,
 }
 
 export interface SEnumInfo {
@@ -98,14 +104,13 @@ export interface SEnumInfo {
     label?: string;
 }
 
-export interface SimpleType extends SModel {
+export interface SimpleType extends AbstractModel {
     kind: SimpleTypeKind;
     builtinType: BuiltinTypeKind;
     data: SimpleTypeData;
     flags: CommonTypeFlags | SimpleTypeFlags;
     internalType?: string;
     union?: SimpleType[];
-    /* @deprecated */ evalues?: string[];
     emap?: Map<string, SEnumInfo>;
     patterns?: RegExp[];
 }
@@ -131,7 +136,7 @@ export const enum ComplexTypeFlags {
     AllowExtraAttrs     = 1 << 13,
 }
 
-export interface ComplexType extends SModel {
+export interface ComplexType extends AbstractModel {
     mpKind: MappedComplexKind;
     flags: CommonTypeFlags | ComplexTypeFlags;
     attributes: Map<string, Attribute>;
@@ -197,16 +202,15 @@ export interface FrameType {
     blizzOnly: boolean;
     fclasses: Map<string, FrameClass>;
     fprops: Map<string, FrameProperty>;
+    complexType: ComplexType;
 }
 
 // ===
 
 export interface SchemaRegistry {
-    readonly stypes: ReadonlyMap<string, SModel>;
     readonly fileRootType: ComplexType;
-    readonly frameClasses: ReadonlyMap<string, FrameClass>;
-    readonly frameClassProps: ReadonlyMap<string, FrameProperty[]>;
-    readonly frameTypes: ReadonlyMap<string, FrameType>;
+    readonly frameClassProps: Map<string, FrameProperty[]>;
+    readonly frameTypes: Map<string, FrameType>;
 
     getFrameType(scComplexType: ComplexType): FrameType;
     getFrameProperty(scElementDef: ElementDef): FrameProperty;

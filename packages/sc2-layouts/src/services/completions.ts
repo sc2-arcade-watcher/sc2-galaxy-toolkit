@@ -26,7 +26,7 @@ function completionsForSimpleType(smType: sch.SimpleType) {
         }
     }
 
-    if (smType.evalues) {
+    if (smType.emap) {
         for (const e of smType.emap.values()) {
             const tc = <vs.CompletionItem>{
                 label: e.name,
