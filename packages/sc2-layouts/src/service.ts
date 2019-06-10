@@ -22,7 +22,7 @@ import { SchemaLoader } from './schemaLoader';
 
 export enum ExtCfgSchemaUpdateMode {
     Auto = 'auto',
-    Manual = 'auto',
+    Manual = 'manual',
 }
 
 export interface ExtCfgSchema {

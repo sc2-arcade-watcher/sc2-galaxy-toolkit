@@ -3,7 +3,7 @@
 ## Unreleased
 
 * Added experimental frame properties panel which works in accordance to existing DescTree. Properties panel will display any selected node from DescTree.
-* Moved schema files of `SC2Layout` to separate [repository](https://github.com/SC2Mapster/sc2layout-schema). They won't be bundled with the extension anymore. Instead extension will download them automatically from linked repo. And keep it in sync with `master` branch under default configuration.
+* Moved schema files of `SC2Layout` to separate [repository](https://github.com/SC2Mapster/sc2layout-schema). They won't be bundled with the extension anymore. Instead extension will download them automatically in form of a zipball, of most recently Git tagged commit under default configuration.
 
 ## [0.8.0] - 2019-05-22
 

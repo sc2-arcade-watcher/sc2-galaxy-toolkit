@@ -55,7 +55,7 @@ export const enum MappedComplexKind {
     CFrameStateCreateFromTemplateAction,
 }
 
-//
+export const CurrentModelVersion = 2;
 
 export enum ModelKind {
     SimpleType = 'simpleType',
