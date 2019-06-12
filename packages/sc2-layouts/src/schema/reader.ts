@@ -35,6 +35,7 @@ export namespace sraw {
     }
 
     export type SimpleType = NamedDefinition & {
+        label?: string;
         data?: string;
         kind?: ESimpleTypeKind;
         internalType?: string;
@@ -61,6 +62,7 @@ export namespace sraw {
 
     export type ComplexType = NamedDefinition & {
         label?: string;
+        documentation?: string;
         extend?: {
             value: string;
         }[];
@@ -69,6 +71,7 @@ export namespace sraw {
             type: string;
             use?: keyof typeof EUseAttr;
             default?: string;
+            label?: string;
             documentation?: string;
         }[];
         indeterminateAttribute: {
@@ -115,8 +118,8 @@ export namespace sraw {
     };
 
     export type FrameType = NamedDefinition & {
-        frameType: string;
-        descType: string;
+        name: string;
+        descType?: string;
         classType: string;
         blizzOnly: boolean;
     };
@@ -280,6 +283,9 @@ function readSimpleType(el: xmljs.Element) {
             },
         },
         props: {
+            label: {
+                single: true,
+            },
             enumeration: {
                 props: {
                     label: {
@@ -299,6 +305,22 @@ function readComplexType(el: xmljs.Element) {
             element: [],
         },
         props: {
+            label: {
+                single: true,
+            },
+            documentation: {
+                single: true,
+            },
+            attribute: {
+                props: {
+                    label: {
+                        single: true,
+                    },
+                    documentation: {
+                        single: true,
+                    },
+                },
+            },
             element: {
                 reader: (childTarget, childEl) => {
                     if (childEl.attributes.ref) {

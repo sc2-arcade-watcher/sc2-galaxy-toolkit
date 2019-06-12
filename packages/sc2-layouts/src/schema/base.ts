@@ -55,7 +55,7 @@ export const enum MappedComplexKind {
     CFrameStateCreateFromTemplateAction,
 }
 
-export const CurrentModelVersion = 2;
+export const CurrentModelVersion = 3;
 
 export enum ModelKind {
     SimpleType = 'simpleType',
@@ -113,6 +113,7 @@ export interface SimpleType extends AbstractModel {
     union?: SimpleType[];
     emap?: Map<string, SEnumInfo>;
     patterns?: RegExp[];
+    label?: string;
 }
 
 // ===
@@ -122,6 +123,7 @@ export interface Attribute {
     type: SimpleType;
     required: boolean;
     default?: string;
+    label?: string;
     documentation?: string;
 }
 
@@ -136,6 +138,17 @@ export const enum ComplexTypeFlags {
     AllowExtraAttrs     = 1 << 13,
 }
 
+interface ComplexTypeInheritance {
+    from: Map<string, ComplexType>;
+    attrs: Map<Attribute, ComplexType>;
+    elements: Map<ElementDef, ComplexType>;
+}
+
+interface ComplexTypeOrigin {
+    attrs: Set<Attribute>;
+    elements: Set<ElementDef>;
+}
+
 export interface ComplexType extends AbstractModel {
     mpKind: MappedComplexKind;
     flags: CommonTypeFlags | ComplexTypeFlags;
@@ -143,7 +156,9 @@ export interface ComplexType extends AbstractModel {
     indeterminateAttributes: Map<string, IndeterminateAttr>;
     struct: Map<string, ElementDef>;
     label?: string;
-    inherits: ComplexType[];
+    documentation?: string;
+    inheritance: ComplexTypeInheritance;
+    origin: ComplexTypeOrigin;
 }
 
 export const enum ElementDefFlags {
@@ -200,6 +215,7 @@ export interface FrameClass {
 export interface FrameType {
     name: string;
     blizzOnly: boolean;
+    customDesc?: ComplexType;
     fclasses: Map<string, FrameClass>;
     fprops: Map<string, FrameProperty>;
     complexType: ComplexType;

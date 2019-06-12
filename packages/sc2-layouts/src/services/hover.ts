@@ -8,8 +8,8 @@ import { vsRangeOrPositionOfXNode } from './helpers';
 function attrSchDocs(sAttr: sch.Attribute)  {
     let s = '';
     s += `&nbsp;**@**${sAttr.name}${(sAttr.required ? '' : '?')} — [${sAttr.type.name}](https://mapster.talv.space/layouts/frame)`;
-    if (sAttr.documentation) {
-        s += ' — ' + sAttr.documentation;
+    if (sAttr.label) {
+        s += ' — ' + sAttr.label;
     }
     return s;
 }

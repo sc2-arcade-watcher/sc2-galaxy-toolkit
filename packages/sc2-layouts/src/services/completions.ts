@@ -642,7 +642,7 @@ class AttrNameProvider extends SuggestionsProvider {
                 filterText: sAttrItem.name,
                 kind: vs.CompletionItemKind.Field,
                 detail: sAttrItem.type.name,
-                documentation: new vs.MarkdownString(sAttrItem.documentation),
+                documentation: new vs.MarkdownString(sAttrItem.label),
                 insertText: sAttrItem.name,
             };
             if (!atHasValue) {
