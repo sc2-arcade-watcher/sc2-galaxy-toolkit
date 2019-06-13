@@ -373,6 +373,8 @@ function initializeRegistry(rawEntries: SRawEntries): RegistryCatalog {
         const objComplexType = createComplexType({
             name: sFrameType.name,
             flags: sch.CommonTypeFlags.Virtual,
+            label: sFrameType.label,
+            documentation: sFrameType.documentation,
         });
 
         objFrameType.complexType = objComplexType;

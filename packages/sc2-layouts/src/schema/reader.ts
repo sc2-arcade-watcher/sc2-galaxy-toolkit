@@ -122,6 +122,8 @@ export namespace sraw {
         descType?: string;
         classType: string;
         blizzOnly: boolean;
+        label?: string;
+        documentation?: string;
     };
 }
 
@@ -368,6 +370,14 @@ function readFrameClass(el: xmljs.Element) {
 
 function readFrameType(el: xmljs.Element) {
     return createNamedDefinition<sraw.FrameType>(el, sch.ModelKind.FrameType, {
+        props: {
+            label: {
+                single: true,
+            },
+            documentation: {
+                single: true,
+            },
+        },
     });
 }
 
