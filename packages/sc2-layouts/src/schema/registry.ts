@@ -1,7 +1,8 @@
 import * as sch from './base';
 import { readSchema, createDefaultSchemaFileProvider, sraw, SRawEntries } from './reader';
+import { readMdStorage, MdFileStorage, getMdFilenameOfType, mdContentToDef } from './localization';
 
-class DefinitionMap<T> extends Map<string, T> {
+export class DefinitionMap<T> extends Map<string, T> {
     mustGet(key: string): T {
         const r = this.get(key);
         if (r === void 0) throw new Error(`Element definition "${key}" doesn't exist`);
@@ -27,6 +28,7 @@ type NamedPartial<T> = Partial<T> & {
 
 function createSimpleType(opts: NamedPartial<sch.SimpleType>): sch.SimpleType {
     return Object.assign({
+        smKind: sch.ModelKind.SimpleType,
         flags: 0,
         builtinType: sch.BuiltinTypeKind.Unknown,
         kind: sch.SimpleTypeKind.Default,
@@ -36,6 +38,7 @@ function createSimpleType(opts: NamedPartial<sch.SimpleType>): sch.SimpleType {
 
 function createComplexType(opts: NamedPartial<sch.ComplexType>): sch.ComplexType {
     return Object.assign<sch.ComplexType, NamedPartial<sch.ComplexType>>({
+        smKind: sch.ModelKind.ComplexType,
         name: void 0,
         mpKind: sch.MappedComplexKind.Unknown,
         flags: 0,
@@ -54,7 +57,17 @@ function createComplexType(opts: NamedPartial<sch.ComplexType>): sch.ComplexType
     }, opts);
 }
 
-function initializeRegistry(rawEntries: SRawEntries): RegistryCatalog {
+function createElementDef(opts: NamedPartial<sch.ElementDef>): sch.ElementDef {
+    return Object.assign<sch.ElementDef, NamedPartial<sch.ElementDef>>({
+        smKind: sch.ModelKind.Element,
+        name: void 0,
+        type: void 0,
+        flags: 0,
+        nodeKind: sch.ElementDefKind.Unknown,
+    }, opts);
+}
+
+function initializeRegistry(rawEntries: SRawEntries, mdStorage: MdFileStorage): RegistryCatalog {
     const indexedRawEntries = {
         simpleType: new DefinitionMap<sraw.SimpleType>(),
         complexType: new DefinitionMap<sraw.ComplexType>(),
@@ -74,7 +87,26 @@ function initializeRegistry(rawEntries: SRawEntries): RegistryCatalog {
         frameType: new DefinitionMap<sch.FrameType>(),
     };
 
+    function applyLocalizationText(cType: sch.AbstractModel) {
+        switch (cType.smKind) {
+            case sch.ModelKind.SimpleType:
+            case sch.ModelKind.ComplexType:
+            {
+                if ((<sch.SimpleType | sch.ComplexType>cType).flags & sch.CommonTypeFlags.Virtual) {
+                    return;
+                }
+                break;
+            }
+        }
+
+        const mContent = mdStorage.get(getMdFilenameOfType(cType));
+        if (!mContent) return;
+
+        mdContentToDef(cType, mContent);
+    }
+
     function addToRegistry<T extends sch.AbstractModel>(mKind: sch.ModelKind, obj: sch.AbstractModel) {
+        applyLocalizationText(obj);
         registry[mKind].set(obj.name, <any>obj);
         return <T>obj;
     }
@@ -96,7 +128,6 @@ function initializeRegistry(rawEntries: SRawEntries): RegistryCatalog {
     function setupSimpleType(sType: sraw.SimpleType) {
         const objSimpleType = createSimpleType({
             name: sType.name,
-            label: sType.label,
         });
         const builtinId: sch.BuiltinTypeKind = (<any>sch).BuiltinTypeKind[sType.name.split(':')[0]];
         if (builtinId) {
@@ -116,7 +147,6 @@ function initializeRegistry(rawEntries: SRawEntries): RegistryCatalog {
             sType.enumeration.forEach(def => {
                 objSimpleType.emap.set(def.value.toLowerCase(), {
                     name: def.value,
-                    label: def.label,
                 });
             });
             if (sType.kind === sraw.ESimpleTypeKind.flags) objSimpleType.kind = sch.SimpleTypeKind.Flags;
@@ -194,8 +224,6 @@ function initializeRegistry(rawEntries: SRawEntries): RegistryCatalog {
     function setupComplexType(item: sraw.ComplexType) {
         const ct = createComplexType({
             name: item.name,
-            label: item.label,
-            documentation: item.documentation,
         });
         const mappedKind: sch.MappedComplexKind = (<any>sch).MappedComplexKind[item.name];
         if (mappedKind) {
@@ -215,8 +243,6 @@ function initializeRegistry(rawEntries: SRawEntries): RegistryCatalog {
                 required: (attr.use && attr.use === 'required') ? true : false,
                 default: attr.default,
             };
-            scAttr.label = attr.label;
-            scAttr.documentation = attr.documentation;
             ct.attributes.set(attr.name.toLowerCase(), scAttr);
             ct.origin.attrs.add(scAttr);
         }
@@ -271,14 +297,10 @@ function initializeRegistry(rawEntries: SRawEntries): RegistryCatalog {
             throw new Error('type not specified');
         }
 
-        const scEl = <sch.ElementDef>{
-            flags: 0,
+        const scEl: sch.ElementDef = createElementDef({
             name: el.name,
             type: elComplexType,
-        };
-
-        scEl.label = el.label;
-        scEl.documentation = el.documentation;
+        });
 
         if (el.alternative) {
             scEl.flags |= sch.ElementDefFlags.TypeAlternation;
@@ -329,23 +351,21 @@ function initializeRegistry(rawEntries: SRawEntries): RegistryCatalog {
     function setupFrameClass(sFrameClass: sraw.FrameClass) {
         if (registry.frameClass.has(sFrameClass.name)) return;
 
-        const objFrameClass = <sch.FrameClass>{
+        const objFrameClass: sch.FrameClass = {
+            smKind: sch.ModelKind.FrameClass,
             name: sFrameClass.name,
             cparent: sFrameClass.parent ? getOrSetupFrameClass(sFrameClass.parent) : void 0,
             properties: new Map<string, sch.FrameProperty>(),
         };
 
         for (const spProp of sFrameClass.property) {
-            const elDef = <sch.ElementDef>{
-                flags: 0,
+            const elDef = createElementDef({
                 nodeKind: sch.ElementDefKind.FrameProperty,
                 name: spProp.name,
                 type: setupFieldType(spProp),
-                label: spProp.label,
-                documentation: spProp.documentation,
-            };
+            });
 
-            const scProperty = <sch.FrameProperty>{
+            const scProperty: sch.FrameProperty = {
                 name: spProp.name,
                 etype: elDef,
                 fclass: objFrameClass,
@@ -363,6 +383,7 @@ function initializeRegistry(rawEntries: SRawEntries): RegistryCatalog {
 
     function setupFrameType(sFrameType: sraw.FrameType) {
         const objFrameType: sch.FrameType = {
+            smKind: sch.ModelKind.FrameType,
             name: sFrameType.name,
             blizzOnly: sFrameType.blizzOnly,
             fclasses: new Map<string, sch.FrameClass>(),
@@ -373,8 +394,6 @@ function initializeRegistry(rawEntries: SRawEntries): RegistryCatalog {
         const objComplexType = createComplexType({
             name: sFrameType.name,
             flags: sch.CommonTypeFlags.Virtual,
-            label: sFrameType.label,
-            documentation: sFrameType.documentation,
         });
 
         objFrameType.complexType = objComplexType;
@@ -402,6 +421,7 @@ function initializeRegistry(rawEntries: SRawEntries): RegistryCatalog {
         fmtElement.flags |= sch.ElementDefFlags.TypeAlternation;
 
         const fmtEnum = registry.simpleType.mustGet('EFrameType');
+        fmtEnum.flags |= sch.CommonTypeFlags.Virtual;
         fmtEnum.kind = sch.SimpleTypeKind.Enumaration;
         fmtEnum.emap = new Map();
 
@@ -546,9 +566,9 @@ export class SchemaRegistryBrowser implements sch.SchemaRegistry {
 }
 
 export function generateSchema(src: string) {
-    const rawEntries = readSchema(
-        createDefaultSchemaFileProvider(src)
-    );
-    const registryData = initializeRegistry(rawEntries);
+    const sfProvider = createDefaultSchemaFileProvider(src);
+    const rawEntries = readSchema(sfProvider);
+    const mdStorage = readMdStorage(sfProvider);
+    const registryData = initializeRegistry(rawEntries, mdStorage);
     return new SchemaRegistryBrowser(registryData);
 }

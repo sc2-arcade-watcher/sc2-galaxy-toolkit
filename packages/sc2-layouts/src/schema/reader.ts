@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as xmljs from 'xml-js';
 import * as sch from './base';
+import * as glob from 'glob';
 
 export function createDefaultSchemaFileProvider(schDir: string): sch.SchemaFileProvider {
     function readFile(filename: string): string {
@@ -12,8 +13,16 @@ export function createDefaultSchemaFileProvider(schDir: string): sch.SchemaFileP
         return fs.readFileSync(path.join(schDir, filename), 'utf8');
     }
 
+    function listDir(pattern: string) {
+        return glob.sync(pattern, {
+            cwd: schDir,
+            nodir: true,
+        });
+    }
+
     return {
         readFile,
+        listDir,
     };
 }
 
@@ -35,7 +44,6 @@ export namespace sraw {
     }
 
     export type SimpleType = NamedDefinition & {
-        label?: string;
         data?: string;
         kind?: ESimpleTypeKind;
         internalType?: string;
@@ -44,7 +52,6 @@ export namespace sraw {
         }[];
         enumeration?: {
             value: string;
-            label?: string;
         }[];
         union?: {
             value: string;
@@ -61,8 +68,6 @@ export namespace sraw {
     }
 
     export type ComplexType = NamedDefinition & {
-        label?: string;
-        documentation?: string;
         extend?: {
             value: string;
         }[];
@@ -71,8 +76,6 @@ export namespace sraw {
             type: string;
             use?: keyof typeof EUseAttr;
             default?: string;
-            label?: string;
-            documentation?: string;
         }[];
         indeterminateAttribute: {
             key: string;
@@ -93,8 +96,6 @@ export namespace sraw {
         simpleType?: string;
         table?: boolean;
         type?: string;
-        label?: string;
-        documentation?: string;
         alternative?: {
             test: string;
             type: string;
@@ -108,13 +109,11 @@ export namespace sraw {
         elementType?: string;
         valueType?: string;
         readonly?: boolean;
-        label?: string;
-        documentation?: string;
     };
 
     export type FrameClass = NamedDefinition & {
         parent?: string;
-        property?: FrameClassProperty[];
+        property: FrameClassProperty[];
     };
 
     export type FrameType = NamedDefinition & {
@@ -122,8 +121,6 @@ export namespace sraw {
         descType?: string;
         classType: string;
         blizzOnly: boolean;
-        label?: string;
-        documentation?: string;
     };
 }
 
@@ -285,16 +282,6 @@ function readSimpleType(el: xmljs.Element) {
             },
         },
         props: {
-            label: {
-                single: true,
-            },
-            enumeration: {
-                props: {
-                    label: {
-                        single: true,
-                    }
-                }
-            },
         },
     });
 }
@@ -307,22 +294,6 @@ function readComplexType(el: xmljs.Element) {
             element: [],
         },
         props: {
-            label: {
-                single: true,
-            },
-            documentation: {
-                single: true,
-            },
-            attribute: {
-                props: {
-                    label: {
-                        single: true,
-                    },
-                    documentation: {
-                        single: true,
-                    },
-                },
-            },
             element: {
                 reader: (childTarget, childEl) => {
                     if (childEl.attributes.ref) {
@@ -338,12 +309,6 @@ function readComplexType(el: xmljs.Element) {
 function readElementType(el: xmljs.Element) {
     return createNamedDefinition<sraw.ElementType>(el, sch.ModelKind.Element, {
         props: {
-            label: {
-                single: true,
-            },
-            documentation: {
-                single: true,
-            },
         },
     });
 }
@@ -356,12 +321,6 @@ function readFrameClass(el: xmljs.Element) {
         props: {
             property: {
                 props: {
-                    label: {
-                        single: true,
-                    },
-                    documentation: {
-                        single: true,
-                    },
                 },
             },
         },
@@ -371,12 +330,6 @@ function readFrameClass(el: xmljs.Element) {
 function readFrameType(el: xmljs.Element) {
     return createNamedDefinition<sraw.FrameType>(el, sch.ModelKind.FrameType, {
         props: {
-            label: {
-                single: true,
-            },
-            documentation: {
-                single: true,
-            },
         },
     });
 }

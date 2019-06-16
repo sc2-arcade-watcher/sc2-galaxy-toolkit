@@ -68,9 +68,9 @@ export enum ModelKind {
 export type ModelKindT = 'simpleType' | 'complexType' | 'element' | 'frameClass' | 'frameType';
 
 export interface AbstractModel {
-    smKind?: ModelKind;
+    smKind: ModelKind;
     name: string;
-    flags?: CommonTypeFlags | any;
+    // flags?: CommonTypeFlags | any;
 }
 
 export enum CommonTypeFlags {
@@ -114,6 +114,7 @@ export interface SimpleType extends AbstractModel {
     emap?: Map<string, SEnumInfo>;
     patterns?: RegExp[];
     label?: string;
+    documentation?: string;
 }
 
 // ===
@@ -185,7 +186,7 @@ export enum ElementDefKind {
     StateGroupStateAction,
 }
 
-export interface ElementDef {
+export interface ElementDef extends AbstractModel {
     nodeKind: ElementDefKind;
     flags: ElementDefFlags;
     name: string;
@@ -206,13 +207,13 @@ export interface FrameProperty {
     tableKey: string;
 }
 
-export interface FrameClass {
+export interface FrameClass extends AbstractModel {
     name: string;
     cparent?: FrameClass;
     properties: Map<string, FrameProperty>;
 }
 
-export interface FrameType {
+export interface FrameType extends AbstractModel {
     name: string;
     blizzOnly: boolean;
     customDesc?: ComplexType;
@@ -238,4 +239,5 @@ export interface SchemaRegistry {
 
 export interface SchemaFileProvider {
     readFile(filename: string): string;
+    listDir(pattern: string): string[];
 }
