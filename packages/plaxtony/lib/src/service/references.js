@@ -15,7 +15,7 @@ class ReferencesProvider extends provider_1.AbstractProvider {
         };
     }
     collectReferences(sourceFile, child) {
-        if (child.kind === 112 /* Identifier */ && this.checker.getSymbolAtLocation(child) === this.searchSymbol) {
+        if (child.kind === 113 /* Identifier */ && this.checker.getSymbolAtLocation(child) === this.searchSymbol) {
             this.locations.push({
                 uri: sourceFile.fileName,
                 range: {

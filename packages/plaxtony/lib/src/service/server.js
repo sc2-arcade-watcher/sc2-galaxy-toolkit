@@ -41,15 +41,15 @@ function getNodeRange(node) {
 }
 function translateNodeKind(node) {
     switch (node.kind) {
-        case 139 /* VariableDeclaration */:
+        case 141 /* VariableDeclaration */:
             const variable = node;
             const isConstant = variable.modifiers.some((value) => {
                 return value.kind === 53 /* ConstKeyword */;
             });
             return isConstant ? lsp.SymbolKind.Constant : lsp.SymbolKind.Variable;
-        case 140 /* FunctionDeclaration */:
+        case 142 /* FunctionDeclaration */:
             return lsp.SymbolKind.Function;
-        case 138 /* StructDeclaration */:
+        case 140 /* StructDeclaration */:
             return lsp.SymbolKind.Class;
         default:
             return lsp.SymbolKind.Field;
@@ -60,7 +60,7 @@ function translateDeclaratons(origDeclarations) {
     let kind;
     for (let node of origDeclarations) {
         const sourceFile = utils_1.findAncestor(node, (element) => {
-            return element.kind === 126 /* SourceFile */;
+            return element.kind === 127 /* SourceFile */;
         });
         symbols.push({
             kind: translateNodeKind(node),
@@ -257,7 +257,7 @@ class Server {
                 this.workspaceWatcher = new store_1.WorkspaceWatcher(rootPath);
             }
             if (!workspace) {
-                workspace = new archive_1.SC2Workspace(null, [new archive_1.SC2Archive('mods/core.sc2mod', archive_1.resolveArchiveDirectory('mods/core.sc2mod', modSources))]);
+                workspace = new archive_1.SC2Workspace(null, [new archive_1.SC2Archive('mods/core.sc2mod', yield archive_1.resolveArchiveDirectory('mods/core.sc2mod', modSources))]);
             }
             this.connection.sendNotification('indexProgress', 'Indexing trigger libraries and data catalogs..');
             yield this.store.updateS2Workspace(workspace, this.config.localization);
@@ -395,7 +395,9 @@ class Server {
             return;
         if (this.documents.get(documentUri).version > req.version)
             return;
-        this.diagnosticsProvider.checkFile(documentUri);
+        if (this.store.isUriInWorkspace(documentUri)) {
+            this.diagnosticsProvider.checkFile(documentUri);
+        }
         this.connection.sendDiagnostics({
             uri: documentUri,
             diagnostics: this.diagnosticsProvider.provideDiagnostics(documentUri),

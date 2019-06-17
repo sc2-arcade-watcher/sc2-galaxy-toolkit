@@ -16,6 +16,7 @@ const xml = require("xml2js");
 const trig = require("./trigger");
 const cat = require("./datacatalog");
 const loc = require("./localization");
+const utils_1 = require("../service/utils");
 function isSC2Archive(directory) {
     return /\.(SC2Mod|SC2Map|SC2Campaign)$/i.exec(path.basename(directory));
 }
@@ -169,15 +170,14 @@ class LocalizationComponent extends Component {
 }
 exports.LocalizationComponent = LocalizationComponent;
 function resolveArchiveDirectory(name, sources) {
-    for (const src of sources) {
-        if (fs.existsSync(path.join(src, name).toLowerCase())) {
-            return path.join(src, name).toLowerCase();
+    return __awaiter(this, void 0, void 0, function* () {
+        for (const src of sources) {
+            const results = yield utils_1.globify(`${name}/`, { nocase: true, realpath: true, cwd: src });
+            if (results.length) {
+                return results[0];
+            }
         }
-        const results = glob.sync(name, { nocase: true, realpath: true, cwd: src });
-        if (results.length) {
-            return results[0];
-        }
-    }
+    });
 }
 exports.resolveArchiveDirectory = resolveArchiveDirectory;
 function resolveArchiveDependencyList(rootArchive, sources, overrides = null) {
@@ -198,7 +198,7 @@ function resolveArchiveDependencyList(rootArchive, sources, overrides = null) {
                         dir = overrides.get(entry);
                     }
                     else {
-                        dir = resolveArchiveDirectory(entry, sources);
+                        dir = yield resolveArchiveDirectory(entry, sources);
                     }
                     if (dir) {
                         yield resolveWorker(new SC2Archive(entry, dir));

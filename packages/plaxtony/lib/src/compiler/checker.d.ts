@@ -106,6 +106,7 @@ export declare class TypeChecker {
     private nodeLinks;
     private diagnostics;
     private currentSymbolContainer;
+    private currentSymbolReferences;
     private currentDocuments;
     constructor(store: Store);
     private report(location, msg, category?);
@@ -128,14 +129,17 @@ export declare class TypeChecker {
     getTypeOfNode(node: gt.Node, followRef?: boolean): AbstractType;
     private getRegularTypeOfExpression(expr);
     private getTypeOfExpression(node, cache?);
+    private clear();
     checkSourceFile(sourceFile: gt.SourceFile, bindSymbols?: boolean): gt.Diagnostic[];
     protected checkSourceFileRecursivelyWorker(sourceFile: gt.SourceFile): void;
     checkSourceFileRecursively(sourceFile: gt.SourceFile): {
         success: boolean;
         diagnostics: Map<string, gt.Diagnostic[]>;
     };
+    private checkSymbolDefinitions();
     private checkSourceElement(node);
     private checkIncludeStatement(node);
+    private checkDeclarationType(node);
     private checkFunction(node);
     private checkParameterDeclaration(node);
     private checkVariableDeclaration(node);
@@ -156,7 +160,7 @@ export declare class TypeChecker {
     private checkParenthesizedExpression(node, checkMode?);
     private checkPrefixUnaryExpression(node, checkMode?);
     private checkPostfixUnaryExpression(node, checkMode?);
-    private checkIdentifier(node, checkSymbol?);
+    private checkIdentifier(node, checkSymbol?, definitionReferenced?);
     private checkCallExpression(node);
     private checkIndexedAccess(node);
     private checkPropertyAccessExpression(node);

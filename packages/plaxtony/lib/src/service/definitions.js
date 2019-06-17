@@ -10,7 +10,7 @@ class DefinitionProvider extends provider_1.AbstractProvider {
         if (!sourceFile)
             return;
         const currentToken = utils_2.getTokenAtPosition(position, sourceFile);
-        if (!currentToken || currentToken.kind !== 112 /* Identifier */) {
+        if (!currentToken || currentToken.kind !== 113 /* Identifier */) {
             return [];
         }
         const definitions = [];

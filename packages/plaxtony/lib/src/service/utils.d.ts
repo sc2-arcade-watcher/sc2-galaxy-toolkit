@@ -1,3 +1,5 @@
+/// <reference types="glob" />
+import * as glob from 'glob';
 import * as gt from '../compiler/types';
 import * as lsp from 'vscode-languageserver';
 export declare function getNodeChildren(node: gt.Node): gt.Node[];
@@ -10,3 +12,4 @@ export declare function getAdjacentToken(position: number, sourceFile: gt.Source
 export declare function getPositionOfLineAndCharacter(sourceFile: gt.SourceFile, line: number, character: number): number;
 export declare function getLineAndCharacterOfPosition(sourceFile: gt.SourceFile, pos: number): lsp.Position;
 export declare function fuzzysearch(needle: string, haystack: string): boolean;
+export declare const globify: typeof glob.__promisify__;

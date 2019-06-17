@@ -70,6 +70,7 @@ export declare class Parser {
     private parseTypedefDeclaration();
     private parseReturnStatement();
     private parseBreakOrContinueStatement(kind);
+    private parseBreakpointStatement();
     private parseExpressionStatement();
     private parseEmptyStatement();
     private parseIfStatement();

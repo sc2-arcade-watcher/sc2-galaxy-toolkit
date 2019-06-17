@@ -64,7 +64,7 @@ describe('Checker', () => {
             it('funcref', () => {
                 type = getNodeTypeAt(checker, sourceFile, 29, 6);
                 chai_1.assert.isOk(type instanceof tc.ReferenceType);
-                chai_1.assert.isOk(type.kind & 111 /* FuncrefKeyword */);
+                chai_1.assert.isOk(type.kind & 112 /* FuncrefKeyword */);
                 chai_1.assert.isOk(type.declaredType.symbol.escapedName, 'fprototype');
             });
             it('code validation', () => {
@@ -83,14 +83,14 @@ describe('Checker', () => {
             it('ref []', () => {
                 type = getNodeTypeAt(checker, sourceFile, 7, 5);
                 chai_1.assert.isOk(type instanceof tc.ReferenceType);
-                chai_1.assert.isOk(type.kind & 109 /* ArrayrefKeyword */);
+                chai_1.assert.isOk(type.kind & 110 /* ArrayrefKeyword */);
                 chai_1.assert.isOk(type.declaredType.flags & 65536 /* Array */);
                 chai_1.assert.isOk(type.declaredType.elementType.flags & 2 /* String */);
             });
             it('ref [][]', () => {
                 type = getNodeTypeAt(checker, sourceFile, 8, 5);
                 chai_1.assert.isOk(type instanceof tc.ReferenceType);
-                chai_1.assert.isOk(type.kind & 109 /* ArrayrefKeyword */);
+                chai_1.assert.isOk(type.kind & 110 /* ArrayrefKeyword */);
                 chai_1.assert.isOk(type.declaredType.flags & 65536 /* Array */);
                 chai_1.assert.isOk(type.declaredType.elementType.flags & 65536 /* Array */);
             });
@@ -118,7 +118,7 @@ describe('Checker', () => {
             chai_1.assert.isAbove(type.flags & 2 /* String */, 0, '[].');
             type = getNodeTypeAt(checker, sourceFile, 23, 37);
             chai_1.assert.isAbove(type.flags & 32768 /* Complex */, 0, '[].[].');
-            chai_1.assert.equal(type.kind, 101 /* UnitKeyword */);
+            chai_1.assert.equal(type.kind, 102 /* UnitKeyword */);
         });
         it('structref property', () => {
             let type;
@@ -282,13 +282,36 @@ describe('Checker', () => {
         });
     });
     describe('Diagnostics Recursive', () => {
-        it('simple', () => __awaiter(this, void 0, void 0, function* () {
-            const store = yield helpers_1.mockupStoreFromDirectory(path.resolve('tests/fixtures/type_checker/diagnostics_recursive/simple'));
-            const checker = new checker_1.TypeChecker(store);
-            const sourceFile = store.documents.get(vscode_uri_1.default.file(path.join(store.rootPath, 'MapScript.galaxy')).toString());
-            const diagnostics = checker.checkSourceFileRecursively(sourceFile);
-            chai_1.assert.isTrue(diagnostics.success);
-        }));
+        const drFixturesDir = 'tests/fixtures/type_checker/diagnostics_recursive';
+        for (let nsName of fs.readdirSync(path.resolve(drFixturesDir))) {
+            for (let nsCurrentFilename of fs.readdirSync(path.resolve(drFixturesDir, nsName))) {
+                const matchedTestFile = nsCurrentFilename.match(/^(([\w]+)_(pass|fail))\.galaxy$/);
+                if (!matchedTestFile)
+                    continue;
+                it(`${nsName}/${matchedTestFile[1]}`, () => __awaiter(this, void 0, void 0, function* () {
+                    const store = yield helpers_1.mockupStoreFromDirectory(path.resolve(drFixturesDir, nsName));
+                    const checker = new checker_1.TypeChecker(store);
+                    const sourceFile = store.documents.get(vscode_uri_1.default.file(path.resolve(drFixturesDir, nsName, nsCurrentFilename)).toString());
+                    const result = checker.checkSourceFileRecursively(sourceFile);
+                    switch (matchedTestFile[3]) {
+                        case 'pass':
+                            {
+                                chai_1.assert.isTrue(result.success, Array.from(result.diagnostics.values())[0].map(item => item.messageText).join('\n'));
+                                break;
+                            }
+                        case 'fail':
+                            {
+                                chai_1.assert.isFalse(result.success);
+                                break;
+                            }
+                        default:
+                            {
+                                throw new Error();
+                            }
+                    }
+                }));
+            }
+        }
     });
 });
 //# sourceMappingURL=typechecker.js.map

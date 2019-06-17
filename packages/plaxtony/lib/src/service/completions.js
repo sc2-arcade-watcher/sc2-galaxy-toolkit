@@ -54,10 +54,10 @@ class CompletionsProvider extends provider_1.AbstractProvider {
                 }
             }
             if (!paramElement) {
-                if (param.type.kind === 73 /* IntKeyword */) {
+                if (param.type.kind === 74 /* IntKeyword */) {
                     args.push('0');
                 }
-                else if (param.type.kind === 74 /* FixedKeyword */) {
+                else if (param.type.kind === 75 /* FixedKeyword */) {
                     args.push('0.0');
                 }
                 else {
@@ -102,20 +102,20 @@ class CompletionsProvider extends provider_1.AbstractProvider {
             data: {},
         };
         switch (node.kind) {
-            case 138 /* StructDeclaration */:
+            case 140 /* StructDeclaration */:
                 item.kind = lsp.CompletionItemKind.Class;
                 break;
-            case 140 /* FunctionDeclaration */:
+            case 142 /* FunctionDeclaration */:
                 item.kind = lsp.CompletionItemKind.Function;
                 break;
-            case 139 /* VariableDeclaration */:
-            case 141 /* ParameterDeclaration */:
+            case 141 /* VariableDeclaration */:
+            case 143 /* ParameterDeclaration */:
                 item.kind = lsp.CompletionItemKind.Variable;
                 break;
-            case 142 /* PropertyDeclaration */:
+            case 144 /* PropertyDeclaration */:
                 item.kind = lsp.CompletionItemKind.Property;
                 break;
-            case 143 /* TypedefDeclaration */:
+            case 145 /* TypedefDeclaration */:
                 item.kind = lsp.CompletionItemKind.Interface;
                 break;
             default:
@@ -143,16 +143,16 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         let completions = [];
         for (const document of this.store.documents.values()) {
             for (const [name, symbol] of document.symbol.members) {
-                if (symbol.declarations[0].kind !== 140 /* FunctionDeclaration */)
+                if (symbol.declarations[0].kind !== 142 /* FunctionDeclaration */)
                     continue;
                 const funcDecl = symbol.declarations[0];
-                if (funcDecl.type.kind !== 70 /* BoolKeyword */)
+                if (funcDecl.type.kind !== 71 /* BoolKeyword */)
                     continue;
                 if (funcDecl.parameters.length !== 2)
                     continue;
-                if (funcDecl.parameters[0].type.kind !== 70 /* BoolKeyword */)
+                if (funcDecl.parameters[0].type.kind !== 71 /* BoolKeyword */)
                     continue;
-                if (funcDecl.parameters[1].type.kind !== 70 /* BoolKeyword */)
+                if (funcDecl.parameters[1].type.kind !== 71 /* BoolKeyword */)
                     continue;
                 const item = this.buildFromSymbolDecl(symbol);
                 item.data.flags = 0;
@@ -194,14 +194,14 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         // query
         let query = null;
         const processedSymbols = new Map();
-        if (currentToken && currentToken.pos <= position && currentToken.end >= position && currentToken.kind === 112 /* Identifier */) {
+        if (currentToken && currentToken.pos <= position && currentToken.end >= position && currentToken.kind === 113 /* Identifier */) {
             const offset = position - currentToken.pos;
             query = currentToken.name.substr(0, offset);
         }
         // trigger handlers
-        if (currentToken && currentToken.kind === 3 /* StringLiteral */ && currentToken.parent.kind === 120 /* CallExpression */) {
+        if (currentToken && currentToken.kind === 3 /* StringLiteral */ && currentToken.parent.kind === 121 /* CallExpression */) {
             const callExpr = currentToken.parent;
-            if (callExpr.expression.kind === 112 /* Identifier */ &&
+            if (callExpr.expression.kind === 113 /* Identifier */ &&
                 (callExpr.expression).name === "TriggerCreate") {
                 return {
                     items: this.provideTriggerHandlers(),
@@ -210,7 +210,7 @@ class CompletionsProvider extends provider_1.AbstractProvider {
             }
         }
         // include
-        if (currentToken && currentToken.kind === 3 /* StringLiteral */ && currentToken.pos <= position && currentToken.end >= position && currentToken.parent.kind === 134 /* IncludeStatement */) {
+        if (currentToken && currentToken.kind === 3 /* StringLiteral */ && currentToken.pos <= position && currentToken.end >= position && currentToken.parent.kind === 136 /* IncludeStatement */) {
             const inclStmt = currentToken.parent;
             const offset = position - currentToken.pos;
             query = currentToken.text.substr(1, offset - 1).replace(/(\/*)[^\/]+$/, '$1');
@@ -287,8 +287,8 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         }
         // properties
         if (currentToken) {
-            if ((currentToken.kind === 10 /* DotToken */ || currentToken.kind === 112 /* Identifier */) &&
-                (currentToken.parent.kind === 119 /* PropertyAccessExpression */ && currentToken.parent.expression !== currentToken)) {
+            if ((currentToken.kind === 10 /* DotToken */ || currentToken.kind === 113 /* Identifier */) &&
+                (currentToken.parent.kind === 120 /* PropertyAccessExpression */ && currentToken.parent.expression !== currentToken)) {
                 const checker = new checker_1.TypeChecker(this.store);
                 currentToken = currentToken.parent.expression;
                 const type = checker.getTypeOfNode(currentToken, true);
@@ -303,7 +303,7 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         // local variables
         if (currentToken) {
             const currentContext = utils_1.findAncestor(currentToken, (element) => {
-                return element.kind === 140 /* FunctionDeclaration */;
+                return element.kind === 142 /* FunctionDeclaration */;
             });
             if (currentContext) {
                 completions = completions.concat(this.buildFromSymbolMembers(currentContext.symbol, query));
@@ -325,7 +325,7 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         //     }
         // }
         // keywords
-        for (let i = 50 /* FirstKeyword */; i <= 111 /* LastKeyword */; i++) {
+        for (let i = 50 /* FirstKeyword */; i <= 112 /* LastKeyword */; i++) {
             const name = scanner_1.tokenToString(i);
             if (!query || utils_2.fuzzysearch(query, name)) {
                 completions.push({
@@ -337,12 +337,12 @@ class CompletionsProvider extends provider_1.AbstractProvider {
         // can append semicolon
         let flags = 2 /* CanExpand */;
         if (currentToken) {
-            if (currentToken.kind === 112 /* Identifier */ && position < currentToken.end) {
+            if (currentToken.kind === 113 /* Identifier */ && position < currentToken.end) {
                 flags &= ~2 /* CanExpand */;
             }
             if (currentToken.parent) {
                 switch (currentToken.parent.kind) {
-                    case 136 /* ExpressionStatement */: {
+                    case 138 /* ExpressionStatement */: {
                         if (position >= currentToken.end) {
                             flags |= 4 /* CanAppendSemicolon */;
                         }
@@ -351,15 +351,15 @@ class CompletionsProvider extends provider_1.AbstractProvider {
                         }
                         break;
                     }
-                    case 127 /* Block */:
-                    case 126 /* SourceFile */:
+                    case 128 /* Block */:
+                    case 127 /* SourceFile */:
                         {
                             if (position >= currentToken.end) {
                                 flags |= 4 /* CanAppendSemicolon */;
                             }
                             break;
                         }
-                    case 140 /* FunctionDeclaration */:
+                    case 142 /* FunctionDeclaration */:
                         {
                             flags &= ~2 /* CanExpand */;
                             break;
@@ -425,7 +425,7 @@ class CompletionsProvider extends provider_1.AbstractProvider {
             const decl = symbol.declarations[0];
             let funcArgs = [];
             // TODO: support funcrefs expansion
-            if (decl.kind === 140 /* FunctionDeclaration */ && this.config.functionExpand !== 1 /* Parenthesis */) {
+            if (decl.kind === 142 /* FunctionDeclaration */ && this.config.functionExpand !== 1 /* Parenthesis */) {
                 funcArgs = this.expandFunctionArguments(decl);
             }
             if (funcArgs) {
@@ -448,14 +448,14 @@ class CompletionsProvider extends provider_1.AbstractProvider {
             completion.documentation = s2meta_1.getDocumentationOfSymbol(this.store, symbol, false);
             let node = symbol.declarations[0];
             switch (node.kind) {
-                case 140 /* FunctionDeclaration */:
+                case 142 /* FunctionDeclaration */:
                     node = Object.create(node);
                     node.body = null;
                 // pass through
-                case 139 /* VariableDeclaration */:
-                case 141 /* ParameterDeclaration */:
-                case 142 /* PropertyDeclaration */:
-                case 143 /* TypedefDeclaration */:
+                case 141 /* VariableDeclaration */:
+                case 143 /* ParameterDeclaration */:
+                case 144 /* PropertyDeclaration */:
+                case 145 /* TypedefDeclaration */:
                     completion.detail = this.printer.printNode(node);
                     break;
             }

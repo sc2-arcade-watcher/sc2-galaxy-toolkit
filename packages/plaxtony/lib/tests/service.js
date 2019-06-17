@@ -41,7 +41,7 @@ describe('Service', () => {
         it('findPrecedingToken "incomplete_if_identifier"', () => {
             const sourceFile = helpers_1.mockupSourceFile(path.join('type_checker', 'find', 'incomplete_if_identifier.galaxy'));
             const t = utils_1.findPrecedingToken(utils_1.getPositionOfLineAndCharacter(sourceFile, 2, 25), sourceFile);
-            chai_1.assert.equal(t.kind, 112 /* Identifier */, `not expected ${t.kindName}`);
+            chai_1.assert.equal(t.kind, 113 /* Identifier */, `not expected ${t.kindName}`);
             chai_1.assert.equal(t.name, 'UserDataGetFixed');
         });
     });

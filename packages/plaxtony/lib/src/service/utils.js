@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const util = require("util");
+const glob = require("glob");
 const utils_1 = require("../compiler/utils");
 function getNodeChildren(node) {
     let children = [];
@@ -125,10 +127,10 @@ function getTokenAtPositionWorker(position, sourceFile, includePrecedingTokenAtE
 }
 function getAdjacentIdentfier(position, sourceFile) {
     let token = getTokenAtPosition(position, sourceFile);
-    if (token && token.kind === 112 /* Identifier */)
+    if (token && token.kind === 113 /* Identifier */)
         return token;
     token = findPrecedingToken(position, sourceFile);
-    if (token && token.kind === 112 /* Identifier */)
+    if (token && token.kind === 113 /* Identifier */)
         return token;
     return null;
 }
@@ -199,4 +201,5 @@ function fuzzysearch(needle, haystack) {
     return true;
 }
 exports.fuzzysearch = fuzzysearch;
+exports.globify = util.promisify(glob);
 //# sourceMappingURL=utils.js.map

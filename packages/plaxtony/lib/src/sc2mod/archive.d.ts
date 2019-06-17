@@ -35,7 +35,7 @@ export interface ArchiveLink {
     name: string;
     src: string;
 }
-export declare function resolveArchiveDirectory(name: string, sources: string[]): string;
+export declare function resolveArchiveDirectory(name: string, sources: string[]): Promise<string>;
 export declare function resolveArchiveDependencyList(rootArchive: SC2Archive, sources: string[], overrides?: Map<string, string>): Promise<{
     list: ArchiveLink[];
     unresolvedNames: string[];
