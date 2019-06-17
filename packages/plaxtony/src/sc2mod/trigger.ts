@@ -422,9 +422,9 @@ export class XMLReader {
 
                 if (item.ScriptCode) {
                     func.scriptCode = item.ScriptCode[0];
-                    const whitespace = func.scriptCode.match(/^\r\n(\s+)/)[1];
+                    const whitespace = func.scriptCode.match(/^\r?\n(\s+)/);
                     if (whitespace) {
-                        func.scriptCode = func.scriptCode.trim().replace(/\r\n/g, '\n').replace(new RegExp('^' + whitespace, 'gm'), '');
+                        func.scriptCode = func.scriptCode.trim().replace(/\r?\n/g, '\n').replace(new RegExp('^' + whitespace[1], 'gm'), '');
                     }
                 }
                 break;
