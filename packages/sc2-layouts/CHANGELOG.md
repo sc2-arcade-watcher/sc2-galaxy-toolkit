@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.10.1] - 2019-06-20
+
+* Hotfix https://github.com/Talv/sc2-layouts/commit/4a89c573ecb7b2a510a75f6a77d3fc2bd5f2b816
+
 ## [0.10.0] - 2019-06-20
 
 * Improved population strategy for `sc2layout-schema`. Documentation/localization text entries have been moved to separate markdown files. Each time new version is fetched it will be fully indexed just once and then cached to speed up loading times.
