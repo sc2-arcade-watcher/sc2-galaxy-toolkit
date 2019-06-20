@@ -1,5 +1,13 @@
 # Change Log
 
+## Unreleased
+
+* Fixed `$ancestor[type=X]` failing to find the frame.
+
+## [0.9.1] - 2019-06-18
+
+* Fixed missing `request` dependency
+
 ## [0.9.0] - 2019-06-13
 
 * Added experimental frame properties panel which works in accordance to existing DescTree. Properties panel will display any selected node from DescTree.

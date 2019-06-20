@@ -303,10 +303,10 @@ export class UINavigator {
 
                     case 'type':
                     {
-                        let type = `Frame:${selFrag.parameter.value.name}`;
+                        const fType = selFrag.parameter.value.name;
                         do {
                             current = current.parent;
-                        } while (current && current.mainDesc.stype.name !== type);
+                        } while (current && current.mainDesc.stype.name !== fType);
                         return current;
                     }
 

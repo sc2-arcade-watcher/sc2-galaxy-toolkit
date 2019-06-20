@@ -127,7 +127,7 @@ export class DescTreeDataProvider implements vs.TreeDataProvider<DescTreeNode> {
                     arguments: [dNode],
                 };
 
-                ritem.description = `[${dNode.dsItem.stype.name.replace('Frame:', '')}]`;
+                ritem.description = `[${dNode.dsItem.stype.name}]`;
                 ritem.tooltip = `${dNode.dsItem.fqn}\n[${dNode.dsItem.stype.name}]\n`;
                 if (dNode.dsItem.template) {
                     ritem.tooltip += `template = ${dNode.dsItem.template}\n`;
@@ -138,7 +138,7 @@ export class DescTreeDataProvider implements vs.TreeDataProvider<DescTreeNode> {
                 ritem.tooltip = ritem.tooltip.trim();
 
                 switch (dNode.dsItem.stype.name) {
-                    case 'Frame:EditBox': ritem.iconPath = this.getIcon('string.svg'); break;
+                    case 'EditBox': ritem.iconPath = this.getIcon('string.svg'); break;
                     default: ritem.iconPath = this.getIcon('frame.svg'); break;
                 }
             }
