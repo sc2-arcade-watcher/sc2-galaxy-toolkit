@@ -3,6 +3,7 @@
 ## Unreleased
 
 * Fixed `$ancestor[type=X]` failing to find the frame.
+* Removed default keybinding for opening SC2Layout container in the sidebar (`ctrl+shift+w`).
 
 ## [0.9.1] - 2019-06-18
 
