@@ -147,8 +147,16 @@ function matchEnum<T>(en: T, value: string) {
 }
 
 function ensureString(v: any) {
-    if (typeof v !== 'string') throw Error();
+    if (typeof v !== 'string') throw new Error();
     return v;
+}
+
+const reBool = /^(true|false)$/;
+function ensureBoolean(v: string) {
+    if (!v.match(reBool)) {
+        throw new Error();
+    }
+    return v === 'true' ? true : false;
 }
 
 // ===========================
@@ -160,7 +168,7 @@ interface AssignAttrOpts {
     attrs?: {
         [name: string]: {
             parser?: AssignAttrParserFn,
-        };
+        } | AssignAttrParserFn;
     };
 }
 
@@ -174,8 +182,13 @@ function assignAttrs<T>(target: T, srcAttrs: xmljs.Attributes, opts?: AssignAttr
 
         let val: any = srcAttrs[atName];
 
-        if (cOpts.parser) {
-            val = cOpts.parser(val);
+        if (typeof cOpts === 'function') {
+            val = cOpts(val);
+        }
+        else {
+            if (cOpts.parser) {
+                val = cOpts.parser(val);
+            }
         }
 
         (<any>target)[atName] = val;
@@ -282,6 +295,11 @@ function readSimpleType(el: xmljs.Element) {
             },
         },
         props: {
+            flag: {
+                attrs: {
+                    value: ensureBoolean,
+                },
+            },
         },
     });
 }
@@ -294,6 +312,11 @@ function readComplexType(el: xmljs.Element) {
             element: [],
         },
         props: {
+            flag: {
+                attrs: {
+                    value: ensureBoolean,
+                },
+            },
             element: {
                 reader: (childTarget, childEl) => {
                     if (childEl.attributes.ref) {
@@ -308,6 +331,9 @@ function readComplexType(el: xmljs.Element) {
 
 function readElementType(el: xmljs.Element) {
     return createNamedDefinition<sraw.ElementType>(el, sch.ModelKind.Element, {
+        attrs: {
+            table: ensureBoolean,
+        },
         props: {
         },
     });
@@ -320,6 +346,10 @@ function readFrameClass(el: xmljs.Element) {
         },
         props: {
             property: {
+                attrs: {
+                    table: ensureBoolean,
+                    readonly: ensureBoolean,
+                },
                 props: {
                 },
             },
@@ -329,6 +359,9 @@ function readFrameClass(el: xmljs.Element) {
 
 function readFrameType(el: xmljs.Element) {
     return createNamedDefinition<sraw.FrameType>(el, sch.ModelKind.FrameType, {
+        attrs: {
+            blizzOnly: ensureBoolean,
+        },
         props: {
         },
     });
@@ -377,22 +410,9 @@ export function readSchema(sfProvider: sch.SchemaFileProvider) {
     }
 
     function readFile(fname: string) {
-        const reBool = /^(true|false)$/;
-        const reNumber = /^(\+|\-)?(([\d]+\.[\d]*)|([\d]*\.?[\d]+))$/;
-
         const content = xmljs.xml2js(sfProvider.readFile(fname), {
             compact: false,
             ignoreComment: true,
-
-            attributeValueFn: (atValue) => {
-                if (atValue.match(reBool)) {
-                    return atValue === 'true' ? true : false;
-                }
-                if (atValue.match(reNumber)) {
-                    return new Number(atValue);
-                }
-                return atValue;
-            },
 
             cdataFn: (val) => {
                 if (val.charAt(0) === '\n') {

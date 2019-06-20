@@ -4,6 +4,7 @@
 
 * Fixed `$ancestor[type=X]` failing to find the frame.
 * Removed default keybinding for opening SC2Layout container in the sidebar (`ctrl+shift+w`).
+* Fixed missing code completions in `Stategroup` and `Animation` elements.
 
 ## [0.9.1] - 2019-06-18
 
