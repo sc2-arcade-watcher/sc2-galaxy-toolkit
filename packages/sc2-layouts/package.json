@@ -71,9 +71,18 @@
                     "default": null,
                     "description": "Custom path to directory with XML schema files. If set extension will use it instead of default one."
                 },
+                "sc2layout.dataPath": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": null,
+                    "description": "Custom path to SC2 data repository with builtin mods (such as local copy of github.com/SC2Mapster/SC2GameData)."
+                },
                 "sc2layout.builtinMods": {
                     "scope": "window",
-                    "type": "object",
+                    "type": [
+                        "object",
+                        "null"
+                    ],
                     "default": {
                         "mods/core.sc2mod": true,
                         "mods/liberty.sc2mod": true,
@@ -126,7 +135,10 @@
                 },
                 "sc2layout.completion.stategroupDefaultState": {
                     "scope": "window",
-                    "type": ["boolean", "string"],
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "default": true,
                     "description": "Controls whether to include DefaultState in the StateGroup snippet. If string is given it will be used as default placeholder."
                 },

@@ -50,6 +50,7 @@ export interface ExtTreeView {
 
 export interface ExtConfig {
     schema: ExtCfgSchema;
+    dataPath: string;
     builtinMods: ExtCfgSect.builtinMods;
     documentUpdateDelay: number;
     documentDiagnosticsDelay: number;
@@ -345,12 +346,11 @@ export class ServiceContext implements IService {
         // -
         context.subscriptions.push(vs.workspace.onDidChangeConfiguration(async e => {
             if (!e.affectsConfiguration(`${languageId}`)) return;
-            const affectsMods = e.affectsConfiguration(`${languageId}.builtinMods`);
-            this.console.debug('[onDidChangeConfiguration]', {affectsMods});
+            this.console.debug('[onDidChangeConfiguration]');
 
             this.readConfig();
 
-            if (affectsMods) {
+            if (e.affectsConfiguration(`${languageId}.builtinMods`) || e.affectsConfiguration(`${languageId}.dataPath`)) {
                 await this.reinitialize();
             }
         }));
@@ -439,7 +439,8 @@ export class ServiceContext implements IService {
         const wsConfig = vs.workspace.getConfiguration(languageId);
         this.config = {
             schema: wsConfig.get('schema'),
-            builtinMods: wsConfig.get<ExtCfgSect.builtinMods>('builtinMods', {}),
+            dataPath: wsConfig.get('dataPath'),
+            builtinMods: wsConfig.get<ExtCfgSect.builtinMods>('builtinMods'),
             documentUpdateDelay: wsConfig.get<number>('documentUpdateDelay', 100),
             documentDiagnosticsDelay: wsConfig.get<number>('documentDiagnosticsDelay', -1),
             completion: {
@@ -450,6 +451,9 @@ export class ServiceContext implements IService {
                 visible: wsConfig.get('treeview.visible'),
             }
         };
+        if (!this.config.dataPath) {
+            this.config.dataPath = path.join(this.extContext.extensionPath, 'sc2-data');
+        }
         this.console.log('[readConfig]', this.config);
     }
 
@@ -462,10 +466,12 @@ export class ServiceContext implements IService {
         this.state = ServiceStateFlags.IndexingInProgress;
 
         // -
-        for (const [mod, enabled] of objventries(this.config.builtinMods)) {
-            if (!enabled) continue;
-            const uri = URI.file(path.join(this.extContext.extensionPath, 'sc2-data', <string>mod));
-            archives.push(new s2.Archive(<string>mod, uri, true));
+        if (typeof this.config.builtinMods === 'object') {
+            for (const [mod, enabled] of objventries(this.config.builtinMods)) {
+                if (!enabled) continue;
+                const uri = URI.file(path.join(this.config.dataPath, <string>mod));
+                archives.push(new s2.Archive(<string>mod, uri, true));
+            }
         }
 
         // -
