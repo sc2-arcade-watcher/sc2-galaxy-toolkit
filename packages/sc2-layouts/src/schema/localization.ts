@@ -1,15 +1,18 @@
 import * as path from 'path';
 import * as sch from './base';
+import { objventries } from '../common';
 
 interface MdNamedEntry {
     title?: string;
     content?: string;
 }
 
+type MdNamedEntries = {[name: string]: MdNamedEntry};
+
 interface MdFileContent {
     title?: string;
     content?: string;
-    entries: Map<string, MdNamedEntry>[];
+    entries: MdNamedEntries[];
 }
 
 const placeholderStr = 'TBD';
@@ -65,12 +68,12 @@ export function defTypeToMdFile(def: sch.AbstractModel, mContent?: MdFileContent
             const cSimple = <sch.SimpleType>def;
             if (!cSimple.emap) break;
 
-            const mdProperties = new Map<string, MdNamedEntry>();
+            const mdProperties = <MdNamedEntries>{};
             mContent.entries.push(mdProperties);
             for (const item of cSimple.emap.values()) {
-                mdProperties.set(item.name, {
+                mdProperties[item.name] = {
                     title: item.label,
-                });
+                };
             }
             break;
         }
@@ -79,13 +82,13 @@ export function defTypeToMdFile(def: sch.AbstractModel, mContent?: MdFileContent
         {
             const fClass = <sch.FrameClass>def;
 
-            const mdProperties = new Map<string, MdNamedEntry>();
+            const mdProperties = <MdNamedEntries>{};
             mContent.entries.push(mdProperties);
             for (const item of fClass.properties.values()) {
-                mdProperties.set(item.name, {
+                mdProperties[item.name] = {
                     title: item.etype.label,
                     content: item.etype.documentation,
-                });
+                };
             }
 
             break;
@@ -96,22 +99,22 @@ export function defTypeToMdFile(def: sch.AbstractModel, mContent?: MdFileContent
         {
             const cType = <sch.ComplexType & sch.ElementDef>def;
 
-            const mdAttrs = new Map<string, MdNamedEntry>();
+            const mdAttrs = <MdNamedEntries>{};
             mContent.entries.push(mdAttrs);
             for (const item of cType.origin.attrs.values()) {
-                mdAttrs.set(item.name, {
+                mdAttrs[item.name] = {
                     title: item.label,
                     content: item.documentation,
-                });
+                };
             }
 
-            const mdElements = new Map<string, MdNamedEntry>();
+            const mdElements = <MdNamedEntries>{};
             mContent.entries.push(mdElements);
             for (const item of cType.origin.elements.values()) {
-                mdElements.set(item.name, {
+                mdElements[item.name] = {
                     title: item.label,
                     content: item.documentation,
-                });
+                };
             }
 
             break;
@@ -153,8 +156,8 @@ export function mdContentToDef(def: sch.AbstractModel, mContent: MdFileContent) 
             if (!mdProperties) break;
 
             for (const item of cSimple.emap.values()) {
-                const cProp = mdProperties.get(item.name);
-                if (!cProp) continue;
+                const cProp = mdProperties[item.name];
+                if (cProp === void 0) continue;
                 item.label = cProp.title;
             }
             break;
@@ -168,8 +171,8 @@ export function mdContentToDef(def: sch.AbstractModel, mContent: MdFileContent) 
             if (!mdProperties) break;
 
             for (const item of fClass.properties.values()) {
-                const cProp = mdProperties.get(item.name);
-                if (!cProp) continue;
+                const cProp = mdProperties[item.name];
+                if (cProp === void 0) continue;
                 item.etype.label = cProp.title;
                 item.etype.documentation = cProp.content;
             }
@@ -186,8 +189,8 @@ export function mdContentToDef(def: sch.AbstractModel, mContent: MdFileContent) 
             if (!mdAttrs) break;
 
             for (const item of cType.origin.attrs.values()) {
-                const cProp = mdAttrs.get(item.name);
-                if (!cProp) continue;
+                const cProp = mdAttrs[item.name];
+                if (cProp === void 0) continue;
                 item.label = cProp.title;
                 item.documentation = cProp.content;
             }
@@ -196,8 +199,8 @@ export function mdContentToDef(def: sch.AbstractModel, mContent: MdFileContent) 
             if (!mdElements) break;
 
             for (const item of cType.origin.elements.values()) {
-                const cProp = mdElements.get(item.name);
-                if (!cProp) continue;
+                const cProp = mdElements[item.name];
+                if (cProp === void 0) continue;
                 item.label = cProp.title;
                 item.documentation = cProp.content;
             }
@@ -215,9 +218,9 @@ export function writeMdFile(mContent: MdFileContent) {
     if (mContent.title !== void 0) output.push(mContent.title);
     if (mContent.content !== void 0) output.push(mContent.content);
 
-    for (const enMap of mContent.entries) {
+    for (const entries of mContent.entries) {
         output.push('___');
-        for (const [key, item] of enMap) {
+        for (const [key, item] of objventries(entries)) {
             output.push(`## ${key}`);
             if (item.title !== void 0) {
                 output.push(item.title);
@@ -255,7 +258,7 @@ export function readMdFile(input: string) {
     }
 
     for (let i = 1; i < sections.length; i++) {
-        const mEntries = new Map<string, MdNamedEntry>();
+        const mEntries = <MdNamedEntries>{};
         mContent.entries.push(mEntries);
 
         let buff = sections[i];
@@ -263,7 +266,7 @@ export function readMdFile(input: string) {
         while (matches = buff.match(reEntryHead)) {
             const key = matches[1];
             const entry: MdNamedEntry = {};
-            mEntries.set(key, entry);
+            mEntries[key] = entry;
 
             buff = buff.substr(matches[0].length);
             matches = buff.match(reEntryTitle);
@@ -283,14 +286,14 @@ export function readMdFile(input: string) {
     return mContent;
 }
 
-export type MdFileStorage = Map<string, MdFileContent>;
+export type MdFileStorage = {[name: string]: MdFileContent};
 
-export function readMdStorage(sfProvider: sch.SchemaFileProvider) {
-    const mRegistry: MdFileStorage = new Map();
+export async function readMdStorage(sfProvider: sch.SchemaFileProvider) {
+    const mRegistry: MdFileStorage = {};
 
-    for (const filename of sfProvider.listDir('doc/**/*.md')) {
-        const mFile = readMdFile(sfProvider.readFile(filename));
-        mRegistry.set(filename.substr(4), mFile);
+    for (const filename of await sfProvider.listDir('doc/**/*.md')) {
+        const mFile = readMdFile(await sfProvider.readFile(filename));
+        mRegistry[filename.substr(4)] = mFile;
     }
 
     return mRegistry;

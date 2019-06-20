@@ -1,30 +1,5 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
 import * as xmljs from 'xml-js';
 import * as sch from './base';
-import * as glob from 'glob';
-
-export function createDefaultSchemaFileProvider(schDir: string): sch.SchemaFileProvider {
-    function readFile(filename: string): string {
-        schDir = path.resolve(schDir);
-        if (!path.join(schDir, filename).startsWith(schDir)) {
-            throw Error(`Attempting to read file "${filename}" outside designated directory ${schDir}`);
-        }
-        return fs.readFileSync(path.join(schDir, filename), 'utf8');
-    }
-
-    function listDir(pattern: string) {
-        return glob.sync(pattern, {
-            cwd: schDir,
-            nodir: true,
-        });
-    }
-
-    return {
-        readFile,
-        listDir,
-    };
-}
 
 /**
  * Raw structures
@@ -383,16 +358,16 @@ const structureReaders: {[type: string]: modelReadFn<sraw.NamedDefinition>} = {
 
 export type SRawEntries = sraw.NamedDefinition[];
 
-export function readSchema(sfProvider: sch.SchemaFileProvider) {
+export async function readSchemaModel(sfProvider: sch.SchemaFileProvider) {
     const entries: SRawEntries = [];
 
-    function readMap(el: xmljs.Element) {
+    async function readMap(el: xmljs.Element) {
         for (const child of el.elements) {
             switch (child.name) {
                 case 'include':
                 {
                     const incPath = ensureString(child.attributes.path);
-                    readFile(incPath);
+                    await readFile(incPath);
                     break;
                 }
 
@@ -409,8 +384,8 @@ export function readSchema(sfProvider: sch.SchemaFileProvider) {
         }
     }
 
-    function readFile(fname: string) {
-        const content = xmljs.xml2js(sfProvider.readFile(fname), {
+    async function readFile(fname: string) {
+        const content = xmljs.xml2js(await sfProvider.readFile(fname), {
             compact: false,
             ignoreComment: true,
 
@@ -423,10 +398,10 @@ export function readSchema(sfProvider: sch.SchemaFileProvider) {
             }
         });
 
-        readMap(content.elements[0]);
+        await readMap(content.elements[0]);
     }
 
-    readFile('sc2layout.xml');
+    await readFile('sc2layout.xml');
 
     return entries;
 }

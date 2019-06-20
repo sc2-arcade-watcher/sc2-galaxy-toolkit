@@ -58,13 +58,7 @@ export function* oentries<T>(obj: T[]) {
     }
 }
 
-// export function* oventries<T>(obj: T[]) {
-//     for (const key in obj) {
-//         yield key, obj[key];
-//     }
-// }
-
-export function* objventries<T>(obj: {[name: string]: T}) {
+export function* objventries<T>(obj: {[name: string]: T}): Iterable<[string, T]> {
     for (const key in obj) {
         yield [key, obj[key]];
     }

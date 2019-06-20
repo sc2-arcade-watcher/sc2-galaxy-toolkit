@@ -1,3 +1,4 @@
-import { generateSchema } from '../src/schema/registry';
+import * as fs from 'fs-extra';
+import { createRegistry } from '../src/schema/registry';
 
-(<any>global)._cachedSchema = generateSchema('test/fixtures/schema/sc2layout');
+(<any>global)._cachedSchema = createRegistry(fs.readJSONSync('test/fixtures/schema/sc-min.json'));

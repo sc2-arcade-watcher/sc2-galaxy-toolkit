@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* Improved population strategory for `sc2layout-schema`. Documentation/localization text entries have been moved to separate markdown files. Each time new version is fetched it will be fully indexed just once and then cached to speed up loading times.
 * Fixed `$ancestor[type=X]` failing to find the frame.
 * Removed default keybinding for opening SC2Layout container in the sidebar (`ctrl+shift+w`).
 * Fixed missing code completions in `Stategroup` and `Animation` elements.

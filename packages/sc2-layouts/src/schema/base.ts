@@ -55,8 +55,6 @@ export const enum MappedComplexKind {
     CFrameStateCreateFromTemplateAction,
 }
 
-export const CurrentModelVersion = 3;
-
 export enum ModelKind {
     SimpleType = 'simpleType',
     ComplexType = 'complexType',
@@ -238,6 +236,6 @@ export interface SchemaRegistry {
 }
 
 export interface SchemaFileProvider {
-    readFile(filename: string): string;
-    listDir(pattern: string): string[];
+    readFile(filename: string): Promise<string>;
+    listDir(pattern: string): Promise<string[]>;
 }

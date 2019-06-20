@@ -1,6 +1,9 @@
+import * as path from 'path';
+import * as fs from 'fs-extra';
 import * as sch from './base';
-import { readSchema, createDefaultSchemaFileProvider, sraw, SRawEntries } from './reader';
+import { readSchemaModel, sraw, SRawEntries } from './reader';
 import { readMdStorage, MdFileStorage, getMdFilenameOfType, mdContentToDef } from './localization';
+import { globify } from '../common';
 
 export class DefinitionMap<T> extends Map<string, T> {
     mustGet(key: string): T {
@@ -67,7 +70,7 @@ function createElementDef(opts: NamedPartial<sch.ElementDef>): sch.ElementDef {
     }, opts);
 }
 
-function initializeRegistry(rawEntries: SRawEntries, mdStorage: MdFileStorage): RegistryCatalog {
+function initializeRegistry(sdata: SchemaData): RegistryCatalog {
     const indexedRawEntries = {
         simpleType: new DefinitionMap<sraw.SimpleType>(),
         complexType: new DefinitionMap<sraw.ComplexType>(),
@@ -75,7 +78,7 @@ function initializeRegistry(rawEntries: SRawEntries, mdStorage: MdFileStorage): 
         frameClass: new DefinitionMap<sraw.FrameClass>(),
         frameType: new DefinitionMap<sraw.FrameType>(),
     };
-    for (const item of rawEntries) {
+    for (const item of sdata.dEntries) {
         indexedRawEntries[item.entryType].set(item.name, <any>item);
     }
 
@@ -99,14 +102,16 @@ function initializeRegistry(rawEntries: SRawEntries, mdStorage: MdFileStorage): 
             }
         }
 
-        const mContent = mdStorage.get(getMdFilenameOfType(cType));
+        const mContent = sdata.mdStorage[getMdFilenameOfType(cType)];
         if (!mContent) return;
 
         mdContentToDef(cType, mContent);
     }
 
     function addToRegistry<T extends sch.AbstractModel>(mKind: sch.ModelKind, obj: sch.AbstractModel) {
-        applyLocalizationText(obj);
+        if (sdata.mdStorage) {
+            applyLocalizationText(obj);
+        }
         registry[mKind].set(obj.name, <any>obj);
         return <T>obj;
     }
@@ -447,7 +452,7 @@ function initializeRegistry(rawEntries: SRawEntries, mdStorage: MdFileStorage): 
 
     // ===========================
 
-    for (const item of rawEntries) {
+    for (const item of sdata.dEntries) {
         switch (item.entryType) {
             case sch.ModelKind.SimpleType:
             {
@@ -565,10 +570,58 @@ export class SchemaRegistryBrowser implements sch.SchemaRegistry {
     }
 }
 
-export function generateSchema(src: string) {
+export interface SchemaData {
+    dEntries: SRawEntries;
+    mdStorage?: MdFileStorage;
+}
+
+interface SchemaDirReadOptions {
+    includeLocalization?: boolean;
+}
+
+export async function readSchemaDataDir(src: string, opts: SchemaDirReadOptions = {}): Promise<SchemaData> {
+    opts = Object.assign({
+        includeLocalization: true,
+    }, opts);
+
     const sfProvider = createDefaultSchemaFileProvider(src);
-    const rawEntries = readSchema(sfProvider);
-    const mdStorage = readMdStorage(sfProvider);
-    const registryData = initializeRegistry(rawEntries, mdStorage);
-    return new SchemaRegistryBrowser(registryData);
+    const sdata: SchemaData = {
+        dEntries: await readSchemaModel(sfProvider),
+    };
+
+    if (opts.includeLocalization) {
+        sdata.mdStorage = await readMdStorage(sfProvider);
+    }
+
+    return sdata;
+}
+
+export function createRegistry(sdata: SchemaData) {
+    return new SchemaRegistryBrowser(initializeRegistry(sdata));
+}
+
+export async function createRegistryFromDir(src: string, opts: SchemaDirReadOptions = {}) {
+    return createRegistry(await readSchemaDataDir(src, opts));
+}
+
+export function createDefaultSchemaFileProvider(schDir: string): sch.SchemaFileProvider {
+    function readFile(filename: string) {
+        schDir = path.resolve(schDir);
+        if (!path.join(schDir, filename).startsWith(schDir)) {
+            throw new Error(`Attempting to read file "${filename}" outside designated directory ${schDir}`);
+        }
+        return fs.readFile(path.join(schDir, filename), 'utf8');
+    }
+
+    function listDir(pattern: string) {
+        return globify(pattern, {
+            cwd: schDir,
+            nodir: true,
+        });
+    }
+
+    return {
+        readFile,
+        listDir,
+    };
 }

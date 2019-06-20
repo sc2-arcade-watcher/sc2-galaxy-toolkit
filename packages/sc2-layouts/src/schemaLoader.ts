@@ -1,5 +1,5 @@
 import { ServiceContext, ExtCfgSchemaUpdateMode } from './service';
-import { generateSchema } from './schema/registry';
+import { readSchemaDataDir, createRegistry, createRegistryFromDir } from './schema/registry';
 import * as vs from 'vscode';
 import * as request from 'request-promise-native';
 import * as fs from 'fs-extra';
@@ -10,6 +10,7 @@ import { IService, ILoggerConsole, svcRequest } from './services/provider';
 import * as sch from './schema/base';
 
 const extractZipAsync = util.promisify(extractZip);
+const currentModelVersion = 4;
 
 namespace IGithub {
     export interface Author {
@@ -46,7 +47,8 @@ namespace IGithub {
 }
 
 export interface SchemaState {
-    srcDir: string;
+    // srcDir: string;
+    cacheFilename: string;
     shortHash: string;
     tag: IGithub.Tag.Entry;
     version: number[];
@@ -65,10 +67,12 @@ function sanitizeCommitMessage(msg: string) {
 export class SchemaLoader implements IService, vs.Disposable {
     console: ILoggerConsole;
     subscriptions: { dispose(): any }[] = [];
+    protected storagePath: string;
 
     constructor(protected sCtx: ServiceContext) {
         this.console = sCtx.console;
         this.subscriptions.push(vs.commands.registerCommand('sc2layout.updateSchemaFiles', this.performUpdate.bind(this, true)));
+        this.storagePath = this.sCtx.extContext.globalStoragePath;
     }
 
     dispose() {
@@ -90,23 +94,25 @@ export class SchemaLoader implements IService, vs.Disposable {
 
     protected async getTags() {
         this.console.log(`[SchemaLoader] getTags`);
-        const r = await request.get(`https://api.github.com/repos/${schemaGithubRepo}/tags`, {
+        const r: IGithub.Tag.Entry[] = await request.get(`https://api.github.com/repos/${schemaGithubRepo}/tags`, {
             headers: {
                 'User-Agent': 'nodejs request'
             },
             json: true,
         });
-        this.console.log(`[SchemaLoader] getTags result`, r);
-        return <IGithub.Tag.Entry[]>r;
+        this.console.log(`[SchemaLoader] getTags result`, r.map(v => v.name));
+        return r;
     }
 
     protected async downloadSchema(gTag: IGithub.Tag.Entry, version: number[]): Promise<SchemaState> {
         const shortHash = gTag.commit.sha.substr(0, 7);
-        const zipSrc = path.join(this.sCtx.extContext.globalStoragePath, 'tmp', `${shortHash}.zip`);
-        const outDir = path.join(
-            this.sCtx.extContext.globalStoragePath,
-            `${schemaGithubRepo.replace('/', '-')}-${shortHash}`
-        );
+        const tmpPath = path.join(this.storagePath, 'tmp');
+        const zipSrc = path.join(tmpPath, `${shortHash}.zip`);
+        let outDir = tmpPath;
+
+        this.console.log(`[SchemaLoader] Clearing tmp..`);
+        await fs.remove(tmpPath);
+        await fs.ensureDir(tmpPath);
 
         this.console.log(`[SchemaLoader] downloading zipball of ${gTag.commit.sha}`);
         await fs.ensureFile(zipSrc);
@@ -119,9 +125,8 @@ export class SchemaLoader implements IService, vs.Disposable {
         await fs.writeFile(zipSrc, payload);
 
         this.console.log(`[SchemaLoader] extracting zip..`);
-        await fs.remove(outDir);
         await extractZipAsync(zipSrc, {
-            dir: this.sCtx.extContext.globalStoragePath,
+            dir: outDir,
             defaultFileMode: 0o444,
             onEntry: (entry, zipFile) => {
                 this.console.log(`[SchemaLoader] extracting file "${entry.fileName}" ..`);
@@ -129,12 +134,21 @@ export class SchemaLoader implements IService, vs.Disposable {
         });
         this.console.log(`[SchemaLoader] all files extracted`);
         await fs.remove(zipSrc);
+        outDir = path.join(outDir, `${schemaGithubRepo.replace('/', '-')}-${shortHash}`);
+
+        this.console.log(`[SchemaLoader] reading from dir..`);
+        const sData = await readSchemaDataDir(path.join(outDir, 'sc2layout'));
+        await fs.remove(outDir);
+
+        this.console.log(`[SchemaLoader] caching..`);
+        const cacheFilename = `sch-cache-${shortHash}.json`;
+        await fs.writeJSON(path.join(this.storagePath, cacheFilename), sData);
 
         return {
             tag: gTag,
             shortHash: shortHash,
-            srcDir: outDir,
             version: version,
+            cacheFilename: cacheFilename,
         };
     }
 
@@ -152,7 +166,7 @@ export class SchemaLoader implements IService, vs.Disposable {
         for (const item of await this.getTags()) {
             // format vX.X
             gVersion = item.name.substr(1).split('.').map(v => Number(v));
-            if (gVersion[0] === sch.CurrentModelVersion) {
+            if (gVersion[0] === currentModelVersion) {
                 gTag = item;
                 break;
             }
@@ -161,7 +175,7 @@ export class SchemaLoader implements IService, vs.Disposable {
         if (sbTmp) sbTmp.dispose();
 
         if (gTag === void 0) {
-            throw new Error(`Couldn't find schema files for v${sch.CurrentModelVersion} in the repoistory.`);
+            throw new Error(`Couldn't find schema files for v${currentModelVersion} in the repoistory.`);
         }
 
         if (!smState || smState.tag.name !== gTag.name) {
@@ -201,25 +215,19 @@ export class SchemaLoader implements IService, vs.Disposable {
         }
     }
 
-    protected loadFromDir(src: string) {
-        this.console.info(`[SchemaLoader] loading from "${src}"`);
-        return generateSchema(src);
-    }
-
     async prepareSchema() {
         const schConfig = this.sCtx.config.schema;
-        let schemaDir: string;
 
         if (typeof schConfig.localPath === 'string') {
-            this.console.info('[SchemaLoader] using custom path');
-            schemaDir = schConfig.localPath;
+            this.console.info('[SchemaLoader] using custom path', schConfig.localPath);
+            return await createRegistryFromDir(path.join(schConfig.localPath, 'sc2layout'));
         }
         else {
             let smState = <SchemaState>this.sCtx.extContext.globalState.get('schema');
             this.console.log('[SchemaLoader] state', smState);
 
-            if (smState && !(await fs.pathExists(smState.srcDir))) {
-                this.console.warn(`[SchemaLoader] local srcDir no longer exists "${smState.srcDir}"`);
+            if (smState && (smState.cacheFilename === void 0 || !(await fs.pathExists(path.join(this.storagePath, smState.cacheFilename)))) ) {
+                this.console.warn(`[SchemaLoader] cached file no longer exists "${path.join(this.storagePath, smState.cacheFilename)}"`);
                 smState = void 0;
                 this.sCtx.extContext.globalState.update('schema', smState);
             }
@@ -230,9 +238,9 @@ export class SchemaLoader implements IService, vs.Disposable {
             else if (schConfig.updateMode === ExtCfgSchemaUpdateMode.Auto) {
                 this.performUpdate();
             }
-            schemaDir = smState.srcDir;
-        }
 
-        return this.loadFromDir(path.join(schemaDir, 'sc2layout'));
+            this.console.info(`[SchemaLoader] loading from`, path.join(this.storagePath, smState.cacheFilename));
+            return createRegistry(await fs.readJSON(path.join(this.storagePath, smState.cacheFilename)));
+        }
     }
 }
