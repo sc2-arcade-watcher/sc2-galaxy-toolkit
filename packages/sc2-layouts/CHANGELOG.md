@@ -1,16 +1,17 @@
 # Change Log
 
-## Unreleased
+## [0.10.0] - 2019-06-20
 
-* Improved population strategory for `sc2layout-schema`. Documentation/localization text entries have been moved to separate markdown files. Each time new version is fetched it will be fully indexed just once and then cached to speed up loading times.
+* Improved population strategy for `sc2layout-schema`. Documentation/localization text entries have been moved to separate markdown files. Each time new version is fetched it will be fully indexed just once and then cached to speed up loading times.
 * Added `sc2layout.dataPath` config option. It allows to customize the source path from where built-in mods are going to be read. This extension is bundled with minimal set of files required to work, but updates aren't always frequent enough. In which case you may want to use more up to date version, such as [SC2GameData](https://github.com/SC2Mapster/SC2GameData).
-* Fixed `$ancestor[type=X]` failing to find the frame.
 * Removed default keybinding for opening SC2Layout container in the sidebar (`ctrl+shift+w`).
+* Updated `sc2-data` to `4.9.2`
+* Fixed `$ancestor[type=X]` failing to find the frame.
 * Fixed missing code completions in `Stategroup` and `Animation` elements.
 
 ## [0.9.1] - 2019-06-18
 
-* Fixed missing `request` dependency
+* Fixed missing `request` dependency resulting in error during initialization.
 
 ## [0.9.0] - 2019-06-13
 
