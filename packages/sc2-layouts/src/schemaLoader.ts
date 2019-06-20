@@ -227,7 +227,7 @@ export class SchemaLoader implements IService, vs.Disposable {
             this.console.log('[SchemaLoader] state', smState);
 
             if (smState && (smState.cacheFilename === void 0 || !(await fs.pathExists(path.join(this.storagePath, smState.cacheFilename)))) ) {
-                this.console.warn(`[SchemaLoader] cached file no longer exists "${path.join(this.storagePath, smState.cacheFilename)}"`);
+                this.console.warn(`[SchemaLoader] cached file no longer exists`, smState.cacheFilename);
                 smState = void 0;
                 this.sCtx.extContext.globalState.update('schema', smState);
             }
