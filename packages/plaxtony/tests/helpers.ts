@@ -22,11 +22,11 @@ export function mockupSourceFile(...filepath: string[]): SourceFile {
     return parser.parseFile(path.basename(completeFilePath), document.getText());
 }
 
-export function mockupStoreDocument(...filepath: string[]) {
+export function mockupStoreDocument(...filepath: string[]): [Store, SourceFile] {
     const store = new Store();
     const document = createTextDocumentFromFs(fixtureFilePath(...filepath));
     store.updateDocument(document);
-    return store.documents.get(document.uri);
+    return [store, store.documents.get(document.uri)];
 }
 
 export function mockupStore(...documents: TextDocument[]) {

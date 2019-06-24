@@ -509,14 +509,6 @@ export interface TypeNode extends Node {
     symbol?: Symbol; // Symbol associated with type (if any)
 }
 
-export interface TypeNode extends Node {
-}
-
-// export interface TypeReferenceNode extends TypeNode {
-//     kind: SyntaxKind.TypeReference;
-//     name: Identifier;
-// }
-
 export interface ArrayTypeNode extends TypeNode {
     kind: SyntaxKind.ArrayType;
     elementType: TypeNode;

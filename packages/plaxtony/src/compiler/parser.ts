@@ -38,7 +38,7 @@ export class Parser {
 
     private parseErrorAtCurrentToken(message: string, arg0?: any): void {
         const start = this.scanner.getStartPos();
-        const length = this.scanner.getTokenPos() - start;
+        const length = this.scanner.getCurrentPos() - start;
 
         this.parseErrorAtPosition(start, length, message, arg0);
     }
@@ -167,8 +167,10 @@ export class Parser {
         return array;
     }
 
-    private createMissingNode<T extends Node>(kind: T['kind']): T {
-        this.parseErrorAtCurrentToken(`Missing node: ${getKindName(kind)}`);
+    private createMissingNode<T extends Node>(kind: T['kind'], emitErrorMessage = true): T {
+        if (emitErrorMessage) {
+            this.parseErrorAtCurrentToken(`Missing node: ${getKindName(kind)}`);
+        }
 
         return this.createNode(SyntaxKind.Unknown, undefined, false) as T;
     }
@@ -339,8 +341,11 @@ export class Parser {
         }
 
         this.nextToken();
-        if (this.token() !== SyntaxKind.EqualsToken && this.token() !== SyntaxKind.SemicolonToken) {
-            return false;
+        switch (this.token()) {
+            // we're expecting ";" or "=", but let's allow everything else than "(" for better error tolerance
+            // "(" indicates that it might be CallExpression or FunctionDeclaration
+            case SyntaxKind.OpenParenToken:
+                return false;
         }
 
         return true;
@@ -407,26 +412,13 @@ export class Parser {
 
     private isStartOfStatement(): boolean {
         switch (this.token()) {
-            case SyntaxKind.SemicolonToken:
-            case SyntaxKind.OpenBraceToken:
             case SyntaxKind.StructKeyword:
-            case SyntaxKind.IfKeyword:
-            case SyntaxKind.DoKeyword:
-            case SyntaxKind.WhileKeyword:
-            case SyntaxKind.ForKeyword:
-            case SyntaxKind.ContinueKeyword:
-            case SyntaxKind.BreakKeyword:
-            case SyntaxKind.ReturnKeyword:
-            case SyntaxKind.BreakpointKeyword:
             case SyntaxKind.IncludeKeyword:
-                return true;
-
-            default:
-                if (this.isStartOfVariableDeclaration()) {
-                    return true;
-                }
-                return this.isStartOfExpression();
+            case SyntaxKind.TypedefKeyword:
+                return false;
         }
+
+        return true;
     }
 
     private isStartOfVariableDeclaration(): boolean {
@@ -439,18 +431,18 @@ export class Parser {
 
     private isStartOfRootStatement(): boolean {
         switch (this.token()) {
-            case SyntaxKind.SemicolonToken:
-            case SyntaxKind.StructKeyword:
-            case SyntaxKind.IncludeKeyword:
-            case SyntaxKind.TypedefKeyword:
-                return true;
+            case SyntaxKind.IfKeyword:
+            case SyntaxKind.DoKeyword:
+            case SyntaxKind.WhileKeyword:
+            case SyntaxKind.ForKeyword:
+            case SyntaxKind.ContinueKeyword:
+            case SyntaxKind.BreakKeyword:
+            case SyntaxKind.ReturnKeyword:
+            case SyntaxKind.BreakpointKeyword:
+                return false;
         }
 
-        if (this.isStartOfVariableDeclaration() || this.isStartOfFunctionDeclaration()) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     private isStartOfTypeDefinition(): boolean {
@@ -1114,8 +1106,8 @@ export class Parser {
                 }
 
             default:
-                this.parseErrorAtCurrentToken(`Unexpected ${getKindName(this.token())}`);
-                const node = this.createMissingNode(SyntaxKind.ExpressionStatement);
+                this.parseErrorAtCurrentToken(`Expected declaration or statement, found ${getKindName(this.token())}`);
+                const node = this.createMissingNode(SyntaxKind.ExpressionStatement, false);
                 this.nextToken();
                 return node;
         }

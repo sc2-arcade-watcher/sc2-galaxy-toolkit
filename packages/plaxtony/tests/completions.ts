@@ -2,7 +2,7 @@ import 'mocha';
 import { assert } from 'chai';
 import * as path from 'path';
 import * as gt from '../src/compiler/types';
-import { mockupStoreFromDirectory, fixtureFilePath, mapStoreFilesByBasename } from './helpers';
+import { mockupStoreFromDirectory, fixtureFilePath, mapStoreFilesByBasename, mockupStoreDocument } from './helpers';
 import { createProvider } from '../src/service/provider';
 import { Store } from '../src/service/store';
 import { CompletionsProvider, CompletionFunctionExpand } from '../src/service/completions';
@@ -62,5 +62,18 @@ describe('Completions', () => {
             assert.isFalse(completionsContains(results, 'static_a_func'));
             assert.isTrue(completionsContains(results, 'non_static_var'));
         })
+    });
+
+    it('incomplete variable declaration', function () {
+        const [store, sourceFile] = mockupStoreDocument('service', 'completion', 'incomplete_variable_decl.galaxy');
+        const complProvider = createProvider(CompletionsProvider, store);
+
+        const results = complProvider.getCompletionsAt(
+            sourceFile.fileName,
+            getPositionOfLineAndCharacter(sourceFile, 1, 11)
+        );
+
+        assert.lengthOf(results.items, 1);
+        assert.isTrue(completionsContains(results, 'MAX_PLAYERS'));
     });
 });

@@ -726,10 +726,16 @@ export class Scanner {
         return this.pos;
     }
 
+    /**
+     * Absolute start position - including adjacent whitespace
+     */
     public getStartPos(): number {
         return this.startPos;
     }
 
+    /**
+     * Actual start position - excluding adjacent whitespace
+     */
     public getTokenPos(): number {
         return this.tokenPos;
     }
