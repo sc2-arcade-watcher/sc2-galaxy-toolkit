@@ -26,12 +26,11 @@
     "build:watch": "tsc --watch",
     "test": "mocha --opts mocha.opts",
     "test:watch": "mocha --opts mocha.opts --watch",
-    "test:coverage": "nyc mocha --opts mocha.opts"
+    "test:coverage": "nyc mocha --opts mocha-nyc.opts"
   },
   "nyc": {
     "extension": [
-      ".ts",
-      ".tsx"
+      ".ts"
     ],
     "include": [
       "src/**/*.ts"
@@ -40,7 +39,8 @@
       "lcov",
       "text-summary"
     ],
-    "all": true
+    "sourceMap": true,
+    "instrument": true
   },
   "dependencies": {
     "glob": "^7.1.2",
