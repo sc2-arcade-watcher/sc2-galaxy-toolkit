@@ -29,6 +29,8 @@ https://code.visualstudio.com/api/working-with-extensions/testing-extension
 
 ## Features
 
+---
+
 ### Custom abbreviations
 
 Quick and convenient way for inserting code snippets.
@@ -51,15 +53,17 @@ Syntax: __`/`__*`Filename/Path/ToTheFrame/Image`*
  * Special `#` character at the end is utilized to accept suggestion and expand to choosed element.
  * Suggestions list can be triggered only within root element (`<Desc>`).
 
-#### Template overloading
+#### Desc extending / overloading
 
 Syntax: __`.`__*`Name`*
 
 ![abbrv-template-overloading](assets/abbrv-template-overloading.png)
 
- * Suggestions list will exclude elements that are already extended in scope of current declaration.
+ * Listing elements elements from template/templates used within the scope.
+ * Listing elements elements from foreign desc - when overriding frame declared in another layout etc.
+ * Listing native hookups available for implementation.
  * Works with deeply nested elements.
- * Not limited to templates - it will also provide suggestions when extending frame within another layout file etc.
+ * Suggestions list will exclude elements that are already extended/implemented in scope of current declaration.
 
 ---
 

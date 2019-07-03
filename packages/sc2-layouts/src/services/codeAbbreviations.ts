@@ -1,8 +1,8 @@
 import * as vs from 'vscode';
 import { XMLElement } from '../types';
-import { DescKind, DescIndex } from '../index/desc';
+import { DescKind, DescIndex, DescNamespace } from '../index/desc';
 import { ExpressionParser } from '../parser/expressions';
-import { UINavigator, UIBuilder, UINode } from '../index/hierarchy';
+import { UINavigator, UIBuilder, UINode, FrameNode } from '../index/hierarchy';
 import { LayoutProcessor } from '../index/processor';
 import { LayoutChecker } from '../index/checker';
 import { XRay } from '../index/xray';
@@ -10,6 +10,7 @@ import { Store } from '../index/store';
 import { ILoggerConsole } from './provider';
 import { descKindToCompletionKind } from './completions';
 import { getSelectionIndexAtPosition } from '../parser/utils';
+import * as sch from '../schema/base';
 
 export class SuggestionsProvider {
     protected exParser = new ExpressionParser();
@@ -149,7 +150,45 @@ export class CodeAbbreviations extends SuggestionsProvider {
     protected provideChildrenNodes(ctx: AbbrComplContext, uNode: UINode) {
         const cList = new vs.CompletionList();
 
-        outer: for (const uChildNode of uNode.children.values()) {
+        interface EnrichDescOpts {
+            sComplexType?: sch.ComplexType;
+            dKind?: DescKind;
+            mainDesc?: DescNamespace;
+            uNode?: UINode;
+        }
+
+        function enrichDescComplItem(tmpCI: vs.CompletionItem, opts: { sComplexType?: sch.ComplexType, dKind?: DescKind, mainDesc?: DescNamespace , uNode?: UINode }) {
+            if (opts.uNode) {
+                opts.mainDesc = opts.uNode.mainDesc;
+            }
+            if (opts.mainDesc) {
+                opts.dKind = opts.mainDesc.kind;
+                opts.sComplexType = opts.mainDesc.stype;
+            }
+
+            tmpCI.kind = descKindToCompletionKind(opts.dKind);
+            tmpCI.range = ctx.abbrvRange;
+            tmpCI.filterText = `.${tmpCI.label}`;
+
+            if (opts.uNode) {
+                tmpCI.detail = `${opts.uNode.fqn} (${opts.uNode.children.size})`;
+            }
+            else if (opts.mainDesc) {
+                tmpCI.detail = `${opts.mainDesc.fqn} (${opts.mainDesc.children.size})`;
+            }
+
+            tmpCI.documentation = new vs.MarkdownString();
+            if (opts.sComplexType.label) {
+                tmpCI.documentation.appendText(opts.sComplexType.label);
+            }
+            if (opts.sComplexType.documentation) {
+                tmpCI.documentation.appendText(opts.sComplexType.documentation);
+            }
+            tmpCI.documentation.appendCodeblock((<vs.SnippetString>tmpCI.insertText).value.replace('$0', '\n'), 'xml');
+        }
+
+        outer: for (const childName of uNode.children.keys()) {
+            const uChildNode = this.uNavigator.resolveChild(uNode, childName);
             const dscList = Array.from(uChildNode.descs);
             const mIndex = dscList.findIndex((value) => {
                 if (value.xDecls.has(ctx.xEl) && uChildNode.descs.size > 1) return false;
@@ -194,12 +233,40 @@ export class CodeAbbreviations extends SuggestionsProvider {
                 }
             }
 
-            tmpCI.kind = descKindToCompletionKind(uChildNode.mainDesc.kind);
-            tmpCI.range = ctx.abbrvRange;
-            tmpCI.filterText = `.${tmpCI.label}`;
-            tmpCI.detail = uChildNode.fqn;
-            tmpCI.documentation = new vs.MarkdownString('```xml\n' + (<vs.SnippetString>tmpCI.insertText).value.replace('$0', '\n') + '\n```');
+            enrichDescComplItem(tmpCI, { uNode: uChildNode });
             cList.items.push(tmpCI);
+        }
+
+        if (uNode.mainDesc.kind === DescKind.Frame) {
+            const ufNode = <FrameNode>uNode;
+            const sFrameType = this.store.schema.getFrameType(ufNode.mainDesc.stype);
+            const propHookupAlias = ufNode.propHookupAlias;
+
+            for (const sHookup of sFrameType.hookups.values()) {
+                let desiredPath: string;
+                const pHookAlias = propHookupAlias.get(sHookup.path);
+                if (pHookAlias && pHookAlias.alias) {
+                    desiredPath = pHookAlias.alias;
+                }
+                else {
+                    desiredPath = sHookup.path;
+                }
+                const uChild = this.uNavigator.resolveChild(ufNode, desiredPath.split('/'));
+                if (uChild) continue;
+
+                let tmpCI: vs.CompletionItem;
+                tmpCI = {
+                    label: `${desiredPath}[${sHookup.fClass.name.substr(1)}] /H` + (sHookup.required ? '*' : ''),
+                    insertText: new vs.SnippetString(`<Frame type="${sHookup.fClass.name.substr(1)}" name="${desiredPath}">\$0</Frame>`),
+                    detail: 'Hookup - ' + (sHookup.required ? '[Required]' : '[Optional]'),
+                    preselect: sHookup.required,
+                };
+                enrichDescComplItem(tmpCI, {
+                    dKind: DescKind.Frame,
+                    sComplexType: this.store.schema.frameTypes.get(sHookup.fClass.name.substr(1)).complexType,
+                });
+                cList.items.push(tmpCI);
+            }
         }
 
         return cList;
