@@ -5,6 +5,7 @@ import { ExtLangIds } from '../types';
 import { UINode, FrameNode } from '../index/hierarchy';
 import { Store } from '../index/store';
 import { ServiceContext } from '../service';
+import * as sch from '../schema/base';
 
 interface VTreeItem extends vs.TreeItem {
     parent?: VTreeItem;
@@ -42,8 +43,57 @@ class FramePropertiesTreeDataProvider implements vs.TreeDataProvider<VTreeItem> 
             tooltip: uNode.fqn,
             iconPath: this.svcContext.getThemeIcon('frame.svg'),
         }));
-        // uNode.mainDesc.stype.name
 
+        // ===
+        // hookups
+        const vHookupGroup = append(vRoot, this.createVTreeItem({
+            label: 'Hookups',
+            description: `[${frameType.hookups.size}]`,
+            tooltip: 'Native hookup list',
+            iconPath: this.svcContext.getThemeIcon('dependency.svg'),
+            collapsibleState: frameType.hookups.size > 0 ? vs.TreeItemCollapsibleState.Expanded : vs.TreeItemCollapsibleState.None,
+        }));
+        for (const hookupItem of frameType.hookups.values()) {
+            append(vHookupGroup, this.createVTreeItem({
+                label: (hookupItem.required ? '* ' : '  ') + hookupItem.path,
+                description: hookupItem.fClass.name,
+                tooltip: `"${hookupItem.path}" [${hookupItem.fClass.name}] - ` + (hookupItem.required ? 'required' : 'optional')
+            }));
+        }
+
+        // ===
+        // desc structures
+        const frameDescs: sch.ComplexType[] = [];
+        function applyDesc(currDesc: sch.ComplexType) {
+            frameDescs.push(currDesc);
+            for (const tmpcType of currDesc.inheritance.from.values()) {
+                applyDesc(tmpcType);
+            }
+        }
+        if (frameType.customDesc) {
+            applyDesc(frameType.customDesc);
+        }
+
+        for (const descType of frameDescs) {
+            const vFrameDescGroup = append(vRoot, this.createVTreeItem({
+                collapsibleState: vs.TreeItemCollapsibleState.Expanded,
+                label: descType.name,
+                description: `(${descType.struct.size})`,
+                iconPath: this.svcContext.getThemeIcon('folder.svg'),
+            }));
+
+            for (const descField of descType.struct.values()) {
+                append(vFrameDescGroup, this.createVTreeItem({
+                    collapsibleState: vs.TreeItemCollapsibleState.None,
+                    label: descField.name,
+                    description: `[${descField.type.name}]`,
+                    tooltip: descField.label,
+                }));
+            }
+        }
+
+        // ===
+        // class props
         for (const frameClass of frameType.fclasses.values()) {
             const vFrameClassGroup = append(vRoot, this.createVTreeItem({
                 collapsibleState: vs.TreeItemCollapsibleState.Expanded,

@@ -8,6 +8,9 @@
     * Reporting about missmatched type.
     * Aliasing via `HookupAlias` property is supported.
 * Introduced custom abbreviations to enhance code completions capabilities. Head over to [README#custom-abbreviations](README.md#custom-abbreviations) to learn how to use them.
+* Frame properties panel improvements:
+    * Added section listing hookups of a frame. Required hookups are prefixed with `* `.
+    * Added section listing desc types of a frame, along with their fields.
 
 ## [0.10.1] - 2019-06-20
 

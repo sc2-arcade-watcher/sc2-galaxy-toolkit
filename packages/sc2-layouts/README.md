@@ -61,6 +61,28 @@ Syntax: __`.`__*`Name`*
  * Works with deeply nested elements.
  * Not limited to templates - it will also provide suggestions when extending frame within another layout file etc.
 
+---
+
+### Custom panels
+
+Accessible from the activity bar on the left - it will open in a separate container.
+
+![desc-tree-props](assets/desc-tree-props.png)
+
+#### Desc tree
+
+All layout files from the workspace and their content arranged in a tree.
+
+#### Frame properties
+
+Provides basic informations about selected frame in corresponding DescTree panel. It includes:
+
+ * Native hookup list
+ * Desc types of a frame and its fields
+ * Class types of a frame and its properties
+
+---
+
 ## Showcase
 
 ### Code completions
