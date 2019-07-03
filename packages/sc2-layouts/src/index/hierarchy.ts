@@ -228,7 +228,7 @@ export class UIBuilder {
             const tplpath = frDesc.template;
             if (tplpath !== null) {
                 const tplDesc = rootNs.getDeep(tplpath);
-                if (tplDesc) {
+                if (tplDesc && tplDesc.kind === frDesc.kind) {
                     processDesc(uNode, tplDesc, tpath);
                 }
                 else {
