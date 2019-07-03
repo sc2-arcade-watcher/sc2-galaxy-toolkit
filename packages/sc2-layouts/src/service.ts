@@ -248,7 +248,11 @@ export class ServiceContext implements IService {
 
         // -
         this.completionsProvider = this.createProvider(CompletionsProvider);
-        context.subscriptions.push(vs.languages.registerCompletionItemProvider(lselector, this.completionsProvider, '<', '"', '#', '$', '@', '/', '\\'));
+        context.subscriptions.push(vs.languages.registerCompletionItemProvider(
+            lselector,
+            this.completionsProvider,
+            '<', '"', '#', '$', '@', '/', '\\', ':', '.'
+        ));
 
         // -
         this.hoverProvider = this.createProvider(HoverProvider);

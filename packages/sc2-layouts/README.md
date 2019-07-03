@@ -27,6 +27,40 @@ yarn install
 
 https://code.visualstudio.com/api/working-with-extensions/testing-extension
 
+## Features
+
+### Custom abbreviations
+
+Quick and convenient way for inserting code snippets.
+
+They function the same way as normal code completions, with one exception - they're supposed to be triggered directly inside content of XML element. Upon accepting they'll be expanded to include all boilerplate code.
+
+#### Frame declarations
+
+Syntax: __`:`__*`FrameType`*
+
+![abbrv-frame-declaration](assets/abbrv-frame-declaration.png)
+
+#### Desc overrides
+
+Syntax: __`/`__*`Filename/Path/ToTheFrame/Image`*
+
+![abbrv-desc-override](assets/abbrv-desc-override.png)
+
+ * Works with Frames, Animations, Stategroups.
+ * Special `#` character at the end is utilized to accept suggestion and expand to choosed element.
+ * Suggestions list can be triggered only within root element (`<Desc>`).
+
+#### Template overloading
+
+Syntax: __`.`__*`Name`*
+
+![abbrv-template-overloading](assets/abbrv-template-overloading.png)
+
+ * Suggestions list will exclude elements that are already extended in scope of current declaration.
+ * Works with deeply nested elements.
+ * Not limited to templates - it will also provide suggestions when extending frame within another layout file etc.
+
 ## Showcase
 
 ### Code completions

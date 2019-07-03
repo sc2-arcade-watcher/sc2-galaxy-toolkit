@@ -8,14 +8,12 @@ import { TokenType, ScannerState, XMLElement, AttrValueKind, XMLNodeKind, AttrVa
 import { DescIndex, DescNamespace, DescKind } from '../index/desc';
 import * as s2 from '../index/s2mod';
 import { Store } from '../index/store';
-import { ExpressionParser, SelHandleKind, SelectorFragment, PathSelector, PropertyBindExpr, SyntaxKind } from '../parser/expressions';
-import { UINavigator, UIBuilder, FrameNode, AnimationNode, StateGroupNode, UINode } from '../index/hierarchy';
+import { SelHandleKind, SelectorFragment, PathSelector, PropertyBindExpr, SyntaxKind } from '../parser/expressions';
+import { FrameNode, AnimationNode, StateGroupNode, UINode } from '../index/hierarchy';
 import { getSelectionIndexAtPosition, getAttrValueKind, isConstantValue } from '../parser/utils';
-import { LayoutProcessor } from '../index/processor';
-import { XRay } from '../index/xray';
-import { LayoutChecker } from '../index/checker';
 import { reValueColor } from '../schema/validation';
 import { parseColorLiteral, getColorAsHexARGB } from './color';
+import { reAbbrvWord, CodeAbbreviations, SuggestionsProvider } from './codeAbbreviations';
 
 function completionsForSimpleType(smType: sch.SimpleType) {
     let items = <vs.CompletionItem[]> [];
@@ -55,7 +53,7 @@ function completionFromUNodeItem(uNode: UINode) {
     return compl;
 }
 
-function descKindToCompletionKind(dkind: DescKind) {
+export function descKindToCompletionKind(dkind: DescKind) {
     switch (dkind) {
         case DescKind.Root:
         case DescKind.File:
@@ -87,29 +85,6 @@ interface AtComplContext extends ComplContext {
 interface AtValComplContext extends AtComplContext {
     attrValue: string;
     atOffsetRelative: number;
-}
-
-class SuggestionsProvider {
-    protected exParser = new ExpressionParser();
-    protected uNavigator: UINavigator;
-    protected uBuilder: UIBuilder;
-    protected processor: LayoutProcessor;
-    protected checker: LayoutChecker;
-    protected dIndex: DescIndex;
-    protected xray: XRay;
-
-    protected prepare() {
-        this.uNavigator = new UINavigator(this.store.schema, this.store.index);
-        this.uBuilder = new UIBuilder(this.store.schema, this.store.index);
-        this.processor = new LayoutProcessor(this.store, this.store.index);
-        this.checker = new LayoutChecker(this.store, this.store.index);
-        this.dIndex = this.store.index;
-        this.xray = new XRay(this.store);
-    }
-
-    constructor(protected store: Store, protected console: ILoggerConsole) {
-        this.prepare();
-    }
 }
 
 // ====
@@ -716,6 +691,7 @@ class AttrNameProvider extends SuggestionsProvider {
 export class CompletionsProvider extends AbstractProvider implements vs.CompletionItemProvider {
     protected atValueProvider: AttrValueProvider;
     protected atNameProvider: AttrNameProvider;
+    protected codeAbrvProvider: CodeAbbreviations;
 
     protected provideConstants(compls: vs.CompletionItem[], vKind: AttrValueKind) {
         for (const item of this.store.index.constants.values()) {
@@ -985,6 +961,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
         super.init(svcContext, store, console);
         this.atValueProvider = new AttrValueProvider(this.store, console);
         this.atNameProvider = new AttrNameProvider(this.store, console);
+        this.codeAbrvProvider = new CodeAbbreviations(this.store, console);
     }
 
     @svcRequest(
@@ -1106,6 +1083,18 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
             case TokenType.StartTagOpen:
             case TokenType.Content:
             {
+                const abbrvRange = document.getWordRangeAtPosition(position, reAbbrvWord);
+                if (abbrvRange && token === TokenType.Content) {
+                    const abrvResult = this.codeAbrvProvider.processAbbrv({
+                        vDoc: document,
+                        xEl: node,
+                        abbrvRange: abbrvRange,
+                        curPosition: position,
+                    });
+                    if (abrvResult !== void 0) {
+                        return abrvResult;
+                    }
+                }
                 this.suggestElements(cmCtx);
                 break;
             }
@@ -1134,8 +1123,6 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
             }
         }
 
-        return {
-            items: cmCtx.citems,
-        };
+        return new vs.CompletionList(cmCtx.citems);
     }
 }
