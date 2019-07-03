@@ -211,6 +211,12 @@ export interface FrameClass extends AbstractModel {
     properties: Map<string, FrameProperty>;
 }
 
+export interface FrameHookup {
+    path: string;
+    fClass: FrameClass;
+    required: boolean;
+}
+
 export interface FrameType extends AbstractModel {
     name: string;
     blizzOnly: boolean;
@@ -218,6 +224,7 @@ export interface FrameType extends AbstractModel {
     fclasses: Map<string, FrameClass>;
     fprops: Map<string, FrameProperty>;
     complexType: ComplexType;
+    hookups: Map<string, FrameHookup>;
 }
 
 // ===

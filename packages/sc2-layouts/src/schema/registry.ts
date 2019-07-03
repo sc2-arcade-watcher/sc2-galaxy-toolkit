@@ -394,6 +394,7 @@ function initializeRegistry(sdata: SchemaData): RegistryCatalog {
             fclasses: new Map<string, sch.FrameClass>(),
             fprops: new Map<string, sch.FrameProperty>(),
             complexType: void 0,
+            hookups: new Map(),
         };
 
         const objComplexType = createComplexType({
@@ -411,6 +412,14 @@ function initializeRegistry(sdata: SchemaData): RegistryCatalog {
                 objComplexType.struct.set(scProperty.etype.name, scProperty.etype);
             }
             scFrameClass = scFrameClass.cparent;
+        }
+
+        for (const sHookup of sFrameType.hookup) {
+            objFrameType.hookups.set(sHookup.path, {
+                path: sHookup.path,
+                fClass: registry.frameClass.mustGet(sHookup.class),
+                required: sHookup.required,
+            });
         }
 
         return addToRegistry(sch.ModelKind.FrameType, objFrameType);

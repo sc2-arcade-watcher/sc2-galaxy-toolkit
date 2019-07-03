@@ -91,11 +91,18 @@ export namespace sraw {
         property: FrameClassProperty[];
     };
 
+    export type FrameTypeHookup = {
+        path: string;
+        class: string;
+        required: boolean;
+    };
+
     export type FrameType = NamedDefinition & {
         name: string;
         descType?: string;
         classType: string;
         blizzOnly: boolean;
+        hookup: FrameTypeHookup[];
     };
 }
 
@@ -334,10 +341,18 @@ function readFrameClass(el: xmljs.Element) {
 
 function readFrameType(el: xmljs.Element) {
     return createNamedDefinition<sraw.FrameType>(el, sch.ModelKind.FrameType, {
+        defaults: {
+            hookup: [],
+        },
         attrs: {
             blizzOnly: ensureBoolean,
         },
         props: {
+            hookup: {
+                attrs: {
+                    required: ensureBoolean,
+                },
+            },
         },
     });
 }

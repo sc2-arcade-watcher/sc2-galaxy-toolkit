@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.11.0] - Unreleased
+
+* Added native frame hookup declarations to the schema.
+
 ## [0.10.1] - 2019-06-20
 
 * Hotfix https://github.com/Talv/sc2-layouts/commit/4a89c573ecb7b2a510a75f6a77d3fc2bd5f2b816

@@ -46,6 +46,45 @@ async function cacheSchema(sDir: string, targetFilename: string) {
 }
 
 // ===
+// hookups
+
+interface HookupEntry {
+    type: string;
+    name: string;
+}
+
+interface Hookup {
+    fclass: string;
+    children: HookupEntry[];
+}
+
+async function applyHookups(srcList: string, srcFrmType: string) {
+    const hookups: Hookup[] = await fs.readJSON(srcList);
+    let frmTypeXML = await fs.readFile(srcFrmType, 'utf8');
+
+    function appendChunk(currentHookup: Hookup) {
+        const frameName = currentHookup.fclass.substr(1);
+        const rawXMLHookups: string[] = [];
+        for (const entry of currentHookup.children) {
+            rawXMLHookups.push(' '.repeat(8) + `<hookup path="${entry.name}" class="${entry.type}" required="true"/>`);
+        }
+        let offset = frmTypeXML.indexOf(`<frameType name="${frameName}"`);
+        if (offset === -1) {
+            console.error(`frameType element for "${frameName}" not found`);
+            return;
+        }
+        offset = frmTypeXML.indexOf('>', offset) + 1;
+        frmTypeXML = frmTypeXML.substr(0, offset) + '\n' + rawXMLHookups.join('\n') + frmTypeXML.substr(offset);
+    }
+
+    for (const currentHookup of hookups) {
+        appendChunk(currentHookup)
+    }
+
+    process.stdout.write(frmTypeXML);
+}
+
+// ===
 // run
 
 if (process.argv.length < 3) process.exit(1);
@@ -64,6 +103,11 @@ switch (process.argv[2]) {
         cacheSchema(process.argv[3], process.argv[4]);
         break;
     }
-}
 
-console.info('Done');
+    case 'hookups':
+    {
+        if (process.argv.length < 5) process.exit(1);
+        applyHookups(process.argv[3], process.argv[4]);
+        break;
+    }
+}
