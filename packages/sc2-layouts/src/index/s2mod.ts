@@ -325,7 +325,7 @@ export class Workspace {
     }
 
     async handleFileUpdate(uri: URI) {
-        const archiveMatch = Array.from(this.archives.values()).find(item => uri.fsPath.startsWith(item.uri.fsPath));
+        const archiveMatch = this.matchFileWorkspace(uri);
         if (!archiveMatch) return false;
         if (uri.fsPath.match(/\/(GameStrings|GameHotkeys|Assets|AssetsProduct)\.txt$/i)) {
             await this.strings.reload(archiveMatch);
@@ -338,7 +338,9 @@ export class Workspace {
 
     matchFileWorkspace(uri: URI) {
         for (const sa of this.archives.values()) {
-            if (uri.fsPath.toString().startsWith(sa.uri.fsPath.toString())) {
+            // add separator at the end of archivePath, so it doesn't pickup temp files created by sc2edit:
+            // /\.(sc2map|sc2mod)\.(temp|orig)/
+            if (uri.fsPath.toString().startsWith(sa.uri.fsPath.toString() + path.sep)) {
                 return sa;
             }
         }

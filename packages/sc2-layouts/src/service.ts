@@ -602,7 +602,6 @@ export class ServiceContext implements IService {
         (r: boolean) => r
     )
     protected async onFileChange(ev: vs.FileChangeEvent) {
-        if (ev.uri.fsPath.match(/(sc2map|sc2mod)\.(temp|orig)/gi)) return false;
         if (!this.store.s2ws.matchFileWorkspace(ev.uri)) {
             this.console.log('not in workspace');
             return false;
