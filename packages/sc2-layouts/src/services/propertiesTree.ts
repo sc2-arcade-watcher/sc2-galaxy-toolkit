@@ -115,11 +115,13 @@ export class PropertiesViewProvider extends AbstractProvider implements vs.Dispo
 
     @svcRequest(true)
     public showDescItem(dsItem?: DescNamespace) {
-        let uNode: UINode;
         if (dsItem && dsItem.kind === DescKind.Frame) {
-            uNode = this.xray.uBuilder.buildNodeFromDesc(dsItem);
+            const uNode = <FrameNode>this.xray.uBuilder.buildNodeFromDesc(dsItem);
+            this.viewDataProvider.setCurrentFrameNode(uNode);
         }
-        this.viewDataProvider.setCurrentFrameNode(uNode);
+        else {
+            this.viewDataProvider.setCurrentFrameNode();
+        }
     }
 
     protected onChangeTextEditorSelection(ev: vs.TextEditorSelectionChangeEvent) {

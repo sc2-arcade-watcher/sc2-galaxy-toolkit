@@ -10,7 +10,7 @@ import { IService, ILoggerConsole, svcRequest } from './services/provider';
 import * as sch from './schema/base';
 
 const extractZipAsync = util.promisify(extractZip);
-const currentModelVersion = 4;
+const currentModelVersion = 5;
 
 namespace IGithub {
     export interface Author {

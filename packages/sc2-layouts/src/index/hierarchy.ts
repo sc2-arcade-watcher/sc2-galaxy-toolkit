@@ -11,6 +11,7 @@ export class UINode {
     readonly descs = new Set<DescNamespace>();
     public build = false;
     protected _elements: XMLElement[];
+    protected _elementsMap: Map<sch.ComplexType, XMLElement[]>;
 
     constructor(public readonly mainDesc: DescNamespace, public readonly parent: UINode = null) {
         this.name = mainDesc.name;
@@ -20,15 +21,24 @@ export class UINode {
     }
 
     protected collectElements() {
-        const mElements: XMLElement[] = [];
+        if (this._elementsMap !== void 0) return this._elementsMap;
+        this._elementsMap = new Map();
+        this._elements = [];
         for (const currDesc of Array.from(this.descs).reverse()) {
             for (const xDecl of currDesc.xDecls) {
                 for (const xCurrEl of xDecl.children) {
-                    mElements.push(xCurrEl);
+                    this._elements.push(xCurrEl);
+
+                    let sTypeList = this._elementsMap.get(xCurrEl.stype);
+                    if (!sTypeList) {
+                        sTypeList = [];
+                        this._elementsMap.set(xCurrEl.stype, sTypeList);
+                    }
+                    sTypeList.push(xCurrEl);
                 }
             }
         }
-        return mElements;
+        return this._elementsMap;
     }
 
     getChild(...names: string[]) {
@@ -41,7 +51,7 @@ export class UINode {
     }
 
     findElements(predicate: (itemEl: XMLElement) => boolean) {
-        if (!this._elements) this._elements = this.collectElements();
+        this.collectElements();
 
         const mElements: XMLElement[] = [];
         for (const currEl of this._elements) {
@@ -85,6 +95,33 @@ export class UINode {
 
         return plist;
     }
+
+    fieldsOfType(sType: sch.ComplexType) {
+        const fields = this.collectElements().get(sType);
+        if (!fields) {
+            return [];
+        }
+        return fields;
+    }
+
+    getFieldNameMap<T>(sType: sch.ComplexType, keyName: string): ReadonlyMap<string, T> {
+        const fMap = new Map<string, T>();
+        for (const currField of this.fieldsOfType(sType)) {
+            const attrKeyInfo = currField.attributes[keyName];
+            if (attrKeyInfo === void 0 || attrKeyInfo.value === void 0) continue;
+
+            const values: any = {};
+            for (const [currAttrName, currAttrInfo] of sType.attributes) {
+                if (currAttrName === keyName) continue;
+                const attrValue = currField.getAttributeValue(currAttrName, void 0);
+                if (attrValue === void 0) continue;
+                values[currAttrInfo.name] = attrValue;
+            }
+
+            fMap.set(attrKeyInfo.value, values);
+        }
+        return fMap;
+    }
 }
 
 export class FrameNode extends UINode {
@@ -95,6 +132,11 @@ export class FrameNode extends UINode {
     // get stateGroups() {
     //     return this.childrenOfType<StateGroupNode>(StateGroupNode);
     // }
+
+    get propHookupAlias() {
+        const sType = this.mainDesc.stype.struct.get('HookupAlias').type;
+        return this.getFieldNameMap<{alias?: string}>(sType, 'original');
+    }
 }
 
 export class StateGroupNode extends UINode {
@@ -407,7 +449,15 @@ export class UINavigator {
         return resSel;
     }
 
-    resolveChild(uNode: UINode, name: string) {
+    resolveChild(uNode: UINode, name: string | string[]) {
+        if (typeof name === 'object') {
+            let currUNode = uNode;
+            for (const currName of name) {
+                currUNode = this.resolveChild(currUNode, currName);
+                if (!currUNode) break;
+            }
+            return currUNode;
+        }
         const childNode = uNode.getChild(name);
         if (!childNode) return;
         if (!childNode.build) this.uBuilder.expandNode(childNode, []);

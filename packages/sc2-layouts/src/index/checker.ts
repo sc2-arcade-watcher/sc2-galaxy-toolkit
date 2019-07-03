@@ -6,7 +6,7 @@ import { SchemaValidator } from '../schema/validation';
 import { CharacterCodes } from '../parser/scanner';
 import { getAttrValueKind } from '../parser/utils';
 import { ExpressionParser, NodeExpr, SelHandleKind, SelectorFragment, PathSelector } from '../parser/expressions';
-import { UINavigator, UIBuilder, UINode } from './hierarchy';
+import { UINavigator, UIBuilder, UINode, FrameNode } from './hierarchy';
 
 export class DescResolvedSelection {
     public readonly items: DescNamespace[][] = [];
@@ -179,11 +179,60 @@ export class LayoutChecker {
         }
     }
 
+    protected checkFrameHookups(el: XMLElement, ufNode: FrameNode) {
+        const sFrameType = this.store.schema.getFrameType(el.stype);
+        const propHookupAlias = ufNode.propHookupAlias;
+        for (const sHookup of sFrameType.hookups.values()) {
+            let desiredPath: string;
+            const pHookAlias = propHookupAlias.get(sHookup.path);
+            if (pHookAlias && pHookAlias.alias) {
+                desiredPath = pHookAlias.alias;
+            }
+            else {
+                desiredPath = sHookup.path;
+            }
+            const uChild = this.uNavigator.resolveChild(ufNode, desiredPath.split('/'));
+
+            if (!uChild) {
+                if (!sHookup.required) continue;
+                this.reportAtNode(
+                    el,
+                    `Frame[${sFrameType.name}] is missing hookup definition of "${sHookup.fClass.name}" at path "${sHookup.path}".`,
+                    DiagnosticCategory.Warning
+                );
+                continue;
+            }
+
+            const sChildFType = this.store.schema.getFrameType(uChild.mainDesc.stype);
+            if (!sChildFType) {
+                continue;
+            }
+            if (!sChildFType.fclasses.has(sHookup.fClass.name)) {
+                this.reportAtNode(
+                    el,
+                    `Frame[${sFrameType.name}] incorrect hookup type at path "${sHookup.path}" - "${Array.from(sChildFType.fclasses.values()).pop().name}" doesn't implement "${sHookup.fClass.name}".`,
+                    DiagnosticCategory.Warning
+                );
+                continue;
+            }
+        }
+    }
+
     protected checkElement(el: XMLElement) {
         if (!el.stype) return;
         this.svalidator.checkRequiredAttr(el);
 
         const cDesc = this.index.resolveElementDesc(el);
+
+        if (el.sdef.nodeKind === sch.ElementDefKind.Frame) {
+            const sFrameType = this.store.schema.getFrameType(el.stype);
+            if (sFrameType && sFrameType.hookups.size > 0) {
+                const ufNode = <FrameNode>this.uBuilder.buildNodeFromDesc(cDesc);
+                if (ufNode) {
+                    this.checkFrameHookups(el, ufNode);
+                }
+            }
+        }
 
         switch (el.sdef.nodeKind) {
             case sch.ElementDefKind.Frame:

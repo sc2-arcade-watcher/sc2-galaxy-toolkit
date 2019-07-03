@@ -3,6 +3,10 @@
 ## [0.11.0] - Unreleased
 
 * Added native frame hookup declarations to the schema.
+* Hookups of a frame type are now validated:
+    * Reporting about omitted elements which are flagged as obligatory.
+    * Reporting about missmatched type.
+    * Aliasing via `HookupAlias` property is supported.
 
 ## [0.10.1] - 2019-06-20
 
