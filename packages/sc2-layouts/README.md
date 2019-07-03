@@ -4,30 +4,11 @@ Visual Studio Code extension introducing extensive support for **SC2Layout** lan
 
 > Schema files of `SC2Layout` are hosted in its own [repository](https://github.com/SC2Mapster/sc2layout-schema), from which this extension will always pull most recent version.
 
-## Contribution guide
-
-**Requirements**
-
- * yarn: https://yarnpkg.com
-
-**Initial setup**
-```
-git clone https://github.com/Talv/sc2-layouts.git
-cd sc2-layouts
-git submodule update
-yarn install
-```
-
-**Dev tasks**
-
-* `yarn run build:watch` - compile `.ts` files and watch for changes
-* `yarn run test` - run tests
-
-**Testing extension in VSCode**
-
-https://code.visualstudio.com/api/working-with-extensions/testing-extension
+* [Contributing](CONTRIBUTING.md)
 
 ## Features
+
+It provides all basic stuff you'd expect from extension of this sort. However, it also includes some more obscure things - this section will briefly mention these.
 
 ---
 
@@ -87,9 +68,11 @@ Provides basic informations about selected frame in corresponding DescTree panel
 
 ---
 
-## Showcase
+### Other stuff
 
-### Code completions
+Random screenshots made during development. Some of the things shown here are probably bit out of date - it has been improved since then.
+
+#### Code completions
 
 ![completions-tooltips](./assets/completions-tooltips.png)
 
@@ -103,16 +86,16 @@ Provides basic informations about selected frame in corresponding DescTree panel
 
 ![completions-templates](./assets/completions-templates.png)
 
-### Goto definition
+#### Goto definition
 
 ![image](./assets/definition-selectors.png)
 
-### Document and workspace navigation
+#### Document and workspace navigation
 
 ![image](./assets/document-navigation.png)
 
 ![image](./assets/workspace-navigation-constants.png)
 
-### Code diagnostics
+#### Code diagnostics
 
 ![image](./assets/diagnostics-overview.png)
