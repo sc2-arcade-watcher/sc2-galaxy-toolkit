@@ -1,6 +1,6 @@
 # Change Log
 
-## [0.11.0] - Unreleased
+## [0.11.0] - 2019-07-03
 
 * Added native frame hookup declarations to the schema.
 * Hookups of a frame type are now validated:
