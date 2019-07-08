@@ -13,7 +13,8 @@ import { FrameNode, AnimationNode, StateGroupNode, UINode } from '../index/hiera
 import { getSelectionIndexAtPosition, getAttrValueKind, isConstantValue } from '../parser/utils';
 import { reValueColor } from '../schema/validation';
 import { parseColorLiteral, getColorAsHexARGB } from './color';
-import { reAbbrvWord, CodeAbbreviations, SuggestionsProvider } from './codeAbbreviations';
+import { reAbbrvWord, CodeAbbreviations } from './completions/codeAbbreviations';
+import { SuggestionsProvider } from './completions/helpers';
 
 function completionsForSimpleType(smType: sch.SimpleType) {
     let items = <vs.CompletionItem[]> [];
@@ -959,9 +960,9 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
 
     public init(svcContext: ServiceContext, store: Store, console: ILoggerConsole) {
         super.init(svcContext, store, console);
-        this.atValueProvider = new AttrValueProvider(this.store, console);
-        this.atNameProvider = new AttrNameProvider(this.store, console);
-        this.codeAbrvProvider = new CodeAbbreviations(this.store, console);
+        this.atValueProvider = new AttrValueProvider(this.store, console, this.svcContext.config);
+        this.atNameProvider = new AttrNameProvider(this.store, console, this.svcContext.config);
+        this.codeAbrvProvider = new CodeAbbreviations(this.store, console, this.svcContext.config);
     }
 
     @svcRequest(

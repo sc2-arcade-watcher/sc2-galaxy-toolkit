@@ -1,39 +1,11 @@
 import * as vs from 'vscode';
-import { XMLElement } from '../types';
-import { DescKind, DescIndex, DescNamespace } from '../index/desc';
-import { ExpressionParser } from '../parser/expressions';
-import { UINavigator, UIBuilder, UINode, FrameNode } from '../index/hierarchy';
-import { LayoutProcessor } from '../index/processor';
-import { LayoutChecker } from '../index/checker';
-import { XRay } from '../index/xray';
-import { Store } from '../index/store';
-import { ILoggerConsole } from './provider';
-import { descKindToCompletionKind } from './completions';
-import { getSelectionIndexAtPosition } from '../parser/utils';
-import * as sch from '../schema/base';
-
-export class SuggestionsProvider {
-    protected exParser = new ExpressionParser();
-    protected uNavigator: UINavigator;
-    protected uBuilder: UIBuilder;
-    protected processor: LayoutProcessor;
-    protected checker: LayoutChecker;
-    protected dIndex: DescIndex;
-    protected xray: XRay;
-
-    protected prepare() {
-        this.uNavigator = new UINavigator(this.store.schema, this.store.index);
-        this.uBuilder = new UIBuilder(this.store.schema, this.store.index);
-        this.processor = new LayoutProcessor(this.store, this.store.index);
-        this.checker = new LayoutChecker(this.store, this.store.index);
-        this.dIndex = this.store.index;
-        this.xray = new XRay(this.store);
-    }
-
-    constructor(protected store: Store, protected console: ILoggerConsole) {
-        this.prepare();
-    }
-}
+import { XMLElement } from '../../types';
+import { DescKind, DescNamespace } from '../../index/desc';
+import { UINode, FrameNode } from '../../index/hierarchy';
+import { descKindToCompletionKind } from '../completions';
+import { getSelectionIndexAtPosition } from '../../parser/utils';
+import * as sch from '../../schema/base';
+import { SuggestionsProvider } from './helpers';
 
 export interface AbbrComplContext {
     vDoc: vs.TextDocument;
@@ -42,7 +14,7 @@ export interface AbbrComplContext {
     curPosition: vs.Position;
 }
 
-export const reAbbrvWord = /(-?\d*\.\d\w*)|([^\`\~\!\@\%\^\&\*\(\)\+\[\{\]\}\\\'\"\<\>\?\s]+)/g;
+export const reAbbrvWord = /(-?\d*\.\d\w*)|([^\`\~\!\%\^\&\*\(\)\+\[\{\]\}\\\'\"\<\>\?\s]+)/g;
 
 export class CodeAbbreviations extends SuggestionsProvider {
     protected provideFrameTypes(ctx: AbbrComplContext) {
@@ -147,6 +119,93 @@ export class CodeAbbreviations extends SuggestionsProvider {
         return cList;
     }
 
+    protected provideFrameProperties(ctx: AbbrComplContext, ufNode: FrameNode) {
+        const cList = new vs.CompletionList();
+
+        const phrase = ctx.vDoc.getText(ctx.abbrvRange);
+        const relativeOffset = ctx.vDoc.offsetAt(ctx.curPosition) - ctx.vDoc.offsetAt(ctx.abbrvRange.start) - 1;
+        const path = phrase.substr(1).split('/');
+
+        const sFrameType = this.store.schema.getFrameType(ufNode.mainDesc.stype);
+        const sFrameStMap = new Map<string, Map<string, sch.ElementDef>>();
+
+        for (const fDesc of this.store.schema.getFrameDescs(sFrameType)) {
+            const eMap = new Map<string, sch.ElementDef>();
+            for (const eDef of fDesc.struct.values()) {
+                eMap.set(eDef.name, eDef);
+            }
+            if (!eMap.size) continue;
+            sFrameStMap.set(fDesc.name.replace(/^C/, ''), eMap);
+        }
+
+        for (const fClass of sFrameType.fclasses.values()) {
+            const eMap = new Map<string, sch.ElementDef>();
+            for (const fProp of fClass.properties.values()) {
+                eMap.set(fProp.name, fProp.etype);
+            }
+            if (!eMap.size) continue;
+            sFrameStMap.set(fClass.name.replace(/^C/, ''), eMap);
+        }
+
+        if (path.length >= 2 && relativeOffset > path[0].length) {
+            const eMap = sFrameStMap.get(path[0]);
+            if (!eMap) return cList;
+
+            for (const eDef of eMap.values()) {
+                let tmpCI: vs.CompletionItem;
+                tmpCI = {
+                    kind: vs.CompletionItemKind.Field,
+                    label: eDef.name,
+                    detail: `${eDef.type.name}`,
+                    range: new vs.Range(
+                        ctx.vDoc.positionAt(ctx.vDoc.offsetAt(ctx.abbrvRange.start) + path[0].length + 2),
+                        ctx.abbrvRange.end
+                    ),
+                    insertText: this.snippetForElement(eDef),
+                    additionalTextEdits: [new vs.TextEdit(new vs.Range(
+                        ctx.vDoc.positionAt(ctx.vDoc.offsetAt(ctx.abbrvRange.start)),
+                        ctx.vDoc.positionAt(ctx.vDoc.offsetAt(ctx.abbrvRange.start) + path[0].length + 2)
+                    ), '')],
+                };
+
+                tmpCI.documentation = new vs.MarkdownString();
+                if (eDef.type.label) {
+                    tmpCI.documentation.appendText(eDef.type.label);
+                }
+                if (eDef.type.documentation) {
+                    tmpCI.documentation.appendText(eDef.type.documentation);
+                }
+                tmpCI.documentation.appendCodeblock((<vs.SnippetString>tmpCI.insertText).value, 'xml');
+
+                cList.items.push(tmpCI);
+            }
+        }
+        else {
+            for (const [sName, eMap] of sFrameStMap) {
+                let tmpCI: vs.CompletionItem;
+                tmpCI = {
+                    kind: vs.CompletionItemKind.Struct,
+                    label: sName,
+                    filterText: sName,
+                    insertText: `${sName}/`,
+                    detail: `(${eMap.size})`,
+                    range: new vs.Range(
+                        ctx.vDoc.positionAt(ctx.vDoc.offsetAt(ctx.abbrvRange.start) + 1),
+                        ctx.vDoc.positionAt(ctx.vDoc.offsetAt(ctx.abbrvRange.start) + 1 + path[0].length + (path.length >= 2 ? 1 : 0))
+                    ),
+                    command: { command: 'editor.action.triggerSuggest', title: '' },
+                };
+
+                tmpCI.documentation = new vs.MarkdownString();
+                tmpCI.documentation.appendMarkdown(Array.from(eMap.keys()).map(v => `${v} \`[${sFrameStMap.get(sName).get(v).type.name}]\``).join('\\\n'));
+
+                cList.items.push(tmpCI);
+            }
+        }
+
+        return cList;
+    }
+
     protected provideChildrenNodes(ctx: AbbrComplContext, uNode: UINode) {
         const cList = new vs.CompletionList();
 
@@ -157,7 +216,7 @@ export class CodeAbbreviations extends SuggestionsProvider {
             uNode?: UINode;
         }
 
-        function enrichDescComplItem(tmpCI: vs.CompletionItem, opts: { sComplexType?: sch.ComplexType, dKind?: DescKind, mainDesc?: DescNamespace , uNode?: UINode }) {
+        function enrichDescComplItem(tmpCI: vs.CompletionItem, opts: EnrichDescOpts) {
             if (opts.uNode) {
                 opts.mainDesc = opts.uNode.mainDesc;
             }
@@ -274,7 +333,7 @@ export class CodeAbbreviations extends SuggestionsProvider {
 
     processAbbrv(ctx: AbbrComplContext) {
         const phraseValue = ctx.vDoc.getText(ctx.abbrvRange);
-        const m = phraseValue.match(/^(:|\/|\.)([^\s]*)/i);
+        const m = phraseValue.match(/^(:|\/|\.|@)([^\s]*)/i);
         if (!m) return;
 
         const currentDesc = this.store.index.resolveElementDesc(ctx.xEl);
@@ -302,6 +361,16 @@ export class CodeAbbreviations extends SuggestionsProvider {
                 if (!uNode) break;
 
                 return this.provideChildrenNodes(ctx, uNode);
+            }
+
+            case '@':
+            {
+                if (currentDesc.kind !== DescKind.Frame) break;
+
+                const uNode = this.xray.determineCurrentFrameNode(ctx.xEl);
+                if (!uNode) break;
+
+                return this.provideFrameProperties(ctx, <FrameNode>uNode);
             }
         }
     }

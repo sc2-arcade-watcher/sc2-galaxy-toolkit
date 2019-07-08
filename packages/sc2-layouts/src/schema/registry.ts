@@ -542,6 +542,20 @@ export class SchemaRegistryBrowser implements sch.SchemaRegistry {
         return tmp ? tmp[0] : void 0;
     }
 
+    getFrameDescs(sFrameType: sch.FrameType): sch.ComplexType[] {
+        const frameDescs: sch.ComplexType[] = [];
+        function applyDesc(currDesc: sch.ComplexType) {
+            frameDescs.push(currDesc);
+            for (const tmpcType of currDesc.inheritance.from.values()) {
+                applyDesc(tmpcType);
+            }
+        }
+        if (sFrameType.customDesc) {
+            applyDesc(sFrameType.customDesc);
+        }
+        return frameDescs;
+    }
+
     // TODO: move it out of here
     isPropertyBindAllowed(scElementDef: sch.ElementDef, scComplexType: sch.ComplexType, attrName: string) {
         switch (scElementDef.nodeKind) {

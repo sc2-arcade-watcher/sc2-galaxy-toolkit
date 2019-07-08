@@ -5,6 +5,7 @@ Visual Studio Code extension introducing extensive support for **SC2Layout** lan
 > Schema files of `SC2Layout` are hosted in its own [repository](https://github.com/SC2Mapster/sc2layout-schema), from which this extension will always pull most recent version.
 
 * [Contributing](CONTRIBUTING.md)
+* [Changelog](CHANGELOG.md)
 
 ## Features
 
@@ -30,9 +31,9 @@ Syntax: __`/`__*`Filename/Path/ToTheFrame/Image`*
 
 ![abbrv-desc-override](assets/abbrv-desc-override.png)
 
- * Works with Frames, Animations, Stategroups.
- * Special `#` character at the end is utilized to accept suggestion and expand to choosed element.
- * Suggestions list can be triggered only within root element (`<Desc>`).
+* Works with Frames, Animations, Stategroups.
+* Special `#` character at the end is utilized to accept suggestion and expand to choosed element.
+* Suggestions list can be triggered only within root element (`<Desc>`).
 
 #### Desc extending / overloading
 
@@ -40,11 +41,20 @@ Syntax: __`.`__*`Name`*
 
 ![abbrv-template-overloading](assets/abbrv-template-overloading.png)
 
- * Listing elements elements from template/templates used within the scope.
- * Listing elements elements from foreign desc - when overriding frame declared in another layout etc.
- * Listing native hookups available for implementation.
- * Works with deeply nested elements.
- * Suggestions list will exclude elements that are already extended/implemented in scope of current declaration.
+* List includes:
+    * Elements from template(s) used within the scope.
+    * Elements from foreign desc - when overriding frame declared in another layout etc.
+    * Native hookups available for implementation.
+* Works with deeply nested elements.
+* Suggestions list will exclude elements that are already extended/implemented in scope of current declaration.
+
+#### Properties of a frame class
+
+Syntax: __`@`__*`ClassName/PropertyName`*
+
+![abbrv-template-overloading](assets/abbrv-frame-props.png)
+
+* Useful for filtering suggestions to properties of choosen class.
 
 ---
 

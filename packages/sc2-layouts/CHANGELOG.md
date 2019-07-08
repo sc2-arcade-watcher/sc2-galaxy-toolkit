@@ -1,5 +1,9 @@
 # Change Log
 
+## UNRELEASED
+
+* Added abbreviation for [inserting properties/fields of choosen frame class](README.md#properties-of-a-frame-class).
+
 ## [0.11.0] - 2019-07-03
 
 * Added native frame hookup declarations to the schema.

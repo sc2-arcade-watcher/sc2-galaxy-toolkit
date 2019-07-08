@@ -236,6 +236,7 @@ export interface SchemaRegistry {
 
     getFrameType(scComplexType: ComplexType): FrameType;
     getFrameProperty(scElementDef: ElementDef): FrameProperty;
+    getFrameDescs(sFrameType: FrameType): ComplexType[];
 
     getPropertyByName(name: string): FrameProperty;
 

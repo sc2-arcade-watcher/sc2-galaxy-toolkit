@@ -63,18 +63,7 @@ class FramePropertiesTreeDataProvider implements vs.TreeDataProvider<VTreeItem> 
 
         // ===
         // desc structures
-        const frameDescs: sch.ComplexType[] = [];
-        function applyDesc(currDesc: sch.ComplexType) {
-            frameDescs.push(currDesc);
-            for (const tmpcType of currDesc.inheritance.from.values()) {
-                applyDesc(tmpcType);
-            }
-        }
-        if (frameType.customDesc) {
-            applyDesc(frameType.customDesc);
-        }
-
-        for (const descType of frameDescs) {
+        for (const descType of this.store.schema.getFrameDescs(frameType)) {
             const vFrameDescGroup = append(vRoot, this.createVTreeItem({
                 collapsibleState: vs.TreeItemCollapsibleState.Expanded,
                 label: descType.name,
