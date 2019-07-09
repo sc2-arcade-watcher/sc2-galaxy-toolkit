@@ -170,7 +170,7 @@ export function getPositionOfLineAndCharacter(sourceFile: gt.SourceFile, line: n
 
 export function getLineAndCharacterOfPosition(sourceFile: gt.SourceFile, pos: number): lsp.Position {
     let loc = {line: 0, character: 0};
-    for (var i = 0; i < sourceFile.lineMap.length; i++) {
+    for (let i = 0; i < sourceFile.lineMap.length; i++) {
         if (sourceFile.lineMap[i] <= pos) {
             loc = {
                 line: i,
@@ -181,6 +181,14 @@ export function getLineAndCharacterOfPosition(sourceFile: gt.SourceFile, pos: nu
         break;
     }
     return loc;
+}
+
+export function getNodeRange(node: gt.Node): lsp.Range {
+    const sourceFile = getSourceFileOfNode(node);
+    return {
+        start: getLineAndCharacterOfPosition(sourceFile, node.pos),
+        end: getLineAndCharacterOfPosition(sourceFile, node.end),
+    };
 }
 
 // github.com/bevacqua/fuzzysearch

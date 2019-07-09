@@ -240,16 +240,15 @@ export async function openArchiveWorkspace(archive: SC2Archive, sources: string[
 }
 
 export class SC2Archive {
-    // triggers = new trig.TriggerStore();
-    // trigStrings = new Map<string, LocalizationFile>();
-    // trigStrings = new LocalizationFile();
-    name: string;
-    directory: string;
+    readonly name: string;
+    readonly directory: string;
+    /** lower-cased `fsPath` */
+    readonly lcFsPath: string;
 
     constructor(name: string, directory: string) {
         this.name = name.replace(/\\/g, '/').toLowerCase();
-        // this.directory = directory;
         this.directory = path.resolve(directory);
+        this.lcFsPath = this.directory.toLowerCase();
     }
 
     public async findFiles(pattern: string) {
@@ -337,6 +336,31 @@ export class SC2Archive {
     }
 }
 
+export enum S2ArchiveNsNameKind {
+    'base',
+    'enus',
+    // TODO: add missing localizations
+}
+
+export enum S2ArchiveNsTypeKind {
+    'sc2data',
+    'sc2assets',
+}
+
+export interface S2FileNs {
+    name: keyof typeof S2ArchiveNsNameKind;
+    type: keyof typeof S2ArchiveNsTypeKind;
+}
+
+export interface S2QualifiedFile {
+    fsPath: string;
+    relativePath: string;
+    namespace?: S2FileNs;
+    archive: SC2Archive;
+}
+
+const reArchiveFileNs = /^(?:(?<nsName>[a-z]+)\.(?<nsType>(?:sc2data|sc2assets))(?:\/|\\))?(?<rp>.+)$/i;
+
 export class SC2Workspace {
     rootArchive?: SC2Archive;
     allArchives: SC2Archive[] = [];
@@ -360,5 +384,29 @@ export class SC2Workspace {
         p.push(this.locComponent.load());
         p.push(this.catalogComponent.load());
         await Promise.all(p);
+    }
+
+    public resolvePath(fsPath: string): S2QualifiedFile | undefined {
+        for (const cArchive of this.allArchives) {
+            if (!fsPath.toLowerCase().startsWith(cArchive.lcFsPath + path.sep)) continue;
+
+            const m = fsPath.substr(cArchive.lcFsPath.length + 1).match(reArchiveFileNs);
+            if (!m) return;
+
+            let ns: S2FileNs;
+            if (m.groups['nsName']) {
+                ns = {
+                    name: <any>m.groups['nsName'].toLowerCase(),
+                    type: <any>m.groups['nsType'].toLowerCase(),
+                };
+            }
+
+            return {
+                fsPath: fsPath,
+                relativePath: m.groups['rp'].replace(/\\/g, '/'),
+                namespace: ns,
+                archive: cArchive,
+            };
+        }
     }
 }

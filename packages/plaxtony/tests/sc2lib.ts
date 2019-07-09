@@ -76,14 +76,28 @@ describe('SC2Mod', () => {
 
     context('Workspace', () => {
         let s2work: SC2Workspace;
+        const sources = [
+            path.resolve(path.join(resourcesPath)),
+        ];
+        const dir = path.resolve(path.join('tests', 'fixtures', 'sc2-map.SC2Map'));
+        const rootArchive = new SC2Archive(path.basename(dir), dir);
 
         before(async () => {
-            const sources = [
-                path.resolve(path.join(resourcesPath)),
-            ];
-            const dir = path.resolve(path.join('tests', 'fixtures', 'sc2-map.SC2Map'));
-            const rootArchive = new SC2Archive(path.basename(dir), dir);
             s2work = await openArchiveWorkspace(rootArchive, sources);
+        });
+
+        it('resolvePath', async () => {
+            let s2qFile = s2work.resolvePath(path.join(rootArchive.directory, 'MapScript.galaxy'));
+            assert.isDefined(s2qFile);
+            assert.equal(s2qFile.relativePath, 'MapScript.galaxy');
+            assert.isUndefined(s2qFile.namespace);
+
+            s2qFile = s2work.resolvePath(path.join(rootArchive.directory, 'Base.SC2Data', 'GameData', 'UnitData.xml'));
+            assert.isDefined(s2qFile);
+            assert.equal(s2qFile.relativePath, 'GameData/UnitData.xml');
+            assert.isDefined(s2qFile.namespace);
+            assert.equal(s2qFile.namespace.name, 'base');
+            assert.equal(s2qFile.namespace.type, 'sc2data');
         });
 
         it('load triggers', async () => {

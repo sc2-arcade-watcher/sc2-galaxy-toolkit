@@ -4,7 +4,7 @@ import { getSourceFileOfNode } from '../compiler/utils';
 import { Parser } from '../compiler/parser';
 import { S2WorkspaceMetadata } from './s2meta';
 import { bindSourceFile, unbindSourceFile } from '../compiler/binder';
-import { findSC2ArchiveDirectories, isSC2Archive, SC2Archive, SC2Workspace, openArchiveWorkspace } from '../sc2mod/archive';
+import { findSC2ArchiveDirectories, isSC2Archive, SC2Archive, SC2Workspace, openArchiveWorkspace, S2QualifiedFile } from '../sc2mod/archive';
 import { Element } from '../sc2mod/trigger';
 import * as lsp from 'vscode-languageserver';
 import * as path from 'path';
@@ -149,29 +149,69 @@ export interface IStoreSymbols {
     resolveGlobalSymbol(name: string): gt.Symbol | undefined;
 }
 
+export interface SourceFileS2Meta {
+    file: S2QualifiedFile;
+    docName: string;
+}
+
+export interface QualifiedSourceFile extends SourceFile {
+    s2meta?: SourceFileS2Meta;
+}
+
 export class Store implements IStoreSymbols {
     private parser = new Parser();
     public rootPath?: string;
-    public documents = new Map<string, SourceFile>();
+    public documents = new Map<string, QualifiedSourceFile>();
+    public readonly qualifiedDocuments = new Map<string, Map<string, QualifiedSourceFile>>();
     public openDocuments = new Map<string, boolean>();
     public s2workspace: SC2Workspace;
     public s2metadata: S2WorkspaceMetadata;
     // protected watchers = new Map<string, WorkspaceWatcher>();
 
+    protected removeQualifiedDocument(qsFile: QualifiedSourceFile) {
+        const qDocMap = this.qualifiedDocuments.get(qsFile.s2meta.docName.toLowerCase());
+        if (qDocMap) {
+            qDocMap.delete(qsFile.fileName);
+        }
+        if (!qDocMap.size) {
+            this.qualifiedDocuments.delete(qsFile.s2meta.docName.toLowerCase());
+        }
+    }
+
+    protected requalifyFile(qsFile: QualifiedSourceFile) {
+        if (qsFile.s2meta) {
+            this.removeQualifiedDocument(qsFile);
+        }
+
+        if (!this.s2workspace) return;
+
+        const s2file = this.s2workspace.resolvePath(URI.parse(qsFile.fileName).fsPath);
+        if (s2file) {
+            qsFile.s2meta = {
+                file: s2file,
+                docName: s2file.relativePath.replace(/\.galaxy$/, ''),
+            };
+
+            let qDocMap = this.qualifiedDocuments.get(qsFile.s2meta.docName.toLowerCase());
+            if (!qDocMap) {
+                qDocMap = new Map();
+                this.qualifiedDocuments.set(qsFile.s2meta.docName.toLowerCase(), qDocMap);
+            }
+            qDocMap.set(qsFile.fileName, qsFile);
+        }
+        else {
+            qsFile.s2meta = void 0;
+        }
+    }
+
     public removeDocument(documentUri: string) {
         const currSorceFile = this.documents.get(documentUri);
         if (!currSorceFile) return;
         unbindSourceFile(currSorceFile, this);
-        this.documents.delete(documentUri);
-    }
-
-    public getFirstMatchingDocument(partialname: string) {
-        for (const [fullname, sourceFile] of this.documents.entries()) {
-            if (fullname.endsWith(partialname)) {
-                return sourceFile;
-            }
+        if (currSorceFile.s2meta) {
+            this.removeQualifiedDocument(currSorceFile);
         }
-        return null;
+        this.documents.delete(documentUri);
     }
 
     public updateDocument(document: lsp.TextDocument, check = false) {
@@ -183,8 +223,11 @@ export class Store implements IStoreSymbols {
 
             this.removeDocument(document.uri);
         }
-        let sourceFile = this.parser.parseFile(document.uri, document.getText());
+
+        const sourceFile = this.parser.parseFile(document.uri, document.getText());
         this.documents.set(document.uri, sourceFile);
+        this.requalifyFile(sourceFile);
+
         if (check) {
             const checker = new TypeChecker(this);
             sourceFile.additionalSyntacticDiagnostics = checker.checkSourceFile(sourceFile, true);
@@ -198,8 +241,14 @@ export class Store implements IStoreSymbols {
         this.s2workspace = workspace;
         this.s2metadata = new S2WorkspaceMetadata(this.s2workspace);
         await this.s2metadata.build(lang);
+
+        this.qualifiedDocuments.clear();
+        for (const qsFile of this.documents.values()) {
+            this.requalifyFile(qsFile);
+        }
     }
 
+    /** @deprecated use `qualifiedDocuments` */
     public getDocumentMeta(documentUri: string) {
         let documentPath = URI.parse(documentUri).fsPath;
         let meta: SourceFileMeta = {

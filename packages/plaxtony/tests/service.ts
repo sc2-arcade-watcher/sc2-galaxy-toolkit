@@ -4,7 +4,6 @@ import { DiagnosticsProvider } from '../src/service/diagnostics';
 import { NavigationProvider } from '../src/service/navigation';
 import { CompletionsProvider, CompletionFunctionExpand } from '../src/service/completions';
 import { SignaturesProvider } from '../src/service/signatures';
-import { DefinitionProvider } from '../src/service/definitions';
 import { HoverProvider } from '../src/service/hover';
 import { ReferencesProvider } from '../src/service/references';
 import { getPositionOfLineAndCharacter, findPrecedingToken } from '../src/service/utils';
@@ -14,7 +13,6 @@ import * as lsp from 'vscode-languageserver';
 import { assert } from 'chai';
 import * as path from 'path';
 import 'mocha';
-
 
 describe('Service', () => {
     describe('Utils', () => {
@@ -248,137 +246,6 @@ describe('Service', () => {
         it('funcref in structref', () => {
             signature = signaturesProvider.getSignatureAt(docFnref.uri, getPositionOfLineAndCharacter(srcFnref, 15, 16));
             assert.isDefined(signature);
-        });
-    });
-
-    describe('Definition', () => {
-        const refsDoc = mockupTextDocument('service', 'definition', 'refs.galaxy');
-        const headerDoc = mockupTextDocument('service', 'definition', 'header.galaxy');
-        const store = mockupStore(
-            headerDoc,
-            refsDoc
-        );
-
-        const definitions = createProvider(DefinitionProvider, store);
-
-        function getDef(document: lsp.TextDocument, line: number, character: number) {
-            return definitions.getDefinitionAt(document.uri, getPositionOfLineAndCharacter(store.documents.get(document.uri), line, character));
-        }
-
-        it('should fail gracefully for non identifiers', () => {
-            assert.lengthOf(<lsp.Location[]>getDef(refsDoc, 0, 0), 0);
-        });
-
-        it('should fail gracefully for undeclared symbols', () => {
-            assert.lengthOf(<lsp.Location[]>getDef(headerDoc, 13, 0), 0);
-        });
-
-        it('should locate declarations within the same file', () => {
-            let loc: lsp.Definition;
-
-            loc = getDef(refsDoc, 2, 8);
-            assert.isAtLeast((<lsp.Location[]>loc).length, 1);
-            assert.deepEqual((<lsp.Location[]>loc)[0], <lsp.Location>{
-                uri: refsDoc.uri,
-                range: {
-                    start: {
-                        line: 0,
-                        character: 16,
-                    },
-                    end: {
-                        line: 0,
-                        character: 21,
-                    },
-                },
-            }, 'func param');
-
-            loc = getDef(refsDoc, 12, 7);
-            assert.isAtLeast((<lsp.Location[]>loc).length, 1);
-            assert.deepEqual((<lsp.Location[]>loc)[0], <lsp.Location>{
-                uri: refsDoc.uri,
-                range: {
-                    start: {
-                        line: 7,
-                        character: 9,
-                    },
-                    end: {
-                        line: 7,
-                        character: 14,
-                    },
-                },
-            }, 'local variable: unit local');
-
-            loc = getDef(refsDoc, 11, 7);
-            assert.isAtLeast((<lsp.Location[]>loc).length, 1);
-            assert.deepEqual((<lsp.Location[]>loc)[0], <lsp.Location>{
-                uri: refsDoc.uri,
-                range: {
-                    start: {
-                        line: 0,
-                        character: 5,
-                    },
-                    end: {
-                        line: 0,
-                        character: 9,
-                    },
-                },
-            }, 'function call: call');
-        });
-
-        it('should locate declarations within the same workspace', () => {
-            let loc: lsp.Definition;
-
-            loc = getDef(refsDoc, 9, 4);
-            assert.isAtLeast((<lsp.Location[]>loc).length, 1);
-            assert.deepEqual((<lsp.Location[]>loc)[0], <lsp.Location>{
-                uri: headerDoc.uri,
-                range: {
-                    start: {
-                        line: 9,
-                        character: 4,
-                    },
-                    end: {
-                        line: 9,
-                        character: 9,
-                    },
-                },
-            }, 'global variable: aglob');
-
-            loc = getDef(refsDoc, 14, 14);
-            assert.isAtLeast((<lsp.Location[]>loc).length, 1);
-            assert.deepEqual((<lsp.Location[]>loc)[0], <lsp.Location>{
-                uri: headerDoc.uri,
-                range: {
-                    start: {
-                        line: 1,
-                        character: 11,
-                    },
-                    end: {
-                        line: 1,
-                        character: 20,
-                    },
-                },
-            }, 'struct property access: submemeber');
-        });
-
-        it('should locate types of members in a struct', () => {
-            let loc: lsp.Definition;
-
-            loc = getDef(headerDoc, 6, 4);
-            assert.isAtLeast((<lsp.Location[]>loc).length, 1);
-            assert.deepEqual((<lsp.Location[]>loc)[0], <lsp.Location>{
-                uri: headerDoc.uri,
-                range: {
-                    start: {
-                        line: 0,
-                        character: 7,
-                    },
-                    end: {
-                        line: 0,
-                        character: 21,
-                    },
-                },
-            }, 'struct decl member: container_t::sub');
         });
     });
 

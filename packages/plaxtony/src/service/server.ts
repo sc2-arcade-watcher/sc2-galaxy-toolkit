@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { findAncestor } from '../compiler/utils';
 import { Store, WorkspaceWatcher, S2WorkspaceWatcher, findWorkspaceArchive, S2WorkspaceChangeEvent, createTextDocumentFromFs, createTextDocumentFromUri } from './store';
-import { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition } from './utils';
+import { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition, getNodeRange } from './utils';
 import { AbstractProvider, LoggerConsole, createProvider } from './provider';
 import { DiagnosticsProvider } from './diagnostics';
 import { NavigationProvider } from './navigation';
@@ -18,13 +18,6 @@ import { RenameProvider } from './rename';
 import { SC2Archive, SC2Workspace, resolveArchiveDirectory, openArchiveWorkspace, isSC2Archive, resolveArchiveDependencyList } from '../sc2mod/archive';
 import { setTimeout, clearTimeout } from 'timers';
 import URI from 'vscode-uri';
-
-function getNodeRange(node: Types.Node): lsp.Range {
-    return {
-        start: { line: node.line, character: node.char },
-        end: { line: node.line, character: node.char }
-    };
-}
 
 function translateNodeKind(node: Types.Node): lsp.SymbolKind {
     switch (node.kind) {
@@ -573,7 +566,7 @@ export class Server {
     }
 
     @wrapRequest(true)
-    private async onDefinition(params: lsp.TextDocumentPositionParams): Promise<lsp.Definition> {
+    private async onDefinition(params: lsp.TextDocumentPositionParams): Promise<lsp.DefinitionLink[]> {
         if (!this.store.documents.has(params.textDocument.uri)) return null;
         await this.flushDocument(params.textDocument.uri);
         return this.definitionsProvider.getDefinitionAt(
