@@ -1,175 +1,178 @@
 {
-  "name": "sc2galaxy",
-  "displayName": "StarCraft 2 Galaxy Script",
-  "description": "Language support for StarCraft 2 Galaxy Script",
-  "version": "1.9.0",
-  "publisher": "talv",
-  "license": "MIT",
-  "engines": {
-    "vscode": "^1.27.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Talv/vscode-sc2-galaxy.git"
-  },
-  "keywords": [
-    "sc2",
-    "starcraft",
-    "galaxy",
-    "galaxy script"
-  ],
-  "categories": [
-    "Programming Languages"
-  ],
-  "activationEvents": [
-    "onLanguage:galaxy"
-  ],
-  "main": "./out/src/extension",
-  "icon": "icon.png",
-  "contributes": {
-    "configuration": {
-      "type": "object",
-      "title": "sc2galaxy",
-      "properties": {
-        "sc2galaxy.logLevel": {
-          "scope": "window",
-          "type": "string",
-          "enum": [
-            "info",
-            "verbose"
-          ],
-          "default": "info",
-          "description": "Logging verbosity of Plaxtony language server."
-        },
-        "sc2galaxy.archivePath": {
-          "scope": "window",
-          "type": "string",
-          "default": null,
-          "description": "Path (relative or absolute) to the SC2Map|SC2Mod within workspace, which should be used as a base for indexing. Useful if we have multiple within same workspace, and want to explictly choose one."
-        },
-        "sc2galaxy.s2mod.sources": {
-          "scope": "window",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [],
-          "description": "List of directories providing SC2Mod dependencies. List will be resolved in the given order."
-        },
-        "sc2galaxy.s2mod.overrides": {
-          "scope": "window",
-          "type": "object",
-          "description": "Local overrides of SC2Mod archives"
-        },
-        "sc2galaxy.s2mod.extra": {
-          "scope": "window",
-          "type": "object",
-          "description": "List of extra mod dependencies to index."
-        },
-        "sc2galaxy.localization": {
-          "scope": "window",
-          "type": "string",
-          "enum": [
-            "enUS",
-            "deDE",
-            "esES",
-            "frFR",
-            "ruRU",
-            "koKR",
-            "zhCN",
-            "zhTW",
-            "ptBR",
-            "plPL",
-            "esMX",
-            "itIT"
-          ],
-          "default": "enUS",
-          "description": "Localization file to use when providing documentation."
-        },
-        "sc2galaxy.documentUpdateDelay": {
-          "scope": "window",
-          "type": "number",
-          "default": 100,
-          "minimum": 1,
-          "description": "Wait time before reindexing changed dirty files"
-        },
-        "sc2galaxy.documentDiagnosticsDelay": {
-          "scope": "window",
-          "type": "number",
-          "default": 300,
-          "minimum": 1,
-          "description": "Wait time before providing diagnostics for dirty files (value from *documentUpdateDelay* is contributed)"
-        },
-        "sc2galaxy.completion.functionExpand": {
-          "scope": "window",
-          "type": "string",
-          "enum": [
-            "None",
-            "Parenthesis",
-            "ArgumentsNull",
-            "ArgumentsDefault"
-          ],
-          "default": "None",
-          "description": "[Completion] Function expansion behavior"
-        },
-        "sc2galaxy.references.currentWorkspaceOnly": {
-          "scope": "window",
-          "type": "boolean",
-          "default": false,
-          "description": "[References] Search files only from current workspace"
-        }
-      }
-    },
-    "languages": [
-      {
-        "id": "galaxy",
-        "aliases": [
-          "SC2 Galaxy Script",
-          "galaxy"
-        ],
-        "extensions": [
-          ".galaxy"
-        ],
-        "configuration": "./language-configuration.json"
-      }
-    ],
-    "grammars": [
-      {
-        "language": "galaxy",
-        "scopeName": "source.galaxy",
-        "path": "./syntaxes/galaxy.json"
-      }
-    ],
-    "snippets": [
-      {
-        "language": "galaxy",
-        "path": "./snippets/general.json"
-      }
-    ],
-    "commands": [
-      {
-        "command": "s2galaxy.verifyScript",
-        "title": "s2galaxy: Verify script"
-      }
-    ]
-  },
-  "scripts": {
-    "vscode:prepublish": "tsc -p ./",
-    "compile": "tsc -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "node ./node_modules/vscode/bin/test"
-  },
-  "dependencies": {
-    "fs": "0.0.2",
-    "path": "^0.12.7",
-    "plaxtony": "^1.9.0",
-    "vscode-languageclient": "^5.1.0"
-  },
-  "devDependencies": {
-    "@types/mocha": "^2.2.48",
-    "@types/node": "^6.0.106",
-    "mocha": "^2.3.3",
-    "typescript": "^2.8.3",
-    "vscode": "^1.1.21"
-  }
+	"name": "sc2galaxy",
+	"displayName": "StarCraft 2 Galaxy Script",
+	"description": "Language support for StarCraft 2 Galaxy Script",
+	"version": "1.9.0",
+	"publisher": "talv",
+	"license": "MIT",
+	"engines": {
+		"vscode": "^1.35.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Talv/vscode-sc2-galaxy.git"
+	},
+	"keywords": [
+		"sc2",
+		"starcraft",
+		"galaxy",
+		"galaxy script"
+	],
+	"categories": [
+		"Programming Languages"
+	],
+	"activationEvents": [
+		"onLanguage:galaxy"
+	],
+	"main": "./out/src/extension",
+	"icon": "icon.png",
+	"contributes": {
+		"configuration": {
+			"type": "object",
+			"title": "sc2galaxy",
+			"properties": {
+				"sc2galaxy.logLevel": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"info",
+						"verbose"
+					],
+					"default": "info",
+					"description": "Logging verbosity of Plaxtony language server."
+				},
+				"sc2galaxy.archivePath": {
+					"scope": "window",
+					"type": "string",
+					"default": null,
+					"description": "Path (relative or absolute) to the SC2Map|SC2Mod within workspace, which should be used as a base for indexing. Useful if we have multiple within same workspace, and want to explictly choose one."
+				},
+				"sc2galaxy.s2mod.sources": {
+					"scope": "window",
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "List of directories providing SC2Mod dependencies. List will be resolved in the given order."
+				},
+				"sc2galaxy.s2mod.overrides": {
+					"scope": "window",
+					"type": "object",
+					"description": "Local overrides of SC2Mod archives"
+				},
+				"sc2galaxy.s2mod.extra": {
+					"scope": "window",
+					"type": "object",
+					"description": "List of extra mod dependencies to index."
+				},
+				"sc2galaxy.localization": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"enUS",
+						"deDE",
+						"esES",
+						"frFR",
+						"ruRU",
+						"koKR",
+						"zhCN",
+						"zhTW",
+						"ptBR",
+						"plPL",
+						"esMX",
+						"itIT"
+					],
+					"default": "enUS",
+					"description": "Localization file to use when providing documentation."
+				},
+				"sc2galaxy.documentUpdateDelay": {
+					"scope": "window",
+					"type": "number",
+					"default": 100,
+					"minimum": 1,
+					"description": "Wait time before reindexing changed dirty files"
+				},
+				"sc2galaxy.documentDiagnosticsDelay": {
+					"scope": "window",
+					"type": "number",
+					"default": 300,
+					"minimum": 1,
+					"description": "Wait time before providing diagnostics for dirty files (value from *documentUpdateDelay* is contributed)"
+				},
+				"sc2galaxy.completion.functionExpand": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"None",
+						"Parenthesis",
+						"ArgumentsNull",
+						"ArgumentsDefault"
+					],
+					"default": "None",
+					"description": "[Completion] Function expansion behavior"
+				},
+				"sc2galaxy.references.currentWorkspaceOnly": {
+					"scope": "window",
+					"type": "boolean",
+					"default": false,
+					"description": "[References] Search files only from current workspace"
+				}
+			}
+		},
+		"languages": [
+			{
+				"id": "galaxy",
+				"aliases": [
+					"SC2 Galaxy Script",
+					"galaxy"
+				],
+				"extensions": [
+					".galaxy"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "galaxy",
+				"scopeName": "source.galaxy",
+				"path": "./syntaxes/galaxy.json"
+			}
+		],
+		"snippets": [
+			{
+				"language": "galaxy",
+				"path": "./snippets/general.json"
+			}
+		],
+		"commands": [
+			{
+				"command": "s2galaxy.verifyScript",
+				"title": "s2galaxy: Verify script"
+			}
+		]
+	},
+	"scripts": {
+		"build": "tsc -p ./",
+		"build:watch": "tsc -watch -p ./",
+		"vscode:prepublish": "tsc -p ./",
+		"postinstall": "node ./node_modules/vscode/bin/install",
+		"test": "node ./node_modules/vscode/bin/test"
+	},
+	"dependencies": {
+		"path": "^0.12.7",
+		"plaxtony": "^1.9.0",
+		"vscode-languageclient": "^5.2.1"
+	},
+	"devDependencies": {
+		"@types/node": "^10.14.12",
+		"typescript": "^3.5.3",
+		"vscode": "^1.1.35"
+	},
+	"__metadata": {
+		"id": "1e8db834-5c91-4e2f-93e8-642fb1faa3f6",
+		"publisherDisplayName": "Talv",
+		"publisherId": "60b06097-c0b9-440b-aa23-09911f15089c"
+	}
 }
