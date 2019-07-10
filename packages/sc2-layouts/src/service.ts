@@ -143,20 +143,22 @@ export const enum ServiceStateFlags {
     StepFilesDone              = 1 << 3,
     StepMetadataDone           = 1 << 4,
 
+    StatusNone                 = 0,
     StatusReady                = StepWorkspaceDiscoveryDone | StepModsDiscoveryDone | StepFilesDone | StepMetadataDone,
     StatusBusy                 = IndexingInProgress,
 }
 
 export class ServiceContext implements IService {
     console: ILoggerConsole;
-    protected store: Store;
+    store: Store;
     errorOutputChannel: vs.OutputChannel;
     protected fsWatcher: vs.FileSystemWatcher;
     protected diagnosticCollection: vs.DiagnosticCollection;
     protected documentUpdateRequests = new Map<string, DocumentUpdateRequest>();
     config: ExtConfig;
-    state: ServiceStateFlags = 0;
+    state: ServiceStateFlags = ServiceStateFlags.StatusNone;
 
+    protected wsSetupChecker = new WorkspaceSetupChecker(this);
     protected schemaLoader: SchemaLoader;
     protected completionsProvider: CompletionsProvider;
     protected hoverProvider: HoverProvider;
@@ -211,6 +213,7 @@ export class ServiceContext implements IService {
                     vs.window.showErrorMessage(`Whoops! An unhandled exception occurred within SC2Layouts extension. Please consider [reporting it](https://github.com/Talv/sc2-layouts/issues) with the log included. You'll not be notified about further errors within this session. However, it is possible that index state has been corrupted, and restat might be required if extension will stop function properly.`, { modal : false });
                 }
                 ++errorCounter;
+                emitOutput(`[ERROR:COUNTER ${errorCounter}]`);
                 emitOutput(msg, params);
             },
             warn: emitOutput,
@@ -276,13 +279,10 @@ export class ServiceContext implements IService {
         context.subscriptions.push(vs.languages.registerColorProvider(lselector, this.colorProvider));
 
         // -
-        this.treeviewProvider = this.createProvider(TreeViewProvider);
         if (this.config.treeview.visible) {
+            this.treeviewProvider = this.createProvider(TreeViewProvider);
             context.subscriptions.push(this.treeviewProvider.register());
-        }
 
-        // -
-        if (this.config.treeview.visible) {
             this.frameViewProvider = this.createProvider(PropertiesViewProvider);
             context.subscriptions.push(this.frameViewProvider);
         }
@@ -320,25 +320,14 @@ export class ServiceContext implements IService {
         }));
 
         // -
-        const workspaceMonitorSB = vs.window.createStatusBarItem(vs.StatusBarAlignment.Left);
-        workspaceMonitorSB.hide();
-        workspaceMonitorSB.text = 'SC2 Layout: Workspace not configured!';
-        workspaceMonitorSB.tooltip = `Couldn't match currently active SC2Layout file to SC2Mod/SC2Map document it belongs to. Due to that certain Intellisense capabilities have been disabled or might not function properly. Use "File: Open folder" and point it to your SC2Mod/SC2Map component folder, or a parent folder that holds SC2Mod/SC2Map documents.`;
-        workspaceMonitorSB.command = 'workbench.action.files.openFolder';
-        workspaceMonitorSB.color = new vs.ThemeColor('errorForeground');
+        this.fsWatcher = vs.workspace.createFileSystemWatcher('**/{GameStrings.txt,GameHotkeys.txt,Assets.txt,AssetsProduct.txt,FontStyles.SC2Style,*.SC2Layout}');
+        this.fsWatcher.onDidCreate(e => this.onFileChange({type: vs.FileChangeType.Created, uri: e}));
+        this.fsWatcher.onDidDelete(e => this.onFileChange({type: vs.FileChangeType.Deleted, uri: e}));
+        this.fsWatcher.onDidChange(e => this.onFileChange({type: vs.FileChangeType.Changed, uri: e}));
+        context.subscriptions.push(this.fsWatcher);
 
-        vs.window.onDidChangeActiveTextEditor(ev => {
-            workspaceMonitorSB.hide();
-            if (!ev || ev.document.languageId !== languageId) return;
-            if (!(this.state & ServiceStateFlags.StepModsDiscoveryDone)) return;
-
-            if (vs.workspace.workspaceFolders !== void 0 && vs.workspace.workspaceFolders.length) {
-                const nonNativeS2Documents = Array.from(this.store.s2ws.archives.values()).filter(i => !i.native)
-                if (nonNativeS2Documents.length) return;
-            }
-
-            workspaceMonitorSB.show();
-        });
+        // -
+        context.subscriptions.push(this.wsSetupChecker.install());
 
         // -
         context.subscriptions.push(vs.workspace.onDidChangeWorkspaceFolders(async e => {
@@ -360,27 +349,37 @@ export class ServiceContext implements IService {
         }));
 
         // -
-        context.subscriptions.push(this);
         this.store.s2ws.logger = this.console;
 
         // -
         this.initialize();
     }
 
-    public dispose() {
-        if (this.fsWatcher) {
-            this.fsWatcher.dispose();
-            this.fsWatcher = void 0;
-        }
-    }
-
     protected async reinitialize() {
-        const choice = await vs.window.showInformationMessage(`Workspace configuration has changed, reindex might be required. Would you like to do that now?`, 'Yes', 'No');
+        if (!(this.state & ServiceStateFlags.StepWorkspaceDiscoveryDone)) {
+            this.console.log('[reinitialize] aborted: !StatusReady');
+            return;
+        }
+
+        const choice = await vs.window.showInformationMessage(
+            (`Workspace configuration has changed, reindex might be required. Would you like to do that now?`),
+            'Yes',
+            'No'
+        );
         if (choice !== 'Yes') return;
-        if ((this.state & ServiceStateFlags.StatusReady) !== ServiceStateFlags.StatusReady) return;
-        this.console.log('[reinitialize]');
-        this.dispose();
-        this.state = 0;
+
+        if (!(this.state & ServiceStateFlags.StatusReady)) {
+            this.console.log('[reinitialize] aborted: !StatusReady');
+
+            if (this.state === ServiceStateFlags.StatusNone) {
+                this.console.error('[reinitialize] current status = StatusNone. softlock?');
+            }
+
+            return;
+        }
+
+        this.console.log('[reinitialize] begin');
+        this.state = ServiceStateFlags.StatusNone;
         await this.store.clear();
         await this.initialize();
     }
@@ -499,8 +498,7 @@ export class ServiceContext implements IService {
                 }));
             }
             else {
-                this.console.info('No s2mods found in workspace folders. Using workspace rootPath as a base for indexing.');
-                wsArchives.push(new s2.Archive(vs.workspace.workspaceFolders[0].name, vs.workspace.workspaceFolders[0].uri));
+                this.console.info('No s2mods found in workspace folders.');
             }
         }
         else {
@@ -518,6 +516,9 @@ export class ServiceContext implements IService {
             return tmp;
         })));
         this.state |= ServiceStateFlags.StepModsDiscoveryDone;
+
+        // -
+        this.wsSetupChecker.checkActiveTextEditor();
 
         // -
         this.console.info(`Indexing layouts files..`);
@@ -554,12 +555,6 @@ export class ServiceContext implements IService {
             });
         }
         this.state |= ServiceStateFlags.StepMetadataDone;
-
-        // -
-        this.fsWatcher = vs.workspace.createFileSystemWatcher('**/{GameStrings.txt,GameHotkeys.txt,Assets.txt,AssetsProduct.txt,FontStyles.SC2Style,*.SC2Layout}');
-        this.fsWatcher.onDidCreate(e => this.onFileChange({type: vs.FileChangeType.Created, uri: e}));
-        this.fsWatcher.onDidDelete(e => this.onFileChange({type: vs.FileChangeType.Deleted, uri: e}));
-        this.fsWatcher.onDidChange(e => this.onFileChange({type: vs.FileChangeType.Changed, uri: e}));
 
         // -
         for (const item of vs.window.visibleTextEditors) {
@@ -607,9 +602,12 @@ export class ServiceContext implements IService {
             return false;
         }
 
-        if (!(this.state & ServiceStateFlags.StepFilesDone)) return false;
-
         if (path.extname(ev.uri.fsPath).toLowerCase() === '.sc2layout') {
+            if (!(this.state & ServiceStateFlags.StepFilesDone)) {
+                this.console.log('state not StepFilesDone');
+                return false;
+            }
+
             switch (ev.type) {
                 case vs.FileChangeType.Deleted:
                 {
@@ -628,10 +626,17 @@ export class ServiceContext implements IService {
             }
         }
         else {
-            if (ev.type === vs.FileChangeType.Changed) {
-                return await this.store.s2ws.handleFileUpdate(ev.uri);
+            if (!(this.state & ServiceStateFlags.StepMetadataDone)) {
+                this.console.log('state not StepMetadataDone');
+                return false;
             }
+
+            const r = await this.store.s2ws.handleFileUpdate(ev.uri);
+            if (!r) this.console.warn('handleFileUpdate failed');
+
+            return true;
         }
+
         return false;
     }
 
@@ -641,5 +646,52 @@ export class ServiceContext implements IService {
             ndoc = await this.syncDocument(createDocumentFromVS(vdoc));
         }
         return ndoc;
+    }
+}
+
+export class WorkspaceSetupChecker implements vs.Disposable {
+    protected subscriptions: { dispose(): any }[] = [];
+    protected workspaceMonitorSB: vs.StatusBarItem;
+
+    constructor(protected readonly svCtx: ServiceContext) {
+    }
+
+    install(): vs.Disposable {
+        this.workspaceMonitorSB = vs.window.createStatusBarItem(vs.StatusBarAlignment.Left);
+        this.workspaceMonitorSB.hide();
+        this.workspaceMonitorSB.text = '$(alert) SC2Layout: Workspace not configured!';
+        this.workspaceMonitorSB.tooltip = `Couldn't locate origin of SC2Layout file. As a result Intellisense capabilities will be greatly limited. To resolve this problem make sure to include SC2Mod/SC2Map folder in your project workspace. Use "File: Open folder" and navigate to SC2Mod/SC2Map component folder, or a parent folder that groups them.`;
+        this.workspaceMonitorSB.command = 'workbench.action.files.openFolder';
+        this.workspaceMonitorSB.color = new vs.ThemeColor('errorForeground');
+        this.subscriptions.push(this.workspaceMonitorSB);
+
+        this.subscriptions.push(vs.window.onDidChangeActiveTextEditor(this.checkTextEditor.bind(this)));
+
+        return this;
+    }
+
+    checkTextEditor(textEditor: vs.TextEditor | undefined) {
+        this.workspaceMonitorSB.hide();
+
+        if (!textEditor || textEditor.document.languageId !== languageId) return;
+        if (!(this.svCtx.state & ServiceStateFlags.StepModsDiscoveryDone)) return;
+
+        if (vs.workspace.workspaceFolders !== void 0 && vs.workspace.workspaceFolders.length) {
+            const nonNativeS2Documents = Array.from(this.svCtx.store.s2ws.archives.values()).filter(i => !i.native);
+            if (nonNativeS2Documents.length) return;
+        }
+
+        this.workspaceMonitorSB.show();
+    }
+
+    checkActiveTextEditor() {
+        this.checkTextEditor(vs.window.activeTextEditor);
+    }
+
+    dispose() {
+        this.subscriptions.forEach(d => d.dispose());
+        this.subscriptions = [];
+
+        this.workspaceMonitorSB = void 0;
     }
 }
