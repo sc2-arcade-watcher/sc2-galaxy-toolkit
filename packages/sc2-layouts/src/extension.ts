@@ -12,26 +12,30 @@ export function activate(context: vs.ExtensionContext) {
     //     activateTagClosing(tagRequestor, { sc2layout: true}, 'sc2layout.autoClosingTags.enabled')
     // );
 
-    vs.languages.setLanguageConfiguration('sc2layout', {
+    context.subscriptions.push(vs.languages.setLanguageConfiguration('sc2layout', {
         indentationRules: {
             increaseIndentPattern: /<(?!\?|[^>]*\/>)([-_\.A-Za-z0-9]+)(?=\s|>)\b[^>]*>(?!.*<\/\1>)|<!--(?!.*-->)|\{[^}"']*$/,
-            decreaseIndentPattern: /^\s*(<\/[-_\.A-Za-z0-9]+\b[^>]*>|-->|\})/
+            decreaseIndentPattern: /^\s*(<\/[-_\.A-Za-z0-9]+\b[^>]*>|-->|\})/,
+
+            /**
+             * following rule would handle indentation correctly in scenarios like such, but do we really want that?
+             *
+             * ```xml
+             * <Frame type="Frame" name="GameUI/WorldPanel" file="GameUI">
+             * <Visible val="False"/></Frame>
+             * ```
+             */
+            // decreaseIndentPattern: /^(\s*<([-_\.A-Za-z0-9]+)([-_\.A-Za-z0-9]+)(?=\s|>)\b[^\/>]*\/>)*\s*(<\/[-_\.A-Za-z0-9]+\b[^>]*>|-->|\})/,
         },
-        // wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\@\$\^\&\*\(\)\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\s]+)/g,
         wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\@\%\^\&\*\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
         onEnterRules: [
             {
-                // beforeText: new RegExp(`<([_:\\w][_:\\w-.\\d]*)([^/>]*(?!/)>)[^<]*$`, 'i'),
                 beforeText: /<([_:\w][_:\w-.\d]*)([^>/]*(?!\/>)(\/[^>]|>))+[^</]*$/i,
-                afterText: /^<\/([_:\w][_:\w-.\d]*)\s*>/i,
+                afterText: /^<\/([_:\w][_:\w-.\d]*)\s*>\s*$/i,
                 action: { indentAction: vs.IndentAction.IndentOutdent }
             },
-            {
-                beforeText: new RegExp(`<(\\w[\\w\\d]*)([^/>]*(?!/)>)[^<]*$`, 'i'),
-                action: { indentAction: vs.IndentAction.Indent }
-            }
         ],
-    });
+    }));
 
     svcContext = new ServiceContext();
     svcContext.activate(context);
