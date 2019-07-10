@@ -115,6 +115,7 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
 
     protected getMergedDescFromFilePath(pathSel: PathSelector, offsRelative: number, fileDesc: DescNamespace): DefinitionDescNode {
         const pathIndex = getSelectionIndexAtPosition(pathSel, offsRelative);
+        if (pathIndex === void 0) return;
 
         const topDesc = fileDesc.get(pathSel.path[0].name.name);
         if (!topDesc) return;
@@ -140,6 +141,8 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
 
     protected getMergedDescFromPath(pathSel: PathSelector, offsRelative: number, relativeDesc: DescNamespace): DefinitionDescNode {
         const pathIndex = getSelectionIndexAtPosition(pathSel, offsRelative);
+        if (pathIndex === void 0) return;
+
         const resolvedDesc = this.checker.resolveDescPath(relativeDesc, pathSel);
         if (resolvedDesc.items.length <= pathIndex) return;
         return {

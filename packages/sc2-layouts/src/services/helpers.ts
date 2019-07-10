@@ -48,7 +48,13 @@ export function getAttrInfoAtPosition(xDoc: XMLDocument, offset: number) {
     }
 
     const nattr = xEl.findAttributeAt(offset);
-    if (!nattr || !nattr.startValue || nattr.startValue > offset) return;
+    if (
+        (!nattr || !nattr.startValue) ||
+        nattr.startValue >= offset ||
+        nattr.startValue + 1 + nattr.value.length <= offset
+    ) {
+        return;
+    }
 
     const xAttrNameLower = nattr.name.toLowerCase();
     const sAttrType = xEl.stype.attributes.get(xAttrNameLower);
