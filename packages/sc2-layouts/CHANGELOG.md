@@ -2,6 +2,8 @@
 
 ## UNRELEASED
 
+## [0.11.1] - 2019-08-19
+
 * Added abbreviation for [inserting properties/fields of choosen frame class](README.md#properties-of-a-frame-class).
 * Fixed incorrect configuration of indentation rules - the flaw was most noticeable during copy-pasting chunks of code, where first line could be indented twice, which in turn would screw up formatting of pasted snippet entirely. Indent rules should now be pretty solid: VSC's built-in commands such as `Reindex Lines` or `Reindent Selected Lines` can now freely used.
 
