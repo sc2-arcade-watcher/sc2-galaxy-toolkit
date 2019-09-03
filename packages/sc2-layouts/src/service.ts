@@ -294,24 +294,24 @@ export class ServiceContext implements IService {
         // -
         this.diagnosticsProvider = this.createProvider(DiagnosticsProvider);
         context.subscriptions.push(vs.workspace.onDidChangeTextDocument(async ev => {
-            if (ev.document.languageId !== languageId) return;
+            if (vs.languages.match(lselector, ev.document) <= 0) return;
             if (!(this.state & ServiceStateFlags.StepFilesDone)) return;
             this.debounceDocumentSync(ev.document);
         }));
         context.subscriptions.push(vs.workspace.onDidOpenTextDocument(async document => {
-            if (document.languageId !== languageId) return;
+            if (vs.languages.match(lselector, document) <= 0) return;
             if (!(this.state & ServiceStateFlags.StepFilesDone)) return;
             await this.syncVsDocument(document);
             await this.provideDiagnostics(document.uri.toString());
         }));
         context.subscriptions.push(vs.workspace.onDidSaveTextDocument(async document => {
-            if (document.languageId !== languageId) return;
+            if (vs.languages.match(lselector, document) <= 0) return;
             if (!(this.state & ServiceStateFlags.StepFilesDone)) return;
             await this.syncVsDocument(document);
             await this.provideDiagnostics(document.uri.toString());
         }));
         context.subscriptions.push(vs.workspace.onDidCloseTextDocument(async document => {
-            if (document.languageId !== languageId) return;
+            if (vs.languages.match(lselector, document) <= 0) return;
             this.diagnosticCollection.delete(document.uri);
             if (!(this.state & ServiceStateFlags.StepFilesDone)) return;
             if (document.isDirty) {
