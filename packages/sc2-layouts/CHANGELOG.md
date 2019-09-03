@@ -2,6 +2,14 @@
 
 ## UNRELEASED
 
+## [0.11.2] - 2019-09-03
+
+* Bugfixes:
+    * [allow `documentDiagnosticsDelay` to be set to `false` - to disable providing code diagnostics for dirty files](https://github.com/Talv/sc2-layouts/commit/10a8444a92d8836ffd419a02c95b7de9840a07db)
+    * [properly filter document selector to not clash with extensions like Gitlens etc.](https://github.com/Talv/sc2-layouts/commit/b523e6205ecc4a1a5cb68b79905f8090f591ba43)
+    * [add very basic support for code completions based on frame context in Stategroups and Animations without a parent frame - when they're used as templates](https://github.com/Talv/sc2-layouts/commit/4f33d4d27040ebc645b7becb5b3db5b0d78e5cf2)
+* Updated `sc2-data` to `4.10.1`
+
 ## [0.11.1] - 2019-08-19
 
 * Added abbreviation for [inserting properties/fields of choosen frame class](README.md#properties-of-a-frame-class).
