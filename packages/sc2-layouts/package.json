@@ -79,7 +79,7 @@
                     "scope": "window",
                     "type": "string",
                     "default": null,
-                    "description": "Custom path to SC2 data repository with builtin mods (such as local copy of github.com/SC2Mapster/SC2GameData)."
+                    "markdownDescription": "Custom path to SC2 data repository with builtin mods, such as local copy of [SC2GameData](https://github.com/SC2Mapster/SC2GameData)."
                 },
                 "sc2layout.builtinMods": {
                     "scope": "window",
@@ -122,10 +122,13 @@
                 },
                 "sc2layout.documentDiagnosticsDelay": {
                     "scope": "window",
-                    "type": "number",
+                    "type": [
+                        "number",
+                        "boolean"
+                    ],
                     "default": 300,
-                    "minimum": -1,
-                    "description": "Minimum idle time (ms) required before providing code diagnostics for dirty files (value from *documentUpdateDelay* is contributed). -1 to disable - in which case diagnostics will be provided only on save."
+                    "minimum": 0,
+                    "markdownDescription": "Minimum idle time (ms) required before providing code diagnostics for dirty files (value from `documentUpdateDelay` is contributed). Use `false` to disable - in which case diagnostics will be provided only on save."
                 },
                 "sc2layout.completion.tabStop": {
                     "scope": "window",

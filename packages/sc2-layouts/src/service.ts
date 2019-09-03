@@ -53,7 +53,7 @@ export interface ExtConfig {
     dataPath: string;
     builtinMods: ExtCfgSect.builtinMods;
     documentUpdateDelay: number;
-    documentDiagnosticsDelay: number;
+    documentDiagnosticsDelay: number | false;
     completion: ExtConfigCompletion;
     treeview: ExtTreeView;
 }
@@ -418,11 +418,13 @@ export class ServiceContext implements IService {
             req.resolve();
             if (this.documentUpdateRequests.get(uri) !== req) return;
 
-            req.diagnosticsTimer = setTimeout(() => {
-                req.diagnosticsTimer = void 0;
-                this.provideDiagnostics(req.uri);
-                this.documentUpdateRequests.delete(uri);
-            }, this.config.documentDiagnosticsDelay);
+            if (this.config.documentDiagnosticsDelay !== false) {
+                req.diagnosticsTimer = setTimeout(() => {
+                    req.diagnosticsTimer = void 0;
+                    this.provideDiagnostics(req.uri);
+                    this.documentUpdateRequests.delete(uri);
+                }, this.config.documentDiagnosticsDelay);
+            }
         }, this.config.documentUpdateDelay);
         this.documentUpdateRequests.set(uri, req);
     }
@@ -445,7 +447,7 @@ export class ServiceContext implements IService {
             dataPath: wsConfig.get('dataPath'),
             builtinMods: wsConfig.get<ExtCfgSect.builtinMods>('builtinMods'),
             documentUpdateDelay: wsConfig.get<number>('documentUpdateDelay', 100),
-            documentDiagnosticsDelay: wsConfig.get<number>('documentDiagnosticsDelay', -1),
+            documentDiagnosticsDelay: wsConfig.get('documentDiagnosticsDelay', false),
             completion: {
                 tabStop: <any>ExtConfigCompletionTabStopKind[<any>wsConfig.get<string>('completion.tabStop')],
                 stategroupDefaultState: wsConfig.get('completion.stategroupDefaultState'),
