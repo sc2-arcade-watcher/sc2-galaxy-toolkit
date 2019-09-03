@@ -206,7 +206,7 @@ export class CodeAbbreviations extends SuggestionsProvider {
         return cList;
     }
 
-    protected provideChildrenNodes(ctx: AbbrComplContext, uNode: UINode) {
+    protected provideChildrenNodes(ctx: AbbrComplContext, uNode: UINode, currentDesc: DescNamespace) {
         const cList = new vs.CompletionList();
 
         interface EnrichDescOpts {
@@ -251,7 +251,7 @@ export class CodeAbbreviations extends SuggestionsProvider {
             const dscList = Array.from(uChildNode.descs);
             const mIndex = dscList.findIndex((value) => {
                 if (value.xDecls.has(ctx.xEl) && uChildNode.descs.size > 1) return false;
-                if (value.parent !== uNode.mainDesc) return false;
+                if (value.parent !== currentDesc) return false;
                 return true;
             });
             if (mIndex !== -1) continue;
@@ -360,7 +360,7 @@ export class CodeAbbreviations extends SuggestionsProvider {
                 const uNode = this.xray.determineCurrentFrameNode(ctx.xEl);
                 if (!uNode) break;
 
-                return this.provideChildrenNodes(ctx, uNode);
+                return this.provideChildrenNodes(ctx, uNode, currentDesc);
             }
 
             case '@':

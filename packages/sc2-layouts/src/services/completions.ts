@@ -434,7 +434,7 @@ class AttrValueProvider extends SuggestionsProvider {
 
     protected suggestPropertyNames(ctx: AtValComplContext) {
         const uFrame = this.xray.determineTargetFrameNode(ctx.node);
-        if (uFrame) {
+        if (uFrame && uFrame.mainDesc) {
             const sfType = this.store.schema.getFrameType(Array.from(uFrame.mainDesc.xDecls)[0].stype);
             if (sfType) {
                 for (const currScProp of sfType.fprops.values()) {
@@ -660,7 +660,7 @@ class AttrNameProvider extends SuggestionsProvider {
                 case sch.BuiltinTypeKind.PropertyName:
                 {
                     let sfType: sch.FrameType;
-                    if (uFrame) {
+                    if (uFrame && uFrame.mainDesc) {
                         sfType = this.store.schema.getFrameType(Array.from(uFrame.mainDesc.xDecls)[0].stype);
                         if (sfType) {
                             for (const currScProp of sfType.fprops.values()) {

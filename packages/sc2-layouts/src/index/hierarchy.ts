@@ -6,18 +6,18 @@ import * as sch from '../schema/base';
 import { XMLElement } from '../types';
 
 export class UINode {
-    readonly name: string;
     readonly children = new Map<string, UINode>();
     readonly descs = new Set<DescNamespace>();
     public build = false;
     protected _elements: XMLElement[];
     protected _elementsMap: Map<sch.ComplexType, XMLElement[]>;
 
-    constructor(public readonly mainDesc: DescNamespace, public readonly parent: UINode = null) {
-        this.name = mainDesc.name;
-        if (parent) parent.children.set(this.name, this);
+    constructor(public readonly mainDesc?: DescNamespace, public readonly parent: UINode = null) {
+        if (mainDesc) {
+            this.descs.add(mainDesc);
+        }
 
-        this.descs.add(mainDesc);
+        if (parent) parent.children.set(this.name, this);
     }
 
     protected collectElements() {
@@ -71,6 +71,10 @@ export class UINode {
     //     }
     //     return rm;
     // }
+
+    get name() {
+        return this.mainDesc ? this.mainDesc.name : '(unknown)';
+    }
 
     get topNode() {
         let tmp: UINode = this;
@@ -229,7 +233,9 @@ export class UIBuilder {
             if (tplpath !== null) {
                 const tplDesc = rootNs.getDeep(tplpath);
                 if (tplDesc && tplDesc.kind === frDesc.kind) {
-                    processDesc(uNode, tplDesc, tpath);
+                    if (!uNode.descs.has(tplDesc)) {
+                        processDesc(uNode, tplDesc, tpath);
+                    }
                 }
                 else {
                     // console.warn('miss', frDesc.name, tplpath);
@@ -483,17 +489,21 @@ export class UINavigator {
         return rm;
     }
 
-    getContextFrameNode(uNode: UINode) {
-        if (uNode.constructor !== FrameNode) {
-            if (uNode.parent && uNode.parent.constructor === FrameNode) {
-                uNode = uNode.parent;
-                this.uBuilder.expandNode(uNode, []);
-                return uNode;
+    getContextFrameNode(uNode: UINode): FrameNode {
+        if (!(uNode instanceof FrameNode)) {
+            let ufNode: FrameNode;
+            if (uNode.parent && uNode.parent instanceof FrameNode) {
+                ufNode = uNode.parent;
             }
             else {
-                return;
+                ufNode = new FrameNode();
+                ufNode.children.set(uNode.name, uNode);
             }
+            this.uBuilder.expandNode(ufNode, []);
+            return ufNode;
         }
-        return uNode;
+        else {
+            return uNode;
+        }
     }
 }

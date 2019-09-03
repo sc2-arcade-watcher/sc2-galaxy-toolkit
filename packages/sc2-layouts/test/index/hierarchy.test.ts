@@ -199,4 +199,12 @@ describe('hierarchy navigator', function () {
             assert.isDefined(animPrimary.getEvents().has('EventTemplate'));
         });
     });
+
+    describe('getContextFrameNode', function () {
+        it('animation', function () {
+            const uaNode = uBuilder.buildNodeFromDesc(dIndex.rootNs.getMulti('Animation', 'ATpl1'));
+            const ufNode = navigator.getContextFrameNode(uaNode);
+            assert.isDefined(ufNode);
+        });
+    });
 });

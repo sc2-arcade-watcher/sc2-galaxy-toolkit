@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Desc>
+    <Frame type="Frame" name="HAnimTpl1">
+        <Handle val="HAnimTpl1"/>
+
+        <StateGroup name="StateGroup1">
+            <DefaultState val="Default"/>
+
+            <State name="1">
+            </State>
+
+            <State name="Default">
+            </State>
+        </StateGroup>
+    </Frame>
+
+    <Animation name="AnimTpl1">
+        <Event event="EventTemplate" action="Reset,Play" frame="$this"/>
+
+        <Controller type="State" end="Pause" frame="$HAnimTpl1" stateGroup="StateGroup1">
+            <Key type="Identifier" time="0.0" value="1"/>
+        </Controller>
+    </Animation>
+
+    <StateGroup name="StateTpl1">
+        <State name="First">
+            <When type="StateGroup" frame="$HAnimTpl1" operator="Equal" StateGroup1="Default"/>
+        </State>
+    </StateGroup>
+</Desc>

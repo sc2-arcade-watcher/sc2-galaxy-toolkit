@@ -2,7 +2,7 @@ import * as vs from 'vscode';
 import * as sch from '../schema/base';
 import { AbstractProvider, svcRequest } from './provider';
 import { XMLElement } from '../types';
-import { DefinitionProvider, DefinitionItemKind, DefinitionDescNode, DefinitionContainer, DefinitionXNode } from './definition';
+import { DefinitionProvider, DefinitionItemKind, DefinitionDescNode, DefinitionContainer, DefinitionXNode, DefinitionUINode } from './definition';
 import { vsRangeOrPositionOfXNode } from './helpers';
 import { DescKind } from '../index/desc';
 
@@ -56,23 +56,28 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
         return processSmType(smType);
     }
 
-    protected tooltipDefinitionDesc(defContainer: DefinitionContainer, dscNode: DefinitionDescNode): vs.MarkdownString {
+    protected tooltipDefinitionDesc(defContainer: DefinitionContainer, dscNode: DefinitionDescNode | DefinitionUINode): vs.MarkdownString {
         const contents: string[] = [];
-        const dNode = dscNode.selectedDescs[0];
 
-        let dLink = '#';
-        switch (dNode.kind) {
-            case DescKind.Frame:
-            {
-                const sFrameType = this.store.schema.getFrameType(dNode.stype);
-                if (sFrameType) {
-                    dLink = docsLink('frame-type', sFrameType.name);
+        if (dscNode.selectedDescs.length) {
+            const dNode = dscNode.selectedDescs[0];
+            let dLink = '#';
+            switch (dNode.kind) {
+                case DescKind.Frame:
+                {
+                    const sFrameType = this.store.schema.getFrameType(dNode.stype);
+                    if (sFrameType) {
+                        dLink = docsLink('frame-type', sFrameType.name);
+                    }
+                    break;
                 }
-                break;
             }
+            contents.push(`**\`${dNode.name}\`** — [${dNode.stype.name}](${dLink})`);
+        }
+        else if ((<DefinitionUINode>dscNode).selectedNode) {
+            contents.push(`**\`${(<DefinitionUINode>dscNode).selectedNode.name}\`** — ?`);
         }
 
-        contents.push(`**\`${dNode.name}\`** — [${dNode.stype.name}](${dLink})`);
         for (const desc of dscNode.selectedDescs) {
             contents.push(desc.fqn);
         }
