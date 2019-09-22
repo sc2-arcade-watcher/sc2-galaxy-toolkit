@@ -2,9 +2,9 @@ import * as lsp from 'vscode-languageserver';
 import * as Types from '../compiler/types';
 import * as util from 'util';
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import { findAncestor } from '../compiler/utils';
-import { Store, WorkspaceWatcher, S2WorkspaceWatcher, findWorkspaceArchive, S2WorkspaceChangeEvent, createTextDocumentFromFs, createTextDocumentFromUri } from './store';
+import { Store, createTextDocumentFromFs, createTextDocumentFromUri } from './store';
 import { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition, getNodeRange } from './utils';
 import { AbstractProvider, LoggerConsole, createProvider } from './provider';
 import { DiagnosticsProvider } from './diagnostics';
@@ -15,7 +15,7 @@ import { DefinitionProvider } from './definitions';
 import { HoverProvider } from './hover';
 import { ReferencesProvider, ReferencesConfig } from './references';
 import { RenameProvider } from './rename';
-import { SC2Archive, SC2Workspace, resolveArchiveDirectory, openArchiveWorkspace, isSC2Archive, resolveArchiveDependencyList } from '../sc2mod/archive';
+import { SC2Archive, SC2Workspace, resolveArchiveDirectory, openArchiveWorkspace, isSC2Archive, resolveArchiveDependencyList, findSC2ArchiveDirectories } from '../sc2mod/archive';
 import { setTimeout, clearTimeout } from 'timers';
 import URI from 'vscode-uri';
 
@@ -122,16 +122,18 @@ interface PlaxtonyConfig {
     documentUpdateDelay: number;
     documentDiagnosticsDelay: number;
     archivePath: string;
+    dataPath: string;
+    fallbackDependency: string;
     s2mod: {
-        sources: string[],
-        overrides: {},
-        extra: {},
-    },
-    completion: {
-        functionExpand: string,
+        sources: string[];
+        overrides: {};
+        extra: {};
     };
-    references: ReferencesConfig
-};
+    completion: {
+        functionExpand: string;
+    };
+    references: ReferencesConfig;
+}
 
 interface DocumentUpdateRequest {
     timer: NodeJS.Timer;
@@ -139,7 +141,13 @@ interface DocumentUpdateRequest {
     content: string;
     isDirty: boolean;
     version: number;
-};
+}
+
+interface InitializeParams extends lsp.InitializeParams {
+    initializationOptions?: {
+        defaultDataPath: string | null;
+    };
+}
 
 export class Server {
     public connection: lsp.IConnection;
@@ -153,8 +161,7 @@ export class Server {
     private referenceProvider: ReferencesProvider;
     private renameProvider: RenameProvider;
     private documents = new lsp.TextDocuments();
-    private workspaceWatcher: WorkspaceWatcher;
-    private initParams: lsp.InitializeParams;
+    private initParams: InitializeParams;
     private indexing = false;
     private ready = false;
     private config: PlaxtonyConfig;
@@ -206,7 +213,19 @@ export class Server {
     public log(msg: string, ...params: any[]) {
         this.connection.console.log(msg);
         if (params.length) {
-            this.connection.console.log(util.inspect(params));
+            for (const p of params) {
+                this.connection.console.log(util.inspect(p, {
+                    breakLength: 80,
+                    compact: false,
+                }));
+            }
+        }
+    }
+
+    public reportMemoryUsage() {
+        const used = process.memoryUsage();
+        for (const key in used) {
+            this.log(`${key} ${Math.round((<any>used)[key] / 1024 / 1024 * 100) / 100} MB`);
         }
     }
 
@@ -232,115 +251,207 @@ export class Server {
         }
     }
 
+    protected async requestReindex() {
+        if (this.indexing) return;
+
+        const choice = await this.connection.window.showInformationMessage(
+            (`Workspace configuration has changed, reindex might be required. Would you like to do that now?`),
+            {
+                title: 'Yes',
+            },
+            {
+                title: 'No'
+            }
+        );
+        if (!choice || choice.title !== 'Yes') return;
+        await this.reindex();
+    }
+
     @wrapRequest()
-    private async reindex(rootPath: string, modSources: string[]) {
+    private async reindex() {
         let archivePath: string;
         let workspace: SC2Workspace;
 
+        // signal begining of indexing
         this.indexing = true;
-        this.connection.sendNotification("indexStart");
+        this.connection.sendNotification('indexStart');
+        this.store.clear();
 
-        this.store.rootPath = rootPath;
-        if (this.config.archivePath) {
-            if (path.isAbsolute(this.config.archivePath)) {
-                archivePath = this.config.archivePath;
-            }
-            else if (rootPath) {
-                archivePath = path.join(rootPath, this.config.archivePath);
-            }
+        let projFolders = await this.connection.workspace.getWorkspaceFolders();
+        if (!projFolders) projFolders = [];
 
-            if (!fs.existsSync(archivePath)) {
-                this.showErrorMessage(`Specified archivePath '${this.config.archivePath}' resolved to '${archivePath}', but it doesn't exist.`);
-                archivePath = null;
-            }
-            else if (!isSC2Archive(archivePath)) {
-                this.showErrorMessage(`Specified archivePath '${archivePath}', doesn't appear to be valid archive.`);
-                archivePath = null;
-            }
-        }
-        if (!archivePath && rootPath) {
-            archivePath = await findWorkspaceArchive(rootPath);
-        }
-
-        if (archivePath) {
-            const wsArchive = new SC2Archive(path.basename(archivePath), archivePath);
-            this.workspaceWatcher = new WorkspaceWatcher(archivePath);
-
-            this.log(`SC2 archive for this workspace set to: ${archivePath}`);
-            this.connection.sendNotification('indexProgress', `Resolving dependencies of [${wsArchive.name}]`);
-
-            const depList = await resolveArchiveDependencyList(
-                wsArchive,
-                modSources,
-                mapFromObject(this.config.s2mod.overrides)
-            );
-            for (const [name, src] of mapFromObject(this.config.s2mod.extra)) {
-                if (!fs.existsSync(src)) {
-                    this.showErrorMessage(`Extra archive [${name}] '${src}' doesn't exist. Skipping.`);
-                    continue;
-                }
-                depList.list.push({
-                    name: name,
-                    src: src
-                });
-            }
-            if (depList.unresolvedNames.length > 0) {
-                this.showErrorMessage(
-                    `Some SC2 archives couldn't be found [${depList.unresolvedNames.map((s) => `'${s}'`).join(', ')}]. By a result certain intellisense capabilities might not function properly.`
-                );
-            }
-
-            workspace = new SC2Workspace(wsArchive, depList.list.map((item) => new SC2Archive(item.name, item.src)));
-            this.log('Resolved archives:\n' + workspace.allArchives.map(item => {
-                return `${item.name} => ${item.directory}`;
-            }).join('\n'));
-        }
-        else if (rootPath) {
-            this.log(`SC2 workspace set to project root`);
-            this.workspaceWatcher = new WorkspaceWatcher(rootPath);
-        }
-
-        if (!workspace) {
-            workspace = new SC2Workspace(null, [new SC2Archive('mods/core.sc2mod', await resolveArchiveDirectory('mods/core.sc2mod', modSources))]);
-        }
-
-        this.connection.sendNotification('indexProgress', 'Indexing trigger libraries and data catalogs..');
-        await this.store.updateS2Workspace(workspace, this.config.localization);
-
-        this.connection.sendNotification('indexProgress', `Indexing Galaxy files..`);
-        for (const modArchive of workspace.dependencies) {
-            for (const extSrc of await modArchive.findFiles('**/*.galaxy')) {
-                // this.connection.sendNotification('indexProgress', `Indexing: ${extSrc}`);
-                this.onDidFindInWorkspace({document: createTextDocumentFromFs(path.join(modArchive.directory, extSrc))});
-            }
-        }
-
-        if (this.workspaceWatcher) {
-            this.workspaceWatcher.onDidOpen((ev) => {
-                const extSrc = URI.parse(ev.document.uri).fsPath.substr(this.workspaceWatcher.workspacePath.length);
-                // this.connection.sendNotification('indexProgress', `Indexing: ${extSrc}`);
-                this.onDidFindInWorkspace(ev);
+        // attempt to determine active document (archivePath) for non-empty project workspace
+        if (projFolders.length) {
+            const s2archives: string[] = [];
+            (await Promise.all(
+                projFolders.map(v => findSC2ArchiveDirectories(URI.parse(v.uri).fsPath)))
+            ).forEach(resultFolder => {
+                s2archives.push(...resultFolder);
             });
-            // workspace.onDidOpenS2Archive(this.onDidFindS2Workspace.bind(this));
-            await this.workspaceWatcher.watch();
+            this.log('s2archives in the workspace', s2archives);
+
+            if (this.config.archivePath) {
+                if (path.isAbsolute(this.config.archivePath)) {
+                    archivePath = this.config.archivePath;
+                }
+                else {
+                    archivePath = s2archives.find((v) => v.toLowerCase().endsWith(this.config.archivePath.toLowerCase()));
+                }
+
+                if (!archivePath) {
+                    this.showErrorMessage(`Specified archivePath '${this.config.archivePath}' couldn't be found.`);
+                }
+                else if (!(await fs.pathExists(archivePath))) {
+                    this.showErrorMessage(`Specified archivePath '${this.config.archivePath}' resolved to '${archivePath}', but it doesn't exist.`);
+                    archivePath = null;
+                }
+            }
+
+            if (!archivePath) {
+                const s2maps = s2archives.filter(v => path.extname(v).toLowerCase() === '.sc2map');
+                this.log(`s2maps in workspace`, s2maps);
+
+                if (s2maps.length === 1) {
+                    archivePath = s2maps.pop();
+                }
+                else if (s2archives.length === 1) {
+                    archivePath = s2archives.pop();
+                }
+                else {
+                    this.connection.window.showInformationMessage(`Couldn't find applicable sc2map/sc2mod in the workspace. Set it manually under "sc2galaxy.archivePath" in projects configuration.`);
+                }
+            }
         }
 
+        // build list of mod sources - directories with dependencies to lookup
+        const modSources: string[] = [];
+        if (this.config.dataPath) {
+            if (path.isAbsolute(this.config.dataPath)) {
+                modSources.push(this.config.dataPath);
+            }
+            else if (projFolders.length) {
+                for (const wsFolder of projFolders) {
+                    const resolvedDataPath = path.join(URI.parse(wsFolder.uri).fsPath, this.config.dataPath);
+                    if (await fs.pathExists(resolvedDataPath)) {
+                        modSources.push(resolvedDataPath);
+                    }
+                }
+            }
+        }
+        if (!modSources.length) {
+            modSources.push(this.initParams.initializationOptions.defaultDataPath);
+        }
+        modSources.push(...this.config.s2mod.sources);
+        this.log(`Mod sources`, modSources);
+        this.log(`SC2 archive for this workspace set to: ${archivePath}`);
+
+        // setup s2workspace
+        let wsArchive: SC2Archive;
+        if (archivePath) {
+            wsArchive = new SC2Archive(path.basename(archivePath), archivePath);
+        }
+
+        this.connection.sendNotification('indexProgress', `Resolving dependencies..`);
+        const fallbackDep = new SC2Archive(this.config.fallbackDependency, await resolveArchiveDirectory(this.config.fallbackDependency, modSources));
+        const depLinks = await resolveArchiveDependencyList(wsArchive ? wsArchive : fallbackDep, modSources, {
+            overrides: mapFromObject(this.config.s2mod.overrides),
+            fallbackResolve: async (depName: string) => {
+                while (depName.length) {
+                    for (const wsFolder of projFolders) {
+                        const fsPath = URI.parse(wsFolder.uri).fsPath;
+
+                        if (depName.toLowerCase() === wsFolder.name.toLowerCase()) {
+                            return fsPath;
+                        }
+                        else {
+                            const result = await resolveArchiveDirectory(depName, [fsPath]);
+                            if (result) return result;
+                        }
+                    }
+
+                    depName = depName.split('/').slice(1).join('/');
+                }
+
+                return void 0;
+            }
+        });
+
+        for (const [name, src] of mapFromObject(this.config.s2mod.extra)) {
+            if (!fs.existsSync(src)) {
+                this.showErrorMessage(`Extra archive [${name}] '${src}' doesn't exist. Skipping.`);
+                continue;
+            }
+            depLinks.list.push({
+                name: name,
+                src: src
+            });
+        }
+        if (depLinks.unresolvedNames.length > 0) {
+            this.showErrorMessage(
+                `Some SC2 archives couldn't be found [${depLinks.unresolvedNames.map((s) => `'${s}'`).join(', ')}]. By a result certain intellisense capabilities might not function properly.`
+            );
+        }
+
+        if (projFolders.length) {
+            this.log(`SC2 workspace set to project root`);
+        }
+
+        let depList = depLinks.list.map((item) => new SC2Archive(item.name, item.src));
+        if (!wsArchive && !depList.find((item) => item.name === fallbackDep.name)) {
+            depList.push(fallbackDep);
+        }
+        workspace = new SC2Workspace(wsArchive, depList);
+        this.log('Resolved archives:\n' + workspace.allArchives.map(item => {
+            return `${item.name} => ${item.directory}`;
+        }).join('\n'));
+
+        this.reportMemoryUsage();
+
+        // process metadata files etc.
+        this.connection.sendNotification('indexProgress', 'Indexing trigger libraries and data catalogs..');
+        this.log('updateS2Workspace');
+        await this.store.updateS2Workspace(workspace);
+        this.log('rebuildS2Metadata');
+        await this.store.rebuildS2Metadata(this.config.localization);
+
+        this.reportMemoryUsage();
+
+        // process .galaxy files in the workspace
+        this.connection.sendNotification('indexProgress', `Indexing Galaxy files..`);
+        for (const modArchive of workspace.allArchives) {
+            for (const extSrc of await modArchive.findFiles('**/*.galaxy')) {
+                await this.syncSourceFile({document: createTextDocumentFromFs(path.join(modArchive.directory, extSrc))});
+            }
+        }
+
+        this.reportMemoryUsage();
+
+        // almost done
         this.connection.sendNotification('indexProgress', 'Finalizing..');
 
+        // apply overdue updates to files issued during initial indexing
         for (const documentUri of this.documentUpdateRequests.keys()) {
             await this.flushDocument(documentUri);
         }
 
+        // signal done
         this.indexing = false;
         this.ready = true;
-        this.connection.sendNotification("indexEnd");
+        this.connection.sendNotification('indexEnd');
     }
 
     @wrapRequest()
     private async onInitialize(params: lsp.InitializeParams): Promise<lsp.InitializeResult> {
         this.initParams = params;
+        this.log('params', this.initParams);
         return {
             capabilities: {
+                workspace: {
+                    workspaceFolders: {
+                        supported: true,
+                        changeNotifications: true,
+                    },
+                },
                 textDocumentSync: {
                     change: this.documents.syncKind,
                     openClose: true,
@@ -348,7 +459,7 @@ export class Server {
                 documentSymbolProvider: true,
                 workspaceSymbolProvider: true,
                 completionProvider: {
-                    triggerCharacters: ['.'],
+                    triggerCharacters: ['.', '/'],
                     resolveProvider: true,
                 },
                 signatureHelpProvider: {
@@ -361,17 +472,36 @@ export class Server {
                     prepareProvider: true,
                 },
             }
-        }
+        };
     }
 
     @wrapRequest()
     private async onInitialized(params: lsp.InitializedParams) {
+        if (this.initParams.capabilities.workspace.workspaceFolders) {
+            this.connection.workspace.onDidChangeWorkspaceFolders(this.onDidChangeWorkspaceFolders.bind(this))
+        }
     }
 
     @wrapRequest()
     private async onDidChangeConfiguration(ev: lsp.DidChangeConfigurationParams) {
-        this.log(util.inspect(ev.settings.sc2galaxy));
-        this.config = <PlaxtonyConfig>ev.settings.sc2galaxy;
+        const newConfig = <PlaxtonyConfig>ev.settings.sc2galaxy;
+        let reindexRequired = false;
+        let firstInit = !this.config;
+
+        if (
+            !this.config ||
+            this.config.archivePath !== newConfig.archivePath ||
+            this.config.dataPath !== newConfig.dataPath ||
+            this.config.fallbackDependency !== newConfig.fallbackDependency ||
+            this.config.localization !== newConfig.localization ||
+            (JSON.stringify(this.config.s2mod) !== JSON.stringify(newConfig.s2mod))
+        ) {
+            this.log('Reindex required');
+            reindexRequired = true;
+        }
+
+        this.log(util.inspect(newConfig));
+        this.config = newConfig;
         switch (this.config.completion.functionExpand) {
             case "None":
                 this.completionsProvider.config.functionExpand = CompletionFunctionExpand.None;
@@ -389,9 +519,18 @@ export class Server {
 
         this.referenceProvider.config = this.config.references;
 
-        if (!this.indexing) {
-            this.reindex(this.initParams.rootPath, this.initParams.initializationOptions.sources);
+        if (firstInit) {
+            this.reindex();
         }
+        else if (reindexRequired) {
+            this.requestReindex();
+        }
+    }
+
+    @wrapRequest()
+    private async onDidChangeWorkspaceFolders(ev: lsp.WorkspaceFoldersChangeEvent) {
+        this.log('ev', ev);
+        this.requestReindex();
     }
 
     @wrapRequest()
@@ -461,7 +600,7 @@ export class Server {
 
     @wrapRequest(false, (payload: lsp.TextDocumentChangeEvent) => { return {document: payload.document.uri}})
     private onDidOpen(ev: lsp.TextDocumentChangeEvent) {
-        this.store.openDocuments.set(ev.document.uri, true);
+        this.store.openDocuments.add(ev.document.uri);
     }
 
     @wrapRequest(false, (payload: lsp.TextDocumentChangeEvent) => { return {document: payload.document.uri}})
@@ -485,7 +624,7 @@ export class Server {
     @wrapRequest(true)
     private async onDidChangeWatchedFiles(ev: lsp.DidChangeWatchedFilesParams) {
         for (const x of ev.changes) {
-            if (URI.parse(x.uri).fsPath.match(/sc2map\.(temp|orig)/gi)) continue;
+            if (URI.parse(x.uri).fsPath.match(/sc2\w+\.(temp|orig)/gi)) continue;
             if (!this.store.isUriInWorkspace(x.uri)) continue;
             this.log(`${fileChangeTypeNames[x.type]} ${x.uri}`);
             switch (x.type) {
@@ -493,7 +632,7 @@ export class Server {
                 case lsp.FileChangeType.Changed:
                 {
                     if (!this.store.openDocuments.has(x.uri)) {
-                        this.onDidFindInWorkspace({document: createTextDocumentFromUri(x.uri)});
+                        this.syncSourceFile({document: createTextDocumentFromUri(x.uri)});
                     }
                     break;
                 }
@@ -507,16 +646,9 @@ export class Server {
     }
 
     @wrapRequest(false, (payload: lsp.TextDocumentChangeEvent) => { return {document: payload.document.uri}})
-    private onDidFindInWorkspace(ev: lsp.TextDocumentChangeEvent) {
+    private async syncSourceFile(ev: lsp.TextDocumentChangeEvent) {
         this.store.updateDocument(ev.document);
     }
-
-    // @wrapRequest('Indexing workspace ', true, true)
-    // private async onDidFindS2Workspace(ev: S2WorkspaceChangeEvent) {
-    //     this.log('Updating archives');
-    //     await this.store.updateS2Workspace(ev.workspace);
-    //     this.log('Archives: ' + util.inspect(ev.workspace.allArchives, false, 1));
-    // }
 
     @wrapRequest(true)
     private async onCompletion(params: lsp.TextDocumentPositionParams) {

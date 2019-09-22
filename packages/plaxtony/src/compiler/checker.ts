@@ -4,7 +4,7 @@ import URI from 'vscode-uri';
 import * as gt from './types';
 import { isComplexTypeKind } from '../compiler/utils';
 import { isDeclarationKind, forEachChild, isPartOfExpression, isRightSideOfPropertyAccess, findAncestor, createDiagnosticForNode, isAssignmentOperator, isComparisonOperator, isReferenceKeywordKind, findAncestorByKind } from './utils';
-import { Store } from '../service/store';
+import { Store, QualifiedSourceFile } from '../service/store';
 import { tokenToString } from './scanner';
 import { Printer } from './printer';
 import { declareSymbol, unbindSourceFile } from './binder';
@@ -839,14 +839,11 @@ export class TypeChecker {
 
         for (const statement of sourceFile.statements) {
             if (statement.kind === gt.SyntaxKind.IncludeStatement) {
-                const docUri = this.checkIncludeStatement(<gt.IncludeStatement>statement);
-                if (docUri && !this.currentDocuments.has(docUri)) {
-                    const inclFile = this.store.documents.get(docUri);
-                    if (inclFile) {
-                        const currentSymbolContainer = this.currentSymbolContainer;
-                        this.checkSourceFileRecursivelyWorker(inclFile);
-                        this.currentSymbolContainer = currentSymbolContainer;
-                    }
+                const qsFile = this.checkIncludeStatement(<gt.IncludeStatement>statement);
+                if (qsFile && !this.currentDocuments.has(qsFile.fileName)) {
+                    const currentSymbolContainer = this.currentSymbolContainer;
+                    this.checkSourceFileRecursivelyWorker(qsFile);
+                    this.currentSymbolContainer = currentSymbolContainer;
                 }
                 continue;
             }
@@ -875,6 +872,7 @@ export class TypeChecker {
         return {
             success: Array.from(this.diagnostics.values()).findIndex((value, index) => value.length > 0) === -1,
             diagnostics: this.diagnostics,
+            sourceFiles: <Map<string, QualifiedSourceFile>>this.currentDocuments,
         };
     }
 
@@ -980,18 +978,20 @@ export class TypeChecker {
 
     private checkIncludeStatement(node: gt.IncludeStatement) {
         const path = node.path.value.replace(/\.galaxy$/i, '').toLowerCase();
-        for (const docUri of this.store.documents.keys()) {
-            const meta = this.store.getDocumentMeta(docUri);
-            if (!meta.relativeName) continue;
-            if (meta.relativeName.toLowerCase() != path) continue;
-            const sourceFile = <gt.SourceFile>findAncestorByKind(node, gt.SyntaxKind.SourceFile);
-            if (this.store.documents.get(docUri) === sourceFile) {
-                this.report(node.path, `Self-include`, gt.DiagnosticCategory.Warning);
-                return;
-            }
-            return docUri;
+        const qsMap = this.store.qualifiedDocuments.get(path);
+        if (!qsMap) {
+            this.report(node.path, `Given filename couldn't be matched`);
+            return;
         }
-        this.report(node.path, `Given filename couldn't be matched`);
+
+        const qsFile = Array.from(qsMap.values())[0];
+        const currCourceFile = <gt.SourceFile>findAncestorByKind(node, gt.SyntaxKind.SourceFile);
+        if (currCourceFile === qsFile) {
+            this.report(node, `Self-include`, gt.DiagnosticCategory.Warning);
+            return;
+        }
+
+        return qsFile;
     }
 
     private checkDeclarationType(node: gt.TypeNode) {

@@ -212,6 +212,53 @@ export class CompletionsProvider extends AbstractProvider {
         return completions;
     }
 
+    private provideIncludes(query: string): lsp.CompletionList {
+        const completions = new Map<string, lsp.CompletionItem>();
+
+        for (const [relativeName, qsMap] of this.store.qualifiedDocuments) {
+            if (query && !relativeName.startsWith(query.toLowerCase())) continue;
+
+            const qsFiles = Array.from(qsMap.values()).filter(v => v.s2meta);
+            if (!qsFiles.length) continue;
+
+            const itemPart = qsFiles[0].s2meta.docName.substr(query.length).split('/');
+            let cpItem = completions.get(itemPart[0]);
+
+            if (!cpItem) {
+                cpItem = lsp.CompletionItem.create(itemPart[0]);
+                cpItem.documentation = '';
+                cpItem.data = {};
+
+                if (itemPart.length > 1) {
+                    cpItem.kind = lsp.CompletionItemKind.Folder;
+                }
+                else {
+                    cpItem.kind = lsp.CompletionItemKind.File;
+                    cpItem.detail = qsFiles.filter(v => v.s2meta.file.archive).map(v => `${v.s2meta.file.archive.name}`).join(' | ');
+                    cpItem.documentation = qsFiles.map(v => {
+                        return (
+                            (v.s2meta.file.archive ? `${v.s2meta.file.archive.name}/` : '') +
+                            `${v.s2meta.file.relativePath}`
+                        );
+                    }).join('\n');
+                }
+
+                completions.set(cpItem.label, cpItem);
+            }
+
+            if (cpItem.kind === lsp.CompletionItemKind.Folder) {
+                const nDocs = qsFiles.filter(v => v.s2meta.file.archive).map(v => `${v.s2meta.file.archive.name}`);
+                if (nDocs.length) {
+                    cpItem.documentation = Array.from(new Set(cpItem.documentation.toString().split('\n').concat(nDocs))).join('\n');
+                }
+            }
+        }
+        return {
+            items: Array.from(completions.values()),
+            isIncomplete: false,
+        };
+    }
+
     public getCompletionsAt(uri: string, position: number, context?: lsp.CompletionContext): lsp.CompletionList {
         let completions = <lsp.CompletionItem[]> [];
 
@@ -248,40 +295,13 @@ export class CompletionsProvider extends AbstractProvider {
             const inclStmt = <gt.IncludeStatement>currentToken.parent;
             const offset = position - currentToken.pos;
             query = (<gt.StringLiteral>currentToken).text.substr(1, offset - 1).replace(/(\/*)[^\/]+$/, '$1');
-            const imap = new Map<string,lsp.CompletionItem>();
 
-            if ((<gt.StringLiteral>currentToken).text.match(/[^"]$/) || currentToken.end != position) {
-                for (const uri of this.store.documents.keys()) {
-                    const meta = this.store.getDocumentMeta(uri);
-                    if (!meta.relativeName) continue;
-                    if (query && !meta.relativeName.toLowerCase().startsWith(query.toLowerCase())) continue;
-                    const itemPart = meta.relativeName.substr(query.length).split('/');
-                    if (itemPart.length > 1) {
-                        imap.set(itemPart[0], {
-                            kind: lsp.CompletionItemKind.Folder,
-                            label: itemPart[0],
-                            insertText: itemPart[0] + '/',
-                            detail: meta.archive ? meta.archive.name : null,
-                            data: {},
-                        });
-                    }
-                    else {
-                        imap.set(itemPart[0], {
-                            kind: lsp.CompletionItemKind.File,
-                            label: itemPart[0] + '.galaxy',
-                            insertText: itemPart[0],
-                            detail: meta.relativeName + '.galaxy',
-                            documentation: meta.archive ? meta.archive.name : null,
-                            data: {},
-                        });
-                    }
-                }
-                return {
-                    items: Array.from(imap.values()),
-                    isIncomplete: false,
-                };
+            if ((<gt.StringLiteral>currentToken).text.match(/[^"]$/) || currentToken.end !== position) {
+                return this.provideIncludes(query);
             }
         }
+
+        if (context && context.triggerCharacter === '/') return;
 
         // presets
         if (currentToken && this.store.s2metadata) {
@@ -444,6 +464,19 @@ export class CompletionsProvider extends AbstractProvider {
         let symbol: gt.Symbol;
         let parentSymbolName: string;
         const customData: CompletionItemData = completion.data || {};
+
+        switch (completion.kind) {
+            case lsp.CompletionItemKind.Folder:
+            case lsp.CompletionItemKind.File:
+            {
+                return completion;
+            }
+
+            default:
+            {
+                break;
+            }
+        }
 
         if (customData.elementType && customData.elementType === 'gamelink') {
             completion.documentation = this.store.s2metadata.getGameLinkLocalizedName(customData.gameType, completion.insertText, true);

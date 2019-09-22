@@ -1,8 +1,8 @@
 import { SourceFile, Diagnostic } from './../src/compiler/types';
 import { Parser } from '../src/compiler/parser';
 import { TextDocument } from 'vscode-languageserver';
-import { Store, WorkspaceWatcher, S2WorkspaceWatcher, createTextDocumentFromFs } from '../src/service/store';
-import { SC2Workspace } from '../src/sc2mod/archive'
+import { Store, S2WorkspaceWatcher, createTextDocumentFromFs, openSourceFilesInLocation } from '../src/service/store';
+import { SC2Workspace } from '../src/sc2mod/archive';
 import * as path from 'path';
 
 const fixturesPath = 'tests/fixtures';
@@ -37,22 +37,13 @@ export function mockupStore(...documents: TextDocument[]) {
     return store;
 }
 
-export function mockupStoreFromDirectory(directory: string) {
-    return new Promise<Store>((resolve, reject) => {
-        try {
-            const store = new Store();
-            store.rootPath = directory;
-            const ws = new WorkspaceWatcher(directory);
-            ws.onDidOpen((ev) => {
-                store.updateDocument(ev.document);
-            });
-            ws.watch();
-            resolve(store);
-        }
-        catch (err) {
-            reject(err);
-        }
-    });
+export async function mockupStoreFromDirectory(directory: string) {
+    const store = new Store();
+    store.rootPath = directory;
+    for await (const doc of openSourceFilesInLocation(directory)) {
+        store.updateDocument(doc);
+    }
+    return store;
 }
 
 export async function mockupStoreFromS2Workspace(directory: string, modSources: string[]) {
@@ -67,7 +58,8 @@ export async function mockupStoreFromS2Workspace(directory: string, modSources: 
     });
     await ws.watch();
     for (const ws of workspaces) {
-        await store.updateS2Workspace(ws, 'enUS');
+        await store.updateS2Workspace(ws);
+        await store.rebuildS2Metadata('enUS');
     }
     return store;
 }

@@ -83,10 +83,7 @@ export class RenameProvider extends AbstractProvider {
 
         for (const decl of result.symbol.declarations) {
             const declSourceFile = getSourceFileOfNode(decl);
-            if (
-                (!this.store.rootPath || !URI.parse(declSourceFile.fileName).fsPath.startsWith(this.store.rootPath)) &&
-                !this.store.openDocuments.has(declSourceFile.fileName)
-            ) {
+            if (!this.store.isUriInWorkspace(declSourceFile.fileName) && !this.store.openDocuments.has(declSourceFile.fileName)) {
                 return new lsp.ResponseError<undefined>(lsp.ErrorCodes.InvalidParams, 'Declaration not in workspace');
             }
         }

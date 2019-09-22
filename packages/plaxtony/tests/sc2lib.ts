@@ -11,24 +11,24 @@ const resourcesPath = path.join('tests', 'fixtures', 'sc2-data-trigger');
 
 describe('SC2Mod', () => {
     describe('General', () => {
-        let archives: string[];
-        let modArchives: string[];
-
-        before(async () => {
-            archives = await findSC2ArchiveDirectories(resourcesPath);
-            modArchives = await findSC2ArchiveDirectories(path.join(resourcesPath, 'mods'));
-        });
-
-        it('should find SC2 archives within directory', () => {
+        it('should find SC2 archives within directory', async () => {
+            const archives = await findSC2ArchiveDirectories(resourcesPath);
+            const modArchives = await findSC2ArchiveDirectories(path.join(resourcesPath, 'mods'));
             assert.isAtLeast(archives.length, 22);
-            assert.isAtLeast(archives.length, 15);
+            assert.isAtLeast(modArchives.length, 15);
             assert.include(archives, path.resolve(path.join(resourcesPath, 'mods', 'core.sc2mod')));
-        })
+        });
 
         it('should find SC2 all galaxy files', async () => {
             const core = new SC2Archive('core/sc2.mod', path.join(resourcesPath, 'mods', 'core.sc2mod'));
             const gf = await core.findFiles('**/*.galaxy');
             assert.isAbove(gf.length, 124);
+        });
+
+        it('find sc2map', async () => {
+            const stuff = await findSC2ArchiveDirectories(path.join('tests', 'fixtures'));
+            assert.isNotEmpty(stuff);
+            assert.isTrue(stuff.pop().toLowerCase().endsWith('.sc2map'))
         });
     });
 

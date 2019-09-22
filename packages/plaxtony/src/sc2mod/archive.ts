@@ -1,93 +1,66 @@
-import * as fs from 'fs'
-import * as util from 'util'
-import * as glob from 'glob'
-import * as path from 'path'
+import * as fs from 'fs';
+import * as util from 'util';
+import * as path from 'path';
 import * as xml from 'xml2js';
 import * as trig from './trigger';
 import * as cat from './datacatalog';
 import * as loc from './localization';
 import { globify } from '../service/utils';
 
+const validArchiveExtensions = [
+    'sc2map',
+    'sc2interface',
+    'sc2campaign',
+    'sc2mod',
+];
+
+const reValidArchiveExtension = new RegExp('\\.(' + validArchiveExtensions.join('|') + ')$', 'i');
+
 export function isSC2Archive(directory: string) {
-    return /\.(SC2Mod|SC2Map|SC2Campaign)$/i.exec(path.basename(directory));
+    return path.basename(directory).match(reValidArchiveExtension);
 }
 
-export function findSC2ArchiveDirectories(directory: string) {
-    directory = path.relative(process.cwd(), path.resolve(directory));
-    return new Promise<string[]>((resolve, reject) => {
-        if (isSC2Archive(directory)) {
-            resolve([path.resolve(directory)]);
-            return;
+export async function findSC2ArchiveDirectories(directory: string) {
+    directory = path.resolve(directory);
+    if (isSC2Archive(directory)) {
+        return [directory];
+    }
+
+    const results = await globify(
+        path.join(`**/*.+(${validArchiveExtensions.join('|')})/`),
+        {
+            nocase: true,
+            realpath: true,
+            cwd: directory,
         }
-        glob(path.join(directory, '**/*.+(SC2Mod|SC2Map|SC2Campaign)'), {nocase: true, realpath: true} , (err, matches) => {
-            if (err) {
-                reject(err);
-            }
-            else {
-                resolve(matches.filter((value) => {
-                    return fs.lstatSync(value).isDirectory();
-                }));
-            }
-        });
-    });
-}
+    );
 
-function findSC2File(directory: string, pattern: string) {
-    return new Promise<string[]>((resolve, reject) => {
-        glob(path.join(pattern), {nocase: true, realpath: true, nodir: true, cwd: directory} , (err, matches) => {
-            if (err) {
-                reject(err);
-            }
-            else {
-                resolve(matches);
-            }
-        });
+    return results.sort((a, b) => {
+        return (
+            validArchiveExtensions.indexOf(b.match(reValidArchiveExtension)[1].toLowerCase()) -
+            validArchiveExtensions.indexOf(a.match(reValidArchiveExtension)[1].toLowerCase())
+        );
     });
 }
 
 export abstract class Component {
     protected workspace: SC2Workspace;
-    protected waitPromise: Promise<boolean>;
-    protected waitQueue: (ready: boolean) => void;
-    protected ready: boolean = false;
 
     constructor(workspace: SC2Workspace) {
         this.workspace = workspace;
     }
 
-    public load() {
-        this.ready = false;
-        // this.waitQueue = (ready: boolean) => {
-        // }
-        this.waitPromise = new Promise<boolean>(async (resolve, reject) => {
-            try {
-                this.ready = await this.loadData();
-                resolve(this.ready);
-            }
-            catch (e) {
-                e.message = '[' + this.constructor.name + '/load] ' + e.message;
-                reject(e);
-            }
-        });
-        return Promise.resolve(this.waitPromise);
+    public async load() {
+        try {
+            return await this.loadData();
+        }
+        catch (e) {
+            e.message = '[' + this.constructor.name + '/load] ' + e.message;
+            throw e;
+        }
     }
 
     abstract async loadData(): Promise<boolean>;
-
-    public isReady(): boolean {
-        return this.ready;
-    }
-
-    public sync(): Promise<boolean> {
-        if (!this.waitPromise) {
-            return Promise.race([this.load()]);
-            // return this.ready;
-        }
-        if (this.isReady()) {
-            return Promise.resolve(true);
-        }
-        return Promise.race([this.waitPromise]);
-    }
 }
 
 export class TriggerComponent extends Component {
@@ -131,7 +104,7 @@ export class CatalogComponent extends Component {
 export class LocalizationComponent extends Component {
     lang = 'enUS';
     triggers = new loc.LocalizationTriggers();
-    strings = new Map<string,loc.LocalizationTextStore>();
+    strings = new Map<string, loc.LocalizationTextStore>();
 
     private async loadStrings(name: string) {
         const textStore = new loc.LocalizationTextStore();
@@ -179,7 +152,12 @@ export async function resolveArchiveDirectory(name: string, sources: string[]) {
     }
 }
 
-export async function resolveArchiveDependencyList(rootArchive: SC2Archive, sources: string[], overrides: Map<string,string> = null) {
+type ResolveDependencyOpts = {
+    overrides?: Map<string, string>;
+    fallbackResolve?: (name: string) => Promise<string | undefined>;
+};
+
+export async function resolveArchiveDependencyList(rootArchive: SC2Archive, sources: string[], opts: ResolveDependencyOpts = {}) {
     const list: ArchiveLink[] = [];
     const unresolvedNames: string[] = [];
 
@@ -193,12 +171,17 @@ export async function resolveArchiveDependencyList(rootArchive: SC2Archive, sour
             };
 
             let dir: string;
-            if (overrides && overrides.has(entry)) {
-                dir = overrides.get(entry);
+            if (opts.overrides && opts.overrides.has(entry)) {
+                dir = opts.overrides.get(entry);
             }
             else {
                 dir = await resolveArchiveDirectory(entry, sources);
             }
+
+            if (!dir && opts.fallbackResolve) {
+                dir = await opts.fallbackResolve(entry);
+            }
+
             if (dir) {
                 await resolveWorker(new SC2Archive(entry, dir));
                 link.src = dir;
@@ -220,7 +203,9 @@ export async function resolveArchiveDependencyList(rootArchive: SC2Archive, sour
 
 export async function openArchiveWorkspace(archive: SC2Archive, sources: string[], overrides: Map<string,string> = null, extra: Map<string,string> = null) {
     const dependencyArchives: SC2Archive[] = [];
-    const result = await resolveArchiveDependencyList(archive, sources, overrides);
+    const result = await resolveArchiveDependencyList(archive, sources, {
+        overrides,
+    });
 
     if (result.unresolvedNames.length > 0) {
         throw new Error(`couldn\'t resolve ${util.inspect(result.unresolvedNames)}\nSources: ${util.inspect(sources)}\nOverrides: ${util.inspect(overrides)}`);
@@ -244,17 +229,25 @@ export class SC2Archive {
     readonly directory: string;
     /** lower-cased `fsPath` */
     readonly lcFsPath: string;
+    priority: number = 0;
 
-    constructor(name: string, directory: string) {
+    constructor(name: string = null, directory: string) {
+        if (name === null) {
+            name = path.basename(directory);
+        }
         this.name = name.replace(/\\/g, '/').toLowerCase();
-        this.directory = path.resolve(directory);
+        this.directory = fs.realpathSync(path.resolve(directory));
         this.lcFsPath = this.directory.toLowerCase();
     }
 
     public async findFiles(pattern: string) {
-        const dirs = await findSC2File(this.directory, pattern);
-        return dirs.map((item) => {
-            return item.substr(fs.realpathSync(this.directory).length + 1);
+        return (await globify(pattern, {
+            nocase: true,
+            nodir: true,
+            cwd: this.directory,
+        })).filter(v => {
+            // filter out sc2maps inside campaign deps
+            return !v.match(/base[\d]*\.sc2maps/i);
         });
     }
 
@@ -279,6 +272,9 @@ export class SC2Archive {
         });
     }
 
+    /**
+     * returns lowercased and forward slash normalized list
+     */
     public async getDependencyList() {
         const list: string[] = [];
 
@@ -337,14 +333,14 @@ export class SC2Archive {
 }
 
 export enum S2ArchiveNsNameKind {
-    'base',
-    'enus',
+    base,
+    enus,
     // TODO: add missing localizations
 }
 
 export enum S2ArchiveNsTypeKind {
-    'sc2data',
-    'sc2assets',
+    sc2assets,
+    sc2data,
 }
 
 export interface S2FileNs {
@@ -356,7 +352,8 @@ export interface S2QualifiedFile {
     fsPath: string;
     relativePath: string;
     namespace?: S2FileNs;
-    archive: SC2Archive;
+    archive?: SC2Archive;
+    priority: number;
 }
 
 const reArchiveFileNs = /^(?:(?<nsName>[a-z]+)\.(?<nsType>(?:sc2data|sc2assets))(?:\/|\\))?(?<rp>.+)$/i;
@@ -368,6 +365,7 @@ export class SC2Workspace {
     trigComponent: TriggerComponent = new TriggerComponent(this);
     locComponent: LocalizationComponent = new LocalizationComponent(this);
     catalogComponent: CatalogComponent = new CatalogComponent(this);
+    readonly arvMap = new Map<string, SC2Archive>();
 
     constructor(rootArchive?: SC2Archive, dependencies: SC2Archive[] = []) {
         this.rootArchive = rootArchive;
@@ -376,14 +374,19 @@ export class SC2Workspace {
         if (rootArchive) {
             this.allArchives.push(rootArchive);
         }
+
+        this.allArchives.forEach((av, index) => {
+            this.arvMap.set(av.name, av);
+            av.priority = index * 20;
+        });
     }
 
     public async loadComponents() {
-        const p: Promise<boolean>[] = [];
-        p.push(this.trigComponent.load());
-        p.push(this.locComponent.load());
-        p.push(this.catalogComponent.load());
-        await Promise.all(p);
+        return await Promise.all([
+            this.trigComponent.load(),
+            this.locComponent.load(),
+            this.catalogComponent.load(),
+        ]);
     }
 
     public resolvePath(fsPath: string): S2QualifiedFile | undefined {
@@ -393,12 +396,20 @@ export class SC2Workspace {
             const m = fsPath.substr(cArchive.lcFsPath.length + 1).match(reArchiveFileNs);
             if (!m) return;
 
+            let priority = cArchive.priority;
             let ns: S2FileNs;
             if (m.groups['nsName']) {
                 ns = {
                     name: <any>m.groups['nsName'].toLowerCase(),
                     type: <any>m.groups['nsType'].toLowerCase(),
                 };
+                priority += S2ArchiveNsTypeKind[ns.type];
+                if (ns.name !== 'base') {
+                    priority += 5;
+                }
+            }
+            else {
+                priority += 10;
             }
 
             return {
@@ -406,6 +417,7 @@ export class SC2Workspace {
                 relativePath: m.groups['rp'].replace(/\\/g, '/'),
                 namespace: ns,
                 archive: cArchive,
+                priority: priority,
             };
         }
     }

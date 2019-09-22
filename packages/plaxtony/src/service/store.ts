@@ -8,11 +8,12 @@ import { findSC2ArchiveDirectories, isSC2Archive, SC2Archive, SC2Workspace, open
 import { Element } from '../sc2mod/trigger';
 import * as lsp from 'vscode-languageserver';
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as glob from 'glob';
 import Uri from 'vscode-uri';
 import { TypeChecker } from '../compiler/checker';
 import URI from 'vscode-uri';
+import { globify } from './utils';
 
 export function createTextDocument(uri: string, text: string): lsp.TextDocument {
     return <lsp.TextDocument>{
@@ -28,8 +29,35 @@ export function createTextDocumentFromFs(filepath: string): lsp.TextDocument {
     return createTextDocument(Uri.file(filepath).toString(), fs.readFileSync(filepath, 'utf8'));
 }
 
+export async function readDocumentFile(fsPath: string) {
+    return createTextDocument(
+        Uri.file(fsPath).toString(),
+        await fs.readFile(fsPath, 'utf8')
+    );
+}
+
 export function createTextDocumentFromUri(uri: string): lsp.TextDocument {
     return createTextDocument(uri, fs.readFileSync(Uri.parse(uri).fsPath, 'utf8'));
+}
+
+export async function *openSourceFilesInLocation(...srcFolders: string[]) {
+    const workspaceFolders = await Promise.all(srcFolders.map(async folder => {
+        return {
+            folder,
+            galaxyFiles: await globify('**/*.galaxy', {
+                cwd: folder,
+                absolute: true,
+                nocase: true,
+                nodir: true,
+            })
+        };
+    }));
+
+    for (const wsFolder of workspaceFolders) {
+        for (const wsFile of wsFolder.galaxyFiles) {
+            yield await readDocumentFile(wsFile);
+        }
+    }
 }
 
 export class IndexedDocument {
@@ -40,28 +68,14 @@ export class IndexedDocument {
 export interface S2WorkspaceChangeEvent {
     src: string;
     workspace: SC2Workspace;
-};
+}
 
 export class WorkspaceWatcher {
-    public workspacePath: string;
-    protected _onDidOpen: lsp.Emitter<lsp.TextDocumentChangeEvent>;
+    public readonly folders: string[];
+    protected _onDidOpen = new lsp.Emitter<lsp.TextDocumentChangeEvent>();
 
-    constructor(workspacePath: string) {
-        this.workspacePath = workspacePath;
-
-        this._onDidOpen = new lsp.Emitter<lsp.TextDocumentChangeEvent>();
-    }
-
-    protected watchFiles() {
-        // TODO: filewatch
-        const files = glob.sync(path.join(path.resolve(this.workspacePath), '**/*.galaxy'));
-        for (let filepath of files) {
-            this._onDidOpen.fire({document: createTextDocumentFromFs(filepath)})
-        }
-    }
-
-    public watch() {
-        this.watchFiles();
+    constructor(...folders: string[]) {
+        this.folders = folders;
     }
 
     public get onDidOpen(): lsp.Event<lsp.TextDocumentChangeEvent> {
@@ -83,60 +97,21 @@ export class S2WorkspaceWatcher extends WorkspaceWatcher {
         return this._onDidOpenS2Workspace.event;
     }
 
-    // public setSources(sources: string[]) {
-    //     this.modSources = sources;
-    // }
-
     public async watch() {
-        super.watch();
-        const rootArchive = new SC2Archive(path.basename(this.workspacePath), this.workspacePath);
+        const rootArchive = new SC2Archive(path.basename(this.folders[0]), this.folders[0]);
         const workspace = await openArchiveWorkspace(rootArchive, this.modSources);
 
         for (const modArchive of workspace.dependencies) {
             for (const extSrc of await modArchive.findFiles('**/*.galaxy')) {
-                this._onDidOpen.fire({document: createTextDocumentFromFs(path.join(modArchive.directory, extSrc))})
+                this._onDidOpen.fire({document: createTextDocumentFromFs(path.join(modArchive.directory, extSrc))});
             }
         }
 
         this._onDidOpenS2Workspace.fire({
-            src: this.workspacePath,
+            src: this.folders[0],
             workspace: workspace,
         });
     }
-}
-
-// export async function resolveWorkspaces(dir: string, modSources: string[]) {
-//     const watchers: WorkspaceWatcher[] = [];
-//     dir = path.resolve(dir);
-//     const archives = await findSC2ArchiveDirectories(dir);
-//     if (archives.length) {
-//         for (const archive of archives) {
-//             watchers.push(new S2WorkspaceWatcher(archive, modSources));
-//         }
-//     }
-//     else {
-//         watchers.push(new WorkspaceWatcher(dir))
-//     }
-//     return watchers;
-// }
-
-export async function findWorkspaceArchive(rootPath: string) {
-    if (isSC2Archive(rootPath)) {
-        return rootPath;
-    }
-    const archives = await findSC2ArchiveDirectories(rootPath);
-    if (archives.length > 0) {
-        const map = archives.find((dir) => {
-            return path.extname(dir).toLowerCase() === '.sc2map';
-        });
-        if (map) {
-            return map;
-        }
-        else {
-            return archives[0];
-        }
-    }
-    return null;
 }
 
 export interface SourceFileMeta {
@@ -159,22 +134,34 @@ export interface QualifiedSourceFile extends SourceFile {
 }
 
 export class Store implements IStoreSymbols {
-    private parser = new Parser();
+    protected parser: Parser;
     public rootPath?: string;
     public documents = new Map<string, QualifiedSourceFile>();
     public readonly qualifiedDocuments = new Map<string, Map<string, QualifiedSourceFile>>();
-    public openDocuments = new Map<string, boolean>();
+    public openDocuments = new Set<string>();
     public s2workspace: SC2Workspace;
     public s2metadata: S2WorkspaceMetadata;
-    // protected watchers = new Map<string, WorkspaceWatcher>();
+
+    public constructor(opts: { parser?: Parser } = {}) {
+        this.parser = opts.parser ? opts.parser : new Parser();
+    }
+
+    public clear() {
+        for (const key of this.documents.keys()) {
+            if (this.openDocuments.has(key)) continue;
+            this.removeDocument(key);
+        }
+        this.s2workspace = void 0;
+        this.s2metadata = void 0;
+    }
 
     protected removeQualifiedDocument(qsFile: QualifiedSourceFile) {
         const qDocMap = this.qualifiedDocuments.get(qsFile.s2meta.docName.toLowerCase());
         if (qDocMap) {
             qDocMap.delete(qsFile.fileName);
-        }
-        if (!qDocMap.size) {
-            this.qualifiedDocuments.delete(qsFile.s2meta.docName.toLowerCase());
+            if (!qDocMap.size) {
+                this.qualifiedDocuments.delete(qsFile.s2meta.docName.toLowerCase());
+            }
         }
     }
 
@@ -183,9 +170,22 @@ export class Store implements IStoreSymbols {
             this.removeQualifiedDocument(qsFile);
         }
 
-        if (!this.s2workspace) return;
+        const fsPath = URI.parse(qsFile.fileName).fsPath;
+        let s2file: S2QualifiedFile;
+        if (this.s2workspace) {
+            s2file = this.s2workspace.resolvePath(fsPath);
+        }
+        else if (this.rootPath) {
+            const commonBase = fsPath.toLowerCase().startsWith(this.rootPath.toLowerCase() + path.sep);
+            if (commonBase) {
+                s2file = {
+                    fsPath: fsPath,
+                    relativePath: fsPath.substr(this.rootPath.length + 1).toLowerCase(),
+                    priority: 0,
+                };
+            }
+        }
 
-        const s2file = this.s2workspace.resolvePath(URI.parse(qsFile.fileName).fsPath);
         if (s2file) {
             qsFile.s2meta = {
                 file: s2file,
@@ -197,6 +197,15 @@ export class Store implements IStoreSymbols {
                 qDocMap = new Map();
                 this.qualifiedDocuments.set(qsFile.s2meta.docName.toLowerCase(), qDocMap);
             }
+
+            if (qDocMap.size > 1) {
+                const tmpDocs = Array.from(qDocMap).sort((a, b) => a[1].s2meta.file.priority - b[1].s2meta.file.priority);
+                qDocMap.clear();
+                for (const [k, v] of tmpDocs) {
+                    qDocMap.set(k, v);
+                }
+            }
+
             qDocMap.set(qsFile.fileName, qsFile);
         }
         else {
@@ -237,10 +246,8 @@ export class Store implements IStoreSymbols {
         }
     }
 
-    public async updateS2Workspace(workspace: SC2Workspace, lang: string) {
+    public async updateS2Workspace(workspace: SC2Workspace) {
         this.s2workspace = workspace;
-        this.s2metadata = new S2WorkspaceMetadata(this.s2workspace);
-        await this.s2metadata.build(lang);
 
         this.qualifiedDocuments.clear();
         for (const qsFile of this.documents.values()) {
@@ -248,44 +255,20 @@ export class Store implements IStoreSymbols {
         }
     }
 
-    /** @deprecated use `qualifiedDocuments` */
-    public getDocumentMeta(documentUri: string) {
-        let documentPath = URI.parse(documentUri).fsPath;
-        let meta: SourceFileMeta = {
-            absoluteName: documentPath,
-        };
-
-        const isWin = process.platform === 'win32';
-        if (isWin) {
-            documentPath = documentPath.toLowerCase();
-        }
-
-        if (this.rootPath && (!this.s2workspace || !this.s2workspace.rootArchive) && documentPath.startsWith((isWin ? this.rootPath.toLowerCase() : this.rootPath) + path.sep)) {
-            meta.relativeName = documentPath.substr(this.rootPath.length + 1);
-        }
-        else if (this.s2workspace) {
-            for (const archive of this.s2workspace.allArchives) {
-                if (documentPath.startsWith((isWin ? archive.directory.toLowerCase() : archive.directory) + path.sep)) {
-                    meta.relativeName = documentPath.substr(archive.directory.length + 1);
-                    meta.relativeName = meta.relativeName.replace(/^base\.sc2data[\/\\]/i, '');
-                    meta.archive = archive;
-                    break;
-                }
-            }
-        }
-
-        if (meta.relativeName) {
-            meta.relativeName = meta.relativeName.replace(/\.galaxy$/i, '');
-            if (isWin) {
-                meta.relativeName = meta.relativeName.replace(/\\/g, '/');
-            }
-        }
-
-        return meta;
+    public async rebuildS2Metadata(lang: string) {
+        this.s2metadata = new S2WorkspaceMetadata(this.s2workspace);
+        await this.s2metadata.build(lang);
     }
 
     public isUriInWorkspace(documentUri: string) {
-        return typeof this.getDocumentMeta(documentUri).relativeName !== 'undefined';
+        const qsFile = this.documents.get(documentUri);
+        if (qsFile && qsFile.s2meta) return true;
+
+        const fsPath = URI.parse(documentUri).fsPath;
+        const s2file = this.s2workspace.resolvePath(fsPath);
+        if (s2file) return true;
+
+        return false;
     }
 
     public resolveGlobalSymbol(name: string): gt.Symbol | undefined {

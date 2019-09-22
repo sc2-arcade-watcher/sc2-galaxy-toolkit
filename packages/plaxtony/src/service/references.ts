@@ -61,7 +61,7 @@ export class ReferencesProvider extends AbstractProvider {
         for (const sourceFile of this.store.documents.values()) {
             if (
                 (this.config.currentWorkspaceOnly || currentWorkspaceOnly === true) &&
-                (!this.store.rootPath || !URI.parse(sourceFile.fileName).fsPath.startsWith(this.store.rootPath)) &&
+                !this.store.isUriInWorkspace(sourceFile.fileName) &&
                 !this.store.openDocuments.has(sourceFile.fileName)
             ) {
                 continue;
