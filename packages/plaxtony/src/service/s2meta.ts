@@ -167,6 +167,28 @@ export class S2WorkspaceMetadata {
         return names;
     }
 
+    public getParameterTypeDoc(el: trig.ParameterType) {
+        let typeName: string;
+        let type: string;
+        if (el.type === 'gamelink') {
+            type = `${el.type}<${(el.gameType || 'any')}>`;
+        }
+        else if (el.type === 'preset') {
+            typeName = this.workspace.locComponent.triggers.elementName('Name', el.typeElement.resolve());
+            type = `Preset<${this.getElementSymbolName(el.typeElement.resolve())}>`;
+        }
+        else {
+            type = el.type;
+        }
+        return { typeName, type};
+    }
+
+    public getParamDoc(el: trig.ParamDef) {
+        const name = this.workspace.locComponent.triggers.elementName('Name', el);
+        const type = this.getParameterTypeDoc(el.type).type;
+        return { name, type };
+    }
+
     public getElementDoc(el: trig.Element, extended: boolean) {
         let name = '**' + this.workspace.locComponent.triggers.elementName('Name', el) + '**';
 

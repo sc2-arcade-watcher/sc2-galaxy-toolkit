@@ -57,14 +57,16 @@ export class ParameterType {
     gameType?: string; // when type == gamelink; e.g. Model; (may be omitted - "any")
     typeElement?: ElementReference<Preset>; // when type == preset;
 
-    public galaxyType() {
+    get galaxyType(): string {
         switch (this.type) {
+            case 'anygamelink':
             case 'gamelink':
             case 'convline':
             case 'filepath':
             case 'gameoption':
             case 'gameoptionvalue':
             case 'modelanim':
+            case 'actormsg':
                 return 'string';
 
             case 'control':

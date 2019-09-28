@@ -1,48 +1,27 @@
-import * as fs from 'fs';
 import * as path from 'path';
-import * as glob from 'glob';
 import { Store, createTextDocumentFromFs } from '../service/store';
 import * as trig from '../sc2mod/trigger';
-import * as loc from '../sc2mod/localization';
+import { openArchiveWorkspace, SC2Archive } from '../sc2mod/archive';
+import { logger } from '../common';
+import { isKeywordTypeKind } from '../compiler/utils';
+import { stringToToken } from '../compiler/scanner';
 
 (async function () {
     const store = new Store();
-    const tstore = new trig.TriggerStore();
-    const treader = new trig.XMLReader(tstore);
-    const locStrings = new loc.LocalizationTriggers();
-    const ntveLib = await treader.loadLibrary(fs.readFileSync(`${process.argv[2]}/base.sc2data/TriggerLibs/NativeLib.TriggerLib`, 'utf8'));
-    const ntveStrings = new loc.LocalizationFile();
-    ntveStrings.readFromFile(`${process.argv[2]}/enus.sc2data/LocalizedData/TriggerStrings.txt`);
-    locStrings.merge(ntveStrings);
+    const rootArchive = new SC2Archive('mods/core.sc2mod', path.join(process.argv[2], 'mods/core.sc2mod'));
 
-    function trigTypeToGalaxy(type: trig.ParameterType): string {
-        switch (type.type) {
-            case 'gamelink':
-            case 'convline':
-            case 'filepath':
-            case 'gameoption':
-            case 'gameoptionvalue':
-            case 'modelanim':
-                return 'string';
-
-            case 'control':
-            case 'transmission':
-            case 'portrait':
-                return 'int';
-
-            case 'preset':
-                return type.typeElement.resolve().baseType;
-
-            default:
-                return type.type;
-        }
+    for (const filepath of await rootArchive.findFiles('**/*.galaxy')) {
+        if (filepath.match(/natives_missing\.galaxy$/)) continue;
+        logger.verbose(` :: ${filepath}`);
+        store.updateDocument(createTextDocumentFromFs(path.join(rootArchive.directory, filepath)));
     }
 
-    for (let filepath of glob.sync(path.join(path.resolve(process.argv[2]), 'base.sc2data', 'TriggerLibs', '**/*.galaxy'))) {
-        store.updateDocument(createTextDocumentFromFs(filepath));
-    }
+    const s2work = await openArchiveWorkspace(rootArchive, [process.argv[2]]);
+    await store.updateS2Workspace(s2work);
+    await store.rebuildS2Metadata({ loadLevel: 'Core', localization: 'enUS' });
+    const ntveLib = s2work.trigComponent.getStore().getLibraries().get('Ntve');
+    const locStrings = s2work.locComponent.triggers;
 
-    const ntveElements: trig.FunctionDef[] = [];
     for (const curEl of ntveLib.getElements().values()) {
         if (!(curEl.flags & trig.ElementFlag.Native)) continue;
         if (!(curEl instanceof trig.FunctionDef)) continue;
@@ -50,20 +29,35 @@ import * as loc from '../sc2mod/localization';
         if (store.resolveGlobalSymbol(name)) continue;
 
         let out: string[] = [];
-        out.push('native ');
-        out.push(curEl.returnType ? trigTypeToGalaxy(curEl.returnType) : 'void');
-        out.push(' ');
-        out.push(name)
-        out.push('(');
-        for (const [key, param] of curEl.getParameters().entries()) {
-            out.push(trigTypeToGalaxy(param.type));
-            out.push(' lp_');
-            out.push(param.name);
-            if (key < curEl.parameters.length - 1) {
-                out.push(', ');
+        out.push(`/// # ${locStrings.elementName('Name', curEl)}\n`);
+        if (locStrings.elementName('Hint', curEl)) {
+            out.push(`///\n/// ${locStrings.elementName('Hint', curEl).replace(/  /g, '\n/// ')}\n`);
+        }
+
+        if (curEl.returnType && curEl.returnType.type !== curEl.returnType.galaxyType) {
+            out.push(`///\n/// # Returns \`${store.s2metadata.getParameterTypeDoc(curEl.returnType).type}\`\n`);
+            if (curEl.returnType.type === 'preset') {
+                const pValues = store.s2metadata.getConstantNamesOfPreset(curEl.returnType.typeElement.resolve());
             }
         }
-        out.push(');');
+
+        const rType = curEl.returnType ? curEl.returnType.galaxyType : 'void';
+        out.push(`native ${rType} ${name}(`);
+        for (const [key, param] of curEl.getParameters().entries()) {
+            const paramDoc = store.s2metadata.getParamDoc(param);
+            let paramName = param.name;
+            if (isKeywordTypeKind(stringToToken(param.name))) {
+                paramName = `in${paramName.charAt(0).toUpperCase()}${paramName.slice(1)}`;
+            }
+
+            out.push('\n');
+            out.push(`    ${param.type.galaxyType} ${paramName}${(key < curEl.parameters.length - 1 ? ',' : '')}`.padEnd(35));
+            out.push(` /// * ${paramDoc.name}`.padEnd(25) + ` :: ${paramDoc.type}`);
+            if (key >= curEl.parameters.length - 1) {
+                out.push('\n');
+            }
+        }
+        out.push(');\n');
         console.log(out.join(''));
     }
 })();
