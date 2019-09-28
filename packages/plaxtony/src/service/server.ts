@@ -244,14 +244,20 @@ export class Server {
 
         let projFolders = await this.connection.workspace.getWorkspaceFolders();
         if (!projFolders) projFolders = [];
+        const archivePathToWsFolder = new Map<string, lsp.WorkspaceFolder>();
 
         // attempt to determine active document (archivePath) for non-empty project workspace
         if (projFolders.length) {
             const s2archives: string[] = [];
             (await Promise.all(
-                projFolders.map(v => findSC2ArchiveDirectories(URI.parse(v.uri).fsPath)))
-            ).forEach(resultFolder => {
-                s2archives.push(...resultFolder);
+                projFolders.map(async wsFolder => {
+                    return { wsFolder, foundArchivePaths: (await findSC2ArchiveDirectories(URI.parse(wsFolder.uri).fsPath)) };
+                }))
+            ).forEach(result => {
+                for (const currArchivePath of result.foundArchivePaths) {
+                    archivePathToWsFolder.set(currArchivePath, result.wsFolder);
+                }
+                s2archives.push(...result.foundArchivePaths);
             });
             logger.info('s2archives in workspace', ...s2archives);
 
@@ -312,7 +318,10 @@ export class Server {
         // setup s2workspace
         let wsArchive: SC2Archive;
         if (archivePath) {
-            wsArchive = new SC2Archive(path.basename(archivePath), archivePath);
+            const matchingWsFolder = archivePathToWsFolder.get(archivePath);
+            const name = matchingWsFolder ? path.relative(URI.parse(matchingWsFolder.uri).fsPath, archivePath) : path.basename(archivePath);
+            wsArchive = new SC2Archive(name, archivePath);
+            logger.info(`wsArchive`, wsArchive.name, wsArchive.directory, matchingWsFolder);
         }
 
         this.connection.sendNotification('indexProgress', `Resolving dependencies..`);
