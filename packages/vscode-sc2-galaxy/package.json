@@ -24,49 +24,91 @@
 	"activationEvents": [
 		"onLanguage:galaxy"
 	],
-	"main": "./out/src/extension",
+	"main": "./out/extension",
 	"icon": "icon.png",
 	"contributes": {
 		"configuration": {
 			"type": "object",
 			"title": "sc2galaxy",
 			"properties": {
-				"sc2galaxy.logLevel": {
+				"sc2galaxy.trace.server": {
 					"scope": "window",
 					"type": "string",
 					"enum": [
-						"info",
+						"off",
+						"messages",
 						"verbose"
 					],
+					"default": "messages",
+					"markdownDescription": "Logging verbosity of communication between language server."
+				},
+				"sc2galaxy.trace.service": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"error",
+						"warn",
+						"info",
+						"verbose",
+						"debug"
+					],
 					"default": "info",
-					"description": "Logging verbosity of Plaxtony language server."
+					"markdownDescription": "Logging verbosity of intellisense service."
+				},
+				"sc2galaxy.dataPath": {
+					"scope": "window",
+					"type": "string",
+					"default": null,
+					"markdownDescription": "Custom path to SC2 data repository with builtin mods, such as local copy of [SC2GameData](https://github.com/SC2Mapster/SC2GameData)."
+				},
+				"sc2galaxy.fallbackDependency": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"mods/core.sc2mod",
+						"mods/liberty.sc2mod",
+						"mods/swarm.sc2mod",
+						"mods/void.sc2mod",
+						"mods/libertymulti.sc2mod",
+						"mods/swarmmulti.sc2mod",
+						"mods/voidmulti.sc2mod",
+						"mods/balancemulti.sc2mod",
+						"mods/starcoop/starcoop.sc2mod",
+						"campaigns/liberty.sc2campaign",
+						"campaigns/swarm.sc2campaign",
+						"campaigns/void.sc2campaign",
+						"campaigns/libertystory.sc2campaign",
+						"campaigns/swarmstory.sc2campaign",
+						"campaigns/voidstory.sc2campaign"
+					],
+					"default": "mods/liberty.sc2mod",
+					"markdownDescription": "Fallback mod to use whenever dependency chain cannot be determined automatically from project's workspace."
 				},
 				"sc2galaxy.archivePath": {
 					"scope": "window",
 					"type": "string",
 					"default": null,
-					"description": "Path (relative or absolute) to the SC2Map|SC2Mod within workspace, which should be used as a base for indexing. Useful if we have multiple within same workspace, and want to explictly choose one."
+					"markdownDescription": "Path (relative or absolute) to an active document (SC2Map/SC2Mod) within the workspace. Active document will dictate what other dependencies and resources will be loaded. This field is optional for non-complex workspaces, such as the ones with a single `.sc2map` in it."
 				},
-				"sc2galaxy.s2mod.sources": {
+				"sc2galaxy.metadata.loadLevel": {
 					"scope": "window",
-					"type": "array",
-					"items": {
-						"type": "string"
-					},
-					"default": [],
-					"description": "List of directories providing SC2Mod dependencies. List will be resolved in the given order."
+					"type": "string",
+					"enum": [
+						"None",
+						"Core",
+						"Builtin",
+						"Default"
+					],
+					"enumDescriptions": [
+						"Do not load any metadata.",
+						"Load limit to native library and other data from `core.sc2mod`.",
+						"Load limit to builtin dependencies of an active docoument.",
+						"Load limit to all dependencies of an active document."
+					],
+					"default": "Default",
+					"markdownDescription": "Include trigger component during indexing"
 				},
-				"sc2galaxy.s2mod.overrides": {
-					"scope": "window",
-					"type": "object",
-					"description": "Local overrides of SC2Mod archives"
-				},
-				"sc2galaxy.s2mod.extra": {
-					"scope": "window",
-					"type": "object",
-					"description": "List of extra mod dependencies to index."
-				},
-				"sc2galaxy.localization": {
+				"sc2galaxy.metadata.localization": {
 					"scope": "window",
 					"type": "string",
 					"enum": [
@@ -84,24 +126,46 @@
 						"itIT"
 					],
 					"default": "enUS",
-					"description": "Localization file to use when providing documentation."
+					"markdownDescription": "Localization to use for documentation. **Only `enUS` files are bundled with the extension.** In order to use different localization, you need to extract necessary game files to a custom directory, configured in `sc2galaxy.dataPath`."
+				},
+				"sc2galaxy.s2mod.sources": {
+					"scope": "window",
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"markdownDescription": "Directories containing SC2Mod dependencies. List will be resolved in the given order. It is advised to provide path to SC2 installation directory. **Note**: do not include `mods` folder within the path, because it's already included within name of a dependency."
+				},
+				"sc2galaxy.s2mod.overrides": {
+					"scope": "window",
+					"type": "object",
+					"markdownDescription": "Local overrides of SC2Mod archives. `{\"mods/my-mod.sc2mod\": \"absolute or workspace relative path\"}`."
+				},
+				"sc2galaxy.s2mod.extra": {
+					"scope": "window",
+					"type": "object",
+					"markdownDescription": "Extra dependencies which should be indexed. `{\"mods/my-mod.sc2mod\": \"absolute or workspace relative path\"}`."
 				},
 				"sc2galaxy.documentUpdateDelay": {
 					"scope": "window",
 					"type": "number",
 					"default": 100,
 					"minimum": 1,
-					"description": "Wait time before reindexing changed dirty files"
+					"markdownDescription": "Minimum idle time (ms) required before reindexing dirty files."
 				},
 				"sc2galaxy.documentDiagnosticsDelay": {
 					"scope": "window",
-					"type": "number",
-					"default": 300,
-					"minimum": 1,
-					"description": "Wait time before providing diagnostics for dirty files (value from *documentUpdateDelay* is contributed)"
+					"type": [
+						"number",
+						"boolean"
+					],
+					"default": 400,
+					"minimum": 0,
+					"markdownDescription": "Minimum idle time (ms) required before providing code diagnostics for dirty files (value from `documentUpdateDelay` is contributed). Use `false` to disable - in which case diagnostics will be provided only on save."
 				},
 				"sc2galaxy.completion.functionExpand": {
-					"scope": "window",
+					"scope": "resource",
 					"type": "string",
 					"enum": [
 						"None",
@@ -109,14 +173,20 @@
 						"ArgumentsNull",
 						"ArgumentsDefault"
 					],
+					"enumDescriptions": [
+						"Feature disabled.",
+						"Expand to `func()`.",
+						"Expand and placehold all parameters using `null` like values (`0`, `false` etc.), applicable to a given type of parameter.",
+						"Expand and placehold all parameters using default values from trigger libraries metadata (i.e. `UnitCreate(0, null, c_unitCreateConstruct, 1, null, 270.0)`). If function isn't part of any trigger library, the behavior will fallback to `ArgumentsNull`."
+					],
 					"default": "None",
-					"description": "[Completion] Function expansion behavior"
+					"markdownDescription": "[Completion] Describes the behavior of expanding a function when suggestion from code completions is accepted."
 				},
 				"sc2galaxy.references.currentWorkspaceOnly": {
 					"scope": "window",
 					"type": "boolean",
 					"default": false,
-					"description": "[References] Search files only from current workspace"
+					"markdownDescription": "[References] Search only within files from current workspace."
 				}
 			}
 		},
@@ -162,7 +232,7 @@
 	},
 	"dependencies": {
 		"path": "^0.12.7",
-		"plaxtony": "^1.9.0",
+		"plaxtony": "1.10.0",
 		"vscode-languageclient": "^5.2.1"
 	},
 	"devDependencies": {

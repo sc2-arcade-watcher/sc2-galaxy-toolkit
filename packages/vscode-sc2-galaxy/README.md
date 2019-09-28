@@ -19,10 +19,10 @@ Rich set of utilities providing IDE like capabilities for StarCraft 2 Galaxy Scr
 
 *Notice: Actual indexing logic is provided by [plaxtony](https://github.com/Talv/plaxtony) library. This extension is merely a wrapper.*
 
-## Documentation
+## Useful links
 
-1. [Extension configuration](docs/CONFIGURATION.md)
 1. [SC2 Editor workflow tips](docs/SC2_EDITOR.md)
+1. [Getting Started with SC2 development](https://sc2mapster.github.io/mkdocs/setup/)
 
 ## Planned features
 

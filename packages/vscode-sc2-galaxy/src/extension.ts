@@ -27,16 +27,20 @@ function createProgressNotification() {
 }
 
 export function activate(context: ExtensionContext) {
-    let serverModule = context.asAbsolutePath(path.join('node_modules', 'plaxtony', 'lib', 'src', 'service', 'lsp-run.js'));
-    let debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
+    const serverModule = context.asAbsolutePath(path.join('node_modules', 'plaxtony', 'lib', 'src', 'service', 'lsp-run.js'));
 
-    let serverOptions: ServerOptions = {
-        run : { module: serverModule, transport: TransportKind.ipc },
-        debug: { module: serverModule, transport: TransportKind.ipc, options: debugOptions }
+    const envSvc = Object.assign({}, process.env);
+    envSvc.PLAXTONY_LOG_LEVEL = workspace.getConfiguration('sc2galaxy.trace').get('service');
+
+    const serverOptions: ServerOptions = {
+        run : { module: serverModule, transport: TransportKind.ipc, options: {
+            env: envSvc,
+        }},
+        debug: { module: serverModule, transport: TransportKind.ipc, options: {
+            execArgv: ['--nolazy', '--inspect=6009'],
+            env: Object.assign(envSvc, { PLAXTONY_DEBUG: 1 }),
+        }}
     };
-
-    let modSources = [context.asAbsolutePath(path.join('sc2-data-trigger'))];
-    modSources = modSources.concat(workspace.getConfiguration().get('sc2galaxy.s2mod.sources'));
 
     const clientOptions: LanguageClientOptions = {
         documentSelector: [{scheme: 'file', language: 'galaxy'}],
@@ -45,11 +49,11 @@ export function activate(context: ExtensionContext) {
             fileEvents: workspace.createFileSystemWatcher('**/*.galaxy')
         },
         initializationOptions: {
-            sources: modSources
+            defaultDataPath: context.asAbsolutePath('sc2-data-trigger'),
         }
     };
 
-    const client = new LanguageClient('plaxtony', 'Plaxtony Language Server', serverOptions, clientOptions);
+    const client = new LanguageClient('sc2galaxy', 'SC2Galaxy', serverOptions, clientOptions);
     let disposable = client.start();
 
     let indexingProgress: ProgressProxy;
@@ -71,7 +75,7 @@ export function activate(context: ExtensionContext) {
 
     context.subscriptions.push(commands.registerTextEditorCommand('s2galaxy.verifyScript', async (textEditor, edit) => {
         const r = await client.sendRequest('document/checkRecursively', {uri: textEditor.document.uri.toString()});
-        window.setStatusBarMessage(r === true ? `[[ ✓ ]] SUCCESS!` : `[[ x ]] FAILED!`, 1500);
+        window.setStatusBarMessage(r === true ? `[[ ✓ ]] SUCCESS!` : `[[ x ]] FAILED!`, 2500);
     }));
 
     context.subscriptions.push(disposable);
