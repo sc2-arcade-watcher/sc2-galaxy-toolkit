@@ -6,6 +6,8 @@ import * as cat from '../sc2mod/datacatalog';
 import { SC2Workspace } from '../sc2mod/archive';
 import * as lsp from 'vscode-languageserver';
 import { getLineAndCharacterOfPosition } from './utils';
+import { logIt, logger } from '../common';
+import { MetadataConfig } from './server';
 
 const elementNotValidCharsRE = /[^a-zA-Z0-9_]+/g;
 const elementValidCharsRE = /[a-zA-Z]+/g;
@@ -13,7 +15,6 @@ const quationMarkRE = /"/g;
 const tildeRE = /~/g;
 
 export class S2WorkspaceMetadata {
-    protected workspace: SC2Workspace;
     protected symbolMap: Map<string, trig.Element> = new Map();
     protected presetValueParentMap: Map<string, trig.Preset> = new Map();
 
@@ -97,8 +98,34 @@ export class S2WorkspaceMetadata {
         }
     }
 
-    public async build(lang: string) {
-        this.workspace.locComponent.lang = lang;
+    @logIt()
+    public async build() {
+        this.workspace.locComponent.lang = this.metadataCfg.localization;
+        this.workspace.metadataArchives = this.workspace.allArchives.filter(item => {
+            switch (this.metadataCfg.loadLevel) {
+                case 'Default':
+                {
+                    return true;
+                }
+
+                case 'Builtin':
+                {
+                    return item.isBuiltin;
+                }
+
+                case 'Core':
+                {
+                    return item.name === 'mods/core.sc2mod';
+                }
+
+                case 'None':
+                default:
+                {
+                    return false;
+                }
+            }
+        });
+        logger.info('metadata archives', ...this.workspace.metadataArchives.map(item => item.name));
         await this.workspace.loadComponents();
 
         for (const lib of this.workspace.trigComponent.getStore().getLibraries().values()) {
@@ -107,8 +134,7 @@ export class S2WorkspaceMetadata {
         this.mapContainer(this.workspace.trigComponent.getStore());
     }
 
-    constructor(workspace: SC2Workspace) {
-        this.workspace = workspace;
+    constructor(protected workspace: SC2Workspace, protected metadataCfg: MetadataConfig) {
     }
 
     public findElementByName(name: string) {

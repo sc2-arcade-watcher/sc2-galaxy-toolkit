@@ -14,6 +14,7 @@ import Uri from 'vscode-uri';
 import { TypeChecker } from '../compiler/checker';
 import URI from 'vscode-uri';
 import { globify } from './utils';
+import { MetadataConfig } from './server';
 
 export function createTextDocument(uri: string, text: string): lsp.TextDocument {
     return <lsp.TextDocument>{
@@ -255,9 +256,12 @@ export class Store implements IStoreSymbols {
         }
     }
 
-    public async rebuildS2Metadata(lang: string) {
-        this.s2metadata = new S2WorkspaceMetadata(this.s2workspace);
-        await this.s2metadata.build(lang);
+    public async rebuildS2Metadata(metadataCfg: MetadataConfig = {
+        loadLevel: 'Default',
+        localization: 'enUS',
+    }) {
+        this.s2metadata = new S2WorkspaceMetadata(this.s2workspace, metadataCfg);
+        await this.s2metadata.build();
     }
 
     public isUriInWorkspace(documentUri: string) {

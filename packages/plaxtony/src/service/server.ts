@@ -6,7 +6,7 @@ import * as fs from 'fs-extra';
 import { findAncestor } from '../compiler/utils';
 import { Store, createTextDocumentFromFs, createTextDocumentFromUri } from './store';
 import { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition, getNodeRange } from './utils';
-import { AbstractProvider, LoggerConsole, createProvider } from './provider';
+import { AbstractProvider, createProvider } from './provider';
 import { DiagnosticsProvider } from './diagnostics';
 import { NavigationProvider } from './navigation';
 import { CompletionsProvider, CompletionConfig, CompletionFunctionExpand } from './completions';
@@ -15,9 +15,10 @@ import { DefinitionProvider } from './definitions';
 import { HoverProvider } from './hover';
 import { ReferencesProvider, ReferencesConfig } from './references';
 import { RenameProvider } from './rename';
-import { SC2Archive, SC2Workspace, resolveArchiveDirectory, openArchiveWorkspace, isSC2Archive, resolveArchiveDependencyList, findSC2ArchiveDirectories } from '../sc2mod/archive';
+import { SC2Archive, SC2Workspace, resolveArchiveDirectory, resolveArchiveDependencyList, findSC2ArchiveDirectories } from '../sc2mod/archive';
 import { setTimeout, clearTimeout } from 'timers';
 import URI from 'vscode-uri';
+import { logIt, logger } from '../common';
 
 function translateNodeKind(node: Types.Node): lsp.SymbolKind {
     switch (node.kind) {
@@ -57,51 +58,6 @@ function translateDeclaratons(origDeclarations: Types.NamedDeclaration[]): lsp.S
     return symbols;
 }
 
-var formatElapsed = function(start: [number, number], end: [number, number]): string {
-    const diff = process.hrtime(start);
-    var elapsed = diff[1] / 1000000; // divide by a million to get nano to milli
-    let out = '';
-    if (diff[0] > 0) {
-        out += diff[0] + "s ";
-    }
-    out += elapsed.toFixed(3) + "ms";
-    return out;
-}
-
-let reqDepth = 0;
-function wrapRequest(showArg = false, argFormatter?: (payload: any) => any, msg?: string) {
-    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-        const method = (<Function>descriptor.value);
-        descriptor.value = async function(...args: any[]) {
-            const server = <Server>this;
-            server.connection.console.info('>'.repeat(++reqDepth) + ' ' + (msg ? msg : propertyKey));
-            if (showArg) {
-                server.connection.console.log(util.inspect(args[0], true, 1, false));
-            }
-            else if (argFormatter) {
-                server.connection.console.log(util.inspect(argFormatter(args[0])));
-            }
-
-            var start = process.hrtime();
-            let ret;
-            try {
-                ret = method.bind(this)(...arguments);
-                if (ret instanceof Promise) {
-                    ret = await ret;
-                }
-            }
-            catch (e) {
-                ret = null;
-                server.connection.console.error('[' + (<Error>e).name + '] ' + (<Error>e).message + '\n' + (<Error>e).stack);
-            }
-
-            server.connection.console.info('='.repeat(reqDepth--) + ' ' + `${formatElapsed(start, process.hrtime())}`);
-
-            return ret;
-        }
-    }
-}
-
 function mapFromObject(stuff: any) {
     const m = new Map<string,string>();
     Object.keys(stuff).forEach((key) => {
@@ -116,14 +72,30 @@ const fileChangeTypeNames: { [key: number]: string } = {
     [lsp.FileChangeType.Deleted]: 'Deleted',
 };
 
+export enum MetadataLoadLevel {
+    None = 'None',
+    Core = 'Core',
+    Builtin = 'Builtin',
+    Default = 'Default',
+}
+
+export interface MetadataConfig {
+    loadLevel: keyof typeof MetadataLoadLevel;
+    localization: string;
+}
+
 interface PlaxtonyConfig {
     logLevel: string;
-    localization: string;
     documentUpdateDelay: number;
-    documentDiagnosticsDelay: number;
+    documentDiagnosticsDelay: number | false;
     archivePath: string;
     dataPath: string;
     fallbackDependency: string;
+    trace: {
+        server: string;
+        service: string;
+    };
+    metadata: MetadataConfig;
     s2mod: {
         sources: string[];
         overrides: {};
@@ -168,7 +140,7 @@ export class Server {
     private documentUpdateRequests = new Map<string, DocumentUpdateRequest>();
 
     private createProvider<T extends AbstractProvider>(cls: new () => T): T {
-        return createProvider(cls, this.store, this.connection.console);
+        return createProvider(cls, this.store);
     }
 
     public createConnection(connection?: lsp.IConnection): lsp.IConnection {
@@ -222,21 +194,14 @@ export class Server {
         }
     }
 
-    public reportMemoryUsage() {
-        const used = process.memoryUsage();
-        for (const key in used) {
-            this.log(`${key} ${Math.round((<any>used)[key] / 1024 / 1024 * 100) / 100} MB`);
-        }
-    }
-
     public showErrorMessage(msg: string) {
-        this.log(`[ERROR MSG]\n${msg}`);
+        logger.error(`${msg}`);
         this.connection.window.showErrorMessage(msg);
     }
 
     private async flushDocument(documentUri: string, isDirty = true) {
         if (!this.ready) {
-            this.log('Busy indexing..');
+            logger.info('Busy indexing..', { documentUri });
             return false;
         }
         const req = this.documentUpdateRequests.get(documentUri);
@@ -267,7 +232,7 @@ export class Server {
         await this.reindex();
     }
 
-    @wrapRequest()
+    @logIt()
     private async reindex() {
         let archivePath: string;
         let workspace: SC2Workspace;
@@ -288,7 +253,7 @@ export class Server {
             ).forEach(resultFolder => {
                 s2archives.push(...resultFolder);
             });
-            this.log('s2archives in the workspace', s2archives);
+            logger.info('s2archives in workspace', ...s2archives);
 
             if (this.config.archivePath) {
                 if (path.isAbsolute(this.config.archivePath)) {
@@ -309,7 +274,7 @@ export class Server {
 
             if (!archivePath) {
                 const s2maps = s2archives.filter(v => path.extname(v).toLowerCase() === '.sc2map');
-                this.log(`s2maps in workspace`, s2maps);
+                logger.info(`s2maps in workspace`, ...s2maps);
 
                 if (s2maps.length === 1) {
                     archivePath = s2maps.pop();
@@ -342,8 +307,7 @@ export class Server {
             modSources.push(this.initParams.initializationOptions.defaultDataPath);
         }
         modSources.push(...this.config.s2mod.sources);
-        this.log(`Mod sources`, modSources);
-        this.log(`SC2 archive for this workspace set to: ${archivePath}`);
+        logger.info(`Workspace discovery`, ...modSources, { archivePath });
 
         // setup s2workspace
         let wsArchive: SC2Archive;
@@ -392,29 +356,19 @@ export class Server {
             );
         }
 
-        if (projFolders.length) {
-            this.log(`SC2 workspace set to project root`);
-        }
-
         let depList = depLinks.list.map((item) => new SC2Archive(item.name, item.src));
         if (!wsArchive && !depList.find((item) => item.name === fallbackDep.name)) {
             depList.push(fallbackDep);
         }
         workspace = new SC2Workspace(wsArchive, depList);
-        this.log('Resolved archives:\n' + workspace.allArchives.map(item => {
+        logger.info('Resolved archives', ...workspace.allArchives.map(item => {
             return `${item.name} => ${item.directory}`;
-        }).join('\n'));
-
-        this.reportMemoryUsage();
+        }));
 
         // process metadata files etc.
         this.connection.sendNotification('indexProgress', 'Indexing trigger libraries and data catalogs..');
-        this.log('updateS2Workspace');
         await this.store.updateS2Workspace(workspace);
-        this.log('rebuildS2Metadata');
-        await this.store.rebuildS2Metadata(this.config.localization);
-
-        this.reportMemoryUsage();
+        await this.store.rebuildS2Metadata(this.config.metadata);
 
         // process .galaxy files in the workspace
         this.connection.sendNotification('indexProgress', `Indexing Galaxy files..`);
@@ -423,8 +377,6 @@ export class Server {
                 await this.syncSourceFile({document: createTextDocumentFromFs(path.join(modArchive.directory, extSrc))});
             }
         }
-
-        this.reportMemoryUsage();
 
         // almost done
         this.connection.sendNotification('indexProgress', 'Finalizing..');
@@ -440,10 +392,9 @@ export class Server {
         this.connection.sendNotification('indexEnd');
     }
 
-    @wrapRequest()
-    private async onInitialize(params: lsp.InitializeParams): Promise<lsp.InitializeResult> {
+    @logIt({ level: 'verbose', profiling: false, argsDump: true, resDump: true })
+    private onInitialize(params: lsp.InitializeParams): lsp.InitializeResult {
         this.initParams = params;
-        this.log('params', this.initParams);
         return {
             capabilities: {
                 workspace: {
@@ -475,15 +426,15 @@ export class Server {
         };
     }
 
-    @wrapRequest()
-    private async onInitialized(params: lsp.InitializedParams) {
+    @logIt({ level: 'verbose', profiling: false, argsDump: true })
+    private onInitialized(params: lsp.InitializedParams) {
         if (this.initParams.capabilities.workspace.workspaceFolders) {
-            this.connection.workspace.onDidChangeWorkspaceFolders(this.onDidChangeWorkspaceFolders.bind(this))
+            this.connection.workspace.onDidChangeWorkspaceFolders(this.onDidChangeWorkspaceFolders.bind(this));
         }
     }
 
-    @wrapRequest()
-    private async onDidChangeConfiguration(ev: lsp.DidChangeConfigurationParams) {
+    @logIt({ level: 'verbose', profiling: false, argsDump: ev => ev.settings.sc2galaxy })
+    private onDidChangeConfiguration(ev: lsp.DidChangeConfigurationParams) {
         const newConfig = <PlaxtonyConfig>ev.settings.sc2galaxy;
         let reindexRequired = false;
         let firstInit = !this.config;
@@ -493,14 +444,14 @@ export class Server {
             this.config.archivePath !== newConfig.archivePath ||
             this.config.dataPath !== newConfig.dataPath ||
             this.config.fallbackDependency !== newConfig.fallbackDependency ||
-            this.config.localization !== newConfig.localization ||
+            (JSON.stringify(this.config.trace) !== JSON.stringify(newConfig.trace)) ||
+            (JSON.stringify(this.config.metadata) !== JSON.stringify(newConfig.metadata)) ||
             (JSON.stringify(this.config.s2mod) !== JSON.stringify(newConfig.s2mod))
         ) {
-            this.log('Reindex required');
+            logger.warn('Config changed, reindex required');
             reindexRequired = true;
         }
 
-        this.log(util.inspect(newConfig));
         this.config = newConfig;
         switch (this.config.completion.functionExpand) {
             case "None":
@@ -527,13 +478,14 @@ export class Server {
         }
     }
 
-    @wrapRequest()
-    private async onDidChangeWorkspaceFolders(ev: lsp.WorkspaceFoldersChangeEvent) {
-        this.log('ev', ev);
+    @logIt({ profiling: false, argsDump: true })
+    private onDidChangeWorkspaceFolders(ev: lsp.WorkspaceFoldersChangeEvent) {
         this.requestReindex();
     }
 
-    @wrapRequest()
+    @logIt({ level: 'verbose', profiling: false, argsDump: ev => {
+        return { uri: ev.document.uri, ver: ev.document.version };
+    }})
     private async onDidChangeContent(ev: lsp.TextDocumentChangeEvent) {
         let req = this.documentUpdateRequests.get(ev.document.uri);
         if (req) {
@@ -566,7 +518,9 @@ export class Server {
         this.documentUpdateRequests.set(ev.document.uri, req);
     }
 
-    @wrapRequest()
+    @logIt({ level: 'verbose', argsDump: (docUri: string, req: DocumentUpdateRequest) => {
+        return { uri: docUri, ver: req.version };
+    }})
     private async onUpdateContent(documentUri: string, req: DocumentUpdateRequest) {
         req.promise = new Promise((resolve) => {
             this.store.updateDocument(<lsp.TextDocument>{
@@ -575,14 +529,19 @@ export class Server {
                     return req.content;
                 }
             });
-            setTimeout(this.onDiagnostics.bind(this, documentUri, req), req.isDirty ? this.config.documentDiagnosticsDelay : 1);
             this.documentUpdateRequests.delete(documentUri);
+            const diagDelay = this.config.documentDiagnosticsDelay ? this.config.documentDiagnosticsDelay : 1;
+            if (this.config.documentDiagnosticsDelay !== false || !req.isDirty) {
+                setTimeout(this.onDiagnostics.bind(this, documentUri, req), req.isDirty ? diagDelay : 1);
+            }
             resolve(true);
         });
         await req.promise;
     }
 
-    @wrapRequest()
+    @logIt({ level: 'verbose', argsDump: (docUri: string, req: DocumentUpdateRequest) => {
+        return { uri: docUri, ver: req.version };
+    }})
     private onDiagnostics(documentUri: string, req: DocumentUpdateRequest) {
         if (this.documentUpdateRequests.has(documentUri)) return;
         if (this.documents.keys().indexOf(documentUri) === -1) return;
@@ -598,35 +557,35 @@ export class Server {
         });
     }
 
-    @wrapRequest(false, (payload: lsp.TextDocumentChangeEvent) => { return {document: payload.document.uri}})
+    @logIt({ level: 'verbose', profiling: false, argsDump: ev => ev.document.uri })
     private onDidOpen(ev: lsp.TextDocumentChangeEvent) {
         this.store.openDocuments.add(ev.document.uri);
     }
 
-    @wrapRequest(false, (payload: lsp.TextDocumentChangeEvent) => { return {document: payload.document.uri}})
+    @logIt({ level: 'verbose', profiling: false, argsDump: ev => ev.document.uri })
     private onDidClose(ev: lsp.TextDocumentChangeEvent) {
         this.store.openDocuments.delete(ev.document.uri);
         if (!this.store.isUriInWorkspace(ev.document.uri)) {
-            this.store.removeDocument(ev.document.uri)
-            this.log('removed from store');
+            this.store.removeDocument(ev.document.uri);
+            logger.verbose('removed from store', ev.document.uri);
         }
         this.connection.sendDiagnostics({
             uri: ev.document.uri,
             diagnostics: [],
-        })
+        });
     }
 
-    @wrapRequest(false, (payload: lsp.TextDocumentChangeEvent) => { return {document: payload.document.uri}})
+    @logIt({ level: 'verbose', profiling: false, argsDump: ev => ev.document.uri })
     private async onDidSave(ev: lsp.TextDocumentChangeEvent) {
         await this.flushDocument(ev.document.uri, true);
     }
 
-    @wrapRequest(true)
+    @logIt({ level: 'verbose', profiling: false })
     private async onDidChangeWatchedFiles(ev: lsp.DidChangeWatchedFilesParams) {
         for (const x of ev.changes) {
             if (URI.parse(x.uri).fsPath.match(/sc2\w+\.(temp|orig)/gi)) continue;
             if (!this.store.isUriInWorkspace(x.uri)) continue;
-            this.log(`${fileChangeTypeNames[x.type]} ${x.uri}`);
+            logger.verbose(`${fileChangeTypeNames[x.type]} '${x.uri}'`);
             switch (x.type) {
                 case lsp.FileChangeType.Created:
                 case lsp.FileChangeType.Changed:
@@ -645,14 +604,15 @@ export class Server {
         }
     }
 
-    @wrapRequest(false, (payload: lsp.TextDocumentChangeEvent) => { return {document: payload.document.uri}})
-    private async syncSourceFile(ev: lsp.TextDocumentChangeEvent) {
+    @logIt({ level: 'verbose', argsDump: (ev: lsp.TextDocumentChangeEvent) => {
+        return { uri: ev.document.uri, ver: ev.document.version };
+    }})
+    private syncSourceFile(ev: lsp.TextDocumentChangeEvent) {
         this.store.updateDocument(ev.document);
     }
 
-    @wrapRequest(true)
     private async onCompletion(params: lsp.TextDocumentPositionParams) {
-        if (!this.store.documents.has(params.textDocument.uri)) return null;
+        if (!this.store.documents.has(params.textDocument.uri)) return;
         await this.flushDocument(params.textDocument.uri);
 
         let context: lsp.CompletionContext = null;
@@ -670,24 +630,20 @@ export class Server {
         );
     }
 
-    @wrapRequest(true)
     private onCompletionResolve(params: lsp.CompletionItem): lsp.CompletionItem {
         return this.completionsProvider.resolveCompletion(params);
     }
 
-    @wrapRequest(true)
     private onDocumentSymbol(params: lsp.DocumentSymbolParams): lsp.SymbolInformation[] {
         if (!this.ready) return null;
         return translateDeclaratons(this.navigationProvider.getDocumentSymbols(params.textDocument.uri));
     }
 
-    @wrapRequest(true)
     private onWorkspaceSymbol(params: lsp.WorkspaceSymbolParams): lsp.SymbolInformation[] {
         if (!this.ready) return null;
         return translateDeclaratons(this.navigationProvider.getWorkspaceSymbols(params.query));
     }
 
-    @wrapRequest(true)
     private async onSignatureHelp(params: lsp.TextDocumentPositionParams): Promise<lsp.SignatureHelp> {
         if (!this.store.documents.has(params.textDocument.uri)) return null;
         await this.flushDocument(params.textDocument.uri);
@@ -697,7 +653,6 @@ export class Server {
         );
     }
 
-    @wrapRequest(true)
     private async onDefinition(params: lsp.TextDocumentPositionParams): Promise<lsp.DefinitionLink[]> {
         if (!this.store.documents.has(params.textDocument.uri)) return null;
         await this.flushDocument(params.textDocument.uri);
@@ -708,25 +663,21 @@ export class Server {
         );
     }
 
-    @wrapRequest(true)
     private async onHover(params: lsp.TextDocumentPositionParams): Promise<lsp.Hover> {
         await this.flushDocument(params.textDocument.uri);
         return this.hoverProvider.getHoverAt(params);
     }
 
-    @wrapRequest(true)
     private async onReferences(params: lsp.ReferenceParams): Promise<lsp.Location[]> {
         await this.flushDocument(params.textDocument.uri);
         return this.referenceProvider.onReferences(params);
     }
 
-    @wrapRequest(true)
     private async onRenameRequest(params: lsp.RenameParams) {
         await this.flushDocument(params.textDocument.uri);
         return this.renameProvider.onRenameRequest(params);
     }
 
-    @wrapRequest(true)
     private async onPrepareRename(params: lsp.TextDocumentPositionParams) {
         await this.flushDocument(params.textDocument.uri);
         const r = this.renameProvider.onPrepareRename(params);
@@ -738,13 +689,11 @@ export class Server {
         return r;
     }
 
-    @wrapRequest()
     private async onRenamePrefetch(params: lsp.TextDocumentPositionParams) {
         await this.flushDocument(params.textDocument.uri);
         return this.renameProvider.prefetchLocations();
     }
 
-    @wrapRequest()
     private async onDiagnoseDocumentRecursively(params: lsp.TextDocumentIdentifier) {
         await this.flushDocument(params.uri);
         const dg = this.diagnosticsProvider.checkFileRecursively(params.uri);

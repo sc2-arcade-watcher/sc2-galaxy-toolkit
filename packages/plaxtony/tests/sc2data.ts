@@ -18,8 +18,11 @@ describe('SC2Metadata', function () {
         const dir = path.resolve(path.join('tests', 'fixtures', 'sc2-map.SC2Map'));
         const rootArchive = new SC2Archive(path.basename(dir), dir);
         s2work = await openArchiveWorkspace(rootArchive, sources);
-        s2meta = new S2WorkspaceMetadata(s2work);
-        await s2meta.build('enUS');
+        s2meta = new S2WorkspaceMetadata(s2work, {
+            loadLevel: 'Default',
+            localization: 'enUS',
+        });
+        await s2meta.build();
     });
 
     it('find elements by name', () => {

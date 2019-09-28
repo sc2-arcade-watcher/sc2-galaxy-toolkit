@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { SC2Archive, SC2Workspace } from './archive';
+import { logger } from '../common';
 
 export type CatalogEntryKind = string;
 export type CatalogFileKind = string;
@@ -32,6 +33,7 @@ export class CatalogFile {
             return false;
         }
 
+        logger.debug(`:: ${this.archive.name}/${resolvedFiles[0]}`);
         const parser = new CatalogParser();
         parser.write(await this.archive.readFile(resolvedFiles[0]));
         this.entries = parser.toCatalog();
@@ -76,7 +78,7 @@ export class GameCatalogStore {
     private async processDataKind(kind: string, workspace: SC2Workspace) {
         const catalogStore = new CatalogStore(kind);
         const p: Promise<boolean>[] = [];
-        for (const archive of workspace.allArchives) {
+        for (const archive of workspace.metadataArchives) {
             p.push(catalogStore.addArchive(archive));
         }
         await Promise.all(p);
@@ -86,12 +88,12 @@ export class GameCatalogStore {
 
     async loadData(workspace: SC2Workspace): Promise<boolean> {
         const kindList: string[] = [];
-        const archiveFiles = new Map<string,string[]>();
+        const archiveFiles = new Map<string, string[]>();
 
         this.catalogs = new Map<string, CatalogStore>();
 
-        for (const archive of workspace.allArchives) {
-            const files = await archive.findFiles('Base.SC2Data/GameData/*Data.xml')
+        for (const archive of workspace.metadataArchives) {
+            const files = await archive.findFiles('Base.SC2Data/GameData/*Data.xml');
             archiveFiles.set(archive.name, files);
 
             for (const name of files) {

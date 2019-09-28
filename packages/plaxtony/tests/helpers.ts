@@ -59,7 +59,7 @@ export async function mockupStoreFromS2Workspace(directory: string, modSources: 
     await ws.watch();
     for (const ws of workspaces) {
         await store.updateS2Workspace(ws);
-        await store.rebuildS2Metadata('enUS');
+        await store.rebuildS2Metadata();
     }
     return store;
 }

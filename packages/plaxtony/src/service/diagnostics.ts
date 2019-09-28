@@ -5,6 +5,7 @@ import { Diagnostic } from '../compiler/types';
 import { TypeChecker } from '../compiler/checker';
 import { unbindSourceFile } from '../compiler/binder';
 import { getLineAndCharacterOfPosition } from './utils';
+import { logger } from '../common';
 
 export type DiagnosticsCallback = (a: string) => void;
 
@@ -45,7 +46,7 @@ export class DiagnosticsProvider extends AbstractProvider {
         let parseDiag = sourceFile.parseDiagnostics;
         let checkerDiag = sourceFile.additionalSyntacticDiagnostics;
 
-        this.console.log(`${uri} - ${parseDiag.length} - ${checkerDiag.length}`);
+        logger.info(`${uri} - ${parseDiag.length} - ${checkerDiag.length}`);
 
         if (parseDiag.length > 100) parseDiag = parseDiag.slice(0, 100);
         if (checkerDiag.length > 100) checkerDiag = checkerDiag.slice(0, 100);

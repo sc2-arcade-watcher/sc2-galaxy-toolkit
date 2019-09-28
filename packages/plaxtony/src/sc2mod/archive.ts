@@ -6,6 +6,7 @@ import * as trig from './trigger';
 import * as cat from './datacatalog';
 import * as loc from './localization';
 import { globify } from '../service/utils';
+import { logger, logIt } from '../common';
 
 const validArchiveExtensions = [
     'sc2map',
@@ -15,6 +16,91 @@ const validArchiveExtensions = [
 ];
 
 const reValidArchiveExtension = new RegExp('\\.(' + validArchiveExtensions.join('|') + ')$', 'i');
+
+export enum BuiltinDeps {
+    'mods/core.sc2mod',
+    'mods/glue.sc2mod',
+    'mods/liberty.sc2mod',
+    'mods/swarm.sc2mod',
+    'mods/void.sc2mod',
+    'mods/libertymulti.sc2mod',
+    'mods/swarmmulti.sc2mod',
+    'mods/voidmulti.sc2mod',
+    'mods/balancemulti.sc2mod',
+    'mods/starcoop/starcoop.sc2mod',
+    'mods/war3.sc2mod',
+    'mods/novastoryassets.sc2mod',
+    'campaigns/liberty.sc2campaign',
+    'campaigns/swarm.sc2campaign',
+    'campaigns/void.sc2campaign',
+    'campaigns/libertystory.sc2campaign',
+    'campaigns/swarmstory.sc2campaign',
+    'campaigns/voidstory.sc2campaign',
+}
+export type builtinDepName = keyof typeof BuiltinDeps;
+const builtinDepsHierarchy = (function() {
+    function depsFor(modName: builtinDepName) {
+        let list: string[] = [];
+
+        let matches: RegExpExecArray;
+        if (matches = /^campaigns\/(liberty|swarm|void)story\.sc2campaign$/i.exec(modName)) {
+            list.push('campaigns/' + matches[1] + '.sc2campaign');
+        }
+        else if (matches = /^mods\/(liberty|swarm|void|balance)multi\.sc2mod$/i.exec(modName)) {
+            if (matches[1] === 'balance') {
+                list.push('mods/void.sc2mod');
+            }
+            else {
+                list.push('mods/' + matches[1] + '.sc2mod');
+            }
+        }
+        else if (matches = /^campaigns\/(liberty|swarm|void)\.sc2campaign$/i.exec(modName)) {
+            if (matches[1] === 'void') {
+                list.push('campaigns/swarm.sc2campaign');
+            }
+            else if (matches[1] === 'swarm') {
+                list.push('campaigns/liberty.sc2campaign');
+            }
+            list.push('mods/' + matches[1] + '.sc2mod');
+        }
+        else if (matches = /^mods\/(liberty|swarm|void)\.sc2mod$/i.exec(modName)) {
+            if (matches[1] === 'void') {
+                list.push('mods/swarm.sc2mod');
+            }
+            else if (matches[1] === 'swarm') {
+                list.push('mods/liberty.sc2mod');
+            }
+        }
+        else {
+            switch (modName) {
+                case 'mods/novastoryassets.sc2mod':
+                case 'mods/starcoop/starcoop.sc2mod':
+                {
+                    list.push('campaigns/void.sc2campaign');
+                    break;
+                }
+            }
+        }
+
+        for (const item of list) {
+            list = depsFor(item as builtinDepName).concat(list.reverse());
+        }
+
+        return list;
+    }
+
+    const depHierarchy: {[key in builtinDepName]: string[]} = {} as any;
+    for (const modName of Object.keys(BuiltinDeps).filter(v => typeof (BuiltinDeps as any)[v] === 'number')) {
+        depHierarchy[modName as builtinDepName] = [];
+        if (modName !== 'mods/core.sc2mod') {
+            depHierarchy[modName as builtinDepName].push('mods/core.sc2mod');
+        }
+        depHierarchy[modName as builtinDepName] = depHierarchy[modName as builtinDepName].concat(
+            Array.from(new Set(depsFor(modName as builtinDepName)))
+        );
+    }
+    return depHierarchy;
+})();
 
 export function isSC2Archive(directory: string) {
     return path.basename(directory).match(reValidArchiveExtension);
@@ -51,13 +137,7 @@ export abstract class Component {
     }
 
     public async load() {
-        try {
-            return await this.loadData();
-        }
-        catch (e) {
-            e.message = '[' + this.constructor.name + '/load] ' + e.message;
-            throw e;
-        }
+        return await this.loadData();
     }
 
     abstract async loadData(): Promise<boolean>;
@@ -67,14 +147,17 @@ export class TriggerComponent extends Component {
     protected store = new trig.TriggerStore();
     // protected libraries: trig.Library;
 
+    @logIt()
     public async loadData() {
         const trigReader = new trig.XMLReader(this.store);
 
-        for (const archive of this.workspace.allArchives) {
+        for (const archive of this.workspace.metadataArchives) {
             for (const filename of await archive.findFiles('**/+(*.TriggerLib|*.SC2Lib)')) {
+                logger.debug(`:: ${archive.name}/${filename}`);
                 this.store.addLibrary(await trigReader.loadLibrary(await archive.readFile(filename)));
             }
             if (await archive.hasFile('Triggers')) {
+                logger.debug(`:: ${archive.name}/Triggers`);
                 await trigReader.load(await archive.readFile('Triggers'), this.workspace.rootArchive !== archive);
             }
         }
@@ -90,6 +173,7 @@ export class TriggerComponent extends Component {
 export class CatalogComponent extends Component {
     protected store = new cat.GameCatalogStore();
 
+    @logIt()
     public async loadData() {
         await this.store.loadData(this.workspace);
 
@@ -108,9 +192,10 @@ export class LocalizationComponent extends Component {
 
     private async loadStrings(name: string) {
         const textStore = new loc.LocalizationTextStore();
-        for (const archive of this.workspace.allArchives) {
+        for (const archive of this.workspace.metadataArchives) {
             const filenames = await archive.findFiles(this.lang + '.SC2Data/LocalizedData/' + name + 'Strings.txt');
             if (filenames.length) {
+                logger.debug(`:: ${archive.name}/${filenames[0]}`);
                 const locFile = new loc.LocalizationFile();
                 locFile.read(await archive.readFile(filenames[0]));
                 textStore.merge(locFile);
@@ -119,10 +204,12 @@ export class LocalizationComponent extends Component {
         this.strings.set(name, textStore);
     }
 
+    @logIt()
     public async loadData() {
-        for (const archive of this.workspace.allArchives) {
-            const filenames = await archive.findFiles('enUS.SC2Data/LocalizedData/TriggerStrings.txt');
+        for (const archive of this.workspace.metadataArchives) {
+            const filenames = await archive.findFiles(this.lang + '.SC2Data/LocalizedData/TriggerStrings.txt');
             if (filenames.length) {
+                logger.debug(`:: ${archive.name}/${filenames[0]}`);
                 const locFile = new loc.LocalizationFile();
                 locFile.read(await archive.readFile(filenames[0]));
                 this.triggers.merge(locFile);
@@ -276,32 +363,10 @@ export class SC2Archive {
      * returns lowercased and forward slash normalized list
      */
     public async getDependencyList() {
-        const list: string[] = [];
+        let list: string[] = [];
 
-        if (this.name !== 'mods/core.sc2mod') {
-            list.push('mods/core.sc2mod');
-        }
-
-        let matches: RegExpExecArray;
-        if (matches = /^campaigns\/(liberty|swarm|void)story\.sc2campaign$/i.exec(this.name)) {
-            list.push('campaigns/' + matches[1] + '.sc2campaign');
-        }
-        else if (matches = /^campaigns\/(liberty|swarm|void)\.sc2campaign$/i.exec(this.name)) {
-            if (matches[1] === 'void') {
-                list.push('campaigns/swarm.sc2campaign');
-            }
-            else if (matches[1] === 'swarm') {
-                list.push('campaigns/liberty.sc2campaign');
-            }
-            list.push('mods/' + matches[1] + '.sc2mod');
-        }
-        else if (matches = /^mods\/(liberty|swarm|void)\.sc2mod$/i.exec(this.name)) {
-            if (matches[1] === 'void') {
-                list.push('mods/swarm.sc2mod');
-            }
-            else if (matches[1] === 'swarm') {
-                list.push('mods/liberty.sc2mod');
-            }
+        if (builtinDepsHierarchy[this.name as builtinDepName]) {
+            list = list.concat(builtinDepsHierarchy[this.name as builtinDepName]);
         }
 
         if (await this.hasFile('DocumentInfo')) {
@@ -322,13 +387,17 @@ export class SC2Archive {
                 });
             });
 
-            if (data.DocInfo.Dependencies) {
+            if (data.DocInfo && data.DocInfo.Dependencies) {
                 for (const depValue of data.DocInfo.Dependencies[0].Value) {
                     list.push(depValue.substr(depValue.indexOf('file:') + 5).replace(/\\/g, '/').toLowerCase());
                 }
             }
         }
         return list;
+    }
+
+    get isBuiltin(): boolean {
+        return builtinDepsHierarchy[this.name as builtinDepName] !== void 0;
     }
 }
 
@@ -362,6 +431,7 @@ export class SC2Workspace {
     rootArchive?: SC2Archive;
     allArchives: SC2Archive[] = [];
     dependencies: SC2Archive[] = [];
+    metadataArchives: SC2Archive[] = [];
     trigComponent: TriggerComponent = new TriggerComponent(this);
     locComponent: LocalizationComponent = new LocalizationComponent(this);
     catalogComponent: CatalogComponent = new CatalogComponent(this);
@@ -371,6 +441,7 @@ export class SC2Workspace {
         this.rootArchive = rootArchive;
         this.dependencies = dependencies;
         this.allArchives = this.allArchives.concat(this.dependencies);
+        this.metadataArchives = this.allArchives;
         if (rootArchive) {
             this.allArchives.push(rootArchive);
         }
@@ -382,11 +453,9 @@ export class SC2Workspace {
     }
 
     public async loadComponents() {
-        return await Promise.all([
-            this.trigComponent.load(),
-            this.locComponent.load(),
-            this.catalogComponent.load(),
-        ]);
+        await this.trigComponent.load();
+        await this.locComponent.load();
+        await this.catalogComponent.load();
     }
 
     public resolvePath(fsPath: string): S2QualifiedFile | undefined {
