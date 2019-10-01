@@ -204,17 +204,22 @@ export class LayoutChecker {
             }
 
             const sChildFType = this.store.schema.getFrameType(uChild.mainDesc.stype);
-            if (!sChildFType) {
-                continue;
+            if (!sChildFType) continue;
+            if (sChildFType.fclasses.has(sHookup.fClass.name)) continue;
+
+            const inheritanceChain: string[] = [sHookup.fClass.name];
+            let cp = sHookup.fClass;
+            while (cp = cp.cparent) {
+                inheritanceChain.push(cp.name);
             }
-            if (!sChildFType.fclasses.has(sHookup.fClass.name)) {
-                this.reportAtNode(
-                    el,
-                    `Frame[${sFrameType.name}] incorrect hookup type at path "${sHookup.path}" - "${Array.from(sChildFType.fclasses.values()).pop().name}" doesn't implement "${sHookup.fClass.name}".`,
-                    DiagnosticCategory.Warning
-                );
-                continue;
-            }
+            const isAncestor = Array.from(sChildFType.fclasses.keys()).every(cName => inheritanceChain.includes(cName));
+            if (isAncestor) continue;
+
+            this.reportAtNode(
+                el,
+                `Frame[${sFrameType.name}] incorrect hookup type at path "${sHookup.path}": found class "${Array.from(sChildFType.fclasses.values()).pop().name}" which expected to be "${sHookup.fClass.name}" or its ancestor, but it isn't.`,
+                DiagnosticCategory.Warning
+            );
         }
     }
 
