@@ -21,10 +21,6 @@ export interface RegistryCatalog {
     frameType: DefinitionMap<sch.FrameType>;
 }
 
-type Partial<T> = {
-    [P in keyof T]?: T[P];
-};
-
 type NamedPartial<T> = Partial<T> & {
     name: string;
 };

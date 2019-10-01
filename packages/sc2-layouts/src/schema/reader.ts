@@ -181,6 +181,7 @@ function assignAttrs<T>(target: T, srcAttrs: xmljs.Attributes, opts?: AssignAttr
 
 type AssignChildReaderFn = (target: any, el: xmljs.Element) => any;
 interface AssignChildPropertyOpts extends AssignAttrOpts {
+    defaults?: { [name: string]: any };
     reader?: AssignChildReaderFn;
     single?: boolean;
     props?: { [name: string]: AssignChildPropertyOpts};
@@ -209,6 +210,9 @@ function assignChildren<T>(target: T, srcElements: xmljs.Element[], opts?: Assig
         const cOpts = opts.props[child.name] !== void 0 ? opts.props[child.name] : {};
 
         let childTarget = {};
+        if (cOpts.defaults) {
+            childTarget = Object.assign(childTarget, cOpts.defaults);
+        }
 
         if (
             child.attributes === void 0 &&
@@ -249,7 +253,7 @@ function assignChildren<T>(target: T, srcElements: xmljs.Element[], opts?: Assig
 }
 
 interface CreateNamedDefinitionOpts<T extends sraw.NamedDefinition> extends AssignChildOpts, AssignAttrOpts {
-    defaults?: T | {};
+    defaults?: Partial<T>;
 }
 
 function createNamedDefinition<T extends sraw.NamedDefinition>(el: xmljs.Element, entryType: sch.ModelKind, opts?: CreateNamedDefinitionOpts<T>) {
@@ -328,6 +332,9 @@ function readFrameClass(el: xmljs.Element) {
         },
         props: {
             property: {
+                defaults: {
+                    readonly: false,
+                },
                 attrs: {
                     table: ensureBoolean,
                     readonly: ensureBoolean,
