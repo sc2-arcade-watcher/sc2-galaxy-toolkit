@@ -1,13 +1,14 @@
-import * as vs from 'vscode';
-import * as sch from '../schema/base';
-import { AbstractProvider, svcRequest } from './provider';
-import { XMLElement, AttrValueKindOffset, AttrValueConstant } from '../types';
-import { ServiceStateFlags } from '../service';
-import { getAttrValueKind, isConstantValueKind } from '../parser/utils';
-import { reValueColor } from '../schema/validation';
+import * as lsp from 'vscode-languageserver';
+import * as sch from '../../schema/base';
+import { AbstractProvider, errGuard } from '../provider';
+import { XMLElement, AttrValueKindOffset, AttrValueConstant } from '../../types';
+import { ServiceStateFlags } from '../server';
+import { getAttrValueKind, isConstantValueKind } from '../../parser/utils';
+import { reValueColor } from '../../schema/validation';
+import { logIt } from '../../logger';
 
 export interface ColorLiteral {
-    vColor: vs.Color;
+    vColor: lsp.Color;
     ntDecimal: boolean;
     inclAlpha: boolean;
 }
@@ -17,7 +18,7 @@ export function parseColorLiteral(val: string): ColorLiteral {
         const colComponents = val.split(',');
         if (colComponents.length === 4) {
             return {
-                vColor: new vs.Color(
+                vColor: lsp.Color.create(
                     Number(colComponents[1].trim()) / 255.0,
                     Number(colComponents[2].trim()) / 255.0,
                     Number(colComponents[3].trim()) / 255.0,
@@ -29,7 +30,7 @@ export function parseColorLiteral(val: string): ColorLiteral {
         }
         else {
             return {
-                vColor: new vs.Color(
+                vColor: lsp.Color.create(
                     Number(colComponents[0].trim()) / 255.0,
                     Number(colComponents[1].trim()) / 255.0,
                     Number(colComponents[2].trim()) / 255.0,
@@ -42,7 +43,7 @@ export function parseColorLiteral(val: string): ColorLiteral {
     }
     else if (val.length === 6) {
         return {
-            vColor: new vs.Color(
+            vColor: lsp.Color.create(
                 parseInt(val.substr(0, 2), 16) / 255.0,
                 parseInt(val.substr(2, 2), 16) / 255.0,
                 parseInt(val.substr(4, 2), 16) / 255.0,
@@ -54,7 +55,7 @@ export function parseColorLiteral(val: string): ColorLiteral {
     }
     else if (val.length === 8) {
         return {
-            vColor: new vs.Color(
+            vColor: lsp.Color.create(
                 parseInt(val.substr(2, 2), 16) / 255.0,
                 parseInt(val.substr(4, 2), 16) / 255.0,
                 parseInt(val.substr(6, 2), 16) / 255.0,
@@ -66,7 +67,7 @@ export function parseColorLiteral(val: string): ColorLiteral {
     }
 }
 
-export function getColorAsDecimalARGB(color: vs.Color, includeAlpha = false) {
+export function getColorAsDecimalARGB(color: lsp.Color, includeAlpha = false) {
     return (
         ((includeAlpha || color.alpha !== 1.0) ? (Math.round((color.alpha * 255.0)).toString(10) + ',') : '') +
         Math.round((color.red * 255.0)).toString(10) + ',' +
@@ -75,7 +76,7 @@ export function getColorAsDecimalARGB(color: vs.Color, includeAlpha = false) {
     );
 }
 
-export function getColorAsHexARGB(color: vs.Color, includeAlpha = false) {
+export function getColorAsHexARGB(color: lsp.Color, includeAlpha = false) {
     return (
         ((includeAlpha || color.alpha !== 1.0) ? (Math.round((color.alpha * 255.0)).toString(16).padStart(2, '0')) : '') +
         Math.round((color.red * 255.0)).toString(16).padStart(2, '0') +
@@ -96,18 +97,26 @@ function canContainColorValue(sType: sch.SimpleType) {
     return false;
 }
 
-export class DocumentColorProvider extends AbstractProvider implements vs.DocumentColorProvider {
-    @svcRequest()
-    async provideDocumentColors(document: vs.TextDocument, token: vs.CancellationToken): Promise<vs.ColorInformation[]> {
-        if (!(this.svcContext.state & ServiceStateFlags.StepFilesDone)) return;
+export class ColorProvider extends AbstractProvider {
+    install() {
+        this.slSrv.conn.onDocumentColor(this.provideDocumentColors.bind(this));
+        this.slSrv.conn.onColorPresentation(this.provideColorPresentations.bind(this));
+    }
 
-        const xDoc = await this.svcContext.syncVsDocument(document);
+    @errGuard()
+    @logIt()
+    async provideDocumentColors(params: lsp.DocumentColorParams, token: lsp.CancellationToken): Promise<lsp.ColorInformation[]> {
+        if (!(this.slSrv.state & ServiceStateFlags.StepFilesDone)) return;
+
+        const xDoc = await this.slSrv.flushDocumentByUri(params.textDocument.uri);
+        if (!xDoc) return;
+
         const xRoot = xDoc.getRootNode();
         if (!xRoot) return;
         const xray = this.xray;
         const dIndex = this.dIndex;
 
-        const colInfo: vs.ColorInformation[] = [];
+        const colInfo: lsp.ColorInformation[] = [];
 
         function processXElement(xEl: XMLElement) {
             if (!xEl.stype) return;
@@ -153,10 +162,10 @@ export class DocumentColorProvider extends AbstractProvider implements vs.Docume
 
                 const staOffset = xDoc.tdoc.positionAt(xAt.startValue + 1);
                 const endOffset = xDoc.tdoc.positionAt(xAt.startValue + 1 + xAt.value.length);
-                colInfo.push(new vs.ColorInformation(
-                    new vs.Range(
-                        new vs.Position(staOffset.line, staOffset.character),
-                        new vs.Position(endOffset.line, endOffset.character),
+                colInfo.push(lsp.ColorInformation.create(
+                    lsp.Range.create(
+                        lsp.Position.create(staOffset.line, staOffset.character),
+                        lsp.Position.create(endOffset.line, endOffset.character),
                     ),
                     iCol.vColor
                 ));
@@ -172,17 +181,21 @@ export class DocumentColorProvider extends AbstractProvider implements vs.Docume
         return colInfo;
     }
 
-    @svcRequest()
-    async provideColorPresentations(color: vs.Color, context: { document: vs.TextDocument; range: vs.Range; }, token: vs.CancellationToken): Promise<vs.ColorPresentation[]> {
-        const iCol = parseColorLiteral(context.document.getText(context.range).trim());
+    @errGuard()
+    @logIt()
+    async provideColorPresentations(params: lsp.ColorPresentationParams, token: lsp.CancellationToken): Promise<lsp.ColorPresentation[]> {
+        const xDoc = await this.slSrv.flushDocumentByUri(params.textDocument.uri);
+        if (!xDoc) return;
+
+        const iCol = parseColorLiteral(xDoc.tdoc.getText(params.range).trim());
         if (!iCol) return;
 
-        const decCP: vs.ColorPresentation = {
-            label: getColorAsDecimalARGB(color, iCol.inclAlpha),
+        const decCP: lsp.ColorPresentation = {
+            label: getColorAsDecimalARGB(params.color, iCol.inclAlpha),
         };
 
-        const hexCP: vs.ColorPresentation = {
-            label: getColorAsHexARGB(color, iCol.inclAlpha),
+        const hexCP: lsp.ColorPresentation = {
+            label: getColorAsHexARGB(params.color, iCol.inclAlpha),
         };
 
         return [decCP, hexCP];

@@ -1,39 +1,40 @@
-import * as vs from 'vscode';
-import { XMLElement } from '../../types';
-import { DescKind, DescNamespace } from '../../index/desc';
-import { UINode, FrameNode } from '../../index/hierarchy';
-import { descKindToCompletionKind } from '../completions';
-import { getSelectionIndexAtPosition } from '../../parser/utils';
-import * as sch from '../../schema/base';
-import { SuggestionsProvider } from './helpers';
+import * as lsp from 'vscode-languageserver';
+import { XMLElement } from '../../../types';
+import { DescKind, DescNamespace } from '../../../index/desc';
+import { UINode, FrameNode } from '../../../index/hierarchy';
+import { descKindToCompletionKind } from './completions';
+import { getSelectionIndexAtPosition } from '../../../parser/utils';
+import * as sch from '../../../schema/base';
+import { SuggestionsProvider, createMarkdownString } from './helpers';
 
 export interface AbbrComplContext {
-    vDoc: vs.TextDocument;
+    vDoc: lsp.TextDocument;
     xEl: XMLElement;
-    abbrvRange: vs.Range;
-    curPosition: vs.Position;
+    abbrvRange: lsp.Range;
+    curPosition: lsp.Position;
 }
 
 export const reAbbrvWord = /(-?\d*\.\d\w*)|([^\`\~\!\%\^\&\*\(\)\+\[\{\]\}\\\'\"\<\>\?\s]+)/g;
 
 export class CodeAbbreviations extends SuggestionsProvider {
     protected provideFrameTypes(ctx: AbbrComplContext) {
-        const cList = new vs.CompletionList();
+        const cList = lsp.CompletionList.create();
 
         for (const sFrameType of this.store.schema.frameTypes.values()) {
-            let tmpCI: vs.CompletionItem;
+            let tmpCI: lsp.CompletionItem;
+            const insertText = `<Frame type="${sFrameType.name}" name="\${1:${sFrameType.name}}">\$0</Frame>`;
             tmpCI = {
-                kind: vs.CompletionItemKind.Struct,
+                kind: lsp.CompletionItemKind.Struct,
                 label: `${sFrameType.name}`,
-                insertText: new vs.SnippetString(`<Frame type="${sFrameType.name}" name="\${1:${sFrameType.name}}">\$0</Frame>`),
-                range: ctx.abbrvRange,
+                insertTextFormat: lsp.InsertTextFormat.Snippet,
+                textEdit: lsp.TextEdit.replace(
+                    ctx.abbrvRange,
+                    insertText
+                ),
                 detail: (sFrameType.blizzOnly ? '[BLZ] ' : '') + (sFrameType.complexType.label ? sFrameType.complexType.label : ''),
-                documentation: new vs.MarkdownString(sFrameType.complexType.documentation ? sFrameType.complexType.documentation : ''),
+                documentation: createMarkdownString(sFrameType.complexType.documentation ? sFrameType.complexType.documentation : ''),
             };
-            (<vs.MarkdownString>tmpCI.documentation).appendCodeblock(
-                (<vs.SnippetString>tmpCI.insertText).value.replace('$0', '\n'),
-                'xml'
-            );
+            (<lsp.MarkupContent>tmpCI.documentation).value += '\n```sc2layout\n' + insertText.replace('$0', '\n') + '\n```';
             tmpCI.filterText = `:${tmpCI.label}`;
             cList.items.push(tmpCI);
         }
@@ -42,7 +43,7 @@ export class CodeAbbreviations extends SuggestionsProvider {
     }
 
     protected provideDescOverrides(ctx: AbbrComplContext) {
-        const cList = new vs.CompletionList();
+        const cList = lsp.CompletionList.create();
 
         const phrase = ctx.vDoc.getText(ctx.abbrvRange);
         const relativeOffset = ctx.vDoc.offsetAt(ctx.curPosition) - ctx.vDoc.offsetAt(ctx.abbrvRange.start) - 1;
@@ -80,14 +81,14 @@ export class CodeAbbreviations extends SuggestionsProvider {
                 let rawAttrType = uTargetNode.mainDesc.kind === DescKind.Frame ? ` type="${xTargetEl.stype.name}"` : '';
                 const insertText = `<${rawTagName}${rawAttrType} name="${pathSel.path.slice(1, pathIndex).map(v => v.name.name).join('/')}" file="${pathSel.path[0].name.name}">\$0</${rawTagName}>`;
                 cList.items.push({
-                    kind: vs.CompletionItemKind.Method,
+                    kind: lsp.CompletionItemKind.Method,
                     label: `${uTargetNode.name}# [expand]`,
                     filterText: phrase,
                     sortText: phrase,
-                    insertText: new vs.SnippetString(insertText),
+                    insertTextFormat: lsp.InsertTextFormat.Snippet,
+                    textEdit: lsp.TextEdit.replace(ctx.abbrvRange, insertText),
                     detail: `${uTargetNode.name}[${(<XMLElement>Array.from(uTargetNode.mainDesc.xDecls)[0]).sdef.name}]`,
-                    documentation: new vs.MarkdownString('```xml\n' + insertText.replace('$0', '\n') + '\n```'),
-                    range: ctx.abbrvRange,
+                    documentation: createMarkdownString('```sc2layout\n' + insertText.replace('$0', '\n') + '\n```'),
                     preselect: true,
                     // commitCharacters: ['#'],
                 });
@@ -120,7 +121,7 @@ export class CodeAbbreviations extends SuggestionsProvider {
     }
 
     protected provideFrameProperties(ctx: AbbrComplContext, ufNode: FrameNode) {
-        const cList = new vs.CompletionList();
+        const cList = lsp.CompletionList.create();
 
         const phrase = ctx.vDoc.getText(ctx.abbrvRange);
         const relativeOffset = ctx.vDoc.offsetAt(ctx.curPosition) - ctx.vDoc.offsetAt(ctx.abbrvRange.start) - 1;
@@ -152,52 +153,62 @@ export class CodeAbbreviations extends SuggestionsProvider {
             if (!eMap) return cList;
 
             for (const eDef of eMap.values()) {
-                let tmpCI: vs.CompletionItem;
+                let tmpCI: lsp.CompletionItem;
+                const insertText = this.snippetForElement(eDef);
                 tmpCI = {
-                    kind: vs.CompletionItemKind.Field,
+                    kind: lsp.CompletionItemKind.Field,
                     label: eDef.name,
                     detail: `${eDef.type.name}`,
-                    range: new vs.Range(
-                        ctx.vDoc.positionAt(ctx.vDoc.offsetAt(ctx.abbrvRange.start) + path[0].length + 2),
-                        ctx.abbrvRange.end
+                    insertTextFormat: lsp.InsertTextFormat.Snippet,
+                    textEdit: lsp.TextEdit.replace(
+                        lsp.Range.create(
+                            ctx.vDoc.positionAt(ctx.vDoc.offsetAt(ctx.abbrvRange.start) + path[0].length + 2),
+                            ctx.abbrvRange.end
+                        ),
+                        insertText
                     ),
-                    insertText: this.snippetForElement(eDef),
-                    additionalTextEdits: [new vs.TextEdit(new vs.Range(
-                        ctx.vDoc.positionAt(ctx.vDoc.offsetAt(ctx.abbrvRange.start)),
-                        ctx.vDoc.positionAt(ctx.vDoc.offsetAt(ctx.abbrvRange.start) + path[0].length + 2)
-                    ), '')],
+                    additionalTextEdits: [
+                        lsp.TextEdit.replace(lsp.Range.create(
+                            ctx.vDoc.positionAt(ctx.vDoc.offsetAt(ctx.abbrvRange.start)),
+                            ctx.vDoc.positionAt(ctx.vDoc.offsetAt(ctx.abbrvRange.start) + path[0].length + 2)
+                        ), ''),
+                    ],
                 };
 
-                tmpCI.documentation = new vs.MarkdownString();
+                const tmpdoc: string[] = [];
                 if (eDef.type.label) {
-                    tmpCI.documentation.appendText(eDef.type.label);
+                    tmpdoc.push(eDef.type.label);
                 }
                 if (eDef.type.documentation) {
-                    tmpCI.documentation.appendText(eDef.type.documentation);
+                    tmpdoc.push(eDef.type.documentation);
                 }
-                tmpCI.documentation.appendCodeblock((<vs.SnippetString>tmpCI.insertText).value, 'xml');
+                tmpdoc.push('```sc2layout\n' + insertText + '\n```');
+                tmpCI.documentation = createMarkdownString(tmpdoc.join('\n'));
 
                 cList.items.push(tmpCI);
             }
         }
         else {
             for (const [sName, eMap] of sFrameStMap) {
-                let tmpCI: vs.CompletionItem;
+                let tmpCI: lsp.CompletionItem;
                 tmpCI = {
-                    kind: vs.CompletionItemKind.Struct,
+                    kind: lsp.CompletionItemKind.Struct,
                     label: sName,
                     filterText: sName,
-                    insertText: `${sName}/`,
-                    detail: `(${eMap.size})`,
-                    range: new vs.Range(
-                        ctx.vDoc.positionAt(ctx.vDoc.offsetAt(ctx.abbrvRange.start) + 1),
-                        ctx.vDoc.positionAt(ctx.vDoc.offsetAt(ctx.abbrvRange.start) + 1 + path[0].length + (path.length >= 2 ? 1 : 0))
+                    textEdit: lsp.TextEdit.replace(
+                        lsp.Range.create(
+                            ctx.vDoc.positionAt(ctx.vDoc.offsetAt(ctx.abbrvRange.start) + 1),
+                            ctx.vDoc.positionAt(ctx.vDoc.offsetAt(ctx.abbrvRange.start) + 1 + path[0].length + (path.length >= 2 ? 1 : 0))
+                        ),
+                        `${sName}/`
                     ),
+                    detail: `(${eMap.size})`,
                     command: { command: 'editor.action.triggerSuggest', title: '' },
                 };
 
-                tmpCI.documentation = new vs.MarkdownString();
-                tmpCI.documentation.appendMarkdown(Array.from(eMap.keys()).map(v => `${v} \`[${sFrameStMap.get(sName).get(v).type.name}]\``).join('\\\n'));
+                tmpCI.documentation = createMarkdownString(
+                    Array.from(eMap.keys()).map(v => `${v} \`[${sFrameStMap.get(sName).get(v).type.name}]\``).join('\\\n')
+                );
 
                 cList.items.push(tmpCI);
             }
@@ -207,7 +218,7 @@ export class CodeAbbreviations extends SuggestionsProvider {
     }
 
     protected provideChildrenNodes(ctx: AbbrComplContext, uNode: UINode, currentDesc: DescNamespace) {
-        const cList = new vs.CompletionList();
+        const cList = lsp.CompletionList.create();
 
         interface EnrichDescOpts {
             sComplexType?: sch.ComplexType;
@@ -216,7 +227,7 @@ export class CodeAbbreviations extends SuggestionsProvider {
             uNode?: UINode;
         }
 
-        function enrichDescComplItem(tmpCI: vs.CompletionItem, opts: EnrichDescOpts) {
+        function enrichDescComplItem(tmpCI: lsp.CompletionItem, opts: EnrichDescOpts) {
             if (opts.uNode) {
                 opts.mainDesc = opts.uNode.mainDesc;
             }
@@ -226,7 +237,11 @@ export class CodeAbbreviations extends SuggestionsProvider {
             }
 
             tmpCI.kind = descKindToCompletionKind(opts.dKind);
-            tmpCI.range = ctx.abbrvRange;
+            tmpCI.insertTextFormat = lsp.InsertTextFormat.Snippet;
+            tmpCI.textEdit = lsp.TextEdit.replace(
+                ctx.abbrvRange,
+                tmpCI.insertText
+            );
             tmpCI.filterText = `.${tmpCI.label}`;
 
             if (opts.uNode) {
@@ -236,14 +251,17 @@ export class CodeAbbreviations extends SuggestionsProvider {
                 tmpCI.detail = `${opts.mainDesc.fqn} (${opts.mainDesc.children.size})`;
             }
 
-            tmpCI.documentation = new vs.MarkdownString();
+            const tmpdoc: string[] = [];
             if (opts.sComplexType.label) {
-                tmpCI.documentation.appendText(opts.sComplexType.label);
+                tmpdoc.push(opts.sComplexType.label);
             }
             if (opts.sComplexType.documentation) {
-                tmpCI.documentation.appendText(opts.sComplexType.documentation);
+                tmpdoc.push(opts.sComplexType.documentation);
             }
-            tmpCI.documentation.appendCodeblock((<vs.SnippetString>tmpCI.insertText).value.replace('$0', '\n'), 'xml');
+            tmpdoc.push('```sc2layout\n' + tmpCI.insertText.replace('$0', '\n') + '\n```');
+            tmpCI.documentation = createMarkdownString(tmpdoc.join('\n'));
+
+            tmpCI.insertText = void 0;
         }
 
         outer: for (const childName of uNode.children.keys()) {
@@ -256,14 +274,14 @@ export class CodeAbbreviations extends SuggestionsProvider {
             });
             if (mIndex !== -1) continue;
 
-            let tmpCI: vs.CompletionItem;
+            let tmpCI: lsp.CompletionItem;
             switch (uChildNode.mainDesc.kind) {
                 case DescKind.Frame:
                 {
                     const sFrameType = this.store.schema.getFrameType(uChildNode.mainDesc.stype);
                     tmpCI = {
                         label: `${uChildNode.name}[${sFrameType.name}]`,
-                        insertText: new vs.SnippetString(`<Frame type="${sFrameType.name}" name="${uChildNode.name}">\$0</Frame>`),
+                        insertText: `<Frame type="${sFrameType.name}" name="${uChildNode.name}">\$0</Frame>`,
                     };
                     break;
                 }
@@ -272,7 +290,7 @@ export class CodeAbbreviations extends SuggestionsProvider {
                 {
                     tmpCI = {
                         label: `${uChildNode.name}[Animation]`,
-                        insertText: new vs.SnippetString(`<Animation name="${uChildNode.name}">\$0</Animation>`),
+                        insertText: `<Animation name="${uChildNode.name}">\$0</Animation>`,
                     };
                     break;
                 }
@@ -281,7 +299,7 @@ export class CodeAbbreviations extends SuggestionsProvider {
                 {
                     tmpCI = {
                         label: `${uChildNode.name}[StateGroup]`,
-                        insertText: new vs.SnippetString(`<StateGroup name="${uChildNode.name}">\$0</StateGroup>`),
+                        insertText: `<StateGroup name="${uChildNode.name}">\$0</StateGroup>`,
                     };
                     break;
                 }
@@ -313,10 +331,11 @@ export class CodeAbbreviations extends SuggestionsProvider {
                 const uChild = this.uNavigator.resolveChild(ufNode, desiredPath.split('/'));
                 if (uChild) continue;
 
-                let tmpCI: vs.CompletionItem;
+                let tmpCI: lsp.CompletionItem;
                 tmpCI = {
                     label: `${desiredPath}[${sHookup.fClass.name.substr(1)}] /H` + (sHookup.required ? '*' : ''),
-                    insertText: new vs.SnippetString(`<Frame type="${sHookup.fClass.name.substr(1)}" name="${desiredPath}">\$0</Frame>`),
+                    insertText: `<Frame type="${sHookup.fClass.name.substr(1)}" name="${desiredPath}">\$0</Frame>`,
+                    insertTextFormat: lsp.InsertTextFormat.Snippet,
                     detail: 'Hookup - ' + (sHookup.required ? '[Required]' : '[Optional]'),
                     preselect: sHookup.required,
                 };

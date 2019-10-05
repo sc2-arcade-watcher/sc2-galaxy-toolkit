@@ -1,23 +1,29 @@
-import * as vs from 'vscode';
-import { AbstractProvider, svcRequest } from './provider';
+import * as lsp from 'vscode-languageserver';
+import { AbstractProvider, errGuard } from '../provider';
 import { DefinitionProvider, DefinitionItemKind, DefinitionDescNode } from './definition';
-import { DescKind } from '../index/desc';
-import { vsLocationOfXEl, getAttrInfoAtPosition } from './helpers';
-import { BuiltinTypeKind } from '../schema/base';
+import { DescKind } from '../../index/desc';
+import { vsLocationOfXEl, getAttrInfoAtPosition } from '../helpers';
+import { BuiltinTypeKind } from '../../schema/base';
+import { logIt } from '../../logger';
 
 
-export class ReferenceProvider extends AbstractProvider implements vs.ReferenceProvider {
-    defProvider: DefinitionProvider;
+export class ReferenceProvider extends AbstractProvider {
+    install() {
+        this.slSrv.conn.onReferences(this.provideReferences.bind(this))
+    }
 
-    @svcRequest()
-    async provideReferences(document: vs.TextDocument, position: vs.Position, context: vs.ReferenceContext, token: vs.CancellationToken): Promise<vs.Location[]> {
-        const xDoc = await this.svcContext.syncVsDocument(document);
-        const offset = xDoc.tdoc.offsetAt(position);
+    @errGuard()
+    @logIt()
+    async provideReferences(params: lsp.ReferenceParams, token: lsp.CancellationToken): Promise<lsp.Location[]> {
+        const xDoc = await this.slSrv.flushDocumentByUri(params.textDocument.uri);
+        if (!xDoc) return;
+
+        const offset = xDoc.tdoc.offsetAt(params.position);
 
         const attrInfo = getAttrInfoAtPosition(xDoc, offset);
         if (!attrInfo || !attrInfo.sType) return;
 
-        const results: vs.Location[] = [];
+        const results: lsp.Location[] = [];
 
         switch (attrInfo.sType.builtinType) {
             case BuiltinTypeKind.ConstantName:
@@ -29,7 +35,7 @@ export class ReferenceProvider extends AbstractProvider implements vs.ReferenceP
             }
         }
 
-        const defContainer = this.defProvider.getDefinitionAtOffset(xDoc, offset);
+        const defContainer = this.slSrv.providers.definition.getDefinitionAtOffset(xDoc, offset);
         if (defContainer) {
             switch (defContainer.itemKind) {
                 case DefinitionItemKind.DescNode:

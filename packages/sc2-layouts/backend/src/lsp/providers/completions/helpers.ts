@@ -1,14 +1,20 @@
-import * as vs from 'vscode';
-import { DescIndex } from '../../index/desc';
-import { ExpressionParser } from '../../parser/expressions';
-import { UINavigator, UIBuilder } from '../../index/hierarchy';
-import { LayoutProcessor } from '../../index/processor';
-import { LayoutChecker } from '../../index/checker';
-import { XRay } from '../../index/xray';
-import { Store } from '../../index/store';
-import { ILoggerConsole } from '../provider';
-import * as sch from '../../schema/base';
-import { ExtConfigCompletionTabStopKind, ExtConfig } from '../../service';
+import * as lsp from 'vscode-languageserver';
+import { DescIndex } from '../../../index/desc';
+import { ExpressionParser } from '../../../parser/expressions';
+import { UINavigator, UIBuilder } from '../../../index/hierarchy';
+import { LayoutProcessor } from '../../../index/processor';
+import { LayoutChecker } from '../../../index/checker';
+import { XRay } from '../../../index/xray';
+import { Store } from '../../../index/store';
+import * as sch from '../../../schema/base';
+import { ExtConfigCompletionTabStopKind, S2LConfig } from '../../config';
+
+export function createMarkdownString(s: string = ''): lsp.MarkupContent {
+    return {
+        kind: 'markdown',
+        value: s,
+    };
+}
 
 export class SuggestionsProvider {
     protected exParser = new ExpressionParser();
@@ -28,37 +34,37 @@ export class SuggestionsProvider {
         this.xray = new XRay(this.store);
     }
 
-    constructor(protected store: Store, protected console: ILoggerConsole, protected config: ExtConfig) {
+    constructor(protected store: Store, protected config: S2LConfig) {
         this.prepare();
     }
 
     protected snippetForElement(eDef: sch.ElementDef) {
-        const insertText = new vs.SnippetString();
-        insertText.appendText(`<${eDef.name}`);
+        const insertText: string[] = [];
+        insertText.push(`<${eDef.name}`);
         let i = 0;
         for (const atInfo of eDef.type.attributes.values()) {
             if (!atInfo.required && !atInfo.default) continue;
 
             if (atInfo.default) {
-                insertText.value += ` ${atInfo.name}="\${${++i}:${atInfo.default.replace('$', '\\$')}}"`;
+                insertText.push(` ${atInfo.name}="\${${++i}:${atInfo.default.replace('$', '\\$')}}"`);
             }
             else if (atInfo.type.emap) {
                 const choices = Array.from(atInfo.type.emap.values()).map(v => v.name);
-                insertText.value += ` ${atInfo.name}="\${${++i}|${choices.join(',')}|}"`;
+                insertText.push(` ${atInfo.name}="\${${++i}|${choices.join(',')}|}"`);
             }
             else {
-                insertText.value += ` ${atInfo.name}="\$${++i}"`;
+                insertText.push(` ${atInfo.name}="\$${++i}"`);
             }
         }
         if (!eDef.type.struct.size && eDef.nodeKind !== sch.ElementDefKind.Frame) {
             if (i === 1 && this.config.completion.tabStop === ExtConfigCompletionTabStopKind.Attr) {
-                insertText.value = insertText.value.replace('$1', '$0');
+                insertText[insertText.length - 1] = insertText[insertText.length - 1].replace('$1', '$0');
             }
-            insertText.value += '/>';
+            insertText.push('/>');
         }
         else {
-            insertText.value += `>\$0</${eDef.name}>`;
+            insertText.push(`>\$0</${eDef.name}>`);
         }
-        return insertText;
+        return insertText.join('');
     }
 }

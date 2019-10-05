@@ -1,25 +1,25 @@
-import * as vs from 'vscode';
-import * as sch from '../schema/base';
-import { AbstractProvider, svcRequest } from './provider';
-import { createScanner, CharacterCodes } from '../parser/scanner';
-import { TokenType, XMLElement, AttrValueKind, XMLDocument, AttrValueKindOffset, XMLAttr, XMLNode } from '../types';
-import { getAttrValueKind, getSelectionFragmentAtPosition, getSelectionIndexAtPosition } from '../parser/utils';
+import * as lsp from 'vscode-languageserver';
+import * as sch from '../../schema/base';
+import { AbstractProvider, errGuard } from '../provider';
+import { TokenType, XMLElement, AttrValueKind, XMLDocument, AttrValueKindOffset, XMLAttr, XMLNode } from '../../types';
+import { getAttrValueKind, getSelectionIndexAtPosition } from '../../parser/utils';
 import URI from 'vscode-uri';
-import { ExpressionParser, PathSelector, PropertyBindExpr, SelectorFragment, SyntaxKind } from '../parser/expressions';
-import { UINavigator, UIBuilder, FrameNode, AnimationNode, UINode } from '../index/hierarchy';
-import { LayoutProcessor } from '../index/processor';
-import { DescKind, DescNamespace } from '../index/desc';
-import { LayoutChecker } from '../index/checker';
-import { getAttrInfoAtPosition } from './helpers';
+import { ExpressionParser, PathSelector, PropertyBindExpr, SelectorFragment, SyntaxKind } from '../../parser/expressions';
+import { UINavigator, UIBuilder, FrameNode, AnimationNode, UINode } from '../../index/hierarchy';
+import { LayoutProcessor } from '../../index/processor';
+import { DescKind, DescNamespace } from '../../index/desc';
+import { LayoutChecker } from '../../index/checker';
+import { getAttrInfoAtPosition } from '../helpers';
+import { logIt } from '../../logger';
 
 function getVsTextRange(xDoc: XMLDocument, start: number, end: number) {
     const origin = {
         start: xDoc.tdoc.positionAt(start),
         end: xDoc.tdoc.positionAt(end),
     };
-    return new vs.Range(
-        new vs.Position(origin.start.line, origin.start.character),
-        new vs.Position(origin.end.line, origin.end.character)
+    return lsp.Range.create(
+        lsp.Position.create(origin.start.line, origin.start.character),
+        lsp.Position.create(origin.end.line, origin.end.character)
     );
 }
 
@@ -33,8 +33,8 @@ export const enum DefinitionItemKind {
 export interface DefinitionContainer {
     xSrcEl: XMLElement;
     xSrcAttr: XMLAttr;
-    sAttrType: sch.SimpleType,
-    srcTextRange: vs.Range;
+    sAttrType: sch.SimpleType;
+    srcTextRange: lsp.Range;
     itemKind: DefinitionItemKind;
     itemData: DefinitionXNode | DefinitionDescNode | UINode;
 
@@ -57,7 +57,7 @@ export interface DefinitionUINode extends DefinitionDescNode {
     selectedNode: UINode;
 }
 
-export class DefinitionProvider extends AbstractProvider implements vs.DefinitionProvider {
+export class DefinitionProvider extends AbstractProvider {
     protected exParser = new ExpressionParser();
     protected uNavigator: UINavigator;
     protected uBuilder: UIBuilder;
@@ -69,6 +69,10 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
         this.uBuilder = new UIBuilder(this.store.schema, this.store.index);
         this.processor = new LayoutProcessor(this.store, this.store.index);
         this.checker = new LayoutChecker(this.store, this.store.index);
+    }
+
+    install() {
+        this.slSrv.conn.onDefinition(this.provideDefinition.bind(this));
     }
 
     protected getSelectedNodeFromPath(pathSel: PathSelector | PropertyBindExpr, xEl: XMLElement, offsRelative: number): DefinitionUINode {
@@ -335,14 +339,17 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
         return defContainer;
     }
 
-    @svcRequest(false)
-    async provideDefinition(document: vs.TextDocument, position: vs.Position, cancToken: vs.CancellationToken) {
-        const xDoc = await this.svcContext.syncVsDocument(document);
-        const offset = xDoc.tdoc.offsetAt(position);
+    @errGuard()
+    @logIt()
+    async provideDefinition(params: lsp.TextDocumentPositionParams, cancToken: lsp.CancellationToken) {
+        const xDoc = await this.slSrv.flushDocumentByUri(params.textDocument.uri);
+        if (!xDoc) return;
+
+        const offset = xDoc.tdoc.offsetAt(params.position);
         const defContainer = this.getDefinitionAtOffset(xDoc, offset);
         if (!defContainer) return;
 
-        const defLinks: vs.DefinitionLink[] = [];
+        const defLinks: lsp.DefinitionLink[] = [];
 
         function appendDefLinkFromXNode(xDecl: XMLNode) {
             if (xDecl === defContainer.xSrcEl) return;
@@ -351,12 +358,16 @@ export class DefinitionProvider extends AbstractProvider implements vs.Definitio
             const posSta = xTargetDoc.tdoc.positionAt(xDecl.start);
             const posEnd = xTargetDoc.tdoc.positionAt((<XMLElement>xDecl).startTagEnd ? (<XMLElement>xDecl).startTagEnd : xDecl.end);
 
-            defLinks.push(<vs.DefinitionLink>{
+            defLinks.push(<lsp.DefinitionLink>{
                 originSelectionRange: defContainer.srcTextRange,
-                targetUri: URI.parse(xTargetDoc.tdoc.uri),
-                targetRange: new vs.Range(
-                    new vs.Position(posSta.line, posSta.character),
-                    new vs.Position(posEnd.line, posEnd.character),
+                targetUri: xTargetDoc.tdoc.uri,
+                targetRange: lsp.Range.create(
+                    lsp.Position.create(posSta.line, posSta.character),
+                    lsp.Position.create(posEnd.line, posEnd.character),
+                ),
+                targetSelectionRange: lsp.Range.create(
+                    lsp.Position.create(posSta.line, posSta.character),
+                    lsp.Position.create(posEnd.line, posEnd.character),
                 ),
             });
         }

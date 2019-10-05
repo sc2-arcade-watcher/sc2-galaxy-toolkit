@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as glob from 'glob';
 import { readFileAsync, globify, readDirAsync } from '../common';
 import URI from 'vscode-uri';
-import { ILoggerConsole, createLogger } from '../services/provider';
+import { logger } from '../logger';
 
 if (!Symbol.asyncIterator) (<any>Symbol).asyncIterator = Symbol.for('Symbol.asyncIterator');
 
@@ -285,9 +285,6 @@ export class Workspace {
     readonly strings = new StringsComponent(this);
     readonly styles = new FontStyleComponent(this);
 
-    constructor (public logger: ILoggerConsole = createLogger()) {
-    }
-
     async clear() {
         for (const sa of Array.from(this.archives)) {
             await this.deleteArchive(sa);
@@ -307,13 +304,13 @@ export class Workspace {
     }
 
     async deleteArchive(sa: Archive) {
-        this.archives.delete(sa);
         await this.strings.delete(sa);
         await this.styles.delete(sa);
+        this.archives.delete(sa);
     }
 
     async reloadArchive(sa: Archive) {
-        this.logger.info(`processing s2mod: ${sa.name}`);
+        logger.info(`processing s2mod: ${sa.name}`);
         await this.strings.reload(sa);
         await this.styles.reload(sa);
     }

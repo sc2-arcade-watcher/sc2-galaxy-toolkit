@@ -1,13 +1,11 @@
-import { ServiceContext, ExtCfgSchemaUpdateMode } from './service';
-import { readSchemaDataDir, createRegistry, createRegistryFromDir } from './schema/registry';
-import * as vs from 'vscode';
+import { readSchemaDataDir, createRegistry, createRegistryFromDir } from '../schema/registry';
 import * as request from 'request-promise-native';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as util from 'util';
 import * as extractZip from 'extract-zip';
-import { IService, ILoggerConsole, svcRequest } from './services/provider';
-import * as sch from './schema/base';
+import { S2LServer } from './server';
+import { logger, logIt } from '../logger';
 
 const extractZipAsync = util.promisify(extractZip);
 const currentModelVersion = 5;
@@ -64,57 +62,54 @@ function sanitizeCommitMessage(msg: string) {
     return msg;
 }
 
-export class SchemaLoader implements IService, vs.Disposable {
-    console: ILoggerConsole;
-    subscriptions: { dispose(): any }[] = [];
-    protected storagePath: string;
-
-    constructor(protected sCtx: ServiceContext) {
-        this.console = sCtx.console;
-        this.subscriptions.push(vs.commands.registerCommand('sc2layout.updateSchemaFiles', this.performUpdate.bind(this, true)));
-        this.storagePath = this.sCtx.extContext.globalStoragePath;
+export class SchemaLoader {
+    constructor(protected slSrv: S2LServer) {
     }
 
-    dispose() {
-        this.subscriptions.forEach(i => i.dispose());
-        this.subscriptions = [];
+    protected async readSmState() {
+        const schStateSrc = path.join(this.slSrv.initOptions.globalStoragePath, 'sch-state.json');
+        return await fs.readJSON(schStateSrc) as SchemaState;
     }
 
+    protected async storeSmState(smState: SchemaState) {
+        const schStateSrc = path.join(this.slSrv.initOptions.globalStoragePath, 'sch-state.json');
+        await fs.writeJSON(schStateSrc, smState);
+    }
+
+    @logIt({ resDump: true })
     protected async getMostRecentCommit() {
-        this.console.log(`[SchemaLoader] getMostRecentCommit`);
         const r = await request.get(`https://api.github.com/repos/${schemaGithubRepo}/branches/master`, {
             headers: {
                 'User-Agent': 'nodejs request'
             },
             json: true,
         });
-        this.console.log(`[SchemaLoader] getMostRecentCommit result`, (<IGithub.BranchCommit>r.commit).commit);
         return <IGithub.BranchCommit>r.commit;
     }
 
+    @logIt({ resDump: true })
     protected async getTags() {
-        this.console.log(`[SchemaLoader] getTags`);
         const r: IGithub.Tag.Entry[] = await request.get(`https://api.github.com/repos/${schemaGithubRepo}/tags`, {
             headers: {
                 'User-Agent': 'nodejs request'
             },
             json: true,
         });
-        this.console.log(`[SchemaLoader] getTags result`, r.map(v => v.name));
         return r;
     }
 
+    @logIt()
     protected async downloadSchema(gTag: IGithub.Tag.Entry, version: number[]): Promise<SchemaState> {
         const shortHash = gTag.commit.sha.substr(0, 7);
-        const tmpPath = path.join(this.storagePath, 'tmp');
+        const tmpPath = path.join(this.slSrv.initOptions.globalStoragePath, 'tmp');
         const zipSrc = path.join(tmpPath, `${shortHash}.zip`);
         let outDir = tmpPath;
 
-        this.console.log(`[SchemaLoader] Clearing tmp..`);
+        logger.info(`[SchemaLoader] Clearing tmp..`);
         await fs.remove(tmpPath);
         await fs.ensureDir(tmpPath);
 
-        this.console.log(`[SchemaLoader] downloading zipball of ${gTag.commit.sha}`);
+        logger.info(`[SchemaLoader] downloading zipball of ${gTag.commit.sha}`);
         await fs.ensureFile(zipSrc);
         const payload: Buffer = await request.get(`https://api.github.com/repos/${schemaGithubRepo}/zipball/${gTag.commit.sha}`, {
             headers: {
@@ -124,25 +119,25 @@ export class SchemaLoader implements IService, vs.Disposable {
         });
         await fs.writeFile(zipSrc, payload);
 
-        this.console.log(`[SchemaLoader] extracting zip..`);
+        logger.info(`[SchemaLoader] extracting zip..`);
         await extractZipAsync(zipSrc, {
             dir: outDir,
             defaultFileMode: 0o444,
             onEntry: (entry, zipFile) => {
-                this.console.log(`[SchemaLoader] extracting file "${entry.fileName}" ..`);
+                logger.info(`[SchemaLoader] extracting file "${entry.fileName}" ..`);
             }
         });
-        this.console.log(`[SchemaLoader] all files extracted`);
+        logger.info(`[SchemaLoader] all files extracted`);
         await fs.remove(zipSrc);
         outDir = path.join(outDir, `${schemaGithubRepo.replace('/', '-')}-${shortHash}`);
 
-        this.console.log(`[SchemaLoader] reading from dir..`);
+        logger.info(`[SchemaLoader] reading from dir..`);
         const sData = await readSchemaDataDir(path.join(outDir, 'sc2layout'));
         await fs.remove(outDir);
 
-        this.console.log(`[SchemaLoader] caching..`);
+        logger.info(`[SchemaLoader] caching..`);
         const cacheFilename = `sch-cache-${shortHash}.json`;
-        await fs.writeJSON(path.join(this.storagePath, cacheFilename), sData);
+        await fs.writeJSON(path.join(this.slSrv.initOptions.globalStoragePath, cacheFilename), sData);
 
         return {
             tag: gTag,
@@ -152,14 +147,13 @@ export class SchemaLoader implements IService, vs.Disposable {
         };
     }
 
-    @svcRequest()
+    @logIt()
     protected async updateSchema(reportStatus: boolean = false) {
-        let sbTmp: vs.Disposable;
         if (reportStatus) {
-            sbTmp = vs.window.setStatusBarMessage('SC2 Layout: checking if schema files are up to date..');
+            this.slSrv.conn.window.showInformationMessage('SC2 Layout: checking if schema files are up to date..');
         }
 
-        let smState = <SchemaState>this.sCtx.extContext.globalState.get('schema');
+        let smState = await this.readSmState();
 
         let gTag: IGithub.Tag.Entry;
         let gVersion: number[];
@@ -172,75 +166,69 @@ export class SchemaLoader implements IService, vs.Disposable {
             }
         }
 
-        if (sbTmp) sbTmp.dispose();
-
         if (gTag === void 0) {
             throw new Error(`Couldn't find schema files for v${currentModelVersion} in the repoistory.`);
         }
 
         if (!smState || smState.tag.name !== gTag.name) {
-            this.console.log(`[SchemaLoader] schema files are out of date, updating..`);
-            sbTmp = vs.window.setStatusBarMessage('SC2 Layout: schema files are out of date, updating..');
+            logger.info(`[SchemaLoader] schema files are out of date, updating..`);
+            logger.info('SC2 Layout: schema files are out of date, updating..');
             smState = await this.downloadSchema(gTag, gVersion);
-            this.sCtx.extContext.globalState.update('schema', smState);
-            sbTmp.dispose();
-            vs.window.setStatusBarMessage(`SC2 Layout: schema files updated to ${smState.tag.name}`, 5000);
+            this.storeSmState(smState);
+            logger.info(`SC2 Layout: schema files updated to ${smState.tag.name}`);
+            this.slSrv.conn.window.showInformationMessage(`SC2 Layout: schema files updated to ${smState.tag.name}`);
             return smState;
         }
         else {
-            this.console.log(`[SchemaLoader] schema files are up to date`);
-            vs.window.setStatusBarMessage(`SC2 Layout: schema files are up to date`, 5000);
+            logger.info(`[SchemaLoader] schema files are up to date`);
         }
     }
 
-    protected async performUpdate(reportStatus: boolean = false) {
+    public async performUpdate(reportStatus: boolean = false) {
         const smState = await this.updateSchema(reportStatus);
 
         if (smState) {
-            const decision = await vs.window.showInformationMessage(
+            const decision = await this.slSrv.conn.window.showInformationMessage(
                 (
                     `Schema files have been updated to ` +
                     `"[${smState.tag.name}](https://github.com/${schemaGithubRepo}/releases/tag/${smState.tag.name})".\n` +
                     `Restart is required for changes to take effect.`
                 ),
-                {
-                    modal: false,
-                },
-                'Restart',
-                'Later'
+                { title: 'Restart' },
+                { title: 'Later' },
             );
-            if (decision === 'Restart') {
-                vs.commands.executeCommand('workbench.action.reloadWindow');
+            if (decision && decision.title === 'Restart') {
+                process.exit(0);
             }
         }
     }
 
     async prepareSchema() {
-        const schConfig = this.sCtx.config.schema;
+        const schConfig = this.slSrv.cfg.schema;
 
         if (typeof schConfig.localPath === 'string') {
-            this.console.info('[SchemaLoader] using custom path', schConfig.localPath);
+            logger.info('[SchemaLoader] using custom path', schConfig.localPath);
             return await createRegistryFromDir(path.join(schConfig.localPath, 'sc2layout'));
         }
         else {
-            let smState = <SchemaState>this.sCtx.extContext.globalState.get('schema');
-            this.console.log('[SchemaLoader] state', smState);
+            let smState = await this.readSmState();
+            logger.info('[SchemaLoader] state', smState);
 
-            if (smState && (smState.cacheFilename === void 0 || !(await fs.pathExists(path.join(this.storagePath, smState.cacheFilename)))) ) {
-                this.console.warn(`[SchemaLoader] cached file no longer exists`, smState.cacheFilename);
+            if (smState && (smState.cacheFilename === void 0 || !(await fs.pathExists(path.join(this.slSrv.initOptions.globalStoragePath, smState.cacheFilename)))) ) {
+                logger.warn(`[SchemaLoader] cached file no longer exists`, smState.cacheFilename);
                 smState = void 0;
-                this.sCtx.extContext.globalState.update('schema', smState);
+                await this.storeSmState(smState);
             }
 
             if (!smState) {
                 smState = await this.updateSchema(true);
             }
-            else if (schConfig.updateMode === ExtCfgSchemaUpdateMode.Auto) {
+            else if (schConfig.updateMode === 'Auto') {
                 this.performUpdate();
             }
 
-            this.console.info(`[SchemaLoader] loading from`, path.join(this.storagePath, smState.cacheFilename));
-            return createRegistry(await fs.readJSON(path.join(this.storagePath, smState.cacheFilename)));
+            logger.info(`[SchemaLoader] loading from`, path.join(this.slSrv.initOptions.globalStoragePath, smState.cacheFilename));
+            return createRegistry(await fs.readJSON(path.join(this.slSrv.initOptions.globalStoragePath, smState.cacheFilename)));
         }
     }
 }

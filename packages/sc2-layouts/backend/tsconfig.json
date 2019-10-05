@@ -1,24 +1,29 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es2016",
+        "target": "es2015",
         "outDir": "out",
+        "lib": [
+            "es2017",
+            "esnext.asynciterable"
+        ],
+        // "rootDir": ".",
+        // "declaration": true,
+        // "removeComments": false,
+        "preserveConstEnums": true,
         "allowUnreachableCode": true,
         "sourceMap": true,
         "allowJs": false,
         "strict": true,
         "strictNullChecks": false,
-        "rootDir": "src"
+        "experimentalDecorators": true
     },
     "include": [
-        "src"
+        "src/**/*",
+        "test/**/*"
     ],
     "exclude": [
         "node_modules",
         ".vscode-test"
-    ],
-    "references": [
-        { "path": "./backend" },
-        { "path": "./client" }
     ]
 }

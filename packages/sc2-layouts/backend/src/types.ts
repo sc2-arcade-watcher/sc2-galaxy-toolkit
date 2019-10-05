@@ -50,6 +50,8 @@ export class TextDocument implements lsp.TextDocument {
     }
 
     positionAt(offset: number): lsp.Position {
+        offset = Math.max(Math.min(offset, this._content.length), 0);
+
         let low = 1, high = this.lineMap.length;
         const lineOffsets = this.lineMap;
 
@@ -68,6 +70,29 @@ export class TextDocument implements lsp.TextDocument {
 
     offsetAt(position: lsp.Position): number {
         return this.lineMap[position.line] + position.character;
+    }
+
+    getWordRangeAtPosition(position: lsp.Position, regex: RegExp = /[^\s]+/): lsp.Range | undefined {
+        const line = Math.min(this.lineMap.length, Math.max(0, position.line));
+        const lineText = this.getText(lsp.Range.create(
+            lsp.Position.create(line, 0),
+            this.positionAt(this.lineMap[line + 1] ? this.lineMap[line + 1] : this._content.length)
+        ));
+        const character = Math.min(lineText.length - 1, Math.max(0, position.character));
+        let startChar = character;
+        let endChar = character;
+        while (startChar > 0 && lineText.charAt(startChar - 1).match(regex)) {
+            --startChar;
+        }
+        while (endChar < lineText.length - 1 && lineText.charAt(endChar).match(regex)) {
+            ++endChar;
+        }
+        if (startChar === endChar) {
+            return void 0;
+        }
+        else {
+            return lsp.Range.create(line, startChar, line, endChar);
+        }
     }
 
     get uri() {

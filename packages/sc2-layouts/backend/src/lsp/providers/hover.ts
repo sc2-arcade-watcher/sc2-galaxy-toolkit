@@ -1,10 +1,11 @@
-import * as vs from 'vscode';
-import * as sch from '../schema/base';
-import { AbstractProvider, svcRequest } from './provider';
-import { XMLElement } from '../types';
+import * as lsp from 'vscode-languageserver';
+import * as sch from '../../schema/base';
+import { AbstractProvider, errGuard } from '../provider';
+import { XMLElement } from '../../types';
 import { DefinitionProvider, DefinitionItemKind, DefinitionDescNode, DefinitionContainer, DefinitionXNode, DefinitionUINode } from './definition';
-import { vsRangeOrPositionOfXNode } from './helpers';
-import { DescKind } from '../index/desc';
+import { vsRangeOrPositionOfXNode, rangeContainsPosition } from '../helpers';
+import { DescKind } from '../../index/desc';
+import { logIt, logger } from '../../logger';
 
 export function slugify(str: string) {
     str = str.replace(/[_\\:<>\.]/g, '-');
@@ -28,8 +29,10 @@ function attrSchDocs(sAttr: sch.Attribute)  {
     return s;
 }
 
-export class HoverProvider extends AbstractProvider implements vs.HoverProvider {
-    defProvider: DefinitionProvider;
+export class HoverProvider extends AbstractProvider {
+    install() {
+        this.slSrv.conn.onHover(this.provideHover.bind(this));
+    }
 
     protected matchAttrValueEnum(smType: sch.SimpleType, value: string) {
         value = value.toLowerCase();
@@ -56,7 +59,7 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
         return processSmType(smType);
     }
 
-    protected tooltipDefinitionDesc(defContainer: DefinitionContainer, dscNode: DefinitionDescNode | DefinitionUINode): vs.MarkdownString {
+    protected tooltipDefinitionDesc(defContainer: DefinitionContainer, dscNode: DefinitionDescNode | DefinitionUINode): lsp.MarkupContent {
         const contents: string[] = [];
 
         if (dscNode.selectedDescs.length) {
@@ -81,7 +84,10 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
         for (const desc of dscNode.selectedDescs) {
             contents.push(desc.fqn);
         }
-        return new vs.MarkdownString(contents.join('\n\n'));
+        return {
+            kind: 'markdown',
+            value: contents.join('\n\n'),
+        };
     }
 
     protected processElement(node: XMLElement) {
@@ -119,25 +125,23 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
         }
         contents += '\n\n' + Array.from(node.stype.attributes.values()).map(v => attrSchDocs(v)).join('\n\n');
 
-        return new vs.Hover(contents.trim());
+        return <lsp.Hover>{
+            contents: contents.trim(),
+        };
     }
 
-    @svcRequest(
-        false,
-        (document: vs.TextDocument, position: vs.Position) => {
-            return {
-                filename: document.uri.fsPath,
-                position: {line: position.line, char: position.character},
-            };
-        },
-        (r: vs.Hover) => typeof r
-    )
-    async provideHover(document: vs.TextDocument, position: vs.Position, token: vs.CancellationToken) {
-        const sourceFile = await this.svcContext.syncVsDocument(document);
+    @errGuard()
+    @logIt({
+        argsDump: (p: lsp.TextDocumentPositionParams) => p,
+        resDump: (r: lsp.Hover) => typeof r,
+    })
+    async provideHover(params: lsp.TextDocumentPositionParams, token: lsp.CancellationToken) {
+        const sourceFile = await this.slSrv.flushDocumentByUri(params.textDocument.uri);
+        if (!sourceFile) return;
 
-        const offset = document.offsetAt(position);
+        const offset = sourceFile.tdoc.offsetAt(params.position);
         const node = sourceFile.findNodeAt(offset);
-        let hv: vs.Hover;
+        let hv: lsp.Hover;
 
         if (node instanceof XMLElement && node.stype) {
             if (node.start <= offset && (node.start + node.tag.length + 1) > offset) {
@@ -161,22 +165,23 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
                     if (scAttr) {
                         if ((attr.start + attr.name.length) > offset) {
                             let contents = attrSchDocs(scAttr);
-                            hv = new vs.Hover(
-                                new vs.MarkdownString(contents),
-                            );
+                            hv = {
+                                contents: <lsp.MarkupContent>{ kind: 'markdown', value: contents },
+                            };
                         }
                         else if (attr.startValue && (attr.startValue - 1) <= offset && attr.end >= offset) {
                             switch (scAttr.type.builtinType) {
                                 default:
                                 {
-                                    const wordRange = document.getWordRangeAtPosition(position);
-                                    const matchedEn = this.matchAttrValueEnum(scAttr.type, document.getText(wordRange));
+                                    const wordRange = sourceFile.tdoc.getWordRangeAtPosition(params.position, this.slSrv.wordPattern);
+                                    if (!wordRange) break;
+                                    const matchedEn = this.matchAttrValueEnum(scAttr.type, sourceFile.tdoc.getText(wordRange));
                                     if (matchedEn && matchedEn.label) {
                                         let contents = `**${matchedEn.name}** — ${matchedEn.label}\n\n[${matchedEn.type.name}](${docsLink('type', matchedEn.type.name)})`;
-                                        hv = new vs.Hover(
-                                            new vs.MarkdownString(contents),
-                                            wordRange
-                                        );
+                                        hv = {
+                                            contents: <lsp.MarkupContent>{ kind: 'markdown', value: contents },
+                                            range: wordRange,
+                                        };
                                     }
                                     break;
                                 }
@@ -188,34 +193,34 @@ export class HoverProvider extends AbstractProvider implements vs.HoverProvider 
         }
 
         if (!hv) {
-            const defContainer = this.defProvider.getDefinitionAtOffset(sourceFile, offset);
+            const defContainer = this.slSrv.providers.definition.getDefinitionAtOffset(sourceFile, offset);
             if (!defContainer) return;
 
             switch (defContainer.itemKind) {
                 case DefinitionItemKind.DescNode:
                 case DefinitionItemKind.UINode:
                 {
-                    hv = new vs.Hover(
-                        this.tooltipDefinitionDesc(defContainer, <DefinitionDescNode>defContainer.itemData),
-                        defContainer.srcTextRange
-                    );
+                    hv = {
+                        contents: this.tooltipDefinitionDesc(defContainer, <DefinitionDescNode>defContainer.itemData),
+                        range: defContainer.srcTextRange
+                    };
                     break;
                 }
 
                 case DefinitionItemKind.XNode:
                 {
-                    const mstr = new vs.MarkdownString();
+                    const mstr: lsp.MarkedString[] = [];
                     for (const xEl of (<DefinitionXNode>defContainer.itemData).xNodes) {
-                        if ((<vs.Range>vsRangeOrPositionOfXNode(xEl)).contains(position)) continue;
-                        mstr.appendCodeblock(
-                            xEl.getDocument().tdoc.getText(<vs.Range>vsRangeOrPositionOfXNode(xEl)),
-                            'sc2layout'
-                        )
+                        if (rangeContainsPosition(vsRangeOrPositionOfXNode(xEl), params.position)) continue;
+                        mstr.push({
+                            language: 'sc2layout',
+                            value: xEl.getDocument().tdoc.getText(<lsp.Range>vsRangeOrPositionOfXNode(xEl)),
+                        });
                     }
-                    hv = new vs.Hover(
-                        mstr,
-                        defContainer.srcTextRange
-                    );
+                    hv = {
+                        contents: mstr,
+                        range: defContainer.srcTextRange,
+                    };
                 }
             }
         }

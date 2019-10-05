@@ -1,7 +1,14 @@
-import * as vs from 'vscode';
+import * as lsp from 'vscode-languageserver';
 import { XMLElement, XMLDocument, XMLNode, XMLNodeKind } from '../types';
-import URI from 'vscode-uri';
 import { SimpleType } from '../schema/base';
+
+export function rangeContainsPosition(range: lsp.Range, pos: lsp.Position) {
+    if (range.start.line > pos.line) return false;
+    if (range.end.line < pos.line) return false;
+    if (range.start.line === pos.line && range.start.character > pos.character) return false;
+    if (range.end.line === pos.line && range.end.character < pos.character) return false;
+    return true;
+}
 
 export function vsRangeOrPositionOfXNode(xNode: XMLNode) {
     const xDoc = xNode.getDocument();
@@ -12,7 +19,10 @@ export function vsRangeOrPositionOfXNode(xNode: XMLNode) {
             const rootNode = (<XMLDocument>xNode).getRootNode();
             if (!rootNode) {
                 const posSta = xDoc.tdoc.positionAt(xEl.start);
-                return new vs.Position(posSta.line, posSta.character);
+                return lsp.Range.create(
+                    lsp.Position.create(posSta.line, posSta.character),
+                    lsp.Position.create(posSta.line, posSta.character)
+                );
             }
             else {
                 xEl = rootNode;
@@ -29,14 +39,14 @@ export function vsRangeOrPositionOfXNode(xNode: XMLNode) {
 
     const posSta = xDoc.tdoc.positionAt(xEl.start);
     const posEnd = xDoc.tdoc.positionAt(xEl.startTagEnd ? xEl.startTagEnd : xEl.end);
-    return new vs.Range(
-        new vs.Position(posSta.line, posSta.character),
-        new vs.Position(posEnd.line, posEnd.character),
+    return lsp.Range.create(
+        lsp.Position.create(posSta.line, posSta.character),
+        lsp.Position.create(posEnd.line, posEnd.character),
     );
 }
 
 export function vsLocationOfXEl(xEl: XMLNode) {
-    return new vs.Location(URI.parse(xEl.getDocument().tdoc.uri), vsRangeOrPositionOfXNode(xEl));
+    return lsp.Location.create(xEl.getDocument().tdoc.uri, vsRangeOrPositionOfXNode(xEl));
 }
 
 export function getAttrInfoAtPosition(xDoc: XMLDocument, offset: number) {

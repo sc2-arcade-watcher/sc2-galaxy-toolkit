@@ -51,8 +51,14 @@ export class Store implements IStoreEvents {
 
     async clear() {
         for (const sa of this.s2ws.archives) {
-            this._onDidArchiveDelete.fire(sa);
+            await this.deleteArchive(sa);
         }
+
+        for (const docUri of this.documents.keys()) {
+            this.removeDocument(docUri);
+        }
+
+
         await this.s2ws.clear();
         this.index.clear();
         this.documents.clear();

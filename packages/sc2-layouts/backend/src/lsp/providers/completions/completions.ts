@@ -1,23 +1,23 @@
-import * as util from 'util';
-import * as vs from 'vscode';
-import * as sch from '../schema/base';
-import { AbstractProvider, svcRequest, ILoggerConsole } from './provider';
-import { ServiceContext, ExtConfigCompletionTabStopKind } from '../service';
-import { createScanner, CharacterCodes } from '../parser/scanner';
-import { TokenType, ScannerState, XMLElement, AttrValueKind, XMLNodeKind, AttrValueKindOp } from '../types';
-import { DescIndex, DescNamespace, DescKind } from '../index/desc';
-import * as s2 from '../index/s2mod';
-import { Store } from '../index/store';
-import { SelHandleKind, SelectorFragment, PathSelector, PropertyBindExpr, SyntaxKind } from '../parser/expressions';
-import { FrameNode, AnimationNode, StateGroupNode, UINode } from '../index/hierarchy';
-import { getSelectionIndexAtPosition, getAttrValueKind, isConstantValue } from '../parser/utils';
-import { reValueColor } from '../schema/validation';
-import { parseColorLiteral, getColorAsHexARGB } from './color';
-import { reAbbrvWord, CodeAbbreviations } from './completions/codeAbbreviations';
-import { SuggestionsProvider } from './completions/helpers';
+import * as lsp from 'vscode-languageserver';
+import * as sch from '../../../schema/base';
+import { AbstractProvider, errGuard } from '../../provider';
+import { ExtConfigCompletionTabStopKind } from '../../config';
+import { createScanner, CharacterCodes } from '../../../parser/scanner';
+import { TokenType, ScannerState, XMLElement, AttrValueKind, XMLNodeKind, AttrValueKindOp } from '../../../types';
+import { DescIndex, DescNamespace, DescKind } from '../../../index/desc';
+import * as s2 from '../../../index/s2mod';
+import { Store } from '../../../index/store';
+import { SelHandleKind, SelectorFragment, PathSelector, PropertyBindExpr, SyntaxKind } from '../../../parser/expressions';
+import { FrameNode, AnimationNode, StateGroupNode, UINode } from '../../../index/hierarchy';
+import { getSelectionIndexAtPosition, getAttrValueKind, isConstantValue } from '../../../parser/utils';
+import { reValueColor } from '../../../schema/validation';
+import { parseColorLiteral, getColorAsHexARGB } from '../color';
+import { reAbbrvWord, CodeAbbreviations } from './codeAbbreviations';
+import { SuggestionsProvider, createMarkdownString } from './helpers';
+import { logIt } from '../../../logger';
 
 function completionsForSimpleType(smType: sch.SimpleType) {
-    let items = <vs.CompletionItem[]> [];
+    let items = <lsp.CompletionItem[]> [];
 
     if (smType.union) {
         for (const unSmType of smType.union) {
@@ -27,11 +27,11 @@ function completionsForSimpleType(smType: sch.SimpleType) {
 
     if (smType.emap) {
         for (const e of smType.emap.values()) {
-            const tc = <vs.CompletionItem>{
+            const tc = <lsp.CompletionItem>{
                 label: e.name,
-                kind: vs.CompletionItemKind.EnumMember,
+                kind: lsp.CompletionItemKind.EnumMember,
                 detail: e.label,
-                documentation: new vs.MarkdownString(`\`[${smType.name}]\``),
+                documentation: createMarkdownString(`\`[${smType.name}]\``),
             };
             items.push(tc);
         }
@@ -41,7 +41,7 @@ function completionsForSimpleType(smType: sch.SimpleType) {
 }
 
 function completionFromDescItem(descItem: DescNamespace) {
-    return <vs.CompletionItem>{
+    return <lsp.CompletionItem>{
         kind: descKindToCompletionKind(descItem.kind),
         label: descItem.name,
         detail: `${descItem.stype.name} (${descItem.children.size})`,
@@ -58,19 +58,19 @@ export function descKindToCompletionKind(dkind: DescKind) {
     switch (dkind) {
         case DescKind.Root:
         case DescKind.File:
-            return vs.CompletionItemKind.Module;
+            return lsp.CompletionItemKind.Module;
         case DescKind.Frame:
-            return vs.CompletionItemKind.Struct;
+            return lsp.CompletionItemKind.Struct;
         case DescKind.Animation:
-            return vs.CompletionItemKind.Event;
+            return lsp.CompletionItemKind.Event;
         case DescKind.StateGroup:
-            return vs.CompletionItemKind.Class;
+            return lsp.CompletionItemKind.Class;
     }
-    return vs.CompletionItemKind.Folder;
+    return lsp.CompletionItemKind.Folder;
 }
 
 interface ComplContext {
-    citems: vs.CompletionItem[];
+    citems: lsp.CompletionItem[];
     node: XMLElement;
     offset: number;
     xtokenText: string;
@@ -94,7 +94,7 @@ class AttrValueProvider extends SuggestionsProvider {
     protected suggestPropNames(ctx: AtComplContext) {
         for (const props of this.store.schema.frameClassProps.values()) {
             ctx.citems.push({
-                kind: vs.CompletionItemKind.Property,
+                kind: lsp.CompletionItemKind.Property,
                 label: props[0].name,
                 detail: `[${props[0].fclass.name}] ${props[0].etype.type.name}`,
                 documentation: props[0].etype.label,
@@ -175,7 +175,7 @@ class AttrValueProvider extends SuggestionsProvider {
             case sch.BuiltinTypeKind.DescInternal:
             {
                 if (pathIndex === void 0 || pathIndex === 0) {
-                    ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$root'});
+                    ctx.citems.push({kind: lsp.CompletionItemKind.Keyword, label: '$root'});
                     const uNode = this.uBuilder.buildNodeFromDesc(currentDesc);
                     appendUNodeChildren(uNode.children.values());
                 }
@@ -215,9 +215,9 @@ class AttrValueProvider extends SuggestionsProvider {
                         (selFrag.parameter.pos <= ctx.atOffsetRelative && selFrag.parameter.end >= ctx.atOffsetRelative)
                     ) {
                         if (selFrag.parameter.key && selFrag.parameter.key.pos <= ctx.atOffsetRelative && selFrag.parameter.key.end >= ctx.atOffsetRelative) {
-                            ctx.citems.push({kind: vs.CompletionItemKind.Operator, label: 'type', });
-                            ctx.citems.push({kind: vs.CompletionItemKind.Operator, label: 'oftype', });
-                            ctx.citems.push({kind: vs.CompletionItemKind.Operator, label: 'name', });
+                            ctx.citems.push({kind: lsp.CompletionItemKind.Operator, label: 'type', });
+                            ctx.citems.push({kind: lsp.CompletionItemKind.Operator, label: 'oftype', });
+                            ctx.citems.push({kind: lsp.CompletionItemKind.Operator, label: 'name', });
                         }
                         else if (selFrag.parameter.value && selFrag.parameter.value.pos <= ctx.atOffsetRelative && selFrag.parameter.value.end >= ctx.atOffsetRelative) {
                             switch (selFrag.parameter.key.name) {
@@ -226,7 +226,7 @@ class AttrValueProvider extends SuggestionsProvider {
                                 {
                                     for (const tmp of this.store.schema.frameTypes.values()) {
                                         ctx.citems.push({
-                                            kind: vs.CompletionItemKind.EnumMember,
+                                            kind: lsp.CompletionItemKind.EnumMember,
                                             label: tmp.name,
                                             detail: Array.from(tmp.fclasses.values()).map(fc => `${fc.name}`).join(' :: '),
                                         });
@@ -240,7 +240,7 @@ class AttrValueProvider extends SuggestionsProvider {
                                     while (cparent = cparent.parent) {
                                         if (cparent.mainDesc.kind !== DescKind.Frame) break;
                                         const compl = completionFromUNodeItem(cparent);
-                                        compl.documentation = new vs.MarkdownString(`\`${cparent.mainDesc.fqn}\``);
+                                        compl.documentation = createMarkdownString(`\`${cparent.mainDesc.fqn}\``);
                                         ctx.citems.push(compl);
                                     }
                                     break;
@@ -263,12 +263,12 @@ class AttrValueProvider extends SuggestionsProvider {
                         case SelHandleKind.Ancestor:
                         case SelHandleKind.Custom:
                         {
-                            ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$parent', preselect: true});
-                            ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$this', preselect: true});
-                            ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$sibling', preselect: false});
-                            ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$ancestor', preselect: false});
+                            ctx.citems.push({kind: lsp.CompletionItemKind.Keyword, label: '$parent', preselect: true});
+                            ctx.citems.push({kind: lsp.CompletionItemKind.Keyword, label: '$this', preselect: true});
+                            ctx.citems.push({kind: lsp.CompletionItemKind.Keyword, label: '$sibling', preselect: false});
+                            ctx.citems.push({kind: lsp.CompletionItemKind.Keyword, label: '$ancestor', preselect: false});
                             if (pathIndex === 0) {
-                                ctx.citems.push({kind: vs.CompletionItemKind.Keyword, label: '$layer', preselect: false});
+                                ctx.citems.push({kind: lsp.CompletionItemKind.Keyword, label: '$layer', preselect: false});
                             }
                             break;
                         }
@@ -279,7 +279,7 @@ class AttrValueProvider extends SuggestionsProvider {
                     if (selFrag.selKind !== SelHandleKind.Identifier) {
                         for (const item of this.dIndex.handles.values()) {
                             ctx.citems.push({
-                                kind: vs.CompletionItemKind.Variable,
+                                kind: lsp.CompletionItemKind.Variable,
                                 label: `$${item.name}`,
                                 detail: `[${item.desc.stype.name}]\n${item.desc.fqn}`,
                             });
@@ -294,7 +294,7 @@ class AttrValueProvider extends SuggestionsProvider {
     protected suggestFontStyles(ctx: AtValComplContext) {
         for (const item of this.store.s2ws.styles.values) {
             ctx.citems.push({
-                kind: vs.CompletionItemKind.Reference,
+                kind: lsp.CompletionItemKind.Reference,
                 label: item.name,
                 detail: Array.from(item.archives.values()).map(a => a.name).join(' ; '),
             });
@@ -311,13 +311,13 @@ class AttrValueProvider extends SuggestionsProvider {
         for (const [ikey, item] of rl) {
             if (item.partial) {
                 ctx.citems.push({
-                    kind: vs.CompletionItemKind.Folder,
+                    kind: lsp.CompletionItemKind.Folder,
                     label: ikey,
                 });
             }
             else {
                 ctx.citems.push({
-                    kind: vs.CompletionItemKind.Reference,
+                    kind: lsp.CompletionItemKind.Reference,
                     label: ikey,
                     detail: item.result.value,
                     documentation: item.result.archive.name,
@@ -356,9 +356,9 @@ class AttrValueProvider extends SuggestionsProvider {
 
             ctx.citems.push({
                 label: uChild.name,
-                kind: vs.CompletionItemKind.Value,
+                kind: lsp.CompletionItemKind.Value,
                 detail: `[${uChild.mainDesc.stype.name}]`,
-                documentation: new vs.MarkdownString(`${uChild.mainDesc.fqn.replace(/\//g, '/\\\n')}`),
+                documentation: createMarkdownString(`${uChild.mainDesc.fqn.replace(/\//g, '/\\\n')}`),
             });
         }
     }
@@ -373,7 +373,7 @@ class AttrValueProvider extends SuggestionsProvider {
                 for (const aNode of this.uNavigator.getChildrenOfType<AnimationNode>(uNode, DescKind.Animation).values()) {
                     for (const [evName, evXEl] of aNode.getEvents()) {
                         ctx.citems.push({
-                            kind: vs.CompletionItemKind.Event,
+                            kind: lsp.CompletionItemKind.Event,
                             label: evName,
                             detail: `[${aNode.name}] ${evXEl.map(item => item.getAttributeValue('action')).join(' | ')}`,
                         });
@@ -396,7 +396,7 @@ class AttrValueProvider extends SuggestionsProvider {
         for (const aNode of this.uNavigator.getChildrenOfType<AnimationNode>(uNode, DescKind.Animation).values()) {
             ctx.citems.push({
                 label: aNode.name,
-                kind: vs.CompletionItemKind.Variable,
+                kind: lsp.CompletionItemKind.Variable,
             });
         }
     }
@@ -413,9 +413,9 @@ class AttrValueProvider extends SuggestionsProvider {
             docs += `**Context:**\\\n${aNode.parentNodes.map(item => `\\- ${item.name} \`[${item.constructor.name}]\``).join('\\\n')}`;
             ctx.citems.push({
                 label: aNode.name,
-                kind: vs.CompletionItemKind.Class,
+                kind: lsp.CompletionItemKind.Class,
                 detail: aNode.parent ? `${aNode.parent.name} [parent]` : void 0,
-                documentation: new vs.MarkdownString(docs),
+                documentation: createMarkdownString(docs),
             });
         }
     }
@@ -426,7 +426,7 @@ class AttrValueProvider extends SuggestionsProvider {
         for (const xElState of sgNode.states.values()) {
             ctx.citems.push({
                 label: xElState[0].getAttributeValue('name'),
-                kind: vs.CompletionItemKind.Interface,
+                kind: lsp.CompletionItemKind.Interface,
                 detail: sgNode.parent ? `${sgNode.name} — ${sgNode.parent.name} [parent]` : void 0,
             });
         }
@@ -440,7 +440,7 @@ class AttrValueProvider extends SuggestionsProvider {
                 for (const currScProp of sfType.fprops.values()) {
                     ctx.citems.push({
                         label: currScProp.name,
-                        kind: vs.CompletionItemKind.Variable,
+                        kind: lsp.CompletionItemKind.Variable,
                         detail: `Property of ${currScProp.fclass.name}`,
                     });
                 }
@@ -451,7 +451,7 @@ class AttrValueProvider extends SuggestionsProvider {
         for (const props of this.store.schema.frameClassProps.values()) {
             ctx.citems.push({
                 label: props[0].name,
-                kind: vs.CompletionItemKind.Property,
+                kind: lsp.CompletionItemKind.Property,
                 detail: `Property of ${props.map(item => item.fclass.name).join(',')}`,
             });
         }
@@ -592,13 +592,14 @@ class AttrNameProvider extends SuggestionsProvider {
         }
 
         function createCompletion(name: string, opts: { detail?: string, triggerSuggest?: boolean } = {}) {
-            const tmpc = <vs.CompletionItem>{
+            const tmpc = <lsp.CompletionItem>{
                 label: name,
-                kind: vs.CompletionItemKind.Variable,
+                kind: lsp.CompletionItemKind.Variable,
                 detail: opts.detail ? opts.detail : void 0,
             };
             if (!atHasValue) {
-                tmpc.insertText = new vs.SnippetString(`${name}="\$0"`);
+                tmpc.insertText = `${name}="\$0"`;
+                tmpc.insertTextFormat = lsp.InsertTextFormat.Snippet;
                 if (opts.triggerSuggest) {
                     tmpc.command = {command: 'editor.action.triggerSuggest', title: ''};
                 }
@@ -613,16 +614,17 @@ class AttrNameProvider extends SuggestionsProvider {
             ) {
                 continue;
             }
-            const tmpc = <vs.CompletionItem>{
+            const tmpc = <lsp.CompletionItem>{
                 label: sAttrItem.name + (sAttrItem.required ? '' : '?'),
                 filterText: sAttrItem.name,
-                kind: vs.CompletionItemKind.Field,
+                kind: lsp.CompletionItemKind.Field,
                 detail: sAttrItem.type.name,
-                documentation: new vs.MarkdownString(sAttrItem.label),
+                documentation: createMarkdownString(sAttrItem.label),
                 insertText: sAttrItem.name,
             };
             if (!atHasValue) {
-                tmpc.insertText = new vs.SnippetString(`${sAttrItem.name}="\$0"`);
+                tmpc.insertText = `${sAttrItem.name}="\$0"`;
+                tmpc.insertTextFormat = lsp.InsertTextFormat.Snippet;
                 tmpc.command = sAttrItem.type.builtinType !== sch.BuiltinTypeKind.String ? {command: 'editor.action.triggerSuggest', title: ''} : void 0;
             }
             ctx.citems.push(tmpc);
@@ -689,15 +691,15 @@ class AttrNameProvider extends SuggestionsProvider {
 
 // ====
 
-export class CompletionsProvider extends AbstractProvider implements vs.CompletionItemProvider {
+export class CompletionsProvider extends AbstractProvider {
     protected atValueProvider: AttrValueProvider;
     protected atNameProvider: AttrNameProvider;
     protected codeAbrvProvider: CodeAbbreviations;
 
-    protected provideConstants(compls: vs.CompletionItem[], vKind: AttrValueKind) {
+    protected provideConstants(compls: lsp.CompletionItem[], vKind: AttrValueKind) {
         for (const item of this.store.index.constants.values()) {
-            const compl = <vs.CompletionItem>{
-                kind: vs.CompletionItemKind.Constant,
+            const compl = <lsp.CompletionItem>{
+                kind: lsp.CompletionItemKind.Constant,
                 label: AttrValueKindOp[vKind] + `${item.name}`,
                 detail: item.value,
             };
@@ -712,7 +714,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
             }
 
             if (reValueColor.test(finalValue)) {
-                compl.kind = vs.CompletionItemKind.Color;
+                compl.kind = lsp.CompletionItemKind.Color;
                 compl.documentation = `#${getColorAsHexARGB(parseColorLiteral(finalValue.trim()).vColor)}`;
             }
             compls.push(compl);
@@ -722,9 +724,9 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
     protected suggestAnchors(ctx: ComplContext, nodeCtx: XMLElement) {
         const scElAnchor = nodeCtx.stype.struct.get('Anchor');
         for (const side of ['Left', 'Right', 'Top', 'Bottom']) {
-            const complItem = <vs.CompletionItem>{
+            const complItem = <lsp.CompletionItem>{
                 label: `${scElAnchor.name}:${side}`,
-                kind: vs.CompletionItemKind.Property,
+                kind: lsp.CompletionItemKind.Property,
                 detail: scElAnchor.label,
             };
             complItem.insertText = (ctx.xtoken === TokenType.Content ? '<' : '') + `${scElAnchor.name}`;
@@ -760,7 +762,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                 complItem.insertText += ` ${stInfo.name}="${v}"`;
             }
             complItem.insertText += '/>';
-            complItem.insertText = new vs.SnippetString(complItem.insertText);
+            complItem.insertTextFormat = lsp.InsertTextFormat.Snippet;
             ctx.citems.push(complItem);
         }
     }
@@ -769,17 +771,17 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
         const category = 'StateGroup';
         const itemSch = nodeCtx.stype.struct.get(category);
         for (let l = 1; l <= 5; ++l) {
-            const complItem = <vs.CompletionItem>{
+            const complItem = <lsp.CompletionItem>{
                 label: `${category}:${l}`,
-                kind: vs.CompletionItemKind.Interface,
+                kind: lsp.CompletionItemKind.Interface,
                 detail: itemSch.name,
             };
 
             let defaultStateName: string;
-            if (typeof this.svcContext.config.completion.stategroupDefaultState === 'string') {
-                defaultStateName = this.svcContext.config.completion.stategroupDefaultState;
+            if (typeof this.slSrv.cfg.completion.stategroupDefaultState === 'string') {
+                defaultStateName = this.slSrv.cfg.completion.stategroupDefaultState;
             }
-            else if (this.svcContext.config.completion.stategroupDefaultState === true) {
+            else if (this.slSrv.cfg.completion.stategroupDefaultState === true) {
                 defaultStateName = 'Default';
             }
 
@@ -795,10 +797,11 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                 complItem.insertText += `\n\t<State name="\${${l + 2}:${defaultStateName}}">\n\t</State>\n`;
             }
             complItem.insertText += `</${category}>`;
+            complItem.insertTextFormat = lsp.InsertTextFormat.Snippet;
 
-            complItem.documentation = new vs.MarkdownString();
-            complItem.documentation.appendCodeblock(complItem.insertText, 'sc2layout');
-            complItem.insertText = new vs.SnippetString(complItem.insertText);
+            complItem.documentation = createMarkdownString(
+                '```sc2layout\n' + complItem.insertText + '```'
+            );
             ctx.citems.push(complItem);
         }
     }
@@ -806,9 +809,9 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
     protected suggestStateGroupInstruction(ctx: ComplContext, nodeCtx: XMLElement) {
         for (const category of ['When', 'Action']) {
             for (const [itemType, itemSch] of nodeCtx.stype.struct.get(category).alternateTypes) {
-                const complItem = <vs.CompletionItem>{
+                const complItem = <lsp.CompletionItem>{
                     label: `${category}:${itemType}`,
-                    kind: vs.CompletionItemKind.Method,
+                    kind: lsp.CompletionItemKind.Method,
                     detail: itemSch.name,
                 };
                 complItem.insertText = (ctx.xtoken === TokenType.Content ? '<' : '') + `${category}`;
@@ -840,7 +843,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                     complItem.insertText += ` $0`;
                 }
                 complItem.insertText += '/>';
-                complItem.insertText = new vs.SnippetString(complItem.insertText);
+                complItem.insertTextFormat = lsp.InsertTextFormat.Snippet;
                 ctx.citems.push(complItem);
             }
         }
@@ -849,9 +852,9 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
     protected suggestAnimationController(ctx: ComplContext, nodeCtx: XMLElement) {
         const category = 'Controller';
         for (const [itemType, itemSch] of nodeCtx.stype.struct.get(category).alternateTypes) {
-            const complItem = <vs.CompletionItem>{
+            const complItem = <lsp.CompletionItem>{
                 label: `${category}:${itemType}`,
-                kind: vs.CompletionItemKind.Method,
+                kind: lsp.CompletionItemKind.Method,
                 detail: itemSch.name,
             };
             complItem.insertText = (ctx.xtoken === TokenType.Content ? '<' : '') + `${category}`;
@@ -880,7 +883,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                 complItem.insertText += ` ${stInfo.name}="${val}"`;
             }
             complItem.insertText += `>\$0</${category}>`;
-            complItem.insertText = new vs.SnippetString(complItem.insertText);
+            complItem.insertTextFormat = lsp.InsertTextFormat.Snippet;
             ctx.citems.push(complItem);
         }
     }
@@ -913,9 +916,9 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
         }
 
         for (const [sElKey, sElItem] of nodeCtx.stype.struct) {
-            const complItem = <vs.CompletionItem>{
+            const complItem = <lsp.CompletionItem>{
                 label: sElKey,
-                kind: sElItem.nodeKind === sch.ElementDefKind.FrameProperty ? vs.CompletionItemKind.Property : vs.CompletionItemKind.Struct,
+                kind: sElItem.nodeKind === sch.ElementDefKind.FrameProperty ? lsp.CompletionItemKind.Property : lsp.CompletionItemKind.Struct,
                 // detail: sElItem.type.name,
                 detail: typeof sElItem.label !== 'undefined' ? sElItem.label : void 0
             };
@@ -943,7 +946,7 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                     }
                 }
                 if (!sElItem.type.struct.size && sElItem.nodeKind !== sch.ElementDefKind.Frame) {
-                    if (i === 1 && this.svcContext.config.completion.tabStop === ExtConfigCompletionTabStopKind.Attr) {
+                    if (i === 1 && this.slSrv.cfg.completion.tabStop === ExtConfigCompletionTabStopKind.Attr) {
                         complItem.insertText = complItem.insertText.replace('$1', '$0');
                     }
                     complItem.insertText += '/>';
@@ -951,49 +954,51 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
                 else {
                     complItem.insertText += `>\$0</${sElKey}>`;
                 }
-                complItem.insertText = new vs.SnippetString(complItem.insertText);
+                complItem.insertTextFormat = lsp.InsertTextFormat.Snippet;
             }
 
             ctx.citems.push(complItem);
         }
     }
 
-    public init(svcContext: ServiceContext, store: Store, console: ILoggerConsole) {
-        super.init(svcContext, store, console);
-        this.atValueProvider = new AttrValueProvider(this.store, console, this.svcContext.config);
-        this.atNameProvider = new AttrNameProvider(this.store, console, this.svcContext.config);
-        this.codeAbrvProvider = new CodeAbbreviations(this.store, console, this.svcContext.config);
+    protected prepare() {
+        super.prepare();
+        this.atValueProvider = new AttrValueProvider(this.store, this.slSrv.cfg);
+        this.atNameProvider = new AttrNameProvider(this.store, this.slSrv.cfg);
+        this.codeAbrvProvider = new CodeAbbreviations(this.store, this.slSrv.cfg);
     }
 
-    @svcRequest(
-        false,
-        (document: vs.TextDocument, position: vs.Position, cancToken: vs.CancellationToken, context: vs.CompletionContext) => {
-            return {
-                filename: document.uri.fsPath,
-                position: {line: position.line, char: position.character},
-                context,
-            };
-        },
-        (r: vs.CompletionList) => r.items.length
-    )
-    async provideCompletionItems(document: vs.TextDocument, position: vs.Position, cancToken: vs.CancellationToken, context: vs.CompletionContext) {
-        let items = <vs.CompletionItem[]> [];
-        const sourceFile = await this.svcContext.syncVsDocument(document);
-        const offset = document.offsetAt(position);
+    install() {
+        this.slSrv.conn.onCompletion(this.provideCompletionItems.bind(this));
+    }
+
+    @errGuard()
+    @logIt({
+        argsDump: true,
+        resDump: (r: lsp.CompletionList) => r.items.length,
+    })
+    async provideCompletionItems(params: lsp.CompletionParams, cancToken: lsp.CancellationToken) {
+        let items = <lsp.CompletionItem[]> [];
+
+        const sourceFile = await this.slSrv.flushDocumentByUri(params.textDocument.uri);
+        if (!sourceFile) return;
+
+        const offset = sourceFile.tdoc.offsetAt(params.position);
         const node = sourceFile.findNodeAt(offset);
 
         if (!node || !(node instanceof XMLElement)) {
             if (!sourceFile.getRootNode()) {
                 items.push({
-                    kind: vs.CompletionItemKind.Snippet,
+                    kind: lsp.CompletionItemKind.Snippet,
                     label: 'fdesc',
                     detail: 'Desc template',
-                    insertText: new vs.SnippetString(
+                    insertText: (
                         '<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n' +
                         '<Desc>$0\n</Desc>'
                     ),
+                    insertTextFormat: lsp.InsertTextFormat.Snippet,
                 });
-                return {items};
+                return lsp.CompletionList.create(items);
             }
             return;
         }
@@ -1004,11 +1009,11 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
             startOffset = node.start;
         }
         else {
-            startOffset = document.offsetAt(document.getWordRangeAtPosition(position).start);
+            startOffset = sourceFile.tdoc.offsetAt(sourceFile.tdoc.getWordRangeAtPosition(params.position).start);
         }
 
         // console.log('offset', offset);
-        let scanner = createScanner(document.getText(), startOffset);
+        let scanner = createScanner(sourceFile.tdoc.getText(), startOffset);
         let token = scanner.scan();
         let currentAttrName: string;
         outer: while (token !== TokenType.EOS) {
@@ -1049,10 +1054,10 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
         };
 
         if (scanner.getScannerState() === ScannerState.AfterOpeningEndTag || scanner.getScannerState() === ScannerState.WithinEndTag) {
-            items.push(<vs.CompletionItem>{
+            items.push(<lsp.CompletionItem>{
                 label: `/${node.tag}`,
-                kind: vs.CompletionItemKind.Struct,
-                insertText: node.tag + (document.getText().charCodeAt(scanner.getTokenEnd()) === CharacterCodes.greaterThan ? '' : '>'),
+                kind: lsp.CompletionItemKind.Struct,
+                insertText: node.tag + (sourceFile.tdoc.getText().charCodeAt(scanner.getTokenEnd()) === CharacterCodes.greaterThan ? '' : '>'),
                 command: { command: 'editor.action.reindentselectedlines' },
             });
         }
@@ -1084,13 +1089,13 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
             case TokenType.StartTagOpen:
             case TokenType.Content:
             {
-                const abbrvRange = document.getWordRangeAtPosition(position, reAbbrvWord);
+                const abbrvRange = sourceFile.tdoc.getWordRangeAtPosition(params.position, reAbbrvWord);
                 if (abbrvRange && token === TokenType.Content) {
                     const abrvResult = this.codeAbrvProvider.processAbbrv({
-                        vDoc: document,
+                        vDoc: sourceFile.tdoc,
                         xEl: node,
                         abbrvRange: abbrvRange,
-                        curPosition: position,
+                        curPosition: params.position,
                     });
                     if (abrvResult !== void 0) {
                         return abrvResult;
@@ -1124,6 +1129,6 @@ export class CompletionsProvider extends AbstractProvider implements vs.Completi
             }
         }
 
-        return new vs.CompletionList(cmCtx.citems);
+        return lsp.CompletionList.create(cmCtx.citems);
     }
 }

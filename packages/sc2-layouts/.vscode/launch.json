@@ -10,11 +10,11 @@
             "args": ["--extensionDevelopmentPath=${workspaceRoot}" ],
             "stopOnEntry": false,
             "sourceMaps": true,
-            "outFiles": [ "${workspaceRoot}/out/src/**/*.js" ],
+            "outFiles": [ "${workspaceRoot}/client/out/**/*.js" ],
             "env": {
                 "SC2LDEBUG": "1",
-            }
-            // "preLaunchTask": "npm"
+            },
+            // "preLaunchTask": "Build",
         },
         {
             "name": "Launch tests",
@@ -27,6 +27,17 @@
             ],
             "protocol": "inspector",
             "sourceMaps": true
-        }
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach backend",
+            "port": 6009,
+            "protocol": "inspector",
+            "sourceMaps": true,
+            "outFiles": [
+                "${workspaceRoot}/backend/out/**/*.js"
+            ]
+        },
     ]
 }
