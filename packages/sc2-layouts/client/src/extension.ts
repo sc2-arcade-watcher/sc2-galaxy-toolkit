@@ -2,7 +2,33 @@ import * as vs from 'vscode';
 import * as lspc from 'vscode-languageclient';
 import * as path from 'path';
 
-let client: lspc.LanguageClient;
+type ProgressReportParams = {
+    message?: string;
+    increment?: number;
+};
+
+interface ProgressProxy {
+    done: () => void;
+    progress: vs.Progress<ProgressReportParams>;
+}
+
+function createProgressNotification(params: ProgressReportParams) {
+    let r = <ProgressProxy>{};
+    vs.window.withProgress(
+        {
+            title: params.message,
+            location: vs.ProgressLocation.Notification,
+        },
+        (progress, token) => {
+            r.progress = progress;
+
+            return new Promise((resolve) => {
+                r.done = resolve;
+            });
+        }
+    );
+    return r;
+}
 
 const sc2layoutConfig: vs.LanguageConfiguration = {
     indentationRules: {
@@ -29,9 +55,10 @@ const sc2layoutConfig: vs.LanguageConfiguration = {
     ],
 };
 
+let client: lspc.LanguageClient;
 let extContext: vs.ExtensionContext;
 
-export function activate(context: vs.ExtensionContext) {
+export async function activate(context: vs.ExtensionContext) {
     extContext = context;
     context.subscriptions.push(vs.languages.setLanguageConfiguration('sc2layout', sc2layoutConfig));
 
@@ -69,6 +96,22 @@ export function activate(context: vs.ExtensionContext) {
 
     client = new lspc.LanguageClient('sc2layout', 'SC2Layout', serverOptions, clientOptions);
     client.start();
+    await client.onReady();
+
+    let indexingProgress: ProgressProxy;
+    client.onNotification('progressCreate', (params: ProgressReportParams) => {
+        if (indexingProgress) indexingProgress.done();
+        indexingProgress = createProgressNotification(params);
+    });
+    client.onNotification('progressReport', (params: ProgressReportParams) => {
+        if (!indexingProgress) return;
+        indexingProgress.progress.report(params);
+    });
+    client.onNotification('progressDone', (params: ProgressReportParams) => {
+        if (indexingProgress) indexingProgress.done();
+        indexingProgress = void 0;
+        vs.window.setStatusBarMessage(params.message, 2000);
+    });
 }
 
 export async function deactivate() {

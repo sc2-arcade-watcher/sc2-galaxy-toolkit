@@ -76,44 +76,32 @@ export const enum ServiceStateFlags {
     StatusBusy                 = IndexingInProgress,
 }
 
-interface Progress<T> {
-    report(value: T): void;
-}
+type ProgressReportParams = {
+    message?: string;
+    increment?: number;
+};
 
-enum ProgressLocation {
-    SourceControl = 1,
-    Window = 10,
-    Notification = 15
-}
+type ProgressReporter = {
+    create: (params: ProgressReportParams) => void;
+    report: (params: ProgressReportParams) => void;
+    done: (params: ProgressReportParams) => void;
+};
 
-interface ProgressOptions {
-    location: ProgressLocation;
-    title?: string;
-    cancellable?: boolean;
-}
-
-interface ProgressProxy {
-    done: () => void;
-    progress: Progress<{ message?: string; increment?: number }>;
-}
-
-function withProgress<R>(options: ProgressOptions, task: (progress: Progress<{ message?: string; increment?: number }>, token: lsp.CancellationToken) => Thenable<R>): Thenable<R> {
-    return void 0 as any;
-}
-
-function createProgressNotification(options: ProgressOptions) {
-    let r = <ProgressProxy>{};
-    withProgress(
-        options,
-        (progress, token) => {
-            r.progress = progress;
-
-            return new Promise((resolve) => {
-                r.done = resolve;
-            });
-        }
-    );
-    return r;
+function installProgressReporter(lsvc: LangService): ProgressReporter {
+    function progressCreate(params: ProgressReportParams) {
+        lsvc.conn.sendNotification('progressCreate', params);
+    }
+    function progressReport(params: ProgressReportParams) {
+        lsvc.conn.sendNotification('progressReport', params);
+    }
+    function progressDone(params: ProgressReportParams) {
+        lsvc.conn.sendNotification('progressDone', params);
+    }
+    return {
+        create: progressCreate,
+        report: progressReport,
+        done: progressDone,
+    };
 }
 
 export type InitializationOptions = {
@@ -132,10 +120,15 @@ export interface ErrorReporter {
     errHandler: ErrorHandlerType;
 }
 
-export class S2LServer implements ErrorReporter {
+export interface LangService {
+    readonly conn: lsp.Connection;
+}
+
+export class S2LServer implements ErrorReporter, LangService {
     protected documents = new lsp.TextDocuments();
     protected documentUpdateRequests = new Map<string, DocumentUpdateRequest>();
     protected schemaLoader = new SchemaLoader(this);
+    protected progress = installProgressReporter(this);
 
     providers = {
         diagnostics: new DiagnosticsProvider(),
@@ -286,7 +279,7 @@ export class S2LServer implements ErrorReporter {
         let projFolders = await this.conn.workspace.getWorkspaceFolders();
         if (!projFolders) projFolders = [];
 
-        const progressCtrl = createProgressNotification({ title: 'Indexing layouts', location: ProgressLocation.Notification });
+        this.progress.create({ message: 'Indexing layouts' });
         this.state = ServiceStateFlags.IndexingInProgress;
 
         // -
@@ -327,7 +320,7 @@ export class S2LServer implements ErrorReporter {
         }
 
         // -
-        progressCtrl.progress.report({ message: 'Workspace discovery' });
+        this.progress.report({ message: 'Workspace discovery' });
         const mArchives = archives.concat(wsArchives);
         this.store.presetArchives(...mArchives);
         this.state |= ServiceStateFlags.StepWorkspaceDiscoveryDone;
@@ -349,7 +342,7 @@ export class S2LServer implements ErrorReporter {
         const chunkLength = 25;
         while ((partialFileList = fileList.slice(index, index + chunkLength)).length) {
             index += chunkLength;
-            progressCtrl.progress.report({
+            this.progress.report({
                 increment: 0,
                 message: path.basename(partialFileList[0])
             });
@@ -357,22 +350,22 @@ export class S2LServer implements ErrorReporter {
                 const content = await createTextDocumentFromFs(fsPath);
                 await this.syncDocument(content);
             }));
-            progressCtrl.progress.report({
+            this.progress.report({
                 increment: 50.0 / (fileList.length - 1) * chunkLength,
             });
         }
         this.state |= ServiceStateFlags.StepFilesDone;
 
         // -
-        progressCtrl.progress.report({ message: 's2mods metadata' });
+        this.progress.report({ message: 's2mods metadata' });
         logger.info(`Indexing s2mods metadata..`);
         for (const sa of this.store.s2ws.archives.values()) {
-            progressCtrl.progress.report({
+            this.progress.report({
                 message: sa.name,
                 increment: 0,
             });
             await this.store.s2ws.reloadArchive(sa);
-            progressCtrl.progress.report({
+            this.progress.report({
                 increment: 50.0 / (this.store.s2ws.archives.size - 1),
             });
         }
@@ -386,7 +379,7 @@ export class S2LServer implements ErrorReporter {
             await this.postDiagnostics(sourceFile.tdoc);
         }
 
-        progressCtrl.done();
+        this.progress.done({ message: 'SC2Layout: indexing completed!' });
         this.state &= ~ServiceStateFlags.IndexingInProgress;
     }
 
