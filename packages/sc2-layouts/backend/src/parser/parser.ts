@@ -40,22 +40,43 @@ export function parse(text: string, options: ParserOptions) {
                 printDiagnosticsAtCurrentToken(`Not expected element "${el.tag}" under [${parentNode.stype.name}]`);
             }
         }
-        else {
-            // printDiagnosticsAtCurrentToken(`Parent node schema missing`);
-        }
     }
 
     function matchNodeAlt(el: XMLElement) {
+        function doMatch(currAltType: sch.AlternationDesc) {
+            switch (currAltType.matchKind) {
+                case sch.AlternativeMatchKind.AttrValue: {
+                    let valType = el.getAttributeValue(currAltType.attributeName);
+                    if (currAltType.icase) {
+                        valType = valType.toLowerCase();
+                    }
+
+                    const altStmt = currAltType.statements.get(valType);
+                    if (altStmt) {
+                        el.stype = altStmt.type;
+                        if (altStmt.altType) {
+                            doMatch(altStmt.altType);
+                        }
+                    }
+                    else {
+                        printDiagnosticsAtCurrentToken(
+                            `Couldn't find matching type for ${el.tag}[${currAltType.attributeName}=${valType}]`,
+                            el.start
+                        );
+                        el.altTypeNotMatched = true;
+                    }
+                    break;
+                }
+
+                default: {
+                    throw new Error(`unsupported matchKind`);
+                    break;
+                }
+            }
+        }
+
         if (el.sdef && el.sdef.flags & sch.ElementDefFlags.TypeAlternation) {
-            const valType = el.getAttributeValue('type');
-            const altType = el.sdef.alternateTypes.get(valType);
-            if (altType) {
-                el.stype = altType;
-            }
-            else {
-                printDiagnosticsAtCurrentToken(`Couldn't find matching type for ${el.tag}[type=${valType}]`, el.start);
-                el.altTypeNotMatched = true;
-            }
+            doMatch(el.sdef.altType);
         }
     }
 

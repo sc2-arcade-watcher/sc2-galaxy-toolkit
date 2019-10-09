@@ -67,14 +67,29 @@ export namespace sraw {
         ref: string;
     };
 
+    export enum EAltMatch {
+        attrValue,
+        expression,
+    }
+
+    export type AltStatement = {
+        test: string;
+        type: string;
+        alternative?: AltType;
+    };
+
+    export type AltType = {
+        match: EAltMatch;
+        attributeName?: string;
+        icase?: boolean;
+        statement: AltStatement[];
+    };
+
     export type ElementType = NamedDefinition & {
         simpleType?: string;
         table?: boolean;
         type?: string;
-        alternative?: {
-            test: string;
-            type: string;
-        }[];
+        alternative?: AltType;
     };
 
     export type FrameClassProperty = {
@@ -150,19 +165,30 @@ interface AssignAttrOpts {
     attrs?: {
         [name: string]: {
             parser?: AssignAttrParserFn,
+            required?: boolean;
         } | AssignAttrParserFn;
     };
 }
 
-function assignAttrs<T>(target: T, srcAttrs: xmljs.Attributes, opts?: AssignAttrOpts) {
+function assignAttrs<T>(target: T, srcElement: xmljs.Element, opts?: AssignAttrOpts) {
     opts = Object.assign(<AssignAttrOpts>{
         attrs: {},
     }, opts);
 
-    for (const atName in srcAttrs) {
+    for (const atName in opts.attrs) {
+        const cOpts = opts.attrs[atName];
+
+        if (typeof cOpts === 'function') continue;
+
+        if (cOpts.required && !srcElement.attributes[atName]) {
+            throw new Error(`Missing required attribute "${atName}" in "${srcElement.name}"`);
+        }
+    }
+
+    for (const atName in srcElement.attributes) {
         const cOpts = opts.attrs[atName] || {};
 
-        let val: any = srcAttrs[atName];
+        let val: any = srcElement.attributes[atName];
 
         if (typeof cOpts === 'function') {
             val = cOpts(val);
@@ -223,7 +249,7 @@ function assignChildren<T>(target: T, srcElements: xmljs.Element[], opts?: Assig
             childTarget = child.elements[0].text || child.elements[0].cdata;
         }
         else {
-            assignAttrs(childTarget, child.attributes, {
+            assignAttrs(childTarget, child, {
                 attrs: cOpts.attrs || {},
             });
             assignChildren(childTarget, child.elements, {
@@ -252,11 +278,21 @@ function assignChildren<T>(target: T, srcElements: xmljs.Element[], opts?: Assig
     return target;
 }
 
-interface CreateNamedDefinitionOpts<T extends sraw.NamedDefinition> extends AssignChildOpts, AssignAttrOpts {
+interface CreateEntityOpts<T extends object> extends AssignChildOpts, AssignAttrOpts {
     defaults?: Partial<T>;
 }
 
-function createNamedDefinition<T extends sraw.NamedDefinition>(el: xmljs.Element, entryType: sch.ModelKind, opts?: CreateNamedDefinitionOpts<T>) {
+function createEntity<T extends object>(el: xmljs.Element, opts?: CreateEntityOpts<T>) {
+    const def = <T>{};
+    if (opts.defaults) {
+        Object.assign(def, opts.defaults);
+    }
+    assignAttrs(def, el, opts);
+    assignChildren(def, el.elements, opts);
+    return def;
+}
+
+function createNamedDefinition<T extends sraw.NamedDefinition>(el: xmljs.Element, entryType: sch.ModelKind, opts?: CreateEntityOpts<T>) {
     const def = <T>{
         entryType: entryType,
         name: ensureString(el.attributes.name),
@@ -264,7 +300,7 @@ function createNamedDefinition<T extends sraw.NamedDefinition>(el: xmljs.Element
     if (opts.defaults) {
         Object.assign(def, opts.defaults);
     }
-    assignAttrs(def, el.attributes, opts);
+    assignAttrs(def, el, opts);
     assignChildren(def, el.elements, opts);
     return def;
 }
@@ -315,12 +351,52 @@ function readComplexType(el: xmljs.Element) {
     });
 }
 
+function readAlternativeType(el: xmljs.Element): sraw.AltType {
+    return createEntity<sraw.AltType>(el, {
+        defaults: {
+            attributeName: 'type',
+            icase: false,
+            statement: [],
+        },
+        attrs: {
+            match: {
+                required: true,
+                parser: (v) => matchEnum(sraw.EAltMatch, v),
+            },
+            attributeName: ensureString,
+            icase: ensureBoolean,
+        },
+        props: {
+            statement: {
+                attrs: {
+                    test: ensureString,
+                    value: ensureString,
+                },
+                props: {
+                    alternative: {
+                        reader: (target, el) => {
+                            return readAlternativeType(el);
+                        },
+                        single: true,
+                    },
+                },
+            },
+        },
+    });
+}
+
 function readElementType(el: xmljs.Element) {
     return createNamedDefinition<sraw.ElementType>(el, sch.ModelKind.Element, {
         attrs: {
             table: ensureBoolean,
         },
         props: {
+            alternative: {
+                reader: (target, el) => {
+                    return readAlternativeType(el);
+                },
+                single: true,
+            }
         },
     });
 }

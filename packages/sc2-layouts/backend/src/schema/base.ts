@@ -184,12 +184,29 @@ export enum ElementDefKind {
     StateGroupStateAction,
 }
 
+export const enum AlternativeMatchKind {
+    AttrValue,
+    Expression,
+}
+
+export interface AlternationDesc {
+    matchKind: AlternativeMatchKind;
+    attributeName: string;
+    icase: boolean;
+    statements: Map<string, AlternationStatementDesc>;
+}
+
+export interface AlternationStatementDesc {
+    type: ComplexType;
+    altType?: AlternationDesc;
+}
+
 export interface ElementDef extends AbstractModel {
     nodeKind: ElementDefKind;
     flags: ElementDefFlags;
     name: string;
     type: ComplexType;
-    alternateTypes?: Map<string, ComplexType>;
+    altType?: AlternationDesc;
     label?: string;
     documentation?: string;
 }

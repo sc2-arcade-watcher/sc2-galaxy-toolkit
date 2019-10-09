@@ -295,7 +295,7 @@ function initializeRegistry(sdata: SchemaData): RegistryCatalog {
             });
         }
         else {
-            throw new Error('type not specified');
+            throw new Error(`type not specified: "${JSON.stringify(el)}"`);
         }
 
         const scEl: sch.ElementDef = createElementDef({
@@ -303,12 +303,31 @@ function initializeRegistry(sdata: SchemaData): RegistryCatalog {
             type: elComplexType,
         });
 
+        function createAltdesc(rawAlt: sraw.AltType) {
+            const altDesc: sch.AlternationDesc = {
+                matchKind: {
+                    [sraw.EAltMatch.attrValue]: sch.AlternativeMatchKind.AttrValue,
+                    [sraw.EAltMatch.expression]: sch.AlternativeMatchKind.Expression,
+                }[rawAlt.match],
+                attributeName: rawAlt.attributeName,
+                icase: rawAlt.icase,
+                statements: new Map(),
+            };
+            for (const stmt of rawAlt.statement) {
+                const altStmtDesc: sch.AlternationStatementDesc = {
+                    type: registry.complexType.mustGet(stmt.type),
+                };
+                altDesc.statements.set(stmt.test, altStmtDesc);
+                if (stmt.alternative) {
+                    altStmtDesc.altType = createAltdesc(stmt.alternative);
+                }
+            }
+            return altDesc;
+        }
+
         if (el.alternative) {
             scEl.flags |= sch.ElementDefFlags.TypeAlternation;
-            scEl.alternateTypes = new Map<string, sch.ComplexType>();
-            for (const alt of el.alternative) {
-                scEl.alternateTypes.set(alt.test, registry.complexType.mustGet(alt.type));
-            }
+            scEl.altType = createAltdesc(el.alternative);
         }
 
         switch (el.name) {
@@ -427,7 +446,12 @@ function initializeRegistry(sdata: SchemaData): RegistryCatalog {
         registry.complexType.mustGet('Frame');
 
         const fmtElement = registry.complexType.mustGet('CDesc').struct.get('Frame');
-        fmtElement.alternateTypes = new Map();
+        fmtElement.altType = {
+            matchKind: sch.AlternativeMatchKind.AttrValue,
+            attributeName: 'type',
+            icase: false,
+            statements: new Map(),
+        };
         fmtElement.flags |= sch.ElementDefFlags.TypeAlternation;
 
         const fmtEnum = registry.simpleType.mustGet('EFrameType');
@@ -439,7 +463,7 @@ function initializeRegistry(sdata: SchemaData): RegistryCatalog {
             fmtEnum.emap.set(itemFType.name.toLowerCase(), {
                 name: itemFType.name,
             });
-            fmtElement.alternateTypes.set(itemFType.name, itemFType.complexType);
+            fmtElement.altType.statements.set(itemFType.name, { type: itemFType.complexType });
 
             extendComplexType(itemFType.complexType, registry.complexType.mustGet('Frame'));
             extendComplexType(itemFType.complexType, registry.complexType.mustGet('CFrameDesc'));

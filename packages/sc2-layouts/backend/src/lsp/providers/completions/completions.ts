@@ -808,15 +808,15 @@ export class CompletionsProvider extends AbstractProvider {
 
     protected suggestStateGroupInstruction(ctx: ComplContext, nodeCtx: XMLElement) {
         for (const category of ['When', 'Action']) {
-            for (const [itemType, itemSch] of nodeCtx.stype.struct.get(category).alternateTypes) {
+            for (const [itemType, itemSch] of nodeCtx.stype.struct.get(category).altType.statements) {
                 const complItem = <lsp.CompletionItem>{
                     label: `${category}:${itemType}`,
                     kind: lsp.CompletionItemKind.Method,
-                    detail: itemSch.name,
+                    detail: itemSch.type.name,
                 };
                 complItem.insertText = (ctx.xtoken === TokenType.Content ? '<' : '') + `${category}`;
                 let i = 0;
-                outer: for (const stInfo of itemSch.attributes.values()) {
+                outer: for (const stInfo of itemSch.type.attributes.values()) {
                     let val: string;
                     switch (stInfo.name) {
                         case 'type':
@@ -839,7 +839,7 @@ export class CompletionsProvider extends AbstractProvider {
                     }
                     complItem.insertText += ` ${stInfo.name}="${val}"`;
                 }
-                if (itemSch.indeterminateAttributes.size > 0) {
+                if (itemSch.type.indeterminateAttributes.size > 0) {
                     complItem.insertText += ` $0`;
                 }
                 complItem.insertText += '/>';
@@ -851,15 +851,15 @@ export class CompletionsProvider extends AbstractProvider {
 
     protected suggestAnimationController(ctx: ComplContext, nodeCtx: XMLElement) {
         const category = 'Controller';
-        for (const [itemType, itemSch] of nodeCtx.stype.struct.get(category).alternateTypes) {
+        for (const [itemType, itemSch] of nodeCtx.stype.struct.get(category).altType.statements) {
             const complItem = <lsp.CompletionItem>{
                 label: `${category}:${itemType}`,
                 kind: lsp.CompletionItemKind.Method,
-                detail: itemSch.name,
+                detail: itemSch.type.name,
             };
             complItem.insertText = (ctx.xtoken === TokenType.Content ? '<' : '') + `${category}`;
             let i = 0;
-            outer: for (const stInfo of itemSch.attributes.values()) {
+            outer: for (const stInfo of itemSch.type.attributes.values()) {
                 let val: string;
                 switch (stInfo.name) {
                     case 'type':
