@@ -8,7 +8,7 @@ import { S2LServer } from './server';
 import { logger, logIt } from '../logger';
 
 const extractZipAsync = util.promisify(extractZip);
-const currentModelVersion = 5;
+const currentModelVersion = 6;
 
 namespace IGithub {
     export interface Author {
