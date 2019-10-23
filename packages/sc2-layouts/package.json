@@ -214,7 +214,7 @@
             "editor/title": [
                 {
                     "command": "sc2layout.dtree.revealActiveFile",
-                    "when": "resourceLangId == sc2layout",
+                    "when": "resourceLangId == sc2layout && config.sc2layout.treeview.visible == true",
                     "group": "navigation"
                 }
             ],
@@ -231,11 +231,13 @@
             "sc2layout": [
                 {
                     "id": "sc2layoutMainView",
-                    "name": "Layout tree"
+                    "name": "Layout tree",
+                    "when": "config.sc2layout.treeview.visible == true"
                 },
                 {
                     "id": "sc2layoutElementView",
-                    "name": "Element details"
+                    "name": "Element details",
+                    "when": "config.sc2layout.treeview.visible == true"
                 }
             ]
         },

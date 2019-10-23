@@ -36,6 +36,12 @@ export class DescTreeDataProvider implements vs.TreeDataProvider<DTRichItemType>
         }
     }
 
+    public async ensureWorkspaceSynced() {
+        if (!this.archiveNodes.size || !this.layoutNodes.size) {
+            await this.getWorkspaceOverview();
+        }
+    }
+
     protected async getLayoutElement(docUri: string) {
         const lResult = await this.langClient.sendRequest(LayoutElementRequest.type, {
             textDocument: { uri: docUri },
@@ -160,9 +166,7 @@ export class DescTreeDataProvider implements vs.TreeDataProvider<DTRichItemType>
 
     public async getChildren(dParentNode?: DTRichItemType): Promise<DTRichItemType[]> {
         if (!dParentNode) {
-            if (!this.archiveNodes.size || !this.layoutNodes.size) {
-                await this.getWorkspaceOverview();
-            }
+            await this.ensureWorkspaceSynced();
             return Array.from(this.archiveNodes.values());
         }
         else if (dParentNode.kind === DTNodeKind.Archive) {
@@ -249,7 +253,7 @@ class FramePropertiesTreeDataProvider implements vs.TreeDataProvider<ElementView
             label: vItem.label,
             description: vItem.description,
             tooltip: vItem.tooltip,
-            iconPath: getThemeIcon(vItem.iconPath),
+            iconPath: vItem.iconPath ? getThemeIcon(vItem.iconPath) : void 0,
             collapsibleState: vItem.children.length ? vs.TreeItemCollapsibleState.Expanded : vs.TreeItemCollapsibleState.None,
         };
     }
@@ -335,6 +339,8 @@ export class TreeViewProvider implements vs.Disposable {
     async revealTextSelectedNode(textEditor: vs.TextEditor, edit: vs.TextEditorEdit) {
         if (textEditor.document.languageId !== 'sc2layout') return;
 
+        await this.descDataProvider.ensureWorkspaceSynced();
+
         const dtNode = await this.langClient.sendRequest(FetchNodeRequest.type, <FetchNodeParams>{
             textDocument: { uri: textEditor.document.uri.toString() },
             position: { line: textEditor.selection.active.line, character: textEditor.selection.active.character },
@@ -342,7 +348,7 @@ export class TreeViewProvider implements vs.Disposable {
 
         if (!dtNode) return;
 
-        this.descViewer.reveal(dtNode as DTRichItemType);
+        this.descViewer.reveal(dtNode as DTRichItemType, { select: true, expand: true });
     }
 
     onChangeSelection(ev: vs.TreeViewSelectionChangeEvent<DTRichItemType>) {

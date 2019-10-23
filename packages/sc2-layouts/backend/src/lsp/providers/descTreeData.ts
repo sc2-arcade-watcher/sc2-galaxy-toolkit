@@ -189,7 +189,7 @@ export class DescTreeDataProvider extends AbstractProvider /* implements dst.Des
         const descItem = this.store.index.resolveElementDesc(xEl);
         if (!descItem) return;
 
-        return this.dNodeFromDsItem(descItem) as FetchNodeResult;
+        return this.dNodeFromDsItem(descItem, sourceFile) as FetchNodeResult;
     }
 
     @errGuard()
@@ -219,6 +219,14 @@ export class DescTreeDataProvider extends AbstractProvider /* implements dst.Des
 
         if (dsNode.kind === DescKind.Frame) {
             const uNode = <FrameNode>this.xray.uBuilder.buildNodeFromDesc(dsNode);
+            if (!uNode) {
+                const tmp = append({ label: 'ERROR', iconPath: 'number.svg' });
+                append({
+                    label: `Details cannot be shown, because element contains errors.`,
+                }, tmp);
+                return vRoot;
+            }
+
             const frameType = this.store.schema.getFrameType(uNode.mainDesc.stype);
 
             // ===
