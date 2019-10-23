@@ -17,6 +17,7 @@ import { ColorProvider } from './providers/color';
 import { CompletionsProvider } from './providers/completions/completions';
 import { DescTreeDataProvider } from './providers/descTreeData';
 import { errGuard } from './provider';
+import { ReferenceProvider } from './providers/reference';
 
 const fileChangeTypeNames: { [key: number]: string } = {
     [lsp.FileChangeType.Created]: 'Created',
@@ -137,6 +138,7 @@ export class S2LServer implements ErrorReporter, LangService {
         completion: new CompletionsProvider(),
         definition: new DefinitionProvider(),
         hover: new HoverProvider(),
+        references: new ReferenceProvider(),
         navigation: new NavigationProvider(),
         color: new ColorProvider(),
         descTreeData: new DescTreeDataProvider(),

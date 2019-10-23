@@ -9,7 +9,7 @@ import { logIt } from '../../logger';
 
 export class ReferenceProvider extends AbstractProvider {
     install() {
-        this.slSrv.conn.onReferences(this.provideReferences.bind(this))
+        this.slSrv.conn.onReferences(this.provideReferences.bind(this));
     }
 
     @errGuard()
