@@ -330,10 +330,10 @@ export interface Scanner {
 }
 
 export enum DiagnosticCategory {
-    Error,
-    Warning,
-    Message,
-    Hint,
+    Error = 1,
+    Warning = 2,
+    Message = 3,
+    Hint = 4,
 }
 
 export interface DiagnosticReport {
@@ -342,10 +342,3 @@ export interface DiagnosticReport {
     category: DiagnosticCategory;
     message: string;
 }
-
-// export interface SourceFile {
-//     uri?: string;
-//     text: string;
-//     diagnostics: DiagnosticReport[];
-//     root: Node;
-// }

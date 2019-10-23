@@ -198,7 +198,7 @@ export class LayoutChecker {
                 this.reportAtNode(
                     el,
                     `Frame[${sFrameType.name}] is missing hookup definition of "${sHookup.fClass.name}" at path "${sHookup.path}".`,
-                    DiagnosticCategory.Warning
+                    DiagnosticCategory.Message
                 );
                 continue;
             }
