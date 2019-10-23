@@ -15,6 +15,7 @@ import { HoverProvider } from './providers/hover';
 import { NavigationProvider } from './providers/navigation';
 import { ColorProvider } from './providers/color';
 import { CompletionsProvider } from './providers/completions/completions';
+import { DescTreeDataProvider } from './providers/descTreeData';
 import { errGuard } from './provider';
 
 const fileChangeTypeNames: { [key: number]: string } = {
@@ -108,6 +109,7 @@ export type InitializationOptions = {
     defaultDataPath: string;
     globalStoragePath: string;
     wordPattern: string[];
+    configuration: S2LConfig;
 };
 
 export type ErrorHandlerType = (params: {
@@ -137,6 +139,7 @@ export class S2LServer implements ErrorReporter, LangService {
         hover: new HoverProvider(),
         navigation: new NavigationProvider(),
         color: new ColorProvider(),
+        descTreeData: new DescTreeDataProvider(),
     };
 
     initParams: lsp.InitializeParams;
@@ -144,6 +147,7 @@ export class S2LServer implements ErrorReporter, LangService {
     wordPattern: RegExp;
     cfg: S2LConfig;
     store: Store;
+    schema: SchemaRegistry;
     state: ServiceStateFlags = ServiceStateFlags.StatusNone;
 
     private errCounter = 0;
@@ -381,6 +385,8 @@ export class S2LServer implements ErrorReporter, LangService {
 
         this.progress.done({ message: 'SC2Layout: indexing completed!' });
         this.state &= ~ServiceStateFlags.IndexingInProgress;
+
+        this.providers.descTreeData.sendWorkspaceChange();
     }
 
     protected async fetchFilelist(uri: URI) {
@@ -394,10 +400,13 @@ export class S2LServer implements ErrorReporter, LangService {
     }
 
     @logIt({ level: 'verbose', profiling: false, argsDump: true, resDump: true })
-    protected onInitialize(params: lsp.InitializeParams): lsp.InitializeResult {
+    protected async onInitialize(params: lsp.InitializeParams): Promise<lsp.InitializeResult> {
         this.initParams = params;
         this.initOptions = params.initializationOptions;
         this.wordPattern = new RegExp(this.initOptions.wordPattern[0], this.initOptions.wordPattern[1]);
+
+        this.cfg = this.initOptions.configuration;
+        this.schema = await this.loadSchema();
 
         return {
             capabilities: {
@@ -429,7 +438,8 @@ export class S2LServer implements ErrorReporter, LangService {
     }
 
     @logIt({ level: 'verbose', profiling: false, argsDump: true })
-    protected async onInitialized(params: lsp.InitializedParams) {
+    protected onInitialized(params: lsp.InitializedParams) {
+        this.postInit();
     }
 
     @logIt({ profiling: false, argsDump: true })
@@ -441,11 +451,9 @@ export class S2LServer implements ErrorReporter, LangService {
     @logIt({ level: 'verbose', profiling: false, argsDump: ev => ev.settings.sc2layout })
     protected onDidChangeConfiguration(ev: lsp.DidChangeConfigurationParams) {
         let reindexRequired = false;
-        let firstInit = !this.cfg;
 
         const newCfg = JSON.parse(JSON.stringify(ev.settings.sc2layout)) as S2LConfig;
         if (
-            firstInit ||
             this.cfg.dataPath !== newCfg.dataPath ||
             JSON.stringify(this.cfg.builtinMods) !== JSON.stringify(newCfg.builtinMods)
         ) {
@@ -453,17 +461,14 @@ export class S2LServer implements ErrorReporter, LangService {
         }
         this.cfg = newCfg;
 
-        if (firstInit) {
-            this.postInit();
-        }
-        else if (reindexRequired && this.store) {
+        if (reindexRequired && this.store) {
             this.requestReindex();
         }
     }
 
     @logIt()
     protected async postInit() {
-        this.store = new Store(await this.loadSchema());
+        this.store = new Store(this.schema);
 
         if (this.initParams.capabilities.workspace.workspaceFolders) {
             this.conn.workspace.onDidChangeWorkspaceFolders(this.onDidChangeWorkspaceFolders.bind(this));

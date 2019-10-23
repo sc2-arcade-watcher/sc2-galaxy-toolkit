@@ -1,6 +1,7 @@
 import * as vs from 'vscode';
 import * as lspc from 'vscode-languageclient';
 import * as path from 'path';
+import { TreeViewProvider } from './dtree';
 
 type ProgressReportParams = {
     message?: string;
@@ -57,6 +58,7 @@ const sc2layoutConfig: vs.LanguageConfiguration = {
 
 let client: lspc.LanguageClient;
 let extContext: vs.ExtensionContext;
+let dTree: TreeViewProvider;
 
 export async function activate(context: vs.ExtensionContext) {
     extContext = context;
@@ -91,12 +93,18 @@ export async function activate(context: vs.ExtensionContext) {
             defaultDataPath: context.asAbsolutePath('sc2-data'),
             globalStoragePath: context.globalStoragePath,
             wordPattern: [sc2layoutConfig.wordPattern.source, sc2layoutConfig.wordPattern.flags],
+            configuration: vs.workspace.getConfiguration('sc2layout'),
         },
     };
 
     client = new lspc.LanguageClient('sc2layout', 'SC2Layout', serverOptions, clientOptions);
     client.start();
     await client.onReady();
+
+    if (vs.workspace.getConfiguration('sc2layout.treeview').get<boolean>('visible')) {
+        dTree = new TreeViewProvider(client);
+        context.subscriptions.push(dTree);
+    }
 
     let indexingProgress: ProgressProxy;
     client.onNotification('progressCreate', (params: ProgressReportParams) => {

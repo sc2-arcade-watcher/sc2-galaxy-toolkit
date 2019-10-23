@@ -7,7 +7,7 @@
     "publisher": "talv",
     "license": "MIT",
     "engines": {
-        "vscode": "1.38.0"
+        "vscode": "^1.38.0"
     },
     "repository": {
         "type": "git",
@@ -26,7 +26,7 @@
     "activationEvents": [
         "onLanguage:sc2layout"
     ],
-    "main": "./client/out/extension",
+    "main": "./client/out/client/src/extension",
     "contributes": {
         "languages": [
             {
@@ -189,39 +189,11 @@
                 "category": "SC2 Layout"
             },
             {
-                "command": "sc2layout.gameReload",
-                "title": "SC2 Layouts: Game Reload"
-            },
-            {
                 "command": "sc2layout.dtree.revealActiveFile",
                 "title": "SC2 Layouts: Reveal Active Frame in Desc Tree",
                 "icon": {
                     "light": "resources/light/layout.svg",
                     "dark": "resources/dark/layout.svg"
-                }
-            },
-            {
-                "command": "sc2layout.dtree.gameReload",
-                "title": "Reload layouts in game",
-                "icon": {
-                    "light": "resources/light/refresh.svg",
-                    "dark": "resources/dark/refresh.svg"
-                }
-            },
-            {
-                "command": "sc2layout.dtree.previewInGame",
-                "title": "Preview frame in game",
-                "icon": {
-                    "light": "resources/light/boolean.svg",
-                    "dark": "resources/dark/boolean.svg"
-                }
-            },
-            {
-                "command": "sc2layout.dtree.newLayout",
-                "title": "New layout",
-                "icon": {
-                    "light": "resources/light/document.svg",
-                    "dark": "resources/dark/document.svg"
                 }
             },
             {
@@ -236,10 +208,6 @@
         "menus": {
             "commandPalette": [
                 {
-                    "command": "sc2layout.gameReload",
-                    "when": "0"
-                },
-                {
                     "command": "sc2layout.dtree.revealActiveFile"
                 }
             ],
@@ -251,42 +219,23 @@
                 }
             ],
             "view/title": [
-                {
-                    "command": "sc2layout.dtree.gameReload",
-                    "when": "view == sc2layoutDesc && 0",
-                    "group": "navigation"
-                }
             ],
             "view/item/context": [
                 {
-                    "command": "sc2layout.dtree.newLayout",
-                    "when": "view == sc2layoutDesc && viewItem == archive && 0",
-                    "group": "inline"
-                },
-                {
-                    "command": "sc2layout.dtree.newLayout",
-                    "when": "view == sc2layoutDesc && viewItem == archive && 0"
-                },
-                {
-                    "command": "sc2layout.dtree.previewInGame",
-                    "when": "view == sc2layoutDesc && viewItem == desc && 0",
-                    "group": "inline"
-                },
-                {
                     "command": "sc2layout.dtree.showInTextEditor",
-                    "when": "view == sc2layoutDesc && viewItem == desc"
+                    "when": "view == sc2layoutMainView && viewItem == element"
                 }
             ]
         },
         "views": {
             "sc2layout": [
                 {
-                    "id": "sc2layoutDesc",
-                    "name": "Desc Tree"
+                    "id": "sc2layoutMainView",
+                    "name": "Layout tree"
                 },
                 {
-                    "id": "s2lPropertiesView",
-                    "name": "Frame properties"
+                    "id": "sc2layoutElementView",
+                    "name": "Element details"
                 }
             ]
         },
@@ -301,7 +250,7 @@
         }
     },
     "scripts": {
-        "clean": "rm -rf out/*",
+        "clean": "rm -r backend/out/* && rm -r client/out/*",
         "vscode:prepublish": "tsc -b",
         "build": "tsc -b",
         "build:watch": "tsc -b -w"

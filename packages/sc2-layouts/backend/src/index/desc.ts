@@ -180,11 +180,11 @@ export class DescNamespace {
 
     get descRelativeChain() {
         let tmp: DescNamespace = this;
-        const chain: DescNamespace[] = [this];
-        while (tmp.parent) {
-            if (tmp.parent.kind === DescKind.Root || tmp.parent.kind === DescKind.File) break;
-            tmp = tmp.parent;
+        const chain: DescNamespace[] = [];
+        while (tmp) {
+            if (tmp.kind === DescKind.Root || tmp.kind === DescKind.File) break;
             chain.push(tmp);
+            tmp = tmp.parent;
         }
         return chain.reverse();
     }

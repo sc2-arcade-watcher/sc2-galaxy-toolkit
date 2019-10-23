@@ -975,7 +975,7 @@ export class CompletionsProvider extends AbstractProvider {
     @errGuard()
     @logIt({
         argsDump: true,
-        resDump: (r: lsp.CompletionList) => r.items.length,
+        resDump: (r: lsp.CompletionList) => r ? r.items.length : void 0,
     })
     async provideCompletionItems(params: lsp.CompletionParams, cancToken: lsp.CancellationToken) {
         let items = <lsp.CompletionItem[]> [];

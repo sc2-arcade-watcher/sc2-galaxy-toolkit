@@ -1,125 +1,137 @@
 import * as path from 'path';
 import * as vs from 'vscode';
-import * as sch from '../schema/base';
-import { AbstractProvider, svcRequest } from './provider';
-import { UINavigator, UIBuilder } from '../index/hierarchy';
-import { DescIndex, DescNamespace, DescKind } from '../index/desc';
-import * as s2 from '../index/s2mod';
-import { Store, FileDescEventData } from '../index/store';
-import { XMLDocument, XMLElement, ExtLangIds } from '../types';
+import * as lspc from 'vscode-languageclient';
+import { getThemeIcon } from './extension';
+import { DTItemType, DTNodeKind, DTArchive, DTLayout, DTElement, FetchNodeRequest, FetchNodeParams, WorkspaceOverviewRequest, DTElementWithChildren, LayoutElementRequest, LayoutElementParams, WorkspaceChangeNotification, WorkspaceChangeParams, ElementViewDataSection, ElementViewDataRequest } from '../../backend/src/protocol/protocol.descTree';
 
-const enum DescTreeNodeKind {
-    Archive,
-    File,
-    Desc,
+interface DTRichElement extends DTElementWithChildren {
+    parent?: DTRichElement;
 }
 
-const DescTreeViewType = {
-    [DescTreeNodeKind.Archive]: 'archive',
-    [DescTreeNodeKind.File]: 'file',
-    [DescTreeNodeKind.Desc]: 'desc',
-};
+type DTRichItemType = DTArchive | DTLayout | DTRichElement;
 
-interface DescTreeNode {
-    kind: DescTreeNodeKind;
-    name: string;
-    archive?: s2.Archive;
-    dsItem?: DescNamespace;
-    xDoc?: XMLDocument;
-    parent?: DescTreeNode;
-}
+export class DescTreeDataProvider implements vs.TreeDataProvider<DTRichItemType> {
+    protected _onDidChangeTreeData: vs.EventEmitter<DTRichItemType> = new vs.EventEmitter<DTRichItemType>();
+    readonly onDidChangeTreeData: vs.Event<DTRichItemType | undefined | null> = this._onDidChangeTreeData.event;
 
-export class DescTreeDataProvider implements vs.TreeDataProvider<DescTreeNode> {
-    protected _onDidChangeTreeData: vs.EventEmitter<DescTreeNode> = new vs.EventEmitter<DescTreeNode>();
-    readonly onDidChangeTreeData: vs.Event<DescTreeNode | undefined | null> = this._onDidChangeTreeData.event;
-    readonly topNodes = new Map<string, DescTreeNode>();
-    readonly fileNodes = new Map<string, DescTreeNode>();
+    protected archiveNodes = new Map<string, DTArchive>();
+    protected layoutNodes = new Map<string, DTLayout>();
+    protected elementNodeTree = new Map<string, DTRichElement[]>();
 
-    constructor(private readonly store: Store, private readonly dIndex: DescIndex, private readonly extPath: string) {
-        this.store.onDidArchiveAdd((sa) => {
-            this.topNodes.set(sa.uri.toString(), {
-                kind: DescTreeNodeKind.Archive,
-                name: sa.name,
-                archive: sa,
-            });
-            this.refresh();
-        });
-
-        this.store.onDidArchiveDelete((sa) => {
-            this.topNodes.delete(sa.uri.toString());
-            this.refresh();
-        });
-
-        this.store.onDidFileDescCreate((ev) => {
-            const dNode: DescTreeNode = {
-                kind: DescTreeNodeKind.File,
-                archive: ev.archive,
-                name: ev.fDesc.name,
-                dsItem: ev.fDesc,
-                xDoc: ev.xDoc,
-            };
-            this.fileNodes.set(ev.xDoc.tdoc.uri, dNode);
-            this.refresh(this.topNodes.get(dNode.archive.uri.toString()));
-        });
-
-        this.store.onDidFileDescChange((ev) => {
-            const dNode = this.fileNodes.get(ev.xDoc.tdoc.uri);
-            dNode.dsItem = ev.fDesc;
-            dNode.xDoc = ev.xDoc;
-            this.refresh(dNode);
-        });
-
-        this.store.onDidFileDescDelete((ev) => {
-            this.fileNodes.delete(ev.xDoc.tdoc.uri);
-            this.refresh(this.topNodes.get(ev.archive.uri.toString()));
-        });
+    constructor(protected readonly langClient: lspc.LanguageClient) {
+        this.langClient.onNotification(WorkspaceChangeNotification.type, this.onWorkspaceChange.bind(this));
     }
 
-    protected getIcon(name: string) {
-        return {
-            light: path.join(this.extPath, 'resources', 'light', `${name}`),
-            dark: path.join(this.extPath, 'resources', 'dark', `${name}`)
-        };
+    protected async getWorkspaceOverview() {
+        const wResult = await this.langClient.sendRequest(WorkspaceOverviewRequest.type, {});
+
+        this.archiveNodes.clear();
+        for (const item of wResult.archives) {
+            this.archiveNodes.set(item.archiveUri, item);
+        }
+
+        this.layoutNodes.clear();
+        for (const item of wResult.layouts) {
+            this.layoutNodes.set(item.fileUri, item);
+        }
     }
 
-    public refresh(dNode?: DescTreeNode) {
-        this._onDidChangeTreeData.fire(dNode);
+    protected async getLayoutElement(docUri: string) {
+        const lResult = await this.langClient.sendRequest(LayoutElementRequest.type, {
+            textDocument: { uri: docUri },
+        } as LayoutElementParams);
+
+        function enrichElementList(currElements: DTElementWithChildren[], parent?: DTRichElement): DTRichElement[] {
+            const richList: DTRichElement[] = [];
+            for (const currChild of currElements) {
+                const richChild: DTRichElement = {
+                    ...currChild,
+                    parent: parent,
+                };
+                richChild.children = enrichElementList(richChild.children);
+                richList.push(richChild);
+            }
+            return richList;
+        }
+
+        const richResult = enrichElementList(lResult, void 0);
+        this.elementNodeTree.set(docUri, richResult);
+
+        return richResult;
     }
 
-    public getTreeItem(dNode: DescTreeNode): vs.TreeItem {
+    protected async onWorkspaceChange(params: WorkspaceChangeParams) {
+        let syncWorkspaceState = false;
+
+        if (!params.events.length) {
+            syncWorkspaceState = true;
+        }
+        else {
+            for (const currEv of params.events) {
+                switch (currEv.type) {
+                    case lspc.FileChangeType.Created:
+                    case lspc.FileChangeType.Deleted: {
+                        syncWorkspaceState = true;
+                        if (currEv.resource.kind === DTNodeKind.Layout) {
+                            this.elementNodeTree.delete(currEv.resource.fileUri);
+                        }
+                        break;
+                    }
+
+                    case lspc.FileChangeType.Changed: {
+                        if (currEv.resource.kind === DTNodeKind.Layout) {
+                            this.elementNodeTree.delete(currEv.resource.fileUri);
+                            this._onDidChangeTreeData.fire(this.layoutNodes.get(currEv.resource.fileUri));
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (syncWorkspaceState) {
+            this.archiveNodes.clear();
+            this.layoutNodes.clear();
+            this._onDidChangeTreeData.fire();
+        }
+    }
+
+    public getTreeItem(dNode: DTRichItemType): vs.TreeItem {
         const ritem: vs.TreeItem = {
             label: dNode.name,
             collapsibleState: vs.TreeItemCollapsibleState.Collapsed,
-            contextValue: DescTreeViewType[dNode.kind],
+            contextValue: DTNodeKind[dNode.kind].toLowerCase(),
         };
 
         switch (dNode.kind) {
-            case DescTreeNodeKind.Archive:
+            case DTNodeKind.Archive:
             {
-                if (dNode.archive.native) {
-                    ritem.description = `[native]`;
-                    ritem.tooltip = dNode.archive.name;
+                if (dNode.isBuiltin) {
+                    ritem.description = `[built-in]`;
                     ritem.contextValue = void 0;
                 }
+                else {
+                    ritem.description = `[workspace]`;
+                }
 
-                ritem.iconPath = this.getIcon('dependency.svg');
+                ritem.iconPath = getThemeIcon('dependency.svg');
                 break;
             }
 
-            case DescTreeNodeKind.File:
+            case DTNodeKind.Layout:
             {
-                ritem.resourceUri = vs.Uri.parse(dNode.xDoc.tdoc.uri);
+                ritem.resourceUri = vs.Uri.parse(dNode.fileUri);
                 ritem.command = {
                     title: 'Open',
                     command: 'vscode.open',
                     arguments: [ritem.resourceUri],
                 };
 
-                ritem.iconPath = this.getIcon('layout.svg');
+                ritem.iconPath = getThemeIcon('layout.svg');
                 break;
             }
 
-            case DescTreeNodeKind.Desc:
+            case DTNodeKind.Element:
             {
                 ritem.command = {
                     title: 'Show element in Text Editor',
@@ -127,25 +139,18 @@ export class DescTreeDataProvider implements vs.TreeDataProvider<DescTreeNode> {
                     arguments: [dNode],
                 };
 
-                ritem.description = `[${dNode.dsItem.stype.name}]`;
-                ritem.tooltip = `${dNode.dsItem.fqn}\n[${dNode.dsItem.stype.name}]\n`;
-                if (dNode.dsItem.template) {
-                    ritem.tooltip += `template = ${dNode.dsItem.template}\n`;
-                }
-                if (dNode.dsItem.file) {
-                    ritem.tooltip += `file = ${dNode.dsItem.file}\n`;
-                }
-                ritem.tooltip = ritem.tooltip.trim();
+                ritem.description = `[${dNode.ctype}]`;
+                ritem.tooltip = `${dNode.fqn.join('/')}`;
 
-                switch (dNode.dsItem.stype.name) {
-                    case 'EditBox': ritem.iconPath = this.getIcon('string.svg'); break;
-                    default: ritem.iconPath = this.getIcon('frame.svg'); break;
+                switch (dNode.ctype) {
+                    case 'EditBox': ritem.iconPath = getThemeIcon('string.svg'); break;
+                    default: ritem.iconPath = getThemeIcon('frame.svg'); break;
                 }
             }
         }
 
-        if (dNode.kind === DescTreeNodeKind.File || dNode.kind === DescTreeNodeKind.Desc) {
-            if (!dNode.dsItem.children.size) {
+        if (dNode.kind === DTNodeKind.Element) {
+            if (dNode.childrenCount <= 0) {
                 ritem.collapsibleState = vs.TreeItemCollapsibleState.None;
             }
         }
@@ -153,147 +158,210 @@ export class DescTreeDataProvider implements vs.TreeDataProvider<DescTreeNode> {
         return ritem;
     }
 
-    public getChildren(dParentNode?: DescTreeNode): DescTreeNode[] {
+    public async getChildren(dParentNode?: DTRichItemType): Promise<DTRichItemType[]> {
         if (!dParentNode) {
-            return Array.from(this.topNodes.values());
-        }
-
-        let children: DescTreeNode[] = [];
-
-        switch (dParentNode.kind) {
-            case DescTreeNodeKind.Archive:
-            {
-                for (const item of Array.from(this.fileNodes.values()).sort((a, b) => a.name.localeCompare(b.name))) {
-                    if (item.archive !== dParentNode.archive) continue;
-                    children.push(item);
-                }
-                break;
+            if (!this.archiveNodes.size || !this.layoutNodes.size) {
+                await this.getWorkspaceOverview();
             }
-
-            case DescTreeNodeKind.File:
-            case DescTreeNodeKind.Desc:
-            {
-                children = Array.from(dParentNode.dsItem.children.values()).map((dChild): DescTreeNode => {
-                    return {
-                        kind: DescTreeNodeKind.Desc,
-                        archive: dParentNode.archive,
-                        name: dChild.name,
-                        xDoc: dParentNode.xDoc,
-                        dsItem: dChild,
-                        parent: dParentNode,
-                    };
-                });
-                break;
-            }
+            return Array.from(this.archiveNodes.values());
         }
-
-        return children;
+        else if (dParentNode.kind === DTNodeKind.Archive) {
+            const children: DTRichItemType[] = [];
+            for (const item of this.layoutNodes.values()) {
+                if (dParentNode.archiveUri !== item.archiveUri) continue;
+                children.push(item);
+            }
+            return children.sort((a, b) => a.name.localeCompare(b.name));
+        }
+        else if (dParentNode.kind === DTNodeKind.Layout) {
+            let rElements: DTRichElement[] = this.elementNodeTree.get(dParentNode.fileUri);
+            if (!rElements) {
+                rElements = await this.getLayoutElement(dParentNode.fileUri);
+            }
+            return rElements;
+        }
+        else if (dParentNode.kind === DTNodeKind.Element) {
+            return dParentNode.children;
+        }
     }
 
-    getParent(dtNode: DescTreeNode): vs.ProviderResult<DescTreeNode> {
-        if (dtNode.kind === DescTreeNodeKind.File) {
-            return this.topNodes.get(dtNode.archive.uri.toString());
-        }
+    async getParent(dtNode: DTRichItemType): Promise<DTRichItemType> {
+        switch (dtNode.kind) {
+            case DTNodeKind.Layout: {
+                return this.archiveNodes.get(dtNode.archiveUri);
+            }
 
-        return dtNode.parent;
+            case DTNodeKind.Element: {
+                if (dtNode.fqn.length <= 1) {
+                    return this.layoutNodes.get(dtNode.fileUri);
+                }
+                else {
+                    const fqnPath = dtNode.fqn.slice(0, -1).reverse();
+                    let currentNodeList = this.elementNodeTree.get(dtNode.fileUri);
+                    if (!currentNodeList) {
+                        currentNodeList = await this.getLayoutElement(dtNode.fileUri);
+                    }
+
+                    let matchedElement: DTRichElement;
+                    while (fqnPath.length) {
+                        const currName = fqnPath.pop();
+                        matchedElement = currentNodeList.find(item => item.name === currName)
+                        if (!matchedElement) {
+                            // TODO: report warning
+                            return;
+                        }
+                        currentNodeList = matchedElement.children;
+                    }
+
+                    return matchedElement;
+                }
+            }
+        }
     }
 }
 
-export class TreeViewProvider extends AbstractProvider implements vs.Disposable {
-    protected uNavigator: UINavigator;
-    protected uBuilder: UIBuilder;
-    protected dTreeDataProvider: DescTreeDataProvider;
-    protected descViewer: vs.TreeView<DescTreeNode>;
-    protected subscriptions: vs.Disposable[] = [];
+interface ElementViewDataSectionRich extends ElementViewDataSection {
+    parent: ElementViewDataSectionRich;
+    children: ElementViewDataSectionRich[];
+}
 
-    protected prepare() {
-        this.uNavigator = new UINavigator(this.store.schema, this.store.index);
-        this.uBuilder = new UIBuilder(this.store.schema, this.store.index);
+class FramePropertiesTreeDataProvider implements vs.TreeDataProvider<ElementViewDataSectionRich> {
+    protected _onDidChangeTreeData: vs.EventEmitter<ElementViewDataSectionRich> = new vs.EventEmitter<ElementViewDataSectionRich>();
+    readonly onDidChangeTreeData: vs.Event<ElementViewDataSectionRich | undefined | null> = this._onDidChangeTreeData.event;
+    protected rootElements: ElementViewDataSectionRich[] = void 0;
+    protected activeElement: DTElement = void 0;
+
+    constructor(protected readonly langClient: lspc.LanguageClient) {
     }
 
-    register(): vs.Disposable {
-        this.dTreeDataProvider = new DescTreeDataProvider(this.store, this.dIndex, this.svcContext.extContext.extensionPath);
-        this.descViewer = vs.window.createTreeView('sc2layoutDesc', { treeDataProvider: this.dTreeDataProvider, showCollapseAll: true });
+    public refresh(vItem?: ElementViewDataSectionRich) {
+        this._onDidChangeTreeData.fire(vItem);
+    }
+
+    public setActiveElement(dtElement?: DTElement) {
+        this.activeElement = dtElement;
+        this.rootElements = void 0;
+        this.refresh();
+    }
+
+    public getTreeItem(vItem: ElementViewDataSectionRich): vs.TreeItem {
+        return {
+            label: vItem.label,
+            description: vItem.description,
+            tooltip: vItem.tooltip,
+            iconPath: getThemeIcon(vItem.iconPath),
+            collapsibleState: vItem.children.length ? vs.TreeItemCollapsibleState.Expanded : vs.TreeItemCollapsibleState.None,
+        };
+    }
+
+    public async getChildren(vItem?: ElementViewDataSectionRich): Promise<ElementViewDataSectionRich[]> {
+        if (!this.activeElement) return;
+
+        function enrichViewDataSection(section: ElementViewDataSection, parent?: ElementViewDataSectionRich): ElementViewDataSectionRich {
+            const richSect: ElementViewDataSectionRich = {
+                ...section,
+                parent,
+                children: [],
+            };
+            if (section.children) {
+                richSect.children = section.children.map(item => enrichViewDataSection(item, richSect));
+            }
+            return richSect;
+        }
+
+        if (!vItem) {
+            if (!this.rootElements) {
+                const result = await this.langClient.sendRequest(ElementViewDataRequest.type, { node: this.activeElement });
+                if (result) {
+                    this.rootElements = enrichViewDataSection(result).children;
+                }
+            }
+
+            return this.rootElements;
+        }
+        else {
+            return vItem.children;
+        }
+    }
+
+    public getParent(vItem: ElementViewDataSectionRich): vs.ProviderResult<ElementViewDataSectionRich> {
+        return vItem.parent;
+    }
+}
+
+export class TreeViewProvider implements vs.Disposable {
+    protected descDataProvider: DescTreeDataProvider;
+    protected descViewer: vs.TreeView<DTRichItemType>;
+    protected viewDataProvider: FramePropertiesTreeDataProvider;
+    protected elementDataViewer: vs.TreeView<ElementViewDataSectionRich>;
+    protected subscriptions: vs.Disposable[] = [];
+
+    constructor(protected readonly langClient: lspc.LanguageClient) {
+        this.descDataProvider = new DescTreeDataProvider(langClient);
+        this.descViewer = vs.window.createTreeView('sc2layoutMainView', {
+            treeDataProvider: this.descDataProvider,
+            showCollapseAll: true,
+        });
         this.subscriptions.push(this.descViewer);
+
+        this.viewDataProvider = new FramePropertiesTreeDataProvider(langClient);
+        this.elementDataViewer = vs.window.createTreeView('sc2layoutElementView', {
+            treeDataProvider: this.viewDataProvider,
+            showCollapseAll: true,
+        });
+        this.subscriptions.push(this.elementDataViewer);
 
         this.descViewer.onDidChangeSelection(this.onChangeSelection, this, this.subscriptions);
 
-        this.subscriptions.push(vs.commands.registerCommand('sc2layout.dtree.showInTextEditor', async (dNode: DescTreeNode) => {
-            const xEl = <XMLElement>Array.from(dNode.dsItem.xDecls)[0];
-            const posSta = dNode.xDoc.tdoc.positionAt(xEl.start);
-            const posEnd = dNode.xDoc.tdoc.positionAt(xEl.startTagEnd ? xEl.startTagEnd : xEl.end);
-
-            await vs.window.showTextDocument(vs.Uri.parse(dNode.xDoc.tdoc.uri), {
-                preserveFocus: true,
-                selection: new vs.Range(
-                    new vs.Position(posSta.line, posSta.character),
-                    new vs.Position(posEnd.line, posEnd.character),
-                ),
-            });
-        }));
-
-        this.subscriptions.push(vs.commands.registerTextEditorCommand('sc2layout.dtree.revealActiveFile', this.revealTextSelectedNode, this));
-
         this.subscriptions.push(
+            vs.commands.registerCommand('sc2layout.dtree.showInTextEditor', this.showInTextEditor, this),
+            vs.commands.registerTextEditorCommand('sc2layout.dtree.revealActiveFile', this.revealTextSelectedNode, this),
             vs.commands.registerCommand('sc2layout.dtree.showProperties', this.onShowProperties, this)
         );
+    }
 
-        return this.descViewer;
+    async showInTextEditor(dtNode: DTElement) {
+        await vs.window.showTextDocument(vs.Uri.parse(dtNode.fileUri), {
+            preserveFocus: true,
+            selection: new vs.Range(
+                dtNode.selectionRange.start.line,
+                dtNode.selectionRange.start.character,
+                dtNode.selectionRange.end.line,
+                dtNode.selectionRange.end.character
+            ),
+        });
     }
 
     async revealTextSelectedNode(textEditor: vs.TextEditor, edit: vs.TextEditorEdit) {
-        if (textEditor.document.languageId !== ExtLangIds.SC2Layout) return;
+        if (textEditor.document.languageId !== 'sc2layout') return;
 
-        let dtFile = this.dTreeDataProvider.fileNodes.get(textEditor.document.uri.toString());
+        const dtNode = await this.langClient.sendRequest(FetchNodeRequest.type, <FetchNodeParams>{
+            textDocument: { uri: textEditor.document.uri.toString() },
+            position: { line: textEditor.selection.active.line, character: textEditor.selection.active.character },
+        });
 
-        if (!dtFile) {
-            vs.window.showErrorMessage(`Currently active file doesn't appear to be part of the workspace.`);
-            return;
-        }
+        if (!dtNode) return;
 
-        const sourceFile = await this.svcContext.syncVsDocument(textEditor.document);
-        const offset = textEditor.document.offsetAt(textEditor.selection.active);
-        const xEl = sourceFile.findNodeAt(offset);
-        if (!(xEl instanceof XMLElement) || !xEl.stype) return;
-        const descItem = this.store.index.resolveElementDesc(xEl);
-
-        let dtResult = dtFile;
-        if (descItem) {
-            switch (descItem.kind) {
-                case DescKind.Frame:
-                case DescKind.Animation:
-                case DescKind.StateGroup:
-                {
-                    const descChain = descItem.descRelativeChain.reverse();
-                    let dcurrent: DescNamespace;
-                    while (dcurrent = descChain.pop()) {
-                        const dtChildren = this.dTreeDataProvider.getChildren(dtResult);
-                        dtResult = dtChildren.find(item => item.dsItem === dcurrent);
-                        if (!dtResult) break;
-                    }
-                    break;
-                }
-            }
-        }
-
-        this.descViewer.reveal(dtResult ? dtResult : dtFile);
+        this.descViewer.reveal(dtNode as DTRichItemType);
     }
 
-    onChangeSelection(ev: vs.TreeViewSelectionChangeEvent<DescTreeNode>) {
-        let dsItem: DescNamespace;
-        if (ev.selection.length && ev.selection[0].kind === DescTreeNodeKind.Desc) {
-            dsItem = ev.selection[0].dsItem;
+    onChangeSelection(ev: vs.TreeViewSelectionChangeEvent<DTRichItemType>) {
+        let dtNode: DTRichItemType;
+        if (ev.selection.length && ev.selection[0].kind === DTNodeKind.Element) {
+            dtNode = ev.selection[0];
+            this.viewDataProvider.setActiveElement(dtNode);
         }
-        this.svcContext.frameViewProvider.showDescItem(dsItem);
+        else {
+            this.viewDataProvider.setActiveElement();
+        }
     }
 
-    onShowProperties(dNode: DescTreeNode) {
-        if (dNode.kind !== DescTreeNodeKind.Desc) return;
-        this.svcContext.frameViewProvider.showDescItem(dNode.dsItem);
+    onShowProperties(dtNode: DTRichItemType) {
+        if (dtNode.kind !== DTNodeKind.Element) return;
+        this.viewDataProvider.setActiveElement(dtNode);
     }
 
     dispose() {
-        // TODO: dispose DescTreeDataProvider
         this.subscriptions.forEach(item => item.dispose());
         this.subscriptions = [];
     }
