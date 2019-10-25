@@ -2,6 +2,7 @@ import * as vs from 'vscode';
 import * as lspc from 'vscode-languageclient';
 import * as path from 'path';
 import { TreeViewProvider } from './dtree';
+import { WorkspaceSetupChecker } from './workspace';
 
 type ProgressReportParams = {
     message?: string;
@@ -59,6 +60,7 @@ const sc2layoutConfig: vs.LanguageConfiguration = {
 let client: lspc.LanguageClient;
 let extContext: vs.ExtensionContext;
 let dTree: TreeViewProvider;
+let wsChecker: WorkspaceSetupChecker;
 
 export async function activate(context: vs.ExtensionContext) {
     extContext = context;
@@ -100,6 +102,9 @@ export async function activate(context: vs.ExtensionContext) {
     client = new lspc.LanguageClient('sc2layout', 'SC2Layout', serverOptions, clientOptions);
     client.start();
     await client.onReady();
+
+    wsChecker = new WorkspaceSetupChecker(client);
+    context.subscriptions.push(wsChecker.install());
 
     if (vs.workspace.getConfiguration('sc2layout.treeview').get<boolean>('visible')) {
         dTree = new TreeViewProvider(client);

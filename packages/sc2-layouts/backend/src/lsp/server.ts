@@ -341,8 +341,7 @@ export class S2LServer implements ErrorReporter, LangService {
         this.state |= ServiceStateFlags.StepModsDiscoveryDone;
 
         // -
-        // TODO:
-        // this.wsSetupChecker.checkActiveTextEditor();
+        this.conn.sendNotification('sc2layout/workspaceStatus', { s2ArchiveWsCount: wsArchives.length });
 
         // -
         logger.info(`Indexing layouts files..`);

@@ -1,10 +1,16 @@
 import * as vs from 'vscode';
+import * as lspc from 'vscode-languageclient';
 
-export class WorkspaceSetupChecker implements vs.Disposable {
+interface S2WorkspaceStatusParams {
+    s2ArchiveWsCount: number;
+}
+
+export class WorkspaceSetupChecker implements lspc.Disposable {
     protected subscriptions: { dispose(): any }[] = [];
     protected workspaceMonitorSB: vs.StatusBarItem;
+    protected recentStatus: S2WorkspaceStatusParams;
 
-    constructor(protected readonly svCtx: ServiceContext) {
+    constructor(protected readonly langClient: lspc.LanguageClient) {
     }
 
     install(): vs.Disposable {
@@ -18,6 +24,13 @@ export class WorkspaceSetupChecker implements vs.Disposable {
 
         this.subscriptions.push(vs.window.onDidChangeActiveTextEditor(this.checkTextEditor.bind(this)));
 
+        // ===
+
+        this.langClient.onNotification('sc2layout/workspaceStatus', (params: S2WorkspaceStatusParams) => {
+            this.recentStatus = params;
+            this.checkActiveTextEditor();
+        });
+
         return this;
     }
 
@@ -25,12 +38,9 @@ export class WorkspaceSetupChecker implements vs.Disposable {
         this.workspaceMonitorSB.hide();
 
         if (!textEditor || textEditor.document.languageId !== 'sc2layout') return;
-        if (!(this.svCtx.state & ServiceStateFlags.StepModsDiscoveryDone)) return;
 
-        if (vs.workspace.workspaceFolders !== void 0 && vs.workspace.workspaceFolders.length) {
-            const nonNativeS2Documents = Array.from(this.svCtx.store.s2ws.archives.values()).filter(i => !i.native);
-            if (nonNativeS2Documents.length) return;
-        }
+        if (!this.recentStatus) return;
+        if (this.recentStatus.s2ArchiveWsCount > 0) return;
 
         this.workspaceMonitorSB.show();
     }
@@ -44,5 +54,6 @@ export class WorkspaceSetupChecker implements vs.Disposable {
         this.subscriptions = [];
 
         this.workspaceMonitorSB = void 0;
+        this.recentStatus = void 0;
     }
 }
