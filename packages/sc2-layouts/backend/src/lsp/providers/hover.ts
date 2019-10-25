@@ -1,7 +1,7 @@
 import * as lsp from 'vscode-languageserver';
 import * as sch from '../../schema/base';
 import { AbstractProvider, errGuard } from '../provider';
-import { XMLElement } from '../../types';
+import { XMLElement, XMLDocument } from '../../types';
 import { DefinitionProvider, DefinitionItemKind, DefinitionDescNode, DefinitionContainer, DefinitionXNode, DefinitionUINode } from './definition';
 import { vsRangeOrPositionOfXNode, rangeContainsPosition } from '../helpers';
 import { DescKind } from '../../index/desc';
@@ -20,11 +20,14 @@ function docsLink(category: 'type' | 'frame-type' | 'complex-type', name: string
     return `https://mapster.talv.space/ui-layout/${category}/${slugify(name)}`;
 }
 
-function attrSchDocs(sAttr: sch.Attribute)  {
+function attrSchDocs(sAttr: sch.Attribute, opts?: { incLabel?: boolean }) {
     let s = '';
-    s += `&nbsp;**@**${sAttr.name}${(sAttr.required ? '' : '?')} — [${sAttr.type.name}](${docsLink('type', sAttr.type.name)})`;
-    if (sAttr.label) {
+    s += `@\`${sAttr.name}\`${(sAttr.required ? '' : '*?*')} — [${sAttr.type.name}](${docsLink('type', sAttr.type.name)})`;
+    if (opts?.incLabel && sAttr.label) {
         s += ' — ' + sAttr.label;
+        if (sAttr.documentation) {
+            s += '..';
+        }
     }
     return s;
 }
@@ -32,31 +35,6 @@ function attrSchDocs(sAttr: sch.Attribute)  {
 export class HoverProvider extends AbstractProvider {
     install() {
         this.slSrv.conn.onHover(this.provideHover.bind(this));
-    }
-
-    protected matchAttrValueEnum(smType: sch.SimpleType, value: string) {
-        value = value.toLowerCase();
-
-        function processSmType(smType: sch.SimpleType): { type: sch.SimpleType, name: string, label?: string } | undefined {
-            if (smType.emap) {
-                const r = smType.emap.get(value);
-                if (!r) return void 0;
-                return {
-                    type: smType,
-                    name: r.name,
-                    label: r.label,
-                };
-            }
-
-            if (smType.union) {
-                for (const unSmType of smType.union) {
-                    const r = processSmType(unSmType);
-                    if (r) return r;
-                }
-            }
-        }
-
-        return processSmType(smType);
     }
 
     protected tooltipDefinitionDesc(defContainer: DefinitionContainer, dscNode: DefinitionDescNode | DefinitionUINode): lsp.MarkupContent {
@@ -123,11 +101,70 @@ export class HoverProvider extends AbstractProvider {
         if (node.stype.label) {
             contents += `\n\n` + node.stype.label;
         }
-        contents += '\n\n' + Array.from(node.stype.attributes.values()).map(v => attrSchDocs(v)).join('\n\n');
+        contents += '\n\n' + Array.from(node.stype.attributes.values()).map(v => {
+            return `&nbsp;&nbsp;` + attrSchDocs(v, { incLabel: true });
+        }).join('\n\n');
 
         return <lsp.Hover>{
             contents: contents.trim(),
         };
+    }
+
+    protected processAttributeName(scAttr: sch.Attribute, xEl: XMLElement): lsp.Hover {
+        const contents: string[] = [];
+
+        contents.push(`Attribute of **<${xEl.sdef.name}>** — `);
+        if (xEl.sdef.nodeKind === sch.ElementDefKind.Frame) {
+            const sFrameType = this.store.schema.getFrameType(xEl.stype);
+            if (sFrameType) {
+                contents.push(`[${sFrameType.name}](${docsLink('frame-type', sFrameType.name)})`);
+            }
+            else {
+                contents.push(`[${xEl.sdef.type.name}](${docsLink('complex-type', xEl.sdef.type.name)})`);
+            }
+        }
+        else {
+            contents.push(`[${xEl.sdef.type.name}](${docsLink('complex-type', xEl.sdef.type.name)})`);
+        }
+        contents.push('\n\n');
+
+        contents.push(attrSchDocs(scAttr));
+        if (scAttr.label || scAttr.documentation) {
+            contents.push(`\n\n${scAttr.documentation ? scAttr.documentation : scAttr.label}`);
+        }
+
+        const flatEnum = this.store.schema.flattenSTypeEnumeration(scAttr.type);
+        if (flatEnum.size) {
+            contents.push(`\n\n---\n\n`);
+            contents.push(`|  | Values |\n`);
+            contents.push(`|---|---|\n`);
+            contents.push(Array.from(flatEnum.values()).map((v, key) => {
+                return `| ${key + 1}. | [\`${v.value}\`](#${v.label ? ` "${v.label.replace(/"/g, '\\"')}"` : ''}) |`;
+            }).join('\n'));
+        }
+        return {
+            contents: <lsp.MarkupContent>{ kind: 'markdown', value: contents.join('') },
+        };
+    }
+
+    protected processAttributeValue(scAttr: sch.Attribute, context: { xDoc: XMLDocument, position: lsp.Position }): lsp.Hover | undefined {
+        switch (scAttr.type.builtinType) {
+            default:
+            {
+                const wordRange = context.xDoc.tdoc.getWordRangeAtPosition(context.position, this.slSrv.wordPattern);
+                if (!wordRange) break;
+                const flatEnum = this.store.schema.flattenSTypeEnumeration(scAttr.type);
+                const matchedEn = flatEnum.get(context.xDoc.tdoc.getText(wordRange));
+                if (!matchedEn || !matchedEn.label) break;
+
+                let contents = `**${matchedEn.value}** — ${matchedEn.label}\n\n[${matchedEn.originType.name}](${docsLink('type', matchedEn.originType.name)})`;
+                return {
+                    contents: <lsp.MarkupContent>{ kind: 'markdown', value: contents },
+                    range: wordRange,
+                };
+                break;
+            }
+        }
     }
 
     @errGuard()
@@ -151,6 +188,8 @@ export class HoverProvider extends AbstractProvider {
                 const attr = node.findAttributeAt(offset);
                 if (attr) {
                     let scAttr = node.stype.attributes.get(attr.name.toLowerCase());
+
+                    // fallback onto indeterminate attrs
                     if (!scAttr) {
                         const indType = this.xray.matchIndeterminateAttr(node, attr.name);
                         if (indType) {
@@ -164,28 +203,13 @@ export class HoverProvider extends AbstractProvider {
 
                     if (scAttr) {
                         if ((attr.start + attr.name.length) > offset) {
-                            let contents = attrSchDocs(scAttr);
-                            hv = {
-                                contents: <lsp.MarkupContent>{ kind: 'markdown', value: contents },
-                            };
+                            hv = this.processAttributeName(scAttr, node);
                         }
                         else if (attr.startValue && (attr.startValue - 1) <= offset && attr.end >= offset) {
-                            switch (scAttr.type.builtinType) {
-                                default:
-                                {
-                                    const wordRange = sourceFile.tdoc.getWordRangeAtPosition(params.position, this.slSrv.wordPattern);
-                                    if (!wordRange) break;
-                                    const matchedEn = this.matchAttrValueEnum(scAttr.type, sourceFile.tdoc.getText(wordRange));
-                                    if (matchedEn && matchedEn.label) {
-                                        let contents = `**${matchedEn.name}** — ${matchedEn.label}\n\n[${matchedEn.type.name}](${docsLink('type', matchedEn.type.name)})`;
-                                        hv = {
-                                            contents: <lsp.MarkupContent>{ kind: 'markdown', value: contents },
-                                            range: wordRange,
-                                        };
-                                    }
-                                    break;
-                                }
-                            }
+                            hv = this.processAttributeValue(scAttr, {
+                                xDoc: sourceFile,
+                                position: params.position,
+                            });
                         }
                     }
                 }

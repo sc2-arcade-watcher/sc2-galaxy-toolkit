@@ -246,6 +246,12 @@ export interface FrameType extends AbstractModel {
 
 // ===
 
+export interface FlattenedEnumItem {
+    originType: SimpleType;
+    value: string;
+    label: string;
+}
+
 export interface SchemaRegistry {
     readonly fileRootType: ComplexType;
     readonly frameClassProps: Map<string, FrameProperty[]>;
@@ -258,6 +264,8 @@ export interface SchemaRegistry {
     getPropertyByName(name: string): FrameProperty;
 
     isPropertyBindAllowed(scElementDef: ElementDef, scComplexType: ComplexType, attrName: string): boolean;
+
+    flattenSTypeEnumeration(smType: SimpleType): Map<string, FlattenedEnumItem>;
 }
 
 export interface SchemaFileProvider {

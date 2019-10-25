@@ -611,6 +611,31 @@ export class SchemaRegistryBrowser implements sch.SchemaRegistry {
 
         return false;
     }
+
+    flattenSTypeEnumeration(smType: sch.SimpleType) {
+        const rmap = new Map<string, sch.FlattenedEnumItem>();
+
+        function processType(smType: sch.SimpleType) {
+            if (smType.emap) {
+                for (const item of smType.emap.values()) {
+                    rmap.set(item.name, {
+                        value: item.name,
+                        label: item.label,
+                        originType: smType,
+                    });
+                }
+            }
+
+            if (smType.union) {
+                for (const childType of smType.union) {
+                    processType(childType);
+                }
+            }
+        }
+
+        processType(smType);
+        return rmap;
+    }
 }
 
 export interface SchemaData {
