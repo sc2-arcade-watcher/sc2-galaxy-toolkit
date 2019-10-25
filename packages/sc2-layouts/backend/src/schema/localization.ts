@@ -236,7 +236,7 @@ export function writeMdFile(mContent: MdFileContent) {
 }
 
 const reEntryHead = /(?:^|\n+)## ([^\n]+)(?:\n|$)/;
-const reEntryTitle = /^\n([^#].+)(?:\n|$)/;
+const reEntryTitle = /^\n((?!#).+)(?:\n|$)/;
 const reEntryContent = /^\n((?!#)[^]+?)(?:\n## |$)/;
 
 export function readMdFile(input: string) {
