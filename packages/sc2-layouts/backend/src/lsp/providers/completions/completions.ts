@@ -9,7 +9,7 @@ import * as s2 from '../../../index/s2mod';
 import { Store } from '../../../index/store';
 import { SelHandleKind, SelectorFragment, PathSelector, PropertyBindExpr, SyntaxKind } from '../../../parser/expressions';
 import { FrameNode, AnimationNode, StateGroupNode, UINode } from '../../../index/hierarchy';
-import { getSelectionIndexAtPosition, getAttrValueKind, isConstantValue } from '../../../parser/utils';
+import { getSelectionIndexAtPosition, getAttrValueKind, isConstantValueKind } from '../../../parser/utils';
 import { reValueColor } from '../../../schema/validation';
 import { parseColorLiteral, getColorAsHexARGB } from '../color';
 import { reAbbrvWord, CodeAbbreviations } from './codeAbbreviations';
@@ -305,7 +305,7 @@ class AttrValueProvider extends SuggestionsProvider {
     protected suggestStrings(ctx: AtValComplContext, strfKind: s2.StringFileKind) {
         const rl = this.store.s2ws.strings.file(strfKind).entriesStartingWith(
             ctx.attrValue.substring(
-                getAttrValueKind(ctx.attrValue) === AttrValueKind.AssetRacial ? 2 : 1,
+                getAttrValueKind(ctx.attrValue, false) === AttrValueKind.AssetRacial ? 2 : 1,
                 ctx.atOffsetRelative
             )
         );
@@ -470,7 +470,7 @@ class AttrValueProvider extends SuggestionsProvider {
             sAttrType = indType.value;
         }
 
-        const pvKind = getAttrValueKind(ctx.attrValue);
+        const pvKind = getAttrValueKind(ctx.attrValue, false);
         const isAssetRef = (pvKind === AttrValueKind.Asset || pvKind === AttrValueKind.AssetRacial);
         const currentDesc = this.store.index.resolveElementDesc(ctx.node);
 
@@ -1112,8 +1112,8 @@ export class CompletionsProvider extends AbstractProvider {
                 const arVal = tokenText.substring(1, tokenText.length - 1);
                 const aOffset = offset - (scanner.getTokenOffset() + 1);
 
-                if (isConstantValue(arVal)) {
-                    this.provideConstants(items, getAttrValueKind(arVal));
+                if (isConstantValueKind(getAttrValueKind(arVal, false))) {
+                    this.provideConstants(items, getAttrValueKind(arVal, false));
                     break;
                 }
 
