@@ -235,6 +235,7 @@ export function writeMdFile(mContent: MdFileContent) {
     return output.join('\n\n');
 }
 
+const reBeginsWithHashSign = /^#+\s+(.+)\s*/;
 const reEntryHead = /(?:^|\n+)## ([^\n]+)(?:\n|$)/;
 const reEntryTitle = /^\n((?!#).+)(?:\n|$)/;
 const reEntryContent = /^\n((?!#)[^]+?)(?:\n## |$)/;
@@ -248,12 +249,22 @@ export function readMdFile(input: string) {
     if (sections.length === 0) return;
 
     if (sections[0].length > 0) {
-        const m = sections[0].split('\n\n', 2);
-        if (m[0].length && m[0] !== placeholderStr) {
-            mContent.title = m[0];
+        const paragraphs = sections[0].split('\n\n');
+
+        // use a leading paragraph as "title" - an intro to the content
+        if (paragraphs.length > 0 && !paragraphs[0].match(reBeginsWithHashSign)) {
+            if (paragraphs[0] !== placeholderStr) {
+                mContent.title = paragraphs[0];
+            }
+            paragraphs.splice(0, 1);
         }
-        if (m[1] !== void 0 && m[1].length) {
-            mContent.content = m[1];
+
+        // use the remaining of the section to fill the content
+        if (paragraphs.length > 0) {
+            mContent.content = paragraphs.join('\n\n').trimRight();
+            if (!mContent.content.length) {
+                mContent.content = void 0;
+            }
         }
     }
 
