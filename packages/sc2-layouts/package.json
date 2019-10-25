@@ -189,8 +189,18 @@
                 "category": "SC2 Layout"
             },
             {
+                "command": "sc2layout.analyzeWorkspace",
+                "title": "Analyze Workspace",
+                "category": "SC2 Layout",
+                "icon": {
+                    "light": "resources/light/refresh.svg",
+                    "dark": "resources/dark/refresh.svg"
+                }
+            },
+            {
                 "command": "sc2layout.dtree.revealActiveFile",
-                "title": "SC2 Layouts: Reveal Active Frame in Desc Tree",
+                "title": "Reveal Active Element in Layout Tree",
+                "category": "SC2 Layout",
                 "icon": {
                     "light": "resources/light/layout.svg",
                     "dark": "resources/dark/layout.svg"
@@ -218,7 +228,13 @@
                     "group": "navigation"
                 }
             ],
-            "view/title": [],
+            "view/title": [
+                {
+                    "command": "sc2layout.analyzeWorkspace",
+                    "when": "view == sc2layoutMainView",
+                    "group": "navigation"
+                }
+            ],
             "view/item/context": [
                 {
                     "command": "sc2layout.dtree.showInTextEditor",

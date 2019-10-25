@@ -6,6 +6,8 @@ import { SchemaRegistry } from '../src/schema/base';
 import URI from 'vscode-uri';
 import { globify, readFileAsync } from '../src/common';
 import { languageExt } from '../src/types';
+import { AbstractProvider } from '../src/lsp/provider';
+import { S2LServer } from '../src/lsp/server';
 
 export function getSchema(): SchemaRegistry {
     return (<any>global)._cachedSchema;
@@ -55,4 +57,12 @@ export function tlog(d: any, opts: util.InspectOptions | number = {}) {
             depth: 1,
         }, opts)
     ));
+}
+
+export function mockupProvider<T extends AbstractProvider>(providerType: { new(): T }, store: Store): T {
+    const srv = new S2LServer(void 0 as any);
+    const p = new providerType();
+    p.init(srv, store);
+    p.errHandler = (params) => {};
+    return p;
 }

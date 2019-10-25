@@ -120,6 +120,11 @@ export async function activate(context: vs.ExtensionContext) {
         indexingProgress = void 0;
         vs.window.setStatusBarMessage(params.message, 2000);
     });
+
+    client.onNotification('sc2layout/workspaceDiagnostics', async (params: { content: string }) => {
+        const textDoc = await vs.workspace.openTextDocument({ content: params.content, language: 'log' });
+        await vs.window.showTextDocument(textDoc);
+    });
 }
 
 export async function deactivate() {

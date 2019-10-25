@@ -118,6 +118,7 @@ export class LayoutChecker {
                 }
                 if (!uNode) {
                     uNode = this.uBuilder.buildNodeFromDesc(relativeDesc);
+                    if (!uNode) break;
                 }
                 uNode = this.uNavigator.resolveSelectorFragment(uNode, pathSel.path[i]);
 

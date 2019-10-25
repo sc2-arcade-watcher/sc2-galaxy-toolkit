@@ -177,6 +177,7 @@ class AttrValueProvider extends SuggestionsProvider {
                 if (pathIndex === void 0 || pathIndex === 0) {
                     ctx.citems.push({kind: lsp.CompletionItemKind.Keyword, label: '$root'});
                     const uNode = this.uBuilder.buildNodeFromDesc(currentDesc);
+                    if (!uNode) break;
                     appendUNodeChildren(uNode.children.values());
                 }
                 else {
@@ -975,9 +976,9 @@ export class CompletionsProvider extends AbstractProvider {
     @errGuard()
     @logIt({
         argsDump: true,
-        resDump: (r: lsp.CompletionList) => r ? r.items.length : void 0,
+        resDump: (r: lsp.CompletionList) => r?.items?.length,
     })
-    async provideCompletionItems(params: lsp.CompletionParams, cancToken: lsp.CancellationToken) {
+    async provideCompletionItems(params: lsp.CompletionParams, cancToken: lsp.CancellationToken): Promise<lsp.CompletionList> {
         let items = <lsp.CompletionItem[]> [];
 
         const sourceFile = await this.slSrv.flushDocumentByUri(params.textDocument.uri);

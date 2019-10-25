@@ -9,7 +9,7 @@ import { SchemaRegistry } from '../schema/base';
 import * as s2 from '../index/s2mod';
 import { objventries, globify } from '../common';
 import { languageExt, languageId } from '../types';
-import { DiagnosticsProvider } from './providers/diagnostics';
+import { DiagnosticsProvider, formatDiagnosticTotal } from './providers/diagnostics';
 import { DefinitionProvider } from './providers/definition';
 import { HoverProvider } from './providers/hover';
 import { NavigationProvider } from './providers/navigation';
@@ -166,6 +166,8 @@ export class S2LServer implements ErrorReporter, LangService {
     }
 
     constructor(public readonly conn: lsp.IConnection) {
+        if (!conn) return;
+
         this.documents.listen(this.conn);
         this.documents.onDidChangeContent(this.onDidChangeContent.bind(this));
         this.documents.onDidOpen(this.onDidOpen.bind(this));
@@ -177,6 +179,7 @@ export class S2LServer implements ErrorReporter, LangService {
         this.conn.onInitialize(this.onInitialize.bind(this));
         this.conn.onInitialized(this.onInitialized.bind(this));
         this.conn.onDidChangeConfiguration(this.onDidChangeConfiguration.bind(this));
+        this.conn.onExecuteCommand(this.onExecuteCommand.bind(this));
     }
 
     protected debounceDocumentSync(inDoc: lsp.TextDocument) {
@@ -433,7 +436,10 @@ export class S2LServer implements ErrorReporter, LangService {
                 referencesProvider: true,
                 colorProvider: true,
                 executeCommandProvider: {
-                    commands: ['sc2layout.updateSchemaFiles'],
+                    commands: [
+                        'sc2layout.updateSchemaFiles',
+                        'sc2layout.analyzeWorkspace',
+                    ],
                 },
             }
         };
@@ -602,7 +608,7 @@ export class S2LServer implements ErrorReporter, LangService {
         if (this.store.s2ws.matchFileWorkspace(URI.parse(doc.uri))) {
             this.conn.sendDiagnostics({
                 uri: doc.uri,
-                diagnostics: await this.providers.diagnostics.provide(doc.uri),
+                diagnostics: await this.providers.diagnostics.analyzeFile(doc.uri),
             });
         }
     }
@@ -611,9 +617,15 @@ export class S2LServer implements ErrorReporter, LangService {
     @logIt({ level: 'verbose', profiling: true })
     protected onExecuteCommand(params: lsp.ExecuteCommandParams) {
         switch (params.command) {
-            case 'sc2layout.updateSchemaFiles':
-            {
+            case 'sc2layout.updateSchemaFiles': {
                 this.schemaLoader.performUpdate(true);
+                break;
+            }
+
+            case 'sc2layout.analyzeWorkspace': {
+                this.conn.sendNotification('sc2layout/workspaceDiagnostics', {
+                    content: formatDiagnosticTotal(this.providers.diagnostics.analyzeWorkspace()),
+                });
                 break;
             }
         }
