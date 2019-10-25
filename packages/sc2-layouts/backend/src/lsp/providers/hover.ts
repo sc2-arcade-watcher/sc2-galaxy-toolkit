@@ -20,9 +20,25 @@ function docsLink(category: 'type' | 'frame-type' | 'complex-type', name: string
     return `https://mapster.talv.space/ui-layout/${category}/${slugify(name)}`;
 }
 
+function labeledTypeLink(type: sch.SimpleType | sch.ComplexType) {
+    if (type.flags & sch.CommonTypeFlags.Virtual) {
+        return `[${type.name}](#)`;
+    }
+    else {
+        let dLink = '#';
+        if (type.smKind === sch.ModelKind.SimpleType) {
+            dLink = docsLink('type', type.name);
+        }
+        else if (type.smKind === sch.ModelKind.ComplexType) {
+            dLink = docsLink('complex-type', type.name);
+        }
+        return `[${type.name}](${dLink})`;
+    }
+}
+
 function attrSchDocs(sAttr: sch.Attribute, opts?: { incLabel?: boolean }) {
     let s = '';
-    s += `@\`${sAttr.name}\`${(sAttr.required ? '' : '*?*')} — [${sAttr.type.name}](${docsLink('type', sAttr.type.name)})`;
+    s += `@\`${sAttr.name}\`${(sAttr.required ? '' : '*?*')} — ${labeledTypeLink(sAttr.type)}`;
     if (opts?.incLabel && sAttr.label) {
         s += ' — ' + sAttr.label;
         if (sAttr.documentation) {
@@ -89,8 +105,7 @@ export class HoverProvider extends AbstractProvider {
 
             default:
             {
-                dLink = docsLink('complex-type', node.sdef.type.name);
-                contents += ` — [${node.sdef.type.name}](${dLink})`;
+                contents += ` — ${labeledTypeLink(node.sdef.type)}`;
                 break;
             }
         }
@@ -120,11 +135,11 @@ export class HoverProvider extends AbstractProvider {
                 contents.push(`[${sFrameType.name}](${docsLink('frame-type', sFrameType.name)})`);
             }
             else {
-                contents.push(`[${xEl.sdef.type.name}](${docsLink('complex-type', xEl.sdef.type.name)})`);
+                contents.push(labeledTypeLink(xEl.sdef.type));
             }
         }
         else {
-            contents.push(`[${xEl.sdef.type.name}](${docsLink('complex-type', xEl.sdef.type.name)})`);
+            contents.push(labeledTypeLink(xEl.sdef.type));
         }
         contents.push('\n\n');
 
@@ -157,7 +172,7 @@ export class HoverProvider extends AbstractProvider {
                 const matchedEn = flatEnum.get(context.xDoc.tdoc.getText(wordRange));
                 if (!matchedEn || !matchedEn.label) break;
 
-                let contents = `**${matchedEn.value}** — ${matchedEn.label}\n\n[${matchedEn.originType.name}](${docsLink('type', matchedEn.originType.name)})`;
+                let contents = `**${matchedEn.value}** — ${matchedEn.label}\n\n${labeledTypeLink(matchedEn.originType)}`;
                 return {
                     contents: <lsp.MarkupContent>{ kind: 'markdown', value: contents },
                     range: wordRange,

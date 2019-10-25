@@ -232,6 +232,10 @@ export function writeMdFile(mContent: MdFileContent) {
         }
     }
 
+    if (output.length && !output[output.length - 1].match(/\n$/)) {
+        output[output.length - 1] += '\n';
+    }
+
     return output.join('\n\n');
 }
 

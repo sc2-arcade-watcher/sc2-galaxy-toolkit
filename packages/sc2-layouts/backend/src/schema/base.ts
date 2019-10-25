@@ -103,6 +103,7 @@ export interface SEnumInfo {
 }
 
 export interface SimpleType extends AbstractModel {
+    smKind: ModelKind.SimpleType;
     kind: SimpleTypeKind;
     builtinType: BuiltinTypeKind;
     data: SimpleTypeData;
@@ -149,6 +150,7 @@ interface ComplexTypeOrigin {
 }
 
 export interface ComplexType extends AbstractModel {
+    smKind: ModelKind.ComplexType;
     mpKind: MappedComplexKind;
     flags: CommonTypeFlags | ComplexTypeFlags;
     attributes: Map<string, Attribute>;

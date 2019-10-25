@@ -164,9 +164,15 @@ function initializeRegistry(sdata: SchemaData): RegistryCatalog {
         if (sType.flag) {
             for (const fl of sType.flag) {
                 switch (fl.name) {
-                    case 'Nullable':
+                    case 'Virtual': {
+                        objSimpleType.flags |= sch.CommonTypeFlags.Virtual;
+                        break;
+                    }
+
+                    case 'Nullable': {
                         objSimpleType.flags |= sch.SimpleTypeFlags.Nullable;
                         break;
+                    }
                 }
             }
         }
