@@ -134,3 +134,45 @@ export function dlog(o: any, opts: util.InspectOptions = {}) {
         depth: 6,
     }, opts)));
 }
+
+export class StringIcaseMap<T> extends Map<string, T> {
+    protected readonly lcaseMap = new Map<string, T>();
+
+    clear() {
+        super.clear();
+        this.lcaseMap.clear();
+    }
+
+    set(key: string, value: T) {
+        this.lcaseMap.set(key.toLowerCase(), value);
+        return super.set(key, value);
+    }
+
+    get(key: string): T | undefined {
+        let r = super.get(key);
+        if (!r) {
+            r = this.lcaseMap.get(key.toLowerCase());
+        }
+        return r;
+    }
+
+    getStrictCase(key: string): T | undefined {
+        return super.get(key);
+    }
+
+    has(key: string): boolean {
+        let r = super.has(key);
+        if (!r) {
+            r = this.lcaseMap.has(key.toLowerCase());
+        }
+        return r;
+    }
+
+    delete(key: string): boolean {
+        let r = super.delete(key);
+        if (r) {
+            this.lcaseMap.delete(key.toLowerCase());
+        }
+        return r;
+    }
+}

@@ -2,6 +2,7 @@ import { LayoutDocument, Store } from './store';
 import { XMLElement, XMLNode, DiagnosticReport, XMLDocument, AttrValueConstant, AttrValueKindOffset } from '../types';
 import * as sch from '../schema/base';
 import { splitSlashDelimetedStr, getAttrValueKind, isConstantValueKind } from '../parser/utils';
+import { StringIcaseMap } from '../common';
 
 export class DescXRef {
     declarations = new Set<XMLElement>();
@@ -99,11 +100,16 @@ export const enum DescKind {
     StateGroup,
 }
 
+export interface DescStrCaseMissmatchInfo<T> {
+    _icaseMissmatch?: string;
+    r: T;
+}
+
 export class DescNamespace {
     kind: DescKind;
     parent?: DescNamespace;
     readonly name: string;
-    readonly children = new Map<string, DescNamespace>();
+    readonly children = new StringIcaseMap<DescNamespace>();
     readonly xDecls = new Set<XMLNode>();
     readonly descExtensions?: Map<string, Set<DescNamespace>>; // FileDesc
 
@@ -145,8 +151,34 @@ export class DescNamespace {
         let current: DescNamespace = this;
         for (const tmp of names) {
             current = current.children.get(tmp);
-            if (!current) break;
+            if (!current) return;
         }
+        return current;
+    }
+
+    getStrictCase(...names: string[]) {
+        let current: DescNamespace = this, strictCurrent: DescNamespace = this;
+        let strICaseMiss: string;
+        for (const tmp of names) {
+            strictCurrent = current.children.getStrictCase(tmp);
+            if (!strictCurrent) {
+                current = current.children.get(tmp);
+                if (!current) return;
+
+                strICaseMiss = tmp;
+            }
+            else {
+                current = strictCurrent;
+            }
+        }
+
+        if (strICaseMiss) {
+            return <DescStrCaseMissmatchInfo<DescNamespace>>{
+                r: current,
+                _icaseMissmatch: strICaseMiss,
+            };
+        }
+
         return current;
     }
 
@@ -246,7 +278,7 @@ function getDeclDescKind(xdecl: XMLElement) {
 export class DescIndex {
     protected xdocState: Map<XMLDocument, DocumentState>;
     rootNs: DescNamespace;
-    tplRefs: Map<string, Set<DescNamespace>>;
+    tplRefs: StringIcaseMap<Set<DescNamespace>>;
     fileRefs: Map<string, Map<string, Set<DescNamespace>>>;
 
     constants: DescXRefMap<ConstantItem>;
@@ -259,7 +291,7 @@ export class DescIndex {
     public clear() {
         this.xdocState = new Map<XMLDocument, DocumentState>();
         this.rootNs = new DescNamespace('$root', DescKind.Root, void 0, this.schema.fileRootType);
-        this.tplRefs = new Map();
+        this.tplRefs = new StringIcaseMap();
         this.fileRefs = new Map();
 
         this.constants = new DescXRefMap<ConstantItem>(this, ConstantItem, 'name');

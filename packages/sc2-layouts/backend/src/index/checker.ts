@@ -1,6 +1,6 @@
 import * as sch from '../schema/base';
 import { DiagnosticReport, XMLElement, AttrValueKind, DiagnosticCategory, XMLAttr } from '../types';
-import { DescIndex, DescKind, DescNamespace } from './desc';
+import { DescIndex, DescKind, DescNamespace, DescStrCaseMissmatchInfo } from './desc';
 import { LayoutDocument, Store } from './store';
 import { SchemaValidator } from '../schema/validation';
 import { CharacterCodes } from '../parser/scanner';
@@ -144,12 +144,28 @@ export class LayoutChecker {
                 if (!pathSel) break;
                 const pathValues = Array.from(pathSel.path).map(selFrag => nattr.value.substring(selFrag.pos, selFrag.end));
 
-                const dItem = this.index.rootNs.getMulti(...pathValues);
-                if (!dItem) {
+                const dResult = this.index.rootNs.getStrictCase(...pathValues);
+                let dItem: DescNamespace;
+                if (!dResult) {
                     this.reportAtAttrVal(nattr, `Could not find template "${nattr.value}"`);
                 }
-                else if (dItem.kind === DescKind.File) {
-                    this.reportAtAttrVal(nattr, `Cannot use FileDesc as template`);
+                else {
+                    if (typeof (<DescStrCaseMissmatchInfo<DescNamespace>>dResult)._icaseMissmatch !== 'undefined') {
+                        const tmp = <DescStrCaseMissmatchInfo<DescNamespace>>dResult;
+                        dItem = tmp.r;
+                        this.reportAtAttrVal(
+                            nattr,
+                            `Case sensitivity of the given path doesn't match with the definition. Fix "${tmp._icaseMissmatch}".`,
+                            DiagnosticCategory.Warning
+                        );
+                    }
+                    else {
+                        dItem = dResult as DescNamespace;
+                    }
+
+                    if (dItem.kind === DescKind.File) {
+                        this.reportAtAttrVal(nattr, `Cannot use FileDesc as template`);
+                    }
                 }
                 break;
             }
