@@ -1,6 +1,17 @@
 # Change Log
 
-## UNRELEASED
+## [[1.0.0]](https://github.com/Talv/sc2-layouts/compare/v0.11.2...v1.0.0) - 2019-10-26
+
+* Refactored codebase in order to adopt [LSP](https://microsoft.github.io/language-server-protocol/). All heavy work performed by extension will now take place in its own system process. Instead of being run together with all other extensions in the same process managed by VSC.
+    * > Previous setup had many disadvantages. Especially on installations where there was a lot of other active extensions, possibly interrupting tasks of each other on slow CPUs - considering it was all running in the same physicial thread.
+* Added a command `SC2 Layout: Analyze Workspace` which will perform analysis on all layout files existing in the project workspace. Resulting raport will be printed to a temporary text document in VSC editor.
+    * > Consider installing [Log File Highlighter](https://marketplace.visualstudio.com/items?itemName=emilast.LogFileHighlighter) for the best experience. It might improve the colorization rules, and solve eventual issues related to opening file links included in the output.
+* Added case insensitive matching of elements across the desc tree (i.e. referencing templates). Previously it would've been reported as error due to lack of support, now it will be a warning, since it's still unwanted behavior.
+* Schema:
+    * [Updated schema definitions to match current version of SC2 (`4.10.0`)](https://github.com/SC2Mapster/sc2layout-schema/commit/d2acaee3ac2e67de5c4c6e822247fdda814905a1). It was done in a semi-automatic process, thus coverage should be quite solid.
+    * Handling of [type alternations have been improved](https://github.com/Talv/sc2-layouts/commit/3e111b10506c4dd62f20f2c8bf462d87bc4010a0). Thus far it was only used to [enhance schema of `CFrameControllerKeyCutscene`](https://github.com/SC2Mapster/sc2layout-schema/commit/262aaff4308467a9811410090a7af06068836b96).
+* Updated `sc2-data` to `4.10.4`
+* Bunch of other minor fixes/improvements.
 
 ## [0.11.2] - 2019-09-03
 
