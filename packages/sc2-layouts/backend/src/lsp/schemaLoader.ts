@@ -63,16 +63,22 @@ function sanitizeCommitMessage(msg: string) {
 }
 
 export class SchemaLoader {
+    protected storagePath = this.slSrv.initOptions.globalStoragePath;
+    protected tmpPath = path.join(this.storagePath, 'tmp');
+    protected cachePath = path.join(this.storagePath, 'cache');
+
     constructor(protected slSrv: S2LServer) {
     }
 
     protected async readSmState() {
-        const schStateSrc = path.join(this.slSrv.initOptions.globalStoragePath, 'sch-state.json');
-        return await fs.readJSON(schStateSrc) as SchemaState;
+        const schStateSrc = path.join(this.storagePath, 'sch-state.json');
+        if (await fs.pathExists(schStateSrc)) {
+            return await fs.readJSON(schStateSrc) as SchemaState;
+        }
     }
 
     protected async storeSmState(smState: SchemaState) {
-        const schStateSrc = path.join(this.slSrv.initOptions.globalStoragePath, 'sch-state.json');
+        const schStateSrc = path.join(this.storagePath, 'sch-state.json');
         await fs.writeJSON(schStateSrc, smState);
     }
 
@@ -101,15 +107,14 @@ export class SchemaLoader {
     @logIt()
     protected async downloadSchema(gTag: IGithub.Tag.Entry, version: number[]): Promise<SchemaState> {
         const shortHash = gTag.commit.sha.substr(0, 7);
-        const tmpPath = path.join(this.slSrv.initOptions.globalStoragePath, 'tmp');
-        const zipSrc = path.join(tmpPath, `${shortHash}.zip`);
-        let outDir = tmpPath;
+        const zipSrc = path.join(this.tmpPath, `${shortHash}.zip`);
+        let zipOutDir = this.tmpPath;
 
-        logger.info(`[SchemaLoader] Clearing tmp..`);
-        await fs.remove(tmpPath);
-        await fs.ensureDir(tmpPath);
+        logger.info(`Clearing tmp..`);
+        await fs.remove(this.tmpPath);
+        await fs.ensureDir(this.tmpPath);
 
-        logger.info(`[SchemaLoader] downloading zipball of ${gTag.commit.sha}`);
+        logger.info(`Downloading zipball of ${gTag.commit.sha}`);
         await fs.ensureFile(zipSrc);
         const payload: Buffer = await request.get(`https://api.github.com/repos/${schemaGithubRepo}/zipball/${gTag.commit.sha}`, {
             headers: {
@@ -119,25 +124,26 @@ export class SchemaLoader {
         });
         await fs.writeFile(zipSrc, payload);
 
-        logger.info(`[SchemaLoader] extracting zip..`);
+        logger.info(`Extracting zip..`);
         await extractZipAsync(zipSrc, {
-            dir: outDir,
+            dir: zipOutDir,
             defaultFileMode: 0o444,
             onEntry: (entry, zipFile) => {
-                logger.info(`[SchemaLoader] extracting file "${entry.fileName}" ..`);
+                logger.info(`Extracting file "${entry.fileName}" ..`);
             }
         });
-        logger.info(`[SchemaLoader] all files extracted`);
+        logger.info(`All files extracted`);
         await fs.remove(zipSrc);
-        outDir = path.join(outDir, `${schemaGithubRepo.replace('/', '-')}-${shortHash}`);
+        zipOutDir = path.join(zipOutDir, `${schemaGithubRepo.replace('/', '-')}-${shortHash}`);
 
-        logger.info(`[SchemaLoader] reading from dir..`);
-        const sData = await readSchemaDataDir(path.join(outDir, 'sc2layout'));
-        await fs.remove(outDir);
+        logger.info(`Reading from dir..`);
+        const sData = await readSchemaDataDir(path.join(zipOutDir, 'sc2layout'));
+        await fs.remove(zipOutDir);
 
-        logger.info(`[SchemaLoader] caching..`);
-        const cacheFilename = `sch-cache-${shortHash}.json`;
-        await fs.writeJSON(path.join(this.slSrv.initOptions.globalStoragePath, cacheFilename), sData);
+        logger.info(`Caching..`);
+        const cacheFilename = `sch-bundle-v${version.join('.')}-${shortHash}.json`;
+        await fs.ensureDir(this.cachePath);
+        await fs.writeJSON(path.join(this.cachePath, cacheFilename), sData);
 
         return {
             tag: gTag,
@@ -150,7 +156,7 @@ export class SchemaLoader {
     @logIt()
     protected async updateSchema(reportStatus: boolean = false) {
         if (reportStatus) {
-            this.slSrv.conn.window.showInformationMessage('SC2 Layout: checking if schema files are up to date..');
+            this.slSrv.conn.window.showInformationMessage('Updating sc2layout schema files..');
         }
 
         let smState = await this.readSmState();
@@ -171,35 +177,39 @@ export class SchemaLoader {
         }
 
         if (!smState || smState.tag.name !== gTag.name) {
-            logger.info(`[SchemaLoader] schema files are out of date, updating..`);
-            logger.info('SC2 Layout: schema files are out of date, updating..');
+            logger.info(`Schema files are out of date, updating..`);
             smState = await this.downloadSchema(gTag, gVersion);
             this.storeSmState(smState);
-            logger.info(`SC2 Layout: schema files updated to ${smState.tag.name}`);
-            this.slSrv.conn.window.showInformationMessage(`SC2 Layout: schema files updated to ${smState.tag.name}`);
+            logger.info(`schema files updated to ${smState.tag.name}`);
+            this.slSrv.conn.window.showInformationMessage(`Schema files updated to ${smState.tag.name}`);
             return smState;
         }
         else {
-            logger.info(`[SchemaLoader] schema files are up to date`);
+            this.slSrv.conn.window.showInformationMessage(`Schema files are already up to date.`);
         }
     }
 
     public async performUpdate(reportStatus: boolean = false) {
-        const smState = await this.updateSchema(reportStatus);
-
-        if (smState) {
-            const decision = await this.slSrv.conn.window.showInformationMessage(
-                (
-                    `Schema files have been updated to ` +
-                    `"[${smState.tag.name}](https://github.com/${schemaGithubRepo}/releases/tag/${smState.tag.name})".\n` +
-                    `Restart is required for changes to take effect.`
-                ),
-                { title: 'Restart' },
-                { title: 'Later' },
-            );
-            if (decision && decision.title === 'Restart') {
-                process.exit(0);
+        try {
+            const smState = await this.updateSchema(reportStatus);
+            if (smState) {
+                const decision = await this.slSrv.conn.window.showInformationMessage(
+                    (
+                        `Schema files have been updated to ` +
+                        `"[${smState.tag.name}](https://github.com/${schemaGithubRepo}/releases/tag/${smState.tag.name})".\n` +
+                        `Restart is required for changes to take effect.`
+                    ),
+                    { title: 'Restart' },
+                    { title: 'Later' },
+                );
+                if (decision && decision.title === 'Restart') {
+                    process.exit(0);
+                }
             }
+        }
+        catch (err) {
+            this.slSrv.conn.window.showErrorMessage('Update failed! Check the output panel for details.');
+            throw err;
         }
     }
 
@@ -208,16 +218,23 @@ export class SchemaLoader {
 
         if (typeof schConfig.localPath === 'string') {
             logger.info('[SchemaLoader] using custom path', schConfig.localPath);
-            return await createRegistryFromDir(path.join(schConfig.localPath, 'sc2layout'));
+            return createRegistryFromDir(path.join(schConfig.localPath, 'sc2layout'));
         }
         else {
             let smState = await this.readSmState();
             logger.info('[SchemaLoader] state', smState);
 
-            if (smState && (smState.cacheFilename === void 0 || !(await fs.pathExists(path.join(this.slSrv.initOptions.globalStoragePath, smState.cacheFilename)))) ) {
-                logger.warn(`[SchemaLoader] cached file no longer exists`, smState.cacheFilename);
+            if (smState && smState.version[0] < currentModelVersion) {
+                if (smState.version[0] <= 5) {
+                    // cleanup forgotten junk from old versions
+                    await fs.remove(this.storagePath);
+                }
                 smState = void 0;
-                await this.storeSmState(smState);
+            }
+
+            if (smState && (smState.cacheFilename === void 0 || !(await fs.pathExists(path.join(this.cachePath, smState.cacheFilename)))) ) {
+                logger.warn(`Cached file no longer exists`, smState.cacheFilename);
+                smState = void 0;
             }
 
             if (!smState) {
@@ -227,8 +244,8 @@ export class SchemaLoader {
                 this.performUpdate();
             }
 
-            logger.info(`[SchemaLoader] loading from`, path.join(this.slSrv.initOptions.globalStoragePath, smState.cacheFilename));
-            return createRegistry(await fs.readJSON(path.join(this.slSrv.initOptions.globalStoragePath, smState.cacheFilename)));
+            logger.info(`Loading from`, path.join(this.cachePath, smState.cacheFilename));
+            return createRegistry(await fs.readJSON(path.join(this.cachePath, smState.cacheFilename)));
         }
     }
 }

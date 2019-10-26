@@ -130,7 +130,7 @@ export interface LangService {
 export class S2LServer implements ErrorReporter, LangService {
     protected documents = new lsp.TextDocuments();
     protected documentUpdateRequests = new Map<string, DocumentUpdateRequest>();
-    protected schemaLoader = new SchemaLoader(this);
+    protected schemaLoader: SchemaLoader;
     protected progress = installProgressReporter(this);
 
     providers = {
@@ -410,6 +410,8 @@ export class S2LServer implements ErrorReporter, LangService {
         this.wordPattern = new RegExp(this.initOptions.wordPattern[0], this.initOptions.wordPattern[1]);
 
         this.cfg = this.initOptions.configuration;
+
+        this.schemaLoader = new SchemaLoader(this);
         this.schema = await this.loadSchema();
 
         return {
@@ -614,10 +616,10 @@ export class S2LServer implements ErrorReporter, LangService {
 
     @errGuard()
     @logIt({ level: 'verbose', profiling: true })
-    protected onExecuteCommand(params: lsp.ExecuteCommandParams) {
+    protected async onExecuteCommand(params: lsp.ExecuteCommandParams) {
         switch (params.command) {
             case 'sc2layout.updateSchemaFiles': {
-                this.schemaLoader.performUpdate(true);
+                await this.schemaLoader.performUpdate(true);
                 break;
             }
 
