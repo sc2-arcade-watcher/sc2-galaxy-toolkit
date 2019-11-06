@@ -1,5 +1,9 @@
 # Change Log
 
+## UNRELEASED
+
+* Fixed multiple flaws in regards to handling content updates in SC2Layout documents. Most importantly content of dirty files wasn't being indexed as soon as it was intended, despite having enough processing capacity. There was hardcoded delay of 300ms occuring after every change. Effectively all services (such as code completions) relaying on fresh data were delayed with their response by at least 300ms.
+
 ## [[1.0.0]](https://github.com/Talv/sc2-layouts/compare/v0.11.2...v1.0.0) - 2019-10-26
 
 * Refactored codebase in order to adopt [LSP](https://microsoft.github.io/language-server-protocol/). All heavy work performed by extension will now take place in its own system process. Instead of being run together with all other extensions in the same process managed by VSC.

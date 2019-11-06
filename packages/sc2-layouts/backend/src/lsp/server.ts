@@ -25,42 +25,76 @@ const fileChangeTypeNames: { [key: number]: string } = {
     [lsp.FileChangeType.Deleted]: 'Deleted',
 };
 
+type DocumentUpdateProcess = (forced?: boolean) => void;
+
 class DocumentUpdateRequest {
     updateTimer: NodeJS.Timer;
     diagnosticsTimer: NodeJS.Timer;
     completed = false;
-    protected funcs: (() => void)[] = [];
+    protected awaitersQueue: (() => void)[] = [];
 
-    constructor(public readonly doc: lsp.TextDocument) {}
+    constructor(public readonly doc: lsp.TextDocument, public readonly doUpdate: DocumentUpdateProcess) {
+    }
 
     wait() {
         if (this.completed) {
             return Promise.resolve();
         }
         return new Promise((resolve, reject) => {
-            this.funcs.push(resolve);
+            if (this.completed) {
+                resolve();
+            }
+            else {
+                this.awaitersQueue.push(resolve);
+            }
         });
     }
 
-    resolve() {
-        this.completed = true;
-        for (const tmp of this.funcs) {
-            tmp();
-        }
-        this.funcs = [];
+    invokeImmediately() {
+        if (!this.updateTimer) return;
+        clearTimeout(this.updateTimer);
+        this.updateTimer = void 0;
+        this.doUpdate(true);
     }
 
+    @logIt({
+        level: 'verbose',
+        scopeDump: (scope: DocumentUpdateRequest) => {
+            return { uri: scope.doc.uri, ver: scope.doc.version, wq: scope.awaitersQueue.length };
+        },
+    })
+    resolve() {
+        this.completed = true;
+        for (const tmp of this.awaitersQueue) {
+            tmp();
+        }
+        this.awaitersQueue = [];
+    }
+
+    @logIt({
+        level: 'verbose',
+        scopeDump: (scope: DocumentUpdateRequest) => {
+            return { uri: scope.doc.uri, ver: scope.doc.version, wq: scope.awaitersQueue.length };
+        },
+    })
     cancel() {
         if (this.updateTimer) {
             clearTimeout(this.updateTimer);
             this.updateTimer = void 0;
             this.completed = true;
-            return;
+
+            if (this.awaitersQueue.length > 0) {
+                this.resolve();
+                logger.warn(`awaitersQueue not empty`);
+                // ideally we should reject all awaiters instead of faking completion
+                // although it shouldn't be an issue either case, since update is invoked at first demand
+                // furthermore reindexing runs in a synchronous function,
+                // thus there's no risk of any pending routine resuming before requested resource is ready
+            }
         }
-        if (this.diagnosticsTimer) {
+        else if (this.diagnosticsTimer) {
             clearTimeout(this.diagnosticsTimer);
             this.diagnosticsTimer = void 0;
-            return;
         }
     }
 }
@@ -186,21 +220,26 @@ export class S2LServer implements ErrorReporter, LangService {
         const prevReq = this.documentUpdateRequests.get(inDoc.uri);
         if (prevReq && (prevReq.updateTimer || prevReq.diagnosticsTimer)) {
             prevReq.cancel();
+            this.documentUpdateRequests.delete(inDoc.uri);
         }
 
-        const req = new DocumentUpdateRequest(inDoc);
-        req.updateTimer = setTimeout(async () => {
+        const req = new DocumentUpdateRequest(inDoc, (forced: boolean) => {
             req.updateTimer = void 0;
+
+            logger.verbose(`[debounceDocumentSync:processUpdate]`, {
+                uri: inDoc.uri,
+                ver: inDoc.version,
+                forced,
+            });
+
             if (this.documentUpdateRequests.get(inDoc.uri) !== req) {
-                logger.verbose(`[debounceDocumentSync] discarded`, {
-                    uri: prevReq.doc.uri, version: prevReq.doc.version
-                });
+                logger.verbose(`[debounceDocumentSync:processUpdate] discarded`);
+                req.cancel();
                 return;
             }
-            await this.syncDocument(req.doc);
 
+            this.updateDocument(req.doc);
             req.resolve();
-            if (this.documentUpdateRequests.get(req.doc.uri) !== req) return;
 
             if (this.cfg.documentDiagnosticsDelay !== false) {
                 req.diagnosticsTimer = setTimeout(() => {
@@ -209,29 +248,50 @@ export class S2LServer implements ErrorReporter, LangService {
                     this.postDiagnostics(req.doc);
                 }, this.cfg.documentDiagnosticsDelay);
             }
-        }, this.cfg.documentUpdateDelay);
+            else {
+                this.documentUpdateRequests.delete(req.doc.uri);
+            }
+        });
+
+        req.updateTimer = setTimeout(req.doUpdate.bind(this, false), this.cfg.documentUpdateDelay);
         this.documentUpdateRequests.set(inDoc.uri, req);
     }
 
     public async flushDocumentByUri(documentUri: string) {
         const req = this.documentUpdateRequests.get(documentUri);
-        if (req) {
-            await req.wait();
+        if (req && !req.completed) {
+            if (req.updateTimer) {
+                req.invokeImmediately();
+            }
+            else {
+                await req.wait();
+            }
         }
         return this.store.documents.get(documentUri);
     }
 
     @errGuard()
-    @logIt({ argsDump: (doc: lsp.TextDocument) => {
-        return { uri: doc.uri, version: doc.version };
+    @logIt({ argsDump: (doc: lsp.TextDocument, force: boolean) => {
+        return { uri: doc.uri, ver: doc.version, force: force };
     }})
     public async syncDocument(doc: lsp.TextDocument, force = false) {
         const req = this.documentUpdateRequests.get(doc.uri);
-        if (req && (doc.version > req.doc.version || doc.version === 0 || force)) {
-            req.cancel();
-            this.documentUpdateRequests.delete(doc.uri);
+        if (req && (doc.version >= req.doc.version || doc.version === 0 || force)) {
+            if (req.updateTimer && doc.version === req.doc.version) {
+                return this.flushDocumentByUri(doc.uri);
+            }
+            else {
+                req.cancel();
+                this.documentUpdateRequests.delete(doc.uri);
+            }
         }
 
+        return this.updateDocument(doc);
+    }
+
+    @errGuard()
+    @logIt()
+    protected updateDocument(doc: lsp.TextDocument) {
         return this.store.updateDocument(doc.uri, doc.getText(), doc.version);
     }
 
@@ -252,7 +312,7 @@ export class S2LServer implements ErrorReporter, LangService {
     @logIt()
     protected async requestReindex() {
         if (!(this.state & ServiceStateFlags.StepWorkspaceDiscoveryDone)) {
-            logger.info('[reindex] aborted: !StatusReady');
+            logger.info('[reindex] aborted: !StepWorkspaceDiscoveryDone');
             return;
         }
 
@@ -263,7 +323,7 @@ export class S2LServer implements ErrorReporter, LangService {
         );
         if (!choice || choice.title !== 'Yes') return;
 
-        if (!(this.state & ServiceStateFlags.StatusReady)) {
+        if ((this.state & ServiceStateFlags.StatusReady) !== ServiceStateFlags.StatusReady) {
             logger.info('[reindex] aborted: !StatusReady');
 
             if (this.state === ServiceStateFlags.StatusNone) {
@@ -496,6 +556,7 @@ export class S2LServer implements ErrorReporter, LangService {
         this.reindex();
     }
 
+    @errGuard()
     @logIt({ level: 'verbose', profiling: false, argsDump: ev => {
         return { uri: ev.document.uri, ver: ev.document.version };
     }})

@@ -58,6 +58,7 @@ export interface LogItOptions {
     profMemory?: boolean;
     argsDump?: ((...args: any[]) => any) | boolean;
     resDump?: ((res: any) => any) | boolean;
+    scopeDump?: ((scope: any) => any);
 }
 
 export function logIt(lgOpts: LogItOptions = {}) {
@@ -113,6 +114,10 @@ export function logIt(lgOpts: LogItOptions = {}) {
             }
             else if (lgOpts.profiling || lgOpts.profMemory) {
                 out.push(` | ${formatMemoryUsage(process.memoryUsage())}`);
+            }
+
+            if (lgOpts.scopeDump) {
+                logger.log(lgOpts.level, out.join(''), lgOpts.scopeDump(this));
             }
 
             let metaArgs: any[] = [];
