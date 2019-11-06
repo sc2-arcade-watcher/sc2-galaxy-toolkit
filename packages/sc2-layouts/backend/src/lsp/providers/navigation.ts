@@ -88,7 +88,12 @@ export class NavigationProvider extends AbstractProvider {
             return symbolsContainer;
         }
 
-        return processNode(xDoc.getRootNode());
+        const rootNode = xDoc.getRootNode();
+        if (rootNode) {
+            return processNode(rootNode);
+        }
+
+        return;
     }
 
     @errGuard()

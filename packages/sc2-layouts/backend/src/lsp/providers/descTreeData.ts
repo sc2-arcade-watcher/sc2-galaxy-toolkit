@@ -29,6 +29,10 @@ export class DescTreeDataProvider extends AbstractProvider /* implements dst.Des
         }
         const xEl = <XMLElement>Array.from(dsItem.xDecls)[0];
 
+        if (dsItem.kind === DescKind.File) {
+            return this.dNodeFromLayout(xDoc);
+        }
+
         return {
             kind: DTNodeKind.Element,
             name: dsItem.name,
@@ -72,7 +76,7 @@ export class DescTreeDataProvider extends AbstractProvider /* implements dst.Des
     }
 
     protected dNodeFromLayout(xDoc: XMLDocument): DTLayout {
-        const fDesc = this.dIndex.resolveElementDesc(xDoc.getRootNode());
+        const fDesc = this.dIndex.resolveElementDesc(xDoc);
         const sa = this.store.s2ws.matchFileWorkspace(URI.parse(xDoc.tdoc.uri));
         return {
             kind: DTNodeKind.Layout,
@@ -144,7 +148,7 @@ export class DescTreeDataProvider extends AbstractProvider /* implements dst.Des
 
         const rLayouts: DTLayout[] = [];
         for (const xDoc of this.store.documents.values()) {
-            const fDesc = this.dIndex.resolveElementDesc(xDoc.getRootNode());
+            const fDesc = this.dIndex.resolveElementDesc(xDoc);
             if (!fDesc) continue;
 
             const sa = this.store.s2ws.matchFileWorkspace(URI.parse(xDoc.tdoc.uri));
@@ -170,7 +174,7 @@ export class DescTreeDataProvider extends AbstractProvider /* implements dst.Des
         const xDoc = this.store.documents.get(params.textDocument.uri);
         if (!xDoc) return;
 
-        const fDesc = this.dIndex.resolveElementDesc(xDoc.getRootNode());
+        const fDesc = this.dIndex.resolveElementDesc(xDoc);
         if (!fDesc) return;
 
         return this.dNodeWithChildrenFromDsChildren(fDesc);
@@ -185,9 +189,14 @@ export class DescTreeDataProvider extends AbstractProvider /* implements dst.Des
         const offset = sourceFile.tdoc.offsetAt(params.position);
         const xEl = sourceFile.findNodeAt(offset);
 
-        if (!(xEl instanceof XMLElement) || !xEl.stype) return;
+        if (!(xEl instanceof XMLElement) || !xEl.stype) {
+            return this.dNodeFromLayout(sourceFile);
+        }
+
         const descItem = this.store.index.resolveElementDesc(xEl);
-        if (!descItem) return;
+        if (!descItem) {
+            return this.dNodeFromLayout(sourceFile);
+        }
 
         return this.dNodeFromDsItem(descItem, sourceFile) as FetchNodeResult;
     }
@@ -197,7 +206,7 @@ export class DescTreeDataProvider extends AbstractProvider /* implements dst.Des
     provideElementViewData(params: ElementViewDataParams): ElementViewDataResult {
         const xDoc = this.store.documents.get(params.node.fileUri);
         if (!xDoc) return;
-        const fDesc = this.dIndex.resolveElementDesc(xDoc.getRootNode());
+        const fDesc = this.dIndex.resolveElementDesc(xDoc);
         if (!fDesc) return;
         const dsNode = fDesc.getMulti(...params.node.fqn);
         if (!dsNode) return;

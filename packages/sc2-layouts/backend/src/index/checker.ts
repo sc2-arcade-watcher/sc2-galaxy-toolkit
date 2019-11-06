@@ -310,7 +310,7 @@ export class LayoutChecker {
 
                 if (!asType) {
                     if (!(el.stype.flags & sch.ComplexTypeFlags.AllowExtraAttrs)) {
-                        this.reportAtAttrName(nattr, `Unknown attribute "${nattr.name}"`, DiagnosticCategory.Message);
+                        this.reportAtAttrName(nattr, `Unexpected attribute "${nattr.name}" - it has no effect on this element.`, DiagnosticCategory.Message);
                     }
                     continue outer;
                 }
@@ -381,9 +381,15 @@ export class LayoutChecker {
     public checkFile(file: LayoutDocument) {
         this.svalidator.diagnostics = [];
         this.diagnostics = [];
-        if (!file.getRootNode()) return [];
-        this.checkElement(file.getRootNode());
-        // return this.diagnostics;
+        if (file.getRootNode()) {
+            this.checkElement(file.getRootNode());
+        }
+        else {
+            this.reportAt(`Root element ("<Desc>") is missing`, {
+                start: file.start,
+                end: file.end,
+            });
+        }
         return this.svalidator.diagnostics.concat(this.diagnostics);
     }
 }

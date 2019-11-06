@@ -469,7 +469,7 @@ export class DescIndex {
         this.xdocState.delete(doc);
     }
 
-    resolveElementDesc(xEl: XMLElement, kind: DescKind = null) {
+    resolveElementDesc(xEl: XMLElement | XMLDocument, kind: DescKind = null) {
         const docState = this.xdocState.get(xEl.getDocument());
         do {
             const elDesc = docState.xdeclDescMap.get(xEl);

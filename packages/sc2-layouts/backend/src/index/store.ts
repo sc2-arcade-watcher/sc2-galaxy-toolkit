@@ -136,7 +136,7 @@ export class Store implements IStoreEvents {
         const xDoc = this.documents.get(documentUri);
         if (!xDoc) return;
 
-        const fDesc = this.index.resolveElementDesc(xDoc.getRootNode());
+        const fDesc = this.index.resolveElementDesc(xDoc);
         if (fDesc) {
             const sa = this.s2ws.matchFileWorkspace(URI.parse(xDoc.tdoc.uri));
             if (sa) {
