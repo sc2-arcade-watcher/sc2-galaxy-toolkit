@@ -949,9 +949,9 @@ export class Parser {
                 break;
             case Types.SyntaxKind.BinaryExpression:
                 if (isAssignmentOperator((<Types.BinaryExpression>node.expression).operatorToken.kind)) break;
-                // pass through
+                /* falls through */
             default:
-                this.parseErrorAtPosition(node.pos, node.end - node.pos, 'dummy expression');
+                this.parseErrorAtPosition(node.pos, node.end - node.pos, 'Statement has no effect');
         }
 
         return node;
@@ -1102,15 +1102,24 @@ export class Parser {
             case SyntaxKind.ArrayrefKeyword:
             case SyntaxKind.StructrefKeyword:
             case SyntaxKind.FuncrefKeyword:
-                if (this.isStartOfFunctionDeclaration()) {
+                if (!(this.parsingContext & (1 << ParsingContext.BlockStatements)) && this.isStartOfFunctionDeclaration()) {
                     return this.parseFunctionDeclaration();
                 }
                 else if (this.isStartOfVariableDeclaration()) {
                     return this.parseVariableDeclaration();
                 }
-                else if (this.isStartOfExpression()) {
+                else if (
+                    (
+                        this.parsingContext & (1 << ParsingContext.SourceElements) ||
+                        this.parsingContext & (1 << ParsingContext.BlockStatements) ||
+                        this.parsingContext & (1 << ParsingContext.TypeArguments) ||
+                        this.parsingContext & (1 << ParsingContext.ArgumentExpressions)
+                    ) &&
+                    this.isStartOfExpression()
+                ) {
                     return this.parseExpressionStatement();
                 }
+                /* falls through */
 
             default:
                 this.parseErrorAtCurrentToken(`Expected declaration or statement, found ${getKindName(this.token())}`);
