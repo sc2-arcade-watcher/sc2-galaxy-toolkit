@@ -306,6 +306,13 @@ export class Parser {
 
                 continue;
             }
+            else if (this.token() === SyntaxKind.CommaToken) {
+                // If list element was *invalid* it might as well be empty
+                // swallow the comma and try again
+                this.parseErrorAtCurrentToken(this.parsingContextErrors(kind));
+                this.nextToken();
+                continue;
+            }
 
             if (this.isListTerminator(kind)) {
                 break;
@@ -313,6 +320,7 @@ export class Parser {
 
             this.parseErrorAtCurrentToken(this.parsingContextErrors(kind));
             this.nextToken();
+            // give up, even if list wasn't properly terminated. because it might never be, if termination character is missing..
             break;
         }
 
@@ -453,16 +461,15 @@ export class Parser {
         return this.lookAhead(this.isParameter.bind(this));
     }
 
-    private parseLiteral(kind?: SyntaxKind): Types.Literal {
-        if (!kind) {
-            kind = this.token();
-        }
-        const node = <Types.Literal>this.createNode(kind, undefined, false);
+    private parseLiteral(kind: Types.SyntaxKind): Types.Literal {
+        const node = <Types.Literal>this.createNode(kind, void 0, false);
         node.end = this.scanner.getCurrentPos();
         node.value = this.scanner.getTokenValue() || '';
         node.text = this.scanner.getTokenText() || '';
-        this.parseExpected(kind);
-        return node;
+        if (this.parseExpected(kind, void 0, false)) {
+            this.nextToken();
+        }
+        return this.finishNode(node, void 0, false);
     }
 
     private parseInclude(): Types.IncludeStatement {
@@ -692,7 +699,7 @@ export class Parser {
         switch (this.token()) {
             case SyntaxKind.NumericLiteral:
             case SyntaxKind.StringLiteral:
-                return this.parseLiteral();
+                return this.parseLiteral(this.token());
             case SyntaxKind.NullKeyword:
             case SyntaxKind.TrueKeyword:
             case SyntaxKind.FalseKeyword:
