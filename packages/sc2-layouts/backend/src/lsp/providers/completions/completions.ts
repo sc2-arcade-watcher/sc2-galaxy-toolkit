@@ -501,11 +501,11 @@ class AttrValueProvider extends SuggestionsProvider {
                 if (!currentDesc) break;
                 if (!currentDesc.file) {
                     this.suggestDescNames(ctx);
-                    break;
                 }
                 else {
                     this.suggestSelection(ctx, this.exParser.parsePathSelector(ctx.attrValue), sAttrType.builtinType, currentDesc);
                 }
+                break;
             }
 
             case sch.BuiltinTypeKind.DescTemplateName:
