@@ -284,7 +284,8 @@ export class DefinitionProvider extends AbstractProvider {
                 if (pbindSel.path.pos <= attrInfo.offsetRelative && pbindSel.path.end >= attrInfo.offsetRelative) {
                     defContainer.itemData = this.getSelectedNodeFromPath(pbindSel, attrInfo.xEl, attrInfo.offsetRelative);
                 }
-                else if (pbindSel.property.pos <= attrInfo.offsetRelative && pbindSel.property.end >= attrInfo.offsetRelative) {
+                else if (pbindSel.property && pbindSel.property.pos <= attrInfo.offsetRelative && pbindSel.property.end >= attrInfo.offsetRelative) {
+                    if (!pbindSel.path.length) return;
                     const defUNode = this.getSelectedNodeFromPath(pbindSel, attrInfo.xEl, pbindSel.path[pbindSel.path.length - 1].end - 1);
                     if (!defUNode) return;
 

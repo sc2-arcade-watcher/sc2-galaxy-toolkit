@@ -45,5 +45,17 @@ describe('expressions', function () {
             assert.lengthOf(propBind.path, 2);
             assert.isAtLeast(propBind.diagnostics.length, 1);
         });
+
+        it('{}', function () {
+            propBind = exParser.parsePropertyBind('{}');
+            assert.lengthOf(propBind.path, 0);
+            assert.isUndefined(propBind.property);
+        });
+
+        it('{@Property}', function () {
+            propBind = exParser.parsePropertyBind('{@Property}');
+            assert.lengthOf(propBind.path, 0);
+            assert.isAtLeast(propBind.diagnostics.length, 1);
+        });
     });
 });

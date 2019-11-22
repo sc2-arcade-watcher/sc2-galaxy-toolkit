@@ -277,6 +277,38 @@ export const enum SyntaxKind {
     PathSelector,
 }
 
+const textToTokenTable: ReadonlyMap<string, SyntaxKind> = new Map([
+    ['{', SyntaxKind.OpenBraceToken],
+    ['}', SyntaxKind.CloseBraceToken],
+    ['[', SyntaxKind.OpenBracketToken],
+    [']', SyntaxKind.CloseBracketToken],
+    ['.', SyntaxKind.DotToken],
+    ['/', SyntaxKind.SlashToken],
+    ['|', SyntaxKind.BarToken],
+    ['$', SyntaxKind.DolarToken],
+    ['@', SyntaxKind.AtToken],
+    ['#', SyntaxKind.HashToken],
+    ['@@', SyntaxKind.AtAtToken],
+    ['##', SyntaxKind.HashHashToken],
+    ['=', SyntaxKind.EqualsToken],
+    ['+', SyntaxKind.PlusToken],
+    ['-', SyntaxKind.MinusToken],
+]);
+
+function makeReverseMap(source: ReadonlyMap<string, SyntaxKind>): string[] {
+    const result: string[] = [];
+    source.forEach((value, name) => {
+        result[value] = name;
+    });
+    return result;
+}
+
+const tokenStrings = makeReverseMap(textToTokenTable);
+
+function tokenToString(t: SyntaxKind): string | undefined {
+    return tokenStrings[t] !== void 0 ? tokenStrings[t] : getKindName(t);
+}
+
 interface TextRange {
     pos: number;
     end: number;
@@ -361,7 +393,7 @@ export class ExpressionParser {
             return true;
         }
         if (!message) {
-            message = `Expected ${getKindName(kind)}, found ${getKindName(this.currentToken)}`;
+            message = `Expected "${tokenToString(kind)}", found "${tokenToString(this.currentToken)}" instead.`;
         }
         this.reportDiagnostics(message);
         return false;
@@ -375,7 +407,7 @@ export class ExpressionParser {
             return true;
         }
         if (!message) {
-            message = `Expected one of [${kind.map(kind => getKindName(kind)).join(', ')}], found ${getKindName(this.currentToken)}`;
+            message = `Expected one of [${kind.map(kind => `"${tokenToString(kind)}"`).join(', ')}], found "${tokenToString(this.currentToken)}" instead.`;
         }
         this.reportDiagnostics(message);
         return false;
@@ -426,8 +458,8 @@ export class ExpressionParser {
 
     private reportDiagnostics(msg: string, options: {start?: number, end?: number, category?: DiagnosticCategory} = {}) {
         this.diagnostics.push({
-            start: options.start ? options.start : this.scanner.getStartPos(),
-            end: options.end ? options.end : this.scanner.getTokenPos(),
+            start: options.start !== void 0 ? options.start : this.scanner.getStartPos(),
+            end: options.end !== void 0 ? options.end : this.scanner.getTokenPos(),
             category: options.category !== void 0 ? options.category : DiagnosticCategory.Error,
             message: msg,
         });
@@ -582,7 +614,16 @@ export class ExpressionParser {
         this.parseExpected(SyntaxKind.EndOfStreamToken);
 
         this.finishNode(propBind);
+
+        if (!propBind.path.length && propBind.property) {
+            this.reportDiagnostics(`Target frame isn't specified`, {
+                start: propBind.pos,
+                end: propBind.end,
+            });
+        }
+
         this.finalizeExpr(propBind);
+
         return propBind;
     }
 

@@ -130,6 +130,40 @@ export class LayoutChecker {
         return resolvedDesc;
     }
 
+    protected checkPropertyBindContext(cDesc: DescNamespace, el: XMLElement, nattr: XMLAttr, sType: sch.SimpleType) {
+        switch (el.sdef.nodeKind) {
+            case sch.ElementDefKind.FrameProperty:
+            {
+                if (!el.stype.attributes.has('val')) {
+                    this.reportAtAttrVal(
+                        nattr,
+                        `Property binding isn't supported for field type: "${el.stype.name}"`
+                    );
+                    return false;
+                }
+            }
+
+            case sch.ElementDefKind.StateGroupStateCondition:
+            case sch.ElementDefKind.StateGroupStateAction:
+            {
+                // TODO: ^
+                break;
+            }
+
+            default:
+            {
+                this.reportAtAttrVal(
+                    nattr,
+                    `Possible property binding used in an usupported context: "${sch.ElementDefKind[el.sdef.nodeKind]}"`,
+                    DiagnosticCategory.Warning,
+                );
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     protected checkGenericAttribute(cDesc: DescNamespace, nattr: XMLAttr, sType: sch.SimpleType) {
         const validationResult = this.svalidator.validateAttrValue(nattr.value, sType);
         if (validationResult) {
@@ -342,6 +376,11 @@ export class LayoutChecker {
 
                 case AttrValueKind.PropertyBind:
                 {
+                    if (!this.checkPropertyBindContext(cDesc, el, nattr, asType)) {
+                        this.checkGenericAttribute(cDesc, nattr, asType);
+                        break;
+                    }
+
                     const propBind = this.exParser.parsePropertyBind(nattr.value);
                     if (propBind.diagnostics.length) {
                         this.diagnostics.push(...propBind.diagnostics.map(item => {
