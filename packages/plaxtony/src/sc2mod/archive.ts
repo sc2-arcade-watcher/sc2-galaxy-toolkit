@@ -370,27 +370,16 @@ export class SC2Archive {
         }
 
         if (await this.hasFile('DocumentInfo')) {
-            const content = await this.readFile('DocumentInfo');
-            const data: any = await new Promise((resolve, reject) => {
-                xml.parseString(content, (err, result) => {
-                    if (err) {
-                        reject(err);
-                    }
-                    else {
-                        try {
-                            resolve(result);
-                        }
-                        catch (err) {
-                            reject(err);
-                        }
-                    }
-                });
-            });
+            try {
+                const content = await this.readFile('DocumentInfo');
+                const data = await xml.parseStringPromise(content);
 
-            if (data.DocInfo && data.DocInfo.Dependencies) {
                 for (const depValue of data.DocInfo.Dependencies[0].Value) {
                     list.push(depValue.substr(depValue.indexOf('file:') + 5).replace(/\\/g, '/').toLowerCase());
                 }
+            }
+            catch (err) {
+                logger.warn(`Couldn't read dependencies from "DocumentInfo" of "${this.name}`, (<Error>err).message);
             }
         }
         return list;
