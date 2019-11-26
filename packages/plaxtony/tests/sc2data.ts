@@ -2,6 +2,7 @@ import 'mocha';
 import { assert } from 'chai';
 import * as path from 'path';
 import { SC2Archive, SC2Workspace, openArchiveWorkspace } from '../src/sc2mod/archive';
+import * as trig from '../src/sc2mod/trigger';
 import { S2WorkspaceMetadata } from '../src/service/s2meta';
 
 const resourcesPath = path.join('tests', 'fixtures');
@@ -31,6 +32,32 @@ describe('SC2Metadata', function () {
         assert.isDefined(s2meta.findElementByName('gf_action_custom_name'));
         assert.isDefined(s2meta.findElementByName('c_unitCountAll'));
         assert.isDefined(s2meta.findElementByName('libNtve_ge_FlyerHelperDisplay_c_flyerDisplaySelected'));
+    });
+
+    it('preset constants', () => {
+        const ntveLib = s2work.trigComponent.getStore().getLibraries().get('Ntve');
+
+        const flyerHelper = ntveLib.findElementById('25B4E1EC', trig.Preset);
+        assert.deepEqual(
+            s2meta.getConstantNamesOfPreset(flyerHelper),
+            [
+                'libNtve_ge_FlyerHelperDisplay_c_flyerDisplayNone',
+                'libNtve_ge_FlyerHelperDisplay_c_flyerDisplaySelected',
+                'libNtve_ge_FlyerHelperDisplay_c_flyerDisplayAll',
+            ]
+        );
+
+        const unitDamageChangeOption = ntveLib.findElementById('6387FB6F', trig.Preset);
+        assert.deepEqual(
+            s2meta.getConstantNamesOfPreset(unitDamageChangeOption),
+            [
+                'libNtve_ge_UnitDamageChangeOption_Full',
+                'libNtve_ge_UnitDamageChangeOption_No',
+                'libNtve_ge_UnitDamageChangeOption_Minimal',
+                'libNtve_ge_UnitDamageChangeOption_Mega',
+                'libNtve_ge_UnitDamageChangeOption_Mega2'
+            ]
+        );
     });
 
     it('find preset', () => {

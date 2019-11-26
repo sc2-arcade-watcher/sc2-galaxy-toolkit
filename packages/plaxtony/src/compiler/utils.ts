@@ -18,6 +18,10 @@ export function isModifierKind(token: gt.SyntaxKind): boolean {
     return false;
 }
 
+export function isKeywordKind(token: gt.SyntaxKind): boolean {
+    return <number>token >= gt.SyntaxKindMarker.FirstKeyword && <number>token <= gt.SyntaxKindMarker.LastKeyword;
+}
+
 export function isKeywordTypeKind(token: gt.SyntaxKind): boolean {
     return <number>token >= gt.SyntaxKindMarker.FirstKeywordType && <number>token <= gt.SyntaxKindMarker.LastKeywordType;
 }

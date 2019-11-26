@@ -10,7 +10,7 @@ import { logIt, logger } from '../common';
 import { MetadataConfig } from './server';
 
 const elementNotValidCharsRE = /[^a-zA-Z0-9_]+/g;
-const elementValidCharsRE = /[a-zA-Z]+/g;
+const elementValidCharsRE = /^[a-z][a-z0-9_]*$/i;
 const quationMarkRE = /"/g;
 const tildeRE = /~/g;
 
@@ -47,7 +47,14 @@ export class S2WorkspaceMetadata {
         }
         else {
             if (el.libId) {
-                parts.push('lib' + el.libId);
+                switch (el.constructor) {
+                    case trig.FunctionDef:
+                    case trig.Preset:
+                    {
+                        parts.push('lib' + el.libId);
+                        break;
+                    }
+                }
             }
 
             if (el instanceof trig.FunctionDef) {
@@ -58,7 +65,7 @@ export class S2WorkspaceMetadata {
                 parts.push('ge');
             }
 
-            if (parts.length) {
+            if (parts.length || el.constructor === trig.PresetValue) {
                 parts.push(elemName);
             }
             else {
@@ -77,22 +84,28 @@ export class S2WorkspaceMetadata {
                 this.symbolMap.set(this.getElementSymbolName(el), el);
             }
             else if (el instanceof trig.Preset) {
-                if (!(el.flags & trig.ElementFlag.PresetGenConstVar)) continue;
+                if (!(el.flags & trig.ElementFlag.PresetGenConstVar) && !(el.flags & trig.ElementFlag.PresetCustom)) continue;
                 if ((<trig.Preset>el).baseType === 'bool') continue;
 
                 for (const presetRef of (<trig.Preset>el).values) {
                     const presetValue = presetRef.resolve();
                     this.presetValueParentMap.set(presetValue.link(), el);
+                    const pname = this.getNameOfPresetValue(el, presetValue);
 
-                    if (el.flags & trig.ElementFlag.PresetCustom) {
-                        if (presetValue.value.match(elementValidCharsRE) && !this.symbolMap.has(presetValue.value)) {
-                            this.symbolMap.set(presetValue.value, presetValue);
-                        }
+                    if (!pname || pname === 'null' || !pname.match(elementValidCharsRE)) {
+                        continue;
                     }
-                    else {
-                        const pname = this.getElementSymbolName(el) + '_' + presetValue.name;
-                        this.symbolMap.set(pname, presetValue);
+
+                    if (this.symbolMap.has(pname)) {
+                        // logger.warn(
+                        //     `Already exists: "${pname}"`,
+                        //     [el.name, presetValue.name, presetValue.value],
+                        //     [this.symbolMap.get(pname)]
+                        // );
+                        continue;
                     }
+
+                    this.symbolMap.set(pname, presetValue);
                 }
             }
         }
@@ -145,22 +158,25 @@ export class S2WorkspaceMetadata {
         return this.presetValueParentMap.get(presetValue.link());
     }
 
+    public getNameOfPresetValue(preset: trig.Preset, presetValue: trig.PresetValue) {
+        if (preset.baseType === 'bool') return;
+
+        if (preset.flags & trig.ElementFlag.PresetCustom) {
+            return presetValue.value;
+        }
+        else {
+            return this.getElementSymbolName(preset) + '_' + this.getElementSymbolName(presetValue);
+        }
+    }
+
     public getConstantNamesOfPreset(preset: trig.Preset) {
         let names: string[] = [];
 
-        if (!(preset.flags & trig.ElementFlag.PresetGenConstVar)) return [];
-        if (preset.baseType === 'bool') return [];
-
         for (const link of preset.values) {
             const presetValue = link.resolve();
-
-            if (preset.flags & trig.ElementFlag.PresetCustom) {
-                if (presetValue.value.match(elementValidCharsRE)) {
-                    names.push(presetValue.value);
-                }
-            }
-            else {
-                names.push(this.getElementSymbolName(preset) + '_' + presetValue.name);
+            const tmp = this.getNameOfPresetValue(preset, presetValue);
+            if (tmp) {
+                names.push(tmp);
             }
         }
 

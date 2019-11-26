@@ -3,7 +3,7 @@ import { SyntaxKind, Symbol, Node, SourceFile, FunctionDeclaration, NamedDeclara
 import { TypeChecker } from '../compiler/checker';
 import { AbstractProvider } from './provider';
 import { tokenToString } from '../compiler/scanner';
-import { findAncestor, isToken, isPartOfExpression } from '../compiler/utils';
+import { findAncestor, isToken, isPartOfExpression, isKeywordKind } from '../compiler/utils';
 import { getTokenAtPosition, findPrecedingToken, fuzzysearch, getAdjacentToken, getLineAndCharacterOfPosition } from './utils';
 import { Printer } from '../compiler/printer';
 import * as lsp from 'vscode-languageserver';
@@ -267,13 +267,19 @@ export class CompletionsProvider extends AbstractProvider {
         if (isInComment(sourceFile, position)) return;
         let currentToken = findPrecedingToken(position, sourceFile);
         // const adjacentToken = getAdjacentToken(position, sourceFile);
+        let filterBooleanKeywords = false;
 
         // query
         let query: string = null;
         const processedSymbols = new Map<string, Symbol>();
-        if (currentToken && currentToken.pos <= position && currentToken.end >= position && currentToken.kind === gt.SyntaxKind.Identifier) {
+        if (currentToken && currentToken.pos <= position && currentToken.end >= position) {
             const offset = position - currentToken.pos;
-            query = (<gt.Identifier>currentToken).name.substr(0, offset);
+            if (currentToken.kind === gt.SyntaxKind.Identifier) {
+                query = (<gt.Identifier>currentToken).name.substr(0, offset);
+            }
+            else if (isKeywordKind(currentToken.kind)) {
+                query = tokenToString(currentToken.kind).substr(0, offset);
+            }
         }
 
         // trigger handlers
@@ -316,18 +322,47 @@ export class CompletionsProvider extends AbstractProvider {
                 }
             }
             if (elementType && elementType.type === 'preset') {
-                for (const name of this.store.s2metadata.getConstantNamesOfPreset(elementType.typeElement.resolve())) {
-                    const symbol = this.store.resolveGlobalSymbol(name);
-                    if (symbol) {
-                        const citem = this.buildFromSymbolDecl(symbol);
-                        completions.push(citem);
-                        processedSymbols.set(name, symbol);
+                const tPreset = elementType.typeElement.resolve();
+
+                switch (tPreset.baseType) {
+                    case tokenToString(gt.SyntaxKind.BoolKeyword): {
+                        completions.push({
+                            kind: lsp.CompletionItemKind.Enum,
+                            preselect: true,
+                            label: tokenToString(gt.SyntaxKind.TrueKeyword),
+                        });
+                        completions.push({
+                            kind: lsp.CompletionItemKind.Enum,
+                            preselect: true,
+                            label: tokenToString(gt.SyntaxKind.FalseKeyword),
+                        });
+                        filterBooleanKeywords = true;
+                        break;
+                    }
+
+                    default: {
+                        let i = 0;
+                        for (const name of this.store.s2metadata.getConstantNamesOfPreset(tPreset)) {
+                            const symbol = this.store.resolveGlobalSymbol(name);
+                            if (symbol) {
+                                const citem = this.buildFromSymbolDecl(symbol);
+                                citem.preselect = true;
+                                citem.kind = lsp.CompletionItemKind.Enum;
+                                citem.sortText = `${(i++).toString().padStart(3, '0')}_${citem.label}`;
+                                completions.push(citem);
+                                processedSymbols.set(name, symbol);
+                            }
+                        }
+                        break;
                     }
                 }
-                if (!query) return {
-                    items: completions,
-                    isIncomplete: false,
-                };
+
+                if (!query) {
+                    return {
+                        items: completions,
+                        isIncomplete: true,
+                    };
+                }
             }
         }
 
@@ -387,9 +422,10 @@ export class CompletionsProvider extends AbstractProvider {
         // }
 
         // keywords
-        for (let i = gt.SyntaxKindMarker.FirstKeyword; i <= gt.SyntaxKindMarker.LastKeyword; i++) {
+        for (let i: number = gt.SyntaxKindMarker.FirstKeyword; i <= gt.SyntaxKindMarker.LastKeyword; i++) {
             const name = tokenToString(<any>i);
             if (!query || fuzzysearch(query, name)) {
+                if (filterBooleanKeywords && (i === gt.SyntaxKind.TrueKeyword || i === gt.SyntaxKind.FalseKeyword))
                 completions.push({
                     label: name,
                     kind: lsp.CompletionItemKind.Keyword
