@@ -31,7 +31,7 @@ import { stringToToken } from '../compiler/scanner';
         let out: string[] = [];
         out.push(`/// # ${locStrings.elementName('Name', curEl)}\n`);
         if (locStrings.elementName('Hint', curEl)) {
-            out.push(`///\n/// ${locStrings.elementName('Hint', curEl).replace(/  /g, '\n/// ')}\n`);
+            out.push(`///\n/// ${locStrings.elementName('Hint', curEl).trim().replace(/  /g, '\n/// ')}\n`);
         }
 
         if (curEl.returnType && curEl.returnType.type !== curEl.returnType.galaxyType) {
@@ -46,7 +46,7 @@ import { stringToToken } from '../compiler/scanner';
         for (const [key, param] of curEl.getParameters().entries()) {
             const paramDoc = store.s2metadata.getParamDoc(param);
             let paramName = param.name;
-            if (isKeywordTypeKind(stringToToken(param.name))) {
+            if (isKeywordTypeKind(stringToToken(param.name.toLowerCase()))) {
                 paramName = `in${paramName.charAt(0).toUpperCase()}${paramName.slice(1)}`;
             }
 
