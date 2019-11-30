@@ -1056,6 +1056,9 @@ export class Parser {
             case SyntaxKind.TypedefKeyword:
                 return this.parseTypedefDeclaration();
 
+            case SyntaxKind.OpenBraceToken:
+                return this.parseBlock(false);
+
             case SyntaxKind.Identifier:
             case SyntaxKind.ConstKeyword:
             case SyntaxKind.StaticKeyword:
