@@ -469,7 +469,7 @@ export class Parser {
         if (this.parseExpected(kind, void 0, false)) {
             this.nextToken();
         }
-        return this.finishNode(node, void 0, false);
+        return this.finishNode(node, node.end, false);
     }
 
     private parseInclude(): Types.IncludeStatement {

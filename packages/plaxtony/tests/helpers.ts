@@ -4,6 +4,7 @@ import { TextDocument } from 'vscode-languageserver';
 import { Store, S2WorkspaceWatcher, createTextDocumentFromFs, openSourceFilesInLocation } from '../src/service/store';
 import { SC2Workspace } from '../src/sc2mod/archive';
 import * as path from 'path';
+import * as util from 'util';
 
 const fixturesPath = 'tests/fixtures';
 
@@ -80,4 +81,14 @@ function printDiagnostics(diagnostics: Diagnostic[]): string {
         r.push(diag.toString());
     }
     return r.join('\n');
+}
+
+export function dump(d: any) {
+    return util.inspect(d, {
+        colors: true,
+        depth: 3,
+        compact: true,
+        maxArrayLength: 500,
+        breakLength: 140,
+    });
 }
