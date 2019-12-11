@@ -131,9 +131,7 @@ export class IntrinsicType extends AbstractType {
 
         if (
             this === rightType ||
-            (rightType.flags & gt.TypeFlags.Integer) ||
-            (rightType.flags & gt.TypeFlags.Fixed) ||
-            (rightType.flags & gt.TypeFlags.Byte) ||
+            (rightType.flags & gt.TypeFlags.Numeric) ||
             (rightType instanceof LiteralType && rightType.value.kind === gt.SyntaxKind.NumericLiteral)
         ) {
             switch (operation) {
@@ -142,20 +140,27 @@ export class IntrinsicType extends AbstractType {
                 case gt.SyntaxKind.AsteriskToken:
                 case gt.SyntaxKind.PercentToken:
                 case gt.SyntaxKind.SlashToken:
-                    if (this.flags & gt.TypeFlags.Integer || this.flags & gt.TypeFlags.Byte || this.flags & gt.TypeFlags.Fixed) return true;
-            }
-        }
+                    if (this.flags & gt.TypeFlags.Numeric) {
+                        return true;
+                    }
+                    break;
 
-        if (this === rightType || (rightType instanceof LiteralType && rightType.value.kind === gt.SyntaxKind.NumericLiteral)) {
-            switch (operation) {
                 case gt.SyntaxKind.AmpersandToken:
                 case gt.SyntaxKind.BarToken:
                 case gt.SyntaxKind.CaretToken:
+                    if ((this.flags & gt.TypeFlags.IntLike) === (rightType.flags & gt.TypeFlags.IntLike)) {
+                        return true;
+                    }
+                    break;
+
                 case gt.SyntaxKind.LessThanLessThanToken:
                 case gt.SyntaxKind.GreaterThanGreaterThanToken:
                 case gt.SyntaxKind.BarBarToken:
                 case gt.SyntaxKind.AmpersandAmpersandToken:
-                    if (this.flags & gt.TypeFlags.Integer) return true;
+                    if (this.flags & gt.TypeFlags.IntLike) {
+                        return true;
+                    }
+                    break;
             }
         }
 
@@ -1217,7 +1222,12 @@ export class TypeChecker {
             case gt.SyntaxKind.StringLiteral:
                 return new LiteralType(gt.TypeFlags.StringLiteral, node);
             case gt.SyntaxKind.NumericLiteral:
-                return new LiteralType(gt.TypeFlags.NumericLiteral, node);
+                if ((<gt.NumericLiteral>node).text.indexOf('.') !== -1) {
+                    return new LiteralType(gt.TypeFlags.NumericLiteral | gt.TypeFlags.Fixed, node);
+                }
+                else {
+                    return new LiteralType(gt.TypeFlags.NumericLiteral | gt.TypeFlags.Integer, node);
+                }
             case gt.SyntaxKind.TrueKeyword:
                 return trueType;
             case gt.SyntaxKind.FalseKeyword:
@@ -1245,6 +1255,27 @@ export class TypeChecker {
             const valid = leftType.isValidBinaryOperation(node.operatorToken.kind, rightType);
             if (!valid) {
                 this.report(node, `Binary '${tokenToString(node.operatorToken.kind)}' operation not supported between '${leftType.getName()}' type and '${rightType.getName()}' type`);
+            }
+
+            switch (node.operatorToken.kind) {
+                case gt.SyntaxKind.PlusToken:
+                case gt.SyntaxKind.MinusToken:
+                case gt.SyntaxKind.AsteriskToken:
+                case gt.SyntaxKind.PercentToken:
+                case gt.SyntaxKind.SlashToken:
+                    if (leftType.flags & gt.TypeFlags.Integer || rightType.flags & gt.TypeFlags.Integer) {
+                        return integerType;
+                    }
+                    break;
+
+                case gt.SyntaxKind.AmpersandToken:
+                case gt.SyntaxKind.BarToken:
+                case gt.SyntaxKind.CaretToken:
+                    break;
+
+                case gt.SyntaxKind.LessThanLessThanToken:
+                case gt.SyntaxKind.GreaterThanGreaterThanToken:
+                    break;
             }
         }
 

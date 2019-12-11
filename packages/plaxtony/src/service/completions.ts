@@ -57,6 +57,17 @@ export class CompletionsProvider extends AbstractProvider {
             funcElement = <trig.FunctionDef>this.store.s2metadata.findElementByName(decl.name.name)
         }
 
+        function isStringLikeParam(param: trig.Param) {
+            switch (param.valueType) {
+                case 'gamelink':
+                case 'string':
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
         for (const [key, param] of decl.parameters.entries()) {
             let paramElement: trig.Param;
             if (funcElement) {
@@ -82,7 +93,7 @@ export class CompletionsProvider extends AbstractProvider {
             }
             else {
                 if (paramElement.value) {
-                    if (paramElement.valueType === "gamelink") {
+                    if (isStringLikeParam(paramElement)) {
                         args.push(`"${paramElement.value}"`);
                     }
                     else {

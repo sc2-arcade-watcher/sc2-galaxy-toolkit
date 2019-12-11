@@ -1,0 +1,102 @@
+void test_byte_byte()
+{
+    byte a;
+    byte b;
+    bool r;
+
+    a = a + b;
+    a = a - b;
+    a = a * b;
+    a = a / b;
+
+    a = a & b;
+    a = a | b;
+    a = a ^ b;
+
+    a = a >> b;
+    a = a << b;
+
+    a = ~b;
+    a = !b;
+
+    r = a > b;
+    r = a >= b;
+    r = a < b;
+    r = a <= b;
+    r = a == b;
+}
+
+void test_byte_int()
+{
+    byte a;
+    int b;
+    bool r;
+
+    a = a + b;
+    a = a - b;
+    a = a * b;
+    a = a / b;
+
+    a = a & b;
+    a = a | b;
+    a = a ^ b;
+
+    a = a >> b;
+    a = a << b;
+
+    a = ~b;
+    a = !b;
+
+    r = a > b;
+    r = a >= b;
+    r = a < b;
+    r = a <= b;
+    r = a == b;
+}
+
+void test_int_byte()
+{
+    int a;
+    byte b;
+    bool r;
+
+    a = a + b;
+    a = a - b;
+    a = a * b;
+    a = a / b;
+
+    a = a & b;
+    a = a | b;
+    a = a ^ b;
+
+    a = a >> b;
+    a = a << b;
+
+    a = ~b;
+    a = !b;
+
+    r = a > b;
+    r = a >= b;
+    r = a < b;
+    r = a <= b;
+    r = a == b;
+}
+
+void test_byte_array_index()
+{
+    string[16] s;
+    int i;
+    byte a;
+
+    // byte as an array index isn't allowed
+    s[a] = null;
+
+    // but it might be implicitly casted to an int through binary expression between integer literal
+    s[a / 1] = null;
+    s[1 / a] = null;
+    s[a + 0] = null;
+
+    // or binary expression between integer variable
+    s[i / a] = null;
+    s[a / i] = null;
+}

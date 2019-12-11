@@ -237,6 +237,32 @@ describe('Checker', () => {
             assert.equal(diagnostics.length, 0);
         });
 
+        it('byte', () => {
+            const diagnostics = validateDocument('byte.galaxy');
+            assert.equal(diagnostics.length, 7);
+
+            assert.equal(diagnostics[0].line, 39);
+            assert.equal(diagnostics[0].messageText, 'Binary \'&\' operation not supported between \'byte\' type and \'integer\' type');
+
+            assert.equal(diagnostics[1].line, 40);
+            assert.equal(diagnostics[1].messageText, 'Binary \'|\' operation not supported between \'byte\' type and \'integer\' type');
+
+            assert.equal(diagnostics[2].line, 41);
+            assert.equal(diagnostics[2].messageText, 'Binary \'^\' operation not supported between \'byte\' type and \'integer\' type');
+
+            assert.equal(diagnostics[3].line, 67);
+            assert.equal(diagnostics[3].messageText, 'Binary \'&\' operation not supported between \'integer\' type and \'byte\' type');
+
+            assert.equal(diagnostics[4].line, 68);
+            assert.equal(diagnostics[4].messageText, 'Binary \'|\' operation not supported between \'integer\' type and \'byte\' type');
+
+            assert.equal(diagnostics[5].line, 69);
+            assert.equal(diagnostics[5].messageText, 'Binary \'^\' operation not supported between \'integer\' type and \'byte\' type');
+
+            assert.equal(diagnostics[6].line, 91);
+            assert.equal(diagnostics[6].messageText, 'Array index require an integer value');
+        });
+
         it('bool', () => {
             const diagnostics = validateDocument('bool.galaxy');
             assert.equal(diagnostics.length, 1);

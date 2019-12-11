@@ -396,7 +396,8 @@ export const enum TypeFlags {
 
     /* @internal */
     Literal = StringLiteral | NumericLiteral | BooleanLiteral,
-    Numeric = Integer | Fixed,
+    IntLike = Integer | Byte,
+    Numeric = Integer | Byte | Fixed,
 }
 
 export interface Type {
