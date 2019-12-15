@@ -279,6 +279,8 @@ export class CodeAbbreviations extends SuggestionsProvider {
                 case DescKind.Frame:
                 {
                     const sFrameType = this.store.schema.getFrameType(uChildNode.mainDesc.stype);
+                    // if unknown desc type
+                    if (!sFrameType) continue;
                     tmpCI = {
                         label: `${uChildNode.name}[${sFrameType.name}]`,
                         insertText: `<Frame type="${sFrameType.name}" name="${uChildNode.name}">\$0</Frame>`,
