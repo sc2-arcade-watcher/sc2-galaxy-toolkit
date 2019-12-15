@@ -1,5 +1,10 @@
 # Change Log
 
+## [[1.0.2]](https://github.com/Talv/sc2-layouts/compare/v1.0.1...v1.0.2) - 2019-12-15
+
+* Bugfixes
+* Updated `sc2-data` to `4.11.0`
+
 ## [[1.0.1]](https://github.com/Talv/sc2-layouts/compare/v1.0.0...v1.0.1) - 2019-11-06
 
 * Fixed multiple flaws in regards to handling content updates in SC2Layout documents. Most importantly content of dirty files wasn't being indexed as soon as it was intended, despite having enough processing capacity. There was hardcoded delay of 300ms occuring after every change. Effectively all services (such as code completions) relaying on fresh data were delayed with their response by at least 300ms.
