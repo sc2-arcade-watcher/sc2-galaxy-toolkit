@@ -447,6 +447,7 @@ export class Parser {
             case SyntaxKind.BreakKeyword:
             case SyntaxKind.ReturnKeyword:
             case SyntaxKind.BreakpointKeyword:
+            case SyntaxKind.OpenBraceToken:
                 return false;
         }
 
