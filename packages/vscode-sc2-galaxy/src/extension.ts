@@ -73,9 +73,24 @@ export function activate(context: ExtensionContext) {
         });
     })();
 
-    context.subscriptions.push(commands.registerTextEditorCommand('s2galaxy.verifyScript', async (textEditor, edit) => {
-        const r = await client.sendRequest('document/checkRecursively', {uri: textEditor.document.uri.toString()});
-        window.setStatusBarMessage(r === true ? `[[ ✓ ]] SUCCESS!` : `[[ x ]] FAILED!`, 2500);
+    context.subscriptions.push(commands.registerCommand('s2galaxy.verifyScript', async (...args) => {
+        let uri: string;
+        try {
+            if (args) {
+                uri = args[0].toString();
+            }
+            else if (!args) {
+                uri = window.activeTextEditor.document.uri.toString()
+            }
+        }
+        catch (e) {
+            window.showErrorMessage(`Couldn't determine entrypoint of a script.`);
+            return;
+        }
+
+        const content = await client.sendRequest('document/checkRecursively', { uri });
+        const textDoc = await workspace.openTextDocument({ content: <string>content, language: 'log' });
+        await window.showTextDocument(textDoc);
     }));
 
     context.subscriptions.push(disposable);

@@ -219,9 +219,18 @@
 		"commands": [
 			{
 				"command": "s2galaxy.verifyScript",
-				"title": "s2galaxy: Verify script"
+				"title": "Verify script",
+				"category": "SC2 Galaxy"
 			}
-		]
+		],
+		"menus": {
+			"explorer/context": [
+				{
+					"command": "s2galaxy.verifyScript",
+					"when": "resourceLangId == galaxy"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"build": "tsc -p ./",
