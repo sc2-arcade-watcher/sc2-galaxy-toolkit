@@ -340,11 +340,17 @@ describe('Checker', () => {
             unbindSourceFile(sourceFile, store);
             const diag = checker.checkSourceFile(sourceFile, true);
 
+            let dcounter = 0;
             for (const [cLine, cInfo] of sourceFile.commentsLineMap) {
                 if (sourceFile.text.substring(cInfo.pos, cInfo.end) === '// ^ERR') {
+                    ++dcounter;
                     const dc = diag.find((v) => v.line === (cLine - 1));
                     assert.isDefined(dc, `Expected error at line ${cLine}`);
                 }
+            }
+
+            if (dcounter > 0) {
+                assert.equal(diag.length, dcounter);
             }
 
             return diag;

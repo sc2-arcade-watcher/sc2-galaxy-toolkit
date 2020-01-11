@@ -938,6 +938,9 @@ export class TypeChecker {
             case gt.SyntaxKind.IncludeStatement:
                 this.checkIncludeStatement(<gt.IncludeStatement>node);
                 break;
+            case gt.SyntaxKind.TypedefDeclaration:
+                this.checkTypedefDeclaration(<gt.TypedefDeclaration>node);
+                break;
             case gt.SyntaxKind.Block:
                 this.checkBlock(<gt.Block>node);
                 break;
@@ -999,17 +1002,19 @@ export class TypeChecker {
         return qsFile;
     }
 
+    private checkTypedefDeclaration(node: gt.TypedefDeclaration) {
+        this.checkDeclarationType(node.type);
+        this.checkIdentifier(node.name);
+    }
+
     private checkDeclarationType(node: gt.TypeNode) {
         switch (node.kind) {
             case gt.SyntaxKind.MappedType:
-                this.checkMappedType(<gt.MappedTypeNode>node);
-                break;
+                return this.checkMappedType(<gt.MappedTypeNode>node);
             case gt.SyntaxKind.ArrayType:
-                this.checkArrayType(<gt.ArrayTypeNode>node);
-                break;
+                return this.checkArrayType(<gt.ArrayTypeNode>node);
             case gt.SyntaxKind.Identifier:
-                this.checkIdentifier(<gt.Identifier>node, false, false);
-                break;
+                return this.checkIdentifier(<gt.Identifier>node, false, false);
         }
     }
 
@@ -1048,13 +1053,18 @@ export class TypeChecker {
     }
 
     private checkVariableDeclaration(node: gt.VariableDeclaration) {
-        this.checkDeclarationType(node.type);
+        const declType = this.checkDeclarationType(node.type);
         this.checkIdentifier(node.name, true);
 
         if (node.initializer) {
             const varType = this.getTypeFromTypeNode(node.type);
             const exprType = this.checkExpression(node.initializer);
             this.checkTypeAssignableTo(exprType, varType, node.initializer);
+        }
+
+        const isConstant = node.modifiers?.some((value) => value.kind === gt.SyntaxKind.ConstKeyword);
+        if (isConstant && declType instanceof TypedefType) {
+            this.report(node.type, `Constant variables cannot reference Typedefs`);
         }
     }
 
