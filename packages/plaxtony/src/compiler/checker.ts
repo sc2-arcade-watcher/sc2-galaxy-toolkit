@@ -985,7 +985,14 @@ export class TypeChecker {
     }
 
     private checkIncludeStatement(node: gt.IncludeStatement) {
-        const path = node.path.value.replace(/\.galaxy$/i, '').toLowerCase();
+        let path = node.path.value.toLowerCase();
+        let segments = path.split('.');
+        if (segments.length > 1 && segments[segments.length - 1] !== 'galaxy') {
+            this.report(node.path, `Dot in a script name is not allowed, unless path ends with ".galaxy"`, gt.DiagnosticCategory.Warning);
+        }
+        else {
+            path = path.replace(/\.galaxy$/, '');
+        }
         const qsMap = this.store.qualifiedDocuments.get(path);
         if (!qsMap) {
             this.report(node.path, `Given filename couldn't be matched`);
