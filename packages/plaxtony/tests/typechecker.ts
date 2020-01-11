@@ -342,10 +342,11 @@ describe('Checker', () => {
 
             let dcounter = 0;
             for (const [cLine, cInfo] of sourceFile.commentsLineMap) {
-                if (sourceFile.text.substring(cInfo.pos, cInfo.end) === '// ^ERR') {
+                const m = sourceFile.text.substring(cInfo.pos, cInfo.end).trim().match(/^\/\/ \^ERR\:?\s?(.*)$/);
+                if (m) {
                     ++dcounter;
                     const dc = diag.find((v) => v.line === (cLine - 1));
-                    assert.isDefined(dc, `Expected error at line ${cLine}`);
+                    assert.isDefined(dc, `Line ${cLine}, expected: ${m[1]}`);
                 }
             }
 

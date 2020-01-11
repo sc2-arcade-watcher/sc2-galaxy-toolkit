@@ -1053,6 +1053,12 @@ export class TypeChecker {
 
     private checkParameterDeclaration(node: gt.ParameterDeclaration) {
         this.checkDeclarationType(node.type);
+
+        const globalSym = this.resolveName(null, node.name.name);
+        if (globalSym && (globalSym.flags & gt.SymbolFlags.Function)) {
+            this.report(node, `Name clash with '${node.name}' function.`);
+        }
+
         const type = this.getTypeFromTypeNode(node.type);
         if (type instanceof StructType || type instanceof FunctionType) {
             this.report(node.type, 'Can only pass basic types');
