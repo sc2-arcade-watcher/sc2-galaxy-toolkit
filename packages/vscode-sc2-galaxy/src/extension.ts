@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 import { workspace, ExtensionContext, window, Disposable, languages, CompletionItemProvider, TextDocument, CompletionItem, CompletionItemKind, SnippetString, ProgressLocation, Progress, commands } from 'vscode';
-import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind, Position, CancellationToken } from 'vscode-languageclient';
+import * as lspc from 'vscode-languageclient';
 
 interface ProgressProxy {
     done: () => void;
@@ -32,17 +32,21 @@ export function activate(context: ExtensionContext) {
     const envSvc = Object.assign({}, process.env);
     envSvc.PLAXTONY_LOG_LEVEL = workspace.getConfiguration('sc2galaxy.trace').get('service');
 
-    const serverOptions: ServerOptions = {
-        run : { module: serverModule, transport: TransportKind.ipc, options: {
-            env: envSvc,
-        }},
-        debug: { module: serverModule, transport: TransportKind.ipc, options: {
-            execArgv: ['--nolazy', '--inspect=6009'],
-            env: Object.assign(envSvc, { PLAXTONY_DEBUG: 1 }),
-        }}
+    const serverOptions: lspc.ServerOptions = {
+        run: {
+            module: serverModule, transport: lspc.TransportKind.ipc, options: {
+                env: envSvc,
+            }
+        },
+        debug: {
+            module: serverModule, transport: lspc.TransportKind.ipc, options: {
+                execArgv: ['--nolazy', '--inspect=6009'],
+                env: Object.assign(envSvc, { PLAXTONY_DEBUG: 1 }),
+            }
+        }
     };
 
-    const clientOptions: LanguageClientOptions = {
+    const clientOptions: lspc.LanguageClientOptions = {
         documentSelector: [{scheme: 'file', language: 'galaxy'}],
         synchronize: {
             configurationSection: 'sc2galaxy',
@@ -50,28 +54,33 @@ export function activate(context: ExtensionContext) {
         },
         initializationOptions: {
             defaultDataPath: context.asAbsolutePath('sc2-data-trigger'),
-        }
+        },
     };
 
-    const client = new LanguageClient('sc2galaxy', 'SC2Galaxy', serverOptions, clientOptions);
-    let disposable = client.start();
+    const client = new lspc.LanguageClient('sc2galaxy', 'SC2Galaxy', serverOptions, clientOptions);
 
     let indexingProgress: ProgressProxy;
-    (async () => {
-        await client.onReady();
-        client.onNotification('indexStart', (params: any) => {
-            if (indexingProgress) indexingProgress.done();
-            indexingProgress = createProgressNotification();
-        });
-        client.onNotification('indexProgress', (params: any) => {
-            indexingProgress.progress.report({message: params});
-        });
-        client.onNotification('indexEnd', async (params: any) => {
-            if (indexingProgress) indexingProgress.done();
-            indexingProgress = null;
-            window.setStatusBarMessage('Indexing of SC2 archives completed!', 2000);
-        });
-    })();
+    client.onDidChangeState((ev) => {
+        if (ev.newState === lspc.State.Running) {
+            client.onNotification('indexStart', (params: any) => {
+                if (indexingProgress) indexingProgress.done();
+                indexingProgress = createProgressNotification();
+            });
+            client.onNotification('indexProgress', (params: any) => {
+                indexingProgress.progress.report({message: params});
+            });
+            client.onNotification('indexEnd', async (params: any) => {
+                if (indexingProgress) indexingProgress.done();
+                indexingProgress = null;
+                window.setStatusBarMessage('Indexing of SC2 archives completed!', 2000);
+            });
+        }
+        else if (ev.newState === lspc.State.Stopped) {
+            client.outputChannel.show(true);
+        }
+    });
+
+    context.subscriptions.push(client.start());
 
     context.subscriptions.push(commands.registerCommand('s2galaxy.verifyScript', async (...args) => {
         let uri: string;
@@ -92,6 +101,4 @@ export function activate(context: ExtensionContext) {
         const textDoc = await workspace.openTextDocument({ content: <string>content, language: 'log' });
         await window.showTextDocument(textDoc);
     }));
-
-    context.subscriptions.push(disposable);
 }
