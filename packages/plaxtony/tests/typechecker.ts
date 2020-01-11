@@ -4,7 +4,7 @@ import * as path from 'path';
 import { assert } from 'chai';
 import * as tc from '../src/compiler/checker';
 import { TypeChecker } from '../src/compiler/checker';
-import { mockupStoreDocument, mockupStore, mockupSourceFile, mockupTextDocument, mockupStoreFromDirectory } from './helpers';
+import { mockupStoreDocument, mockupStore, mockupSourceFile, mockupTextDocument, mockupStoreFromDirectory, dump } from './helpers';
 import { getPositionOfLineAndCharacter, findPrecedingToken, getTokenAtPosition } from '../src/service/utils';
 import * as lsp from 'vscode-languageserver';
 import * as gt from './../src/compiler/types';
@@ -338,7 +338,16 @@ describe('Checker', () => {
             const checker = new TypeChecker(store);
 
             unbindSourceFile(sourceFile, store);
-            return checker.checkSourceFile(sourceFile, true);
+            const diag = checker.checkSourceFile(sourceFile, true);
+
+            for (const [cLine, cInfo] of sourceFile.commentsLineMap) {
+                if (sourceFile.text.substring(cInfo.pos, cInfo.end) === '// ^ERR') {
+                    const dc = diag.find((v) => v.line === (cLine - 1));
+                    assert.isDefined(dc, `Expected error at line ${cLine}`);
+                }
+            }
+
+            return diag;
         }
 
         describe('Error', () => {

@@ -1,0 +1,34 @@
+// e_noDataRefGlobals=Can not use arrayref/structref as a global, a field, or a return value (only as a local or a parameter).
+
+typedef int[8] intd8_t;
+
+struct struct_a {
+    int a;
+};
+
+struct struct_b {
+    structref<struct_a> a;
+    // ^ERR
+    arrayref<intd8_t> b;
+    // ^ERR
+};
+
+struct_a gv_foo1;
+structref<struct_a> gv_foo2;
+// ^ERR
+
+intd8_t gv_foo3;
+arrayref<intd8_t> gv_foo4;
+// ^ERR
+
+structref<struct_a> test_ref_return_1()
+// ^ERR
+{
+    return gv_foo1;
+}
+
+arrayref<intd8_t> test_ref_return_2()
+// ^ERR
+{
+    return gv_foo3;
+}

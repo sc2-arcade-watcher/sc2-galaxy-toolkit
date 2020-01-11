@@ -1135,6 +1135,37 @@ export class TypeChecker {
         if (!isReferenceKeywordKind(node.returnType.kind)) {
             this.report(node.returnType, 'Invalid keyword for reference type provided - use funcref, arrayref or structref');
         }
+        else {
+            switch (node.returnType.kind) {
+                case gt.SyntaxKind.StructrefKeyword:
+                case gt.SyntaxKind.ArrayrefKeyword:
+                {
+                    let invalid = false;
+                    switch (node.parent.kind) {
+                        case gt.SyntaxKind.PropertyDeclaration:
+                            invalid = true;
+                            break;
+
+                        case gt.SyntaxKind.FunctionDeclaration:
+                            if ((<gt.FunctionDeclaration>node.parent).type === node) {
+                                invalid = true;
+                            }
+                            break;
+
+                        case gt.SyntaxKind.VariableDeclaration:
+                            if (node.parent.parent.kind === gt.SyntaxKind.SourceFile) {
+                                invalid = true;
+                            }
+                            break;
+                    }
+                    if (invalid) {
+                        this.report(node, 'Can not use arrayref/structref as a global, a field, or a return value (only as a local or a parameter).');
+                    }
+                    break;
+                }
+            }
+        }
+
         if (node.typeArguments.length !== 1) {
             this.report(node, 'Expected exactly 1 argument');
         }
