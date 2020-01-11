@@ -7,7 +7,7 @@ import { findAncestor } from '../compiler/utils';
 import { Store, createTextDocumentFromFs, createTextDocumentFromUri } from './store';
 import { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition, getNodeRange } from './utils';
 import { AbstractProvider, createProvider } from './provider';
-import { DiagnosticsProvider } from './diagnostics';
+import { DiagnosticsProvider, formatDiagnosticTotal } from './diagnostics';
 import { NavigationProvider } from './navigation';
 import { CompletionsProvider, CompletionConfig, CompletionFunctionExpand } from './completions';
 import { SignaturesProvider } from './signatures';
@@ -705,11 +705,8 @@ export class Server {
 
     private async onDiagnoseDocumentRecursively(params: lsp.TextDocumentIdentifier) {
         await this.flushDocument(params.uri);
-        const dg = this.diagnosticsProvider.checkFileRecursively(params.uri);
-        for (const item of dg.diagnostics) {
-            this.connection.sendDiagnostics(item);
-        }
-        return dg.success;
+        const dtotal = this.diagnosticsProvider.checkFileRecursively(params.uri);
+        return formatDiagnosticTotal(dtotal);
     }
 }
 

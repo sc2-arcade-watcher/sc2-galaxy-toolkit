@@ -751,9 +751,10 @@ export interface ForStatement extends IterationStatement {
 //
 
 export enum DiagnosticCategory {
-    Warning,
-    Error,
-    Message
+    Error = 1,
+    Warning = 2,
+    Message = 3,
+    Hint = 4,
 }
 
 export interface DiagnosticMessage {
