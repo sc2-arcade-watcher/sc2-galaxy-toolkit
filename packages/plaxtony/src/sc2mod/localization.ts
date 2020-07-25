@@ -45,10 +45,16 @@ export class LocalizationTextStore {
 }
 
 export class LocalizationTriggers extends LocalizationTextStore {
-    public elementName(key: string, el?: Element) {
+    public elementName(key: string, el?: Element, fallbackToKey = false) {
         if (el) {
             key = el.textKey(key);
         }
-        return this.entries.get(key);
+        const r = this.entries.get(key);
+        if (r) {
+            return r;
+        }
+        if (fallbackToKey) {
+            return key;
+        }
     }
 }

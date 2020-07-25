@@ -18,6 +18,7 @@ export const enum ElementFlag {
     NoScriptPrefix     = 1 << 14,
     Deprecated         = 1 << 15,
     Internal           = 1 << 16,
+    Restricted         = 1 << 17,
 }
 
 export class ElementReference<T extends Element> {
@@ -61,18 +62,66 @@ export class ParameterType {
         switch (this.type) {
             case 'anygamelink':
             case 'gamelink':
-            case 'convline':
             case 'filepath':
+            case 'actormsg':
+            case 'aidef':
+            case 'modelanim':
+            case 'attributegame':
+            case 'attributeplayer':
+            case 'attributevalue':
+            case 'catalogentry':
+            case 'catalogfieldname':
+            case 'catalogfieldpath':
+            case 'reference':
+            case 'catalogscope':
+            case 'charge':
+            case 'convcharacter':
+            case 'convline':
+            case 'convstateindex':
+            case 'conversationtag':
+            case 'cooldown':
+            case 'fontstyle':
             case 'gameoption':
             case 'gameoptionvalue':
-            case 'modelanim':
-            case 'actormsg':
+            case 'modelcamera':
+            case 'timeofday':
+            case 'layoutframe':
+            case 'layoutframerel':
+            case 'userfield':
+            case 'userinstance':
+            case 'water':
+            {
                 return 'string';
+            }
 
+            case 'aidefwave':
+            case 'cinematic':
+            case 'conversation':
+            case 'reply':
+            case 'datatable':
+            case 'dialog':
             case 'control':
-            case 'transmission':
+            case 'difficulty':
+            case 'objective':
+            case 'path':
+            case 'ping':
+            case 'planet':
+            case 'playercolor':
             case 'portrait':
+            case 'transmission':
+            {
                 return 'int';
+            }
+
+            case 'animlengthquery':
+            {
+                return 'generichandle';
+            }
+
+            case 'targetfilter':
+            {
+                return 'unitfilter';
+            }
 
             case 'preset':
                 return this.typeElement.resolve().baseType;
@@ -82,19 +131,6 @@ export class ParameterType {
         }
     }
 }
-// TODO:
-// <Type Value="filepath"/>
-// <AssetType Value="Cutscene"/>
-// -
-// <Type Value="convline"/>
-// -
-// <Type Value="control"/>
-// -
-// <Type Value="gameoption"/>
-// -
-// <Type Value="gameoptionvalue"/>
-// -
-// <Type Value="modelanim"/>
 
 export abstract class Tag {
     static prefix?: string;
@@ -148,7 +184,22 @@ export abstract class Element extends Tag {
 
 export class ParamDef extends Element {
     type: ParameterType;
+    isReference?: boolean; // ParamFlagReference
     default?: ElementReference<Param>;
+
+    get galaxyType(): string {
+        const rtype = this.type.galaxyType;
+        if (this.isReference) {
+            switch (rtype) {
+                case 'unit':
+                {
+                    return 'unitref';
+                    break;
+                }
+            }
+        }
+        return rtype;
+    }
 }
 
 export class FunctionDef extends Element {
@@ -156,6 +207,7 @@ export class FunctionDef extends Element {
     parameters: ElementReference<ParamDef>[] = [];
     returnType?: ParameterType;
     scriptCode?: string;
+    eventResponses: ElementReference<FunctionDef>[] = [];
 
     public getParameters() {
         return this.parameters.map((paramRef): ParamDef => {
@@ -351,6 +403,18 @@ export class XMLReader {
         return element;
     }
 
+    private parseParamDef(item: any): ParamDef {
+        const paramDef = new ParamDef();
+        paramDef.type = this.parseParameterType(item.ParameterType[0]);
+        if (item.Default) {
+            paramDef.default = this.parseReference(item.Default[0], Param);
+        }
+        if (item.ParamFlagReference) {
+            paramDef.isReference = true;
+        }
+        return paramDef;
+    }
+
     private parseFunctionCall(item: any): FunctionCall {
         const element = new FunctionCall();
         if (item.FunctionDef) {
@@ -410,6 +474,7 @@ export class XMLReader {
                 func.flags |= item.FlagNoScriptPrefix ? ElementFlag.NoScriptPrefix : 0;
                 func.flags |= item.Deprecated ? ElementFlag.Deprecated : 0;
                 func.flags |= item.Internal ? ElementFlag.Internal : 0;
+                func.flags |= item.FlagRestricted ? ElementFlag.Restricted : 0;
 
                 if (item.Parameter) {
                     for (const param of item.Parameter) {
@@ -429,15 +494,17 @@ export class XMLReader {
                         func.scriptCode = func.scriptCode.trim().replace(/\r?\n/g, '\n').replace(new RegExp('^' + whitespace[1], 'gm'), '');
                     }
                 }
+
+                if (item.EventResponse) {
+                    for (const er of item.EventResponse) {
+                        func.eventResponses.push(this.parseReference(er, FunctionDef));
+                    }
+                }
                 break;
             }
             case 'ParamDef':
             {
-                const paramDef = el = new ParamDef();
-                paramDef.type = this.parseParameterType(item.ParameterType[0]);
-                if (item.Default) {
-                    paramDef.default = this.parseReference(item.Default[0], Param);
-                }
+                el = this.parseParamDef(item);
                 break;
             }
             case 'Param':

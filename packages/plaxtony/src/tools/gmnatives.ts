@@ -51,7 +51,7 @@ import { stringToToken } from '../compiler/scanner';
             }
 
             out.push('\n');
-            out.push(`    ${param.type.galaxyType} ${paramName}${(key < curEl.parameters.length - 1 ? ',' : '')}`.padEnd(35));
+            out.push(`    ${param.galaxyType} ${paramName}${(key < curEl.parameters.length - 1 ? ',' : '')}`.padEnd(35));
             out.push(` /// * ${paramDoc.name}`.padEnd(25) + ` :: ${paramDoc.type}`);
             if (key >= curEl.parameters.length - 1) {
                 out.push('\n');
