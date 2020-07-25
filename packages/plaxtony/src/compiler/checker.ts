@@ -93,6 +93,9 @@ export class IntrinsicType extends AbstractType {
             if (target.flags & gt.TypeFlags.Byte && (this.flags & gt.TypeFlags.Integer)) return true;
             if (this.flags & gt.TypeFlags.Boolean && target.flags & gt.TypeFlags.Boolean) return true;
         }
+        else if (target instanceof ComplexType) {
+            if (this.flags & gt.TypeFlags.String && target.kind === gt.SyntaxKind.HandleKeyword) return true;
+        }
 
         if (this.flags & gt.TypeFlags.Null && target.flags & gt.TypeFlags.Nullable) return true;
 
@@ -244,6 +247,9 @@ export class ComplexType extends AbstractType implements gt.ComplexType {
         if (target instanceof ComplexType) {
             if (target.kind === gt.SyntaxKind.HandleKeyword) return this.extendsHandle;
             if (this.kind === gt.SyntaxKind.HandleKeyword) return target.extendsHandle;
+        }
+        else {
+            if (this.kind === gt.SyntaxKind.HandleKeyword && target.flags & gt.TypeFlags.String) return true;
         }
 
         // if (target.flags && gt.TypeFlags.Null && this.flags & gt.TypeFlags.Nullable) return true;
@@ -1274,7 +1280,7 @@ export class TypeChecker {
     private checkLiteralExpression(node: gt.Expression): AbstractType {
         switch (node.kind) {
             case gt.SyntaxKind.StringLiteral:
-                return new LiteralType(gt.TypeFlags.StringLiteral, node);
+                return new LiteralType(gt.TypeFlags.StringLiteral | gt.TypeFlags.String | gt.TypeFlags.Nullable, node);
             case gt.SyntaxKind.NumericLiteral:
                 if ((<gt.NumericLiteral>node).text.indexOf('.') !== -1) {
                     return new LiteralType(gt.TypeFlags.NumericLiteral | gt.TypeFlags.Fixed, node);
