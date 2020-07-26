@@ -72,7 +72,7 @@ export class CompletionsProvider extends AbstractProvider {
             let paramElement: trig.Param;
             if (funcElement) {
                 const index = key - (funcElement.flags & trig.ElementFlag.Event ? 1 : 0);
-                if (index > 0) {
+                if (index >= 0) {
                     const paramDef = funcElement.getParameters()[index];
                     if (paramDef.default) {
                         paramElement = paramDef.default.resolve();
@@ -101,7 +101,19 @@ export class CompletionsProvider extends AbstractProvider {
                     }
                 }
                 else if (paramElement.preset) {
-                    args.push(this.store.s2metadata.getElementSymbolName(paramElement.preset.resolve()));
+                    const presetVal = paramElement.preset.resolve();
+                    if (presetVal.value) {
+                        args.push(presetVal.value);
+                    }
+                    else {
+                        const presetDef = this.store.s2metadata.findPresetDef(presetVal);
+                        if (presetDef) {
+                            args.push(this.store.s2metadata.getNameOfPresetValue(presetDef, presetVal));
+                        }
+                        else {
+                            args.push(this.store.s2metadata.getElementSymbolName(presetVal));
+                        }
+                    }
                 }
                 else if (paramElement.valueElement) {
                     args.push(this.store.s2metadata.getElementSymbolName(paramElement.valueElement.resolve().values[0].resolve()));
