@@ -215,6 +215,9 @@ export class S2WorkspaceMetadata {
                     name += ' (' + grammar.replace(tildeRE, '`') + ')';
                 }
             }
+            if (el.flags & trig.ElementFlag.Restricted) {
+                name += '\n\n__Blizzard only__';
+            }
             const hint = this.workspace.locComponent.triggers.elementName('Hint', el);
             if (hint) {
                 name += '\n\n' + hint.replace(quationMarkRE, '*');

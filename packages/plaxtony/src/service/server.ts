@@ -592,7 +592,9 @@ export class Server {
     @logIt({ level: 'verbose', profiling: false })
     private async onDidChangeWatchedFiles(ev: lsp.DidChangeWatchedFilesParams) {
         for (const x of ev.changes) {
-            if (URI.parse(x.uri).fsPath.match(/sc2\w+\.(temp|orig)/gi)) continue;
+            const xUri = URI.parse(x.uri);
+            if (xUri.scheme !== 'file') continue;
+            if (xUri.fsPath.match(/sc2\w+\.(temp|orig)/gi)) continue;
             if (!this.store.isUriInWorkspace(x.uri)) continue;
             logger.verbose(`${fileChangeTypeNames[x.type]} '${x.uri}'`);
             switch (x.type) {

@@ -107,6 +107,9 @@ export class S2WorkspaceWatcher extends WorkspaceWatcher {
                 this._onDidOpen.fire({document: createTextDocumentFromFs(path.join(modArchive.directory, extSrc))});
             }
         }
+        for (const extSrc of await rootArchive.findFiles('**/*.galaxy')) {
+            this._onDidOpen.fire({document: createTextDocumentFromFs(path.join(rootArchive.directory, extSrc))});
+        }
 
         this._onDidOpenS2Workspace.fire({
             src: this.folders[0],
