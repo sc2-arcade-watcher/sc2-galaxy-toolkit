@@ -239,7 +239,7 @@ export function isS2Archive(fsPath: string) {
     return reIsS2Archive.exec(path.extname(fsPath));
 }
 
-export async function findArchiveDirectories(fsPath: string) {
+export async function findArchiveDirectories(fsPath: string, opts: { exclude?: string | string[] } = {}) {
     if (isS2Archive(fsPath)) {
         return [path.resolve(fsPath)];
     }
@@ -247,7 +247,9 @@ export async function findArchiveDirectories(fsPath: string) {
         cwd: fsPath,
         absolute: true,
         nocase: true,
-    })).sort().sort((a, b) => {
+        ignore: opts.exclude,
+        nosort: false,
+    })).sort((a, b) => {
         return path.extname(a).toLowerCase() === '.sc2map' ? 1 : -1;
     });
     return folders;

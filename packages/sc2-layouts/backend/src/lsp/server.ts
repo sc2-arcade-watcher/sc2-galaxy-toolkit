@@ -361,11 +361,19 @@ export class S2LServer implements ErrorReporter, LangService {
         }
 
         // -
+        const cfgFilesExclude: {[key: string]: boolean} = await this.conn.workspace.getConfiguration('files.exclude');
+        const excludePatterns = Object.entries(cfgFilesExclude).filter(x => x[1] === true).map(x => x[0]);
+        logger.verbose('exclude patterns', ...excludePatterns);
+
+        // -
         if (projFolders !== void 0 && projFolders.length) {
             logger.info('processing workspace folders..', projFolders);
 
             for (const wsFolder of projFolders) {
-                for (const fsPath of (await s2.findArchiveDirectories(URI.parse(wsFolder.uri).fsPath))) {
+                for (const fsPath of (await s2.findArchiveDirectories(
+                    URI.parse(wsFolder.uri).fsPath,
+                    { exclude: excludePatterns }
+                ))) {
                     let name = path.basename(fsPath);
                     if (name !== wsFolder.name) {
                         name = `${wsFolder.name}/${path.basename(fsPath)}`;
@@ -453,12 +461,13 @@ export class S2LServer implements ErrorReporter, LangService {
         this.providers.descTreeData.sendWorkspaceChange();
     }
 
-    protected async fetchFilelist(uri: URI) {
+    protected async fetchFilelist(uri: URI, opts: { exclude?: string | string[] } = {}) {
         const r = await globify(`**/*.${languageExt}`, {
             cwd: uri.fsPath,
             absolute: true,
             nodir: true,
             nocase: true,
+            ignore: opts.exclude,
         });
         return r;
     }
