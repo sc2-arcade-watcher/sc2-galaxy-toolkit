@@ -249,33 +249,58 @@ export class Server {
         // attempt to determine active document (archivePath) for non-empty project workspace
         if (projFolders.length) {
             const s2archives: string[] = [];
-            (await Promise.all(
-                projFolders.map(async wsFolder => {
-                    return { wsFolder, foundArchivePaths: (await findSC2ArchiveDirectories(URI.parse(wsFolder.uri).fsPath)) };
-                }))
-            ).forEach(result => {
-                for (const currArchivePath of result.foundArchivePaths) {
-                    archivePathToWsFolder.set(currArchivePath, result.wsFolder);
-                }
-                s2archives.push(...result.foundArchivePaths);
-            });
-            logger.info('s2archives in workspace', ...s2archives);
 
             if (this.config.archivePath) {
                 if (path.isAbsolute(this.config.archivePath)) {
-                    archivePath = this.config.archivePath;
+                    if ((await fs.pathExists(archivePath))) {
+                        archivePath = this.config.archivePath;
+                    }
+                    else {
+                        this.showErrorMessage(`Specified archivePath '${this.config.archivePath}' resolved to '${archivePath}', but it doesn't exist.`);
+                    }
                 }
                 else {
-                    archivePath = s2archives.find((v) => v.toLowerCase().endsWith(this.config.archivePath.toLowerCase()));
+                    const candidates = (await Promise.all(projFolders.map(async (x) => {
+                        const testedPath = path.join(URI.parse(x.uri).fsPath, this.config.archivePath);
+                        const exists = await fs.pathExists(testedPath);
+                        if (exists) {
+                            return await fs.realpath(testedPath)
+                        }
+                    }))).filter(x => typeof x === 'string');
+                    if (candidates.length) {
+                        archivePath = candidates[0];
+                        logger.info(`Configured archivePath '${this.config.archivePath}' resolved to ${archivePath}`);
+                        if (candidates.length > 1) {
+                            logger.info(`Complete list of candidates:`, ...candidates);
+                        }
+                    }
+                    else {
+                        this.showErrorMessage(`Specified archivePath '${this.config.archivePath}' couldn't be found.`);
+                    }
                 }
+            }
 
-                if (!archivePath) {
-                    this.showErrorMessage(`Specified archivePath '${this.config.archivePath}' couldn't be found.`);
-                }
-                else if (!(await fs.pathExists(archivePath))) {
-                    this.showErrorMessage(`Specified archivePath '${this.config.archivePath}' resolved to '${archivePath}', but it doesn't exist.`);
-                    archivePath = null;
-                }
+            if (!archivePath) {
+                const cfgFilesExclude: {[key: string]: boolean} = await this.connection.workspace.getConfiguration('files.exclude');
+                const excludePatterns = Object.entries(cfgFilesExclude).filter(x => x[1] === true).map(x => x[0]);
+                logger.info('searching workspace for s2archives..');
+                logger.verbose('exclude patterns', ...excludePatterns);
+                (await Promise.all(
+                    projFolders.map(async wsFolder => {
+                        return { wsFolder, foundArchivePaths: (await findSC2ArchiveDirectories(
+                            URI.parse(wsFolder.uri).fsPath,
+                            {
+                                exclude: excludePatterns,
+                            }
+                        )) };
+                    }))
+                ).forEach(result => {
+                    for (const currArchivePath of result.foundArchivePaths) {
+                        archivePathToWsFolder.set(currArchivePath, result.wsFolder);
+                    }
+                    s2archives.push(...result.foundArchivePaths);
+                });
+                logger.info('s2archives in workspace', ...s2archives);
             }
 
             if (!archivePath) {

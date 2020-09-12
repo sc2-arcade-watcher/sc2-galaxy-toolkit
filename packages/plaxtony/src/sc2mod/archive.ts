@@ -106,7 +106,7 @@ export function isSC2Archive(directory: string) {
     return path.basename(directory).match(reValidArchiveExtension);
 }
 
-export async function findSC2ArchiveDirectories(directory: string) {
+export async function findSC2ArchiveDirectories(directory: string, opts: { exclude?: string | string[] } = {}) {
     directory = path.resolve(directory);
     if (isSC2Archive(directory)) {
         return [directory];
@@ -118,6 +118,7 @@ export async function findSC2ArchiveDirectories(directory: string) {
             nocase: true,
             realpath: true,
             cwd: directory,
+            ignore: opts.exclude,
         }
     );
 
