@@ -6,7 +6,7 @@
 	"publisher": "talv",
 	"license": "MIT",
 	"engines": {
-		"vscode": "^1.35.0"
+		"vscode": "^1.64.0"
 	},
 	"repository": {
 		"type": "git",
@@ -229,6 +229,12 @@
 					"command": "s2galaxy.verifyScript",
 					"when": "resourceLangId == galaxy"
 				}
+			],
+			"commandPalette": [
+				{
+					"command": "s2galaxy.verifyScript",
+					"when": "resourceLangId == galaxy"
+				}
 			]
 		}
 	},
@@ -236,7 +242,6 @@
 		"build": "tsc -p ./",
 		"build:watch": "tsc -watch -p ./",
 		"vscode:prepublish": "tsc -p ./",
-		"postinstall": "node ./node_modules/vscode/bin/install",
 		"test": "node ./node_modules/vscode/bin/test"
 	},
 	"dependencies": {
@@ -245,9 +250,9 @@
 		"vscode-languageclient": "^5.2.1"
 	},
 	"devDependencies": {
-		"@types/node": "^10.14.12",
-		"typescript": "^3.5.3",
-		"vscode": "^1.1.35"
+		"@types/node": "^14.14.31",
+		"@types/vscode": "~1.64.0",
+		"typescript": "^3.5.3"
 	},
 	"__metadata": {
 		"id": "1e8db834-5c91-4e2f-93e8-642fb1faa3f6",
