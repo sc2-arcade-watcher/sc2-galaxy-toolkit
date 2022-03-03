@@ -338,23 +338,23 @@ describe('Checker', () => {
             const checker = new TypeChecker(store);
 
             unbindSourceFile(sourceFile, store);
-            const diag = checker.checkSourceFile(sourceFile, true);
+            const dg = checker.checkSourceFile(sourceFile, true);
 
             let dcounter = 0;
             for (const [cLine, cInfo] of sourceFile.commentsLineMap) {
                 const m = sourceFile.text.substring(cInfo.pos, cInfo.end).trim().match(/^\/\/ \^ERR\:?\s?(.*)$/);
                 if (m) {
                     ++dcounter;
-                    const dc = diag.find((v) => v.line === (cLine - 1));
-                    assert.isDefined(dc, `Line ${cLine}, expected: ${m[1]}`);
+                    const dc = dg.find((v) => v.line === (cLine - 1));
+                    assert.isDefined(dc, `Line ${cLine}, expected: ${m[1] || 'ERR'}`);
                 }
             }
 
             if (dcounter > 0) {
-                assert.equal(diag.length, dcounter);
+                assert.equal(dg.length, dcounter, dg.map(x => `${x.line + 1}: ${x.messageText}`).join('\n'));
             }
 
-            return diag;
+            return dg;
         }
 
         describe('Error', () => {
@@ -369,7 +369,7 @@ describe('Checker', () => {
             for (let filename of fs.readdirSync(path.resolve('tests/fixtures/type_checker/pass'))) {
                 it(filename, () => {
                     const dg = checkFile(path.join('pass', filename));
-                    assert.equal(dg.length, 0, dg.map(x => `${x.line}: ${x.messageText}`).join('\n'));
+                    assert.equal(dg.length, 0, dg.map(x => `${x.line + 1}: ${x.messageText}`).join('\n'));
                 });
             }
         });

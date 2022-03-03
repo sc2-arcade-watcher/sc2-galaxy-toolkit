@@ -960,8 +960,10 @@ export class TypeChecker {
                 this.checkFunction(<gt.FunctionDeclaration>node);
                 break;
             case gt.SyntaxKind.VariableDeclaration:
-            case gt.SyntaxKind.PropertyDeclaration:
                 this.checkVariableDeclaration(<gt.VariableDeclaration>node);
+                break;
+            case gt.SyntaxKind.PropertyDeclaration:
+                this.checkPropertyDeclaration(<gt.PropertyDeclaration>node);
                 break;
             case gt.SyntaxKind.ParameterDeclaration:
                 this.checkParameterDeclaration(<gt.ParameterDeclaration>node);
@@ -1033,12 +1035,13 @@ export class TypeChecker {
             case gt.SyntaxKind.ArrayType:
                 return this.checkArrayType(<gt.ArrayTypeNode>node);
             case gt.SyntaxKind.Identifier:
-                return this.checkIdentifier(<gt.Identifier>node, false, false);
+                return this.checkIdentifier(<gt.Identifier>node, false, false)[1];
         }
     }
 
     private checkFunction(node: gt.FunctionDeclaration) {
         this.checkDeclarationType(node.type);
+        this.checkTypeNoRefs(node.type);
 
         const currentSignature = this.getSignatureOfFunction(node);
         for (const prevDecl of node.symbol.declarations) {
@@ -1079,7 +1082,7 @@ export class TypeChecker {
 
     private checkVariableDeclaration(node: gt.VariableDeclaration) {
         const declType = this.checkDeclarationType(node.type);
-        this.checkIdentifier(node.name, true);
+        const [symbol, symType] = this.checkIdentifier(node.name, true);
 
         if (node.initializer) {
             const varType = this.getTypeFromTypeNode(node.type);
@@ -1091,6 +1094,29 @@ export class TypeChecker {
         if (isConstant && declType instanceof TypedefType) {
             this.report(node.type, `Constant variables cannot reference Typedefs`);
         }
+
+        if (symbol.flags & gt.SymbolFlags.GlobalVariable) {
+            this.checkTypeNoRefs(node.type);
+        }
+    }
+
+    private checkTypeNoRefs(node: gt.TypeNode) {
+        if (node.kind === gt.SyntaxKind.MappedType) {
+            switch ((<gt.MappedTypeNode>node).returnType.kind) {
+                case gt.SyntaxKind.StructrefKeyword:
+                case gt.SyntaxKind.ArrayrefKeyword:
+                {
+                    this.report(node, `Can not use arrayref/structref as a global, a field, or a return value (only as a local or a parameter).`);
+                    break;
+                }
+            }
+        }
+    }
+
+    private checkPropertyDeclaration(node: gt.PropertyDeclaration) {
+        this.checkIdentifier(node.name);
+        this.checkDeclarationType(node.type);
+        this.checkTypeNoRefs(node.type);
     }
 
     private checkStructDeclaration(node: gt.StructDeclaration) {
@@ -1170,36 +1196,6 @@ export class TypeChecker {
         if (!isReferenceKeywordKind(node.returnType.kind)) {
             this.report(node.returnType, 'Invalid keyword for reference type provided - use funcref, arrayref or structref');
         }
-        else {
-            switch (node.returnType.kind) {
-                case gt.SyntaxKind.StructrefKeyword:
-                case gt.SyntaxKind.ArrayrefKeyword:
-                {
-                    let invalid = false;
-                    switch (node.parent.kind) {
-                        case gt.SyntaxKind.PropertyDeclaration:
-                            invalid = true;
-                            break;
-
-                        case gt.SyntaxKind.FunctionDeclaration:
-                            if ((<gt.FunctionDeclaration>node.parent).type === node) {
-                                invalid = true;
-                            }
-                            break;
-
-                        case gt.SyntaxKind.VariableDeclaration:
-                            if (node.parent.parent.kind === gt.SyntaxKind.SourceFile) {
-                                invalid = true;
-                            }
-                            break;
-                    }
-                    if (invalid) {
-                        this.report(node, 'Can not use arrayref/structref as a global, a field, or a return value (only as a local or a parameter).');
-                    }
-                    break;
-                }
-            }
-        }
 
         if (node.typeArguments.length !== 1) {
             this.report(node, 'Expected exactly 1 argument');
@@ -1257,7 +1253,7 @@ export class TypeChecker {
     private checkExpressionWorker(node: gt.Expression, checkMode: CheckMode): AbstractType {
         switch (node.kind) {
             case gt.SyntaxKind.Identifier:
-                return this.checkIdentifier(<gt.Identifier>node);
+                return this.checkIdentifier(<gt.Identifier>node)[1];
             case gt.SyntaxKind.NullKeyword:
                 return nullType;
             case gt.SyntaxKind.StringLiteral:
@@ -1364,11 +1360,11 @@ export class TypeChecker {
         return this.checkExpression(node.operand);
     }
 
-    private checkIdentifier(node: gt.Identifier, checkSymbol = false, definitionReferenced = true): AbstractType {
+    private checkIdentifier(node: gt.Identifier, checkSymbol = false, definitionReferenced = true): [gt.Symbol, AbstractType] {
         const symbol = this.getSymbolOfEntityNameOrPropertyAccessExpression(node);
         if (!symbol) {
             this.report(node, `Undeclared symbol: '${node.name}'`);
-            return unknownType;
+            return [symbol, unknownType];
         }
 
         if (definitionReferenced) {
@@ -1392,7 +1388,7 @@ export class TypeChecker {
                 this.report(node, `Attempting to reference symbol with static modifier outside the scope of its definition.`);
             }
         }
-        return this.getTypeOfSymbol(symbol);
+        return [symbol, this.getTypeOfSymbol(symbol)];
     }
 
     private checkCallExpression(node: gt.CallExpression): AbstractType {
