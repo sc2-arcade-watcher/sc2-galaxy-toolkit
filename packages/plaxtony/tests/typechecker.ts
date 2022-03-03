@@ -368,7 +368,8 @@ describe('Checker', () => {
         describe('Pass', () => {
             for (let filename of fs.readdirSync(path.resolve('tests/fixtures/type_checker/pass'))) {
                 it(filename, () => {
-                    assert.equal(checkFile(path.join('pass', filename)).length, 0);
+                    const dg = checkFile(path.join('pass', filename));
+                    assert.equal(dg.length, 0, dg.map(x => `${x.line}: ${x.messageText}`).join('\n'));
                 });
             }
         });

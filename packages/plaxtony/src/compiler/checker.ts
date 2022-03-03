@@ -547,10 +547,16 @@ export class ArrayType extends AbstractType implements gt.ArrayType {
         this.elementType = elementType;
     }
 
-    public isAssignableTo(target: AbstractType) {
+    public isAssignableTo(target: AbstractType): boolean {
         if (target instanceof ReferenceType && target.kind === gt.SyntaxKind.ArrayrefKeyword) {
+            // multi-dimensional array
+            if (this.elementType instanceof ArrayType) {
+                return this.getName() === target.declaredType.getName();
+            }
+            // intrinsic type / whatever else
             if (this.elementType === (<ArrayType>target.declaredType).elementType) return true;
         }
+        return false;
     }
 
     public isComparableTo(target: AbstractType) {
