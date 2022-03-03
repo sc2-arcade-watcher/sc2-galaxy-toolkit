@@ -1066,13 +1066,25 @@ export class TypeChecker {
         }
     }
 
-    private checkParameterDeclaration(node: gt.ParameterDeclaration) {
-        this.checkDeclarationType(node.type);
-
-        const globalSym = this.resolveName(null, node.name.name);
-        if (globalSym && (globalSym.flags & gt.SymbolFlags.Function)) {
-            this.report(node, `Name clash with '${node.name}' function.`);
+    private checkLocalDeclaration(node: gt.ParameterDeclaration | gt.VariableDeclaration, symbol: gt.Symbol)
+    {
+        if ((symbol.flags & gt.SymbolFlags.FunctionScopedVariable)) {
+            const sourceFile = <gt.SourceFile>findAncestorByKind(node, gt.SyntaxKind.SourceFile);
+            const globalSym = this.resolveName(sourceFile, node.name.name, true);
+            if (globalSym && (globalSym.flags & gt.SymbolFlags.Function)) {
+                this.report(node, `Name '${node.name.name}' redefined. Name already in use in global scope.`);
+            }
         }
+    }
+
+    private checkParameterDeclaration(node: gt.ParameterDeclaration) {
+        const declType = this.checkDeclarationType(node.type);
+        const [symbol, symType] = this.checkIdentifier(node.name);
+
+        // const isNative = (<gt.FunctionDeclaration>node.parent).modifiers.some((value) => value.kind === gt.SyntaxKind.NativeKeyword);
+        // if ((<gt.FunctionDeclaration>node.parent).body || isNative) {
+        // }
+        this.checkLocalDeclaration(node, symbol);
 
         const type = this.getTypeFromTypeNode(node.type);
         if (type instanceof StructType || type instanceof FunctionType) {
@@ -1082,7 +1094,7 @@ export class TypeChecker {
 
     private checkVariableDeclaration(node: gt.VariableDeclaration) {
         const declType = this.checkDeclarationType(node.type);
-        const [symbol, symType] = this.checkIdentifier(node.name, true);
+        const [symbol, symType] = this.checkIdentifier(node.name);
 
         if (node.initializer) {
             const varType = this.getTypeFromTypeNode(node.type);
@@ -1094,6 +1106,8 @@ export class TypeChecker {
         if (isConstant && declType instanceof TypedefType) {
             this.report(node.type, `Constant variables cannot reference Typedefs`);
         }
+
+        this.checkLocalDeclaration(node, symbol);
 
         if (symbol.flags & gt.SymbolFlags.GlobalVariable) {
             this.checkTypeNoRefs(node.type);
@@ -1376,12 +1390,6 @@ export class TypeChecker {
             symRef.add(node);
         }
 
-        if (checkSymbol && (symbol.flags & gt.SymbolFlags.FunctionScopedVariable)) {
-            const globalSym = this.resolveName(null, node.name);
-            if (globalSym && (globalSym.flags & gt.SymbolFlags.Function)) {
-                this.report(node, `Name clash for '${node.name}'. Name already in use in global scope.`);
-            }
-        }
         if ((symbol.flags & gt.SymbolFlags.Static)) {
             const sourceFile = <gt.SourceFile>findAncestorByKind(node, gt.SyntaxKind.SourceFile);
             if (symbol.parent && symbol.parent.declarations[0] !== sourceFile) {
@@ -1468,7 +1476,7 @@ export class TypeChecker {
         return unknownType;
     }
 
-    private resolveName(location: gt.Node | undefined, name: string): gt.Symbol | undefined {
+    private resolveName(location: gt.Node | undefined, name: string, limitScopeToDocument: boolean = false): gt.Symbol | undefined {
         if (location) {
             const currentContext = <gt.NamedDeclaration>findAncestor(location, (element: gt.Node): boolean => {
                 return element.kind === gt.SyntaxKind.FunctionDeclaration || element.kind === gt.SyntaxKind.StructDeclaration;
@@ -1482,6 +1490,11 @@ export class TypeChecker {
                 return sourceFile.symbol.members.get(name);
             }
         }
+
+        if (limitScopeToDocument && !location) {
+            throw new Error(`Expected location when limitScopeToDocument is set to true`);
+        }
+        if (limitScopeToDocument) return;
 
         return this.resolveGlobalSymbol(name);
     }
@@ -1501,9 +1514,6 @@ export class TypeChecker {
         let symbol: gt.Symbol;
         if (entityName.kind === gt.SyntaxKind.Identifier) {
             symbol = this.resolveName(location || entityName, entityName.name);
-            if (!symbol) {
-                return undefined;
-            }
         }
         return symbol;
     }
