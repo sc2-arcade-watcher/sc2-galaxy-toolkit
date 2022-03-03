@@ -57,10 +57,13 @@ export class SignaturesProvider extends AbstractProvider {
             parameters: [],
         };
 
-        signatureInfo.documentation = {
-            kind: lsp.MarkupKind.Markdown,
-            value: getDocumentationOfSymbol(this.store, functionSymbol, false),
-        };
+        const docStr = getDocumentationOfSymbol(this.store, functionSymbol, false);
+        if (docStr) {
+            signatureInfo.documentation = {
+                kind: lsp.MarkupKind.Markdown,
+                value: docStr,
+            };
+        }
 
         const argsDoc = this.store.s2metadata ? this.store.s2metadata.getFunctionArgumentsDoc(functionSymbol.escapedName) : null;
 
