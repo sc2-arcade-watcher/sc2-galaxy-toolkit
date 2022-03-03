@@ -341,9 +341,6 @@ export class Scanner {
                 break;
             }
             const ch = this.text.charCodeAt(this.pos);
-            if (ch > CharacterCodes.maxAsciiCharacter) {
-                this.error(`Non ASCII characters not allowed: 0x${ch.toString(16)}`);
-            }
             if (ch === quote) {
                 result += this.text.substring(start, this.pos);
                 this.pos++;
@@ -553,9 +550,6 @@ export class Scanner {
                             const char = this.text.charCodeAt(this.pos);
                             if (isLineBreak(char)) {
                                 break;
-                            }
-                            if (char >= CharacterCodes.maxAsciiCharacter) {
-                                this.error(`Non ASCII characters not allowed: 0x${char.toString(16)}`);
                             }
                             this.pos++;
                         }
