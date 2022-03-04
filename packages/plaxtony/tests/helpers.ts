@@ -1,6 +1,6 @@
 import { SourceFile, Diagnostic } from './../src/compiler/types';
 import { Parser } from '../src/compiler/parser';
-import { TextDocument } from 'vscode-languageserver';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import { Store, S2WorkspaceWatcher, createTextDocumentFromFs, openSourceFilesInLocation } from '../src/service/store';
 import { SC2Workspace } from '../src/sc2mod/archive';
 import * as path from 'path';
@@ -12,7 +12,7 @@ export function fixtureFilePath(...filepath: string[]) {
     return path.join(fixturesPath, ...filepath);
 }
 
-export function mockupTextDocument(...filepath: string[]): TextDocument {
+export function mockupTextDocument(...filepath: string[]) {
     return createTextDocumentFromFs(fixtureFilePath(...filepath));
 }
 

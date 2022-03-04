@@ -7,6 +7,7 @@ import { bindSourceFile, unbindSourceFile } from '../compiler/binder';
 import { findSC2ArchiveDirectories, isSC2Archive, SC2Archive, SC2Workspace, openArchiveWorkspace, S2QualifiedFile } from '../sc2mod/archive';
 import { Element } from '../sc2mod/trigger';
 import * as lsp from 'vscode-languageserver';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as glob from 'glob';
@@ -16,16 +17,11 @@ import URI from 'vscode-uri';
 import { globify } from './utils';
 import { MetadataConfig } from './server';
 
-export function createTextDocument(uri: string, text: string): lsp.TextDocument {
-    return <lsp.TextDocument>{
-        uri: uri,
-        languageId: 'galaxy',
-        version: 0,
-        getText: () => text,
-    };
+export function createTextDocument(uri: string, text: string) {
+    return TextDocument.create(uri, 'galaxy', 0, text)
 }
 
-export function createTextDocumentFromFs(filepath: string): lsp.TextDocument {
+export function createTextDocumentFromFs(filepath: string) {
     filepath = path.resolve(filepath);
     return createTextDocument(Uri.file(filepath).toString(), fs.readFileSync(filepath, 'utf8'));
 }
@@ -37,7 +33,7 @@ export async function readDocumentFile(fsPath: string) {
     );
 }
 
-export function createTextDocumentFromUri(uri: string): lsp.TextDocument {
+export function createTextDocumentFromUri(uri: string) {
     return createTextDocument(uri, fs.readFileSync(Uri.parse(uri).fsPath, 'utf8'));
 }
 
@@ -62,7 +58,7 @@ export async function *openSourceFilesInLocation(...srcFolders: string[]) {
 }
 
 export class IndexedDocument {
-    textDocument: lsp.TextDocument;
+    textDocument: TextDocument;
     sourceNode: SourceFile;
 }
 
@@ -73,13 +69,13 @@ export interface S2WorkspaceChangeEvent {
 
 export class WorkspaceWatcher {
     public readonly folders: string[];
-    protected _onDidOpen = new lsp.Emitter<lsp.TextDocumentChangeEvent>();
+    protected _onDidOpen = new lsp.Emitter<lsp.TextDocumentChangeEvent<TextDocument>>();
 
     constructor(...folders: string[]) {
         this.folders = folders;
     }
 
-    public get onDidOpen(): lsp.Event<lsp.TextDocumentChangeEvent> {
+    public get onDidOpen(): lsp.Event<lsp.TextDocumentChangeEvent<TextDocument>> {
         return this._onDidOpen.event;
     }
 }
@@ -227,7 +223,7 @@ export class Store implements IStoreSymbols {
         this.documents.delete(documentUri);
     }
 
-    public updateDocument(document: lsp.TextDocument, check = false) {
+    public updateDocument(document: TextDocument, check = false) {
         if (this.documents.has(document.uri)) {
             const currSorceFile = this.documents.get(document.uri);
             if (document.getText().length === currSorceFile.text.length && document.getText().valueOf() === currSorceFile.text.valueOf()) {

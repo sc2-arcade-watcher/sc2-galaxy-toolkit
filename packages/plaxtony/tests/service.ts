@@ -10,6 +10,7 @@ import { getPositionOfLineAndCharacter, findPrecedingToken } from '../src/servic
 import * as gt from '../src/compiler/types';
 import { mockupSourceFile, mockupTextDocument, mockupStore, mockupStoreFromDirectory } from './helpers';
 import * as lsp from 'vscode-languageserver';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import { assert } from 'chai';
 import * as path from 'path';
 import 'mocha';
@@ -93,7 +94,7 @@ describe('Service', () => {
         const completionsProvider = createProvider(CompletionsProvider, store);
         completionsProvider.config.functionExpand = CompletionFunctionExpand.ArgumentsNull;
 
-        function getCompletionsAt(doc: lsp.TextDocument, line: number, char: number) {
+        function getCompletionsAt(doc: TextDocument, line: number, char: number) {
             return completionsProvider.getCompletionsAt(
                 doc.uri,
                 getPositionOfLineAndCharacter(store.documents.get(doc.uri), line, char)

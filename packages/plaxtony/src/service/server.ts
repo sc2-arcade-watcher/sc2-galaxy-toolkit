@@ -1,4 +1,5 @@
 import * as lsp from 'vscode-languageserver';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as Types from '../compiler/types';
 import * as util from 'util';
 import * as path from 'path';
@@ -132,7 +133,7 @@ export class Server {
     private hoverProvider: HoverProvider;
     private referenceProvider: ReferencesProvider;
     private renameProvider: RenameProvider;
-    private documents = new lsp.TextDocuments();
+    private documents = new lsp.TextDocuments(TextDocument);
     private initParams: InitializeParams;
     private indexing = false;
     private ready = false;
@@ -143,8 +144,8 @@ export class Server {
         return createProvider(cls, this.store);
     }
 
-    public createConnection(connection?: lsp.IConnection): lsp.IConnection {
-        this.connection = connection ? connection : lsp.createConnection();
+    public createConnection() {
+        this.connection = lsp.createConnection();
 
         this.diagnosticsProvider = this.createProvider(DiagnosticsProvider);
         this.navigationProvider = this.createProvider(NavigationProvider);
@@ -439,7 +440,7 @@ export class Server {
                     },
                 },
                 textDocumentSync: {
-                    change: this.documents.syncKind,
+                    change: lsp.TextDocumentSyncKind.Incremental,
                     openClose: true,
                 },
                 documentSymbolProvider: true,
@@ -521,7 +522,7 @@ export class Server {
     @logIt({ level: 'verbose', profiling: false, argsDump: ev => {
         return { uri: ev.document.uri, ver: ev.document.version };
     }})
-    private async onDidChangeContent(ev: lsp.TextDocumentChangeEvent) {
+    private async onDidChangeContent(ev: lsp.TextDocumentChangeEvent<TextDocument>) {
         let req = this.documentUpdateRequests.get(ev.document.uri);
         if (req) {
             if (req.promise) {
@@ -558,7 +559,7 @@ export class Server {
     }})
     private async onUpdateContent(documentUri: string, req: DocumentUpdateRequest) {
         req.promise = new Promise((resolve) => {
-            this.store.updateDocument(<lsp.TextDocument>{
+            this.store.updateDocument(<TextDocument>{
                 uri: documentUri,
                 getText: () => {
                     return req.content;
@@ -593,12 +594,12 @@ export class Server {
     }
 
     @logIt({ level: 'verbose', profiling: false, argsDump: ev => ev.document.uri })
-    private onDidOpen(ev: lsp.TextDocumentChangeEvent) {
+    private onDidOpen(ev: lsp.TextDocumentChangeEvent<TextDocument>) {
         this.store.openDocuments.add(ev.document.uri);
     }
 
     @logIt({ level: 'verbose', profiling: false, argsDump: ev => ev.document.uri })
-    private onDidClose(ev: lsp.TextDocumentChangeEvent) {
+    private onDidClose(ev: lsp.TextDocumentChangeEvent<TextDocument>) {
         this.store.openDocuments.delete(ev.document.uri);
         if (!this.store.isUriInWorkspace(ev.document.uri)) {
             this.store.removeDocument(ev.document.uri);
@@ -611,7 +612,7 @@ export class Server {
     }
 
     @logIt({ level: 'verbose', profiling: false, argsDump: ev => ev.document.uri })
-    private async onDidSave(ev: lsp.TextDocumentChangeEvent) {
+    private async onDidSave(ev: lsp.TextDocumentChangeEvent<TextDocument>) {
         await this.flushDocument(ev.document.uri, true);
     }
 
@@ -641,10 +642,10 @@ export class Server {
         }
     }
 
-    @logIt({ level: 'verbose', argsDump: (ev: lsp.TextDocumentChangeEvent) => {
+    @logIt({ level: 'verbose', argsDump: (ev: lsp.TextDocumentChangeEvent<TextDocument>) => {
         return { uri: ev.document.uri, ver: ev.document.version };
     }})
-    private syncSourceFile(ev: lsp.TextDocumentChangeEvent) {
+    private syncSourceFile(ev: lsp.TextDocumentChangeEvent<TextDocument>) {
         this.store.updateDocument(ev.document);
     }
 
@@ -738,6 +739,6 @@ export class Server {
     }
 }
 
-export function createServer(): lsp.IConnection {
+export function createServer() {
     return (new Server()).createConnection();
 }

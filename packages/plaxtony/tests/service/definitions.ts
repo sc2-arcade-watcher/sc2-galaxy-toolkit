@@ -1,5 +1,6 @@
 import 'mocha';
 import * as lsp from 'vscode-languageserver';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import { assert } from 'chai';
 import { DefinitionProvider } from '../../src/service/definitions';
 import { mockupTextDocument, mockupStore, fixtureFilePath, dump } from '../helpers';
@@ -19,7 +20,7 @@ describe('Service Definition', () => {
         ));
     });
 
-    function getDefLinks(document: lsp.TextDocument, line: number, character: number) {
+    function getDefLinks(document: TextDocument, line: number, character: number) {
         return defProvider.getDefinitionAt(document.uri, getPositionOfLineAndCharacter(store.documents.get(document.uri), line, character));
     }
 
