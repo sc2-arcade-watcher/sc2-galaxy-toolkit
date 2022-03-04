@@ -217,62 +217,9 @@ describe('Checker', () => {
             return checker.checkSourceFile(sourceFile);
         }
 
-        it('numeric_assignment', () => {
-            const diagnostics = validateDocument('numeric_assignment.galaxy');
-            assert.equal(diagnostics.length, 3);
-            assert.equal(diagnostics[0].messageText, 'Type \'1.0\' is not assignable to type \'integer\'');
-            assert.equal(diagnostics[1].messageText, 'Type \'fixed\' is not assignable to type \'integer\'');
-            assert.equal(diagnostics[2].messageText, 'Type \'fixed\' is not assignable to type \'byte\'');
-        });
-
-        it('numeric_comparison', () => {
-            const diagnostics = validateDocument('numeric_comparison.galaxy');
-            assert.equal(diagnostics.length, 2);
-            assert.equal(diagnostics[0].messageText, 'Type \'null\' is not comparable to type \'integer\'');
-            assert.equal(diagnostics[1].messageText, 'Type \'""\' is not comparable to type \'integer\'');
-        });
-
         it('string', () => {
             const diagnostics = validateDocument('string.galaxy');
             assert.equal(diagnostics.length, 0);
-        });
-
-        it('byte', () => {
-            const diagnostics = validateDocument('byte.galaxy');
-            assert.equal(diagnostics.length, 7);
-
-            assert.equal(diagnostics[0].line, 39);
-            assert.equal(diagnostics[0].messageText, 'Binary \'&\' operation not supported between \'byte\' type and \'integer\' type');
-
-            assert.equal(diagnostics[1].line, 40);
-            assert.equal(diagnostics[1].messageText, 'Binary \'|\' operation not supported between \'byte\' type and \'integer\' type');
-
-            assert.equal(diagnostics[2].line, 41);
-            assert.equal(diagnostics[2].messageText, 'Binary \'^\' operation not supported between \'byte\' type and \'integer\' type');
-
-            assert.equal(diagnostics[3].line, 67);
-            assert.equal(diagnostics[3].messageText, 'Binary \'&\' operation not supported between \'integer\' type and \'byte\' type');
-
-            assert.equal(diagnostics[4].line, 68);
-            assert.equal(diagnostics[4].messageText, 'Binary \'|\' operation not supported between \'integer\' type and \'byte\' type');
-
-            assert.equal(diagnostics[5].line, 69);
-            assert.equal(diagnostics[5].messageText, 'Binary \'^\' operation not supported between \'integer\' type and \'byte\' type');
-
-            assert.equal(diagnostics[6].line, 91);
-            assert.equal(diagnostics[6].messageText, 'Array index require an integer value');
-        });
-
-        it('bool', () => {
-            const diagnostics = validateDocument('bool.galaxy');
-            assert.equal(diagnostics.length, 1);
-            assert.equal(diagnostics[0].messageText, 'Type \'1\' is not assignable to type \'bool\'');
-        });
-
-        it('bitwise', () => {
-            const diagnostics = validateDocument('bitwise.galaxy');
-            assert.equal(diagnostics.length, 1);
-            assert.equal(diagnostics[0].messageText, 'Binary \'&\' operation not supported between \'integer\' type and \'false\' type');
         });
 
         it('complex', () => {
@@ -338,23 +285,25 @@ describe('Checker', () => {
             const checker = new TypeChecker(store);
 
             unbindSourceFile(sourceFile, store);
-            const dg = checker.checkSourceFile(sourceFile, true);
+            const diagnostics = checker.checkSourceFile(sourceFile, true);
 
-            let dcounter = 0;
+            const expectedDiags = new Map<number, gt.Diagnostic>();
             for (const [cLine, cInfo] of sourceFile.commentsLineMap) {
                 const m = sourceFile.text.substring(cInfo.pos, cInfo.end).trim().match(/^\/\/ \^ERR\:?\s?(.*)$/);
                 if (m) {
-                    ++dcounter;
-                    const dc = dg.find((v) => v.line === (cLine - 1));
-                    assert.isDefined(dc, `Line ${cLine}, expected: ${m[1] || 'ERR'}`);
+                    const dg = diagnostics.find((v) => v.line === (cLine - 1));
+                    assert.isDefined(dg, `(expected) ${cLine}: ${m[1] || 'ERR'}`);
+                    expectedDiags.set(cLine - 1, dg);
                 }
             }
 
-            if (dcounter > 0) {
-                assert.equal(dg.length, dcounter, dg.map(x => `${x.line + 1}: ${x.messageText}`).join('\n'));
+            if (diagnostics.length > 0 && expectedDiags.size > 0) {
+                for (const dg of diagnostics) {
+                    assert.isTrue(expectedDiags.has(dg.line), `(unexpected) ${dg.line + 1}: ${dg.messageText}`);
+                }
             }
 
-            return dg;
+            return diagnostics;
         }
 
         describe('Error', () => {
@@ -369,7 +318,7 @@ describe('Checker', () => {
             for (let filename of fs.readdirSync(path.resolve('tests/fixtures/type_checker/pass'))) {
                 it(filename, () => {
                     const dg = checkFile(path.join('pass', filename));
-                    assert.equal(dg.length, 0, dg.map(x => `${x.line + 1}: ${x.messageText}`).join('\n'));
+                    assert.equal(dg.length, 0, 'Unexpected diagnostics');
                 });
             }
         });

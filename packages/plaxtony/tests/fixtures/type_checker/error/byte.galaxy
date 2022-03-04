@@ -38,8 +38,11 @@ void test_byte_int()
     a = a / b;
 
     a = a & b;
+    // ^ERR
     a = a | b;
+    // ^ERR
     a = a ^ b;
+    // ^ERR
 
     a = a >> b;
     a = a << b;
@@ -66,8 +69,11 @@ void test_int_byte()
     a = a / b;
 
     a = a & b;
+    // ^ERR
     a = a | b;
+    // ^ERR
     a = a ^ b;
+    // ^ERR
 
     a = a >> b;
     a = a << b;
@@ -90,6 +96,7 @@ void test_byte_array_index()
 
     // byte as an array index isn't allowed
     s[a] = null;
+    // ^ERR
 
     // but it might be implicitly casted to an int through binary expression between integer literal
     s[a / 1] = null;

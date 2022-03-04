@@ -143,27 +143,40 @@ export class IntrinsicType extends AbstractType {
                 case gt.SyntaxKind.AsteriskToken:
                 case gt.SyntaxKind.PercentToken:
                 case gt.SyntaxKind.SlashToken:
+                {
                     if (this.flags & gt.TypeFlags.Numeric) {
                         return true;
                     }
                     break;
+                }
 
                 case gt.SyntaxKind.AmpersandToken:
                 case gt.SyntaxKind.BarToken:
                 case gt.SyntaxKind.CaretToken:
+                {
+                    // must be same type (either byte and byte, or int and int)
                     if ((this.flags & gt.TypeFlags.IntLike) === (rightType.flags & gt.TypeFlags.IntLike)) {
                         return true;
                     }
                     break;
+                }
 
                 case gt.SyntaxKind.LessThanLessThanToken:
                 case gt.SyntaxKind.GreaterThanGreaterThanToken:
-                case gt.SyntaxKind.BarBarToken:
-                case gt.SyntaxKind.AmpersandAmpersandToken:
-                    if (this.flags & gt.TypeFlags.IntLike) {
+                {
+                    // no strict type checking, can implictly cast from byte to int
+                    if ((this.flags & gt.TypeFlags.IntLike) && (rightType.flags & gt.TypeFlags.IntLike)) {
                         return true;
                     }
                     break;
+                }
+
+                // case gt.SyntaxKind.BarBarToken:
+                // case gt.SyntaxKind.AmpersandAmpersandToken:
+                // {
+                //     return false;
+                //     break;
+                // }
             }
         }
 
@@ -369,7 +382,7 @@ export class LiteralType extends AbstractType {
     public isValidBinaryOperation(operation: gt.BinaryOperator, rightType: AbstractType) {
         let type: IntrinsicType;
         if (this.value.kind === gt.SyntaxKind.NumericLiteral) {
-            if (this.value.text.indexOf('.') !== -1) {
+            if (this.flags & gt.TypeFlags.Fixed) {
                 type = fixedType;
             }
             else {
@@ -389,7 +402,7 @@ export class LiteralType extends AbstractType {
     public isValidPrefixOperation(operation: gt.PrefixUnaryOperator) {
         let type: IntrinsicType;
         if (this.value.kind === gt.SyntaxKind.NumericLiteral) {
-            if (this.value.text.indexOf('.') !== -1) {
+            if (this.flags & gt.TypeFlags.Fixed) {
                 type = fixedType;
             }
             else {
@@ -407,7 +420,25 @@ export class LiteralType extends AbstractType {
     }
 
     public getName() {
-        return `${this.value.text}`;
+        let typeDesc = 'unknown';
+
+        if (this.flags & gt.TypeFlags.String) {
+            typeDesc = 'string';
+        }
+        else if (this.flags & gt.TypeFlags.Integer) {
+            typeDesc = 'integer';
+        }
+        else if (this.flags & gt.TypeFlags.Byte) {
+            typeDesc = 'byte';
+        }
+        else if (this.flags & gt.TypeFlags.Fixed) {
+            typeDesc = 'fixed';
+        }
+        else if (this.flags & gt.TypeFlags.Boolean) {
+            typeDesc = 'bool';
+        }
+
+        return `${this.value.text} [${typeDesc}]`;
     }
 }
 
@@ -1360,7 +1391,12 @@ export class TypeChecker {
         else {
             const valid = leftType.isValidBinaryOperation(node.operatorToken.kind, rightType);
             if (!valid) {
-                this.report(node, `Binary '${tokenToString(node.operatorToken.kind)}' operation not supported between '${leftType.getName()}' type and '${rightType.getName()}' type`);
+                this.report(
+                    node,
+                    [
+                        `Binary expression '${tokenToString(node.operatorToken.kind)}' not supported between '${leftType.getName()}' and '${rightType.getName()}'.`,
+                    ].join(' ')
+                );
             }
 
             switch (node.operatorToken.kind) {
@@ -1369,10 +1405,23 @@ export class TypeChecker {
                 case gt.SyntaxKind.AsteriskToken:
                 case gt.SyntaxKind.PercentToken:
                 case gt.SyntaxKind.SlashToken:
-                    if (leftType.flags & gt.TypeFlags.Integer || rightType.flags & gt.TypeFlags.Integer) {
-                        return integerType;
+                {
+                    if (leftType.flags & gt.TypeFlags.Numeric) {
+                        // implicit cast to fixed
+                        if ((rightType.flags & gt.TypeFlags.Fixed) && !(leftType.flags & gt.TypeFlags.Fixed)) {
+                            return fixedType;
+                        }
+
+                        // implicit cast to int
+                        if (
+                            ((leftType.flags & gt.TypeFlags.Byte) && !(rightType.flags & gt.TypeFlags.Byte)) ||
+                            ((rightType.flags & gt.TypeFlags.Byte) && !(leftType.flags & gt.TypeFlags.Byte))
+                        ) {
+                            return integerType;
+                        }
                     }
                     break;
+                }
 
                 case gt.SyntaxKind.AmpersandToken:
                 case gt.SyntaxKind.BarToken:
