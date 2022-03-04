@@ -81,14 +81,20 @@ export class CompletionsProvider extends AbstractProvider {
             }
 
             if (!paramElement) {
-                if (param.type.kind === gt.SyntaxKind.IntKeyword) {
-                    args.push('0');
+                if (param.type.kind === gt.SyntaxKind.IntKeyword || param.type.kind === gt.SyntaxKind.ByteKeyword) {
+                    args.push(`0`);
                 }
                 else if (param.type.kind === gt.SyntaxKind.FixedKeyword) {
-                    args.push('0.0');
+                    args.push(`0.0`);
+                }
+                else if (param.type.kind === gt.SyntaxKind.StringKeyword) {
+                    args.push(`""`);
+                }
+                else if (param.type.kind === gt.SyntaxKind.BoolKeyword) {
+                    args.push(`false`);
                 }
                 else {
-                    args.push('null');
+                    args.push(`null`);
                 }
             }
             else {
@@ -140,12 +146,11 @@ export class CompletionsProvider extends AbstractProvider {
         const node = <NamedDeclaration>(symbol.declarations[0]);
 
         if (node.name === undefined) {
-            return null;
+            return;
         }
 
         const item = <lsp.CompletionItem>{
             label: node.name.name,
-            data: {},
         };
 
         switch (node.kind) {
@@ -204,7 +209,6 @@ export class CompletionsProvider extends AbstractProvider {
                 if (funcDecl.parameters[1].type.kind !== gt.SyntaxKind.BoolKeyword) continue;
 
                 const item = this.buildFromSymbolDecl(symbol);
-                item.data.flags = 0;
                 completions.push(item);
             }
         }
@@ -250,7 +254,6 @@ export class CompletionsProvider extends AbstractProvider {
             if (!cpItem) {
                 cpItem = lsp.CompletionItem.create(itemPart[0]);
                 cpItem.documentation = '';
-                cpItem.data = {};
 
                 if (itemPart.length > 1) {
                     cpItem.kind = lsp.CompletionItemKind.Folder;
@@ -333,7 +336,7 @@ export class CompletionsProvider extends AbstractProvider {
         if (context && context.triggerCharacter === '/') return;
 
         // presets
-        if (currentToken && this.store.s2metadata) {
+        if (this.store.s2metadata) {
             const elementType = this.store.s2metadata.getElementTypeOfNode(currentToken);
             if (elementType) {
                 // TODO: support <any> gamelink
@@ -346,44 +349,60 @@ export class CompletionsProvider extends AbstractProvider {
             }
             if (elementType && elementType.type === 'preset') {
                 const tPreset = elementType.typeElement.resolve();
+                let matchingPresetCompletions = 0;
+                let totalPresetCompletions = 0;
 
                 switch (tPreset.baseType) {
-                    case tokenToString(gt.SyntaxKind.BoolKeyword): {
-                        completions.push({
-                            kind: lsp.CompletionItemKind.Enum,
-                            preselect: true,
-                            label: tokenToString(gt.SyntaxKind.TrueKeyword),
-                        });
-                        completions.push({
-                            kind: lsp.CompletionItemKind.Enum,
-                            preselect: true,
-                            label: tokenToString(gt.SyntaxKind.FalseKeyword),
-                        });
-                        filterBooleanKeywords = true;
-                        break;
-                    }
-
                     default: {
                         let i = 0;
                         for (const name of this.store.s2metadata.getConstantNamesOfPreset(tPreset)) {
                             const symbol = this.store.resolveGlobalSymbol(name);
                             if (symbol) {
                                 const citem = this.buildFromSymbolDecl(symbol);
+                                if (!citem) continue;
                                 citem.preselect = true;
                                 citem.kind = lsp.CompletionItemKind.Enum;
-                                citem.sortText = `${(i++).toString().padStart(3, '0')}_${citem.label}`;
+                                citem.label = citem.label;
                                 completions.push(citem);
                                 processedSymbols.set(name, symbol);
+
+                                totalPresetCompletions++;
+                                if (!query || fuzzysearch(query, citem.label)) {
+                                    matchingPresetCompletions++;
+                                }
                             }
                         }
                         break;
                     }
                 }
 
-                if (!query) {
+                if (
+                    (
+                        context?.triggerKind === lsp.CompletionTriggerKind.Invoked &&
+                        (!query || totalPresetCompletions === matchingPresetCompletions) &&
+                        matchingPresetCompletions > 0
+                    ) ||
+                    (
+                        context?.triggerKind === lsp.CompletionTriggerKind.Invoked &&
+                        ((query?.length ?? 0) < 2 || totalPresetCompletions === matchingPresetCompletions) &&
+                        matchingPresetCompletions > 0
+                    )
+                ) {
                     return {
                         items: completions,
                         isIncomplete: true,
+                    };
+                }
+                else if (
+                    (
+                        context?.triggerKind === lsp.CompletionTriggerKind.TriggerForIncompleteCompletions &&
+                        query?.length === 1 &&
+                        matchingPresetCompletions > 0
+                    )
+                ) {
+                    return {
+                        items: completions,
+                        isIncomplete: false,
                     };
                 }
             }
@@ -428,49 +447,21 @@ export class CompletionsProvider extends AbstractProvider {
             }
         }
 
-        // keyword types
-        // if (!currentToken || !isPartOfExpression(currentToken)) {
-        //     for (let i = gt.SyntaxKindMarker.FirstBasicType; i <= gt.SyntaxKindMarker.LastBasicType; i++) {
-        //         completions.push({
-        //             label: tokenToString(<any>i),
-        //             kind: lsp.CompletionItemKind.Keyword
-        //         });
-        //     }
-        //     for (let i = gt.SyntaxKindMarker.FirstComplexType; i <= gt.SyntaxKindMarker.LastComplexType; i++) {
-        //         completions.push({
-        //             label: tokenToString(<any>i),
-        //             kind: lsp.CompletionItemKind.Keyword
-        //         });
-        //     }
-        // }
-
-        // keywords
-        for (let i: number = gt.SyntaxKindMarker.FirstKeyword; i <= gt.SyntaxKindMarker.LastKeyword; i++) {
-            const name = tokenToString(<any>i);
-            if (!query || fuzzysearch(query, name)) {
-                if (filterBooleanKeywords && (i === gt.SyntaxKind.TrueKeyword || i === gt.SyntaxKind.FalseKeyword))
-                completions.push({
-                    label: name,
-                    kind: lsp.CompletionItemKind.Keyword
-                });
-            }
-        }
-
         // can append semicolon
-        let flags: CompletionItemDataFlags = CompletionItemDataFlags.CanExpand;
+        let completionFlags: CompletionItemDataFlags = CompletionItemDataFlags.CanExpand;
         if (currentToken) {
             if (currentToken.kind === gt.SyntaxKind.Identifier && position < currentToken.end) {
-                flags &= ~CompletionItemDataFlags.CanExpand;
+                completionFlags &= ~CompletionItemDataFlags.CanExpand;
             }
 
             if (currentToken.parent) {
                 switch (currentToken.parent.kind) {
                     case gt.SyntaxKind.ExpressionStatement: {
                         if (position >= currentToken.end) {
-                            flags |= CompletionItemDataFlags.CanAppendSemicolon;
+                            completionFlags |= CompletionItemDataFlags.CanAppendSemicolon;
                         }
                         else {
-                            flags |= currentToken.parent.syntaxTokens.findIndex(value => value.kind === gt.SyntaxKind.SemicolonToken) === -1 ? CompletionItemDataFlags.CanAppendSemicolon : 0;
+                            completionFlags |= currentToken.parent.syntaxTokens.findIndex(value => value.kind === gt.SyntaxKind.SemicolonToken) === -1 ? CompletionItemDataFlags.CanAppendSemicolon : 0;
                         }
                         break;
                     }
@@ -478,21 +469,22 @@ export class CompletionsProvider extends AbstractProvider {
                     case gt.SyntaxKind.SourceFile:
                     {
                         if (position >= currentToken.end) {
-                            flags |= CompletionItemDataFlags.CanAppendSemicolon;
+                            completionFlags |= CompletionItemDataFlags.CanAppendSemicolon;
                         }
                         break;
                     }
                     case gt.SyntaxKind.FunctionDeclaration:
                     {
-                        flags &= ~CompletionItemDataFlags.CanExpand;
+                        completionFlags &= ~CompletionItemDataFlags.CanExpand;
                         break;
                     }
                 }
             }
         }
 
-        let count = 0;
+        let cpCount = 0;
         let isIncomplete = false;
+        const cpLimit = 9000;
         outer: for (const document of this.store.documents.values()) {
             for (const [name, symbol] of document.symbol.members) {
                 if ((symbol.flags & gt.SymbolFlags.Static) && document.fileName !== uri) continue;
@@ -501,15 +493,28 @@ export class CompletionsProvider extends AbstractProvider {
                     processedSymbols.set(name, symbol);
                     const citem = this.buildFromSymbolDecl(symbol);
                     citem.data = <CompletionItemData>{
-                        flags: flags,
+                        flags: completionFlags,
                     };
                     completions.push(citem);
 
-                    if (++count >= 7500) {
-                        isIncomplete = true;
+                    if (++cpCount >= cpLimit) {
+                        if (context?.triggerKind !== lsp.CompletionTriggerKind.TriggerForIncompleteCompletions) {
+                            isIncomplete = true;
+                        }
                         break outer;
                     }
                 }
+            }
+        }
+
+        // keywords
+        for (let i: number = gt.SyntaxKindMarker.FirstKeyword; i <= gt.SyntaxKindMarker.LastKeyword; i++) {
+            const name = tokenToString(<any>i);
+            if (isIncomplete || !query || fuzzysearch(query, name)) {
+                completions.push({
+                    label: name,
+                    kind: lsp.CompletionItemKind.Keyword
+                });
             }
         }
 
@@ -537,14 +542,14 @@ export class CompletionsProvider extends AbstractProvider {
             }
         }
 
-        if (customData.elementType && customData.elementType === 'gamelink') {
+        if (customData.elementType === 'gamelink') {
             completion.documentation = this.store.s2metadata.getGameLinkLocalizedName(customData.gameType, completion.insertText, true);
             completion.documentation += '\n<' + this.store.s2metadata.getGameLinkKind(customData.gameType, completion.insertText) + '>';
             return completion;
         }
 
         if (customData.parentSymbol) {
-            parentSymbolName = (<string>customData.parentSymbol);
+            parentSymbolName = customData.parentSymbol;
         }
         for (const sourceFile of this.store.documents.values()) {
             if (parentSymbolName) {
