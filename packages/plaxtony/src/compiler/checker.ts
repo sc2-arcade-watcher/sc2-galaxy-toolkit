@@ -791,7 +791,7 @@ export class TypeChecker {
     }
 
     private getTypeOfSymbol(symbol: gt.Symbol): AbstractType {
-        if (symbol.flags & (gt.SymbolFlags.Variable | gt.SymbolFlags.Property)) {
+        if ((symbol.flags & gt.SymbolFlags.Variable) || (symbol.flags & gt.SymbolFlags.Property)) {
             return this.getTypeOfVariableOrParameterOrProperty(symbol);
         }
         else if (symbol.flags & (gt.SymbolFlags.Function)) {
@@ -1066,13 +1066,30 @@ export class TypeChecker {
         }
     }
 
-    private checkLocalDeclaration(node: gt.ParameterDeclaration | gt.VariableDeclaration, symbol: gt.Symbol)
+    private checkLocalDeclaration(node: gt.ParameterDeclaration | gt.VariableDeclaration | gt.PropertyDeclaration, symbol: gt.Symbol)
     {
-        if ((symbol.flags & gt.SymbolFlags.FunctionScopedVariable)) {
-            const sourceFile = <gt.SourceFile>findAncestorByKind(node, gt.SyntaxKind.SourceFile);
+        const sourceFile = <gt.SourceFile>findAncestorByKind(node, gt.SyntaxKind.SourceFile);
+
+        if (
+            (symbol.flags & gt.SymbolFlags.FunctionScopedVariable) ||
+            (symbol.flags & gt.SymbolFlags.Property)
+        ) {
             const globalSym = this.resolveName(sourceFile, node.name.name, true);
-            if (globalSym && (globalSym.flags & gt.SymbolFlags.Function)) {
-                this.report(node, `Name '${node.name.name}' redefined. Name already in use in global scope.`);
+            if (globalSym) {
+                if (
+                    (globalSym.flags & gt.SymbolFlags.Function) ||
+                    (globalSym.flags & gt.SymbolFlags.Typedef)
+                ) {
+                    const orgSourceFile = <gt.SourceFile>findAncestorByKind(globalSym.declarations[0], gt.SyntaxKind.SourceFile);
+                    const orgPos = getLineAndCharacterOfPosition(orgSourceFile, globalSym.declarations[0].pos);
+                    this.report(
+                        node.name,
+                        [
+                            `Name '${node.name.name}' redefined. Already in use in global scope.`,
+                            `See: ${path.basename(URI.parse(orgSourceFile.fileName).fsPath)}:${orgPos.line + 1},${orgPos.character + 1}`,
+                        ].join(' ')
+                    );
+                }
             }
         }
     }
@@ -1084,7 +1101,9 @@ export class TypeChecker {
         // const isNative = (<gt.FunctionDeclaration>node.parent).modifiers.some((value) => value.kind === gt.SyntaxKind.NativeKeyword);
         // if ((<gt.FunctionDeclaration>node.parent).body || isNative) {
         // }
-        this.checkLocalDeclaration(node, symbol);
+        if (symbol) {
+            this.checkLocalDeclaration(node, symbol);
+        }
 
         const type = this.getTypeFromTypeNode(node.type);
         if (type instanceof StructType || type instanceof FunctionType) {
@@ -1107,7 +1126,9 @@ export class TypeChecker {
             this.report(node.type, `Constant variables cannot reference Typedefs`);
         }
 
-        this.checkLocalDeclaration(node, symbol);
+        if (symbol) {
+            this.checkLocalDeclaration(node, symbol);
+        }
 
         if (symbol.flags & gt.SymbolFlags.GlobalVariable) {
             this.checkTypeNoRefs(node.type);
@@ -1128,8 +1149,11 @@ export class TypeChecker {
     }
 
     private checkPropertyDeclaration(node: gt.PropertyDeclaration) {
-        this.checkIdentifier(node.name);
-        this.checkDeclarationType(node.type);
+        const declType = this.checkDeclarationType(node.type);
+        const [symbol, symType] = this.checkIdentifier(node.name);
+        if (symbol) {
+            this.checkLocalDeclaration(node, symbol);
+        }
         this.checkTypeNoRefs(node.type);
     }
 
@@ -1374,6 +1398,19 @@ export class TypeChecker {
         return this.checkExpression(node.operand);
     }
 
+    private isTypeIdentifier(node: gt.Identifier) {
+        switch (node.parent.kind) {
+            case gt.SyntaxKind.PropertyDeclaration:
+            case gt.SyntaxKind.ParameterDeclaration:
+            case gt.SyntaxKind.VariableDeclaration:
+            {
+                const namedDecl = node.parent as gt.PropertyDeclaration;
+                if (namedDecl.type === node) return true;
+            }
+        }
+        return false;
+    }
+
     private checkIdentifier(node: gt.Identifier, checkSymbol = false, definitionReferenced = true): [gt.Symbol, AbstractType] {
         const symbol = this.getSymbolOfEntityNameOrPropertyAccessExpression(node);
         if (!symbol) {
@@ -1485,7 +1522,7 @@ export class TypeChecker {
                 return currentContext.symbol.members.get(name);
             }
 
-            const sourceFile = <gt.SourceFile>findAncestorByKind(location, gt.SyntaxKind.SourceFile)
+            const sourceFile = <gt.SourceFile>findAncestorByKind(location, gt.SyntaxKind.SourceFile);
             if (sourceFile.symbol.members.has(name)) {
                 return sourceFile.symbol.members.get(name);
             }
@@ -1510,10 +1547,15 @@ export class TypeChecker {
         return undefined;
     }
 
-    private resolveEntityName(entityName: gt.EntityNameExpression, meaning: gt.SymbolFlags, ignoreErrors?: boolean, location?: gt.Node): gt.Symbol | undefined {
+    private resolveEntityName(entityName: gt.EntityNameExpression, meaning: gt.SymbolFlags, ignoreErrors?: boolean): gt.Symbol | undefined {
         let symbol: gt.Symbol;
         if (entityName.kind === gt.SyntaxKind.Identifier) {
-            symbol = this.resolveName(location || entityName, entityName.name);
+            if (!this.isTypeIdentifier(entityName)) {
+                symbol = this.resolveName(entityName, entityName.name);
+            }
+            else {
+                symbol = this.resolveName(findAncestorByKind(entityName, gt.SyntaxKind.SourceFile), entityName.name);
+            }
         }
         return symbol;
     }
