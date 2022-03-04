@@ -310,7 +310,7 @@ export class CompletionsProvider extends AbstractProvider {
             const callExpr = <gt.CallExpression>currentToken.parent;
             if (
                 callExpr.expression.kind === gt.SyntaxKind.Identifier &&
-                (<gt.Identifier>(callExpr.expression)).name === "TriggerCreate"
+                ["TriggerCreate", "TriggerFind"].find(x => x === (<gt.Identifier>(callExpr.expression)).name)
             ) {
                 return {
                     items: this.provideTriggerHandlers(),

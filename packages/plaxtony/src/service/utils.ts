@@ -1,5 +1,6 @@
 import * as util from 'util';
 import * as glob from 'glob';
+import * as path from 'path';
 import * as gt from '../compiler/types';
 import { isToken, forEachChild, getSourceFileOfNode } from '../compiler/utils';
 import * as lsp from 'vscode-languageserver';
@@ -231,3 +232,12 @@ export function fuzzysearch (needle: string, haystack: string) {
 }
 
 export const globify = util.promisify(glob);
+
+export function osNormalizePath(p: string) {
+    if (path.sep === '/') {
+        return p.replace(/\\/g, '/');
+    }
+    else {
+        return p.replace(/\//g, '\\');
+    }
+}

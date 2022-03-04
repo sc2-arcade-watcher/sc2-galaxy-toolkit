@@ -141,7 +141,7 @@ export abstract class Component {
         return await this.loadData();
     }
 
-    abstract async loadData(): Promise<boolean>;
+    abstract loadData(): Promise<boolean>;
 }
 
 export class TriggerComponent extends Component {

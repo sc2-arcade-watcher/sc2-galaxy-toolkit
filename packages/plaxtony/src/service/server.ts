@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { findAncestor } from '../compiler/utils';
 import { Store, createTextDocumentFromFs, createTextDocumentFromUri } from './store';
-import { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition, getNodeRange } from './utils';
+import { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition, getNodeRange, osNormalizePath } from './utils';
 import { AbstractProvider, createProvider } from './provider';
 import { DiagnosticsProvider, formatDiagnosticTotal } from './diagnostics';
 import { NavigationProvider } from './navigation';
@@ -260,8 +260,9 @@ export class Server {
                     }
                 }
                 else {
+                    const archiveOsNormalPath = osNormalizePath(this.config.archivePath);
                     const candidates = (await Promise.all(projFolders.map(async (x) => {
-                        const testedPath = path.join(URI.parse(x.uri).fsPath, this.config.archivePath);
+                        const testedPath = path.join(URI.parse(x.uri).fsPath, archiveOsNormalPath);
                         const exists = await fs.pathExists(testedPath);
                         if (exists) {
                             return await fs.realpath(testedPath)
@@ -269,13 +270,13 @@ export class Server {
                     }))).filter(x => typeof x === 'string');
                     if (candidates.length) {
                         archivePath = candidates[0];
-                        logger.info(`Configured archivePath '${this.config.archivePath}' resolved to ${archivePath}`);
+                        logger.info(`Configured archivePath '${archiveOsNormalPath}' resolved to ${archivePath}`);
                         if (candidates.length > 1) {
                             logger.info(`Complete list of candidates:`, ...candidates);
                         }
                     }
                     else {
-                        this.showErrorMessage(`Specified archivePath '${this.config.archivePath}' couldn't be found.`);
+                        this.showErrorMessage(`Specified archivePath '${archiveOsNormalPath}' couldn't be found.`);
                     }
                 }
             }
