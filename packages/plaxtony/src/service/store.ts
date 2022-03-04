@@ -114,12 +114,6 @@ export class S2WorkspaceWatcher extends WorkspaceWatcher {
     }
 }
 
-export interface SourceFileMeta {
-    absoluteName: string;
-    relativeName?: string;
-    archive?: SC2Archive;
-}
-
 export interface IStoreSymbols {
     resolveGlobalSymbol(name: string): gt.Symbol | undefined;
 }

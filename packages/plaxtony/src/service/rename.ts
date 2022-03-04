@@ -5,7 +5,6 @@ import { ReferencesProvider } from './references';
 import { TypeChecker } from '../compiler/checker';
 import { getPositionOfLineAndCharacter, getAdjacentIdentfier, getLineAndCharacterOfPosition } from './utils';
 import { getSourceFileOfNode } from '../compiler/utils';
-import URI from 'vscode-uri';
 
 function deepEqual(x: any, y: any): boolean {
     const ok = Object.keys, tx = typeof x, ty = typeof y;
@@ -78,17 +77,27 @@ export class RenameProvider extends AbstractProvider {
         // const sourceFile = this.store.documents.get(params.textDocument.uri);
         const result = this.getTokenAt(params);
         if (!result) {
-            return new lsp.ResponseError<undefined>(lsp.ErrorCodes.InvalidParams, 'Not an identifier');
+            return new lsp.ResponseError<undefined>(lsp.ErrorCodes.RequestCancelled, 'Not an identifier');
         }
 
         for (const decl of result.symbol.declarations) {
             const declSourceFile = getSourceFileOfNode(decl);
-            if (!this.store.isUriInWorkspace(declSourceFile.fileName) && !this.store.openDocuments.has(declSourceFile.fileName)) {
-                return new lsp.ResponseError<undefined>(lsp.ErrorCodes.InvalidParams, 'Declaration not in workspace');
+            const sfMeta = this.store.documents.get(declSourceFile.fileName);
+            if (
+                (this.store.s2workspace && sfMeta && sfMeta.s2meta && sfMeta.s2meta.file.archive.isBuiltin)
+                // (!this.store.s2workspace && !this.store.openDocuments.has(declSourceFile.fileName))
+            ) {
+                return new lsp.ResponseError<undefined>(
+                    lsp.ErrorCodes.RequestCancelled,
+                    `Cannot rename identifier from built-in dependency: ${sfMeta.s2meta.file.archive.name}`
+                );
             }
         }
 
-        this.recentRequest = Object.assign({params}, result);
+        this.recentRequest = {
+            params: params,
+            ...result,
+        };
 
         return {
             placeholder: result.symbol.escapedName,
@@ -103,22 +112,27 @@ export class RenameProvider extends AbstractProvider {
         const sourceFile = this.store.documents.get(params.textDocument.uri);
         if (!sourceFile) return;
 
-        if (!this.recentRequest || !deepEqual(this.recentRequest.params, <lsp.TextDocumentPositionParams>{ textDocument: params.textDocument, position: params.position }) || this.recentRequest.sourceFile !== sourceFile) {
+        if (
+            !this.recentRequest ||
+            !deepEqual(this.recentRequest.params, <lsp.TextDocumentPositionParams>{ textDocument: params.textDocument, position: params.position }) ||
+            this.recentRequest.sourceFile !== sourceFile
+        ) {
             return;
         }
 
         if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(params.newName)) {
-            return new lsp.ResponseError<undefined>(lsp.ErrorCodes.InvalidRequest, 'Invalid name');
+            return new lsp.ResponseError<undefined>(lsp.ErrorCodes.RequestCancelled, 'Invalid name');
         }
 
-        if (this.store.resolveGlobalSymbol(params.newName)) {
-            return new lsp.ResponseError<undefined>(lsp.ErrorCodes.InvalidRequest, 'Name already in use');
+        if (
+            this.recentRequest.symbol.parent &&
+            this.recentRequest.symbol.parent.members.has(params.newName)
+        ) {
+            return new lsp.ResponseError<undefined>(lsp.ErrorCodes.RequestCancelled, 'Name already in use');
         }
 
         if (this.recentRequest.locations) {
             return this.locationsToWorkspaceEdits(this.recentRequest.locations, params.newName);
         }
-
-        return null;
     }
 }
