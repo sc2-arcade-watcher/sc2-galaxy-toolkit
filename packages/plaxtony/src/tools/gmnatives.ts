@@ -6,6 +6,43 @@ import { logger } from '../common';
 import { isKeywordTypeKind } from '../compiler/utils';
 import { stringToToken } from '../compiler/scanner';
 
+const undocumentedNatives = `
+native void DebugDump(int lp_1);
+native void AISetNukeNukeCastTime(int lp_1, fixed lp_2);
+native void AISetNukeCloak(int lp_1, string lp_2);
+native void AISetNukeCloakCost(int lp_1, fixed lp_2);
+native void AISetNukeCloakRegenRate(int lp_1, fixed lp_2);
+native void AISetNukeGhost(int lp_1, string lp_2);
+native void AISetNukeNukeEffect(int lp_1, string lp_2);
+native void AISetNukeNukeAbilLink(int lp_1, string lp_2);
+native void AISetNukeCloakAbilLink(int lp_1, string lp_2);
+native void AISetNukeDamage(int lp_1, fixed lp_2, fixed lp_3);
+native void AISetNukeRadiusClose(int lp_1, fixed lp_2, fixed lp_3);
+native void AISetNukeRadiusMedium(int lp_1, fixed lp_2, fixed lp_3);
+native void AISetNukeRadiusFar(int lp_1, fixed lp_2, fixed lp_3);
+native string AutomationBuildNumberGet();
+native text AutomationComputerNameGet();
+native string AutomationMapNameGet();
+native void DataTableInstanceValueRemove(int lp_1, string lp_2);
+native void DataTableInstanceSetGenericHandle(int lp_1, string lp_2, generichandle lp_3);
+native generichandle DataTableInstanceGetGenericHandle(int lp_1, string lp_2);
+native unitref DataTableInstanceGetUnitRef(int lp_1, string lp_2);
+native void BankBackupLoopBegin(bank lp_1, bool lp_2);
+native void BankBackupLoopStep();
+native bool BankBackupLoopDone();
+native void BankBackupLoopEnd();
+native int ObservedPlayerId();
+native string TextToString(text lp_1);
+native int EventType();
+native string EventTypeName();
+native text EventTypeDescription();
+native void UnitMagazineAssign(unit lp_1, abilcmd lp_2, unit lp_3, int lp_4);
+native void UnitMagazineRemove(unit lp_1, abilcmd lp_2, unit lp_3);
+native bool UnitBehaviorEffectTreeUserDataExists(unit lp_1, string lp_2, string lp_3);
+native void UnitBehaviorEffectTreeSetUserData(unit lp_1, string lp_2, string lp_3, fixed lp_4);
+native void UnitInventoryDrop(unit lp_1);
+`;
+
 (async function () {
     const store = new Store();
     const rootArchive = new SC2Archive('mods/core.sc2mod', path.join(process.argv[2], 'mods/core.sc2mod'));
@@ -60,4 +97,6 @@ import { stringToToken } from '../compiler/scanner';
         out.push(');\n');
         console.log(out.join(''));
     }
+
+    console.log(undocumentedNatives);
 })();
