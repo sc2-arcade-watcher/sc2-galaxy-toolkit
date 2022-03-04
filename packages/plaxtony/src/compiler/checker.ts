@@ -875,10 +875,16 @@ export class TypeChecker {
         if (this.store.s2workspace) {
             const coreMod = this.store.s2workspace.allArchives.find((archive) => archive.name === 'mods/core.sc2mod');
             if (coreMod) {
-                const fsp = path.join(coreMod.directory, 'base.sc2data', 'TriggerLibs', 'natives_missing.galaxy');
-                const smNatives = this.store.documents.get(URI.file(fsp).toString());
-                if (smNatives) {
-                    this.checkSourceFileRecursivelyWorker(smNatives);
+                const corePath = path.join(coreMod.directory, 'base.sc2data', 'TriggerLibs');
+                const nativeScripts = [
+                    path.join(corePath, 'natives_missing.galaxy'),
+                    path.join(corePath, 'natives.galaxy'),
+                ];
+                for (const fpath of nativeScripts) {
+                    const qFile = this.store.documents.get(URI.file(fpath).toString());
+                    if (qFile) {
+                        this.checkSourceFileRecursivelyWorker(qFile);
+                    }
                 }
             }
         }
