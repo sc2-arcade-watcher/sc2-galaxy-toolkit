@@ -381,6 +381,7 @@ export class SC2Archive {
             }
             catch (err) {
                 logger.warn(`Couldn't read dependencies from "DocumentInfo" of "${this.name}`, (<Error>err).message);
+                list.push('mods/core.sc2mod');
             }
         }
         return list;
