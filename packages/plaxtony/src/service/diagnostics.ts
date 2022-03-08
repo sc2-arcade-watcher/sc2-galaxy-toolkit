@@ -13,8 +13,8 @@ export function formatDiagnosticTotal(summary: DiagnosticWorkspaceSummary) {
     const so: string[] = [];
 
     for (const [uri, dlist] of summary.diagnostics) {
-        const qs = summary.sourceFiles.get(uri)
-        so.push(`Included "${qs.s2meta.docName}" resolved to:\n    ${uri}\n`);
+        const qs = summary.sourceFiles.get(uri);
+        so.push(`"${qs.s2meta.docName}" ${uri}\n`);
         for (const dg of dlist) {
             so.push(`\n[${DiagnosticCategory[dg.category].toUpperCase()}] ${dg.messageText}`);
             so.push(`\n    in ${URI.parse(uri).fsPath}:${dg.line + 1}:${dg.col}\n\n`);
@@ -25,7 +25,7 @@ export function formatDiagnosticTotal(summary: DiagnosticWorkspaceSummary) {
 
     so.push(`Processed ${summary.filesProcessed} files.\n\n`);
     for (const item of Object.keys(DiagnosticCategory).filter(v => typeof (DiagnosticCategory as any)[v] === 'number')) {
-        so.push(`=`);
+        so.push('=');
         so.push(summary.issuesTotal[DiagnosticCategory[item as keyof typeof DiagnosticCategory]].toString().padStart(6));
         so.push(` ${item}s\n`);
     }
@@ -54,15 +54,19 @@ export class DiagnosticsProvider extends AbstractProvider {
         let lspDiagnostics: lsp.Diagnostic[] = [];
 
         for (let dg of origDiagnostics) {
-            lspDiagnostics.push({
-                severity: lsp.DiagnosticSeverity.Error,
+            const tmp = <lsp.Diagnostic>{
+                severity: dg.category,
                 range: {
                     start: getLineAndCharacterOfPosition(sourceFile, dg.start),
                     end: getLineAndCharacterOfPosition(sourceFile, dg.start + dg.length)
                 },
                 message: dg.messageText,
                 source,
-            });
+            };
+            if (tmp.tags) {
+                tmp.tags = dg.tags;
+            }
+            lspDiagnostics.push(tmp);
         }
 
         return lspDiagnostics;

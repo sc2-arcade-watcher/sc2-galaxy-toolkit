@@ -1,4 +1,4 @@
-import * as util from 'util';
+import * as lsp from 'vscode-languageserver';
 import * as path from 'path';
 import URI from 'vscode-uri';
 import * as gt from './types';
@@ -691,8 +691,8 @@ export class TypeChecker {
         this.currentDocuments = this.store.documents;
     }
 
-    private report(location: gt.Node, msg: string, category: gt.DiagnosticCategory = gt.DiagnosticCategory.Error): void {
-        const d = createDiagnosticForNode(location, category, msg);
+    private report(location: gt.Node, msg: string, category: gt.DiagnosticCategory = gt.DiagnosticCategory.Error, tags?: lsp.DiagnosticTag[]): void {
+        const d = createDiagnosticForNode(location, category, msg, tags);
         const c = this.diagnostics.get(d.file.fileName);
         if (c) c.push(d);
     }
@@ -890,15 +890,19 @@ export class TypeChecker {
         this.diagnostics.set(sourceFile.fileName, []);
         this.currentDocuments = this.store.documents;
         if (bindSymbols) {
-            this.currentSymbolContainer = declareSymbol(sourceFile, {resolveGlobalSymbol: this.resolveGlobalSymbol.bind(this)}, null);
+            unbindSourceFile(sourceFile, { resolveGlobalSymbol: this.resolveGlobalSymbol.bind(this) });
+            this.currentSymbolContainer = declareSymbol(sourceFile, { resolveGlobalSymbol: this.resolveGlobalSymbol.bind(this) }, null);
         }
         sourceFile.statements.forEach(this.checkSourceElement.bind(this));
+        if (bindSymbols) {
+            this.checkForUnusedLocalDefinitions(this.currentSymbolContainer);
+        }
         return Array.from(this.diagnostics.values()).pop();
     }
 
     protected checkSourceFileRecursivelyWorker(sourceFile: gt.SourceFile) {
-        unbindSourceFile(sourceFile, {resolveGlobalSymbol: this.resolveGlobalSymbol.bind(this)});
-        this.currentSymbolContainer = declareSymbol(sourceFile, {resolveGlobalSymbol: this.resolveGlobalSymbol.bind(this)}, null);
+        unbindSourceFile(sourceFile, { resolveGlobalSymbol: this.resolveGlobalSymbol.bind(this) });
+        this.currentSymbolContainer = declareSymbol(sourceFile, { resolveGlobalSymbol: this.resolveGlobalSymbol.bind(this) }, null);
         this.diagnostics.set(sourceFile.fileName, []);
         this.currentDocuments.set(sourceFile.fileName, sourceFile);
 
@@ -938,7 +942,8 @@ export class TypeChecker {
         }
 
         this.checkSourceFileRecursivelyWorker(sourceFile);
-        this.checkSymbolDefinitions();
+        this.checkForIdentifierDefinitions();
+        this.checkForUnusedLocalDefinitions(this.currentSymbolContainer);
 
         return {
             success: Array.from(this.diagnostics.values()).findIndex((value, index) => value.length > 0) === -1,
@@ -947,7 +952,7 @@ export class TypeChecker {
         };
     }
 
-    private checkSymbolDefinitions() {
+    private checkForIdentifierDefinitions() {
         for (const [symbol, symRef] of this.currentSymbolReferences) {
             if ((symbol.flags & gt.SymbolFlags.Function)) {
                 if ((symbol.flags & gt.SymbolFlags.Native)) continue;
@@ -961,11 +966,50 @@ export class TypeChecker {
         }
     }
 
+    private checkIsSymbolDeclarationDefined(symbol: gt.Symbol) {
+        const symRef = this.currentSymbolReferences.get(symbol);
+        if (symbol.flags & gt.SymbolFlags.Variable) {
+            if (symRef && symRef.size > 1) return;
+            if (
+                ((symbol.flags & gt.SymbolFlags.GlobalVariable) && !(symbol.flags & gt.SymbolFlags.Static)) ||
+                ((symbol.flags & gt.SymbolFlags.LocalVariable) && !(symbol.parent?.flags & gt.SymbolFlags.Function)) ||
+                ((symbol.flags & gt.SymbolFlags.FunctionParameter) && (symbol.parent?.flags & gt.SymbolFlags.Function))
+            ) {
+                return;
+            }
+
+            for (const nodeDecl of symbol.declarations) {
+                const nameDecl = <gt.NamedDeclaration>nodeDecl;
+                if (nameDecl) {
+                    this.report(
+                        nameDecl.name,
+                        `'${symbol.escapedName}' variable is defined but never used.`,
+                        gt.DiagnosticCategory.Hint,
+                        [lsp.DiagnosticTag.Unnecessary]
+                    );
+                }
+            }
+        }
+    }
+
+    private checkForUnusedLocalDefinitions(rootSym: gt.Symbol) {
+        if (!rootSym) return;
+        for (const currSym of this.currentSymbolContainer.members.values()) {
+            this.checkIsSymbolDeclarationDefined(currSym);
+            if (currSym.flags & gt.SymbolFlags.Function && currSym.valueDeclaration) {
+                for (const childSym of currSym.members.values()) {
+                    this.checkIsSymbolDeclarationDefined(childSym);
+                    // this.checkForUnusedLocalDefinitions(childSym);
+                }
+            }
+        }
+    }
+
     private checkSourceElement(node: gt.Node) {
         let prevSymbolContainer = null;
         if (this.currentSymbolContainer && isDeclarationKind(node.kind)) {
             prevSymbolContainer = this.currentSymbolContainer;
-            this.currentSymbolContainer = declareSymbol(node, {resolveGlobalSymbol: this.resolveGlobalSymbol.bind(this)}, prevSymbolContainer);
+            this.currentSymbolContainer = declareSymbol(node, { resolveGlobalSymbol: this.resolveGlobalSymbol.bind(this) }, prevSymbolContainer);
             if (this.currentSymbolContainer.declarations.length > 1) {
                 let previousDeclaration: gt.Declaration;
                 if (node.kind === gt.SyntaxKind.FunctionDeclaration) {
@@ -1095,6 +1139,7 @@ export class TypeChecker {
 
     private checkFunction(node: gt.FunctionDeclaration) {
         this.checkDeclarationType(node.type);
+        this.checkIdentifier(node.name, false, false);
         this.checkTypeNoRefs(node.type);
 
         const currentSignature = this.getSignatureOfFunction(node);
@@ -1112,7 +1157,7 @@ export class TypeChecker {
 
         if (node.body && node.body.kind === gt.SyntaxKind.Block) {
             const rtype = this.getTypeFromTypeNode(node.type);
-            this.checkBlock(node.body)
+            this.checkBlock(node.body);
 
             if (!(rtype.flags & gt.TypeFlags.Void) && !node.body.hasReturn) {
                 this.report(node.name, 'Expected return statement');
@@ -1120,8 +1165,7 @@ export class TypeChecker {
         }
     }
 
-    private checkLocalDeclaration(node: gt.ParameterDeclaration | gt.VariableDeclaration | gt.PropertyDeclaration, symbol: gt.Symbol)
-    {
+    private checkLocalDeclaration(node: gt.ParameterDeclaration | gt.VariableDeclaration | gt.PropertyDeclaration, symbol: gt.Symbol) {
         const sourceFile = <gt.SourceFile>findAncestorByKind(node, gt.SyntaxKind.SourceFile);
 
         if (
@@ -1490,7 +1534,7 @@ export class TypeChecker {
             return [symbol, unknownType];
         }
 
-        if (definitionReferenced) {
+        if (definitionReferenced && symbol) {
             let symRef = this.currentSymbolReferences.get(symbol);
             if (!symRef) {
                 symRef = new Set();
@@ -1512,7 +1556,7 @@ export class TypeChecker {
         const leftType = this.checkExpression(node.expression);
         let returnType = leftType;
         let func: gt.FunctionDeclaration;
-        if (leftType != unknownType) {
+        if (leftType !== unknownType) {
             let fnType = <FunctionType>leftType;
             if (fnType.flags & gt.TypeFlags.Reference) {
                 fnType = <FunctionType>this.resolveMappedReference(fnType);

@@ -1,3 +1,5 @@
+import * as lsp from 'vscode-languageserver';
+
 /* @internal */
 export const enum CharacterCodes {
     nullCharacter = 0,
@@ -770,6 +772,7 @@ export interface Diagnostic {
     length?: number;
     messageText: string;
     category: DiagnosticCategory;
+    tags?: lsp.DiagnosticTag[];
     code: number;
     source?: string;
 

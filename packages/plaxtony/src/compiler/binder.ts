@@ -45,6 +45,16 @@ export function getDeclarationName(node: Node): string {
     }
 }
 
+function isDeclNodeDefined(node: gt.Declaration) {
+    if (
+        (node.kind === gt.SyntaxKind.FunctionDeclaration && (<gt.FunctionDeclaration>node).body) ||
+        (node.kind === gt.SyntaxKind.VariableDeclaration && (<gt.VariableDeclaration>node).initializer)
+    ) {
+        return true;
+    }
+    return false;
+}
+
 // function createSymbolTable(symbols?: ReadonlyArray<Symbol>): SymbolTable {
 //     const result = new Map<string, Symbol>() as SymbolTable;
 //     if (symbols) {
@@ -95,8 +105,10 @@ export function declareSymbol(node: gt.Declaration, store: IStoreSymbols, parent
                     break;
                 case gt.SyntaxKind.VariableDeclaration:
                     nodeSymbol.flags = (
-                        (parentSymbol && parentSymbol.declarations[0].kind == gt.SyntaxKind.SourceFile) ?
-                        gt.SymbolFlags.GlobalVariable : gt.SymbolFlags.LocalVariable
+                        (
+                            parentSymbol &&
+                            parentSymbol.declarations[0].kind === gt.SyntaxKind.SourceFile
+                        ) ? gt.SymbolFlags.GlobalVariable : gt.SymbolFlags.LocalVariable
                     );
                     break;
                 case gt.SyntaxKind.FunctionDeclaration:
@@ -136,10 +148,7 @@ export function declareSymbol(node: gt.Declaration, store: IStoreSymbols, parent
     node.symbol = nodeSymbol;
     nodeSymbol.declarations.push(node);
 
-    if (!node.symbol.valueDeclaration && (
-        (node.kind === gt.SyntaxKind.FunctionDeclaration && (<gt.FunctionDeclaration>node).body) ||
-        (node.kind === gt.SyntaxKind.VariableDeclaration && (<gt.VariableDeclaration>node).initializer)
-    )) {
+    if (!node.symbol.valueDeclaration && isDeclNodeDefined(node)) {
         nodeSymbol.valueDeclaration = node;
     }
 
@@ -191,8 +200,24 @@ export function unbindSourceFile(sourceFile: SourceFile, store: IStoreSymbols) {
             symbol.declarations = symbol.declarations.filter((decl) => {
                 return getSourceFileOfNode(decl) !== sourceFile;
             });
+
+            if (
+                !symbol.declarations.find(x => x === symbol.valueDeclaration) &&
+                getSourceFileOfNode(symbol.valueDeclaration) === sourceFile
+            ) {
+                delete symbol.valueDeclaration;
+            }
+
             if (symbol.declarations.length) {
                 unbindSymbol(symbol);
+                if (!symbol.valueDeclaration) {
+                    for (const childDecl of symbol.declarations) {
+                        if (!isDeclNodeDefined(childDecl)) continue;
+
+                        symbol.valueDeclaration = childDecl;
+                        break;
+                    }
+                }
             }
             else {
                 parentSymbol.members.delete(symbol.escapedName);

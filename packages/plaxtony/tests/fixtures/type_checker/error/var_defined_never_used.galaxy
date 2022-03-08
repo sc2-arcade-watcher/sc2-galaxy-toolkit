@@ -1,0 +1,16 @@
+static string str_private = "111";
+// ^ERR
+
+string str_public = "222";
+
+void var_defined_never_used1(int lp1)
+{
+    int a;
+    // ^ERR variable is defined but never used
+    lp1 = 123;
+}
+
+void var_defined_never_used2(string lp2)
+// unused params are ignored
+{
+}

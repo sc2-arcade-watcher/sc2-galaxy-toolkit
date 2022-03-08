@@ -1,8 +1,7 @@
 import * as Types from './types';
 import { SyntaxKind, Node, NodeArray, MutableNodeArray } from './types';
 import { Scanner, tokenToString } from './scanner';
-import { getKindName, isModifierKind, isKeywordTypeKind, isLeftHandSideExpression, isAssignmentOperator, fixupParentReferences, isReferenceKeywordKind, isAssignmentExpression } from './utils';
-import { createFileDiagnostic } from './diagnostics';
+import { getKindName, isModifierKind, isKeywordTypeKind, isLeftHandSideExpression, isAssignmentOperator, fixupParentReferences, isReferenceKeywordKind, isAssignmentExpression, createFileDiagnostic } from './utils';
 
 const enum ParsingContext {
     SourceElements,
@@ -53,7 +52,6 @@ export class Parser {
                 category: Types.DiagnosticCategory.Error,
                 message: message,
             },
-            arg0
         );
         // TODO: line & col should not be here
         diag.line = this.scanner.getLine();

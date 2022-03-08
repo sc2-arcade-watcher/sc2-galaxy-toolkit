@@ -1,3 +1,4 @@
+import * as lsp from 'vscode-languageserver';
 import * as gt from './types';
 
 /**
@@ -453,8 +454,51 @@ export function forEachChild<T>(node: gt.Node, cbNode: (node: gt.Node) => T | un
     }
 }
 
-export function createDiagnosticForNode(node: gt.Node, category: gt.DiagnosticCategory, msg: string): gt.Diagnostic {
+class Diagnostic implements gt.Diagnostic {
+    file?: gt.SourceFile;
+    messageText: string;
+    code: number;
+    category: gt.DiagnosticCategory;
+    tags?: lsp.DiagnosticTag[];
+    source?: string;
+
+    start?: number;
+    length?: number;
+
+    line?: number;
+    col?: number;
+
+    constructor(file: gt.SourceFile, code: number, messageText: string, start: number, length: number) {
+        this.file = file;
+        this.code = code;
+        this.messageText = messageText;
+        this.start = start;
+        this.length = length;
+    }
+
+    toString() {
+        return `${this.file?.fileName} [${this.start}]: ${this.messageText}`.toString();
+    }
+}
+
+export function createFileDiagnostic(file: gt.SourceFile, start: number, length: number, message: gt.DiagnosticMessage): gt.Diagnostic {
+    // const end = start + length;
     return <gt.Diagnostic>{
+        file: file,
+        code: message.code,
+        category: message.category,
+        start: start,
+        length: length,
+        messageText: message.message,
+
+        toString() {
+            return `${this.file?.fileName} [${this.start}]: ${this.messageText}`.toString();
+        }
+    };
+}
+
+export function createDiagnosticForNode(node: gt.Node, category: gt.DiagnosticCategory, msg: string, tags?: lsp.DiagnosticTag[]): gt.Diagnostic {
+    const d = <gt.Diagnostic>{
         file: getSourceFileOfNode(node),
         category: category,
         start: node.pos,
@@ -462,5 +506,13 @@ export function createDiagnosticForNode(node: gt.Node, category: gt.DiagnosticCa
         line: node.line,
         col: node.char,
         messageText: msg,
+
+        toString() {
+            return `${this.file?.fileName} [${this.start}]: ${this.messageText}`.toString();
+        }
     };
+    if (tags) {
+        d.tags = tags.concat();
+    }
+    return d;
 }

@@ -169,8 +169,11 @@ describe('Checker', () => {
         const checker = new TypeChecker(store);
 
         it('name non-conflict', () => {
-            assert.equal(checker.checkSourceFile(sourceFileStatic1, true).length, 0);
-            assert.equal(checker.checkSourceFile(sourceFileStatic2, true).length, 0);
+            let dg: gt.Diagnostic[];
+            dg = checker.checkSourceFile(sourceFileStatic1, true);
+            assert.equal(dg.length, 0, dg.join('\n'));
+            dg = checker.checkSourceFile(sourceFileStatic2, true);
+            assert.equal(dg.length, 0, dg.join('\n'));
         });
     });
 
@@ -341,7 +344,7 @@ describe('Checker', () => {
                         case 'pass':
                         {
                             assert.isTrue(result.success, Array.from(
-                                result.diagnostics.values())[0].map(item => item.messageText).join('\n')
+                                result.diagnostics.values()).flat().map(item => item.toString()).join('\n')
                             );
                             break;
                         }
