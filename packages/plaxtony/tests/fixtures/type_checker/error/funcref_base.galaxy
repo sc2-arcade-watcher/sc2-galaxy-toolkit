@@ -1,0 +1,20 @@
+void func_int();
+typedef funcref<func_int> func_int_t;
+void func_int() {}
+
+func_int_t gv_fn = func_int;
+
+void fn(func_int_t lv_fn)
+{
+    lv_fn = null;
+    if (lv_fn == null) {}
+    if (null != lv_fn) {}
+
+    if (lv_fn == func_int) {}
+    if (func_int != lv_fn) {}
+
+    if (lv_fn == gv_fn) {}
+
+    if (lv_fn) {}
+    // ^ERR
+}

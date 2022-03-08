@@ -511,27 +511,31 @@ export class FunctionType extends AbstractType implements gt.FunctionType {
         this.signature = signature;
     }
 
-    public isAssignableTo(target: AbstractType) {
+    public isAssignableTo(target: AbstractType): boolean {
         if (target instanceof ReferenceType && target.kind === gt.SyntaxKind.FuncrefKeyword) {
             if (!(target.declaredType.flags & gt.TypeFlags.Function)) return false;
-            if (this.symbol === (<FunctionType>target.declaredType).symbol) return true;
-            if (this.signature.match((<FunctionType>target.declaredType).signature)) return true;
+            return this.isComparableTo((<FunctionType>target.declaredType));
         }
         return false;
     }
 
-    public isComparableTo(target: AbstractType) {
-        if (this === target) return true;
-        if (target instanceof FunctionType && target.symbol === this.symbol) return true;
+    public isComparableTo(target: AbstractType): boolean {
+        if (target instanceof ReferenceType && target.kind === gt.SyntaxKind.FuncrefKeyword) {
+            if (!(target.declaredType.flags & gt.TypeFlags.Function)) return false;
+            return this.isComparableTo((<FunctionType>target.declaredType));
+        }
+        if (target instanceof FunctionType) {
+            if (this.symbol === target.symbol) return true;
+            if (this.signature.match(target.signature)) return true;
+        }
         return false;
     }
 
-    public isBoolExpression(negation: boolean) {
-        if (negation) return false;
-        return true;
+    public isBoolExpression(negation: boolean): boolean {
+        return false;
     }
 
-    public getName() {
+    public getName(): string {
         return this.symbol.escapedName;
     }
 }
@@ -547,16 +551,29 @@ export class ReferenceType extends AbstractType {
         this.flags = gt.TypeFlags.Reference;
         this.kind = kind;
         this.declaredType = declaredType;
+
+        if (this.kind === gt.SyntaxKind.FuncrefKeyword) {
+            this.flags |= gt.TypeFlags.Nullable;
+        }
     }
 
     public isAssignableTo(target: AbstractType): boolean {
         if (target instanceof ReferenceType && this.kind === target.kind) {
-            return this.declaredType.isAssignableTo(this);
+            return this.declaredType.isAssignableTo(target);
         }
         return false;
     }
 
     public isComparableTo(target: AbstractType) {
+        if (target === nullType) return true;
+        if (target instanceof ReferenceType && this.kind === target.kind) {
+            return this.isAssignableTo(target);
+        }
+        if (target instanceof FunctionType) {
+            if (this.kind === gt.SyntaxKind.FuncrefKeyword) {
+                return (<FunctionType>this.declaredType).signature.match(target.signature);
+            }
+        }
         return false;
     }
 
