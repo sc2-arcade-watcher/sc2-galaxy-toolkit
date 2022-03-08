@@ -1,11 +1,11 @@
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as util from 'util';
 import * as path from 'path';
 import * as xml from 'xml2js';
+import * as glob from 'fast-glob';
 import * as trig from './trigger';
 import * as cat from './datacatalog';
 import * as loc from './localization';
-import { globify } from '../service/utils';
 import { logger, logIt } from '../common';
 
 const validArchiveExtensions = [
@@ -106,21 +106,24 @@ export function isSC2Archive(directory: string) {
     return path.basename(directory).match(reValidArchiveExtension);
 }
 
-export async function findSC2ArchiveDirectories(directory: string, opts: { exclude?: string | string[] } = {}) {
+export async function findSC2ArchiveDirectories(directory: string, opts: { exclude?: string[] } = {}) {
     directory = path.resolve(directory);
     if (isSC2Archive(directory)) {
         return [directory];
     }
 
-    const results = await globify(
-        path.join(`**/*.+(${validArchiveExtensions.join('|')})/`),
+    const results = (await glob(
+        `**/*.{${validArchiveExtensions.join(',')}}`,
         {
-            nocase: true,
-            realpath: true,
+            caseSensitiveMatch: false,
+            absolute: true,
             cwd: directory,
             ignore: opts.exclude,
+            onlyDirectories: true,
+            stats: true,
+            objectMode: true,
         }
-    );
+    )).map(x => x.path);
 
     return results.sort((a, b) => {
         return (
@@ -153,7 +156,7 @@ export class TriggerComponent extends Component {
         const trigReader = new trig.XMLReader(this.store);
 
         for (const archive of this.workspace.metadataArchives) {
-            for (const filename of await archive.findFiles('**/+(*.TriggerLib|*.SC2Lib)')) {
+            for (const filename of await archive.findFiles('**/*.{TriggerLib,SC2Lib}')) {
                 logger.debug(`:: ${archive.name}/${filename}`);
                 this.store.addLibrary(await trigReader.loadLibrary(await archive.readFile(filename)));
             }
@@ -194,7 +197,7 @@ export class LocalizationComponent extends Component {
     private async loadStrings(name: string) {
         const textStore = new loc.LocalizationTextStore();
         for (const archive of this.workspace.metadataArchives) {
-            const filenames = await archive.findFiles(this.lang + '.SC2Data/LocalizedData/' + name + 'Strings.txt');
+            const filenames = await archive.findFiles('**/' + this.lang + '.SC2Data/LocalizedData/' + name + 'Strings.txt');
             if (filenames.length) {
                 logger.debug(`:: ${archive.name}/${filenames[0]}`);
                 const locFile = new loc.LocalizationFile();
@@ -208,7 +211,7 @@ export class LocalizationComponent extends Component {
     @logIt()
     public async loadData() {
         for (const archive of this.workspace.metadataArchives) {
-            const filenames = await archive.findFiles(this.lang + '.SC2Data/LocalizedData/TriggerStrings.txt');
+            const filenames = await archive.findFiles('**/' + this.lang + '.SC2Data/LocalizedData/TriggerStrings.txt');
             if (filenames.length) {
                 logger.debug(`:: ${archive.name}/${filenames[0]}`);
                 const locFile = new loc.LocalizationFile();
@@ -232,7 +235,12 @@ export interface ArchiveLink {
 
 export async function resolveArchiveDirectory(name: string, sources: string[]) {
     for (const src of sources) {
-        const results = await globify(`${name}/`, {nocase: true, realpath: true, cwd: src});
+        const results = await glob(name, {
+            caseSensitiveMatch: false,
+            absolute: true,
+            cwd: src,
+            onlyDirectories: true,
+        });
 
         if (results.length) {
             return results[0];
@@ -329,10 +337,11 @@ export class SC2Archive {
     }
 
     public async findFiles(pattern: string) {
-        return (await globify(pattern, {
-            nocase: true,
-            nodir: true,
+        return (await glob(pattern, {
             cwd: this.directory,
+            caseSensitiveMatch: false,
+            onlyFiles: true,
+            objectMode: false,
         })).filter(v => {
             // filter out sc2maps inside campaign deps
             return !v.match(/base[\d]*\.sc2maps/i);
@@ -340,24 +349,11 @@ export class SC2Archive {
     }
 
     public async hasFile(filename: string) {
-        return new Promise<boolean>((resolve) => {
-            fs.exists(path.join(this.directory, filename), (result) => {
-                resolve(result);
-            })
-        });
+        return fs.pathExists(path.join(this.directory, filename));
     }
 
     public async readFile(filename: string) {
-        return new Promise<string>((resolve, reject) => {
-            fs.readFile(path.join(this.directory, filename), 'utf8', (err, result) => {
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    resolve(result);
-                }
-            });
-        });
+        return fs.readFile(path.join(this.directory, filename), 'utf8');
     }
 
     /**

@@ -27,7 +27,7 @@ export class CatalogFile {
     }
 
     public async load() {
-        const filepath = 'Base.SC2Data/GameData/' + this.kind + 'Data.xml';
+        const filepath = '**/Base.SC2Data/GameData/' + this.kind + 'Data.xml';
         const resolvedFiles = await this.archive.findFiles(filepath);
         if (!(resolvedFiles).length) {
             return false;
@@ -93,7 +93,7 @@ export class GameCatalogStore {
         this.catalogs = new Map<string, CatalogStore>();
 
         for (const archive of workspace.metadataArchives) {
-            const files = await archive.findFiles('Base.SC2Data/GameData/*Data.xml');
+            const files = await archive.findFiles('**/Base.SC2Data/GameData/*Data.xml');
             archiveFiles.set(archive.name, files);
 
             for (const name of files) {

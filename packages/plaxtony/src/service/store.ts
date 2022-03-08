@@ -5,47 +5,45 @@ import { Parser } from '../compiler/parser';
 import { S2WorkspaceMetadata } from './s2meta';
 import { bindSourceFile, unbindSourceFile } from '../compiler/binder';
 import { findSC2ArchiveDirectories, isSC2Archive, SC2Archive, SC2Workspace, openArchiveWorkspace, S2QualifiedFile } from '../sc2mod/archive';
-import { Element } from '../sc2mod/trigger';
 import * as lsp from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as glob from 'glob';
-import Uri from 'vscode-uri';
-import { TypeChecker } from '../compiler/checker';
+import * as glob from 'fast-glob';
 import URI from 'vscode-uri';
-import { globify } from './utils';
+import { TypeChecker } from '../compiler/checker';
 import { MetadataConfig } from './server';
 
 export function createTextDocument(uri: string, text: string) {
-    return TextDocument.create(uri, 'galaxy', 0, text)
+    return TextDocument.create(uri, 'galaxy', 0, text);
 }
 
 export function createTextDocumentFromFs(filepath: string) {
     filepath = path.resolve(filepath);
-    return createTextDocument(Uri.file(filepath).toString(), fs.readFileSync(filepath, 'utf8'));
+    return createTextDocument(URI.file(filepath).toString(), fs.readFileSync(filepath, 'utf8'));
 }
 
 export async function readDocumentFile(fsPath: string) {
     return createTextDocument(
-        Uri.file(fsPath).toString(),
+        URI.file(fsPath).toString(),
         await fs.readFile(fsPath, 'utf8')
     );
 }
 
 export function createTextDocumentFromUri(uri: string) {
-    return createTextDocument(uri, fs.readFileSync(Uri.parse(uri).fsPath, 'utf8'));
+    return createTextDocument(uri, fs.readFileSync(URI.parse(uri).fsPath, 'utf8'));
 }
 
 export async function *openSourceFilesInLocation(...srcFolders: string[]) {
     const workspaceFolders = await Promise.all(srcFolders.map(async folder => {
         return {
             folder,
-            galaxyFiles: await globify('**/*.galaxy', {
+            galaxyFiles: await glob('**/*.galaxy', {
                 cwd: folder,
                 absolute: true,
-                nocase: true,
-                nodir: true,
+                caseSensitiveMatch: false,
+                onlyFiles: true,
+                objectMode: false,
             })
         };
     }));
