@@ -6,6 +6,7 @@ import { findSC2ArchiveDirectories, SC2Archive, SC2Workspace, openArchiveWorkspa
 import * as trig from '../src/sc2mod/trigger';
 import * as cat from '../src/sc2mod/datacatalog';
 import * as loc from '../src/sc2mod/localization';
+import * as dtypes from '../src/sc2mod/dtypes';
 
 const resourcesPath = path.join('tests', 'fixtures', 'sc2-data-trigger');
 
@@ -208,34 +209,33 @@ describe('SC2Mod', () => {
     });
 
     describe('Catalog', () => {
-        it('file', async () => {
-            const s2archive = new SC2Archive('sc2-map.SC2Map', path.resolve('tests/fixtures/sc2-map.SC2Map'));
-            const catalogFile = new cat.CatalogFile(s2archive, 'Unit');
-            await catalogFile.load();
-            assert.isAtLeast(catalogFile.entries.size, 1);
-        });
-
         it('store', async () => {
-            const coreArchive = new SC2Archive('core.sc2mod', path.join(resourcesPath, 'mods', 'core.sc2mod'));
-            const libertyArchive = new SC2Archive('liberty.sc2mod', path.join(resourcesPath, 'mods', 'liberty.sc2mod'));
-            const catalogStore = new cat.CatalogStore('Unit');
-            await catalogStore.addArchive(coreArchive);
-            await catalogStore.addArchive(libertyArchive);
-            catalogStore.merge();
-            assert.isAtLeast(catalogStore.entries.size, 1);
+            const archive = new SC2Archive('sc2-map.SC2Map', path.resolve('tests/fixtures/sc2-map.SC2Map'));
+            const cstore = new cat.CatalogStore();
+            const tdoc = await SC2Workspace.documentFromFile(archive, 'Base.SC2Data/GameData/UnitData.xml');
+            cstore.update(tdoc, archive);
+            assert.equal(cstore.docCount, 1);
         });
 
         it('component', async () => {
-            let s2work: SC2Workspace;
+            let workspace: SC2Workspace;
             const sources = [
                 path.resolve(resourcesPath),
             ];
             const dir = path.resolve(path.join('tests', 'fixtures', 'sc2-map.SC2Map'));
             const rootArchive = new SC2Archive(path.basename(dir), dir);
-            s2work = await openArchiveWorkspace(rootArchive, sources);
-            await s2work.catalogComponent.load();
-            assert.isAtLeast(s2work.catalogComponent.getStore().catalogs.size, 99);
-            assert.isTrue(s2work.catalogComponent.getStore().catalogs.has('Actor'));
+            workspace = await openArchiveWorkspace(rootArchive, sources);
+            await workspace.catalogComponent.load();
+            assert.isAtLeast(workspace.catalogComponent.getStore().docCount, 99);
+            let results: cat.CatalogDeclaration[] = [];
+            for (const chunks of workspace.catalogComponent.getStore().findEntry(dtypes.S2DataCatalogDomain.GameUI)) {
+                results = results.concat(Array.from(chunks));
+            }
+            assert.deepEqual(results.map(x => [workspace.resolvePath(x.uri).archiveRelpath, x.ctype, x.id]), [
+                ['base.sc2data/GameData/GameUIData.xml', 'GameUI', 'CoreDflt'],
+                ['base.sc2data/GameData/SC2Data.xml', 'GameUI', 'Dflt'],
+                ['base.sc2data/GameData/GameUIData.xml', 'GameUI', 'Dflt']
+            ]);
         });
     });
 

@@ -3,8 +3,8 @@ import { getSourceFileOfNode } from '../compiler/utils';
 import { Store } from './store';
 import * as trig from '../sc2mod/trigger';
 import * as cat from '../sc2mod/datacatalog';
+import * as dtypes from '../sc2mod/dtypes';
 import { SC2Workspace } from '../sc2mod/archive';
-import * as lsp from 'vscode-languageserver';
 import { getLineAndCharacterOfPosition } from './utils';
 import { logIt, logger } from '../common';
 import { MetadataConfig } from './server';
@@ -306,21 +306,37 @@ export class S2WorkspaceMetadata {
         return el.getParameters()[index].type;
     }
 
-    public getLinksForGameType(gameType: string) {
-        const catalog = this.workspace.catalogComponent.getStore().catalogs.get(gameType);
-        if (!catalog) return null;
-        return <ReadonlyMap<string, cat.CatalogEntry>>catalog.entries;
+    public getGameLinkItem(gameType: string, id?: string) {
+        const family = (dtypes as any).S2DataCatalogDomain[gameType];
+        let results = Array
+            .from(this.workspace.catalogComponent.getStore().findEntry(family))
+            .map(x => Array.from(x))
+            .flat()
+        ;
+        if (id) {
+            results = results.filter(x => x.id === id);
+        }
+        return new Set(results);
+    }
+
+    public getGameLinkDetails(entity: cat.CatalogDeclaration) {
+        return this.workspace.resolvePath(entity.uri);
     }
 
     public getGameLinkLocalizedName(gameType: string, gameLink: string, includePrefix: boolean = false) {
-        const name = this.workspace.locComponent.strings.get('Game').text(`${gameType}/Name/${gameLink}`);
+        const name = (
+            this.workspace.locComponent.strings.get('Game').text(`${gameType}/Name/${gameLink}`) ??
+            this.workspace.locComponent.strings.get('Object').text(`${gameType}/Name/${gameLink}`)
+        );
+        if (!includePrefix) {
+            return name;
+        }
+        if (!name) {
+            return undefined;
+        }
         const prefix = this.workspace.locComponent.strings.get('Object').text(`${gameType}/EditorPrefix/${gameLink}`);
-        const sufix = this.workspace.locComponent.strings.get('Object').text(`${gameType}/EditorSuffix/${gameLink}`);
-        return (prefix ? prefix + ' ' : '') + (name ? name : '') + (sufix ? ' ' + sufix : '');
-    }
-
-    public getGameLinkKind(gameType: string, gameLink: string) {
-        return this.workspace.catalogComponent.getStore().catalogs.get(gameType).entries.get(gameLink).kind;
+        const suffix = this.workspace.locComponent.strings.get('Object').text(`${gameType}/EditorSuffix/${gameLink}`);
+        return (prefix ? prefix + ' ' : '') + (name ?? gameLink) + (suffix ? ' ' + suffix : '');
     }
 }
 

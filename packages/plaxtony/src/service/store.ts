@@ -170,9 +170,11 @@ export class Store implements IStoreSymbols {
         else if (this.rootPath) {
             const commonBase = fsPath.toLowerCase().startsWith(this.rootPath.toLowerCase() + path.sep);
             if (commonBase) {
+                const relativePath = fsPath.substring(this.rootPath.length + 1).toLowerCase();
                 s2file = {
                     fsPath: fsPath,
-                    relativePath: fsPath.substr(this.rootPath.length + 1).toLowerCase(),
+                    relativePath: relativePath,
+                    archiveRelpath: relativePath,
                     priority: 0,
                 };
             }

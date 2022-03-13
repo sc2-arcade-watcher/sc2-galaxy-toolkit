@@ -1,3 +1,6 @@
+import * as lsp from 'vscode-languageserver';
+import { TextDocument } from 'vscode-languageserver-textdocument';
+import URI from 'vscode-uri';
 import * as fs from 'fs-extra';
 import * as util from 'util';
 import * as path from 'path';
@@ -175,12 +178,15 @@ export class TriggerComponent extends Component {
 }
 
 export class CatalogComponent extends Component {
-    protected store = new cat.GameCatalogStore();
+    protected store = new cat.CatalogStore();
 
     @logIt()
     public async loadData() {
-        await this.store.loadData(this.workspace);
-
+        for await (const [archive, filename] of this.workspace.findFiles('**/GameData/**/*.xml')) {
+            logger.debug(`:: ${archive.name}/${filename}`);
+            const doc = await SC2Workspace.documentFromFile(archive, filename, 'xml');
+            this.store.update(doc, archive);
+        }
         return true;
     }
 
@@ -235,7 +241,7 @@ export interface ArchiveLink {
 
 export async function resolveArchiveDirectory(name: string, sources: string[]) {
     for (const src of sources) {
-        const results = await glob(name, {
+        const results = await glob(`**/${name}`, {
             caseSensitiveMatch: false,
             absolute: true,
             cwd: src,
@@ -336,15 +342,15 @@ export class SC2Archive {
         this.lcFsPath = this.directory.toLowerCase();
     }
 
-    public async findFiles(pattern: string) {
-        return (await glob(pattern, {
+    public async findFiles(pattern: string | string[]) {
+        return glob(pattern, {
             cwd: this.directory,
             caseSensitiveMatch: false,
             onlyFiles: true,
             objectMode: false,
-        })).filter(v => {
-            // filter out sc2maps inside campaign deps
-            return !v.match(/base[\d]*\.sc2maps/i);
+            ignore: [
+                'base{0..99}.sc2maps/**',
+            ],
         });
     }
 
@@ -354,6 +360,14 @@ export class SC2Archive {
 
     public async readFile(filename: string) {
         return fs.readFile(path.join(this.directory, filename), 'utf8');
+    }
+
+    public relativePath(uri: lsp.DocumentUri) {
+        const fsPath = URI.parse(uri).fsPath;
+        if (fsPath.substring(0, this.lcFsPath.length).toLowerCase() !== this.lcFsPath) return;
+
+        const relativeFsPath = fsPath.substring(this.lcFsPath.length + 1);
+        return relativeFsPath;
     }
 
     /**
@@ -407,12 +421,14 @@ export interface S2FileNs {
 export interface S2QualifiedFile {
     fsPath: string;
     relativePath: string;
+    archiveRelpath: string;
     namespace?: S2FileNs;
     archive?: SC2Archive;
     priority: number;
 }
 
 const reArchiveFileNs = /^(?:(?<nsName>[a-z]+)\.(?<nsType>(?:sc2data|sc2assets))(?:\/|\\))?(?<rp>.+)$/i;
+const reIsUri = /^[^:/?#]+:\/\//i;
 
 export class SC2Workspace {
     rootArchive?: SC2Archive;
@@ -440,16 +456,42 @@ export class SC2Workspace {
     }
 
     public async loadComponents() {
-        await this.trigComponent.load();
-        await this.locComponent.load();
-        await this.catalogComponent.load();
+        await Promise.all([
+            this.trigComponent.load(),
+            this.locComponent.load(),
+            this.catalogComponent.load()
+        ]);
     }
 
-    public resolvePath(fsPath: string): S2QualifiedFile | undefined {
-        for (const cArchive of this.allArchives) {
-            if (!fsPath.toLowerCase().startsWith(cArchive.lcFsPath + path.sep)) continue;
+    public async *findFiles(pattern: string | string[]) {
+        const stuff = this.allArchives.map(archive => <[SC2Archive, Promise<string[]>]>[archive, archive.findFiles(pattern)]);
+        for (const [archive, archiveFiles] of stuff) {
+            for (const filename of await archiveFiles) {
+                yield <[SC2Archive, string]>[archive, filename];
+            }
+        }
+    }
 
-            const m = fsPath.substr(cArchive.lcFsPath.length + 1).match(reArchiveFileNs);
+    static async documentFromFile(archive: SC2Archive, filename: string, languageId?: string) {
+        if (!languageId) {
+            languageId = path.extname(filename).split('.').pop();
+        }
+        return TextDocument.create(
+            URI.file(path.join(archive.directory, filename)).toString(),
+            languageId,
+            0,
+            await archive.readFile(filename)
+        );
+    }
+
+    public resolvePath(fsPath: lsp.URI): S2QualifiedFile | undefined {
+        if (fsPath.match(reIsUri)) {
+            fsPath = URI.parse(fsPath).fsPath;
+        }
+        for (const cArchive of this.allArchives) {
+            if (!fsPath.toLowerCase().startsWith(cArchive.lcFsPath)) continue;
+
+            const m = fsPath.substring(cArchive.directory.length + 1).match(reArchiveFileNs);
             if (!m) return;
 
             let priority = cArchive.priority;
@@ -468,9 +510,11 @@ export class SC2Workspace {
                 priority += 10;
             }
 
+            const relativePath = m.groups['rp'].replace(/\\/g, '/');
             return {
                 fsPath: fsPath,
-                relativePath: m.groups['rp'].replace(/\\/g, '/'),
+                relativePath: relativePath,
+                archiveRelpath: m.groups['nsName'] ? `${m.groups['nsName']}.${m.groups['nsType']}/${relativePath}` : relativePath,
                 namespace: ns,
                 archive: cArchive,
                 priority: priority,

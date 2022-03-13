@@ -79,6 +79,6 @@ describe('SC2Metadata', function () {
     });
 
     it('gamelinks', () => {
-        assert.isTrue(s2meta.getLinksForGameType('Unit').has('AberrationACGluescreenDummy'));
-    })
+        assert.equal(s2meta.getGameLinkItem('Unit', 'AberrationACGluescreenDummy').size, 2);
+    });
 });

@@ -217,18 +217,11 @@ export class CompletionsProvider extends AbstractProvider {
     }
 
     private provideGameLinks(gameType: string) {
-        const links = this.store.s2metadata.getLinksForGameType(gameType);
-
+        const links = this.store.s2metadata.getGameLinkItem(gameType);
         let completions = <lsp.CompletionItem[]> [];
-        for (const item of links.values()) {
-            const localizedName = this.store.s2metadata.getGameLinkLocalizedName(gameType, item.id, false);
-            let name = item.id;
-            if (localizedName) {
-                name += ` "${localizedName}"`;
-            }
-            completions.push(<lsp.CompletionItem>{
-                label: name,
-                insertText: item.id,
+        for (const item of links) {
+            completions.push({
+                label: item.id,
                 data: {
                     elementType: 'gamelink',
                     gameType: gameType,
@@ -338,14 +331,17 @@ export class CompletionsProvider extends AbstractProvider {
         // presets
         if (this.store.s2metadata) {
             const elementType = this.store.s2metadata.getElementTypeOfNode(currentToken);
-            if (elementType) {
-                // TODO: support <any> gamelink
-                if (elementType.type === 'gamelink' && currentToken.kind === gt.SyntaxKind.StringLiteral && elementType.gameType) {
-                    return {
-                        items: this.provideGameLinks(elementType.gameType),
-                        isIncomplete: false,
-                    };
-                }
+            // TODO: support <any> gamelink
+            if (
+                elementType &&
+                elementType.type === 'gamelink' &&
+                currentToken.kind === gt.SyntaxKind.StringLiteral &&
+                elementType.gameType
+            ) {
+                return {
+                    items: this.provideGameLinks(elementType.gameType),
+                    isIncomplete: false,
+                };
             }
             if (elementType && elementType.type === 'preset') {
                 const tPreset = elementType.typeElement.resolve();
@@ -525,10 +521,6 @@ export class CompletionsProvider extends AbstractProvider {
     }
 
     public resolveCompletion(completion: lsp.CompletionItem): lsp.CompletionItem {
-        let symbol: gt.Symbol;
-        let parentSymbolName: string;
-        const customData: CompletionItemData = completion.data || {};
-
         switch (completion.kind) {
             case lsp.CompletionItemKind.Folder:
             case lsp.CompletionItemKind.File:
@@ -542,9 +534,32 @@ export class CompletionsProvider extends AbstractProvider {
             }
         }
 
+        let symbol: gt.Symbol;
+        let parentSymbolName: string;
+        const customData: CompletionItemData = completion.data || {};
+
         if (customData.elementType === 'gamelink') {
-            completion.documentation = this.store.s2metadata.getGameLinkLocalizedName(customData.gameType, completion.insertText, true);
-            completion.documentation += '\n<' + this.store.s2metadata.getGameLinkKind(customData.gameType, completion.insertText) + '>';
+            const localizedName = this.store.s2metadata.getGameLinkLocalizedName(customData.gameType, completion.label, true);
+            completion.detail = '';
+            if (localizedName) {
+                completion.detail += `"${localizedName}"`;
+            }
+
+            const linkDeclarations = Array.from(this.store.s2metadata.getGameLinkItem(customData.gameType, completion.label));
+            if (linkDeclarations.length > 0) {
+                const decl = linkDeclarations[0];
+                completion.detail += ` [${decl.ctype}]`;
+
+                completion.documentation = {
+                    kind: lsp.MarkupKind.Markdown,
+                    value: linkDeclarations.map(x => {
+                        const details = this.store.s2metadata.getGameLinkDetails(x);
+                        if (!details) return '`unknown`';
+                        return `\`${details.archive.name}\` :: ${details.relativePath}`;
+                    }).join('\\\n'),
+                };
+            }
+
             return completion;
         }
 

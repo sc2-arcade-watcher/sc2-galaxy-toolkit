@@ -17,7 +17,7 @@ export class LocalizationFile extends Map<string,string> {
 
         let result: RegExpExecArray;
         while (result = fileRe.exec(content)) {
-            // this.set(result[1], result[5]);
+            if (result[1].startsWith('//')) continue;
             this.set(result[1], result[2]);
         }
 

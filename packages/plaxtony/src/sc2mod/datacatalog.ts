@@ -1,172 +1,134 @@
-import * as path from 'path';
+import * as lsp from 'vscode-languageserver';
+import { TextDocument } from 'vscode-languageserver-textdocument';
+import { logger, logIt } from '../common';
 import { SC2Archive, SC2Workspace } from './archive';
-import { logger } from '../common';
+import * as dtypes from './dtypes';
 
-export type CatalogEntryKind = string;
+export type CatalogEntryFamily = dtypes.S2DataCatalogDomain;
 export type CatalogFileKind = string;
-export type CatalogFileMap = Map<string, CatalogEntry>;
+export type CatalogKeyName = string;
 
-export interface CatalogEntry {
-    kind: CatalogEntryKind;
+export interface CatalogEntity {
+    family: dtypes.S2DataCatalogDomain;
+    ctype: string;
     id: string;
-    parent?: string;
-    default: boolean;
-    // tokens: Map<string,string>;
-    // attrs: Map<string,string>;
-    // data
 }
 
-export class CatalogFile {
-    protected kind: CatalogFileKind;
-    protected archive: SC2Archive;
-    entries: CatalogFileMap;
+export interface CatalogDeclaration extends CatalogEntity {
+    uri: lsp.DocumentUri;
+    position: lsp.Position;
+}
 
-    constructor(archive: SC2Archive, kind: CatalogFileKind) {
-        this.archive = archive;
-        this.kind = kind;
-    }
-
-    public async load() {
-        const filepath = '**/Base.SC2Data/GameData/' + this.kind + 'Data.xml';
-        const resolvedFiles = await this.archive.findFiles(filepath);
-        if (!(resolvedFiles).length) {
-            return false;
-        }
-
-        logger.debug(`:: ${this.archive.name}/${resolvedFiles[0]}`);
-        const parser = new CatalogParser();
-        parser.write(await this.archive.readFile(resolvedFiles[0]));
-        this.entries = parser.toCatalog();
-        parser.close();
-        return true;
-    }
+export interface CatalogDocument {
+    uri: lsp.DocumentUri;
+    declarations: {[type: number]: Map<string, CatalogDeclaration>};
 }
 
 export class CatalogStore {
-    readonly kind: CatalogFileKind;
-    files: CatalogFile[] = [];
-    entries: CatalogFileMap = new Map<string, CatalogEntry>();
+    protected documentMap = new Map<lsp.URI, CatalogDocument>();
 
-    constructor(kind: CatalogFileKind) {
-        this.kind = kind;
+    public remove(uri: lsp.URI) {
+        const catDoc = this.documentMap.get(uri);
+        if (!catDoc) return;
+        this.documentMap.delete(uri);
     }
 
-    public async addArchive(archive: SC2Archive) {
-        const catalogFile = new CatalogFile(archive, this.kind);
-        const result = await catalogFile.load();
-        if (result) {
-            this.files.push(catalogFile);
-            return true;
+    @logIt()
+    public update(doc: TextDocument, archive: SC2Archive) {
+        this.remove(doc.uri);
+        const catDoc: CatalogDocument = {
+            uri: doc.uri,
+            declarations: [],
+        };
+        parseCatalog(doc, (decl) => {
+            let declarations = catDoc.declarations[decl.family];
+            if (typeof declarations === 'undefined') {
+                catDoc.declarations[decl.family] = declarations = new Map();
+            }
+            declarations.set(decl.id, decl);
+        });
+        this.documentMap.set(doc.uri, catDoc);
+    }
+
+    public *findEntry(family: CatalogEntryFamily) {
+        for (const catDoc of this.documentMap.values()) {
+            const declarations = catDoc.declarations[family];
+            if (typeof declarations === 'undefined') continue;
+            yield declarations.values();
         }
-        return false;
     }
 
-    public merge() {
-        this.entries.clear();
+    public *findEntryByName(family: CatalogEntryFamily, id: string) {
+        for (const catDoc of this.documentMap.values()) {
+            const declarations = catDoc.declarations[family];
+            if (typeof declarations === 'undefined') continue;
 
-        for (const cfile of this.files) {
-            for (const entry of cfile.entries.values()) {
-                this.entries.set(entry.id, entry);
+            const decl = declarations.get(id);
+            if (decl) {
+                yield decl;
             }
         }
     }
-}
 
-export class GameCatalogStore {
-    catalogs: Map<CatalogFileKind, CatalogStore>;
-
-    private async processDataKind(kind: string, workspace: SC2Workspace) {
-        const catalogStore = new CatalogStore(kind);
-        const p: Promise<boolean>[] = [];
-        for (const archive of workspace.metadataArchives) {
-            p.push(catalogStore.addArchive(archive));
-        }
-        await Promise.all(p);
-        catalogStore.merge();
-        this.catalogs.set(kind, catalogStore);
-    }
-
-    async loadData(workspace: SC2Workspace): Promise<boolean> {
-        const kindList: string[] = [];
-        const archiveFiles = new Map<string, string[]>();
-
-        this.catalogs = new Map<string, CatalogStore>();
-
-        for (const archive of workspace.metadataArchives) {
-            const files = await archive.findFiles('**/Base.SC2Data/GameData/*Data.xml');
-            archiveFiles.set(archive.name, files);
-
-            for (const name of files) {
-                let kind = path.basename(name);
-                kind = kind.substr(0, kind.length - 8);
-                if (!kindList.find((item) => item.valueOf() === kind.valueOf())) {
-                    kindList.push(kind);
-                }
-            }
-        }
-
-        const p: Promise<void>[] = [];
-        for (const kind of kindList) {
-            p.push(this.processDataKind(kind, workspace));
-        }
-        await Promise.all(p);
-
-        return true;
+    public get docCount(): number {
+        return this.documentMap.size;
     }
 }
 
-const reDataElement = /<C([A-Z][A-Za-z0-9]+)\s([^>]+)\/?>/g;
+const reDataElement = /\s*<C([A-Z][A-Za-z0-9]+)\s([^>]+)\/?>/;
 const reAttrs = /([\w-]+)\s?=\s?"([^"]+)"/g;
-export class CatalogParser {
-    protected catalogMap: CatalogFileMap;
+const reSubwordSeparator = /(?=[A-Z])/;
+type ParseCatalogOnDeclaration = (declaration: CatalogDeclaration) => void;
 
-    constructor() {
-        this.flush();
-    }
+function parseCatalog(tdoc: TextDocument, onDeclaration: ParseCatalogOnDeclaration) {
+    for (let i = 0; i < tdoc.lineCount; i++) {
+        const content = tdoc.getText({ start: { line: i, character: 0 }, end: { line: i, character: 1024 } });
+        const matchedElement = content.match(reDataElement);
+        if (!matchedElement) continue;
 
-    write(s: string) {
-        let matchedElement: RegExpMatchArray;
-        while (matchedElement = reDataElement.exec(s)) {
-            const entry = <CatalogEntry>{
-                kind: matchedElement[1],
-            };
+        let family: dtypes.S2DataCatalogDomain | undefined;
+        const kindList = matchedElement[1].split(reSubwordSeparator);
+        while (1) {
+            family = (dtypes as any).S2DataCatalogDomain[kindList.join('')];
+            if (typeof family === 'number') break;
+            if (kindList.length <= 1) break;
+            kindList.pop();
+        }
 
-            let matchedAttr;
-            while (matchedAttr = reAttrs.exec(matchedElement[2])) {
-                switch (matchedAttr[1]) {
-                    case 'id':
-                    case 'parent':
-                    case 'default':
-                        (<any>entry)[matchedAttr[1]] = matchedAttr[2];
-                        break;
+        if (!family) continue;
+
+        const declaration: CatalogDeclaration = {
+            family: family,
+            id: '',
+            ctype: matchedElement[1],
+            uri: tdoc.uri,
+            position: {
+                line: i,
+                character: matchedElement[0].length - matchedElement[1].length - matchedElement[2].length
+            },
+        };
+
+        let matchedAttr: RegExpExecArray;
+        while (matchedAttr = reAttrs.exec(matchedElement[2])) {
+            switch (matchedAttr[1]) {
+                case 'id':
+                {
+                    declaration.id = matchedAttr[2];
+                    break;
                 }
-            }
 
-            reAttrs.lastIndex = 0;
-            if (!entry.id) continue;
-
-            if (s.charCodeAt(reDataElement.lastIndex - 2) !== 47) { // '/'
-                reDataElement.lastIndex = s.indexOf(`</C${entry.kind}>`, reDataElement.lastIndex)
-                if (reDataElement.lastIndex === -1) {
-                    reDataElement.lastIndex = 0;
+                case 'parent':
+                case 'default':
+                {
+                    // (<any>entry)[matchedAttr[1]] = matchedAttr[2];
                     break;
                 }
             }
-
-            this.catalogMap.set(entry.id, entry);
         }
-        reDataElement.lastIndex = 0;
-    }
+        reAttrs.lastIndex = 0;
 
-    close() {
-        this.flush();
-    }
+        if (declaration.id.length <= 0) continue;
 
-    flush() {
-        this.catalogMap = new Map<string, CatalogEntry>();
-    }
-
-    toCatalog() {
-        return this.catalogMap;
+        onDeclaration(declaration);
     }
 }
