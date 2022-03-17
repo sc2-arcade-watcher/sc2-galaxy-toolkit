@@ -455,14 +455,6 @@ export class SC2Workspace {
         });
     }
 
-    public async loadComponents() {
-        await Promise.all([
-            this.trigComponent.load(),
-            this.locComponent.load(),
-            this.catalogComponent.load()
-        ]);
-    }
-
     public async *findFiles(pattern: string | string[]) {
         const stuff = this.allArchives.map(archive => <[SC2Archive, Promise<string[]>]>[archive, archive.findFiles(pattern)]);
         for (const [archive, archiveFiles] of stuff) {

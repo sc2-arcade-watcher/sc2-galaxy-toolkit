@@ -22,6 +22,8 @@ describe('SC2Metadata', function () {
         s2meta = new S2WorkspaceMetadata(s2work, {
             loadLevel: 'Default',
             localization: 'enUS',
+        }, {
+            enabled: true,
         });
         await s2meta.build();
     });

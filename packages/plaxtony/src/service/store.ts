@@ -12,7 +12,7 @@ import * as fs from 'fs-extra';
 import * as glob from 'fast-glob';
 import URI from 'vscode-uri';
 import { TypeChecker } from '../compiler/checker';
-import { MetadataConfig } from './server';
+import { DataCatalogConfig, MetadataConfig } from './server';
 
 export function createTextDocument(uri: string, text: string) {
     return TextDocument.create(uri, 'galaxy', 0, text);
@@ -249,11 +249,16 @@ export class Store implements IStoreSymbols {
         }
     }
 
-    public async rebuildS2Metadata(metadataCfg: MetadataConfig = {
-        loadLevel: 'Default',
-        localization: 'enUS',
-    }) {
-        this.s2metadata = new S2WorkspaceMetadata(this.s2workspace, metadataCfg);
+    public async rebuildS2Metadata(
+        metadataCfg: MetadataConfig = {
+            loadLevel: 'Default',
+            localization: 'enUS',
+        },
+        dataCatalogConfig: DataCatalogConfig = {
+            enabled: true,
+        }
+    ) {
+        this.s2metadata = new S2WorkspaceMetadata(this.s2workspace, metadataCfg, dataCatalogConfig);
         await this.s2metadata.build();
     }
 

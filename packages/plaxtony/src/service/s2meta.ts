@@ -7,7 +7,7 @@ import * as dtypes from '../sc2mod/dtypes';
 import { SC2Workspace } from '../sc2mod/archive';
 import { getLineAndCharacterOfPosition } from './utils';
 import { logIt, logger } from '../common';
-import { MetadataConfig } from './server';
+import { DataCatalogConfig, MetadataConfig } from './server';
 
 const elementNotValidCharsRE = /[^a-zA-Z0-9_]+/g;
 const elementValidCharsRE = /^[a-z][a-z0-9_]*$/i;
@@ -139,7 +139,13 @@ export class S2WorkspaceMetadata {
             }
         });
         logger.info('metadata archives', ...this.workspace.metadataArchives.map(item => item.name));
-        await this.workspace.loadComponents();
+        const loaders: Promise<unknown>[] = [];
+        loaders.push(this.workspace.trigComponent.load());
+        loaders.push(this.workspace.locComponent.load());
+        if (this.dataCatalogConfig.enabled) {
+            loaders.push(this.workspace.catalogComponent.load());
+        }
+        await Promise.all(loaders);
 
         for (const lib of this.workspace.trigComponent.getStore().getLibraries().values()) {
             this.mapContainer(lib);
@@ -147,7 +153,11 @@ export class S2WorkspaceMetadata {
         this.mapContainer(this.workspace.trigComponent.getStore());
     }
 
-    constructor(protected workspace: SC2Workspace, protected metadataCfg: MetadataConfig) {
+    constructor(
+        protected workspace: SC2Workspace,
+        protected metadataCfg: MetadataConfig,
+        protected dataCatalogConfig: DataCatalogConfig
+    ) {
     }
 
     public findElementByName(name: string) {

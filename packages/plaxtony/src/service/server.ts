@@ -85,6 +85,10 @@ export interface MetadataConfig {
     localization: string;
 }
 
+export interface DataCatalogConfig {
+    enabled: boolean;
+}
+
 interface PlaxtonyConfig {
     logLevel: string;
     documentUpdateDelay: number;
@@ -97,6 +101,7 @@ interface PlaxtonyConfig {
         service: string;
     };
     metadata: MetadataConfig;
+    dataCatalog: DataCatalogConfig;
     s2mod: {
         sources: string[];
         overrides: {};
@@ -404,7 +409,7 @@ export class Server {
         // process metadata files etc.
         this.connection.sendNotification('indexProgress', 'Indexing trigger libraries and data catalogs..');
         await this.store.updateS2Workspace(workspace);
-        await this.store.rebuildS2Metadata(this.config.metadata);
+        await this.store.rebuildS2Metadata(this.config.metadata, this.config.dataCatalog);
 
         // process .galaxy files in the workspace
         this.connection.sendNotification('indexProgress', `Indexing Galaxy files..`);
@@ -482,6 +487,7 @@ export class Server {
             this.config.fallbackDependency !== newConfig.fallbackDependency ||
             (JSON.stringify(this.config.trace) !== JSON.stringify(newConfig.trace)) ||
             (JSON.stringify(this.config.metadata) !== JSON.stringify(newConfig.metadata)) ||
+            (JSON.stringify(this.config.dataCatalog) !== JSON.stringify(newConfig.dataCatalog)) ||
             (JSON.stringify(this.config.s2mod) !== JSON.stringify(newConfig.s2mod))
         ) {
             logger.warn('Config changed, reindex required');
