@@ -38,8 +38,6 @@ native string EventTypeName();
 native text EventTypeDescription();
 native void UnitMagazineAssign(unit lp_1, abilcmd lp_2, unit lp_3, int lp_4);
 native void UnitMagazineRemove(unit lp_1, abilcmd lp_2, unit lp_3);
-native bool UnitBehaviorEffectTreeUserDataExists(unit lp_1, string lp_2, string lp_3);
-native void UnitBehaviorEffectTreeSetUserData(unit lp_1, string lp_2, string lp_3, fixed lp_4);
 native void UnitInventoryDrop(unit lp_1);
 `;
 
