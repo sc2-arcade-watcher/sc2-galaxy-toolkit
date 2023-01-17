@@ -86,7 +86,7 @@ export class HoverProvider extends AbstractProvider {
 
     protected processElement(node: XMLElement) {
         if (!node.stype) return;
-        let contents = `**<${node.sdef.name}>**`;
+        let contents = `**&lt;${node.sdef.name}&gt;**`;
         let dLink = '#';
 
         switch (node.sdef.nodeKind) {
@@ -128,7 +128,7 @@ export class HoverProvider extends AbstractProvider {
     protected processAttributeName(scAttr: sch.Attribute, xEl: XMLElement): lsp.Hover {
         const contents: string[] = [];
 
-        contents.push(`Attribute of **<${xEl.sdef.name}>** — `);
+        contents.push(`Attribute of **&lt;${xEl.sdef.name}&gt;** — `);
         if (xEl.sdef.nodeKind === sch.ElementDefKind.Frame) {
             const sFrameType = this.store.schema.getFrameType(xEl.stype);
             if (sFrameType) {
