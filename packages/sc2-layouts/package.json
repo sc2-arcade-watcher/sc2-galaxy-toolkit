@@ -24,7 +24,12 @@
         "Programming Languages"
     ],
     "activationEvents": [
-        "onLanguage:sc2layout"
+        "onLanguage:sc2layout",
+        "workspaceContains:**/DescIndex.SC2Layout",
+        "onView:sc2layoutMainView",
+        "onView:sc2layoutElementView",
+        "onCommand:sc2layout.updateSchemaFiles",
+        "onCommand:sc2layout.analyzeWorkspace"
     ],
     "main": "./client/out/client/src/extension",
     "contributes": {
@@ -204,21 +209,27 @@
                 "icon": {
                     "light": "resources/light/layout.svg",
                     "dark": "resources/dark/layout.svg"
-                }
+                },
+                "enablement": "editorLangId == sc2layout"
             },
             {
                 "command": "sc2layout.dtree.showInTextEditor",
-                "title": "Show in text editor"
+                "title": "Show in text editor",
+                "category": "SC2 Layout",
+                "enablement": "view == sc2layoutMainView && viewItem == element"
             },
             {
                 "command": "sc2layout.dtree.showProperties",
-                "title": "Show properties"
+                "title": "Show properties",
+                "category": "SC2 Layout",
+                "enablement": "view == sc2layoutMainView && viewItem == element"
             }
         ],
         "menus": {
             "commandPalette": [
                 {
-                    "command": "sc2layout.dtree.revealActiveFile"
+                    "command": "sc2layout.dtree.revealActiveFile",
+                    "when": "editorLangId == sc2layout"
                 }
             ],
             "editor/title": [
@@ -238,6 +249,10 @@
             "view/item/context": [
                 {
                     "command": "sc2layout.dtree.showInTextEditor",
+                    "when": "view == sc2layoutMainView && viewItem == element"
+                },
+                {
+                    "command": "sc2layout.dtree.showProperties",
                     "when": "view == sc2layoutMainView && viewItem == element"
                 }
             ]
