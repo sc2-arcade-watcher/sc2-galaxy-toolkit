@@ -193,7 +193,16 @@ class AttrValueProvider extends SuggestionsProvider {
             case sch.BuiltinTypeKind.FrameReference:
             {
                 let uNode: UINode;
-                if (pathSel.kind === SyntaxKind.PropertyBindExpr) {
+                // "frame" property of a StateGroupAction defines the context for other attributes, such as:
+                // - property bindings in CFrameStateSetPropertyAction
+                // - "relative" in CFrameStateSetAnchorAction
+                if (
+                    pathSel.kind === SyntaxKind.PropertyBindExpr ||
+                    (
+                        ctx.node?.sdef.nodeKind === sch.ElementDefKind.StateGroupStateAction &&
+                        ctx.attrNameLower !== 'frame'
+                    )
+                ) {
                     uNode = this.xray.determineActionFrameNode(ctx.node);
                 }
                 else {

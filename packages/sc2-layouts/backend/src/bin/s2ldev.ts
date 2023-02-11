@@ -12,7 +12,7 @@ function getRelativeFilenameForType(cType: sch.AbstractModel) {
     return path.join('doc', getMdFilenameOfType(cType));
 }
 
-async function updateDocOfType(sDir: string, cType: sch.AbstractModel) {
+async function updateDocOfType(sDir: string, cType: sch.AbstractModel, dryRun = false) {
     const mdFile = defTypeToMdFile(cType);
     const fullFilename = path.join(sDir, getRelativeFilenameForType(cType));
 
@@ -22,10 +22,16 @@ async function updateDocOfType(sDir: string, cType: sch.AbstractModel) {
         currentContent = await fs.readFile(fullFilename, 'utf8');
     }
     else {
+        if (dryRun) {
+            return true;
+        }
         await fs.ensureFile(fullFilename);
     }
 
     if (currentContent.trim() !== updatedContent.trim()) {
+        if (dryRun) {
+            return true;
+        }
         await fs.writeFile(fullFilename, updatedContent);
         return true;
     }
@@ -34,7 +40,11 @@ async function updateDocOfType(sDir: string, cType: sch.AbstractModel) {
     }
 }
 
-async function updateDocFiles(sDir: string) {
+async function updateDocFiles(sDir: string, dryRun: boolean) {
+    if (dryRun) {
+        console.log('Peforming dry run..');
+    }
+
     const schemaRegistry = await createRegistryFromDir(sDir);
 
     const existingDocs = new Set(await globify(`doc/@(${sch.ModelKind.SimpleType}|${sch.ModelKind.ComplexType})/**/*.md`, {
@@ -55,14 +65,16 @@ async function updateDocFiles(sDir: string) {
                 }
             }
             existingDocs.delete(getRelativeFilenameForType(cType));
-            if (await updateDocOfType(sDir, cType)) {
+            if (await updateDocOfType(sDir, cType, dryRun)) {
                 console.log(`[UPDATED] ${getMdFilenameOfType(cType)}`);
             }
         }
     }
 
     for (const item of existingDocs) {
-        await fs.remove(path.join(sDir, item));
+        if (!dryRun) {
+            await fs.remove(path.join(sDir, item));
+        }
         console.log(`[REMOVED] ${item}`);
     }
 }
@@ -118,26 +130,27 @@ async function applyHookups(srcList: string, srcFrmType: string) {
 // ===
 // run
 
-if (process.argv.length < 3) process.exit(1);
+if (process.argv.length < 3) throw new Error('missing cmd');
 
 switch (process.argv[2]) {
     case 'doc':
     {
-        if (process.argv.length < 4) process.exit(1);
-        updateDocFiles(process.argv[3]);
+        // argv4 optional
+        if (process.argv.length < 4) throw new Error('missing required args');
+        updateDocFiles(process.argv[3], process.argv[4] === 'force' ? false : true);
         break;
     }
 
     case 'cache':
     {
-        if (process.argv.length < 5) process.exit(1);
+        if (process.argv.length < 5) throw new Error('missing required args');
         cacheSchema(process.argv[3], process.argv[4]);
         break;
     }
 
     case 'hookups':
     {
-        if (process.argv.length < 5) process.exit(1);
+        if (process.argv.length < 5) throw new Error('missing required args');
         applyHookups(process.argv[3], process.argv[4]);
         break;
     }

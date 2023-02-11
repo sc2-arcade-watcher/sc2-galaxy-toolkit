@@ -80,7 +80,11 @@ export class DefinitionProvider extends AbstractProvider {
         if (pathIndex === void 0) return;
 
         let uNode: UINode;
-        if (pathSel.kind === SyntaxKind.PropertyBindExpr) {
+        if (
+            // xEl?.sdef.nodeKind === sch.ElementDefKind.StateGroupStateAction ||
+            // xEl?.sdef.type.mpKind === sch.MappedComplexKind.CFrameStateSetAnchorAction ||
+            pathSel.kind === SyntaxKind.PropertyBindExpr
+        ) {
             uNode = this.xray.determineActionFrameNode(xEl);
         }
         else {
