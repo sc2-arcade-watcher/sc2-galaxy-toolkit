@@ -38,7 +38,7 @@ export interface DTElement extends DTItem {
     fileUri: string;
     ctype: string;
     fqn: string[];
-    selectionRange: lsp.Range;
+    selectionRange?: lsp.Range;
 }
 
 export interface DTElementWithChildren extends DTElement {

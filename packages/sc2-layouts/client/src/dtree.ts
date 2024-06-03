@@ -325,15 +325,18 @@ export class TreeViewProvider implements vs.Disposable {
     }
 
     async showInTextEditor(dtNode: DTElement) {
-        await vs.window.showTextDocument(vs.Uri.parse(dtNode.fileUri), {
+        const docShowOpts: vs.TextDocumentShowOptions = {
             preserveFocus: true,
-            selection: new vs.Range(
+        };
+        if (dtNode.selectionRange) {
+            docShowOpts.selection = new vs.Range(
                 dtNode.selectionRange.start.line,
                 dtNode.selectionRange.start.character,
                 dtNode.selectionRange.end.line,
                 dtNode.selectionRange.end.character
-            ),
-        });
+            )
+        }
+        await vs.window.showTextDocument(vs.Uri.parse(dtNode.fileUri), docShowOpts);
     }
 
     async revealTextSelectedNode(textEditor: vs.TextEditor, edit: vs.TextEditorEdit) {
