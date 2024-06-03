@@ -57,12 +57,13 @@ const sc2layoutConfig: vs.LanguageConfiguration = {
     ],
 };
 
-let client: lspc.LanguageClient;
 let extContext: vs.ExtensionContext;
-let dTree: TreeViewProvider;
-let wsChecker: WorkspaceSetupChecker;
 
 export async function activate(context: vs.ExtensionContext) {
+    let client: lspc.LanguageClient;
+    let wsChecker: WorkspaceSetupChecker;
+    let dTree: TreeViewProvider;
+
     extContext = context;
     context.subscriptions.push(vs.languages.setLanguageConfiguration('sc2layout', sc2layoutConfig));
 
@@ -100,16 +101,33 @@ export async function activate(context: vs.ExtensionContext) {
     };
 
     client = new lspc.LanguageClient('sc2layout', 'SC2Layout', serverOptions, clientOptions);
-    client.start();
+    context.subscriptions.push(client.start());
     await client.onReady();
 
     wsChecker = new WorkspaceSetupChecker(client);
     context.subscriptions.push(wsChecker.install());
 
-    if (vs.workspace.getConfiguration('sc2layout.treeview').get<boolean>('visible')) {
-        dTree = new TreeViewProvider(client);
-        context.subscriptions.push(dTree);
+    function refreshTreeProvider() {
+        if (vs.workspace.getConfiguration('sc2layout.treeview').get<boolean>('visible')) {
+            if (dTree) return;
+            dTree = new TreeViewProvider(client);
+            context.subscriptions.push(dTree);
+        }
+        else {
+            if (!dTree) return;
+            dTree.dispose();
+            dTree = void 0;
+        }
     }
+    vs.commands.executeCommand('setContext', 'sc2layout:extensionEnabled', true);
+
+    refreshTreeProvider();
+    context.subscriptions.push(vs.workspace.onDidChangeConfiguration((ev: vs.ConfigurationChangeEvent) => {
+        if (!ev.affectsConfiguration('sc2layout')) return;
+        if (ev.affectsConfiguration('sc2layout.treeview')) {
+            refreshTreeProvider();
+        }
+    }));
 
     let indexingProgress: ProgressProxy;
     client.onNotification('progressCreate', (params: ProgressReportParams) => {
@@ -133,10 +151,6 @@ export async function activate(context: vs.ExtensionContext) {
 }
 
 export async function deactivate() {
-    if (!client) {
-        await client.stop();
-        client = void 0;
-    }
     extContext = void 0;
 }
 

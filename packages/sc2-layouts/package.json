@@ -229,13 +229,13 @@
             "commandPalette": [
                 {
                     "command": "sc2layout.dtree.revealActiveFile",
-                    "when": "editorLangId == sc2layout"
+                    "when": "sc2layout:extensionEnabled && editorLangId == sc2layout"
                 }
             ],
             "editor/title": [
                 {
                     "command": "sc2layout.dtree.revealActiveFile",
-                    "when": "resourceLangId == sc2layout && config.sc2layout.treeview.visible == true",
+                    "when": "sc2layout:extensionEnabled && resourceLangId == sc2layout && config.sc2layout.treeview.visible == true",
                     "group": "navigation"
                 }
             ],
@@ -262,12 +262,12 @@
                 {
                     "id": "sc2layoutMainView",
                     "name": "Layout tree",
-                    "when": "config.sc2layout.treeview.visible == true"
+                    "when": "sc2layout:extensionEnabled && config.sc2layout.treeview.visible == true"
                 },
                 {
                     "id": "sc2layoutElementView",
                     "name": "Element details",
-                    "when": "config.sc2layout.treeview.visible == true"
+                    "when": "sc2layout:extensionEnabled && config.sc2layout.treeview.visible == true"
                 }
             ]
         },
