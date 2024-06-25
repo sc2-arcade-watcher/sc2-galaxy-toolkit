@@ -1,6 +1,6 @@
 export enum ExtCfgSchemaUpdateMode {
-    Auto = 'auto',
-    Manual = 'manual',
+    Auto = 'Auto',
+    Manual = 'Manual',
 }
 
 export type SectionTrace = {

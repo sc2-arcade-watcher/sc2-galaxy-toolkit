@@ -181,11 +181,15 @@ export class SchemaLoader {
             smState = await this.downloadSchema(gTag, gVersion);
             this.storeSmState(smState);
             logger.info(`schema files updated to ${smState.tag.name}`);
-            this.slSrv.conn.window.showInformationMessage(`Schema files updated to ${smState.tag.name}`);
+            if (reportStatus) {
+                this.slSrv.conn.window.showInformationMessage(`Schema files updated to ${smState.tag.name}`);
+            }
             return smState;
         }
         else {
-            this.slSrv.conn.window.showInformationMessage(`Schema files are already up to date.`);
+            if (reportStatus) {
+                this.slSrv.conn.window.showInformationMessage(`Schema files are already up to date.`);
+            }
         }
     }
 
@@ -240,7 +244,13 @@ export class SchemaLoader {
             if (!smState) {
                 smState = await this.updateSchema(true);
             }
+            else if (schConfig.updateMode === 'Manual') {
+            }
             else if (schConfig.updateMode === 'Auto') {
+                this.performUpdate();
+            }
+            else {
+                logger.warn(`invalid config value for "schema.updateMode"`);
                 this.performUpdate();
             }
 
