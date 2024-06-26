@@ -1,5 +1,10 @@
 # Change Log
 
+## [[1.0.3]](https://github.com/Talv/sc2-layouts/compare/v1.0.2...v1.0.3) - 2024-06-26
+
+* Bugfixes
+* Updated `sc2-data` to `5.0.13.92174`
+
 ## [[1.0.2]](https://github.com/Talv/sc2-layouts/compare/v1.0.1...v1.0.2) - 2019-12-15
 
 * Bugfixes
