@@ -11,8 +11,8 @@ interface DTRichElement extends DTElementWithChildren {
 type DTRichItemType = DTArchive | DTLayout | DTRichElement;
 
 export class DescTreeDataProvider implements vs.TreeDataProvider<DTRichItemType> {
-    protected _onDidChangeTreeData: vs.EventEmitter<DTRichItemType> = new vs.EventEmitter<DTRichItemType>();
-    readonly onDidChangeTreeData: vs.Event<DTRichItemType | undefined | null> = this._onDidChangeTreeData.event;
+    protected _onDidChangeTreeData: vs.EventEmitter<DTRichItemType | undefined> = new vs.EventEmitter<DTRichItemType | undefined>();
+    readonly onDidChangeTreeData: vs.Event<DTRichItemType | undefined> = this._onDidChangeTreeData.event;
 
     protected archiveNodes = new Map<string, DTArchive>();
     protected layoutNodes = new Map<string, DTLayout>();
@@ -98,7 +98,7 @@ export class DescTreeDataProvider implements vs.TreeDataProvider<DTRichItemType>
         if (syncWorkspaceState) {
             this.archiveNodes.clear();
             this.layoutNodes.clear();
-            this._onDidChangeTreeData.fire();
+            this._onDidChangeTreeData.fire(void 0);
         }
     }
 
@@ -230,8 +230,8 @@ interface ElementViewDataSectionRich extends ElementViewDataSection {
 }
 
 class FramePropertiesTreeDataProvider implements vs.TreeDataProvider<ElementViewDataSectionRich> {
-    protected _onDidChangeTreeData: vs.EventEmitter<ElementViewDataSectionRich> = new vs.EventEmitter<ElementViewDataSectionRich>();
-    readonly onDidChangeTreeData: vs.Event<ElementViewDataSectionRich | undefined | null> = this._onDidChangeTreeData.event;
+    protected _onDidChangeTreeData: vs.EventEmitter<ElementViewDataSectionRich | undefined> = new vs.EventEmitter<ElementViewDataSectionRich>();
+    readonly onDidChangeTreeData: vs.Event<ElementViewDataSectionRich | undefined> = this._onDidChangeTreeData.event;
     protected rootElements: ElementViewDataSectionRich[] = void 0;
     protected activeElement: DTElement = void 0;
 

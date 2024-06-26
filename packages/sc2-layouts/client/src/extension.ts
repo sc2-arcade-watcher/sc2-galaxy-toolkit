@@ -10,7 +10,7 @@ type ProgressReportParams = {
 };
 
 interface ProgressProxy {
-    done: () => void;
+    done: (value: any) => void;
     progress: vs.Progress<ProgressReportParams>;
 }
 
@@ -131,7 +131,7 @@ export async function activate(context: vs.ExtensionContext) {
 
     let indexingProgress: ProgressProxy;
     client.onNotification('progressCreate', (params: ProgressReportParams) => {
-        if (indexingProgress) indexingProgress.done();
+        if (indexingProgress) indexingProgress.done(void 0);
         indexingProgress = createProgressNotification(params);
     });
     client.onNotification('progressReport', (params: ProgressReportParams) => {
@@ -139,7 +139,7 @@ export async function activate(context: vs.ExtensionContext) {
         indexingProgress.progress.report(params);
     });
     client.onNotification('progressDone', (params: ProgressReportParams) => {
-        if (indexingProgress) indexingProgress.done();
+        if (indexingProgress) indexingProgress.done(void 0);
         indexingProgress = void 0;
         vs.window.setStatusBarMessage(params.message, 2000);
     });
