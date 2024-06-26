@@ -152,7 +152,7 @@ interface ComplexTypeOrigin {
 export interface ComplexType extends AbstractModel {
     smKind: ModelKind.ComplexType;
     mpKind: MappedComplexKind;
-    flags: CommonTypeFlags | ComplexTypeFlags;
+    flags: CommonTypeFlags | ComplexTypeFlags | number;
     attributes: Map<string, Attribute>;
     indeterminateAttributes: Map<string, IndeterminateAttr>;
     struct: Map<string, ElementDef>;
@@ -205,7 +205,7 @@ export interface AlternationStatementDesc {
 
 export interface ElementDef extends AbstractModel {
     nodeKind: ElementDefKind;
-    flags: ElementDefFlags;
+    flags: ElementDefFlags | number;
     name: string;
     type: ComplexType;
     altType?: AlternationDesc;

@@ -31,7 +31,7 @@ class DocumentUpdateRequest {
     updateTimer: NodeJS.Timer;
     diagnosticsTimer: NodeJS.Timer;
     completed = false;
-    protected awaitersQueue: (() => void)[] = [];
+    protected awaitersQueue: ((value: any) => void)[] = [];
 
     constructor(public readonly doc: lsp.TextDocument, public readonly doUpdate: DocumentUpdateProcess) {
     }
@@ -42,7 +42,7 @@ class DocumentUpdateRequest {
         }
         return new Promise((resolve, reject) => {
             if (this.completed) {
-                resolve();
+                resolve(void 0);
             }
             else {
                 this.awaitersQueue.push(resolve);
@@ -66,7 +66,7 @@ class DocumentUpdateRequest {
     resolve() {
         this.completed = true;
         for (const tmp of this.awaitersQueue) {
-            tmp();
+            tmp(void 0);
         }
         this.awaitersQueue = [];
     }
@@ -148,7 +148,7 @@ export type InitializationOptions = {
 };
 
 export type ErrorHandlerType = (params: {
-    err: Error,
+    err: any,
     self: any,
     propKey: string,
 }) => void;
