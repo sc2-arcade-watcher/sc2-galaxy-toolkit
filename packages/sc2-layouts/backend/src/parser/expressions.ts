@@ -210,10 +210,14 @@ export class Scanner {
 
 export const enum SelHandleKind {
     Unknown,
+
+    /** user/custom identifier (non $) */
     Identifier,
+
+    /** user/custom handle ($Custom) */
     Custom,
 
-    // builtin
+    // builtin handle
     This,
     Parent,
     Root,
@@ -569,7 +573,9 @@ export class ExpressionParser {
             }
 
             if (this.token() === SyntaxKind.SlashToken) {
-                this.parseExpected(SyntaxKind.SlashToken);
+                while (this.token() === SyntaxKind.SlashToken) {
+                    this.parseExpected(SyntaxKind.SlashToken);
+                }
                 hasSeparator = true;
             }
             else {
@@ -634,6 +640,8 @@ export class ExpressionParser {
         const pathSel = this.createNode<PathSelector>(SyntaxKind.PathSelector, 0);
         this.nextToken();
         pathSel.path = this.parseSelectionPath();
+
+        this.parseExpected(SyntaxKind.EndOfStreamToken);
 
         this.finishNode(pathSel);
         this.finalizeExpr(pathSel);
