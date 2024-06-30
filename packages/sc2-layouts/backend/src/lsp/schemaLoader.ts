@@ -164,8 +164,11 @@ export class SchemaLoader {
         let gTag: IGithub.Tag.Entry;
         let gVersion: number[];
         for (const item of await this.getTags()) {
-            // format vX.X
-            gVersion = item.name.substr(1).split('.').map(v => Number(v));
+            // expected format: "vX.X"
+            const m = item.name.match(/^v(?<majorVersion>\d+)\.(?<minorVersion>\d+)$/);
+            if (!m || !m.groups) continue;
+
+            gVersion = [Number(m[1]), Number(m[2])];
             if (gVersion[0] === currentModelVersion) {
                 gTag = item;
                 break;
