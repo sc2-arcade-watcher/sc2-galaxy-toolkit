@@ -190,7 +190,7 @@ export class LayoutChecker {
                         this.reportAtAttrVal(
                             nattr,
                             `Case sensitivity of the given path doesn't match with the definition. Fix "${tmp._icaseMissmatch}".`,
-                            DiagnosticCategory.Warning
+                            DiagnosticCategory.Hint
                         );
                     }
                     else {
@@ -249,7 +249,7 @@ export class LayoutChecker {
                 this.reportAtNode(
                     el,
                     `Frame[${sFrameType.name}] is missing hookup definition of "${sHookup.fClass.name}" at path "${sHookup.path}".`,
-                    DiagnosticCategory.Message
+                    DiagnosticCategory.Hint
                 );
                 continue;
             }
@@ -392,7 +392,7 @@ export class LayoutChecker {
                     }
                     const sprop = this.store.schema.getPropertyByName(propBind.property.name);
                     if (!sprop) {
-                        this.reportAtAttrVal(nattr, `Unknown property "${propBind.property.name}" in property bind expression`, DiagnosticCategory.Message);
+                        this.reportAtAttrVal(nattr, `Unknown property "${propBind.property.name}" in property bind expression`, DiagnosticCategory.Warning);
                         continue outer;
                     }
                     break;
