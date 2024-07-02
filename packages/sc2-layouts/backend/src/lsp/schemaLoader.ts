@@ -66,20 +66,19 @@ export class SchemaLoader {
     protected storagePath = this.slSrv.initOptions.globalStoragePath;
     protected tmpPath = path.join(this.storagePath, 'tmp');
     protected cachePath = path.join(this.storagePath, 'cache');
+    readonly schStateSrc = path.join(this.storagePath, 'sch-state.json');
 
     constructor(protected slSrv: S2LServer) {
     }
 
     protected async readSmState() {
-        const schStateSrc = path.join(this.storagePath, 'sch-state.json');
-        if (await fs.pathExists(schStateSrc)) {
-            return await fs.readJSON(schStateSrc) as SchemaState;
+        if (await fs.pathExists(this.schStateSrc)) {
+            return await fs.readJSON(this.schStateSrc) as SchemaState;
         }
     }
 
     protected async storeSmState(smState: SchemaState) {
-        const schStateSrc = path.join(this.storagePath, 'sch-state.json');
-        await fs.writeJSON(schStateSrc, smState);
+        await fs.writeJSON(this.schStateSrc, smState);
     }
 
     @logIt({ resDump: true })
@@ -220,10 +219,14 @@ export class SchemaLoader {
         }
     }
 
+    public get isUsingLocalSchema() {
+        return typeof this.slSrv.cfg.schema.localPath === 'string';
+    }
+
     async prepareSchema() {
         const schConfig = this.slSrv.cfg.schema;
 
-        if (typeof schConfig.localPath === 'string') {
+        if (this.isUsingLocalSchema) {
             logger.info('[SchemaLoader] using custom path', schConfig.localPath);
             return createRegistryFromDir(path.join(schConfig.localPath, 'sc2layout'));
         }
@@ -260,5 +263,10 @@ export class SchemaLoader {
             logger.info(`Loading from`, path.join(this.cachePath, smState.cacheFilename));
             return createRegistry(await fs.readJSON(path.join(this.cachePath, smState.cacheFilename)));
         }
+    }
+
+    async cleanupState() {
+        if (!this.isUsingLocalSchema) return;
+        (await fs.pathExists(this.schStateSrc)) && (await fs.remove(this.schStateSrc));
     }
 }

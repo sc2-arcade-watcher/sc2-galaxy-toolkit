@@ -295,18 +295,24 @@ export class S2LServer implements ErrorReporter, LangService {
         return this.store.updateDocument(doc.uri, doc.getText(), doc.version);
     }
 
-    @errGuard()
     protected async loadSchema() {
         let schemaRegistry: SchemaRegistry;
         try {
             schemaRegistry = await this.schemaLoader.prepareSchema();
+            return schemaRegistry;
         }
         catch (e) {
             logger.error('prepareSchema', e);
-            this.conn.window.showErrorMessage(`Fatal error, failed to load schema files. ${(<Error>e).message}`);
-            return;
+            const r = await this.conn.window.showErrorMessage(
+                `Fatal error, failed to load schema files. ${(<Error>e).message}`,
+                { title: 'Restart' }
+            );
+            if (r?.title === 'Restart') {
+                await this.schemaLoader.cleanupState();
+                process.abort();
+                throw e;
+            }
         }
-        return schemaRegistry;
     }
 
     @logIt()
