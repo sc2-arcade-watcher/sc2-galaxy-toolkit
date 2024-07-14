@@ -10,7 +10,10 @@ import { AbstractProvider } from '../src/lsp/provider';
 import { S2LServer } from '../src/lsp/server';
 
 export function getSchema(): SchemaRegistry {
-    return (<any>global)._cachedSchema;
+    if (typeof (<any>global)._cachedSchemaGen === 'undefined') {
+        throw new Error('_cachedSchemaGen missing')
+    }
+    return (<any>global)._cachedSchemaGen();
 }
 
 export function getFixturePath(...src: string[]) {
