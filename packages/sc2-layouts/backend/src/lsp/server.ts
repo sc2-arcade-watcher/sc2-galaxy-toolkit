@@ -28,8 +28,8 @@ const fileChangeTypeNames: { [key: number]: string } = {
 type DocumentUpdateProcess = (forced?: boolean) => void;
 
 class DocumentUpdateRequest {
-    updateTimer: NodeJS.Timer;
-    diagnosticsTimer: NodeJS.Timer;
+    updateTimer: NodeJS.Timeout;
+    diagnosticsTimer: NodeJS.Timeout;
     completed = false;
     protected awaitersQueue: ((value: any) => void)[] = [];
 
