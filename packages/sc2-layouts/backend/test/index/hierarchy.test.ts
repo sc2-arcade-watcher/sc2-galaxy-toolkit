@@ -100,68 +100,74 @@ describe('hierarchy navigator', function () {
     const uBuilder = new UIBuilder(getSchema(), dIndex);
     const exParser = new ExpressionParser();
 
+    function parsePathSelectorStrict(text: string) {
+        const psel = exParser.parsePathSelector(text);
+        assert.lengthOf(psel.diagnostics, 0, (() => psel.diagnostics.map(x => `${x.message}`))().join('\n'))
+        return psel;
+    }
+
     describe('selector', function () {
         it('identifier', function () {
             const uNode = uBuilder.buildNodeFromDesc(gameFrameDesc.getMulti('WorldPanel', 'UnitStatusPanel')) as FrameNode;
 
-            let resolvedNode = navigator.resolveSelectorFragment(uNode, exParser.parsePathSelector('Title').path[0]);
+            let resolvedNode = navigator.resolveSelectorFragment(uNode, parsePathSelectorStrict('Title').path[0]);
             assert.equal(resolvedNode.name, 'Title');
         });
 
         it('custom handle', function () {
             const uNode = uBuilder.buildNodeFromDesc(gameFrameDesc.getMulti('WorldPanel', 'UnitStatusPanel')) as FrameNode;
 
-            let resolvedNode = navigator.resolveSelectorFragment(uNode, exParser.parsePathSelector('$GameUI').path[0]);
+            let resolvedNode = navigator.resolveSelectorFragment(uNode, parsePathSelectorStrict('$GameUI').path[0]);
             assert.equal(resolvedNode.name, 'GameUI');
 
-            resolvedNode = navigator.resolveSelectorFragment(uNode, exParser.parsePathSelector('$NotExistingHandle').path[0]);
+            resolvedNode = navigator.resolveSelectorFragment(uNode, parsePathSelectorStrict('$NotExistingHandle').path[0]);
             assert.isUndefined(resolvedNode);
         });
 
         it('$this', function () {
             const uNode = uBuilder.buildNodeFromDesc(gameFrameDesc.getMulti('WorldPanel', 'UnitStatusPanel')) as FrameNode;
 
-            let resolvedNode = navigator.resolveSelectorFragment(uNode, exParser.parsePathSelector('$this').path[0]);
+            let resolvedNode = navigator.resolveSelectorFragment(uNode, parsePathSelectorStrict('$this').path[0]);
             assert.equal(resolvedNode.name, 'UnitStatusPanel');
         });
 
         it('$parent', function () {
             const uNode = uBuilder.buildNodeFromDesc(gameFrameDesc.getMulti('WorldPanel', 'UnitStatusPanel')) as FrameNode;
 
-            let resolvedNode = navigator.resolveSelectorFragment(uNode, exParser.parsePathSelector('$parent').path[0]);
+            let resolvedNode = navigator.resolveSelectorFragment(uNode, parsePathSelectorStrict('$parent').path[0]);
             assert.equal(resolvedNode.name, 'WorldPanel');
         });
 
         // it('$sibling', function () {
         //     const uNode = uBuilder.buildNodeFromDesc(gameFrameDesc.getMulti('btn')) as FrameNode;
 
-        //     let resolvedNode = navigator.resolveSelectorFragment(uNode, exParser.parsePathSelector('$sibling-1').path[0]);
+        //     let resolvedNode = navigator.resolveSelectorFragment(uNode, parsePathSelectorStrict('$sibling-1').path[0]);
         //     assert.equal(resolvedNode.name, 'WorldPanel');
         // });
 
-        it('$ancestor[name]', function () {
+        it('$ancestor[@name]', function () {
             const uNode = uBuilder.buildNodeFromDesc(gameFrameDesc.getMulti('WorldPanel', 'UnitStatusPanel')) as FrameNode;
 
-            let resolvedNode = navigator.resolveSelectorFragment(uNode, exParser.parsePathSelector('$ancestor[name=WorldPanel]').path[0]);
+            let resolvedNode = navigator.resolveSelectorFragment(uNode, parsePathSelectorStrict('$ancestor[@name=WorldPanel]').path[0]);
             assert.equal(resolvedNode.name, 'WorldPanel');
         });
 
-        it('$ancestor[type]', function () {
+        it('$ancestor[@type]', function () {
             const uNode = uBuilder.buildNodeFromDesc(gameFrameDesc.getMulti('btn', 'Title')) as FrameNode;
 
-            let resolvedNode = navigator.resolveSelectorFragment(uNode, exParser.parsePathSelector('$ancestor[type=Button]').path[0]);
+            let resolvedNode = navigator.resolveSelectorFragment(uNode, parsePathSelectorStrict('$ancestor[@type=Button]').path[0]);
             assert.equal(resolvedNode.name, 'btn');
         });
 
-        it('$ancestor[oftype]', function () {
+        it('$ancestor[@oftype]', function () {
             const controlDesc = dIndex.rootNs.getMulti('Control', 'GameUI', 'Container');
             const uNode = uBuilder.buildNodeFromDesc(controlDesc.getMulti('StandardGlueButton', 'Name')) as FrameNode;
 
-            let resolvedNode = navigator.resolveSelectorFragment(uNode, exParser.parsePathSelector('$ancestor[oftype=Control]').path[0]);
+            let resolvedNode = navigator.resolveSelectorFragment(uNode, parsePathSelectorStrict('$ancestor[@oftype=Control]').path[0]);
             assert.equal(resolvedNode.name, 'StandardGlueButton');
-            resolvedNode = navigator.resolveSelectorFragment(uNode, exParser.parsePathSelector('$ancestor[oftype=Frame]').path[0]);
+            resolvedNode = navigator.resolveSelectorFragment(uNode, parsePathSelectorStrict('$ancestor[@oftype=Frame]').path[0]);
             assert.equal(resolvedNode.name, 'StandardGlueButton');
-            resolvedNode = navigator.resolveSelectorFragment(uNode, exParser.parsePathSelector('$ancestor[oftype=GameUI]').path[0]);
+            resolvedNode = navigator.resolveSelectorFragment(uNode, parsePathSelectorStrict('$ancestor[@oftype=GameUI]').path[0]);
             assert.equal(resolvedNode.name, 'GameUI');
         });
     });
@@ -170,7 +176,7 @@ describe('hierarchy navigator', function () {
         const uGameNode = uBuilder.buildNodeFromDesc(dIndex.rootNs.getMulti('GameUI', 'GameUI'));
 
         it('[GameUI] WorldPanel/$parent/Group/FillImageContainer/Background', function () {
-            const psel = exParser.parsePathSelector('WorldPanel/$parent/Group/FillImageContainer/Background');
+            const psel = parsePathSelectorStrict('WorldPanel/$parent/Group/FillImageContainer/Background');
             const resolvedSel = navigator.resolveSelection(uGameNode, psel.path);
             assert.isDefined(resolvedSel.target);
             assert.equal(resolvedSel.target.fqn, 'GameUI/Group/FillImageContainer/Background');
@@ -178,7 +184,7 @@ describe('hierarchy navigator', function () {
 
         it('[Tpl1/BTemplate] L1/L2', function () {
             const tplNode = uBuilder.buildNodeFromDesc(dIndex.rootNs.getMulti('Tpl1', 'BTemplate'));
-            const psel = exParser.parsePathSelector('L1/L2');
+            const psel = parsePathSelectorStrict('L1/L2');
             const resolvedSel = navigator.resolveSelection(tplNode, psel.path);
             assert.isDefined(resolvedSel.target);
         });
