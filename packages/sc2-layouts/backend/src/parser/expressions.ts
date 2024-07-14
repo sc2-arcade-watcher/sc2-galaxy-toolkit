@@ -12,6 +12,8 @@ export function isIdentifierPart(ch: number): boolean {
         || (ch >= CharacterCodes.a && ch <= CharacterCodes.z)
         || (ch >= CharacterCodes._0 && ch <= CharacterCodes._9)
         || (ch === CharacterCodes._)
+        || (ch === CharacterCodes.at)
+        || (ch === CharacterCodes.bar)
     ;
 }
 
