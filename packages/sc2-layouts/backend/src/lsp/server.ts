@@ -309,8 +309,7 @@ export class S2LServer implements ErrorReporter, LangService {
             );
             if (r?.title === 'Restart') {
                 await this.schemaLoader.cleanupState();
-                process.abort();
-                throw e;
+                process.exit(0);
             }
         }
     }
@@ -695,7 +694,11 @@ export class S2LServer implements ErrorReporter, LangService {
     protected async onExecuteCommand(params: lsp.ExecuteCommandParams) {
         switch (params.command) {
             case 'sc2layout.updateSchemaFiles': {
-                await this.schemaLoader.performUpdate(true);
+                this.conn.window.showInformationMessage('Updating sc2layout schema files..');
+                await this.schemaLoader.performUpdate({
+                    reportStatus: true,
+                    force: true,
+                });
                 break;
             }
 

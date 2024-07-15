@@ -6,6 +6,7 @@ import extractZip from 'extract-zip';
 import { promisify } from 'util';
 import { S2LServer } from './server';
 import { logger, logIt } from '../logger';
+import assert from 'assert';
 
 const extractZipAsync = promisify(extractZip);
 const currentModelVersion = 6;
@@ -42,14 +43,49 @@ namespace IGithub {
             url: string;
         }
     }
+
+    export type GitTag = {
+        message: string;
+        node_id: string;
+        object: {
+            sha: string;
+            type: string;
+            url: string;
+        }
+        sha: string;
+        tag: string;
+        tagger: {
+            date: string;
+            email: string;
+            name: string;
+        }
+        url: string;
+        verification: {
+            payload: any
+            reason: string;
+            signature: any;
+            verified: boolean;
+        }
+    }
+
+    export interface GitRefs {
+        node_id: string
+        object: {
+            sha: string
+            type: string
+            url: string
+        }
+        ref: string
+        url: string
+    }
 }
 
 export interface SchemaState {
-    // srcDir: string;
     cacheFilename: string;
     shortHash: string;
-    tag: IGithub.Tag.Entry;
     version: number[];
+    gitTag?: IGithub.GitTag;
+    lastUpdateCheckTimestamp?: number;
 }
 
 const schemaGithubRepo = 'SC2Mapster/sc2layout-schema';
@@ -103,9 +139,32 @@ export class SchemaLoader {
         return r;
     }
 
+    @logIt({ resDump: true })
+    protected async getGitRefs(refName: string = '') {
+        const r: IGithub.GitRefs[] = await request.get(`https://api.github.com/repos/${schemaGithubRepo}/git/matching-refs/${refName}`, {
+            headers: {
+                'User-Agent': 'nodejs request'
+            },
+            json: true,
+        });
+        return r;
+    }
+
+    @logIt({ resDump: true })
+    protected async getGitTagDetails(sha: string) {
+        const r: IGithub.GitTag = await request.get(`https://api.github.com/repos/${schemaGithubRepo}/git/tags/${sha}`, {
+            headers: {
+                'User-Agent': 'nodejs request'
+            },
+            json: true,
+        });
+        return r;
+    }
+
     @logIt()
-    protected async downloadSchema(gTag: IGithub.Tag.Entry, version: number[]): Promise<SchemaState> {
-        const shortHash = gTag.commit.sha.substr(0, 7);
+    protected async downloadSchema(gitTag: IGithub.GitTag, version: number[]): Promise<SchemaState> {
+        const commitSha = gitTag.sha;
+        const shortHash = commitSha.substring(0, 7);
         const zipSrc = path.join(this.tmpPath, `${shortHash}.zip`);
         let zipOutDir = this.tmpPath;
 
@@ -113,9 +172,9 @@ export class SchemaLoader {
         await fs.remove(this.tmpPath);
         await fs.ensureDir(this.tmpPath);
 
-        logger.info(`Downloading zipball of ${gTag.commit.sha}`);
+        logger.info(`Downloading zipball of ${commitSha}`);
         await fs.ensureFile(zipSrc);
-        const payload: Buffer = await request.get(`https://api.github.com/repos/${schemaGithubRepo}/zipball/${gTag.commit.sha}`, {
+        const payload: Buffer = await request.get(`https://api.github.com/repos/${schemaGithubRepo}/zipball/${commitSha}`, {
             headers: {
                 'User-Agent': 'nodejs request'
             },
@@ -145,64 +204,96 @@ export class SchemaLoader {
         await fs.writeJSON(path.join(this.cachePath, cacheFilename), sData);
 
         return {
-            tag: gTag,
             shortHash: shortHash,
             version: version,
             cacheFilename: cacheFilename,
+            gitTag: gitTag,
         };
     }
 
     @logIt()
-    protected async updateSchema(reportStatus: boolean = false) {
-        if (reportStatus) {
-            this.slSrv.conn.window.showInformationMessage('Updating sc2layout schema files..');
-        }
-
+    protected async updateSchema(opts: {
+        force?: boolean;
+        reportStatus?: boolean;
+    } = {}) {
         let smState = await this.readSmState();
 
-        let gTag: IGithub.Tag.Entry;
-        let gVersion: number[];
-        for (const item of await this.getTags()) {
+        let gKnownMinorVersions: {
+            version: number;
+            gitRef: IGithub.GitRefs;
+        }[] = [];
+        for (const item of await this.getGitRefs(`tags/v${currentModelVersion}.`)) {
             // expected format: "vX.X"
-            const m = item.name.match(/^v(?<majorVersion>\d+)\.(?<minorVersion>\d+)$/);
+            const m = item.ref.match(/^refs\/tags\/v(?<majorVersion>\d+)\.(?<minorVersion>\d+)$/);
             if (!m || !m.groups) continue;
 
-            gVersion = [Number(m[1]), Number(m[2])];
-            if (gVersion[0] === currentModelVersion) {
-                gTag = item;
-                break;
-            }
+            assert.ok(Number(m.groups['majorVersion']) === currentModelVersion);
+            gKnownMinorVersions.push({
+                version: Number(m.groups['minorVersion']),
+                gitRef: item,
+            });
         }
-
-        if (gTag === void 0) {
+        if (gKnownMinorVersions.length === 0) {
             throw new Error(`Couldn't find schema files for v${currentModelVersion} in the repoistory.`);
         }
 
-        if (!smState || smState.tag.name !== gTag.name) {
+        gKnownMinorVersions = gKnownMinorVersions.sort((a, b) => a.version - b.version);
+        const gLatestVersion = gKnownMinorVersions[gKnownMinorVersions.length - 1];
+
+        const gTag = await this.getGitTagDetails(gLatestVersion.gitRef.object.sha);
+
+        if (
+            !smState ||
+            opts.force === true ||
+            smState.shortHash !== gTag.sha.substring(0, 7)
+        ) {
             logger.info(`Schema files are out of date, updating..`);
-            smState = await this.downloadSchema(gTag, gVersion);
-            this.storeSmState(smState);
-            logger.info(`schema files updated to ${smState.tag.name}`);
-            if (reportStatus) {
-                this.slSrv.conn.window.showInformationMessage(`Schema files updated to ${smState.tag.name}`);
+            smState = await this.downloadSchema(gTag, [currentModelVersion, gLatestVersion.version]);
+            smState.lastUpdateCheckTimestamp = Date.now();
+            await this.storeSmState(smState);
+
+            const updateDate = new Date(smState.gitTag!.tagger.date);
+            logger.info(`Schema files updated to ${smState.gitTag!.tag}, published at ${updateDate.toUTCString()}`);
+            if (opts.reportStatus) {
+                this.slSrv.conn.window.showInformationMessage(`Schema files updated to ${smState.gitTag!.tag}, published at ${updateDate.toUTCString()}`);
             }
-            return smState;
+
+            return {
+                smState,
+                updated: true,
+            };
         }
         else {
-            if (reportStatus) {
+            // update check timestamp
+            smState.lastUpdateCheckTimestamp = Date.now();
+            await this.storeSmState(smState);
+
+            if (opts.reportStatus) {
                 this.slSrv.conn.window.showInformationMessage(`Schema files are already up to date.`);
             }
+
+            return {
+                smState,
+                updated: false,
+            };
         }
     }
 
-    public async performUpdate(reportStatus: boolean = false) {
+    public async performUpdate(opts: {
+        force?: boolean;
+        reportStatus?: boolean;
+        skipReloadDialog?: boolean;
+    } = {}) {
         try {
-            const smState = await this.updateSchema(reportStatus);
-            if (smState) {
+            const updateInfo = await this.updateSchema({
+                ...opts
+            });
+
+            if (updateInfo.updated && ((opts.skipReloadDialog ?? false) !== true)) {
                 const decision = await this.slSrv.conn.window.showInformationMessage(
                     (
                         `Schema files have been updated to ` +
-                        `"[${smState.tag.name}](https://github.com/${schemaGithubRepo}/releases/tag/${smState.tag.name})".\n` +
+                        `"[${updateInfo.smState.gitTag.tag}](https://github.com/${schemaGithubRepo}/releases/tag/${updateInfo.smState.gitTag.tag})".\n` +
                         `Restart is required for changes to take effect.`
                     ),
                     { title: 'Restart' },
@@ -212,10 +303,21 @@ export class SchemaLoader {
                     process.exit(0);
                 }
             }
+
+            return updateInfo;
         }
         catch (err) {
-            this.slSrv.conn.window.showErrorMessage('Update failed! Check the output panel for details.');
-            throw err;
+            logger.error('schema update failed', err);
+            const decision = await this.slSrv.conn.window.showErrorMessage(
+                'Update failed! Check the output panel for details.',
+                { title: 'Retry' },
+            );
+            if (decision?.title === 'Retry') {
+                process.exit(0);
+            }
+            else {
+                throw err;
+            }
         }
     }
 
@@ -234,30 +336,38 @@ export class SchemaLoader {
             let smState = await this.readSmState();
             logger.info('[SchemaLoader] state', smState);
 
-            if (smState && smState.version[0] < currentModelVersion) {
-                if (smState.version[0] <= 5) {
-                    // cleanup forgotten junk from old versions
-                    await fs.remove(this.storagePath);
-                }
-                smState = void 0;
-            }
-
             if (smState && (smState.cacheFilename === void 0 || !(await fs.pathExists(path.join(this.cachePath, smState.cacheFilename)))) ) {
                 logger.warn(`Cached file no longer exists`, smState.cacheFilename);
                 smState = void 0;
+                await this.cleanupState();
             }
 
             if (!smState) {
-                smState = await this.updateSchema(true);
+                const updateInfo = await this.performUpdate({
+                    reportStatus: true,
+                    force: true,
+                    skipReloadDialog: true,
+                });
+                smState = updateInfo.smState;
             }
             else if (schConfig.updateMode === 'Manual') {
             }
             else if (schConfig.updateMode === 'Auto') {
-                this.performUpdate();
+                const lastUpdateCheckTimestamp = (smState?.lastUpdateCheckTimestamp ?? 0);
+                const timeCheckDiff = (Date.now() - lastUpdateCheckTimestamp) / 1000;
+                logger.info(`prepareSchema: lastUpdateCheckTimestamp=${lastUpdateCheckTimestamp} timeCheckDiff=${timeCheckDiff}`);
+                if (timeCheckDiff >= 3600) {
+                    logger.verbose(`preparting to perform check ..`);
+                    setTimeout(async () => {
+                        await this.performUpdate();
+                    }, 15000).unref();
+                }
+                else {
+                    logger.verbose(`skipping update check ..`);
+                }
             }
             else {
                 logger.warn(`invalid config value for "schema.updateMode"`);
-                this.performUpdate();
             }
 
             logger.info(`Loading from`, path.join(this.cachePath, smState.cacheFilename));
