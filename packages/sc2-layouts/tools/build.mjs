@@ -1,10 +1,10 @@
-const esbuild = require('esbuild');
+import { context } from 'esbuild';
 
 const production = process.argv.includes('--production');
 const watch = process.argv.includes('--watch');
 
 async function main() {
-    const ctx = await esbuild.context({
+    const ctx = await context({
         entryPoints: [
             {
                 in: 'client/src/extension.ts',
@@ -18,7 +18,7 @@ async function main() {
         bundle: true,
         format: 'cjs',
         minify: production,
-        sourcemap: !production,
+        sourcemap: true,
         sourcesContent: false,
         platform: 'node',
         outdir: 'dist',
@@ -66,7 +66,4 @@ const esbuildProblemMatcherPlugin = {
     }
 };
 
-main().catch(e => {
-    console.error(e);
-    process.exit(1);
-});
+await main();

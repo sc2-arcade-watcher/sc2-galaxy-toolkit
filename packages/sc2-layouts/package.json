@@ -8,7 +8,7 @@
     "license": "MIT",
     "packageManager": "yarn@1.22.22",
     "engines": {
-        "vscode": "^1.89.0"
+        "vscode": "^1.90.0"
     },
     "repository": {
         "type": "git",
@@ -69,7 +69,7 @@
                         "messages",
                         "verbose"
                     ],
-                    "default": "messages",
+                    "default": "off",
                     "markdownDescription": "Logging verbosity of communication between language server."
                 },
                 "sc2layout.trace.service": {
@@ -112,30 +112,61 @@
                         "object",
                         "null"
                     ],
+                    "properties": {
+                        "mods/alliedcommanders.sc2mod": { "type": "boolean" },
+                        "mods/balancemultilanmethodcleanedup.sc2mod": { "type": "boolean" },
+                        "mods/balancemulti.sc2mod": { "type": "boolean" },
+                        "mods/balancemultislowwarpprism.sc2mod": { "type": "boolean" },
+                        "mods/challenges.sc2mod": { "type": "boolean" },
+                        "mods/core.sc2mod": { "type": "boolean" },
+                        "mods/frontiers.sc2mod": { "type": "boolean" },
+                        "mods/glue.sc2mod": { "type": "boolean" },
+                        "mods/libertymulti.sc2mod": { "type": "boolean" },
+                        "mods/liberty.sc2mod": { "type": "boolean" },
+                        "mods/missionpacks/campaigncommon.sc2mod": { "type": "boolean" },
+                        "mods/missionpacks/novacampaign.sc2mod": { "type": "boolean" },
+                        "mods/novastoryassets.sc2mod": { "type": "boolean" },
+                        "mods/starcoop/commanders/arcturusmengsk.sc2mod": { "type": "boolean" },
+                        "mods/starcoop/commanders/egonstetmann.sc2mod": { "type": "boolean" },
+                        "mods/starcoop/starcoop.sc2mod": { "type": "boolean" },
+                        "mods/swarmmulti.sc2mod": { "type": "boolean" },
+                        "mods/swarm.sc2mod": { "type": "boolean" },
+                        "mods/voidmulti.sc2mod": { "type": "boolean" },
+                        "mods/voidprologue.sc2mod": { "type": "boolean" },
+                        "mods/void.sc2mod": { "type": "boolean" },
+                        "mods/war3data.sc2mod": { "type": "boolean" },
+                        "mods/warcoop/legends/gromhellscream.sc2mod": { "type": "boolean" },
+                        "mods/warcoop/legends/jainaproudmoore.sc2mod": { "type": "boolean" },
+                        "mods/warcoop/legends/malfurionstormrage.sc2mod": { "type": "boolean" },
+                        "mods/warcoop/progression/equipments.sc2mod": { "type": "boolean" },
+                        "mods/warcoop/warclassic.sc2mod": { "type": "boolean" },
+                        "mods/warcoop/warclassicsystem.sc2mod": { "type": "boolean" },
+                        "mods/warcoop/warcoopcore.sc2mod": { "type": "boolean" },
+                        "mods/warcoop/warcoopdata.sc2mod": { "type": "boolean" },
+                        "mods/warcoop/warcore.sc2mod": { "type": "boolean" },
+                        "mods/warcoop/warmeleeai.sc2mod": { "type": "boolean" },
+                        "mods/warcoop/warterraintemp.sc2mod": { "type": "boolean" },
+                        "campaigns/liberty.sc2campaign": { "type": "boolean" },
+                        "campaigns/libertystory.sc2campaign": { "type": "boolean" },
+                        "campaigns/swarm.sc2campaign": { "type": "boolean" },
+                        "campaigns/swarmstory.sc2campaign": { "type": "boolean" },
+                        "campaigns/swarmstoryutil.sc2mod": { "type": "boolean" },
+                        "campaigns/void.sc2campaign": { "type": "boolean" },
+                        "campaigns/voidstory.sc2campaign": { "type": "boolean" }
+                    },
                     "default": {
                         "mods/core.sc2mod": true,
                         "mods/liberty.sc2mod": true,
                         "mods/swarm.sc2mod": true,
                         "mods/void.sc2mod": true,
-                        "mods/libertymulti.sc2mod": false,
-                        "mods/swarmmulti.sc2mod": false,
-                        "mods/voidmulti.sc2mod": false,
-                        "mods/balancemulti.sc2mod": false,
-                        "mods/challenges.sc2mod": false,
-                        "mods/voidprologue.sc2mod": false,
-                        "mods/war3data.sc2mod": false,
                         "campaigns/liberty.sc2campaign": true,
-                        "campaigns/libertystory.sc2campaign": false,
                         "campaigns/swarm.sc2campaign": true,
-                        "campaigns/swarmstory.sc2campaign": false,
-                        "campaigns/swarmstoryutil.sc2mod": false,
                         "campaigns/void.sc2campaign": true,
-                        "campaigns/voidstory.sc2campaign": false,
-                        "mods/missionpacks/campaigncommon.sc2mod": false,
-                        "mods/missionpacks/novacampaign.sc2mod": false,
-                        "mods/novastoryassets.sc2mod": false,
                         "mods/alliedcommanders.sc2mod": true,
-                        "mods/starcoop/starcoop.sc2mod": true
+                        "mods/novastoryassets.sc2mod": true,
+                        "mods/starcoop/starcoop.sc2mod": true,
+                        "mods/starcoop/commanders/arcturusmengsk.sc2mod": true,
+                        "mods/starcoop/commanders/egonstetmann.sc2mod": true
                     }
                 },
                 "sc2layout.documentUpdateDelay": {
@@ -281,19 +312,21 @@
         "clean": "rm -rf ./backend/out && rm -rf ./client/out",
         "build": "tsc -b",
         "build:watch": "tsc -b -w",
-        "build:bundle": "node ./tools/build.js",
-        "build:bundle:watch": "node ./tools/build.js --watch",
-        "test-server": "cd ./backend && ./node_modules/.bin/mocha",
+        "build:bundle": "node ./tools/build.mjs",
+        "build:sc2-data": "node ./tools/prepare-sc2-data.mjs",
+        "test:server": "cd ./backend && yarn run mocha",
         "vscode:prepublish": "yarn run build:bundle --production"
     },
     "dependencies": {},
     "devDependencies": {
-        "@types/node": "^18.19",
+        "@types/node": "^20.14",
         "@types/vscode": "~1.89.0",
         "esbuild": "^0.23.0",
+        "glob": "^11.0.0",
         "source-map-support": "^0.5.13",
         "ts-node": "^10.9.2",
-        "typescript": "5.5"
+        "typescript": "5.5",
+        "vsce": "^2.15.0"
     },
     "__metadata": {
         "id": "3ed7a10b-6274-4775-a510-0b8cd508ef3e",
