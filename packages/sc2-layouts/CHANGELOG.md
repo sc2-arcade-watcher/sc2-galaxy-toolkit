@@ -1,5 +1,13 @@
 # Change Log
 
+## [[1.1.0]](https://github.com/Talv/sc2-layouts/compare/v1.0.3...v1.1.0) - 2024-07-15
+
+* Misc bugfixes
+* Integrated ESBuild as a code bundler/optimizer.
+* Upgraded deps to Node20, and by a result ext now requires VSC 1.90 (release from May 2024).
+* Integrated CI/CD via Github actions.
+* Adopted "Pre-release" versions of VSC extensions. They'll be pushed automatically to VSC registry upon push to `master`. In addition to that, there'll be plain `.vsix` available as a build artifact on Github.
+
 ## [[1.0.3]](https://github.com/Talv/sc2-layouts/compare/v1.0.2...v1.0.3) - 2024-06-26
 
 * Bugfixes
