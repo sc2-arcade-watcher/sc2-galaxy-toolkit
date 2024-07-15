@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as util from 'util';
-import * as glob from 'glob';
+import { glob, GlobOptions } from 'glob';
 import { CharacterCodes } from './parser/scanner';
 
 export const readFileAsync = util.promisify(fs.readFile);
@@ -118,13 +118,8 @@ export function fuzzysearch (needle: string, haystack: string) {
     return true;
 }
 
-export function globify(pattern: string, opts?: glob.IOptions) {
-    return new Promise<string[]>((resolve, reject) => {
-        glob(pattern, opts, (err, matches) => {
-            if (err) reject(err);
-            else resolve(matches);
-        });
-    });
+export function globify(pattern: string, opts?: GlobOptions) {
+    return glob(pattern, { ...opts, ...{ withFileTypes: false } });
 }
 
 export function dlog(o: any, opts: util.InspectOptions = {}) {

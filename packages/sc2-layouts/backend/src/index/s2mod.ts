@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as glob from 'glob';
+import { glob } from 'glob';
 import { readFileAsync, globify, readDirAsync } from '../common';
 import URI from 'vscode-uri';
 import { logger } from '../logger';
@@ -248,7 +248,6 @@ export async function findArchiveDirectories(fsPath: string, opts: { exclude?: s
         absolute: true,
         nocase: true,
         ignore: opts.exclude,
-        nosort: false,
     })).sort((a, b) => {
         return path.extname(a).toLowerCase() === '.sc2map' ? 1 : -1;
     });
@@ -256,16 +255,7 @@ export async function findArchiveDirectories(fsPath: string, opts: { exclude?: s
 }
 
 function findSC2File(directory: string, pattern: string) {
-    return new Promise<string[]>((resolve, reject) => {
-        glob(path.join(pattern), {nocase: true, realpath: true, nodir: true, cwd: directory} , (err, matches) => {
-            if (err) {
-                reject(err);
-            }
-            else {
-                resolve(matches);
-            }
-        });
-    });
+    return glob(path.join(pattern), {nocase: true, absolute: true, realpath: true, nodir: true, cwd: directory});
 }
 
 export class Archive {

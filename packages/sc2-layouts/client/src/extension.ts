@@ -67,7 +67,7 @@ export async function activate(context: vs.ExtensionContext) {
     extContext = context;
     context.subscriptions.push(vs.languages.setLanguageConfiguration('sc2layout', sc2layoutConfig));
 
-    const serverModule = context.asAbsolutePath(path.join('backend', 'out', 'src', 'bin', 's2l-lsp.js'));
+    const serverModule = context.asAbsolutePath(path.join('dist', 's2l-lsp.js'));
 
     const envSvc = Object.assign({}, process.env);
     envSvc.SC2LAYOUT_LOG_LEVEL = vs.workspace.getConfiguration('sc2layout.trace').get('service');

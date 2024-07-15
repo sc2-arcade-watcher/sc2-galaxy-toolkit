@@ -9,20 +9,26 @@
 
 /** @type import('mocha').MochaInstanceOptions */
 module.exports = {
-    jobs: 4,
+    jobs: 2,
     parallel: true,
     recursive: true,
     require: [
+        // 'ts-node/register',
         'source-map-support/register',
         'out/test/bootstrap.js',
     ],
+    // loader: 'ts-node/esm',
+    // extensions: [
+    //     'js',
+    // ],
     spec: [
         'out/test/**/*.test.js',
     ],
     timeout: 20000,
     // watch: true,
     'watch-files': [
-        'test/fixtures/**/*'
+        'out/src/**/*.js',
+        'out/test/**/*.js',
+        'test/fixtures/**/*',
     ],
-    // 'watch-ignore': ['lib/vendor']
 };

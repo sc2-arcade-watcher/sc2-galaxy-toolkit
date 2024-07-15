@@ -6,6 +6,7 @@
     "version": "1.0.3",
     "publisher": "talv",
     "license": "MIT",
+    "packageManager": "yarn@1.22.22",
     "engines": {
         "vscode": "^1.89.0"
     },
@@ -26,7 +27,7 @@
     "activationEvents": [
         "workspaceContains:**/DescIndex.SC2Layout"
     ],
-    "main": "./client/out/client/src/extension",
+    "main": "./dist/extension",
     "contributes": {
         "languages": [
             {
@@ -277,16 +278,21 @@
         }
     },
     "scripts": {
-        "clean": "rm -r backend/out/* && rm -r client/out/*",
+        "clean": "rm -rf ./backend/out && rm -rf ./client/out",
         "build": "tsc -b",
         "build:watch": "tsc -b -w",
-        "vscode:prepublish": "tsc -b"
+        "build:bundle": "node ./tools/build.js",
+        "build:bundle:watch": "node ./tools/build.js --watch",
+        "test-server": "cd ./backend && ./node_modules/.bin/mocha",
+        "vscode:prepublish": "yarn run build:bundle --production"
     },
     "dependencies": {},
     "devDependencies": {
         "@types/node": "^18.19",
         "@types/vscode": "~1.89.0",
+        "esbuild": "^0.23.0",
         "source-map-support": "^0.5.13",
+        "ts-node": "^10.9.2",
         "typescript": "5.5"
     },
     "__metadata": {

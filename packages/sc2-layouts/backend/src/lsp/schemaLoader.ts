@@ -2,12 +2,12 @@ import { readSchemaDataDir, createRegistry, createRegistryFromDir } from '../sch
 import * as request from 'request-promise-native';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as util from 'util';
-import * as extractZip from 'extract-zip';
+import extractZip from 'extract-zip';
+import { promisify } from 'util';
 import { S2LServer } from './server';
 import { logger, logIt } from '../logger';
 
-const extractZipAsync = util.promisify(extractZip);
+const extractZipAsync = promisify(extractZip);
 const currentModelVersion = 6;
 
 namespace IGithub {
