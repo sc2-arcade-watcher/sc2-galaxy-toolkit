@@ -10,6 +10,11 @@
             <xs:pattern value="[\w!\.x23-x2Fx3A-x40]+"/>
         </xs:restriction>
     </xs:simpleType>
+    <xs:simpleType name="enumerationValue">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[\w!\.x23-x2Fx3A-x40 ]+"/>
+        </xs:restriction>
+    </xs:simpleType>
     <xs:simpleType name="attributeUse">
         <xs:restriction base="xs:string">
             <xs:enumeration value="required"/>
@@ -160,7 +165,7 @@
     </xs:element>
     <xs:element name="enumeration">
         <xs:complexType>
-            <xs:attribute name="value" use="required" type="identifierName"/>
+            <xs:attribute name="value" use="required" type="enumerationValue"/>
         </xs:complexType>
     </xs:element>
     <xs:element name="pattern">
