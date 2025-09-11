@@ -56,6 +56,12 @@
         <enumeration value="OnUpdateData"/>
         <enumeration value="OnClearData"/>
 
+        <!-- CTabControl (?) -->
+        <!-- <enumeration value="SetSelectedIndex_{X}"/> -->
+        <!-- TODO: ^ -->
+        <enumeration value="IncrementSelectedIndex"/>
+        <enumeration value="DecrementSelectedIndex"/>
+
         <!-- CTileListItem (?) -->
         <enumeration value="Selected"/>
         <enumeration value="Preselected"/>
@@ -65,7 +71,118 @@
 
         <!-- CCountdownLabel -->
         <enumeration value="CountdownLabelResetRequest"/>
+
+        <!-- CLayer -->
+        <enumeration value="LayerFocusLost"/>
+        <enumeration value="LayerFocusGained"/>
+
+        <!-- CDialog -->
+        <enumeration value="DismissDialog"/>
+        <enumeration value="DialogDismissed"/>
+
+        <!-- CScreenNewUser / CGlueScreen -->
+        <enumeration value="LaunchTutorialRequest"/>
+        <enumeration value="ActivateHomeScreenRequest"/>
+        <enumeration value="ActivateCampaignScreenRequest"/>
+        <enumeration value="ActivateCoopScreenRequest"/>
+        <enumeration value="ActivateMultiplayerScreenRequest"/>
+        <enumeration value="ActivateNewUserScreenRequest"/>
+        <enumeration value="PauseSoundtrackRequest"/>
+
+        <!-- CVersionNotificationFrame -->
+        <enumeration value="NewVersion"/>
+        <enumeration value="OldVersion"/>
+        <enumeration value="InvalidVersion"/>
+
+        <!-- CUserProfileLadderTeamsFrame -->
+        <enumeration value="UpdateShowcaseRequest"/>
+
+        <!-- CViewLadderTeamButton -->
+        <enumeration value="ViewLadderTeamRequest"/>
+
+        <!-- CLobbyPreviewFrame -->
+        <enumeration value="RequestRefreshLobbyPreview"/>
+
+        <!-- CLobbyListFrame -->
+        <enumeration value="RequestRefreshOpenLobbyList"/>
+        <enumeration value="RequestFilterOpenLobbyList"/>
+
+        <!-- CBattleGameListPanel -->
+        <enumeration value="RequestEditBoxSearch"/>
+
+        <!-- CCustomGameInvitePanel -->
+        <enumeration value="ShowGame"/>
+        <enumeration value="ShowReplay"/>
+
+        <!-- CFriendsButton -->
+        <enumeration value="SocialPanelFriendRequestNew"/>
+        <enumeration value="SocialPanelFriendRequestEmpty"/>
+
+        <!-- CPartyPanelSC2 -->
+        <enumeration value="PlayingOnline"/>
+        <enumeration value="PlayingOffline"/>
+        <enumeration value="PartyJoined"/>
+        <enumeration value="PartyLeft"/>
+        <enumeration value="PartyMemberJoined"/>
+        <enumeration value="PartyMemberLeft"/>
+        <enumeration value="PartyMemberOffline"/>
+        <enumeration value="PartyMemberOnline"/>
+        <enumeration value="PartySizeIncreased"/>
+        <enumeration value="PartySizeFull"/>
+        <enumeration value="PartyInviteSent"/>
+        <enumeration value="PartyPromote"/>
+        <enumeration value="PartyInviteDeclined"/>
+
+        <!-- CHomePanelSC2 -->
+        <!-- <enumeration value=""/> -->
+
+        <!-- CPartyInvitePanel -->
+        <enumeration value="PartyInviteReceived"/>
+        <enumeration value="PartySuggestionReceived"/>
+
+        <!-- CConsolePanel -->
+        <enumeration value="ShowConsole"/>
+        <enumeration value="HideConsole"/>
+
+        <!-- CInfoPaneCargo -->
+        <enumeration value="HighCapacity"/>
+        <enumeration value="NormalCapacity"/>
+
+        <!-- CGameUI -->
+        <enumeration value="ToggleSocial"/>
+        <enumeration value="OnConvertToReplay"/>
+
+        <!-- CUnitStatusBuffDebuffElement -->
+        <enumeration value="ResetVisibility"/>
+        <enumeration value="AllValidatorsFailed"/><!-- ? -->
+
+        <!-- CMathFrame -->
+        <enumeration value="ForceUpdate"/>
     </simpleType>
+
+    <!--
+    ########################
+    #### AnimationState ####
+    ########################
+
+    ### CUnitStatusBuffDebuffElement
+    - UnitStatusValidatorState::NoState
+
+    ### CLadderDivisionState
+    - LadderDivisionState::Loading
+    - LadderDivisionState::LoadedInfo
+    - LadderDivisionState::Loaded
+
+    ### CHomePanelSC2
+    - WidgetsLoadedState::WidgetsLoaded
+    - WidgetsLoadedState::WidgetsNotLoaded
+
+    ### LeaguePromotionDialog
+    - LeaguePromotionDialogState::BirthBegin
+    - LeaguePromotionDialogState::SeasonPlacement
+    - LeaguePromotionDialogState::LeaguePromotion
+
+    -->
 
     <simpleType name="EAnimationControllerType" kind="enum">
         <enumeration value="Visibility"/>
