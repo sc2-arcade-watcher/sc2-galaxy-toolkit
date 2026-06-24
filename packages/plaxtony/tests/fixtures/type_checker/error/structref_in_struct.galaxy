@@ -1,0 +1,15 @@
+struct t1_t {
+    int a;
+};
+
+struct t2_t {
+    structref<t1_t> b;
+    // ^ERR structref not allowed inside struct
+};
+
+typedef int[1] ar_t;
+
+struct t3_t {
+    arrayref<ar_t> b;
+    // ^ERR arrayref not allowed inside struct
+};

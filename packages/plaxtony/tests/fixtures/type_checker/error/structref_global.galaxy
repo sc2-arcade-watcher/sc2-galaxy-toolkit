@@ -1,0 +1,13 @@
+struct st1_t {
+    int a;
+    int b;
+};
+
+structref<st1_t> gv1;
+// ^ERR structref no global
+
+structref<st1_t> fn()
+// ^ERR structref no return
+{
+    return gv1;
+}

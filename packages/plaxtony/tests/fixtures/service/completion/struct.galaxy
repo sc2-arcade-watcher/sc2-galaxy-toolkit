@@ -1,0 +1,19 @@
+struct subcontainer_t {
+    string submember;
+};
+
+struct container_t {
+    int member;
+    subcontainer_t sub;
+    subcontainer_t[10] sub_list;
+};
+
+void struct_test()
+{
+    container_t cont;
+
+    cont.member = 1;
+    cont.sub.submember = 1;
+    cont.sub_list[0].submember = 1;
+    cont.sub_list.submember = 1;
+}
