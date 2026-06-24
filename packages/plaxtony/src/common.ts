@@ -19,7 +19,7 @@ export const logger = createLogger({
                 out[out.length - 1] += ` ${info.ms}`;
             }
 
-            const splat: any[] = info[<any>Symbol.for('splat')];
+            const splat = info[Symbol.for('splat') as any] as any[];
             if (Array.isArray(splat)) {
                 const dump = splat.length === 1 ? splat.pop() : splat;
                 out.push(util.inspect(dump, {

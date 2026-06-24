@@ -17,7 +17,7 @@ function createProgressNotification() {
         (progress, token) => {
             r.progress = progress;
 
-            return new Promise((resolve) => {
+            return new Promise<void>((resolve) => {
                 r.done = resolve;
             });
         }

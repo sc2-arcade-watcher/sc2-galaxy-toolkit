@@ -699,7 +699,7 @@ export class TypeChecker {
 
     private getNodeLinks(node: gt.Node): gt.NodeLinks {
         const nodeId = getNodeId(node);
-        return this.nodeLinks[nodeId] || (this.nodeLinks[nodeId] = { flags: 0 });
+        return this.nodeLinks[nodeId] || (this.nodeLinks[nodeId] = { flags: 0 as gt.NodeCheckFlags });
     }
 
     private checkTypeAssignableTo(source: AbstractType, target: AbstractType, node: gt.Node) {
