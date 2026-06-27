@@ -1,0 +1,55 @@
+{
+    "name": "sc2-layout-lang",
+    "version": "1.1.0",
+    "description": "SC2 Layout language analysis and LSP server",
+    "license": "MIT",
+    "main": "./lib/src/index.js",
+    "types": "./lib/src/index.d.ts",
+    "exports": {
+        ".": "./lib/src/index.js",
+        "./protocol/descTree": "./lib/src/protocol/protocol.descTree.js",
+        "./bin/s2l-lsp": "./lib/src/bin/s2l-lsp.js"
+    },
+    "typesVersions": {
+        "*": {
+            "protocol/descTree": ["lib/src/protocol/protocol.descTree.d.ts"],
+            "bin/s2l-lsp": ["lib/src/bin/s2l-lsp.d.ts"]
+        }
+    },
+    "bin": {
+        "s2l-lsp": "./lib/src/bin/s2l-lsp.js",
+        "s2l-check": "./lib/src/bin/s2l-check.js"
+    },
+    "scripts": {
+        "clean": "rm -rf lib/",
+        "build": "tsc",
+        "build:watch": "tsc --watch",
+        "test": "mocha --config .mocharc.js"
+    },
+    "dependencies": {
+        "sc2-xml": "workspace:*",
+        "extract-zip": "^1.6.7",
+        "fs-extra": "^8.0.1",
+        "glob": "^11",
+        "request": "^2.88.0",
+        "request-promise-native": "^1.0.7",
+        "vscode-jsonrpc": "^4.0.0",
+        "vscode-languageserver": "^5.2.1",
+        "vscode-uri": "^1.0.6",
+        "winston": "^3.2.1",
+        "xml-js": "^1.6.11"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.1.4",
+        "@types/extract-zip": "^1.6.2",
+        "@types/fs-extra": "^7.0.0",
+        "@types/mocha": "^10",
+        "@types/node": "^20.14",
+        "@types/request-promise-native": "^1.0.16",
+        "chai": "^4.1.2",
+        "mocha": "^10",
+        "source-map-support": "^0.5.13",
+        "ts-node": "^10.9.2",
+        "typescript": "~5.5.0"
+    }
+}
