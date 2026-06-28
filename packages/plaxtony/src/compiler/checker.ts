@@ -1,14 +1,14 @@
 import * as lsp from 'vscode-languageserver';
 import * as path from 'path';
 import URI from 'vscode-uri';
-import * as gt from './types';
-import { isComplexTypeKind } from '../compiler/utils';
-import { isDeclarationKind, forEachChild, isPartOfExpression, isRightSideOfPropertyAccess, findAncestor, createDiagnosticForNode, isAssignmentOperator, isComparisonOperator, isReferenceKeywordKind, findAncestorByKind } from './utils';
-import { Store, QualifiedSourceFile } from '../service/store';
-import { tokenToString } from './scanner';
-import { Printer } from './printer';
-import { declareSymbol, unbindSourceFile } from './binder';
-import { getLineAndCharacterOfPosition } from '../service/utils';
+import * as gt from './types.js';
+import { isComplexTypeKind } from '../compiler/utils.js';
+import { isDeclarationKind, forEachChild, isPartOfExpression, isRightSideOfPropertyAccess, findAncestor, createDiagnosticForNode, isAssignmentOperator, isComparisonOperator, isReferenceKeywordKind, findAncestorByKind } from './utils.js';
+import { Store, QualifiedSourceFile } from '../service/store.js';
+import { tokenToString } from './scanner.js';
+import { Printer } from './printer.js';
+import { declareSymbol, unbindSourceFile } from './binder.js';
+import { getLineAndCharacterOfPosition } from '../service/utils.js';
 
 let nextSymbolId = 1;
 let nextNodeId = 1;

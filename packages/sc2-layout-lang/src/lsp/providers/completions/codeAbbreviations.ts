@@ -1,11 +1,11 @@
 import * as lsp from 'vscode-languageserver';
-import { XMLElement } from '../../../types';
-import { DescKind, DescNamespace } from '../../../index/desc';
-import { UINode, FrameNode } from '../../../index/hierarchy';
-import { descKindToCompletionKind } from './completions';
-import { getSelectionIndexAtPosition } from '../../../parser/utils';
-import * as sch from '../../../schema/base';
-import { SuggestionsProvider, createMarkdownString } from './helpers';
+import { XMLElement } from '../../../types.js';
+import { DescKind, DescNamespace } from '../../../index/desc.js';
+import { UINode, FrameNode } from '../../../index/hierarchy.js';
+import { descKindToCompletionKind } from './completions.js';
+import { getSelectionIndexAtPosition } from '../../../parser/utils.js';
+import * as sch from '../../../schema/base.js';
+import { SuggestionsProvider, createMarkdownString } from './helpers.js';
 
 export interface AbbrComplContext {
     vDoc: lsp.TextDocument;

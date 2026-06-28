@@ -1,16 +1,16 @@
 import * as lsp from 'vscode-languageserver';
-import * as sch from '../../schema/base';
-import { AbstractProvider, errGuard } from '../provider';
-import { TokenType, XMLElement, AttrValueKind, XMLDocument, AttrValueKindOffset, XMLAttr, XMLNode } from '../../types';
-import { getAttrValueKind, getSelectionIndexAtPosition } from '../../parser/utils';
+import * as sch from '../../schema/base.js';
+import { AbstractProvider, errGuard } from '../provider.js';
+import { TokenType, XMLElement, AttrValueKind, XMLDocument, AttrValueKindOffset, XMLAttr, XMLNode } from '../../types.js';
+import { getAttrValueKind, getSelectionIndexAtPosition } from '../../parser/utils.js';
 import URI from 'vscode-uri';
-import { ExpressionParser, PathSelector, PropertyBindExpr, SelectorFragment, SyntaxKind } from '../../parser/expressions';
-import { UINavigator, UIBuilder, FrameNode, AnimationNode, UINode } from '../../index/hierarchy';
-import { LayoutProcessor } from '../../index/processor';
-import { DescKind, DescNamespace } from '../../index/desc';
-import { LayoutChecker } from '../../index/checker';
-import { getAttrInfoAtPosition } from '../helpers';
-import { logIt } from '../../logger';
+import { ExpressionParser, PathSelector, PropertyBindExpr, SelectorFragment, SyntaxKind } from '../../parser/expressions.js';
+import { UINavigator, UIBuilder, FrameNode, AnimationNode, UINode } from '../../index/hierarchy.js';
+import { LayoutProcessor } from '../../index/processor.js';
+import { DescKind, DescNamespace } from '../../index/desc.js';
+import { LayoutChecker } from '../../index/checker.js';
+import { getAttrInfoAtPosition } from '../helpers.js';
+import { logIt } from '../../logger.js';
 
 function getVsTextRange(xDoc: XMLDocument, start: number, end: number) {
     const origin = {

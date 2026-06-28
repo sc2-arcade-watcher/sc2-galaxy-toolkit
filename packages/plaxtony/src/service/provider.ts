@@ -1,4 +1,4 @@
-import { Store } from './store';
+import { Store } from './store.js';
 import * as lsp from 'vscode-languageserver';
 
 export abstract class AbstractProvider {

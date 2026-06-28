@@ -1,14 +1,14 @@
-import * as gt from '../compiler/types';
-import { SyntaxKind, Symbol, Node, SourceFile, FunctionDeclaration, NamedDeclaration, VariableDeclaration } from '../compiler/types';
-import { TypeChecker } from '../compiler/checker';
-import { AbstractProvider } from './provider';
-import { tokenToString } from '../compiler/scanner';
-import { findAncestor, isToken, isPartOfExpression, isKeywordKind } from '../compiler/utils';
-import { getTokenAtPosition, findPrecedingToken, fuzzysearch, getAdjacentToken, getLineAndCharacterOfPosition } from './utils';
-import { Printer } from '../compiler/printer';
+import * as gt from '../compiler/types.js';
+import { SyntaxKind, Symbol, Node, SourceFile, FunctionDeclaration, NamedDeclaration, VariableDeclaration } from '../compiler/types.js';
+import { TypeChecker } from '../compiler/checker.js';
+import { AbstractProvider } from './provider.js';
+import { tokenToString } from '../compiler/scanner.js';
+import { findAncestor, isToken, isPartOfExpression, isKeywordKind } from '../compiler/utils.js';
+import { getTokenAtPosition, findPrecedingToken, fuzzysearch, getAdjacentToken, getLineAndCharacterOfPosition } from './utils.js';
+import { Printer } from '../compiler/printer.js';
 import * as lsp from 'vscode-languageserver';
-import { getDocumentationOfSymbol } from './s2meta';
-import * as trig from '../sc2mod/trigger';
+import { getDocumentationOfSymbol } from './s2meta.js';
+import * as trig from '../sc2mod/trigger.js';
 
 function isInComment(sourceFile: gt.SourceFile, pos: number) {
     const comment = sourceFile.commentsLineMap.get(getLineAndCharacterOfPosition(sourceFile, pos).line);

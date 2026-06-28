@@ -1,5 +1,5 @@
-import { createScanner, CharacterCodes } from './scanner';
-import { TokenType, ScannerState, XMLElement, DiagnosticReport, DiagnosticCategory, XMLDocument, XMLNode, XMLNodeKind } from './types';
+import { createScanner, CharacterCodes } from './scanner.js';
+import { TokenType, ScannerState, XMLElement, DiagnosticReport, DiagnosticCategory, XMLDocument, XMLNode, XMLNodeKind } from './types.js';
 
 export interface ParserHooks<L = {}> {
     onElementOpen?: (el: XMLElement<L>, parent: XMLNode<L>) => void;

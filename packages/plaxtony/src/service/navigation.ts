@@ -1,7 +1,7 @@
-import { SourceFile, NamedDeclaration, Node, SyntaxKind } from '../compiler/types';
-import { forEachChild } from '../compiler/utils';
-import { fuzzysearch } from './utils';
-import { AbstractProvider } from './provider';
+import { SourceFile, NamedDeclaration, Node, SyntaxKind } from '../compiler/types.js';
+import { forEachChild } from '../compiler/utils.js';
+import { fuzzysearch } from './utils.js';
+import { AbstractProvider } from './provider.js';
 
 function collectDeclarations(sourceFile: SourceFile): NamedDeclaration[] {
     let declarations: NamedDeclaration[] = [];

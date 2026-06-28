@@ -1,20 +1,20 @@
 import * as lsp from 'vscode-languageserver';
-import * as sch from '../../../schema/base';
-import { AbstractProvider, errGuard } from '../../provider';
-import { ExtConfigCompletionTabStopKind } from '../../config';
+import * as sch from '../../../schema/base.js';
+import { AbstractProvider, errGuard } from '../../provider.js';
+import { ExtConfigCompletionTabStopKind } from '../../config.js';
 import { createScanner, CharacterCodes } from 'sc2-xml';
-import { TokenType, ScannerState, XMLElement, AttrValueKind, XMLNodeKind, AttrValueKindOp } from '../../../types';
-import { DescIndex, DescNamespace, DescKind } from '../../../index/desc';
-import * as s2 from '../../../index/s2mod';
-import { Store } from '../../../index/store';
-import { SelHandleKind, SelectorFragment, PathSelector, PropertyBindExpr, SyntaxKind } from '../../../parser/expressions';
-import { FrameNode, AnimationNode, StateGroupNode, UINode } from '../../../index/hierarchy';
-import { getSelectionIndexAtPosition, getAttrValueKind, isConstantValueKind } from '../../../parser/utils';
-import { reValueColor } from '../../../schema/validation';
-import { parseColorLiteral, getColorAsHexARGB } from '../color';
-import { reAbbrvWord, CodeAbbreviations } from './codeAbbreviations';
-import { SuggestionsProvider, createMarkdownString } from './helpers';
-import { logIt } from '../../../logger';
+import { TokenType, ScannerState, XMLElement, AttrValueKind, XMLNodeKind, AttrValueKindOp } from '../../../types.js';
+import { DescIndex, DescNamespace, DescKind } from '../../../index/desc.js';
+import * as s2 from '../../../index/s2mod.js';
+import { Store } from '../../../index/store.js';
+import { SelHandleKind, SelectorFragment, PathSelector, PropertyBindExpr, SyntaxKind } from '../../../parser/expressions.js';
+import { FrameNode, AnimationNode, StateGroupNode, UINode } from '../../../index/hierarchy.js';
+import { getSelectionIndexAtPosition, getAttrValueKind, isConstantValueKind } from '../../../parser/utils.js';
+import { reValueColor } from '../../../schema/validation.js';
+import { parseColorLiteral, getColorAsHexARGB } from '../color.js';
+import { reAbbrvWord, CodeAbbreviations } from './codeAbbreviations.js';
+import { SuggestionsProvider, createMarkdownString } from './helpers.js';
+import { logIt } from '../../../logger.js';
 
 function completionsForSimpleType(smType: sch.SimpleType) {
     let items = <lsp.CompletionItem[]> [];

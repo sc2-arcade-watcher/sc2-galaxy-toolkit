@@ -1,9 +1,9 @@
 import 'mocha';
 import { assert } from 'chai';
 import * as path from 'path';
-import { SC2Archive, SC2Workspace, openArchiveWorkspace } from '../src/sc2mod/archive';
-import * as trig from '../src/sc2mod/trigger';
-import { S2WorkspaceMetadata } from '../src/service/s2meta';
+import { SC2Archive, SC2Workspace, openArchiveWorkspace } from '../src/sc2mod/archive.js';
+import * as trig from '../src/sc2mod/trigger.js';
+import { S2WorkspaceMetadata } from '../src/service/s2meta.js';
 
 const resourcesPath = path.join('tests', 'fixtures');
 

@@ -1,11 +1,11 @@
-import { readSchemaDataDir, createRegistry, createRegistryFromDir } from '../schema/registry';
+import { readSchemaDataDir, createRegistry, createRegistryFromDir } from '../schema/registry.js';
 import * as request from 'request-promise-native';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import extractZip from 'extract-zip';
 import { promisify } from 'util';
-import { S2LServer } from './server';
-import { logger, logIt } from '../logger';
+import { S2LServer } from './server.js';
+import { logger, logIt } from '../logger.js';
 import assert from 'assert';
 
 const extractZipAsync = promisify(extractZip);

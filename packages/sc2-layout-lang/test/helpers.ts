@@ -1,13 +1,13 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as util from 'util';
-import { Store } from '../src/index/store';
-import { SchemaRegistry } from '../src/schema/base';
+import { Store } from '../src/index/store.js';
+import { SchemaRegistry } from '../src/schema/base.js';
 import URI from 'vscode-uri';
-import { globify, readFileAsync } from '../src/common';
-import { languageExt } from '../src/types';
-import { AbstractProvider } from '../src/lsp/provider';
-import { S2LServer } from '../src/lsp/server';
+import { globify, readFileAsync } from '../src/common.js';
+import { languageExt } from '../src/types.js';
+import { AbstractProvider } from '../src/lsp/provider.js';
+import { S2LServer } from '../src/lsp/server.js';
 
 export function getSchema(): SchemaRegistry {
     if (typeof (<any>global)._cachedSchemaGen === 'undefined') {

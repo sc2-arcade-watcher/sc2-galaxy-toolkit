@@ -1,6 +1,6 @@
-import { Parser } from '../src/compiler/parser';
-import { bindSourceFile } from '../src/compiler/binder';
-import { mockupStoreDocument, mockupStore, mockupSourceFile, mockupTextDocument } from './helpers';
+import { Parser } from '../src/compiler/parser.js';
+import { bindSourceFile } from '../src/compiler/binder.js';
+import { mockupStoreDocument, mockupStore, mockupSourceFile, mockupTextDocument } from './helpers.js';
 import { assert } from 'chai';
 import * as path from 'path';
 import * as fs from 'fs';

@@ -1,25 +1,25 @@
 import * as lsp from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import * as Types from '../compiler/types';
+import * as Types from '../compiler/types.js';
 import * as util from 'util';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { findAncestor } from '../compiler/utils';
-import { Store, createTextDocumentFromFs, createTextDocumentFromUri } from './store';
-import { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition, getNodeRange, osNormalizePath } from './utils';
-import { AbstractProvider, createProvider } from './provider';
-import { DiagnosticsProvider, formatDiagnosticTotal } from './diagnostics';
-import { NavigationProvider } from './navigation';
-import { CompletionsProvider, CompletionConfig, CompletionFunctionExpand } from './completions';
-import { SignaturesProvider } from './signatures';
-import { DefinitionProvider } from './definitions';
-import { HoverProvider } from './hover';
-import { ReferencesProvider, ReferencesConfig } from './references';
-import { RenameProvider } from './rename';
-import { SC2Archive, SC2Workspace, resolveArchiveDirectory, resolveArchiveDependencyList, findSC2ArchiveDirectories } from '../sc2mod/archive';
+import { findAncestor } from '../compiler/utils.js';
+import { Store, createTextDocumentFromFs, createTextDocumentFromUri } from './store.js';
+import { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition, getNodeRange, osNormalizePath } from './utils.js';
+import { AbstractProvider, createProvider } from './provider.js';
+import { DiagnosticsProvider, formatDiagnosticTotal } from './diagnostics.js';
+import { NavigationProvider } from './navigation.js';
+import { CompletionsProvider, CompletionConfig, CompletionFunctionExpand } from './completions.js';
+import { SignaturesProvider } from './signatures.js';
+import { DefinitionProvider } from './definitions.js';
+import { HoverProvider } from './hover.js';
+import { ReferencesProvider, ReferencesConfig } from './references.js';
+import { RenameProvider } from './rename.js';
+import { SC2Archive, SC2Workspace, resolveArchiveDirectory, resolveArchiveDependencyList, findSC2ArchiveDirectories } from '../sc2mod/archive.js';
 import { setTimeout, clearTimeout } from 'timers';
 import URI from 'vscode-uri';
-import { logIt, logger } from '../common';
+import { logIt, logger } from '../common.js';
 
 function translateNodeKind(node: Types.Node): lsp.SymbolKind {
     switch (node.kind) {

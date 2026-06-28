@@ -1,9 +1,9 @@
-import * as sch from '../schema/base';
-import { ExpressionParser } from '../parser/expressions';
-import { UINavigator, UIBuilder, FrameNode, StateGroupNode } from './hierarchy';
-import { DescIndex } from './desc';
-import { XMLElement } from '../types';
-import { Store } from './store';
+import * as sch from '../schema/base.js';
+import { ExpressionParser } from '../parser/expressions.js';
+import { UINavigator, UIBuilder, FrameNode, StateGroupNode } from './hierarchy.js';
+import { DescIndex } from './desc.js';
+import { XMLElement } from '../types.js';
+import { Store } from './store.js';
 
 export class XRay {
     protected exParser = new ExpressionParser();

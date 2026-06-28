@@ -1,6 +1,6 @@
-import * as exp from './expressions';
+import * as exp from './expressions.js';
 import { CharacterCodes } from 'sc2-xml';
-import { AttrValueKind } from '../types';
+import { AttrValueKind } from '../types.js';
 
 export function getKindName(k: number | string): string {
     if (typeof k === 'string') {

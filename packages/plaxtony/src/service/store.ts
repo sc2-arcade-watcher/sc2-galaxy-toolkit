@@ -1,18 +1,18 @@
-import * as gt from '../compiler/types';
-import { SyntaxKind, SourceFile, Node, Symbol, SymbolTable } from '../compiler/types';
-import { getSourceFileOfNode } from '../compiler/utils';
-import { Parser } from '../compiler/parser';
-import { S2WorkspaceMetadata } from './s2meta';
-import { bindSourceFile, unbindSourceFile } from '../compiler/binder';
-import { findSC2ArchiveDirectories, isSC2Archive, SC2Archive, SC2Workspace, openArchiveWorkspace, S2QualifiedFile } from '../sc2mod/archive';
+import * as gt from '../compiler/types.js';
+import { SyntaxKind, SourceFile, Node, Symbol, SymbolTable } from '../compiler/types.js';
+import { getSourceFileOfNode } from '../compiler/utils.js';
+import { Parser } from '../compiler/parser.js';
+import { S2WorkspaceMetadata } from './s2meta.js';
+import { bindSourceFile, unbindSourceFile } from '../compiler/binder.js';
+import { findSC2ArchiveDirectories, isSC2Archive, SC2Archive, SC2Workspace, openArchiveWorkspace, S2QualifiedFile } from '../sc2mod/archive.js';
 import * as lsp from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import glob from 'fast-glob';
 import URI from 'vscode-uri';
-import { TypeChecker } from '../compiler/checker';
-import { DataCatalogConfig, MetadataConfig } from './server';
+import { TypeChecker } from '../compiler/checker.js';
+import { DataCatalogConfig, MetadataConfig } from './server.js';
 
 export function createTextDocument(uri: string, text: string) {
     return TextDocument.create(uri, 'galaxy', 0, text);

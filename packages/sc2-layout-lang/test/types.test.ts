@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import 'mocha';
-import { TextDocument } from '../src/types';
+import { TextDocument } from '../src/types.js';
 
 const wordPattern = /(-?\d*\.\d\w*)|([^\`\~\!\@\%\^\&\*\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g;
 

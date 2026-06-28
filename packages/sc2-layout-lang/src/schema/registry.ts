@@ -1,9 +1,9 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as sch from './base';
-import { readSchemaModel, sraw, SRawEntries } from './reader';
-import { readMdStorage, MdFileStorage, getMdFilenameOfType, mdContentToDef } from './localization';
-import { globify } from '../common';
+import * as sch from './base.js';
+import { readSchemaModel, sraw, SRawEntries } from './reader.js';
+import { readMdStorage, MdFileStorage, getMdFilenameOfType, mdContentToDef } from './localization.js';
+import { globify } from '../common.js';
 
 export class DefinitionMap<T> extends Map<string, T> {
     mustGet(key: string): T {

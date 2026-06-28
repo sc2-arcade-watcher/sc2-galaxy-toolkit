@@ -1,5 +1,5 @@
 import * as lsp from 'vscode-languageserver';
-import * as gt from './types';
+import * as gt from './types.js';
 
 /**
  * True if node is of some token syntax kind.

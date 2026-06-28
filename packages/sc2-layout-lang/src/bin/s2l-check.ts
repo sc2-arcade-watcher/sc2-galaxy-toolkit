@@ -1,11 +1,11 @@
 import * as util from 'util';
 import * as path from 'path';
 import * as glob from 'glob';
-import { languageExt, DiagnosticReport, XMLDocument, DiagnosticCategory } from '../types';
-import { createTextDocumentFromFs } from '../index/store';
-import { buildStore, mockupProvider } from '../../test/helpers';
-import { DiagnosticsProvider, formatDiagnosticTotal } from '../lsp/providers/diagnostics';
-import * as s2 from '../index/s2mod';
+import { languageExt, DiagnosticReport, XMLDocument, DiagnosticCategory } from '../types.js';
+import { createTextDocumentFromFs } from '../index/store.js';
+import { buildStore, mockupProvider } from '../../test/helpers.js';
+import { DiagnosticsProvider, formatDiagnosticTotal } from '../lsp/providers/diagnostics.js';
+import * as s2 from '../index/s2mod.js';
 import URI from 'vscode-uri';
 require('../../test/bootstrap');
 

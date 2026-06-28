@@ -1,9 +1,9 @@
-import { Parser } from './parser';
-import * as gt from './types';
-import { SyntaxKind, SourceFile, Node, Symbol, SymbolTable, NamedDeclaration } from './types';
-import { forEachChild, isNamedDeclarationKind, isDeclarationKind, isContainerKind, getSourceFileOfNode } from './utils';
-import { IStoreSymbols } from '../service/store';
-// import { SignatureMeta, TypeChecker } from './checker';
+import { Parser } from './parser.js';
+import * as gt from './types.js';
+import { SyntaxKind, SourceFile, Node, Symbol, SymbolTable, NamedDeclaration } from './types.js';
+import { forEachChild, isNamedDeclarationKind, isDeclarationKind, isContainerKind, getSourceFileOfNode } from './utils.js';
+import { IStoreSymbols } from '../service/store.js';
+// import { SignatureMeta, TypeChecker } from './checker.js';
 
 export function getDeclarationName(node: Node): string {
     switch (node.kind) {

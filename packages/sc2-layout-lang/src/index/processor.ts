@@ -1,7 +1,7 @@
-import * as sch from '../schema/base';
-import { XMLElement } from '../types';
-import { DescIndex } from './desc';
-import { Store } from './store';
+import * as sch from '../schema/base.js';
+import { XMLElement } from '../types.js';
+import { DescIndex } from './desc.js';
+import { Store } from './store.js';
 
 export class LayoutProcessor {
     constructor(protected store: Store, protected index: DescIndex) {

@@ -1,6 +1,6 @@
 import * as lsp from 'vscode-languageserver';
-import { XMLElement, XMLDocument, XMLNode, XMLNodeKind } from '../types';
-import { SimpleType } from '../schema/base';
+import { XMLElement, XMLDocument, XMLNode, XMLNodeKind } from '../types.js';
+import { SimpleType } from '../schema/base.js';
 
 export function rangeContainsPosition(range: lsp.Range, pos: lsp.Position) {
     if (range.start.line > pos.line) return false;

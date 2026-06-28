@@ -1,11 +1,11 @@
 import * as lsp from 'vscode-languageserver';
-import * as sch from '../../schema/base';
-import { AbstractProvider, errGuard } from '../provider';
-import { XMLElement, XMLDocument } from '../../types';
-import { DefinitionProvider, DefinitionItemKind, DefinitionDescNode, DefinitionContainer, DefinitionXNode, DefinitionUINode } from './definition';
-import { vsRangeOrPositionOfXNode, rangeContainsPosition } from '../helpers';
-import { DescKind } from '../../index/desc';
-import { logIt, logger } from '../../logger';
+import * as sch from '../../schema/base.js';
+import { AbstractProvider, errGuard } from '../provider.js';
+import { XMLElement, XMLDocument } from '../../types.js';
+import { DefinitionProvider, DefinitionItemKind, DefinitionDescNode, DefinitionContainer, DefinitionXNode, DefinitionUINode } from './definition.js';
+import { vsRangeOrPositionOfXNode, rangeContainsPosition } from '../helpers.js';
+import { DescKind } from '../../index/desc.js';
+import { logIt, logger } from '../../logger.js';
 
 export function slugify(str: string) {
     str = str.replace(/[_\\:<>\.]/g, '-');

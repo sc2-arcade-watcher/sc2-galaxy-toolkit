@@ -1,13 +1,13 @@
 import * as lsp from 'vscode-languageserver';
-import { DescIndex } from '../../../index/desc';
-import { ExpressionParser } from '../../../parser/expressions';
-import { UINavigator, UIBuilder } from '../../../index/hierarchy';
-import { LayoutProcessor } from '../../../index/processor';
-import { LayoutChecker } from '../../../index/checker';
-import { XRay } from '../../../index/xray';
-import { Store } from '../../../index/store';
-import * as sch from '../../../schema/base';
-import { ExtConfigCompletionTabStopKind, S2LConfig } from '../../config';
+import { DescIndex } from '../../../index/desc.js';
+import { ExpressionParser } from '../../../parser/expressions.js';
+import { UINavigator, UIBuilder } from '../../../index/hierarchy.js';
+import { LayoutProcessor } from '../../../index/processor.js';
+import { LayoutChecker } from '../../../index/checker.js';
+import { XRay } from '../../../index/xray.js';
+import { Store } from '../../../index/store.js';
+import * as sch from '../../../schema/base.js';
+import { ExtConfigCompletionTabStopKind, S2LConfig } from '../../config.js';
 
 export function createMarkdownString(s: string = ''): lsp.MarkupContent {
     return {

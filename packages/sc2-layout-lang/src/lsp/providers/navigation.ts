@@ -1,11 +1,11 @@
 import * as lsp from 'vscode-languageserver';
-import * as sch from '../../schema/base';
-import { AbstractProvider, errGuard } from '../provider';
-import { XMLElement } from '../../types';
-import { DescNamespace, DescKind } from '../../index/desc';
-import { fuzzysearch } from '../../common';
+import * as sch from '../../schema/base.js';
+import { AbstractProvider, errGuard } from '../provider.js';
+import { XMLElement } from '../../types.js';
+import { DescNamespace, DescKind } from '../../index/desc.js';
+import { fuzzysearch } from '../../common.js';
 import { CharacterCodes } from 'sc2-xml';
-import { logIt } from '../../logger';
+import { logIt } from '../../logger.js';
 
 function symbolKindOfElement(xNode: XMLElement) {
     switch (xNode.lang.sdef.nodeKind) {

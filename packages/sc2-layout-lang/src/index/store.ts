@@ -1,12 +1,12 @@
 import * as path from 'path';
 import * as lsp from 'vscode-languageserver';
 import URI from 'vscode-uri';
-import * as sch from '../schema/base';
-import { XMLDocument, TextDocument, SC2Layout } from '../types';
-import { parseDocument } from '../parser/parser';
-import { DescIndex, DescNamespace } from './desc';
-import * as s2 from '../index/s2mod';
-import { readFileAsync } from '../common';
+import * as sch from '../schema/base.js';
+import { XMLDocument, TextDocument, SC2Layout } from '../types.js';
+import { parseDocument } from '../parser/parser.js';
+import { DescIndex, DescNamespace } from './desc.js';
+import * as s2 from '../index/s2mod.js';
+import { readFileAsync } from '../common.js';
 
 export async function createTextDocumentFromFs(filepath: string): Promise<lsp.TextDocument> {
     return new TextDocument(URI.file(path.resolve(filepath)).toString(), await readFileAsync(filepath, 'utf8'));

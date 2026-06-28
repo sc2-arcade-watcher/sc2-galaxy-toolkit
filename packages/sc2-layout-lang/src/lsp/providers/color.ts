@@ -1,11 +1,11 @@
 import * as lsp from 'vscode-languageserver';
-import * as sch from '../../schema/base';
-import { AbstractProvider, errGuard } from '../provider';
-import { XMLElement, AttrValueKindOffset, AttrValueConstant } from '../../types';
-import { ServiceStateFlags } from '../server';
-import { getAttrValueKind, isConstantValueKind } from '../../parser/utils';
-import { reValueColor } from '../../schema/validation';
-import { logIt } from '../../logger';
+import * as sch from '../../schema/base.js';
+import { AbstractProvider, errGuard } from '../provider.js';
+import { XMLElement, AttrValueKindOffset, AttrValueConstant } from '../../types.js';
+import { ServiceStateFlags } from '../server.js';
+import { getAttrValueKind, isConstantValueKind } from '../../parser/utils.js';
+import { reValueColor } from '../../schema/validation.js';
+import { logIt } from '../../logger.js';
 
 export interface ColorLiteral {
     vColor: lsp.Color;

@@ -6,10 +6,10 @@ import * as util from 'util';
 import * as path from 'path';
 import * as xml from 'xml2js';
 import glob from 'fast-glob';
-import * as trig from './trigger';
-import * as cat from './datacatalog';
-import * as loc from './localization';
-import { logger, logIt } from '../common';
+import * as trig from './trigger.js';
+import * as cat from './datacatalog.js';
+import * as loc from './localization.js';
+import { logger, logIt } from '../common.js';
 
 const validArchiveExtensions = [
     'sc2map',

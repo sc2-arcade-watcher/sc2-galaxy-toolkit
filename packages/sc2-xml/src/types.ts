@@ -1,4 +1,4 @@
-import { findFirst } from './utils';
+import { findFirst } from './utils.js';
 
 export const enum XMLNodeKind {
     Document,

@@ -1,10 +1,10 @@
-import * as gt from '../compiler/types';
-import { TypeChecker } from '../compiler/checker';
-import { AbstractProvider } from './provider';
-import { getSourceFileOfNode, isNamedDeclarationKind } from '../compiler/utils';
-import { getAdjacentIdentfier, getLineAndCharacterOfPosition, getPositionOfLineAndCharacter } from './utils';
-import { Printer } from '../compiler/printer';
-import { getDocumentationOfSymbol } from './s2meta';
+import * as gt from '../compiler/types.js';
+import { TypeChecker } from '../compiler/checker.js';
+import { AbstractProvider } from './provider.js';
+import { getSourceFileOfNode, isNamedDeclarationKind } from '../compiler/utils.js';
+import { getAdjacentIdentfier, getLineAndCharacterOfPosition, getPositionOfLineAndCharacter } from './utils.js';
+import { Printer } from '../compiler/printer.js';
+import { getDocumentationOfSymbol } from './s2meta.js';
 import * as lsp from 'vscode-languageserver';
 
 export class HoverProvider extends AbstractProvider {

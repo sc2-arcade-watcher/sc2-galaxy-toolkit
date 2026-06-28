@@ -2,8 +2,8 @@ import { assert } from 'chai';
 import 'mocha';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { getFixturePath } from '../helpers';
-import { readMdFile } from '../../src/schema/localization';
+import { getFixturePath } from '../helpers.js';
+import { readMdFile } from '../../src/schema/localization.js';
 
 describe('schema localization', function () {
     describe('mdread', function () {

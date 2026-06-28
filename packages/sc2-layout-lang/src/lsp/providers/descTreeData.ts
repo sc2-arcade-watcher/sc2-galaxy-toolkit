@@ -1,14 +1,14 @@
 import * as lsp from 'vscode-languageserver';
-import * as sch from '../../schema/base';
-import { AbstractProvider, errGuard } from '../provider';
-import { logIt } from '../../logger';
-import { DTArchive, DTNodeKind, DTLayout, DTItemType, DTElementKind, FetchNodeParams, FetchNodeResult, FetchNodeRequest, DTElementWithChildren, WorkspaceOverviewRequest, WorkspaceOverviewParams, WorkspaceOverviewResult, LayoutElementRequest, LayoutElementParams, WorkspaceChangeNotification, WorkspaceChangeParams, WorkspaceChangeEvent, ElementViewDataRequest, ElementViewDataParams, ElementViewDataResult, ElementViewDataSection } from '../../protocol/protocol.descTree';
-import { DescNamespace, DescKind } from '../../index/desc';
-import { XMLDocument, XMLElement } from '../../types';
-import { ServiceStateFlags } from '../server';
+import * as sch from '../../schema/base.js';
+import { AbstractProvider, errGuard } from '../provider.js';
+import { logIt } from '../../logger.js';
+import { DTArchive, DTNodeKind, DTLayout, DTItemType, DTElementKind, FetchNodeParams, FetchNodeResult, FetchNodeRequest, DTElementWithChildren, WorkspaceOverviewRequest, WorkspaceOverviewParams, WorkspaceOverviewResult, LayoutElementRequest, LayoutElementParams, WorkspaceChangeNotification, WorkspaceChangeParams, WorkspaceChangeEvent, ElementViewDataRequest, ElementViewDataParams, ElementViewDataResult, ElementViewDataSection } from '../../protocol/protocol.descTree.js';
+import { DescNamespace, DescKind } from '../../index/desc.js';
+import { XMLDocument, XMLElement } from '../../types.js';
+import { ServiceStateFlags } from '../server.js';
 import URI from 'vscode-uri';
-import { Archive } from '../../index/s2mod';
-import { FrameNode } from '../../index/hierarchy';
+import { Archive } from '../../index/s2mod.js';
+import { FrameNode } from '../../index/hierarchy.js';
 
 function getElementKindOfDescNamespace(dsKind: DescKind) {
     switch (dsKind) {

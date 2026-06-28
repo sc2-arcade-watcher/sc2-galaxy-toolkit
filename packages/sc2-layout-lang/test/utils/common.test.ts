@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import 'mocha';
-import { fuzzysearch } from '../../src/common';
+import { fuzzysearch } from '../../src/common.js';
 
 describe('common', function () {
     it('fuzzysearch', function () {

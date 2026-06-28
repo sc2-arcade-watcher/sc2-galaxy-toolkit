@@ -2,11 +2,11 @@ import 'mocha';
 import * as lsp from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { assert } from 'chai';
-import { DefinitionProvider } from '../../src/service/definitions';
-import { mockupTextDocument, mockupStore, fixtureFilePath, dump } from '../helpers';
-import { createProvider } from '../../src/service/provider';
-import { getPositionOfLineAndCharacter } from '../../src/service/utils';
-import { SC2Workspace, SC2Archive } from '../../src/sc2mod/archive';
+import { DefinitionProvider } from '../../src/service/definitions.js';
+import { mockupTextDocument, mockupStore, fixtureFilePath, dump } from '../helpers.js';
+import { createProvider } from '../../src/service/provider.js';
+import { getPositionOfLineAndCharacter } from '../../src/service/utils.js';
+import { SC2Workspace, SC2Archive } from '../../src/sc2mod/archive.js';
 
 describe('Service Definition', () => {
     const refsDoc = mockupTextDocument('service', 'definition', 'refs.galaxy');

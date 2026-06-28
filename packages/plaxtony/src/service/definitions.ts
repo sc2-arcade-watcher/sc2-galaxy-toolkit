@@ -1,8 +1,8 @@
-import * as gt from '../compiler/types';
-import { TypeChecker } from '../compiler/checker';
-import { AbstractProvider } from './provider';
-import { getSourceFileOfNode, isNamedDeclarationKind } from '../compiler/utils';
-import { getTokenAtPosition, getLineAndCharacterOfPosition, getNodeRange } from './utils';
+import * as gt from '../compiler/types.js';
+import { TypeChecker } from '../compiler/checker.js';
+import { AbstractProvider } from './provider.js';
+import { getSourceFileOfNode, isNamedDeclarationKind } from '../compiler/utils.js';
+import { getTokenAtPosition, getLineAndCharacterOfPosition, getNodeRange } from './utils.js';
 import * as lsp from 'vscode-languageserver';
 
 export class DefinitionProvider extends AbstractProvider {

@@ -1,12 +1,12 @@
-import * as gt from '../compiler/types';
+import * as gt from '../compiler/types.js';
 import * as lsp from 'vscode-languageserver';
-import { SyntaxKind, Symbol, Node, SourceFile, CallExpression, Identifier, FunctionDeclaration, Expression } from '../compiler/types';
-import { findAncestor, getSourceFileOfNode } from '../compiler/utils';
-import { Printer } from '../compiler/printer';
-import { TypeChecker } from '../compiler/checker';
-import { AbstractProvider } from './provider';
-import { getTokenAtPosition } from './utils';
-import { getDocumentationOfSymbol } from './s2meta';
+import { SyntaxKind, Symbol, Node, SourceFile, CallExpression, Identifier, FunctionDeclaration, Expression } from '../compiler/types.js';
+import { findAncestor, getSourceFileOfNode } from '../compiler/utils.js';
+import { Printer } from '../compiler/printer.js';
+import { TypeChecker } from '../compiler/checker.js';
+import { AbstractProvider } from './provider.js';
+import { getTokenAtPosition } from './utils.js';
+import { getDocumentationOfSymbol } from './s2meta.js';
 
 export class SignaturesProvider extends AbstractProvider {
     private printer: Printer = new Printer();

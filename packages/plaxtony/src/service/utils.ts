@@ -1,6 +1,6 @@
 import * as path from 'path';
-import * as gt from '../compiler/types';
-import { isToken, forEachChild, getSourceFileOfNode } from '../compiler/utils';
+import * as gt from '../compiler/types.js';
+import { isToken, forEachChild, getSourceFileOfNode } from '../compiler/utils.js';
 import * as lsp from 'vscode-languageserver';
 
 export function getNodeChildren(node: gt.Node): gt.Node[] {

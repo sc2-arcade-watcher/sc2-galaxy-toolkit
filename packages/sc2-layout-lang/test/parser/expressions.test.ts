@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import 'mocha';
-import { ExpressionParser, PropertyBindExpr, PathSelector, SelHandleKind } from '../../src/parser/expressions';
+import { ExpressionParser, PropertyBindExpr, PathSelector, SelHandleKind } from '../../src/parser/expressions.js';
 
 describe('expression pass', function () {
     const exParser = new ExpressionParser();

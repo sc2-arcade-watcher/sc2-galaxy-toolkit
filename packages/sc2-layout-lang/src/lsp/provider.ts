@@ -1,8 +1,8 @@
-import { Store } from '../index/store';
-import { S2LServer, ErrorReporter as ErrorReporterContext, ErrorHandlerType } from './server';
-import { DescIndex } from '../index/desc';
-import { XRay } from '../index/xray';
-import { isPromise } from '../logger';
+import { Store } from '../index/store.js';
+import { S2LServer, ErrorReporter as ErrorReporterContext, ErrorHandlerType } from './server.js';
+import { DescIndex } from '../index/desc.js';
+import { XRay } from '../index/xray.js';
+import { isPromise } from '../logger.js';
 
 export abstract class AbstractProvider implements ErrorReporterContext {
     protected slSrv: S2LServer;

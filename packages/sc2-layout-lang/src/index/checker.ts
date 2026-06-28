@@ -1,12 +1,12 @@
-import * as sch from '../schema/base';
-import { DiagnosticReport, XMLElement, AttrValueKind, DiagnosticCategory, XMLAttr } from '../types';
-import { DescIndex, DescKind, DescNamespace, DescStrCaseMissmatchInfo } from './desc';
-import { LayoutDocument, Store } from './store';
-import { SchemaValidator } from '../schema/validation';
+import * as sch from '../schema/base.js';
+import { DiagnosticReport, XMLElement, AttrValueKind, DiagnosticCategory, XMLAttr } from '../types.js';
+import { DescIndex, DescKind, DescNamespace, DescStrCaseMissmatchInfo } from './desc.js';
+import { LayoutDocument, Store } from './store.js';
+import { SchemaValidator } from '../schema/validation.js';
 import { CharacterCodes } from 'sc2-xml';
-import { getAttrValueKind } from '../parser/utils';
-import { ExpressionParser, NodeExpr, SelHandleKind, SelectorFragment, PathSelector } from '../parser/expressions';
-import { UINavigator, UIBuilder, UINode, FrameNode } from './hierarchy';
+import { getAttrValueKind } from '../parser/utils.js';
+import { ExpressionParser, NodeExpr, SelHandleKind, SelectorFragment, PathSelector } from '../parser/expressions.js';
+import { UINavigator, UIBuilder, UINode, FrameNode } from './hierarchy.js';
 
 export class DescResolvedSelection {
     public readonly items: DescNamespace[][] = [];

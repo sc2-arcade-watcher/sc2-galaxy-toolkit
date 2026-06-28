@@ -1,6 +1,6 @@
-import * as gt from './types';
-import { tokenToString } from './scanner';
-import { getKindName, isToken} from './utils';
+import * as gt from './types.js';
+import { tokenToString } from './scanner.js';
+import { getKindName, isToken} from './utils.js';
 
 export class Printer {
     output: string[];

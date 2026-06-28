@@ -2,11 +2,11 @@ import 'mocha';
 import * as path from 'path';
 import * as fs from 'fs';
 import { assert } from 'chai';
-import { findSC2ArchiveDirectories, SC2Archive, SC2Workspace, openArchiveWorkspace, resolveArchiveDependencyList } from '../src/sc2mod/archive';
-import * as trig from '../src/sc2mod/trigger';
-import * as cat from '../src/sc2mod/datacatalog';
-import * as loc from '../src/sc2mod/localization';
-import * as dtypes from '../src/sc2mod/dtypes';
+import { findSC2ArchiveDirectories, SC2Archive, SC2Workspace, openArchiveWorkspace, resolveArchiveDependencyList } from '../src/sc2mod/archive.js';
+import * as trig from '../src/sc2mod/trigger.js';
+import * as cat from '../src/sc2mod/datacatalog.js';
+import * as loc from '../src/sc2mod/localization.js';
+import * as dtypes from '../src/sc2mod/dtypes.js';
 
 const resourcesPath = path.join('tests', 'fixtures', 'sc2-data-trigger');
 

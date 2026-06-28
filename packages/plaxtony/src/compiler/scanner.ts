@@ -1,4 +1,4 @@
-import { CharacterCodes, SyntaxKind, Token, DiagnosticMessage, DiagnosticCategory } from './types';
+import { CharacterCodes, SyntaxKind, Token, DiagnosticMessage, DiagnosticCategory } from './types.js';
 
 export interface ErrorCallback {
     (message: DiagnosticMessage, pos: number, length: number): void;

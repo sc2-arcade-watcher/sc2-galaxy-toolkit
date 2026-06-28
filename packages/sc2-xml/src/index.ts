@@ -9,20 +9,20 @@ export {
     Scanner,
     DiagnosticCategory,
     DiagnosticReport,
-} from './types';
+} from './types.js';
 
 export {
     CharacterCodes,
     createScanner,
     buildLineMap,
-} from './scanner';
+} from './scanner.js';
 
 export {
     ParserHooks,
     parse,
-} from './parser';
+} from './parser.js';
 
 export {
     findFirst,
     binarySearch,
-} from './utils';
+} from './utils.js';

@@ -1,9 +1,9 @@
-import { AbstractProvider } from './provider';
-import * as gt from '../compiler/types';
+import { AbstractProvider } from './provider.js';
+import * as gt from '../compiler/types.js';
 import * as lsp from 'vscode-languageserver';
-import { forEachChild } from '../compiler/utils';
-import { getPositionOfLineAndCharacter, getAdjacentIdentfier, getLineAndCharacterOfPosition } from './utils';
-import { TypeChecker } from '../compiler/checker';
+import { forEachChild } from '../compiler/utils.js';
+import { getPositionOfLineAndCharacter, getAdjacentIdentfier, getLineAndCharacterOfPosition } from './utils.js';
+import { TypeChecker } from '../compiler/checker.js';
 import URI from 'vscode-uri';
 
 export interface ReferencesConfig {

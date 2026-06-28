@@ -1,10 +1,10 @@
 import * as path from 'path';
-import { Store, createTextDocumentFromFs } from '../service/store';
-import * as trig from '../sc2mod/trigger';
-import { openArchiveWorkspace, SC2Archive } from '../sc2mod/archive';
-import { logger } from '../common';
-import { isKeywordTypeKind } from '../compiler/utils';
-import { stringToToken } from '../compiler/scanner';
+import { Store, createTextDocumentFromFs } from '../service/store.js';
+import * as trig from '../sc2mod/trigger.js';
+import { openArchiveWorkspace, SC2Archive } from '../sc2mod/archive.js';
+import { logger } from '../common.js';
+import { isKeywordTypeKind } from '../compiler/utils.js';
+import { stringToToken } from '../compiler/scanner.js';
 
 const undocumentedNatives = `
 native void DebugDump(int lp_1);

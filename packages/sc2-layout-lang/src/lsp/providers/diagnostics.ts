@@ -1,9 +1,9 @@
 import * as lsp from 'vscode-languageserver';
-import { AbstractProvider, errGuard } from '../provider';
-import { LayoutChecker } from '../../index/checker';
-import { DiagnosticReport, XMLDocument, DiagnosticCategory } from '../../types';
+import { AbstractProvider, errGuard } from '../provider.js';
+import { LayoutChecker } from '../../index/checker.js';
+import { DiagnosticReport, XMLDocument, DiagnosticCategory } from '../../types.js';
 import URI from 'vscode-uri';
-import { logIt, logger } from '../../logger';
+import { logIt, logger } from '../../logger.js';
 
 function translateDiagReport(rep: DiagnosticReport, xDoc: XMLDocument, source?: string): lsp.Diagnostic;
 function translateDiagReport(rep: DiagnosticReport[], xDoc: XMLDocument, source?: string): lsp.Diagnostic[];

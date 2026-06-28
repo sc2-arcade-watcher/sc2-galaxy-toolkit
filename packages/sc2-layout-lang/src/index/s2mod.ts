@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { glob } from 'glob';
-import { readFileAsync, globify, readDirAsync } from '../common';
+import { readFileAsync, globify, readDirAsync } from '../common.js';
 import URI from 'vscode-uri';
-import { logger } from '../logger';
+import { logger } from '../logger.js';
 
 if (!Symbol.asyncIterator) (<any>Symbol).asyncIterator = Symbol.for('Symbol.asyncIterator');
 

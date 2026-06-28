@@ -2,9 +2,9 @@ import { assert } from 'chai';
 import 'mocha';
 import * as fs from 'fs';
 import * as path from 'path';
-import { buildStore, getFixturePath } from '../helpers';
-import { LayoutChecker } from '../../src/index/checker';
-import { DiagnosticReport } from '../../src/types';
+import { buildStore, getFixturePath } from '../helpers.js';
+import { LayoutChecker } from '../../src/index/checker.js';
+import { DiagnosticReport } from '../../src/types.js';
 
 function mockupChecker(...src: string[]) {
     const store = buildStore({fprefix: 'checker'}, ...src);

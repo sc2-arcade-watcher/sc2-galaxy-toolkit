@@ -1,6 +1,6 @@
 import * as path from 'path';
-import * as sch from './base';
-import { objventries } from '../common';
+import * as sch from './base.js';
+import { objventries } from '../common.js';
 
 interface MdNamedEntry {
     title?: string;

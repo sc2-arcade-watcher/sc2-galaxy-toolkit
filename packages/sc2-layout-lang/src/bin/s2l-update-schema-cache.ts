@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import { readSchemaDataDir } from '../schema/registry';
+import { readSchemaDataDir } from '../schema/registry.js';
 
 async function cacheSchema(sDir: string, targetFilename: string, flags: ('--pretty' | '--skip-if-exists')[]) {
     if (flags.includes('--skip-if-exists') && fs.pathExistsSync(targetFilename)) {

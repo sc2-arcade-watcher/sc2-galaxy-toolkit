@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { Element } from './trigger';
+import { Element } from './trigger.js';
 
 // const fileRe = /^((\w+)\/(\w+)\/(\w+))=(.+)$/gmu;
 const fileRe = /^\s*([^=]+)=(.+)$/gmu;

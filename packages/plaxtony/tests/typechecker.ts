@@ -2,13 +2,13 @@ import 'mocha';
 import * as fs from 'fs';
 import * as path from 'path';
 import { assert } from 'chai';
-import * as tc from '../src/compiler/checker';
-import { TypeChecker } from '../src/compiler/checker';
-import { mockupStoreDocument, mockupStore, mockupSourceFile, mockupTextDocument, mockupStoreFromDirectory, dump } from './helpers';
-import { getPositionOfLineAndCharacter, findPrecedingToken, getTokenAtPosition } from '../src/service/utils';
+import * as tc from '../src/compiler/checker.js';
+import { TypeChecker } from '../src/compiler/checker.js';
+import { mockupStoreDocument, mockupStore, mockupSourceFile, mockupTextDocument, mockupStoreFromDirectory, dump } from './helpers.js';
+import { getPositionOfLineAndCharacter, findPrecedingToken, getTokenAtPosition } from '../src/service/utils.js';
 import * as lsp from 'vscode-languageserver';
-import * as gt from './../src/compiler/types';
-import { unbindSourceFile } from '../src/compiler/binder';
+import * as gt from './../src/compiler/types.js';
+import { unbindSourceFile } from '../src/compiler/binder.js';
 import URI from 'vscode-uri';
 
 function getSymbolAt(checker: TypeChecker, sourceFile: gt.SourceFile, line: number, character: number): gt.Symbol | undefined {

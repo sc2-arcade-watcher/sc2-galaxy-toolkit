@@ -1,5 +1,5 @@
-import * as sch from './base';
-import { DiagnosticReport, XMLElement, XMLAttr, DiagnosticCategory } from '../types';
+import * as sch from './base.js';
+import { DiagnosticReport, XMLElement, XMLAttr, DiagnosticCategory } from '../types.js';
 
 const reBool = /^(true|false)$/i;
 const reUint = /^\s*\+?[0-9]+\s*$/;

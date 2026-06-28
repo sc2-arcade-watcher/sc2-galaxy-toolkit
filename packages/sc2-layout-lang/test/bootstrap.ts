@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { spawnSync } from 'child_process';
 import assert = require('assert');
-import { createRegistry } from '../src/schema/registry';
+import { createRegistry } from '../src/schema/registry.js';
 
 const cspath = path.join(__dirname, '../sc-min.json');
 

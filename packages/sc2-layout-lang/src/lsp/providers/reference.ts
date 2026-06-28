@@ -1,10 +1,10 @@
 import * as lsp from 'vscode-languageserver';
-import { AbstractProvider, errGuard } from '../provider';
-import { DefinitionProvider, DefinitionItemKind, DefinitionDescNode } from './definition';
-import { DescKind } from '../../index/desc';
-import { vsLocationOfXEl, getAttrInfoAtPosition } from '../helpers';
-import { BuiltinTypeKind } from '../../schema/base';
-import { logIt } from '../../logger';
+import { AbstractProvider, errGuard } from '../provider.js';
+import { DefinitionProvider, DefinitionItemKind, DefinitionDescNode } from './definition.js';
+import { DescKind } from '../../index/desc.js';
+import { vsLocationOfXEl, getAttrInfoAtPosition } from '../helpers.js';
+import { BuiltinTypeKind } from '../../schema/base.js';
+import { logIt } from '../../logger.js';
 
 
 export class ReferenceProvider extends AbstractProvider {

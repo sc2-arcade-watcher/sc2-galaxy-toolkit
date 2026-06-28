@@ -1,5 +1,5 @@
 import * as xmljs from 'xml-js';
-import * as sch from './base';
+import * as sch from './base.js';
 
 /**
  * Raw structures

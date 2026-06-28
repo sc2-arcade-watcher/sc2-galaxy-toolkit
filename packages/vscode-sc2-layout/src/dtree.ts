@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as vs from 'vscode';
 import * as lspc from 'vscode-languageclient';
-import { getThemeIcon } from './extension';
+import { getThemeIcon } from './extension.js';
 import { DTItemType, DTNodeKind, DTArchive, DTLayout, DTElement, FetchNodeRequest, FetchNodeParams, WorkspaceOverviewRequest, DTElementWithChildren, LayoutElementRequest, LayoutElementParams, WorkspaceChangeNotification, WorkspaceChangeParams, ElementViewDataSection, ElementViewDataRequest } from 'sc2-layout-lang/protocol/descTree';
 
 interface DTRichElement extends DTElementWithChildren {

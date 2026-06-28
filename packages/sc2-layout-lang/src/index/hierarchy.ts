@@ -1,9 +1,9 @@
-import { DescIndex, DescNamespace, DescKind } from './desc';
-import { SchemaRegistry } from '../schema/base';
-import { PathSelector, SelectorFragment, SelHandleKind, NodeArray } from '../parser/expressions';
-import { splitSlashDelimetedStr } from '../parser/utils';
-import * as sch from '../schema/base';
-import { XMLElement } from '../types';
+import { DescIndex, DescNamespace, DescKind } from './desc.js';
+import { SchemaRegistry } from '../schema/base.js';
+import { PathSelector, SelectorFragment, SelHandleKind, NodeArray } from '../parser/expressions.js';
+import { splitSlashDelimetedStr } from '../parser/utils.js';
+import * as sch from '../schema/base.js';
+import { XMLElement } from '../types.js';
 
 export class UINode {
     readonly children = new Map<string, UINode>();

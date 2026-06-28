@@ -1,13 +1,13 @@
 import * as lsp from 'vscode-languageserver';
-import * as gt from '../compiler/types';
-import { AbstractProvider } from './provider';
-import { Diagnostic, DiagnosticCategory } from '../compiler/types';
-import { TypeChecker } from '../compiler/checker';
-import { unbindSourceFile } from '../compiler/binder';
-import { getLineAndCharacterOfPosition } from './utils';
-import { logger } from '../common';
+import * as gt from '../compiler/types.js';
+import { AbstractProvider } from './provider.js';
+import { Diagnostic, DiagnosticCategory } from '../compiler/types.js';
+import { TypeChecker } from '../compiler/checker.js';
+import { unbindSourceFile } from '../compiler/binder.js';
+import { getLineAndCharacterOfPosition } from './utils.js';
+import { logger } from '../common.js';
 import URI from 'vscode-uri';
-import { QualifiedSourceFile } from './store';
+import { QualifiedSourceFile } from './store.js';
 
 export function formatDiagnosticTotal(summary: DiagnosticWorkspaceSummary) {
     const so: string[] = [];

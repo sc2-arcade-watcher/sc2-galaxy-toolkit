@@ -1,7 +1,7 @@
 import { CharacterCodes } from 'sc2-xml';
-import { DiagnosticReport, DiagnosticCategory } from '../types';
-import { getKindName } from './utils';
-import { reverseMap } from '../common';
+import { DiagnosticReport, DiagnosticCategory } from '../types.js';
+import { getKindName } from './utils.js';
+import { reverseMap } from '../common.js';
 
 export function isIdentifierStart(ch: number): boolean {
     return isIdentifierPart(ch);

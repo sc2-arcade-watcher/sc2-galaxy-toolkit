@@ -1,10 +1,10 @@
 import { assert } from 'chai';
 import 'mocha';
-import { buildStoreFromDir, tlog } from '../helpers';
-import { Store } from '../../src/index/store';
-import { XRay } from '../../src/index/xray';
-import { XMLDocument, XMLElement } from '../../src/types';
-import { FrameNode } from '../../src/index/hierarchy';
+import { buildStoreFromDir, tlog } from '../helpers.js';
+import { Store } from '../../src/index/store.js';
+import { XRay } from '../../src/index/xray.js';
+import { XMLDocument, XMLElement } from '../../src/types.js';
+import { FrameNode } from '../../src/index/hierarchy.js';
 
 describe('xray', function () {
     let store: Store;

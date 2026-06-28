@@ -1,4 +1,4 @@
-import { TokenType, ScannerState, Scanner, DiagnosticReport, DiagnosticCategory } from './types';
+import { TokenType, ScannerState, Scanner, DiagnosticReport, DiagnosticCategory } from './types.js';
 
 export const enum CharacterCodes {
     nullCharacter = 0,

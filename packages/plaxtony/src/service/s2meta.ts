@@ -1,13 +1,13 @@
-import * as gt from '../compiler/types';
-import { getSourceFileOfNode } from '../compiler/utils';
-import { Store } from './store';
-import * as trig from '../sc2mod/trigger';
-import * as cat from '../sc2mod/datacatalog';
-import * as dtypes from '../sc2mod/dtypes';
-import { SC2Workspace } from '../sc2mod/archive';
-import { getLineAndCharacterOfPosition } from './utils';
-import { logIt, logger } from '../common';
-import { DataCatalogConfig, MetadataConfig } from './server';
+import * as gt from '../compiler/types.js';
+import { getSourceFileOfNode } from '../compiler/utils.js';
+import { Store } from './store.js';
+import * as trig from '../sc2mod/trigger.js';
+import * as cat from '../sc2mod/datacatalog.js';
+import * as dtypes from '../sc2mod/dtypes.js';
+import { SC2Workspace } from '../sc2mod/archive.js';
+import { getLineAndCharacterOfPosition } from './utils.js';
+import { logIt, logger } from '../common.js';
+import { DataCatalogConfig, MetadataConfig } from './server.js';
 
 const elementNotValidCharsRE = /[^a-zA-Z0-9_]+/g;
 const elementValidCharsRE = /^[a-z][a-z0-9_]*$/i;

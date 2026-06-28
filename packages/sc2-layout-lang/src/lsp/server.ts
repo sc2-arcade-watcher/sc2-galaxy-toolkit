@@ -1,23 +1,23 @@
 import * as path from 'path';
 import * as lsp from 'vscode-languageserver';
 import URI from 'vscode-uri';
-import { logIt, logger } from '../logger';
-import { S2LConfig } from './config';
-import { Store, createTextDocumentFromFs } from '../index/store';
-import { SchemaLoader } from './schemaLoader';
-import { SchemaRegistry } from '../schema/base';
-import * as s2 from '../index/s2mod';
-import { objventries, globify } from '../common';
-import { languageExt, languageId } from '../types';
-import { DiagnosticsProvider, formatDiagnosticTotal } from './providers/diagnostics';
-import { DefinitionProvider } from './providers/definition';
-import { HoverProvider } from './providers/hover';
-import { NavigationProvider } from './providers/navigation';
-import { ColorProvider } from './providers/color';
-import { CompletionsProvider } from './providers/completions/completions';
-import { DescTreeDataProvider } from './providers/descTreeData';
-import { errGuard } from './provider';
-import { ReferenceProvider } from './providers/reference';
+import { logIt, logger } from '../logger.js';
+import { S2LConfig } from './config.js';
+import { Store, createTextDocumentFromFs } from '../index/store.js';
+import { SchemaLoader } from './schemaLoader.js';
+import { SchemaRegistry } from '../schema/base.js';
+import * as s2 from '../index/s2mod.js';
+import { objventries, globify } from '../common.js';
+import { languageExt, languageId } from '../types.js';
+import { DiagnosticsProvider, formatDiagnosticTotal } from './providers/diagnostics.js';
+import { DefinitionProvider } from './providers/definition.js';
+import { HoverProvider } from './providers/hover.js';
+import { NavigationProvider } from './providers/navigation.js';
+import { ColorProvider } from './providers/color.js';
+import { CompletionsProvider } from './providers/completions/completions.js';
+import { DescTreeDataProvider } from './providers/descTreeData.js';
+import { errGuard } from './provider.js';
+import { ReferenceProvider } from './providers/reference.js';
 
 const fileChangeTypeNames: { [key: number]: string } = {
     [lsp.FileChangeType.Created]: 'Created',

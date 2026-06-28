@@ -1,9 +1,9 @@
 import { assert } from 'chai';
 import 'mocha';
-import { buildStore, getSchema, tlog } from '../helpers';
-import { FrameNode, UINavigator, UIBuilder, AnimationNode } from '../../src/index/hierarchy';
-import { ExpressionParser } from '../../src/parser/expressions';
-import { DescKind } from '../../src/index/desc';
+import { buildStore, getSchema, tlog } from '../helpers.js';
+import { FrameNode, UINavigator, UIBuilder, AnimationNode } from '../../src/index/hierarchy.js';
+import { ExpressionParser } from '../../src/parser/expressions.js';
+import { DescKind } from '../../src/index/desc.js';
 
 function mockupIndex(...src: string[]) {
     const store = buildStore({fprefix: 'hierarchy'}, ...src);

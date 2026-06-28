@@ -1,6 +1,6 @@
 import { parse as xmlParse, type ParserHooks, type XMLElement, type XMLNode, type DiagnosticReport, DiagnosticCategory } from 'sc2-xml';
-import { SC2Layout, TextDocument } from '../types';
-import * as sch from '../schema/base';
+import { SC2Layout, TextDocument } from '../types.js';
+import * as sch from '../schema/base.js';
 
 export interface ParserOptions {
     schema: sch.SchemaRegistry;

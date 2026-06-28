@@ -1,8 +1,8 @@
 import * as vs from 'vscode';
 import * as lspc from 'vscode-languageclient';
 import * as path from 'path';
-import { TreeViewProvider } from './dtree';
-import { WorkspaceSetupChecker } from './workspace';
+import { TreeViewProvider } from './dtree.js';
+import { WorkspaceSetupChecker } from './workspace.js';
 
 type ProgressReportParams = {
     message?: string;

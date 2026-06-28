@@ -1,9 +1,9 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { createRegistryFromDir, DefinitionMap } from '../schema/registry';
-import { getMdFilenameOfType, defTypeToMdFile, writeMdFile, readMdFile } from '../schema/localization';
-import * as sch from '../schema/base';
-import { dlog, globify } from '../common';
+import { createRegistryFromDir, DefinitionMap } from '../schema/registry.js';
+import { getMdFilenameOfType, defTypeToMdFile, writeMdFile, readMdFile } from '../schema/localization.js';
+import * as sch from '../schema/base.js';
+import { dlog, globify } from '../common.js';
 
 function getRelativeFilenameForType(cType: sch.AbstractModel) {
     return path.join('doc', getMdFilenameOfType(cType));

@@ -1,8 +1,8 @@
-import { LayoutDocument, Store } from './store';
-import { XMLElement, XMLNode, DiagnosticReport, XMLDocument, AttrValueConstant, AttrValueKindOffset, SC2Layout } from '../types';
-import * as sch from '../schema/base';
-import { splitSlashDelimetedStr, getAttrValueKind, isConstantValueKind } from '../parser/utils';
-import { StringIcaseMap } from '../common';
+import { LayoutDocument, Store } from './store.js';
+import { XMLElement, XMLNode, DiagnosticReport, XMLDocument, AttrValueConstant, AttrValueKindOffset, SC2Layout } from '../types.js';
+import * as sch from '../schema/base.js';
+import { splitSlashDelimetedStr, getAttrValueKind, isConstantValueKind } from '../parser/utils.js';
+import { StringIcaseMap } from '../common.js';
 
 export class DescXRef {
     declarations = new Set<XMLElement>();
