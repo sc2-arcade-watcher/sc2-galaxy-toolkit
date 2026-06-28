@@ -99,12 +99,16 @@ function sanitizeCommitMessage(msg: string) {
 }
 
 export class SchemaLoader {
-    protected storagePath = this.slSrv.initOptions.globalStoragePath;
-    protected tmpPath = path.join(this.storagePath, 'tmp');
-    protected cachePath = path.join(this.storagePath, 'cache');
-    readonly schStateSrc = path.join(this.storagePath, 'sch-state.json');
+    protected storagePath: string;
+    protected tmpPath: string;
+    protected cachePath: string;
+    readonly schStateSrc: string;
 
     constructor(protected slSrv: S2LServer) {
+        this.storagePath = this.slSrv.initOptions.globalStoragePath;
+        this.tmpPath = path.join(this.storagePath, 'tmp');
+        this.cachePath = path.join(this.storagePath, 'cache');
+        this.schStateSrc = path.join(this.storagePath, 'sch-state.json');
     }
 
     protected async readSmState() {

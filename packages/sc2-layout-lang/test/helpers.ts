@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as util from 'util';
 import { Store } from '../src/index/store.js';
 import { SchemaRegistry } from '../src/schema/base.js';
-import URI from 'vscode-uri';
+import { URI } from 'vscode-uri';
 import { globify, readFileAsync } from '../src/common.js';
 import { languageExt } from '../src/types.js';
 import { AbstractProvider } from '../src/lsp/provider.js';

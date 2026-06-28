@@ -6,7 +6,7 @@ import { DTArchive, DTNodeKind, DTLayout, DTItemType, DTElementKind, FetchNodePa
 import { DescNamespace, DescKind } from '../../index/desc.js';
 import { XMLDocument, XMLElement } from '../../types.js';
 import { ServiceStateFlags } from '../server.js';
-import URI from 'vscode-uri';
+import { URI } from 'vscode-uri';
 import { Archive } from '../../index/s2mod.js';
 import { FrameNode } from '../../index/hierarchy.js';
 

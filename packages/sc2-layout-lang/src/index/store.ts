@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as lsp from 'vscode-languageserver';
-import URI from 'vscode-uri';
+import { URI } from 'vscode-uri';
 import * as sch from '../schema/base.js';
 import { XMLDocument, TextDocument, SC2Layout } from '../types.js';
 import { parseDocument } from '../parser/parser.js';
@@ -44,9 +44,10 @@ export class Store implements IStoreEvents {
 
     readonly s2ws = new s2.Workspace();
     readonly documents = new Map<string, XMLDocument>();
-    readonly index = new DescIndex(this.schema);
+    readonly index: DescIndex;
 
     constructor(public readonly schema: sch.SchemaRegistry) {
+        this.index = new DescIndex(this.schema);
     }
 
     async clear() {

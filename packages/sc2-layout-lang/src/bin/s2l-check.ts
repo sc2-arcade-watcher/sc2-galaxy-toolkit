@@ -6,7 +6,7 @@ import { createTextDocumentFromFs } from '../index/store.js';
 import { buildStore, mockupProvider } from '../../test/helpers.js';
 import { DiagnosticsProvider, formatDiagnosticTotal } from '../lsp/providers/diagnostics.js';
 import * as s2 from '../index/s2mod.js';
-import URI from 'vscode-uri';
+import { URI } from 'vscode-uri';
 import '../../test/bootstrap.js';
 
 async function checkFiles(fpaths: string[]) {

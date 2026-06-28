@@ -3,7 +3,7 @@ import * as sch from '../../schema/base.js';
 import { AbstractProvider, errGuard } from '../provider.js';
 import { TokenType, XMLElement, AttrValueKind, XMLDocument, AttrValueKindOffset, XMLAttr, XMLNode } from '../../types.js';
 import { getAttrValueKind, getSelectionIndexAtPosition } from '../../parser/utils.js';
-import URI from 'vscode-uri';
+import { URI } from 'vscode-uri';
 import { ExpressionParser, PathSelector, PropertyBindExpr, SelectorFragment, SyntaxKind } from '../../parser/expressions.js';
 import { UINavigator, UIBuilder, FrameNode, AnimationNode, UINode } from '../../index/hierarchy.js';
 import { LayoutProcessor } from '../../index/processor.js';

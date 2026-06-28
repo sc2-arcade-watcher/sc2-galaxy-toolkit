@@ -1,9 +1,11 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'child_process';
 import assert from 'node:assert';
 import { createRegistry } from '../src/schema/registry.js';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const cspath = path.join(__dirname, '../sc-min.json');
 
 function generateSchemaCache(args: string[] = []) {

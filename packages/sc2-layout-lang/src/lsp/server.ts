@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as lsp from 'vscode-languageserver';
-import URI from 'vscode-uri';
+import { URI } from 'vscode-uri';
 import { logIt, logger } from '../logger.js';
 import { S2LConfig } from './config.js';
 import { Store, createTextDocumentFromFs } from '../index/store.js';
