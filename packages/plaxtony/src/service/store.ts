@@ -9,7 +9,7 @@ import * as lsp from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as glob from 'fast-glob';
+import glob from 'fast-glob';
 import URI from 'vscode-uri';
 import { TypeChecker } from '../compiler/checker';
 import { DataCatalogConfig, MetadataConfig } from './server';

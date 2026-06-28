@@ -5,7 +5,7 @@ import * as fs from 'fs-extra';
 import * as util from 'util';
 import * as path from 'path';
 import * as xml from 'xml2js';
-import * as glob from 'fast-glob';
+import glob from 'fast-glob';
 import * as trig from './trigger';
 import * as cat from './datacatalog';
 import * as loc from './localization';
@@ -126,9 +126,9 @@ export async function findSC2ArchiveDirectories(directory: string, opts: { exclu
             stats: true,
             objectMode: true,
         }
-    )).map(x => x.path);
+    )).map((x: glob.Entry) => x.path);
 
-    return results.sort((a, b) => {
+    return results.sort((a: string, b: string) => {
         return (
             validArchiveExtensions.indexOf(b.match(reValidArchiveExtension)[1].toLowerCase()) -
             validArchiveExtensions.indexOf(a.match(reValidArchiveExtension)[1].toLowerCase())

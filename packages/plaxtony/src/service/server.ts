@@ -114,7 +114,7 @@ interface PlaxtonyConfig {
 }
 
 interface DocumentUpdateRequest {
-    timer: NodeJS.Timer;
+    timer: NodeJS.Timeout;
     promise: Promise<boolean>;
     content: string;
     isDirty: boolean;
