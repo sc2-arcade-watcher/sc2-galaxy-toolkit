@@ -24,10 +24,9 @@
 		"clean": "rm -rf lib/*",
 		"build": "tsc",
 		"build:watch": "tsc --watch",
-		"test": "mocha --config .mocharc.json",
-		"test:watch": "mocha --config .mocharc.json --watch",
-		"test:coverage": "nyc mocha --config .mocharc-nyc.json",
-		"lint": "eslint . --ext .ts"
+		"test": "node --enable-source-maps ./node_modules/.bin/mocha --config .mocharc.json",
+		"test:watch": "node --enable-source-maps ./node_modules/.bin/mocha --config .mocharc.json --watch",
+		"lint": "eslint src/"
 	},
 	"nyc": {
 		"extension": [
@@ -60,11 +59,8 @@
 		"@types/node": "catalog:",
 		"@types/sax": "^1.0.0",
 		"@types/xml2js": "^0.4.2",
-		"@typescript-eslint/eslint-plugin": "^5.14.0",
-		"@typescript-eslint/eslint-plugin-tslint": "^5.14.0",
-		"@typescript-eslint/parser": "^5.14.0",
 		"chai": "^4.3.6",
-		"eslint": "^8.10.0",
+		"typescript-eslint": "^8",
 		"mocha": "^9.2.2",
 		"nyc": "^15.1.0",
 		"source-map-support": "^0.5.4",
