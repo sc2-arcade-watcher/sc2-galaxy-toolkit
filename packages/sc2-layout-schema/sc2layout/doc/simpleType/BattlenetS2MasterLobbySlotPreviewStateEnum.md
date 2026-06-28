@@ -1,0 +1,19 @@
+TBD
+
+___
+
+## CLOSED
+
+TBD
+
+## COMPUTER
+
+TBD
+
+## OPEN
+
+TBD
+
+## OCCUPIED
+
+TBD

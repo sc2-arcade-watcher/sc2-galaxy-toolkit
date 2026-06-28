@@ -1,0 +1,23 @@
+name: Lint
+
+on:
+  push: {}
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  lint-xml:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      - name: Install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxml2-utils
+
+      - name: Validate schema against XSD
+        run: ./validate.sh

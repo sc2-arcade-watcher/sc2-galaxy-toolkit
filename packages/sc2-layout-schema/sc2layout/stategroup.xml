@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<map>
+    <simpleType name="StateGroupStateNameOptional">
+        <union value="StateGroupStateName"/>
+        <flag name="Nullable" value="true"/>
+    </simpleType>
+
+    <simpleType name="AnimationStateName" data="string">
+    </simpleType>
+
+    <simpleType name="AnimationStateEvent" data="string">
+    </simpleType>
+
+    <!--
+     - CFrameStateCondition
+    -->
+
+    <complexType name="CFrameStateCondition">
+        <attribute name="type" type="EStateWhen" use="required"/>
+        <attribute name="frame" type="FrameReference" default="$this"/>
+        <attribute name="operator" type="EStatePropertyOperator" default="Equal"/>
+    </complexType>
+
+    <complexType name="CFrameStateConditionProperty">
+        <extend value="CFrameStateCondition"/>
+        <attribute name="index" type="Uint8"/>
+        <indeterminateAttribute key="PropertyName" value="PropertyValue"/>
+    </complexType>
+
+    <complexType name="CFrameStateConditionAnimationState">
+        <extend value="CFrameStateCondition"/>
+        <indeterminateAttribute key="AnimationStateName" value="AnimationStateEvent"/>
+    </complexType>
+
+    <complexType name="CFrameStateConditionStateGroup">
+        <extend value="CFrameStateCondition"/>
+        <indeterminateAttribute key="StateGroupName" value="StateGroupStateName"/>
+    </complexType>
+
+    <complexType name="CFrameStateConditionOption">
+        <extend value="CFrameStateCondition"/>
+        <!-- TODO: add standard/common variables -->
+        <indeterminateAttribute key="String" value="String"/>
+    </complexType>
+
+    <!--
+     - CFrameStateAction
+    -->
+
+    <complexType name="CFrameStateAction">
+        <attribute name="type" type="EStateAction" use="required"/>
+        <attribute name="frame" type="FrameReference" default="$this"/>
+        <attribute name="on" type="EStateActionWhen"/>
+        <attribute name="undo" type="Boolean"/>
+    </complexType>
+
+    <complexType name="CFrameStateSetStateAction">
+        <extend value="CFrameStateAction"/>
+        <attribute name="group" type="StateGroupName" use="required"/>
+        <attribute name="state" type="StateGroupStateName" use="required"/>
+        <attribute name="forceSet" type="Boolean"/>
+    </complexType>
+
+    <complexType name="CFrameStateSetPropertyAction">
+        <extend value="CFrameStateAction"/>
+        <attribute name="index" type="Uint8"/>
+        <attribute name="layer" type="Uint8"/>
+        <indeterminateAttribute key="PropertyName" value="PropertyValue"/>
+    </complexType>
+
+    <complexType name="CFrameStateSetAnimationPropAction">
+        <extend value="CFrameStateAction"/>
+        <attribute name="animation" type="AnimationName" use="required"/>
+        <attribute name="enabled" type="Boolean" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameStateSetAnchorAction">
+        <extend value="CFrameStateAction"/>
+        <attribute name="side" type="AnchorSide" use="required"/>
+        <attribute name="relative" type="FrameReference" use="required" default="$parent"/>
+        <attribute name="pos" type="AnchorPos" use="required"/>
+        <attribute name="offset" type="Int32" default="0"/>
+    </complexType>
+
+    <complexType name="CFrameStateSendEventAction">
+        <extend value="CFrameStateAction"/>
+        <attribute name="event" type="AnimationEventType" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameStatePlaySoundAction">
+        <extend value="CFrameStateAction"/>
+        <attribute name="sound" type="Sound" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameStateApplyTemplateAction">
+        <extend value="CFrameStateAction"/>
+        <attribute name="template" type="DescTemplateName" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameStateCreateFromTemplateAction">
+        <extend value="CFrameStateAction"/>
+        <attribute name="template" type="DescTemplateName" use="required"/>
+    </complexType>
+
+    <!--
+     - CFrameStateGroup
+    -->
+
+    <complexType name="CStateDesc">
+        <attribute name="name" type="ElementName" use="required" default="Default"/>
+        <element name="When" type="CFrameStateCondition">
+            <alternative match="attrValue">
+                <statement test="Property" type="CFrameStateConditionProperty"/>
+                <statement test="AnimationState" type="CFrameStateConditionAnimationState"/>
+                <statement test="StateGroup" type="CFrameStateConditionStateGroup"/>
+                <statement test="Option" type="CFrameStateConditionOption"/>
+            </alternative>
+        </element>
+        <element name="Action" type="CFrameStateAction">
+            <alternative match="attrValue">
+                <statement test="SetState" type="CFrameStateSetStateAction"/>
+                <statement test="SetProperty" type="CFrameStateSetPropertyAction"/>
+                <statement test="SetAnimationProperty" type="CFrameStateSetAnimationPropAction"/>
+                <statement test="SetAnchor" type="CFrameStateSetAnchorAction"/>
+                <statement test="SendEvent" type="CFrameStateSendEventAction"/>
+                <statement test="PlaySound" type="CFrameStatePlaySoundAction"/>
+                <statement test="ApplyTemplate" type="CFrameStateApplyTemplateAction"/>
+                <statement test="CreateFromTemplate" type="CFrameStateCreateFromTemplateAction"/>
+            </alternative>
+        </element>
+    </complexType>
+
+    <complexType name="CFrameStateDefault">
+        <attribute name="val" type="StateGroupStateNameOptional" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameStateGroupDesc">
+        <extend value="RequiredtoloadTrait"/>
+        <attribute name="name" type="DescName" use="required" default="StateGroup"/>
+        <attribute name="template" type="DescTemplateName"/>
+        <attribute name="file" type="FileDescName"/>
+        <attribute name="log" type="Boolean"/>
+        <element name="DefaultState" type="CFrameStateDefault"/>
+        <element name="State" type="CStateDesc"/>
+    </complexType>
+</map>

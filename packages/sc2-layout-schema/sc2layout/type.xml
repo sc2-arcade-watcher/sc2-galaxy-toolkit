@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="utf-8"?>
+<map>
+    <!--
+    ========================================
+    => NATIVE TYPES
+    ========================================
+    -->
+
+    <simpleType name="Uint8" data="number"/>
+    <simpleType name="Uint16" data="number"/>
+    <simpleType name="Uint32" data="number"/>
+    <simpleType name="Uint64" data="number"/>
+    <simpleType name="Int8" data="number"/>
+    <simpleType name="Int16" data="number"/>
+    <simpleType name="Int32" data="number"/>
+    <simpleType name="Int64" data="number"/>
+    <simpleType name="Real32" data="number"/>
+    <simpleType name="String" data="string"/>
+    <simpleType name="Boolean" data="bool">
+        <enumeration value="False"/>
+        <enumeration value="True"/>
+    </simpleType>
+
+    <simpleType name="FileDescName" data="string"/>
+    <simpleType name="DescName" data="string">
+        <pattern value="^[\w!\x23-\x2F\x3A-\x40]+$"/>
+    </simpleType>
+    <simpleType name="DescTemplateName" data="string"/>
+    <simpleType name="FrameReference" data="string"/>
+
+    <simpleType name="AnimationName" data="string"/>
+    <simpleType name="EventName" data="string"/>
+
+    <simpleType name="StateGroupName" data="string"/>
+    <simpleType name="StateGroupStateName" data="string"/>
+
+    <simpleType name="PropertyName" data="string"/>
+    <simpleType name="PropertyValue" data="string"/>
+
+    <simpleType name="Mixed" data="string"/>
+
+    <simpleType name="Image" data="string"/>
+    <simpleType name="Color" data="string">
+        <flag name="Nullable" value="true"/>
+    </simpleType>
+    <simpleType name="Text" data="string"/>
+    <simpleType name="Hotkey" data="string"/>
+    <simpleType name="Sound" data="string"/>
+    <simpleType name="Style" data="string"/>
+    <simpleType name="Handle" data="string"/>
+
+    <simpleType name="BoundedInt" data="number"/>
+    <simpleType name="UnitTag" data="string"/>
+    <simpleType name="Movie" data="string"/>
+    <simpleType name="Cursor" data="string"/>
+    <simpleType name="Identifier" data="string"/>
+    <simpleType name="GameContent" data="string"/>
+    <simpleType name="Tooltip" data="string"/>
+    <simpleType name="ContextMenu" data="string"/>
+    <simpleType name="FlashFile" data="string"/>
+
+    <!--  -->
+
+    <simpleType name="ConstantName" data="string">
+        <pattern value="^[^#]+$"/>
+    </simpleType>
+
+    <simpleType name="ElementName" data="string">
+        <pattern value="^[\w_\-\/]+$"/>
+    </simpleType>
+
+    <simpleType name="Uint32Pair" data="string">
+        <pattern value="((^|,)[0-9]+){2}$"/>
+    </simpleType>
+
+    <simpleType name="Vector3" data="string">
+        <pattern value="((^|,)-?[0-9]+\.?[0-9]*){3}$"/>
+    </simpleType>
+
+    <!--
+    ========================================
+    :: Internal types
+    ========================================
+    -->
+
+    <simpleType name="DescInternal:CButton" data="internal" internalType="CButton"/>
+    <simpleType name="DescInternal:CFrame" data="internal" internalType="CFrame"/>
+    <simpleType name="DescInternal:CImage" data="internal" internalType="CImage"/>
+    <simpleType name="DescInternal:CLabel" data="internal" internalType="CLabel"/>
+    <simpleType name="DescInternal:CListBox" data="internal" internalType="CListBox"/>
+    <simpleType name="DescInternal:CScrollBar" data="internal" internalType="CScrollBar"/>
+    <simpleType name="DescInternal:CSlider" data="internal" internalType="CSlider"/>
+    <simpleType name="DescInternal:CMovieFrame" data="internal" internalType="CMovieFrame"/>
+
+    <!--
+    ========================================
+    :: Game catalog data links
+    ========================================
+    -->
+
+    <simpleType name="DataLink.Abil" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Achievement" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.AchievementTerm" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Actor" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.ActorSupport" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Alert" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.ArmyCategory" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.ArmyUnit" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.ArmyUpgrade" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Artifact" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.ArtifactSlot" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.AttachMethod" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.BankCondition" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Beam" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Behavior" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Bundle" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Boost" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Button" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Camera" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Campaign" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Character" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Cliff" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.CliffMesh" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.ColorStyle" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Commander" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Config" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.ConsoleSkin" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Conversation" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.ConversationState" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Cursor" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.DecalPack" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.DSP" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Effect" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Emoticon" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.EmoticonPack" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Error" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Footprint" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.FoW" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Game" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.GameUI" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Herd" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.HerdNode" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Hero" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.HeroAbil" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.HeroStat" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Item" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.ItemClass" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.ItemContainer" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Kinetic" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.LensFlareSet" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Light" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Location" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Loot" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Map" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Model" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Mount" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Mover" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Objective" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.PhysicsMaterial" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Ping" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.PortraitPack" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Preload" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.PremiumMap" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Race" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.RaceBannerPack" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Requirement" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.RequirementNode" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Reverb" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Reward" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.ScoreResult" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.ScoreValue" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Shape" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Skin" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.SkinPack" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Sound" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.SoundExclusivity" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.SoundMixSnapshot" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Soundtrack" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.SprayPack" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.TacCooldown" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Tactical" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Talent" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.TalentProfile" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.TargetFind" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.TargetSort" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Terrain" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.TerrainObject" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.TerrainTex" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Texture" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.TextureSheet" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Tile" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Trophy" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Turret" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Unit" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Upgrade" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.User" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Validator" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.VoiceOver" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.VoicePack" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.WarChest" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.WarChestSeason" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Water" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.Weapon" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+    <simpleType name="DataLink.StimPack" data="string">
+        <flag name="Virtual" value="true"/>
+    </simpleType>
+</map>
