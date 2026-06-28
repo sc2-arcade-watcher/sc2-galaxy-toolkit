@@ -3,8 +3,14 @@
     "version": "1.0.0",
     "description": "Generic XML scanner and parser with LSP-compatible position tracking",
     "license": "MIT",
-    "main": "./lib/src/index.js",
-    "types": "./lib/src/index.d.ts",
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./lib/src/index.d.ts",
+            "default": "./lib/src/index.js"
+        }
+    },
+    "engines": { "node": ">=22.0.0" },
     "scripts": {
         "clean": "rm -rf lib/",
         "build": "tsc",
