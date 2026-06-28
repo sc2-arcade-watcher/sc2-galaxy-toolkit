@@ -7,7 +7,7 @@ import { buildStore, mockupProvider } from '../../test/helpers.js';
 import { DiagnosticsProvider, formatDiagnosticTotal } from '../lsp/providers/diagnostics.js';
 import * as s2 from '../index/s2mod.js';
 import URI from 'vscode-uri';
-require('../../test/bootstrap');
+import '../../test/bootstrap.js';
 
 async function checkFiles(fpaths: string[]) {
     const store = buildStore();
