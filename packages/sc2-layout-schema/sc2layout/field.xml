@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<map>
+    <!-- TODO: rename: shared_type.xml / common_type.xml ?? -->
+
+    <!--
+    ========================================
+    => SIMPLE TYPES SHARED IN VARIOUS CONTEXTS
+    ========================================
+    -->
+    <simpleType name="AnimationEventType" data="string">
+        <union value="EAnimationEventNative"/>
+        <union value="EventName"/>
+        <pattern value="^\S+$"/>
+    </simpleType>
+
+    <!--
+    ========================================
+    => FIELD TYPES FOR COMPLEX PROPERTIES/ELEMENTS AND SUCH
+    ========================================
+    -->
+
+    <complexType name="RequiredtoloadTrait">
+        <attribute name="requiredtoload" type="String"/>
+    </complexType>
+
+    <simpleType name="AnchorSide" kind="enum">
+        <enumeration value="Top"/>
+        <enumeration value="Left"/>
+        <enumeration value="Right"/>
+        <enumeration value="Bottom"/>
+    </simpleType>
+
+    <simpleType name="AnchorPosPreset" kind="enum">
+        <enumeration value="Min"/>
+        <enumeration value="Mid"/>
+        <enumeration value="Max"/>
+    </simpleType>
+
+    <simpleType name="AnchorPosOffset" data="number">
+        <pattern value="^(\+|\-)?(([0-9]+\.[0-9]*)|([0-9]*\.?[0-9]+))$"/>
+    </simpleType>
+
+    <simpleType name="AnchorPosPercent" data="number">
+        <pattern value="^(\+|\-)?([0-9]+(\.[0-9]+)?)%$"/>
+    </simpleType>
+
+    <simpleType name="AnchorPos">
+        <union value="AnchorPosPreset"/>
+        <union value="AnchorPosOffset"/>
+        <union value="AnchorPosPercent"/>
+    </simpleType>
+
+    <!--  -->
+
+    <complexType name="Field:Anchor">
+        <attribute name="side" type="AnchorSide"/>
+        <attribute name="relative" type="FrameReference" use="required"/>
+        <attribute name="pos" type="AnchorPos"/>
+        <attribute name="offset" type="Int32"/>
+    </complexType>
+
+    <complexType name="Field:AliasTable">
+        <attribute name="alias" type="FrameReference" use="required"/>
+        <attribute name="original" type="String" use="required"/>
+    </complexType>
+
+    <complexType name="Field:AttachPointTable">
+        <attribute name="alias" type="String"/>
+        <attribute name="finderTag" type="String" use="required"/>
+        <attribute name="attachment" type="EAttachmentID" use="required"/>
+        <attribute name="frame" type="FrameReference" use="required"/>
+    </complexType>
+
+    <complexType name="Field:AutoSizeClamp">
+        <attribute name="maxheight" type="Int32"/>
+        <attribute name="maxwidth" type="Int32"/>
+        <attribute name="minheight" type="Int32"/>
+        <attribute name="minwidth" type="Int32"/>
+        <attribute name="val" type="String"/>
+    </complexType>
+
+    <complexType name="Field:Cutscene">
+        <attribute name="val" type="String" use="required"/>
+        <attribute name="preloadFilters" type="String"/>
+    </complexType>
+
+    <complexType name="Field:DataRefArgTable">
+        <attribute name="name" type="EDataRefType" use="required"/>
+        <attribute name="val" type="String" use="required"/>
+    </complexType>
+
+    <complexType name="Field:DesignRect">
+        <attribute name="bottom" type="Int32"/>
+        <attribute name="left" type="Int32"/>
+        <attribute name="right" type="Int32"/>
+        <attribute name="top" type="Int32"/>
+        <attribute name="val" type="String"/>
+    </complexType>
+
+    <complexType name="Field:Rect">
+        <attribute name="bottom" type="Real32"/>
+        <attribute name="left" type="Real32"/>
+        <attribute name="right" type="Real32"/>
+        <attribute name="top" type="Real32"/>
+        <attribute name="val" type="String"/>
+    </complexType>
+
+    <complexType name="Field:LayerCount">
+        <attribute name="val" type="Uint8" use="required"/>
+    </complexType>
+
+    <complexType name="Field:PlayerColorArray">
+        <attribute name="index" type="Uint8"/>
+        <attribute name="val" type="Color" use="required"/>
+    </complexType>
+
+    <complexType name="Field:Shortcut">
+        <attribute name="val" type="Hotkey" use="required"/>
+        <attribute name="priority" type="Int32"/>
+    </complexType>
+
+    <complexType name="Field:DisplayPriority">
+        <attribute name="name" type="String" default="NameSlot"/>
+        <attribute name="val" type="Uint8" use="required"/>
+    </complexType>
+
+    <complexType name="Field:Camera">
+        <attribute name="position" type="Vector3" default="0.000000,0.000000,10.000000"/>
+        <attribute name="target" type="Vector3" default="0.000000,0.000000,10.000000"/>
+        <attribute name="fov" type="Real32" default="90.000000"/>
+        <attribute name="minz" type="Real32" default="1.000000"/>
+        <attribute name="maxz" type="Real32" default="1000.000000"/>
+    </complexType>
+
+    <complexType name="Field:Model">
+        <attribute name="val" type="String" use="required"/>
+        <element name="Position" simpleType="Vector3" default="0.000000,0.000000,0.000000"/>
+        <element name="Scale" simpleType="Vector3" default="1.000000,1.000000,1.000000"/>
+    </complexType>
+
+    <!--  -->
+
+    <complexType name="Field:Unknown">
+        <flag name="AllowExtraAttrs" value="true"/>
+    </complexType>
+</map>

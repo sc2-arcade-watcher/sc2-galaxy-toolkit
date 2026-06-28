@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:simpleType name="typeName">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[\w!\.x23-x2Fx3A-x40]+"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="identifierName">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[\w!\.x23-x2Fx3A-x40]+"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="enumerationValue">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[\w!\.x23-x2Fx3A-x40 ]+"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="attributeUse">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="required"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:element name="map">
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="include"/>
+                <xs:element ref="complexType"/>
+                <xs:element ref="simpleType"/>
+                <xs:element ref="frameClass"/>
+                <xs:element ref="frameType"/>
+            </xs:choice>
+        </xs:complexType>
+        <xs:unique name="uniqueTypeName">
+            <xs:selector xpath="simpleType|complexType|frameClass|frameType"/>
+            <xs:field xpath="@name"/>
+        </xs:unique>
+    </xs:element>
+
+    <xs:element name="include">
+        <xs:complexType>
+            <xs:attribute name="path" use="required" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="complexType">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element ref="extend"/>
+                    <xs:element ref="flag"/>
+                    <xs:element ref="attribute"/>
+                    <xs:element ref="indeterminateAttribute"/>
+                    <xs:element ref="element"/>
+                </xs:choice>
+            </xs:sequence>
+            <xs:attribute name="name" use="required" type="typeName"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="attribute">
+        <xs:complexType>
+            <xs:attribute name="default"/>
+            <xs:attribute name="name" use="required" type="typeName"/>
+            <xs:attribute name="type" use="required" type="typeName"/>
+            <xs:attribute name="use" type="attributeUse"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="extend">
+        <xs:complexType>
+            <xs:attribute name="value" use="required" type="typeName"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="indeterminateAttribute">
+        <xs:complexType>
+            <xs:attribute name="key" use="required" type="typeName"/>
+            <xs:attribute name="value" use="required" type="typeName"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="element">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="1" ref="alternative"/>
+            </xs:sequence>
+            <!--
+                TODO: remove support for refering to existing type in new version (via "ref")
+                even though it has been implemented:
+                - it's not really used thus far
+                - it's not esssential at all
+                - let's get of rid while so long there's a chance
+            -->
+            <!-- <xs:attribute name="ref" type="xs:NCName"/> -->
+            <xs:attribute name="name" type="typeName"/>
+            <xs:attribute name="simpleType" type="typeName"/>
+            <xs:attribute name="table" type="xs:boolean"/>
+            <xs:attribute name="type" type="typeName"/>
+            <xs:attribute name="default"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="alternative">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="statement">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element minOccurs="0" maxOccurs="1" ref="alternative"/>
+                        </xs:sequence>
+                        <xs:attribute name="test" use="required" type="typeName"/>
+                        <xs:attribute name="type" use="required" type="typeName"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="match" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="attrValue"/>
+                        <!-- TODO: not yet implemented -->
+                        <!-- <xs:enumeration value="expression"/> -->
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="attributeName" use="optional" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        <![CDATA[
+                            Defaults to `type` internally.
+                        ]]>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="icase" use="optional" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation>
+                        <![CDATA[
+                            Case insensitive matching by value (defaults to `false`).
+                        ]]>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+        <xs:unique name="uniqueTestStatement">
+            <xs:selector xpath="statement"/>
+            <xs:field xpath="@test"/>
+        </xs:unique>
+    </xs:element>
+    <xs:element name="simpleType">
+        <xs:complexType mixed="true">
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="flag"/>
+                <xs:element ref="enumeration"/>
+                <xs:element ref="pattern"/>
+                <xs:element ref="union"/>
+            </xs:choice>
+            <xs:attribute name="data" type="identifierName"/>
+            <xs:attribute name="internalType" type="typeName"/>
+            <xs:attribute name="kind" type="identifierName"/>
+            <xs:attribute name="name" use="required" type="typeName"/>
+        </xs:complexType>
+        <xs:unique name="uniqueEnumerationValue">
+            <xs:selector xpath="enumeration"/>
+            <xs:field xpath="@value"/>
+        </xs:unique>
+        <xs:unique name="uniqueUnionValue">
+            <xs:selector xpath="union"/>
+            <xs:field xpath="@value"/>
+        </xs:unique>
+    </xs:element>
+    <xs:element name="enumeration">
+        <xs:complexType>
+            <xs:attribute name="value" use="required" type="enumerationValue"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="pattern">
+        <xs:complexType>
+            <xs:attribute name="value" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="union">
+        <xs:complexType>
+            <xs:attribute name="value" use="required" type="typeName"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="frameClass">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
+            </xs:sequence>
+            <xs:attribute name="name" use="required" type="typeName"/>
+            <xs:attribute name="parent" type="typeName"/>
+        </xs:complexType>
+
+        <xs:unique name="uniquePropertyName">
+            <xs:selector xpath="property"/>
+            <xs:field xpath="@name"/>
+        </xs:unique>
+    </xs:element>
+    <xs:element name="property">
+        <xs:complexType>
+            <xs:attribute name="elementType" type="typeName"/>
+            <xs:attribute name="name" use="required" type="typeName"/>
+            <xs:attribute name="readonly" use="optional" type="xs:boolean"/>
+            <xs:attribute name="table" type="xs:boolean"/>
+            <xs:attribute name="tableKey" type="typeName"/>
+            <xs:attribute name="valueType" type="typeName"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="frameType">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="hookup"/>
+            </xs:sequence>
+            <xs:attribute name="blizzOnly" use="required" type="xs:boolean"/>
+            <xs:attribute name="classType" use="required" type="typeName"/>
+            <xs:attribute name="descType" use="optional" type="typeName"/>
+            <xs:attribute name="name" use="required" type="typeName"/>
+        </xs:complexType>
+        <xs:unique name="uniqueHookupPath">
+            <xs:selector xpath="hookup"/>
+            <xs:field xpath="@path"/>
+        </xs:unique>
+    </xs:element>
+    <xs:element name="hookup">
+        <xs:complexType>
+            <xs:attribute name="path" use="required" type="xs:string"/>
+            <xs:attribute name="class" use="required" type="typeName"/>
+            <xs:attribute name="required" use="required" type="xs:boolean"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="flag">
+        <xs:complexType>
+            <xs:attribute name="name" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Virtual"/>
+                        <xs:enumeration value="Nullable"/>
+                        <xs:enumeration value="AllowExtraAttrs"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="value" use="required" type="xs:boolean"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

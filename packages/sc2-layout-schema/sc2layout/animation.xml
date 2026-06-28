@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8"?>
+<map>
+    <simpleType name="AnimationEventActionList" kind="enum">
+        <pattern value="^([\w]+)(\s*,\s*[\w]+)*$"/>
+    </simpleType>
+
+    <simpleType name="AnimationEventAction" kind="enum">
+        <union value="EAnimationEventAction"/>
+        <union value="AnimationEventActionList"/>
+    </simpleType>
+
+    <simpleType name="AnimationEasingInOutPattern" data="string">
+        <pattern value="^([\w]+)(\s*,\s*[\w]+)?$"/>
+    </simpleType>
+
+    <simpleType name="AnimationEasingInOut" kind="enum">
+        <union value="EAnimationEasing"/>
+        <union value="AnimationEasingInOutPattern"/>
+    </simpleType>
+
+    <!--
+    ========================================
+    => EVENT
+    ========================================
+    -->
+
+    <complexType name="AnimationEvent">
+        <attribute name="event" type="AnimationEventType" use="required"/>
+        <attribute name="action" type="AnimationEventAction" use="required" default="Reset,Play"/>
+        <attribute name="frame" type="FrameReference" default="$this"/>
+    </complexType>
+
+    <!--
+    ========================================
+    => DRIVER
+    ========================================
+    -->
+
+    <complexType name="CFrameAnimationDriver">
+        <attribute name="type" type="EAnimationDriverType" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameAnimationDriverMouse">
+        <extend value="CFrameAnimationDriver"/>
+        <attribute name="axis" type="EAnimationDriverMouseAxis" use="required"/>
+        <attribute name="acceleration" type="Real32" default="1.0"/>
+        <attribute name="friction" type="Real32" default="1.0"/>
+        <attribute name="maxSpeed" type="Real32" default="10.0"/>
+    </complexType>
+
+    <complexType name="CFrameAnimationDriverMousePosition">
+        <extend value="CFrameAnimationDriverMouse"/>
+        <attribute name="scale" type="Real32"/>
+        <attribute name="frame" type="FrameReference"/>
+    </complexType>
+
+    <!--
+    ========================================
+    => CONTROLLER KEYS
+    ========================================
+    -->
+
+    <complexType name="CFrameControllerKey">
+        <attribute name="type" type="EAnimationControllerKeyType" use="required"/>
+        <attribute name="time" type="Real32" default="0.0"/>
+        <attribute name="timeinc" type="Real32"/>
+        <attribute name="in" type="EAnimationEasing"/>
+        <attribute name="out" type="EAnimationEasing"/>
+        <attribute name="inout" type="AnimationEasingInOut"/>
+        <attribute name="direction" type="EAnimationDirection"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyCurveReal">
+        <extend value="CFrameControllerKey"/>
+        <attribute name="type" type="EAnimationControllerKeyType" use="required" default="Curve"/>
+        <attribute name="value" type="Real32" use="required" default="0"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyCurveColor">
+        <extend value="CFrameControllerKey"/>
+        <attribute name="type" type="EAnimationControllerKeyType" use="required" default="Curve"/>
+        <attribute name="value" type="Color" use="required" default="FFFFFF"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyCommand">
+        <extend value="CFrameControllerKey"/>
+        <attribute name="type" type="EAnimationControllerKeyType" use="required" default="Command"/>
+        <attribute name="command" type="String" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeySound">
+        <extend value="CFrameControllerKey"/>
+        <attribute name="type" type="EAnimationControllerKeyType" use="required" default="Sound"/>
+        <attribute name="sound" type="Sound" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyIdentifier">
+        <extend value="CFrameControllerKey"/>
+        <attribute name="type" type="EAnimationControllerKeyType" use="required" default="Identifier"/>
+        <attribute name="value" type="String" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyIdentifierState">
+        <extend value="CFrameControllerKeyIdentifier"/>
+        <attribute name="value" type="StateGroupStateName" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyAnimation">
+        <extend value="CFrameControllerKey"/>
+        <attribute name="type" type="EAnimationControllerKeyType" use="required" default="Animation"/>
+        <attribute name="action" type="EAnimationEventAction" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyBool">
+        <extend value="CFrameControllerKey"/>
+        <attribute name="type" type="EAnimationControllerKeyType" use="required" default="Bool"/>
+        <attribute name="value" type="Boolean" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyEvent">
+        <extend value="CFrameControllerKey"/>
+        <attribute name="type" type="EAnimationControllerKeyType" use="required" default="Event"/>
+        <attribute name="event" type="AnimationEventType" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyImage">
+        <extend value="CFrameControllerKey"/>
+        <attribute name="type" type="EAnimationControllerKeyType" use="required" default="Image"/>
+        <attribute name="image" type="Image" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyText">
+        <extend value="CFrameControllerKey"/>
+        <attribute name="type" type="EAnimationControllerKeyType" use="required" default="Text"/>
+        <attribute name="text" type="Text" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyProperty">
+        <extend value="CFrameControllerKey"/>
+        <attribute name="type" type="EAnimationControllerKeyType" use="required" default="Property"/>
+        <attribute name="value" type="Mixed" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyCutscene">
+        <extend value="CFrameControllerKey"/>
+        <attribute name="type" type="EAnimationControllerKeyType" use="required" default="Cutscene"/>
+        <attribute name="action" type="ECutsceneAction" use="required"/>
+
+        <!-- umm, where does that one go? and what does it do? -->
+        <attribute name="order" type="String"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyCutsceneSetCutscene">
+        <extend value="CFrameControllerKeyCutscene"/>
+        <attribute name="action" type="ECutsceneAction" use="required" default="SetCutscene"/>
+        <attribute name="file" type="String" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyCutscenePlay">
+        <extend value="CFrameControllerKeyCutscene"/>
+        <attribute name="action" type="ECutsceneAction" use="required" default="Play"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyCutscenePause">
+        <extend value="CFrameControllerKeyCutscene"/>
+        <attribute name="action" type="ECutsceneAction" use="required" default="Pause"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyCutsceneStop">
+        <extend value="CFrameControllerKeyCutscene"/>
+        <attribute name="action" type="ECutsceneAction" use="required" default="Stop"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyCutsceneBookmark">
+        <extend value="CFrameControllerKeyCutscene"/>
+        <attribute name="action" type="ECutsceneAction" use="required" default="Bookmark"/>
+        <attribute name="bookmark" type="String" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyCutsceneAddFilter">
+        <extend value="CFrameControllerKeyCutscene"/>
+        <attribute name="action" type="ECutsceneAction" use="required" default="AddFilter"/>
+        <attribute name="filter" type="String" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyCutsceneRemoveFilter">
+        <extend value="CFrameControllerKeyCutscene"/>
+        <attribute name="action" type="ECutsceneAction" use="required" default="RemoveFilter"/>
+        <attribute name="filter" type="String" use="required"/>
+    </complexType>
+
+    <complexType name="CFrameControllerKeyCutsceneTimeScale">
+        <extend value="CFrameControllerKeyCutscene"/>
+        <attribute name="action" type="ECutsceneAction" use="required" default="TimeScale"/>
+        <attribute name="value" type="Real32" use="required" default="1.0"/>
+    </complexType>
+
+    <!--
+    ========================================
+    => CONTROLLER TYPES
+    ========================================
+    -->
+
+    <complexType name="CFrameController">
+        <attribute name="name" type="String"/>
+        <attribute name="type" type="EAnimationControllerType" use="required"/>
+        <attribute name="end" type="EAnimationEndAction" default="Pause"/>
+        <attribute name="frame" type="FrameReference" default="$this"/>
+        <element name="Key" type="CFrameControllerKey"/>
+    </complexType>
+
+    <complexType name="CFrameControllerVisibility">
+        <extend value="CFrameController"/>
+        <element name="Key" type="CFrameControllerKeyBool"/>
+    </complexType>
+
+    <complexType name="CFrameControllerSkew">
+        <extend value="CFrameController"/>
+        <attribute name="relative" type="Boolean" default="False"/>
+        <element name="Key" type="CFrameControllerKeyCurveReal"/>
+    </complexType>
+
+    <complexType name="CFrameControllerHSkew">
+        <extend value="CFrameControllerSkew"/>
+    </complexType>
+
+    <complexType name="CFrameControllerVSkew">
+        <extend value="CFrameControllerSkew"/>
+    </complexType>
+
+    <complexType name="CFrameControllerUV">
+        <extend value="CFrameController"/>
+        <attribute name="relative" type="Boolean" default="False"/>
+        <attribute name="layer" type="Uint8" default="0"/>
+        <attribute name="side" type="AnchorSide" use="required"/>
+        <attribute name="sidelock" type="Boolean" default="False"/>
+        <element name="Key" type="CFrameControllerKeyCurveReal"/>
+    </complexType>
+
+    <complexType name="CFrameControllerTooltip">
+        <extend value="CFrameController"/>
+        <element name="Key" type="CFrameControllerKeyText"/>
+    </complexType>
+
+    <complexType name="CFrameControllerTexture">
+        <extend value="CFrameController"/>
+        <attribute name="layer" type="Uint8" default="0"/>
+        <element name="Key" type="CFrameControllerKeyImage"/>
+    </complexType>
+
+    <complexType name="CFrameControllerText">
+        <extend value="CFrameController"/>
+        <element name="Key" type="CFrameControllerKeyText"/>
+    </complexType>
+
+    <complexType name="CFrameControllerState">
+        <extend value="CFrameController"/>
+        <attribute name="stateGroup" type="StateGroupName" use="required"/>
+        <attribute name="forceSet" type="Boolean"/>
+        <element name="Key" type="CFrameControllerKeyIdentifierState"/>
+    </complexType>
+
+    <complexType name="CFrameControllerStartingAngle">
+        <extend value="CFrameController"/>
+        <attribute name="relative" type="Boolean" default="False"/>
+        <element name="Key" type="CFrameControllerKeyCurveReal"/>
+    </complexType>
+
+    <complexType name="CFrameControllerSound">
+        <extend value="CFrameController"/>
+        <element name="Key" type="CFrameControllerKeySound"/>
+    </complexType>
+
+    <complexType name="CFrameControllerProperty">
+        <extend value="CFrameController"/>
+        <attribute name="property" type="PropertyName" use="required"/>
+        <attribute name="curve" type="Boolean"/>
+        <attribute name="index" type="Uint8"/>
+        <element name="Key" type="CFrameControllerKeyProperty"/>
+    </complexType>
+
+    <complexType name="CFrameControllerLayerColor">
+        <extend value="CFrameController"/>
+        <attribute name="layer" type="Uint8" default="0"/>
+        <element name="Key" type="CFrameControllerKeyCurveColor"/>
+    </complexType>
+
+    <complexType name="CFrameControllerImageRotation">
+        <extend value="CFrameController"/>
+        <attribute name="relative" type="Boolean" default="False"/>
+        <element name="Key" type="CFrameControllerKeyCurveReal"/>
+    </complexType>
+
+    <complexType name="CFrameControllerFontStyle">
+        <extend value="CFrameController"/>
+        <attribute name="style1" type="Style" use="required"/>
+        <attribute name="style2" type="Style" use="required"/>
+        <element name="Key" type="CFrameControllerKeyCurveReal"/>
+    </complexType>
+
+    <complexType name="CFrameControllerFade">
+        <extend value="CFrameController"/>
+        <element name="Key" type="CFrameControllerKeyCurveReal"/>
+    </complexType>
+
+    <complexType name="CFrameControllerEvent">
+        <extend value="CFrameController"/>
+        <element name="Key" type="CFrameControllerKeyEvent"/>
+    </complexType>
+
+    <complexType name="CFrameControllerEndAngleOffset">
+        <extend value="CFrameController"/>
+        <attribute name="relative" type="Boolean" default="False"/>
+        <element name="Key" type="CFrameControllerKeyCurveReal"/>
+    </complexType>
+
+    <complexType name="CFrameControllerEnabled">
+        <extend value="CFrameController"/>
+        <element name="Key" type="CFrameControllerKeyBool"/>
+    </complexType>
+
+    <complexType name="CFrameControllerDimension">
+        <extend value="CFrameController"/>
+        <attribute name="dimension" type="EAnimationDimension" use="required"/>
+        <attribute name="relative" type="Boolean" default="False"/>
+        <attribute name="unclip" type="Boolean"/>
+        <attribute name="percentage" type="Boolean"/>
+        <element name="Key" type="CFrameControllerKeyCurveReal"/>
+    </complexType>
+
+    <complexType name="CFrameControllerDesaturation">
+        <extend value="CFrameController"/>
+        <element name="Key" type="CFrameControllerKeyBool"/>
+    </complexType>
+
+    <complexType name="CFrameControllerCutscene">
+        <extend value="CFrameController"/>
+        <element name="Key" type="CFrameControllerKeyCutscene">
+            <alternative match="attrValue" attributeName="action">
+                <statement test="SetCutscene" type="CFrameControllerKeyCutsceneSetCutscene"/>
+                <statement test="Play" type="CFrameControllerKeyCutscenePlay"/>
+                <statement test="Pause" type="CFrameControllerKeyCutscenePause"/>
+                <statement test="Stop" type="CFrameControllerKeyCutsceneStop"/>
+                <statement test="Bookmark" type="CFrameControllerKeyCutsceneBookmark"/>
+                <statement test="AddFilter" type="CFrameControllerKeyCutsceneAddFilter"/>
+                <statement test="RemoveFilter" type="CFrameControllerKeyCutsceneRemoveFilter"/>
+                <statement test="TimeScale" type="CFrameControllerKeyCutsceneTimeScale"/>
+            </alternative>
+        </element>
+    </complexType>
+
+    <complexType name="CFrameControllerCutsceneProperty">
+        <extend value="CFrameController"/>
+        <attribute name="property" type="String" use="required"/>
+        <attribute name="finderTag" type="String"/>
+        <element name="Key" type="CFrameControllerKeyIdentifier"/>
+    </complexType>
+
+    <complexType name="CFrameControllerCutscenePropertyReal">
+        <extend value="CFrameControllerCutsceneProperty"/>
+        <element name="Key" type="CFrameControllerKeyCurveReal"/>
+    </complexType>
+
+    <complexType name="CFrameControllerCounter">
+        <extend value="CFrameController"/>
+        <element name="Key" type="CFrameControllerKeyCurveReal"/>
+    </complexType>
+
+    <complexType name="CFrameControllerColor">
+        <extend value="CFrameController"/>
+        <element name="Key" type="CFrameControllerKeyCurveColor"/>
+    </complexType>
+
+    <complexType name="CFrameControllerBlur">
+        <extend value="CFrameController"/>
+        <element name="Key" type="CFrameControllerKeyCurveReal"/>
+    </complexType>
+
+    <complexType name="CFrameControllerCommand">
+        <extend value="CFrameController"/>
+        <element name="Key" type="CFrameControllerKeyCommand"/>
+    </complexType>
+
+    <complexType name="CFrameControllerAnimationSpeed">
+        <extend value="CFrameController"/>
+        <attribute name="relative" type="Boolean" default="False"/>
+        <attribute name="animation" type="AnimationName" use="required"/>
+        <element name="Key" type="CFrameControllerKeyCurveReal"/>
+    </complexType>
+
+    <complexType name="CFrameControllerAnimation">
+        <extend value="CFrameController"/>
+        <attribute name="animation" type="AnimationName" use="required"/>
+        <element name="Key" type="CFrameControllerKeyAnimation"/>
+    </complexType>
+
+    <complexType name="CFrameControllerAnchor">
+        <extend value="CFrameController"/>
+        <attribute name="side" type="AnchorSide" use="required"/>
+        <attribute name="relative" type="Boolean" default="True"/>
+        <attribute name="relativeFrame" type="FrameReference"/>
+        <attribute name="pos" type="AnchorPosPreset"/>
+        <attribute name="unclip" type="Boolean"/>
+        <element name="Key" type="CFrameControllerKeyCurveReal"/>
+    </complexType>
+
+    <complexType name="CFrameControllerAdjustmentColor">
+        <extend value="CFrameController"/>
+        <element name="Key" type="CFrameControllerKeyCurveColor"/>
+    </complexType>
+
+    <complexType name="CFrameControllerActorMsg">
+        <extend value="CFrameController"/>
+        <attribute name="modelFrameName" type="String"/>
+        <attribute name="sendToScope" type="Boolean"/>
+        <element name="Key" type="CFrameControllerKeyIdentifier"/>
+    </complexType>
+
+    <!--
+    ========================================
+    => ANIMATION
+    ========================================
+    -->
+
+    <complexType name="CFrameAnimationDesc">
+        <extend value="RequiredtoloadTrait"/>
+        <attribute name="name" type="DescName" use="required" default="Animation"/>
+        <attribute name="template" type="DescTemplateName"/>
+        <attribute name="file" type="FileDescName"/>
+        <attribute name="speed" type="Real32"/>
+        <attribute name="flags" type="EAnimationFlags"/>
+        <element name="Event" type="AnimationEvent">
+        </element>
+        <element name="Driver" type="CFrameAnimationDriver">
+            <alternative match="attrValue">
+                <statement test="Mouse" type="CFrameAnimationDriverMouse"/>
+                <statement test="MousePos" type="CFrameAnimationDriverMousePosition"/>
+            </alternative>
+        </element>
+        <element name="Controller" type="CFrameController">
+            <alternative match="attrValue">
+                <statement test="Visibility" type="CFrameControllerVisibility"/>
+                <statement test="VSkew" type="CFrameControllerVSkew"/>
+                <statement test="HSkew" type="CFrameControllerHSkew"/>
+                <statement test="LayerUV" type="CFrameControllerUV"/>
+                <statement test="Tooltip" type="CFrameControllerTooltip"/>
+                <statement test="Texture" type="CFrameControllerTexture"/>
+                <statement test="Text" type="CFrameControllerText"/>
+                <statement test="State" type="CFrameControllerState"/>
+                <statement test="StartingAngle" type="CFrameControllerStartingAngle"/>
+                <statement test="Sound" type="CFrameControllerSound"/>
+                <statement test="Property" type="CFrameControllerProperty"/>
+                <statement test="LayerColor" type="CFrameControllerLayerColor"/>
+                <statement test="Rotation" type="CFrameControllerImageRotation"/>
+                <statement test="Style" type="CFrameControllerFontStyle"/>
+                <statement test="Fade" type="CFrameControllerFade"/>
+                <statement test="Event" type="CFrameControllerEvent"/>
+                <statement test="EndAngleOffset" type="CFrameControllerEndAngleOffset"/>
+                <statement test="Enabled" type="CFrameControllerEnabled"/>
+                <statement test="Dimension" type="CFrameControllerDimension"/>
+                <statement test="Desaturation" type="CFrameControllerDesaturation"/>
+                <statement test="Cutscene" type="CFrameControllerCutscene"/>
+                <statement test="CutsceneProperty" type="CFrameControllerCutsceneProperty"/>
+                <statement test="CutscenePropertyReal" type="CFrameControllerCutscenePropertyReal"/>
+                <statement test="Counter" type="CFrameControllerCounter"/>
+                <statement test="Color" type="CFrameControllerColor"/>
+                <statement test="Blur" type="CFrameControllerBlur"/>
+                <statement test="Command" type="CFrameControllerCommand"/>
+                <statement test="AnimationSpeed" type="CFrameControllerAnimationSpeed"/>
+                <statement test="Animation" type="CFrameControllerAnimation"/>
+                <statement test="Anchor" type="CFrameControllerAnchor"/>
+                <statement test="AdjustmentColor" type="CFrameControllerAdjustmentColor"/>
+                <statement test="ActorMsg" type="CFrameControllerActorMsg"/>
+            </alternative>
+        </element>
+    </complexType>
+</map>
