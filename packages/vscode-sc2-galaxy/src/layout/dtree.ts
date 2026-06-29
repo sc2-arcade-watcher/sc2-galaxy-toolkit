@@ -1,8 +1,7 @@
-import * as path from 'path';
 import * as vs from 'vscode';
 import * as lspc from 'vscode-languageclient';
-import { getThemeIcon } from './extension.js';
-import { DTItemType, DTNodeKind, DTArchive, DTLayout, DTElement, FetchNodeRequest, FetchNodeParams, WorkspaceOverviewRequest, DTElementWithChildren, LayoutElementRequest, LayoutElementParams, WorkspaceChangeNotification, WorkspaceChangeParams, ElementViewDataSection, ElementViewDataRequest } from 'sc2-layout-lang/protocol/descTree';
+import { getThemeIcon } from '../extension.js';
+import { DTNodeKind, type DTArchive, type DTLayout, type DTElement, type FetchNodeParams, type FetchNodeResult, type DTElementWithChildren, type LayoutElementParams, type WorkspaceChangeParams, type WorkspaceOverviewResult, type ElementViewDataSection } from 'sc2-layout-lang/protocol/descTree';
 
 interface DTRichElement extends DTElementWithChildren {
     parent?: DTRichElement;
@@ -19,11 +18,11 @@ export class DescTreeDataProvider implements vs.TreeDataProvider<DTRichItemType>
     protected elementNodeTree = new Map<string, DTRichElement[]>();
 
     constructor(protected readonly langClient: lspc.LanguageClient) {
-        this.langClient.onNotification(WorkspaceChangeNotification.type, this.onWorkspaceChange.bind(this));
+        this.langClient.onNotification('descTree/workspaceChange', this.onWorkspaceChange.bind(this));
     }
 
     protected async getWorkspaceOverview() {
-        const wResult = await this.langClient.sendRequest(WorkspaceOverviewRequest.type, {});
+        const wResult = await this.langClient.sendRequest<WorkspaceOverviewResult>('descTree/workspaceOverview', {});
 
         this.archiveNodes.clear();
         for (const item of wResult.archives) {
@@ -43,7 +42,7 @@ export class DescTreeDataProvider implements vs.TreeDataProvider<DTRichItemType>
     }
 
     protected async getLayoutElement(docUri: string) {
-        const lResult = await this.langClient.sendRequest(LayoutElementRequest.type, {
+        const lResult = await this.langClient.sendRequest<DTElementWithChildren[]>('descTree/layoutElement', {
             textDocument: { uri: docUri },
         } as LayoutElementParams);
 
@@ -275,7 +274,7 @@ class FramePropertiesTreeDataProvider implements vs.TreeDataProvider<ElementView
 
         if (!vItem) {
             if (!this.rootElements) {
-                const result = await this.langClient.sendRequest(ElementViewDataRequest.type, { node: this.activeElement });
+                const result = await this.langClient.sendRequest<ElementViewDataSection>('descTree/elementViewData', { node: this.activeElement });
                 if (result) {
                     this.rootElements = enrichViewDataSection(result).children;
                 }
@@ -344,7 +343,7 @@ export class TreeViewProvider implements vs.Disposable {
 
         await this.descDataProvider.ensureWorkspaceSynced();
 
-        const dtNode = await this.langClient.sendRequest(FetchNodeRequest.type, <FetchNodeParams>{
+        const dtNode = await this.langClient.sendRequest<FetchNodeResult>('descTree/fetchNode', <FetchNodeParams>{
             textDocument: { uri: textEditor.document.uri.toString() },
             position: { line: textEditor.selection.active.line, character: textEditor.selection.active.character },
         });

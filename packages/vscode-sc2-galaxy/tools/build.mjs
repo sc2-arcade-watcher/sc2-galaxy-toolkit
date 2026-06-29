@@ -26,7 +26,7 @@ const ctx = await context({
     sourcesContent: false,
     platform: 'node',
     outdir: 'dist',
-    external: ['vscode', 'plaxtony'],
+    external: ['vscode', 'plaxtony', 'sc2-layout-lang'],
     logLevel: 'info',
     plugins: [esbuildProblemMatcherPlugin],
 });

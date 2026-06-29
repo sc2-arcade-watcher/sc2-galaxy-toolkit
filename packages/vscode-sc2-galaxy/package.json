@@ -1,12 +1,12 @@
 {
 	"name": "sc2galaxy",
-	"displayName": "StarCraft 2 Galaxy Script",
-	"description": "Language support for StarCraft 2 Galaxy Script",
-	"version": "1.10.5",
+	"displayName": "StarCraft II Mod Tools",
+	"description": "Language support for StarCraft II Galaxy Script and SC2Layout",
+	"version": "2.0.0",
 	"publisher": "talv",
 	"license": "MIT",
 	"engines": {
-		"vscode": "^1.64.0"
+		"vscode": "^1.90.0"
 	},
 	"repository": {
 		"type": "git",
@@ -16,183 +16,310 @@
 		"sc2",
 		"starcraft",
 		"galaxy",
-		"galaxy script"
+		"galaxy script",
+		"sc2layout",
+		"stormlayout"
 	],
 	"categories": [
 		"Programming Languages"
 	],
 	"activationEvents": [
-		"onLanguage:galaxy"
+		"onLanguage:galaxy",
+		"workspaceContains:**/DescIndex.SC2Layout"
 	],
 	"main": "./dist/extension.js",
 	"icon": "icon.png",
 	"contributes": {
-		"configuration": {
-			"type": "object",
-			"title": "sc2galaxy",
-			"properties": {
-				"sc2galaxy.trace.server": {
-					"scope": "window",
-					"type": "string",
-					"enum": [
-						"off",
-						"messages",
-						"verbose"
-					],
-					"default": "messages",
-					"markdownDescription": "Logging verbosity of communication between language server."
-				},
-				"sc2galaxy.trace.service": {
-					"scope": "window",
-					"type": "string",
-					"enum": [
-						"error",
-						"warn",
-						"info",
-						"verbose",
-						"debug"
-					],
-					"default": "info",
-					"markdownDescription": "Logging verbosity of intellisense service."
-				},
-				"sc2galaxy.dataPath": {
-					"scope": "window",
-					"type": "string",
-					"default": null,
-					"markdownDescription": "Custom path to SC2 data repository with builtin mods, such as local copy of [SC2GameData](https://github.com/SC2Mapster/SC2GameData)."
-				},
-				"sc2galaxy.fallbackDependency": {
-					"scope": "window",
-					"type": "string",
-					"enum": [
-						"mods/core.sc2mod",
-						"mods/liberty.sc2mod",
-						"mods/swarm.sc2mod",
-						"mods/void.sc2mod",
-						"mods/libertymulti.sc2mod",
-						"mods/swarmmulti.sc2mod",
-						"mods/voidmulti.sc2mod",
-						"mods/balancemulti.sc2mod",
-						"mods/starcoop/starcoop.sc2mod",
-						"campaigns/liberty.sc2campaign",
-						"campaigns/swarm.sc2campaign",
-						"campaigns/void.sc2campaign",
-						"campaigns/libertystory.sc2campaign",
-						"campaigns/swarmstory.sc2campaign",
-						"campaigns/voidstory.sc2campaign"
-					],
-					"default": "mods/liberty.sc2mod",
-					"markdownDescription": "Fallback mod to use whenever dependency chain cannot be determined automatically from project's workspace."
-				},
-				"sc2galaxy.archivePath": {
-					"scope": "window",
-					"type": "string",
-					"default": null,
-					"markdownDescription": "Path (relative or absolute) to an active document (SC2Map/SC2Mod) within the workspace. Active document will dictate what other dependencies and resources will be loaded. This field is optional for non-complex workspaces, such as the ones with a single `.sc2map` in it."
-				},
-				"sc2galaxy.dataCatalog.enabled": {
-					"scope": "window",
-					"type": "boolean",
-					"default": true,
-					"markdownDescription": "Consider XML data catalog during indexing."
-				},
-				"sc2galaxy.metadata.loadLevel": {
-					"scope": "window",
-					"type": "string",
-					"enum": [
-						"None",
-						"Core",
-						"Builtin",
-						"Default"
-					],
-					"enumDescriptions": [
-						"Do not load any metadata.",
-						"Load limit to native library and other data from `core.sc2mod`.",
-						"Load limit to builtin dependencies of an active docoument.",
-						"Load limit to all dependencies of an active document."
-					],
-					"default": "Default",
-					"markdownDescription": "Consider SC2Editor's Triggers during indexing"
-				},
-				"sc2galaxy.metadata.localization": {
-					"scope": "window",
-					"type": "string",
-					"enum": [
-						"enUS",
-						"deDE",
-						"esES",
-						"frFR",
-						"ruRU",
-						"koKR",
-						"zhCN",
-						"zhTW",
-						"ptBR",
-						"plPL",
-						"esMX",
-						"itIT"
-					],
-					"default": "enUS",
-					"markdownDescription": "Localization to use for documentation. **Only `enUS` files are bundled with the extension.** In order to use different localization, you need to extract necessary game files to a custom directory, configured in `sc2galaxy.dataPath`."
-				},
-				"sc2galaxy.s2mod.sources": {
-					"scope": "window",
-					"type": "array",
-					"items": {
-						"type": "string"
+		"configuration": [
+			{
+				"type": "object",
+				"title": "sc2galaxy",
+				"properties": {
+					"sc2galaxy.trace.server": {
+						"scope": "window",
+						"type": "string",
+						"enum": [
+							"off",
+							"messages",
+							"verbose"
+						],
+						"default": "messages",
+						"markdownDescription": "Logging verbosity of communication between language server."
 					},
-					"default": [],
-					"markdownDescription": "Directories containing SC2Mod dependencies. List will be resolved in the given order. It is advised to provide path to SC2 installation directory. **Note**: do not include `mods` folder within the path, because it's already included within name of a dependency."
-				},
-				"sc2galaxy.s2mod.overrides": {
-					"scope": "window",
-					"type": "object",
-					"markdownDescription": "Local overrides of SC2Mod archives. `{\"mods/my-mod.sc2mod\": \"absolute or workspace relative path\"}`."
-				},
-				"sc2galaxy.s2mod.extra": {
-					"scope": "window",
-					"type": "object",
-					"markdownDescription": "Extra dependencies which should be indexed. `{\"mods/my-mod.sc2mod\": \"absolute or workspace relative path\"}`."
-				},
-				"sc2galaxy.documentUpdateDelay": {
-					"scope": "window",
-					"type": "number",
-					"default": 100,
-					"minimum": 1,
-					"markdownDescription": "Minimum idle time (ms) required before reindexing dirty files."
-				},
-				"sc2galaxy.documentDiagnosticsDelay": {
-					"scope": "window",
-					"type": [
-						"number",
-						"boolean"
-					],
-					"default": 400,
-					"minimum": 0,
-					"markdownDescription": "Minimum idle time (ms) required before providing code diagnostics for dirty files (value from `documentUpdateDelay` is contributed). Use `false` to disable - in which case diagnostics will be provided only on save."
-				},
-				"sc2galaxy.completion.functionExpand": {
-					"scope": "resource",
-					"type": "string",
-					"enum": [
-						"None",
-						"Parenthesis",
-						"ArgumentsNull",
-						"ArgumentsDefault"
-					],
-					"enumDescriptions": [
-						"Feature disabled.",
-						"Expand to `func()`.",
-						"Expand and placehold all parameters using `null` like values (`0`, `false` etc.), applicable to a given type of parameter.",
-						"Expand and placehold all parameters using default values from trigger libraries metadata (i.e. `UnitCreate(0, null, c_unitCreateConstruct, 1, null, 270.0)`). If function isn't part of any trigger library, the behavior will fallback to `ArgumentsNull`."
-					],
-					"default": "None",
-					"markdownDescription": "[Completion] Describes the behavior of expanding a function when suggestion from code completions is accepted."
-				},
-				"sc2galaxy.references.currentWorkspaceOnly": {
-					"scope": "window",
-					"type": "boolean",
-					"default": false,
-					"markdownDescription": "[References] Search only within files from current workspace."
+					"sc2galaxy.trace.service": {
+						"scope": "window",
+						"type": "string",
+						"enum": [
+							"error",
+							"warn",
+							"info",
+							"verbose",
+							"debug"
+						],
+						"default": "info",
+						"markdownDescription": "Logging verbosity of intellisense service."
+					},
+					"sc2galaxy.dataPath": {
+						"scope": "window",
+						"type": "string",
+						"default": null,
+						"markdownDescription": "Custom path to SC2 data repository with builtin mods, such as local copy of [SC2GameData](https://github.com/SC2Mapster/SC2GameData)."
+					},
+					"sc2galaxy.fallbackDependency": {
+						"scope": "window",
+						"type": "string",
+						"enum": [
+							"mods/core.sc2mod",
+							"mods/liberty.sc2mod",
+							"mods/swarm.sc2mod",
+							"mods/void.sc2mod",
+							"mods/libertymulti.sc2mod",
+							"mods/swarmmulti.sc2mod",
+							"mods/voidmulti.sc2mod",
+							"mods/balancemulti.sc2mod",
+							"mods/starcoop/starcoop.sc2mod",
+							"campaigns/liberty.sc2campaign",
+							"campaigns/swarm.sc2campaign",
+							"campaigns/void.sc2campaign",
+							"campaigns/libertystory.sc2campaign",
+							"campaigns/swarmstory.sc2campaign",
+							"campaigns/voidstory.sc2campaign"
+						],
+						"default": "mods/liberty.sc2mod",
+						"markdownDescription": "Fallback mod to use whenever dependency chain cannot be determined automatically from project's workspace."
+					},
+					"sc2galaxy.archivePath": {
+						"scope": "window",
+						"type": "string",
+						"default": null,
+						"markdownDescription": "Path (relative or absolute) to an active document (SC2Map/SC2Mod) within the workspace. Active document will dictate what other dependencies and resources will be loaded. This field is optional for non-complex workspaces, such as the ones with a single `.sc2map` in it."
+					},
+					"sc2galaxy.dataCatalog.enabled": {
+						"scope": "window",
+						"type": "boolean",
+						"default": true,
+						"markdownDescription": "Consider XML data catalog during indexing."
+					},
+					"sc2galaxy.metadata.loadLevel": {
+						"scope": "window",
+						"type": "string",
+						"enum": [
+							"None",
+							"Core",
+							"Builtin",
+							"Default"
+						],
+						"enumDescriptions": [
+							"Do not load any metadata.",
+							"Load limit to native library and other data from `core.sc2mod`.",
+							"Load limit to builtin dependencies of an active docoument.",
+							"Load limit to all dependencies of an active document."
+						],
+						"default": "Default",
+						"markdownDescription": "Consider SC2Editor's Triggers during indexing"
+					},
+					"sc2galaxy.metadata.localization": {
+						"scope": "window",
+						"type": "string",
+						"enum": [
+							"enUS",
+							"deDE",
+							"esES",
+							"frFR",
+							"ruRU",
+							"koKR",
+							"zhCN",
+							"zhTW",
+							"ptBR",
+							"plPL",
+							"esMX",
+							"itIT"
+						],
+						"default": "enUS",
+						"markdownDescription": "Localization to use for documentation. **Only `enUS` files are bundled with the extension.** In order to use different localization, you need to extract necessary game files to a custom directory, configured in `sc2galaxy.dataPath`."
+					},
+					"sc2galaxy.s2mod.sources": {
+						"scope": "window",
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"default": [],
+						"markdownDescription": "Directories containing SC2Mod dependencies. List will be resolved in the given order. It is advised to provide path to SC2 installation directory. **Note**: do not include `mods` folder within the path, because it's already included within name of a dependency."
+					},
+					"sc2galaxy.s2mod.overrides": {
+						"scope": "window",
+						"type": "object",
+						"markdownDescription": "Local overrides of SC2Mod archives. `{\"mods/my-mod.sc2mod\": \"absolute or workspace relative path\"}`."
+					},
+					"sc2galaxy.s2mod.extra": {
+						"scope": "window",
+						"type": "object",
+						"markdownDescription": "Extra dependencies which should be indexed. `{\"mods/my-mod.sc2mod\": \"absolute or workspace relative path\"}`."
+					},
+					"sc2galaxy.documentUpdateDelay": {
+						"scope": "window",
+						"type": "number",
+						"default": 100,
+						"minimum": 1,
+						"markdownDescription": "Minimum idle time (ms) required before reindexing dirty files."
+					},
+					"sc2galaxy.documentDiagnosticsDelay": {
+						"scope": "window",
+						"type": [
+							"number",
+							"boolean"
+						],
+						"default": 400,
+						"minimum": 0,
+						"markdownDescription": "Minimum idle time (ms) required before providing code diagnostics for dirty files (value from `documentUpdateDelay` is contributed). Use `false` to disable - in which case diagnostics will be provided only on save."
+					},
+					"sc2galaxy.completion.functionExpand": {
+						"scope": "resource",
+						"type": "string",
+						"enum": [
+							"None",
+							"Parenthesis",
+							"ArgumentsNull",
+							"ArgumentsDefault"
+						],
+						"enumDescriptions": [
+							"Feature disabled.",
+							"Expand to `func()`.",
+							"Expand and placehold all parameters using `null` like values (`0`, `false` etc.), applicable to a given type of parameter.",
+							"Expand and placehold all parameters using default values from trigger libraries metadata (i.e. `UnitCreate(0, null, c_unitCreateConstruct, 1, null, 270.0)`). If function isn't part of any trigger library, the behavior will fallback to `ArgumentsNull`."
+						],
+						"default": "None",
+						"markdownDescription": "[Completion] Describes the behavior of expanding a function when suggestion from code completions is accepted."
+					},
+					"sc2galaxy.references.currentWorkspaceOnly": {
+						"scope": "window",
+						"type": "boolean",
+						"default": false,
+						"markdownDescription": "[References] Search only within files from current workspace."
+					}
+				}
+			},
+			{
+				"title": "sc2layout",
+				"properties": {
+					"sc2layout.trace.server": {
+						"scope": "window",
+						"type": "string",
+						"enum": [
+							"off",
+							"messages",
+							"verbose"
+						],
+						"default": "off",
+						"markdownDescription": "Logging verbosity of communication between language server."
+					},
+					"sc2layout.trace.service": {
+						"scope": "window",
+						"type": "string",
+						"enum": [
+							"error",
+							"warn",
+							"info",
+							"verbose",
+							"debug"
+						],
+						"default": "info",
+						"markdownDescription": "Logging verbosity of intellisense service."
+					},
+					"sc2layout.schema.updateMode": {
+						"scope": "application",
+						"type": "string",
+						"enum": [
+							"Auto",
+							"Manual"
+						],
+						"default": "Auto"
+					},
+					"sc2layout.schema.localPath": {
+						"scope": "application",
+						"type": "string",
+						"default": null,
+						"description": "Custom path to directory with XML schema files. If set extension will use it instead of default one."
+					},
+					"sc2layout.dataPath": {
+						"scope": "window",
+						"type": "string",
+						"default": null,
+						"markdownDescription": "Custom path to SC2 data repository with builtin mods, such as local copy of [SC2GameData](https://github.com/SC2Mapster/SC2GameData)."
+					},
+					"sc2layout.builtinMods": {
+						"scope": "window",
+						"type": [
+							"object",
+							"null"
+						],
+						"default": {
+							"mods/core.sc2mod": true,
+							"mods/liberty.sc2mod": true,
+							"mods/swarm.sc2mod": true,
+							"mods/void.sc2mod": true,
+							"campaigns/liberty.sc2campaign": true,
+							"campaigns/swarm.sc2campaign": true,
+							"campaigns/void.sc2campaign": true,
+							"mods/alliedcommanders.sc2mod": true,
+							"mods/novastoryassets.sc2mod": true,
+							"mods/starcoop/starcoop.sc2mod": true,
+							"mods/starcoop/commanders/arcturusmengsk.sc2mod": true,
+							"mods/starcoop/commanders/egonstetmann.sc2mod": true
+						}
+					},
+					"sc2layout.documentUpdateDelay": {
+						"scope": "window",
+						"type": "number",
+						"default": 100,
+						"minimum": 10,
+						"description": "Minimum idle time (ms) required before reindexing dirty files"
+					},
+					"sc2layout.documentDiagnosticsDelay": {
+						"scope": "window",
+						"type": [
+							"number",
+							"boolean"
+						],
+						"default": 300,
+						"minimum": 0,
+						"markdownDescription": "Minimum idle time (ms) required before providing code diagnostics for dirty files (value from `documentUpdateDelay` is contributed). Use `false` to disable - in which case diagnostics will be provided only on save."
+					},
+					"sc2layout.completion.tabStop": {
+						"scope": "window",
+						"type": "string",
+						"enum": [
+							"EOL",
+							"Attr"
+						],
+						"default": "Attr",
+						"description": "Controls whether to insert tab-stop at end of line, or within the last placeholded attribute."
+					},
+					"sc2layout.completion.stategroupDefaultState": {
+						"scope": "window",
+						"type": [
+							"boolean",
+							"string"
+						],
+						"default": true,
+						"description": "Controls whether to include DefaultState in the StateGroup snippet. If string is given it will be used as default placeholder."
+					},
+					"sc2layout.treeview.visible": {
+						"scope": "window",
+						"type": "boolean",
+						"default": true,
+						"description": "Controls whether to display the Treeview?"
+					}
+				}
+			}
+		],
+		"configurationDefaults": {
+			"[sc2layout]": {
+				"editor.quickSuggestions": {
+					"other": true,
+					"comments": false,
+					"strings": true
 				}
 			}
 		},
@@ -207,6 +334,17 @@
 					".galaxy"
 				],
 				"configuration": "./language-configuration.json"
+			},
+			{
+				"id": "sc2layout",
+				"aliases": [
+					"SC2 Layout",
+					"sc2layout"
+				],
+				"extensions": [
+					".SC2Layout"
+				],
+				"configuration": "./sc2layout-language-configuration.json"
 			}
 		],
 		"grammars": [
@@ -214,6 +352,11 @@
 				"language": "galaxy",
 				"scopeName": "source.galaxy",
 				"path": "./syntaxes/galaxy.json"
+			},
+			{
+				"language": "sc2layout",
+				"scopeName": "text.xml.sc2layout",
+				"path": "./syntaxes/sc2layout.tmLanguage.json"
 			}
 		],
 		"snippets": [
@@ -227,6 +370,42 @@
 				"command": "s2galaxy.verifyScript",
 				"title": "Verify script",
 				"category": "SC2 Galaxy"
+			},
+			{
+				"command": "sc2layout.updateSchemaFiles",
+				"title": "Update Schema Files",
+				"category": "SC2 Layout"
+			},
+			{
+				"command": "sc2layout.analyzeWorkspace",
+				"title": "Analyze Workspace",
+				"category": "SC2 Layout",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
+			},
+			{
+				"command": "sc2layout.dtree.revealActiveFile",
+				"title": "Reveal Active Element in Layout Tree",
+				"category": "SC2 Layout",
+				"icon": {
+					"light": "resources/light/layout.svg",
+					"dark": "resources/dark/layout.svg"
+				},
+				"enablement": "editorLangId == sc2layout"
+			},
+			{
+				"command": "sc2layout.dtree.showInTextEditor",
+				"title": "Show in text editor",
+				"category": "SC2 Layout",
+				"enablement": "view == sc2layoutMainView && viewItem =~ /(layout|element)/"
+			},
+			{
+				"command": "sc2layout.dtree.showProperties",
+				"title": "Show properties",
+				"category": "SC2 Layout",
+				"enablement": "view == sc2layoutMainView && viewItem == element"
 			}
 		],
 		"menus": {
@@ -240,6 +419,57 @@
 				{
 					"command": "s2galaxy.verifyScript",
 					"when": "resourceLangId == galaxy"
+				},
+				{
+					"command": "sc2layout.dtree.revealActiveFile",
+					"when": "sc2layout:extensionEnabled && editorLangId == sc2layout"
+				}
+			],
+			"editor/title": [
+				{
+					"command": "sc2layout.dtree.revealActiveFile",
+					"when": "sc2layout:extensionEnabled && resourceLangId == sc2layout && config.sc2layout.treeview.visible == true",
+					"group": "navigation"
+				}
+			],
+			"view/title": [
+				{
+					"command": "sc2layout.analyzeWorkspace",
+					"when": "view == sc2layoutMainView",
+					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "sc2layout.dtree.showInTextEditor",
+					"when": "view == sc2layoutMainView && viewItem =~ /(layout|element)/"
+				},
+				{
+					"command": "sc2layout.dtree.showProperties",
+					"when": "view == sc2layoutMainView && viewItem == element"
+				}
+			]
+		},
+		"views": {
+			"sc2layout": [
+				{
+					"id": "sc2layoutMainView",
+					"name": "Layout tree",
+					"when": "sc2layout:extensionEnabled && config.sc2layout.treeview.visible == true"
+				},
+				{
+					"id": "sc2layoutElementView",
+					"name": "Element details",
+					"when": "sc2layout:extensionEnabled && config.sc2layout.treeview.visible == true"
+				}
+			]
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "sc2layout",
+					"title": "StarCraft II Layouts",
+					"icon": "resources/layout.svg"
 				}
 			]
 		}
@@ -253,11 +483,12 @@
 	},
 	"dependencies": {
 		"plaxtony": "workspace:*",
+		"sc2-layout-lang": "workspace:*",
 		"vscode-languageclient": "6.2.0-next.2"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",
-		"@types/vscode": "~1.64.0",
+		"@types/vscode": "~1.89.0",
 		"esbuild": "catalog:",
 		"typescript": "catalog:"
 	},
