@@ -1,25 +1,11 @@
 {
+	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
-		"module": "commonjs",
-		"target": "es2018",
-		"rootDir": "src",
-		"outDir": "out",
-		"strictNullChecks": false,
-		"lib": [
-			"es2018"
-		],
-		"sourceMap": true,
-		"allowJs": false,
-		"skipLibCheck": true
+		"noEmit": true,
+		"composite": false,
+		"lib": ["es2025"]
 	},
-	"include": [
-		"src/**/*"
-	],
-	"exclude": [
-		"node_modules",
-		".vscode-test"
-	],
-	"references": [
-		{ "path": "../plaxtony" }
-	]
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", ".vscode-test"],
+	"references": [{ "path": "../plaxtony" }]
 }

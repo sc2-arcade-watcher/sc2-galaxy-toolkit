@@ -24,7 +24,7 @@
 	"activationEvents": [
 		"onLanguage:galaxy"
 	],
-	"main": "./out/extension",
+	"main": "./dist/extension.js",
 	"icon": "icon.png",
 	"contributes": {
 		"configuration": {
@@ -245,19 +245,20 @@
 		}
 	},
 	"scripts": {
-		"build": "tsc -p ./",
-		"build:watch": "tsc -watch -p ./",
-		"vscode:prepublish": "tsc -p ./",
+		"build": "tsc -p ./ --noEmit",
+		"build:watch": "tsc -watch -p ./ --noEmit",
+		"build:bundle": "node tools/build.mjs",
+		"vscode:prepublish": "pnpm run build:bundle --production",
 		"test": "node ./node_modules/vscode/bin/test"
 	},
 	"dependencies": {
-		"path": "^0.12.7",
 		"plaxtony": "workspace:*",
 		"vscode-languageclient": "6.2.0-next.2"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",
 		"@types/vscode": "~1.64.0",
+		"esbuild": "catalog:",
 		"typescript": "catalog:"
 	},
 	"__metadata": {
