@@ -18,7 +18,7 @@ import { ReferencesProvider, ReferencesConfig } from './references.js';
 import { RenameProvider } from './rename.js';
 import { SC2Archive, SC2Workspace, resolveArchiveDirectory, resolveArchiveDependencyList, findSC2ArchiveDirectories } from '../sc2mod/archive.js';
 import { setTimeout, clearTimeout } from 'timers';
-import URI from 'vscode-uri';
+import { URI } from 'vscode-uri';
 import { logIt, logger } from '../common.js';
 
 function translateNodeKind(node: Types.Node): lsp.SymbolKind {

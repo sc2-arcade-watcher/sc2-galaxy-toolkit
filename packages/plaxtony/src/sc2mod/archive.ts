@@ -1,6 +1,6 @@
 import * as lsp from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import URI from 'vscode-uri';
+import { URI } from 'vscode-uri';
 import * as fs from 'fs-extra';
 import * as util from 'util';
 import * as path from 'path';

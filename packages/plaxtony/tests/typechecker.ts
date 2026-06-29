@@ -9,7 +9,7 @@ import { getPositionOfLineAndCharacter, findPrecedingToken, getTokenAtPosition }
 import * as lsp from 'vscode-languageserver';
 import * as gt from './../src/compiler/types.js';
 import { unbindSourceFile } from '../src/compiler/binder.js';
-import URI from 'vscode-uri';
+import { URI } from 'vscode-uri';
 
 function getSymbolAt(checker: TypeChecker, sourceFile: gt.SourceFile, line: number, character: number): gt.Symbol | undefined {
     const token = getTokenAtPosition(getPositionOfLineAndCharacter(sourceFile, line, character), sourceFile);

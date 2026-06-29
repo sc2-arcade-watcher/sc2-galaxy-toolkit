@@ -10,7 +10,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import glob from 'fast-glob';
-import URI from 'vscode-uri';
+import { URI } from 'vscode-uri';
 import { TypeChecker } from '../compiler/checker.js';
 import { DataCatalogConfig, MetadataConfig } from './server.js';
 

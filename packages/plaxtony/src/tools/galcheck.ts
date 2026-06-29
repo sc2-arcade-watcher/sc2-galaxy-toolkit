@@ -4,7 +4,7 @@ import { openArchiveWorkspace, SC2Archive } from '../sc2mod/archive.js';
 import { logger } from '../common.js';
 import { createProvider } from '../service/provider.js';
 import { DiagnosticsProvider, formatDiagnosticTotal } from '../service/diagnostics.js';
-import URI from 'vscode-uri';
+import { URI } from 'vscode-uri';
 
 (async function () {
     const store = new Store();

@@ -1,6 +1,6 @@
 import * as lsp from 'vscode-languageserver';
 import * as path from 'path';
-import URI from 'vscode-uri';
+import { URI } from 'vscode-uri';
 import * as gt from './types.js';
 import { isComplexTypeKind } from '../compiler/utils.js';
 import { isDeclarationKind, forEachChild, isPartOfExpression, isRightSideOfPropertyAccess, findAncestor, createDiagnosticForNode, isAssignmentOperator, isComparisonOperator, isReferenceKeywordKind, findAncestorByKind } from './utils.js';
@@ -443,7 +443,7 @@ export class LiteralType extends AbstractType {
 }
 
 export class StructType extends AbstractType implements gt.StructType {
-    symbol: gt.Symbol;
+    declare symbol: gt.Symbol;
 
     constructor(symbol: gt.Symbol) {
         super();
@@ -501,7 +501,7 @@ export class SignatureMeta {
 }
 
 export class FunctionType extends AbstractType implements gt.FunctionType {
-    symbol: gt.Symbol;
+    declare symbol: gt.Symbol;
     signature: SignatureMeta;
 
     constructor(symbol: gt.Symbol, signature: SignatureMeta) {

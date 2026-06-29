@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { assert } from 'chai';
-import Uri from 'vscode-uri';
+import { URI as Uri } from 'vscode-uri';
 import { Store } from '../src/service/store.js';
 import { getDocumentationOfSymbol } from '../src/service/s2meta.js';
 import { mockupStoreFromS2Workspace } from './helpers.js';
