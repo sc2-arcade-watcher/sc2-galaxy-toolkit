@@ -69,6 +69,9 @@ function createSchemaHooks(schema: sch.SchemaRegistry, diagnostics: DiagnosticRe
     }
 
     return {
+        onDocumentCreate(doc) {
+            doc.lang.stype = schema.fileRootType;
+        },
         onElementOpen(el, parent) {
             matchElementType(el, parent, el.start, el.end);
         },
@@ -85,7 +88,6 @@ export function parse(text: string, options: ParserOptions) {
     const diagnostics: DiagnosticReport[] = [];
     const hooks = createSchemaHooks(options.schema, diagnostics);
     const result = xmlParse<SC2Layout>(text, hooks);
-    result.root.lang.stype = options.schema.fileRootType;
     return { diagnostics: [...result.diagnostics, ...diagnostics], root: result.root };
 }
 

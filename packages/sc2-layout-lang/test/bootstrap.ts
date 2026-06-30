@@ -8,12 +8,21 @@ import { createRegistry } from '../src/schema/registry.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const cspath = path.join(__dirname, '../sc-min.json');
 
+function resolveSchemaDir(): string {
+    if (typeof process.env.SC2LAYOUT_SCHEMA_DIR === 'string') {
+        return process.env.SC2LAYOUT_SCHEMA_DIR;
+    }
+    const monorepoDefault = path.resolve(__dirname, '../../..', 'sc2-layout-schema', 'sc2layout');
+    assert(fs.existsSync(monorepoDefault), `Schema dir not found at ${monorepoDefault}. Set SC2LAYOUT_SCHEMA_DIR env var.`);
+    return monorepoDefault;
+}
+
 function generateSchemaCache(args: string[] = []) {
-    assert(typeof process.env.SC2LAYOUT_SCHEMA_DIR === 'string');
+    const schemaDir = resolveSchemaDir();
     const result = spawnSync('node',
         [
             path.join(__dirname, '../src/bin/s2l-update-schema-cache.js'),
-            process.env.SC2LAYOUT_SCHEMA_DIR,
+            schemaDir,
             cspath,
             ...args
         ],

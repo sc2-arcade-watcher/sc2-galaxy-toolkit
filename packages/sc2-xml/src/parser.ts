@@ -2,6 +2,7 @@ import { createScanner, CharacterCodes } from './scanner.js';
 import { TokenType, ScannerState, XMLElement, DiagnosticReport, DiagnosticCategory, XMLDocument, XMLNode, XMLNodeKind } from './types.js';
 
 export interface ParserHooks<L = {}> {
+    onDocumentCreate?: (doc: XMLDocument<L>) => void;
     onElementOpen?: (el: XMLElement<L>, parent: XMLNode<L>) => void;
     onStartTagClose?: (el: XMLElement<L>) => void;
     shouldAutoClose?: (el: XMLElement<L>) => boolean;
@@ -13,6 +14,7 @@ export function parse<L = {}>(text: string, hooks?: ParserHooks<L>) {
 
     let docElement = new XMLDocument<L>(0, text.length, void 0);
     docElement.text = text;
+    hooks?.onDocumentCreate?.(docElement);
     let curr: XMLNode<L> = docElement;
     let endTagStart: number = -1;
     let pendingAttribute: string | null = null;
