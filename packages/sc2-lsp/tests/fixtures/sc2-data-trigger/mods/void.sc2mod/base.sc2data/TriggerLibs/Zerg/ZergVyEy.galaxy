@@ -1,0 +1,825 @@
+//==================================================================================================
+//  Zerg VeryEasy Skirmish AI
+//  This is a generated file. Do not edit directly.
+//==================================================================================================
+
+//--------------------------------------------------------------------------------------------------
+//  ZergUpgradesVyEy
+//--------------------------------------------------------------------------------------------------
+void ZergUpgradesVyEy (int player, int phase) {
+    int buildType;
+
+    if (phase < c_ldPhaseLate) {
+        buildType = AIGetUserInt(player, c_openingBuildType);
+    } else {
+        buildType = AIGetUserInt(player, c_lateGameBuildType);
+    }
+
+    if (buildType != e_buildType_Air) {
+
+
+        if (phase >= c_ldPhaseMid) {
+
+
+            if (phase >= c_ldPhaseLate) {
+
+
+                if (phase >= c_ldPhaseFinal) {
+
+
+                }
+            }
+        }
+    }
+    else {  // (buildType == e_buildType_Air) 
+
+
+        if (phase >= c_ldPhaseMid) {
+
+
+            if (phase >= c_ldPhaseLate) {
+
+
+                if (phase >= c_ldPhaseFinal) {
+
+
+                }
+            }
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergOpenArmyInitVyEy
+//--------------------------------------------------------------------------------------------------
+int ZergOpenArmyInitVyEy (int player, int buildType) {
+    int armyRoll = 0;
+    int duration = 0;
+
+    if (buildType == e_buildType_Rush) {
+        // next attack should be around 2 foodCost and 160 resCost after about 393 seconds
+        AIAddToStockArmy(player, c_ZU_Zergling, 5);
+        // validation: 5 units above with average cost 3 food and 125 resources
+        duration = 406 + RandomInt(-13, 20);
+    }
+    else if (buildType == e_buildType_Timing) {
+        // next attack should be around 2 foodCost and 170 resCost after about 450 seconds
+        AIAddToStockArmy(player, c_ZU_Zergling, 6);
+        // validation: 6 units above with average cost 3 food and 150 resources
+        duration = 484 + RandomInt(-16, 24);
+    }
+    else if (buildType == e_buildType_Power) {
+        // next attack should be around 4 foodCost and 240 resCost after about 562 seconds
+        AIAddToStockArmy(player, c_ZU_Zergling, 6);
+        AIAddToStockArmy(player, c_ZU_Roach, 1);
+        // validation: 7 units above with average cost 5 food and 250 resources
+        duration = 606 + RandomInt(-20, 30);
+    }
+    else if (buildType == e_buildType_Macro) {
+        // next attack should be around 2 foodCost and 160 resCost after about 225 seconds
+        AIAddToStockArmy(player, c_ZU_Zergling, 5);
+        // validation: 5 units above with average cost 3 food and 125 resources
+        duration = 232 + RandomInt(-7, 11);
+    }
+    else if (buildType == e_buildType_Air) {
+        // next attack should be around 4 foodCost and 330 resCost after about 618 seconds
+        AIAddToStockArmy(player, c_ZU_Mutalisk, 2);
+        // validation: 2 units above with average cost 4 food and 400 resources
+        duration = 645 + RandomInt(-21, 32);
+    }
+    else {
+        return ZergOpenArmyInitVyEy(player, e_buildType_Macro);
+    }
+
+    AISetUserInt(player, c_ldNextArmyRoll, armyRoll);
+    return duration;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergOpenInitVyEy
+//--------------------------------------------------------------------------------------------------
+void ZergOpenInitVyEy (int player) {
+    int buildType = 0;
+
+    AIChooseNextOpeningBuild(player);
+    buildType = AIGetUserInt(player, c_openingBuildType);
+    AISetupNextArmy (player, buildType, c_ldPhaseOpen, ZergOpenArmyInitVyEy);
+
+    AISetMainState(player, e_mainState_Open, e_mainSubState_Build);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergOpenBuildVyEy
+//--------------------------------------------------------------------------------------------------
+void ZergOpenBuildVyEy (int player) {
+    int buildType = AIGetUserInt(player, c_openingBuildType);
+    int armyRoll = AIGetUserInt(player, c_ldNextArmyRoll);
+    int timeOut = AIGetUserInt(player, c_nextArmyTime);
+    bool nextState = false;
+
+    if (AIHasPlayerChangedCurrentOpening(player)) {
+        AISetMainState(player, e_mainState_Open, e_mainSubState_Init);
+        return;
+    }
+
+    AIClearStock(player);
+
+    if (buildType == e_buildType_Rush) {
+        AISetStock( player, 1, c_ZB_Hatchery_Alias );
+        AISetStock( player, 6, c_ZU_Drone );
+        AISetStock( player, 1, c_ZU_Overlord_Alias );
+        AISetStock( player, 13, c_ZU_Drone );
+        AISetStock( player, 2, c_ZU_Overlord_Alias );
+        AISetStock( player, 14, c_ZU_Drone );
+        AISetStock( player, 1, c_ZB_SpawningPool );
+        AISetStock( player, 1, c_ZB_Extractor );
+        AISetStock( player, 3, c_ZU_Overlord_Alias );
+        AISetStock( player, 1, c_ZU_Queen );
+        AISetStock( player, 4, c_ZU_Zergling );
+        AISetStock( player, 1, c_ZB_RoachWarren );
+        AISetStockFarms( player, c_ZU_Overlord_Alias, c_stockNormalFarms);
+    }
+    else if (buildType == e_buildType_Timing) {
+        AISetStock( player, 1, c_ZB_Hatchery_Alias );
+        AISetStock( player, 6, c_ZU_Drone );
+        AISetStock( player, 1, c_ZU_Overlord_Alias );
+        AISetStock( player, 13, c_ZU_Drone );
+        AISetStock( player, 2, c_ZU_Overlord_Alias );
+        AISetStock( player, 14, c_ZU_Drone );
+        AISetStock( player, 1, c_ZB_SpawningPool );
+        AISetStock( player, 1, c_ZB_Extractor );
+        AISetStock( player, 3, c_ZU_Overlord_Alias );
+        AISetStock( player, 1, c_ZU_Queen );
+        AISetStock( player, 4, c_ZU_Zergling );
+        AISetStock( player, 1, c_ZB_RoachWarren );
+        AISetStockFarms( player, c_ZU_Overlord_Alias, c_stockNormalFarms);
+        AISetStock( player, 2, c_ZB_Extractor );
+    }
+    else if (buildType == e_buildType_Power) {
+        AISetStock( player, 1, c_ZB_Hatchery_Alias );
+        AISetStock( player, 6, c_ZU_Drone );
+        AISetStock( player, 1, c_ZU_Overlord_Alias );
+        AISetStock( player, 13, c_ZU_Drone );
+        AISetStock( player, 2, c_ZU_Overlord_Alias );
+        AISetStock( player, 14, c_ZU_Drone );
+        AISetStock( player, 1, c_ZB_SpawningPool );
+        AISetStock( player, 1, c_ZB_Extractor );
+        AISetStock( player, 3, c_ZU_Overlord_Alias );
+        AISetStock( player, 1, c_ZU_Queen );
+        AISetStock( player, 4, c_ZU_Zergling );
+        AISetStock( player, 1, c_ZB_RoachWarren );
+        AISetStockFarms( player, c_ZU_Overlord_Alias, c_stockNormalFarms);
+        AISetStock( player, 2, c_ZB_Extractor );
+    }
+    else if (buildType == e_buildType_Macro) {
+        AISetStock( player, 1, c_ZB_Hatchery_Alias );
+        AISetStock( player, 6, c_ZU_Drone );
+        AISetStock( player, 1, c_ZU_Overlord_Alias );
+        AISetStock( player, 13, c_ZU_Drone );
+        AISetStock( player, 2, c_ZU_Overlord_Alias );
+        AISetStock( player, 14, c_ZU_Drone );
+        if (ZergMacroExpand(player)) { return; }
+        AISetStock( player, 1, c_ZB_SpawningPool );
+        AISetStock( player, 1, c_ZB_Extractor );
+        AISetStock( player, 3, c_ZU_Overlord_Alias );
+        AISetStock( player, 1, c_ZU_Queen );
+        AISetStock( player, 4, c_ZU_Zergling );
+        AISetStock( player, 1, c_ZB_RoachWarren );
+        AISetStockFarms( player, c_ZU_Overlord_Alias, c_stockNormalFarms);
+        AISetStock( player, 2, c_ZB_Extractor );
+    }
+    else if (buildType == e_buildType_Air) {
+        AISetStock( player, 1, c_ZB_Hatchery_Alias );
+        AISetStock( player, 6, c_ZU_Drone );
+        AISetStock( player, 1, c_ZU_Overlord_Alias );
+        AISetStock( player, 13, c_ZU_Drone );
+        AISetStock( player, 2, c_ZU_Overlord_Alias );
+        AISetStock( player, 14, c_ZU_Drone );
+        if (ZergMacroExpand(player)) { return; }
+        AISetStock( player, 1, c_ZB_SpawningPool );
+        AISetStock( player, 2, c_ZB_Extractor );
+        AISetStock( player, 3, c_ZU_Overlord_Alias );
+        AISetStock( player, 1, c_ZU_Queen );
+        AISetStock( player, 1, c_ZB_Lair_Alias );
+        AISetStock( player, 4, c_ZU_Overlord_Alias );
+        AISetStock( player, 1, c_ZB_Spire_Alias );
+        AISetStockFarms( player, c_ZU_Overlord_Alias, c_stockNormalFarms );
+        AISetStockUnitNext( player, 20, c_ZU_Drone, c_stockIdle );
+    }
+
+    ZergBasicDefenseStock(player);
+
+    AISetStockArmyScale(player, 0.35);
+
+    ZergGeneralBuild(player, c_ldPhaseOpen);
+
+    AISetStockArmyScale(player, 0.70);
+
+    ZergUpgradesVyEy(player, c_ldPhaseOpen);
+
+    AISetStockArmyScale(player, 1.00);
+
+    AILDStockWorkers( player, 20, c_ZU_Drone);
+
+    ZergTechUp(player, c_ldPhaseOpen);
+
+    if (buildType == e_buildType_Air) {
+        AISetStock( player, 1, c_ZR_OverseerSpeed );
+        AISetStock( player, 1, c_ZU_OverlordTransport );
+    }
+
+    AIEnableStock(player);
+
+    AILDGeneralSharedLogic(player);
+
+    nextState = AITestTimeout(player, timeOut, e_mainState_Mid, e_mainSubState_Init);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidArmyInitVyEy
+//--------------------------------------------------------------------------------------------------
+int ZergMidArmyInitVyEy (int player, int buildType) {
+    int armyRoll = 0;
+    int duration = 0;
+
+    if (buildType == e_buildType_Rush) {
+        // next attack should be around 5 foodCost and 260 resCost after about 380 seconds
+        armyRoll = RandomInt(1,6);
+        if (armyRoll <= 2) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 4);
+            AIAddToStockArmy(player, c_ZU_Mutalisk, 1);
+            // validation: 5 units above with average cost 4 food and 300 resources
+            duration = 385 + RandomInt(-12, 19);
+        }
+        else if (armyRoll <= 5) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Roach, 2);
+            // validation: 4 units above with average cost 5 food and 250 resources
+            duration = 374 + RandomInt(-12, 18);
+        }
+        else if (armyRoll <= 6) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 4);
+            AIAddToStockArmy(player, c_ZU_Ravager, 1);
+            // validation: 5 units above with average cost 5 food and 300 resources
+            duration = 404 + RandomInt(-13, 20);
+        }
+    }
+    else if (buildType == e_buildType_Timing) {
+        // next attack should be around 6 foodCost and 320 resCost after about 420 seconds
+        armyRoll = RandomInt(1,6);
+        if (armyRoll <= 2) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 6);
+            AIAddToStockArmy(player, c_ZU_Mutalisk, 1);
+            // validation: 7 units above with average cost 5 food and 350 resources
+            duration = 419 + RandomInt(-13, 20);
+        }
+        else if (armyRoll <= 5) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 1);
+            AIAddToStockArmy(player, c_ZU_Roach, 3);
+            // validation: 4 units above with average cost 7 food and 325 resources
+            duration = 440 + RandomInt(-14, 22);
+        }
+        else if (armyRoll <= 6) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Roach, 1);
+            AIAddToStockArmy(player, c_ZU_Ravager, 1);
+            // validation: 4 units above with average cost 6 food and 350 resources
+            duration = 436 + RandomInt(-14, 21);
+        }
+    }
+    else if (buildType == e_buildType_Power) {
+        // next attack should be around 6 foodCost and 350 resCost after about 440 seconds
+        armyRoll = RandomInt(1,6);
+        if (armyRoll <= 2) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Mutalisk, 2);
+            // validation: 4 units above with average cost 5 food and 450 resources
+            duration = 474 + RandomInt(-15, 23);
+        }
+        else if (armyRoll <= 5) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Roach, 3);
+            // validation: 5 units above with average cost 7 food and 350 resources
+            duration = 458 + RandomInt(-15, 22);
+        }
+        else if (armyRoll <= 6) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Roach, 1);
+            AIAddToStockArmy(player, c_ZU_Ravager, 1);
+            // validation: 4 units above with average cost 6 food and 350 resources
+            duration = 440 + RandomInt(-14, 22);
+        }
+    }
+    else if (buildType == e_buildType_Macro) {
+        // next attack should be around 8 foodCost and 480 resCost after about 618 seconds
+        // note: mid macro build did not send opening attack at 225 time
+        armyRoll = RandomInt(1,6);
+        if (armyRoll <= 2) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 6);
+            AIAddToStockArmy(player, c_ZU_Mutalisk, 2);
+            // validation: 8 units above with average cost 7 food and 550 resources
+            duration = 642 + RandomInt(-28, 43);
+        }
+        else if (armyRoll <= 5) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Roach, 4);
+            // validation: 6 units above with average cost 9 food and 450 resources
+            duration = 622 + RandomInt(-28, 42);
+        }
+        else if (armyRoll <= 6) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 4);
+            AIAddToStockArmy(player, c_ZU_Roach, 2);
+            AIAddToStockArmy(player, c_ZU_Ravager, 1);
+            // validation: 7 units above with average cost 9 food and 500 resources
+            duration = 658 + RandomInt(-29, 44);
+        }
+    }
+    else if (buildType == e_buildType_Air) {
+        // next attack should be around 6 foodCost and 600 resCost after about 420 seconds
+        AIAddToStockArmy(player, c_ZU_Mutalisk, 3);
+        // validation: 3 units above with average cost 6 food and 600 resources
+        duration = 420 + RandomInt(-14, 21);
+    }
+    else {
+        return ZergMidArmyInitVyEy(player, e_buildType_Macro);
+    }
+
+    AISetUserInt(player, c_ldNextArmyRoll, armyRoll);
+    return duration;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidInitVyEy
+//--------------------------------------------------------------------------------------------------
+void ZergMidInitVyEy (int player) {
+    int buildType = 0;
+
+    AIChooseNextOpeningBuild(player);
+    buildType = AIGetUserInt(player, c_openingBuildType);
+    AISetupNextArmy (player, buildType, c_ldPhaseMid, ZergMidArmyInitVyEy);
+
+    AISetFlag(player, e_flagsScouting, true);
+    AISetFlag(player, e_flagsLateScout, true);
+    AISetFlag(player, e_flagsDetect, true);
+
+    AISetMainState(player, e_mainState_Mid, e_mainSubState_Build);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidBuildVyEy
+//--------------------------------------------------------------------------------------------------
+void ZergMidBuildVyEy (int player) {
+    int buildType = AIGetUserInt(player, c_openingBuildType);
+    int armyRoll = AIGetUserInt(player, c_ldNextArmyRoll);
+    int timeOut = AIGetUserInt(player, c_nextArmyTime);
+    bool nextState = false;
+
+    if (AIHasPlayerChangedCurrentOpening(player)) {
+        AISetMainState(player, e_mainState_Mid, e_mainSubState_Init);
+        return;
+    }
+
+    AIClearStock(player);
+
+    ZergBasicEconomy(player, c_ldPhaseMid, 14);
+    if (buildType == e_buildType_Air) {
+        AISetStock( player, 1, c_ZR_OverseerSpeed );
+        AISetStock( player, 1, c_ZU_OverlordTransport );
+    }
+    ZergBasicExpansion(player, c_ldPhaseMid, 5500, 1500);
+
+    ZergBasicDefenseStock(player);
+
+    AISetStockArmyScale(player, 0.35);
+
+    ZergGeneralBuild(player, c_ldPhaseMid);
+
+    AILDStockWorkers( player, 20, c_ZU_Drone);
+
+    if (buildType == e_buildType_Rush) {
+        AISetStock( player, 1, c_ZU_Queen );
+    }
+    else if (buildType == e_buildType_Timing) {
+        AISetStock( player, 1, c_ZU_Queen );
+    }
+    else if (buildType == e_buildType_Power) {
+        AISetStock( player, 1, c_ZU_Queen );
+        if (ZergMacroExpand(player)) { return; }
+    }
+    else if (buildType == e_buildType_Macro) {
+        AISetStock( player, 1, c_ZU_Queen );
+        if (ZergMacroExpand(player)) { return; }
+    }
+    else if (buildType == e_buildType_Air) {
+        AISetStock( player, 1, c_ZU_Queen );
+        if (ZergMacroExpand(player)) { return; }
+    }
+
+    if (AINeedsDetection(player)) {
+        AISetStock( player, 1, c_ZU_Overseer );
+    }
+
+    AISetStockArmyScale(player, 0.70);
+
+    AILDStockWorkers( player, 40, c_ZU_Drone);
+
+    ZergUpgradesVyEy(player, c_ldPhaseMid);
+
+    AISetStockArmyScale(player, 1.00);
+
+    AISetStock( player, 2, c_ZU_Overseer );
+
+    ZergTechUp(player, c_ldPhaseMid);
+
+    AIEnableStock(player);
+
+    AILDGeneralSharedLogic(player);
+
+    nextState = AITestTimeout(player, timeOut, e_mainState_Late, e_mainSubState_Init);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergLateArmyInitVyEy
+//--------------------------------------------------------------------------------------------------
+int ZergLateArmyInitVyEy (int player, int buildType) {
+    int armyRoll = 0;
+    int duration = 0;
+
+    if (buildType == e_buildType_Core) {
+        // next attack should be around 10 foodCost and 600 resCost after about 340 seconds
+        armyRoll = RandomInt(1,9);
+        if (armyRoll <= 2) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 4);
+            AIAddToStockArmy(player, c_ZU_Mutalisk, 3);
+            // validation: 7 units above with average cost 8 food and 700 resources
+            duration = 346 + RandomInt(-11, 17);
+        }
+        else if (armyRoll <= 5) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Roach, 3);
+            AIAddToStockArmy(player, c_ZU_Hydralisk, 2);
+            // validation: 7 units above with average cost 11 food and 650 resources
+            duration = 360 + RandomInt(-12, 18);
+        }
+        else if (armyRoll <= 7) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Roach, 1);
+            AIAddToStockArmy(player, c_ZU_Ravager, 1);
+            AIAddToStockArmy(player, c_ZU_Hydralisk, 2);
+            // validation: 6 units above with average cost 10 food and 650 resources
+            duration = 351 + RandomInt(-11, 17);
+        }
+        else if (armyRoll <= 9) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Roach, 2);
+            AIAddToStockArmy(player, c_ZU_Infestor, 1);
+            AIAddToStockArmy(player, c_ZU_Hydralisk, 1);
+            // validation: 6 units above with average cost 9 food and 650 resources
+            duration = 343 + RandomInt(-11, 17);
+        }
+    }
+    else if (buildType == e_buildType_HighTech) {
+        // next attack should be around 11 foodCost and 640 resCost after about 360 seconds
+        armyRoll = RandomInt(1,5);
+        if (armyRoll <= 3) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Ultralisk, 1);
+            AIAddToStockArmy(player, c_ZU_Hydralisk, 1);
+            // validation: 4 units above with average cost 9 food and 700 resources
+            duration = 358 + RandomInt(-11, 17);
+        }
+        else if (armyRoll <= 5) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_BroodLord, 1);
+            AIAddToStockArmy(player, c_ZU_Corruptor, 1);
+            // validation: 4 units above with average cost 7 food and 850 resources
+            duration = 376 + RandomInt(-12, 18);
+        }
+    }
+    else if (buildType == e_buildType_Special) {
+        // next attack should be around 12 foodCost and 680 resCost after about 380 seconds
+        armyRoll = RandomInt(1,2);
+        if (armyRoll <= 1) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Roach, 2);
+            AIAddToStockArmy(player, c_ZU_Infestor, 2);
+            // validation: 6 units above with average cost 9 food and 750 resources
+            duration = 373 + RandomInt(-12, 18);
+        }
+        else if (armyRoll <= 2) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Roach, 1);
+            AIAddToStockArmy(player, c_ZU_Infestor, 2);
+            AIAddToStockArmy(player, c_ZU_Viper, 1);
+            // validation: 6 units above with average cost 10 food and 950 resources
+            duration = 427 + RandomInt(-14, 21);
+        }
+    }
+    else if (buildType == e_buildType_Mixed) {
+        // next attack should be around 12 foodCost and 720 resCost after about 400 seconds
+        armyRoll = RandomInt(1,3);
+        if (armyRoll <= 2) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Roach, 3);
+            AIAddToStockArmy(player, c_ZU_Hydralisk, 2);
+            AIAddToStockArmy(player, c_ZU_Infestor, 1);
+            // validation: 8 units above with average cost 13 food and 900 resources
+            duration = 450 + RandomInt(-15, 22);
+        }
+        else if (armyRoll <= 3) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Infestor, 1);
+            AIAddToStockArmy(player, AIPickFrom2(c_ZU_BroodLord, c_ZU_Ultralisk), 1);
+            // validation: 4 units above with average cost 8 food and 825 resources
+            duration = 391 + RandomInt(-13, 19);
+        }
+    }
+    else if (buildType == e_buildType_Air) {
+        // next attack should be around 8 foodCost and 800 resCost after about 360 seconds
+        AIAddToStockArmy(player, c_ZU_Zergling, 2);
+        AIAddToStockArmy(player, c_ZU_Mutalisk, 4);
+        // validation: 6 units above with average cost 9 food and 850 resources
+        duration = 380 + RandomInt(-12, 19);
+    }
+    else {
+        return ZergLateArmyInitVyEy(player, e_buildType_Core);
+    }
+
+    AISetUserInt(player, c_ldNextArmyRoll, armyRoll);
+    return duration;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergFinalArmyInitVyEy
+//--------------------------------------------------------------------------------------------------
+int ZergFinalArmyInitVyEy (int player, int buildType) {
+    int armyRoll = 0;
+    int duration = 0;
+
+    if (buildType == e_buildType_Core) {
+        // next attack should be around 15 foodCost and 900 resCost after about 300 seconds
+        armyRoll = RandomInt(1,9);
+        if (armyRoll <= 2) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 8);
+            AIAddToStockArmy(player, c_ZU_Mutalisk, 4);
+            // validation: 12 units above with average cost 12 food and 1000 resources
+            duration = 299 + RandomInt(-9, 14);
+        }
+        else if (armyRoll <= 5) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Roach, 5);
+            AIAddToStockArmy(player, c_ZU_Hydralisk, 2);
+            // validation: 9 units above with average cost 15 food and 850 resources
+            duration = 294 + RandomInt(-9, 14);
+        }
+        else if (armyRoll <= 7) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Roach, 1);
+            AIAddToStockArmy(player, c_ZU_Ravager, 2);
+            AIAddToStockArmy(player, c_ZU_Hydralisk, 2);
+            // validation: 7 units above with average cost 13 food and 850 resources
+            duration = 284 + RandomInt(-9, 14);
+        }
+        else if (armyRoll <= 9) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Roach, 4);
+            AIAddToStockArmy(player, c_ZU_Infestor, 1);
+            AIAddToStockArmy(player, c_ZU_Hydralisk, 2);
+            // validation: 9 units above with average cost 15 food and 1000 resources
+            duration = 313 + RandomInt(-10, 15);
+        }
+    }
+    else if (buildType == e_buildType_HighTech) {
+        // next attack should be around 16 foodCost and 960 resCost after about 320 seconds
+        armyRoll = RandomInt(1,5);
+        if (armyRoll <= 3) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Ultralisk, 2);
+            AIAddToStockArmy(player, c_ZU_Hydralisk, 1);
+            // validation: 5 units above with average cost 15 food and 1200 resources
+            duration = 348 + RandomInt(-11, 17);
+        }
+        else if (armyRoll <= 5) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_BroodLord, 2);
+            AIAddToStockArmy(player, c_ZU_Corruptor, 1);
+            // validation: 5 units above with average cost 11 food and 1400 resources
+            duration = 356 + RandomInt(-11, 17);
+        }
+    }
+    else if (buildType == e_buildType_Special) {
+        // next attack should be around 17 foodCost and 1020 resCost after about 340 seconds
+        armyRoll = RandomInt(1,2);
+        if (armyRoll <= 1) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Roach, 4);
+            AIAddToStockArmy(player, c_ZU_Infestor, 3);
+            // validation: 9 units above with average cost 15 food and 1200 resources
+            duration = 354 + RandomInt(-11, 17);
+        }
+        else if (armyRoll <= 2) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Roach, 3);
+            AIAddToStockArmy(player, c_ZU_Infestor, 2);
+            AIAddToStockArmy(player, c_ZU_Viper, 1);
+            // validation: 8 units above with average cost 14 food and 1150 resources
+            duration = 343 + RandomInt(-11, 17);
+        }
+    }
+    else if (buildType == e_buildType_Mixed) {
+        // next attack should be around 18 foodCost and 1080 resCost after about 360 seconds
+        armyRoll = RandomInt(1,3);
+        if (armyRoll <= 2) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Roach, 3);
+            AIAddToStockArmy(player, c_ZU_Hydralisk, 2);
+            AIAddToStockArmy(player, c_ZU_Infestor, 2);
+            // validation: 9 units above with average cost 15 food and 1150 resources
+            duration = 355 + RandomInt(-11, 17);
+        }
+        else if (armyRoll <= 3) {
+            AIAddToStockArmy(player, c_ZU_Zergling, 2);
+            AIAddToStockArmy(player, c_ZU_Infestor, 1);
+            AIAddToStockArmy(player, AIPickFrom2(c_ZU_BroodLord, c_ZU_Ultralisk), 2);
+            // validation: 5 units above with average cost 13 food and 1350 resources
+            duration = 372 + RandomInt(-12, 18);
+        }
+    }
+    else if (buildType == e_buildType_Air) {
+        // next attack should be around 12 foodCost and 1200 resCost after about 320 seconds
+        armyRoll = RandomInt(1,3);
+        if (armyRoll <= 2) {
+            AIAddToStockArmy(player, c_ZU_Mutalisk, 6);
+            // validation: 6 units above with average cost 12 food and 1200 resources
+            duration = 320 + RandomInt(-10, 16);
+        }
+        else if (armyRoll <= 3) {
+            AIAddToStockArmy(player, c_ZU_Mutalisk, 4);
+            AIAddToStockArmy(player, c_ZU_BroodLord, 1);
+            // validation: 5 units above with average cost 12 food and 1350 resources
+            duration = 336 + RandomInt(-11, 16);
+        }
+    }
+    else {
+        return ZergFinalArmyInitVyEy(player, e_buildType_Core);
+    }
+
+    AISetUserInt(player, c_ldNextArmyRoll, armyRoll);
+    return duration;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergLateInitVyEy
+//--------------------------------------------------------------------------------------------------
+void ZergLateInitVyEy (int player) {
+    int lateLoop = AIGetUserInt(player, c_ldNumLateLoops);
+    int curPhase = c_ldPhaseLate;
+    int buildType = 0;
+
+    AIChooseNextLateGameBuild(player);
+    buildType = AIGetUserInt(player, c_lateGameBuildType);
+
+    if (lateLoop <= 0) { // First Late Loop
+        AISetupNextArmy (player, buildType, curPhase, ZergLateArmyInitVyEy);
+    } else {
+        curPhase = c_ldPhaseFinal + lateLoop;
+        AISetupNextArmy (player, buildType, curPhase, ZergFinalArmyInitVyEy);
+    }
+
+    AISetFlag(player, e_flagsScouting, true);
+    AISetFlag(player, e_flagsClearObs, true);
+    AISetFlag(player, e_flagsLateScout, true);
+    AISetFlag(player, e_flagsDetect, true);
+
+    AISetMainState(player, e_mainState_Late, e_mainSubState_Build);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergLateBuildVyEy
+//--------------------------------------------------------------------------------------------------
+void ZergLateBuildVyEy (int player) {
+    int lateLoop = AIGetUserInt(player, c_ldNumLateLoops);
+    int buildType = AIGetUserInt(player, c_lateGameBuildType);
+    int armyRoll = AIGetUserInt(player, c_ldNextArmyRoll);
+    int timeOut = AIGetUserInt(player, c_nextArmyTime);
+    bool nextState = false;
+
+    if (AIHasPlayerChangedCurrentLateGame(player)) {
+        AISetMainState(player, e_mainState_Late, e_mainSubState_Init);
+        return;
+    }
+
+    AIClearStock(player);
+
+    ZergBasicEconomy(player, c_ldPhaseLate, 14);
+    if (buildType == e_buildType_Air) {
+        AISetStock( player, 1, c_ZR_OverseerSpeed );
+        AISetStock( player, 1, c_ZU_OverlordTransport );
+    }
+    ZergBasicExpansion(player, c_ldPhaseLate, 7000, 1500);
+
+    ZergBasicDefenseStock(player);
+
+    AISetStockArmyScale(player, 0.35);
+
+    ZergGeneralBuild(player, c_ldPhaseLate);
+
+    AILDStockWorkers( player, 20, c_ZU_Drone);
+
+    if (buildType == e_buildType_Core) {
+        if (ZergMacroExpand(player)) { return; }
+        AISetStock( player, 1, c_ZU_Queen );
+    }
+    else if (buildType == e_buildType_HighTech) {
+        if (ZergMacroExpand(player)) { return; }
+        AISetStock( player, 1, c_ZU_Queen );
+    }
+    else if (buildType == e_buildType_Special) {
+        if (ZergMacroExpand(player)) { return; }
+        AISetStock( player, 1, c_ZU_Queen );
+    }
+    else if (buildType == e_buildType_Mixed) {
+        if (ZergMacroExpand(player)) { return; }
+        AISetStock( player, 1, c_ZU_Queen );
+    }
+    else if (buildType == e_buildType_Air) {
+        if (ZergMacroExpand(player)) { return; }
+        AISetStock( player, 1, c_ZU_Queen );
+    }
+
+    AISetStock( player, 2, c_ZU_Overseer );
+
+    AISetStockArmyScale(player, 0.70);
+
+    AISetStock( player, 1, c_ZR_OverseerSpeed );
+    AISetStock( player, 2, c_ZU_OverlordTransport );
+    AISetStock( player, 3, c_ZU_Overseer );
+
+    AISetStockArmyScale(player, 1.00);
+
+    AILDStockWorkers( player, 40, c_ZU_Drone);
+
+    if (lateLoop <= 0) { // First Late Loop
+        ZergUpgradesVyEy(player, c_ldPhaseLate);
+        ZergTechUp(player, c_ldPhaseLate);
+    } else { // Remaining Loops
+        ZergUpgradesVyEy(player, c_ldPhaseFinal);
+        ZergTechUp(player, c_ldPhaseFinal);
+    }
+
+    AIEnableStock(player);
+
+    AILDGeneralSharedLogic(player);
+
+    nextState = AITestTimeout(player, timeOut, e_mainState_Late, e_mainSubState_Init);
+    if (nextState) {
+        lateLoop += 1;
+        AISetUserInt(player, c_ldNumLateLoops, lateLoop);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergOpenVyEy
+//--------------------------------------------------------------------------------------------------
+void ZergOpenVyEy (int player) {
+    int mainSubState = AIState(player, e_mainSubState);
+
+    if (mainSubState != e_mainSubState_Build) {
+        ZergOpenInitVyEy(player);
+        mainSubState = AIState(player, e_mainSubState);
+    }
+
+    if (mainSubState == e_mainSubState_Build) { ZergOpenBuildVyEy(player); }
+    else { ErrorMeleeScript(player, "Invalid Open MainSubState ZergVyEy"); }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidVyEy
+//--------------------------------------------------------------------------------------------------
+void ZergMidVyEy (int player) {
+    int mainSubState = AIState(player, e_mainSubState);
+
+    if (mainSubState != e_mainSubState_Build) {
+        ZergMidInitVyEy(player);
+        mainSubState = AIState(player, e_mainSubState);
+    }
+
+    if (mainSubState == e_mainSubState_Build) { ZergMidBuildVyEy(player);  }
+    else { ErrorMeleeScript(player, "Invalid Mid MainSubState ZergVyEy"); }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergLateVyEy
+//--------------------------------------------------------------------------------------------------
+void ZergLateVyEy (int player) {
+    int mainSubState = AIState(player, e_mainSubState);
+
+    if (mainSubState != e_mainSubState_Build) {
+        ZergLateInitVyEy(player);
+        mainSubState = AIState(player, e_mainSubState);
+    }
+
+    if (mainSubState == e_mainSubState_Build) { ZergLateBuildVyEy(player);  }
+    else { ErrorMeleeScript(player, "Invalid Late MainSubState ZergVyEy"); }
+}
+

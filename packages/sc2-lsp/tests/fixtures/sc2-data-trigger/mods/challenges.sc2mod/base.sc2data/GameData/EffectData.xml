@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CEffectCreatePersistent id="Corruption">
+        <ValidatorArray index="0" value=""/>
+    </CEffectCreatePersistent>
+    <CEffectApplyBehavior id="CorruptionApplyBehavior">
+        <ValidatorArray index="0" value=""/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="CrucioShockCannonBlast">
+        <Amount value="50"/>
+    </CEffectDamage>
+    <CEffectDamage id="CrucioShockCannonDirected">
+        <Amount value="50"/>
+    </CEffectDamage>
+    <CEffectDamage id="CrucioShockCannonDummy">
+        <Amount value="50"/>
+    </CEffectDamage>
+    <CEffectSet id="FungalGrowthInitialSet">
+        <TargetLocationType value="Point"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="InfernalFlameThrowerCP">
+        <PeriodCount value="25"/>
+        <PeriodicOffsetArray value="0,-6.5,0"/>
+    </CEffectCreatePersistent>
+    <CEffectDamage id="InfestedGuassRifle">
+        <Amount value="8"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="IonCannons">
+        <PeriodicEffectArray index="0" value="IonCannonsLMRight"/>
+        <PeriodicEffectArray index="1" value="IonCannonsLMLeft"/>
+    </CEffectCreatePersistent>
+    <CEffectDamage id="IonCannonsDummy">
+        <EditorCategories value="Race:Protoss"/>
+    </CEffectDamage>
+    <CEffectDamage id="IonCannonsU">
+        <Death value="Blast"/>
+        <SearchFilters value="Air;Self,Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <ExcludeArray Value="Target"/>
+    </CEffectDamage>
+    <CEffectDamage id="JavelinMissileLaunchersDamage">
+        <AttributeBonus index="Light" value="6"/>
+        <Amount value="6"/>
+    </CEffectDamage>
+    <CEffectDamage id="KaiserBladesDamage">
+        <Amount value="15"/>
+        <AreaArray Arc="45" Radius="2" Fraction="0.33"/>
+        <AreaArray Arc="180" Radius="2" Fraction="0.33"/>
+        <ExcludeArray Value="Target"/>
+        <ExcludeArray Value="Target"/>
+        <SearchFilters value="Ground;Player,Ally,Neutral,Stasis,Dead,Hidden,Invulnerable"/>
+        <AttributeBonus index="Armored" value="25"/>
+    </CEffectDamage>
+    <CEffectDamage id="ParasiteSporeDamage">
+        <AttributeBonus index="Massive" value="6"/>
+        <Amount value="14"/>
+    </CEffectDamage>
+    <CEffectDamage id="Ram">
+        <Amount value="75"/>
+    </CEffectDamage>
+    <CEffectDamage id="SeekerMissileDamage">
+        <AreaArray Radius="0.5" Fraction="1"/>
+        <AreaArray Radius="1" Fraction="0.5"/>
+        <AreaArray Radius="2" Fraction="0.25"/>
+        <ExcludeArray Value="Target"/>
+    </CEffectDamage>
+    <CEffectDamage id="PrismaticBeamMUx1">
+        <AttributeBonus index="Armored" value="0"/>
+        <Amount value="5"/>
+    </CEffectDamage>
+    <CEffectDamage id="PrismaticBeamMUx2">
+        <AttributeBonus index="Armored" value="0"/>
+        <Amount value="5"/>
+    </CEffectDamage>
+    <CEffectDamage id="PrismaticBeamMUx3">
+        <AttributeBonus index="Armored" value="15"/>
+        <Amount value="10"/>
+    </CEffectDamage>
+    <CEffectApplyBehavior id="SurfaceForSpellcast">
+        <ValidatorArray index="0" value="IsInfestorBurrowed"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="SurfaceForSpellcastChanneled">
+        <ValidatorArray index="0" value="IsInfestorBurrowed"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="ThermalLancesMU">
+        <Amount value="15"/>
+    </CEffectDamage>
+    <CEffectDamage id="PsionicShockwaveDamage" parent="DU_WEAP">
+        <EditorCategories value="Race:Protoss"/>
+        <Kind value="Ranged"/>
+        <Amount value="25"/>
+        <SearchFilters value="-;Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="0.25" Fraction="1"/>
+        <AreaArray Radius="0.5" Fraction="0.5"/>
+        <AreaArray Radius="1" Fraction="0.25"/>
+        <ExcludeArray Value="Outer"/>
+        <ExcludeArray Value="Target"/>
+        <AttributeBonus index="Biological" value="10"/>
+        <SearchFlags index="OffsetByUnitRadius" value="0"/>
+    </CEffectDamage>
+    <CEffectDamage id="ThorsHammerDamage">
+        <Amount value="30"/>
+    </CEffectDamage>
+    <CEffectDamage id="TwinGatlingCannons">
+        <Amount value="12"/>
+    </CEffectDamage>
+    <CEffectRemoveBehavior id="SpawnLarvaInstantRemoveBehavior">
+        <EditorCategories value="Race:Zerg"/>
+        <BehaviorLink value="SpawnLarvaInstant"/>
+        <WhichUnit Value="Source"/>
+        <Count value="1"/>
+    </CEffectRemoveBehavior>
+</Catalog>

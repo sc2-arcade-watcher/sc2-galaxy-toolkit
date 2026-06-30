@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib9CAF1834_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib9CAF1834_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib9CAF1834_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(6);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib9CAF1834_gt_Initialization_Init () {
+    lib9CAF1834_gt_Initialization = TriggerCreate("lib9CAF1834_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib9CAF1834_gt_Initialization);
+}
+
+void lib9CAF1834_InitTriggers () {
+    lib9CAF1834_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib9CAF1834_InitLib_completed = false;
+
+void lib9CAF1834_InitLib () {
+    if (lib9CAF1834_InitLib_completed) {
+        return;
+    }
+
+    lib9CAF1834_InitLib_completed = true;
+
+    lib9CAF1834_InitLibraries();
+    lib9CAF1834_InitTriggers();
+}
+

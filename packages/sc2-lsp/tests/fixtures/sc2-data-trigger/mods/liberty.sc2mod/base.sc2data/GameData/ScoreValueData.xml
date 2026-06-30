@@ -1,0 +1,815 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <!-- Allied Commanders -->
+    <CScoreValueCustom default="1" id="BaseScoreValue">
+        <Collapse value="Latest"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom default="1" id="StatScoreValue" parent="BaseScoreValue">
+        <Flags index="PerformanceMeasure" value="1"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom default="1" id="AchievementScoreValue" parent="BaseScoreValue">
+        <Flags index="TriggerAchievement" value="1"/>
+    </CScoreValueCustom>
+    <!-- Standard values -->
+    <CScoreValueStandard id="APM">
+        <Value value="APM"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="APMAverage">
+        <Value value="APMAverage"/>
+        <Flags index="PersistToDB" value="1"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="CPM">
+        <Value value="CPM"/>
+    </CScoreValueStandard>
+    <CScoreValueCustom id="HornerScrapCollected" parent="AchievementScoreValue">
+        <Flags index="TriggerAchievement" value="0"/>
+        <UniqueTag value="scHC"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="PartAndParcelCollection" parent="BaseScoreValue">
+        <UniqueTag value="smPP"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="CradleOfDeathTimePayloadLeftAlone" parent="BaseScoreValue">
+        <UniqueTag value="smCD"/>
+    </CScoreValueCustom>
+    <CScoreValueStandard id="UncontestedCombatTime">
+        <Value value="UncontestedCombatTime"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="IdleProductionTime">
+        <Value value="IdleProductionTime"/>
+        <Flags index="PersistToDB" value="1"/>
+        <Sort value="Descending"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="IdleWorkerTime">
+        <Value value="IdleWorkerTime"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="UnitKillsPeakCount">
+        <Value value="UnitKillsPeakCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="UnitsTotalCount">
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_unit.dds"/>
+        <Value value="UnitsTotalCount"/>
+    </CScoreValueStandard>
+    <CScoreValueCombine id="UnitsTrainedCount">
+        <Operation value="Subtract"/>
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_unit.dds"/>
+        <ValueTable value="UnitsTotalCount"/>
+        <ValueTable value="UnitsStartCount"/>
+    </CScoreValueCombine>
+    <CScoreValueStandard id="UnitsKilledCount">
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_unit.dds"/>
+        <Value value="UnitsKilledCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="UnitsLostCount">
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_unit.dds"/>
+        <Value value="UnitsLostCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="UnitsFriendlyFireCount">
+        <Value value="UnitsFriendlyFireCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="UnitsSalvagedCount">
+        <Value value="UnitsSalvagedCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="UnitsCanceledCount">
+        <Value value="UnitsCanceledCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="UnitsPeakCount">
+        <Value value="UnitsPeakCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="UnitsInProgressCount">
+        <Value value="UnitsInProgressCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="UnitsActiveCount">
+        <Value value="UnitsActiveCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="UnitsStartCount">
+        <Value value="UnitsStartCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="UnitsTotalValue">
+        <Value value="UnitsTotalValue"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="UnitsKilledValue">
+        <Value value="UnitsKilledValue"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="UnitsLostValue">
+        <Value value="UnitsLostValue"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="UnitsPeakValue">
+        <Value value="UnitsPeakValue"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="UnitsMadePoints">
+        <Value value="UnitsMadePoints"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="UnitsKilledPoints">
+        <Value value="UnitsKilledPoints"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="StructuresTotalCount">
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_building.dds"/>
+        <Value value="StructuresTotalCount"/>
+    </CScoreValueStandard>
+    <CScoreValueCombine id="StructuresBuiltCount">
+        <Operation value="Subtract"/>
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_building.dds"/>
+        <ValueTable value="StructuresTotalCount"/>
+        <ValueTable value="StructuresStartCount"/>
+    </CScoreValueCombine>
+    <CScoreValueStandard id="StructuresKilledCount">
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_building.dds"/>
+        <Value value="StructuresKilledCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="StructuresLostCount">
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_building.dds"/>
+        <Value value="StructuresLostCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="StructuresFriendlyFireCount">
+        <Value value="StructuresFriendlyFireCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="StructuresSalvagedCount">
+        <Value value="StructuresSalvagedCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="StructuresCanceledCount">
+        <Value value="StructuresCanceledCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="StructuresPeakCount">
+        <Value value="StructuresPeakCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="StructuresActiveCount">
+        <Value value="StructuresActiveCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="StructuresStartCount">
+        <Value value="StructuresStartCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="StructuresTotalValue">
+        <Value value="StructuresTotalValue"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="StructuresKilledValue">
+        <Value value="StructuresKilledValue"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="StructuresLostValue">
+        <Value value="StructuresLostValue"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="StructuresPeakValue">
+        <Value value="StructuresPeakValue"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="StructuresMadePoints">
+        <Value value="StructuresMadePoints"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="StructuresKilledPoints">
+        <Value value="StructuresKilledPoints"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="WorkersActiveCountSampled">
+        <Value value="WorkersActiveCount"/>
+        <Sort value="Descending"/>
+        <Report value="Samples"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="WorkersTotalCount">
+        <Value value="WorkersTotalCount"/>
+        <Flags index="PersistToDB" value="1"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="WorkersTotalCountSampled">
+        <Value value="WorkersTotalCount"/>
+        <Sort value="Descending"/>
+        <Report value="Samples"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="WorkersLostCount">
+        <Value value="WorkersLostCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="PreventDefeatQueuedCount">
+        <Value value="PreventDefeatQueuedCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="PreventDefeatInProgressCount">
+        <Value value="PreventDefeatInProgressCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="PreventDefeatActiveCount">
+        <Value value="PreventDefeatActiveCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="PreventDestroyQueuedCount">
+        <Value value="PreventDestroyQueuedCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="PreventDestroyInProgressCount">
+        <Value value="PreventDestroyInProgressCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="PreventDestroyActiveCount">
+        <Value value="PreventDestroyActiveCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="PreventRevealQueuedCount">
+        <Value value="PreventRevealQueuedCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="PreventRevealInProgressCount">
+        <Value value="PreventRevealInProgressCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="PreventRevealActiveCount">
+        <Value value="PreventRevealActiveCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="WeaponTechnologyCount">
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_technology.dds"/>
+        <Value value="WeaponTechnologyCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="ArmorTechnologyCount">
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_technology.dds"/>
+        <Value value="ArmorTechnologyCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MiscTechnologyCount">
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_technology.dds"/>
+        <Value value="MiscTechnologyCount"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="WeaponTechnologyValue">
+        <Value value="WeaponTechnologyValue"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="ArmorTechnologyValue">
+        <Value value="ArmorTechnologyValue"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MiscTechnologyValue">
+        <Value value="MiscTechnologyValue"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="TechnologyPercent">
+        <Value value="TechnologyPercent"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="TechnologyPoints">
+        <Value value="TechnologyPoints"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="FoodCappedTime">
+        <Value value="FoodCappedTime"/>
+        <Flags index="PersistToDB" value="1"/>
+        <Sort value="Descending"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="FoodMade">
+        <Value value="FoodMade"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="FoodMadeKilled">
+        <Value value="FoodMadeKilled"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="FoodMadeLost">
+        <Value value="FoodMadeLost"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="FoodUsed">
+        <Value value="FoodUsed"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="FoodUsedKilled">
+        <Value value="FoodUsedKilled"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="FoodUsedLost">
+        <Value value="FoodUsedLost"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="FoodUsedNone">
+        <Value value="FoodUsedNone"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="FoodUsedArmy">
+        <Value value="FoodUsedArmy"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="FoodUsedEconomy">
+        <Value value="FoodUsedEconomy"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="FoodUsedTechnology">
+        <Value value="FoodUsedTechnology"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="FoodUsedUpgrade">
+        <Value value="FoodUsedUpgrade"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsCurrent">
+        <Value value="MineralsCurrent"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneCurrent">
+        <Value value="VespeneCurrent"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsCollected">
+        <Value value="MineralsCollected"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneCollected">
+        <Value value="VespeneCollected"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsSpent">
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_resource.dds"/>
+        <Value value="MineralsSpent"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneSpent">
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_resource.dds"/>
+        <Value value="VespeneSpent"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsReceived">
+        <Value value="MineralsReceived"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneReceived">
+        <Value value="VespeneReceived"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsDonated">
+        <Value value="MineralsDonated"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneDonated">
+        <Value value="VespeneDonated"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsCollectionRate">
+        <Value value="MineralsCollectionRate"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneCollectionRate">
+        <Value value="VespeneCollectionRate"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsFloatAverage">
+        <Value value="MineralsFloatAverage"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneFloatAverage">
+        <Value value="VespeneFloatAverage"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsUsedCurrentArmy">
+        <Value value="MineralsUsedCurrentArmy"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneUsedCurrentArmy">
+        <Value value="VespeneUsedCurrentArmy"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsKilledArmy">
+        <Value value="MineralsKilledArmy"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneKilledArmy">
+        <Value value="VespeneKilledArmy"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsLostNone">
+        <Value value="MineralsLostNone"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneLostNone">
+        <Value value="VespeneLostNone"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsLostArmy">
+        <Value value="MineralsLostArmy"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneLostArmy">
+        <Value value="VespeneLostArmy"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsLostEconomy">
+        <Value value="MineralsLostEconomy"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneLostEconomy">
+        <Value value="VespeneLostEconomy"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsLostTechnology">
+        <Value value="MineralsLostTechnology"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneLostTechnology">
+        <Value value="VespeneLostTechnology"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsLostUpgrade">
+        <Value value="MineralsLostUpgrade"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneLostUpgrade">
+        <Value value="VespeneLostUpgrade"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsFriendlyFireNone">
+        <Value value="MineralsFriendlyFireNone"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneFriendlyFireNone">
+        <Value value="VespeneFriendlyFireNone"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsFriendlyFireArmy">
+        <Value value="MineralsFriendlyFireArmy"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneFriendlyFireArmy">
+        <Value value="VespeneFriendlyFireArmy"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsFriendlyFireEconomy">
+        <Value value="MineralsFriendlyFireEconomy"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneFriendlyFireEconomy">
+        <Value value="VespeneFriendlyFireEconomy"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsFriendlyFireTechnology">
+        <Value value="MineralsFriendlyFireTechnology"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneFriendlyFireTechnology">
+        <Value value="VespeneFriendlyFireTechnology"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsFriendlyFireUpgrade">
+        <Value value="MineralsFriendlyFireUpgrade"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneFriendlyFireUpgrade">
+        <Value value="VespeneFriendlyFireUpgrade"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsUsedCurrentTechnology">
+        <Value value="MineralsUsedCurrentTechnology"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneUsedCurrentTechnology">
+        <Value value="VespeneUsedCurrentTechnology"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsUsedCurrentUpgrade">
+        <Value value="MineralsUsedCurrentUpgrade"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneUsedCurrentUpgrade">
+        <Value value="VespeneUsedCurrentUpgrade"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="LifeDamageDealtTotal">
+        <Value value="LifeDamageDealtTotal"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="ShieldsDamageDealtTotal">
+        <Value value="ShieldsDamageDealtTotal"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="LifeDamageTakenTotal">
+        <Value value="LifeDamageTakenTotal"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="ShieldsDamageTakenTotal">
+        <Value value="ShieldsDamageTakenTotal"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="LifeHealedTotal">
+        <Value value="LifeHealedTotal"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="ShieldsHealedTotal">
+        <Value value="ShieldsHealedTotal"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="LifeSpentTotal">
+        <Value value="LifeSpentTotal"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="ShieldsSpentTotal">
+        <Value value="ShieldsSpentTotal"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="EnergySpentTotal">
+        <Value value="EnergySpentTotal"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsUsedTotalEconomy">
+        <Value value="MineralsUsedTotalEconomy"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneUsedTotalEconomy">
+        <Value value="VespeneUsedTotalEconomy"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsUsedTotalTechnology">
+        <Value value="MineralsUsedTotalTechnology"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneUsedTotalTechnology">
+        <Value value="VespeneUsedTotalTechnology"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsUsedTotalUpgrade">
+        <Value value="MineralsUsedTotalUpgrade"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneUsedTotalUpgrade">
+        <Value value="VespeneUsedTotalUpgrade"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="MineralsUsedTotalArmy">
+        <Value value="MineralsUsedTotalArmy"/>
+    </CScoreValueStandard>
+    <CScoreValueStandard id="VespeneUsedTotalArmy">
+        <Value value="VespeneUsedTotalArmy"/>
+    </CScoreValueStandard>
+    <!-- Custom values -->
+    <CScoreValueCombine id="UnitsLostAll">
+        <ValueTable value="UnitsLostCount"/>
+        <ValueTable value="UnitsFriendlyFireCount"/>
+        <ValueTable value="StructuresLostCount"/>
+        <ValueTable value="StructuresFriendlyFireCount"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="ResourcesDonated">
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_resource.dds"/>
+        <ValueTable value="MineralsDonated"/>
+        <ValueTable value="VespeneDonated"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="ResourceCollectionRate">
+        <ValueTable value="MineralsCollectionRate"/>
+        <ValueTable value="VespeneCollectionRate"/>
+        <Report value="Average"/>
+        <Collapse value="Average"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="ResourceCollectionRateSampled">
+        <ValueTable value="MineralsCollectionRate"/>
+        <ValueTable value="VespeneCollectionRate"/>
+        <Report value="Samples"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="ResourceFloatAverage">
+        <ValueTable value="MineralsCurrent"/>
+        <ValueTable value="VespeneCurrent"/>
+        <Report value="Average"/>
+        <Collapse value="Average"/>
+        <Flags index="PersistToDB" value="1"/>
+        <Sort value="Descending"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="ResourceValueArmy">
+        <ValueTable value="MineralsUsedCurrentArmy"/>
+        <ValueTable value="VespeneUsedCurrentArmy"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="ResourceKilledArmy">
+        <ValueTable value="MineralsKilledArmy"/>
+        <ValueTable value="VespeneKilledArmy"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="ResourceLostArmy">
+        <ValueTable value="MineralsLostArmy"/>
+        <ValueTable value="VespeneLostArmy"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="ResourceLostAll">
+        <ValueTable value="MineralsLostNone"/>
+        <ValueTable value="VespeneLostNone"/>
+        <ValueTable value="MineralsLostArmy"/>
+        <ValueTable value="VespeneLostArmy"/>
+        <ValueTable value="MineralsLostEconomy"/>
+        <ValueTable value="VespeneLostEconomy"/>
+        <ValueTable value="MineralsLostTechnology"/>
+        <ValueTable value="VespeneLostTechnology"/>
+        <ValueTable value="MineralsLostUpgrade"/>
+        <ValueTable value="VespeneLostUpgrade"/>
+        <ValueTable value="MineralsFriendlyFireNone"/>
+        <ValueTable value="VespeneFriendlyFireNone"/>
+        <ValueTable value="MineralsFriendlyFireArmy"/>
+        <ValueTable value="VespeneFriendlyFireArmy"/>
+        <ValueTable value="MineralsFriendlyFireEconomy"/>
+        <ValueTable value="VespeneFriendlyFireEconomy"/>
+        <ValueTable value="MineralsFriendlyFireTechnology"/>
+        <ValueTable value="VespeneFriendlyFireTechnology"/>
+        <ValueTable value="MineralsFriendlyFireUpgrade"/>
+        <ValueTable value="VespeneFriendlyFireUpgrade"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="MineralsLostUnits">
+        <ValueTable value="MineralsLostArmy"/>
+        <ValueTable value="MineralsLostEconomy"/>
+        <ValueTable value="MineralsLostTechnology"/>
+        <ValueTable value="MineralsFriendlyFireArmy"/>
+        <ValueTable value="MineralsFriendlyFireEconomy"/>
+        <ValueTable value="MineralsFriendlyFireTechnology"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="VespeneLostUnits">
+        <ValueTable value="VespeneLostArmy"/>
+        <ValueTable value="VespeneLostEconomy"/>
+        <ValueTable value="VespeneLostTechnology"/>
+        <ValueTable value="VespeneFriendlyFireArmy"/>
+        <ValueTable value="VespeneFriendlyFireEconomy"/>
+        <ValueTable value="VespeneFriendlyFireTechnology"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="ResourceValueArmySampled">
+        <ValueTable value="MineralsUsedCurrentArmy"/>
+        <ValueTable value="VespeneUsedCurrentArmy"/>
+        <Report value="Samples"/>
+    </CScoreValueCombine>
+    <!--
+    <CScoreValueConstant id="100">
+        <Value value="100"/>
+        <Type value="Fixed"/>
+    </CScoreValueConstant>
+    <CScoreValueCombine id="CombatRatio">
+        <Operation value="Divide"/>
+        <ValueTable value="ResourceKilledArmy"/>
+        <ValueTable value="ResourceLostArmy"/>
+        <Type value="Fixed"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="CombatEfficiency">
+        <Operation value="Multiply"/>
+        <ValueTable value="CombatRatio"/>
+        <ValueTable value="100"/>
+        <Type value="Fixed"/>
+        <Flags index="DisplayAsPercent" value="1"/>
+        <Flags index="PersistToDB" value="1"/>
+    </CScoreValueCombine>
+    -->
+    <CScoreValueCombine id="TotalUnits">
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_unit.dds"/>
+        <ValueTable value="UnitsTotalValue"/>
+        <ValueTable value="UnitsKilledValue"/>
+        <ValueTable value="UnitsLostValue"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="TotalStructures">
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_building.dds"/>
+        <ValueTable value="StructuresTotalValue"/>
+        <ValueTable value="StructuresKilledValue"/>
+        <ValueTable value="StructuresLostValue"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="TotalTechnology">
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_technology.dds"/>
+        <ValueTable value="WeaponTechnologyValue"/>
+        <ValueTable value="ArmorTechnologyValue"/>
+        <ValueTable value="MiscTechnologyValue"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="TotalResources">
+        <Icon value="Assets\Textures\ui_scorescreen_categoryicon_resource.dds"/>
+        <ValueTable value="MineralsSpent"/>
+        <ValueTable value="VespeneSpent"/>
+        <ValueTable value="ResourcesDonated"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="TotalOverview">
+        <ValueTable value="TotalUnits"/>
+        <ValueTable value="TotalStructures"/>
+        <ValueTable value="TotalTechnology"/>
+        <ValueTable value="TotalResources"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="TotalPoints">
+        <ValueTable value="UnitsMadePoints"/>
+        <ValueTable value="UnitsKilledPoints"/>
+        <ValueTable value="StructuresMadePoints"/>
+        <ValueTable value="StructuresKilledPoints"/>
+        <ValueTable value="TechnologyPoints"/>
+        <Type value="Fixed"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="SpendingResourcePoints">
+        <ValueTable value="UnitsMadePoints"/>
+        <ValueTable value="TechnologyPoints"/>
+        <ValueTable value="StructuresMadePoints"/>
+        <Type value="Fixed"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="DestructionPoints">
+        <ValueTable value="StructuresKilledPoints"/>
+        <ValueTable value="UnitsKilledPoints"/>
+        <Type value="Fixed"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="UpgradeSpendingSampled">
+        <ValueTable value="MineralsUsedTotalUpgrade"/>
+        <ValueTable value="VespeneUsedTotalUpgrade"/>
+        <Report value="Samples"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="EconomySpendingTotal">
+        <ValueTable value="MineralsUsedTotalEconomy"/>
+        <ValueTable value="VespeneUsedTotalEconomy"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="TechnologySpendingTotal">
+        <ValueTable value="MineralsUsedTotalTechnology"/>
+        <ValueTable value="VespeneUsedTotalTechnology"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="UpgradeSpendingTotal">
+        <ValueTable value="MineralsUsedTotalUpgrade"/>
+        <ValueTable value="VespeneUsedTotalUpgrade"/>
+    </CScoreValueCombine>
+    <CScoreValueCombine id="ArmySpendingTotal">
+        <ValueTable value="MineralsUsedTotalArmy"/>
+        <ValueTable value="VespeneUsedTotalArmy"/>
+    </CScoreValueCombine>
+    <CScoreValueStandard id="MetaExperience">
+        <Value value="MetaExperience"/>
+    </CScoreValueStandard>
+    <CScoreValueCustom id="AlarakSelfHeals" parent="BaseScoreValue">
+        <UniqueTag value="scTS"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="ArtanisSoADamage" parent="BaseScoreValue">
+        <UniqueTag value="scAS"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="BelshirEscortHarvesterDamage" parent="BaseScoreValue">
+        <Flags index="TriggerAchievement" value="1"/>
+        <UniqueTag value="smBE"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="CybrosEscortGuardianHealth" parent="BaseScoreValue">
+        <UniqueTag value="smCE"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="DamageDealtToVoidShards" parent="BaseScoreValue">
+        <UniqueTag value="smAS"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="FenixSuitDamage" parent="BaseScoreValue">
+        <UniqueTag value="scFS"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="DehakaDamage" parent="BaseScoreValue">
+        <UniqueTag value="scDS"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="JarbanPointCaptureKills" parent="BaseScoreValue">
+        <UniqueTag value="smJP"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="FenixChampionDamage" parent="BaseScoreValue">
+        <UniqueTag value="scFC"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="MSBonusSpeed2" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="MSScientistHealthRemaining" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="MSThrasherUptime" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="MSTempleLifeRemaining" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="MSHarvestingBotLifeRemaining" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="MSLavaDeaths" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="MSTrainDuration" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="MSShuttleUptime" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="MSLockOverloadTime" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="NovaDamage" parent="BaseScoreValue">
+        <UniqueTag value="scNS"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="MSFortressLifeRemaining" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="MSBonusSpeed" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="AlarakDamage" parent="BaseScoreValue">
+        <UniqueTag value="scTC"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="NovaHealandAbsorb" parent="BaseScoreValue">
+        <UniqueTag value="scNC"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="DehakaConsume" parent="BaseScoreValue">
+        <UniqueTag value="scDC"/>
+    </CScoreValueCustom>
+    <CScoreValueStandard id="TotalMissionScore">
+        <Value value="TotalMissionScore"/>
+        <UniqueTag value="zzzz"/>
+    </CScoreValueStandard>
+    <CScoreValueCustom id="MasteryLevel" parent="StatScoreValue">
+        <UniqueTag value="MLVL"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="MasteryPoints2" parent="StatScoreValue">
+        <UniqueTag value="MAS2"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="MasteryPoints3" parent="StatScoreValue">
+        <UniqueTag value="MAS3"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="MasteryPoints4" parent="StatScoreValue">
+        <UniqueTag value="MAS4"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="MasteryPoints5" parent="StatScoreValue">
+        <UniqueTag value="MAS5"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="MasteryPoints6" parent="StatScoreValue">
+        <UniqueTag value="MAS6"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="EnemyPersonality" parent="StatScoreValue">
+        <UniqueTag value="NMEP"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="KaraxChronoCoop" parent="BaseScoreValue">
+        <UniqueTag value="scXC"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="BonusObjectiveXP" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="CommanderLevel" parent="StatScoreValue">
+        <UniqueTag value="CLVL"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="CommanderSelection" parent="StatScoreValue">
+        <UniqueTag value="CSEL"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="Difficulty" parent="StatScoreValue">
+        <UniqueTag value="DIFF"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="KerriganDamage" parent="BaseScoreValue">
+        <UniqueTag value="scKS"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="MasteryPoints1" parent="StatScoreValue">
+        <UniqueTag value="MAS1"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="MutatorIsWeeklyChallenge" parent="StatScoreValue">
+        <UniqueTag value="mChl"/>
+    </CScoreValueCustom>
+    <CScoreValueCombine id="ResourcesGathered" parent="BaseScoreValue">
+        <ValueTable value="VespeneCollected"/>
+        <ValueTable value="MineralsCollected"/>
+    </CScoreValueCombine>
+    <CScoreValueCustom id="MSCompletionSpeed" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="UlnarOverload" parent="BaseScoreValue">
+        <UniqueTag value="smUL"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="TarsonisTrainDamage" parent="BaseScoreValue">
+        <UniqueTag value="smTT"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="RaynorHyperionDamage" parent="BaseScoreValue">
+        <UniqueTag value="scRS"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="ShakurasTempleLife" parent="BaseScoreValue">
+        <UniqueTag value="smST"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="SwannDrillDamage" parent="BaseScoreValue">
+        <UniqueTag value="scSS"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="KaldirShuttleDamage" parent="BaseScoreValue">
+        <UniqueTag value="smKS"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="SlaynPush" parent="BaseScoreValue">
+        <UniqueTag value="smSP"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="MeinhoffDayNightInfestedKills" parent="BaseScoreValue">
+        <UniqueTag value="smMD"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="Veridia" parent="BaseScoreValue">
+        <UniqueTag value="smVC"/>
+    </CScoreValueCustom>
+    <CScoreValueCombine id="UnitsProduced" parent="BaseScoreValue">
+        <ValueTable value="UnitsTrainedCount"/>
+    </CScoreValueCombine>
+    <CScoreValueCustom id="UnitsStructuresKilled" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="AbathurMonsterDamage" parent="BaseScoreValue">
+        <UniqueTag value="scBS"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="VorazunCloakedDamage" parent="BaseScoreValue">
+        <UniqueTag value="scVS"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="KorhalRiftDamage" parent="BaseScoreValue">
+        <UniqueTag value="smKR"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="AbathurHealingReceived" parent="BaseScoreValue">
+        <UniqueTag value="scBC"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="CommanderPlaceholder" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="VorazunTimeStopKills" parent="AchievementScoreValue">
+        <UniqueTag value="TMST"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="MissionXP" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="CharThrasherLife" parent="BaseScoreValue">
+        <UniqueTag value="smCT"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="ArtanisShieldAbsorb" parent="BaseScoreValue">
+        <UniqueTag value="scAC"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="VorazunBlackHoleDamage" parent="BaseScoreValue">
+        <UniqueTag value="scVC"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="ZagaraFrenzyDamage" parent="BaseScoreValue">
+        <UniqueTag value="scZC"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="KerriganAssimilationResources" parent="BaseScoreValue">
+        <UniqueTag value="scKC"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="SwannMechHealing" parent="BaseScoreValue">
+        <UniqueTag value="scSC"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="RaynorMedicHealing" parent="BaseScoreValue">
+        <UniqueTag value="scRC"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="HornerMagMineDamage" parent="BaseScoreValue">
+        <UniqueTag value="scHS"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="ZagaraSuicideDamage" parent="BaseScoreValue">
+        <UniqueTag value="scZS"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="StukovInfestedDamage" parent="BaseScoreValue">
+        <UniqueTag value="scIS"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="StukovMonstrosityDamage" parent="BaseScoreValue">
+        <UniqueTag value="scIC"/>
+    </CScoreValueCustom>
+    <CScoreValueCustom id="MissionScore" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="CommanderOneScorePrimary" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="CommanderOneScoreSecondary" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="CommanderTwoScorePrimary" parent="BaseScoreValue"/>
+    <CScoreValueCustom id="CommanderTwoScoreSecondary" parent="BaseScoreValue"/>
+</Catalog>

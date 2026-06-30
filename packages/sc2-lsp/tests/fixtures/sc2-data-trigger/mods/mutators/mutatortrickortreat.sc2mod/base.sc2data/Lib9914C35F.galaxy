@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib9914C35F_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Trick or Treat
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib9914C35F_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib9914C35F_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "TrickOrTreat");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib9914C35F_gt_Initialization_Init () {
+    lib9914C35F_gt_Initialization = TriggerCreate("lib9914C35F_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib9914C35F_gt_Initialization);
+}
+
+void lib9914C35F_InitTriggers () {
+    lib9914C35F_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib9914C35F_InitLib_completed = false;
+
+void lib9914C35F_InitLib () {
+    if (lib9914C35F_InitLib_completed) {
+        return;
+    }
+
+    lib9914C35F_InitLib_completed = true;
+
+    lib9914C35F_InitLibraries();
+    lib9914C35F_InitTriggers();
+}
+

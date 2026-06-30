@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibB28291DA_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Entomb
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libB28291DA_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libB28291DA_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "Entomb");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libB28291DA_gt_Initialization_Init () {
+    libB28291DA_gt_Initialization = TriggerCreate("libB28291DA_gt_Initialization_Func");
+    TriggerAddEventMapInit(libB28291DA_gt_Initialization);
+}
+
+void libB28291DA_InitTriggers () {
+    libB28291DA_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libB28291DA_InitLib_completed = false;
+
+void libB28291DA_InitLib () {
+    if (libB28291DA_InitLib_completed) {
+        return;
+    }
+
+    libB28291DA_InitLib_completed = true;
+
+    libB28291DA_InitLibraries();
+    libB28291DA_InitTriggers();
+}
+

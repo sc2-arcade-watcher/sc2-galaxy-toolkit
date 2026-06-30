@@ -1,0 +1,786 @@
+//==================================================================================================
+//  Terran Easy Skirmish AI
+//  This is a generated file. Do not edit directly.
+//==================================================================================================
+
+//--------------------------------------------------------------------------------------------------
+//  TerranUpgradesEasy
+//--------------------------------------------------------------------------------------------------
+void TerranUpgradesEasy (int player, int phase) {
+    int buildType;
+
+    if (phase < c_ldPhaseLate) {
+        buildType = AIGetUserInt(player, c_openingBuildType);
+    } else {
+        buildType = AIGetUserInt(player, c_lateGameBuildType);
+    }
+
+    if (buildType != e_buildType_Air) {
+
+
+        if (phase >= c_ldPhaseMid) {
+
+
+            if (phase >= c_ldPhaseLate) {
+
+                AISetStock( player, 1, c_TR_InfantryWeapons1 );
+                AISetStock( player, 1, c_TR_InfantryArmor1 );
+
+                if (phase >= c_ldPhaseFinal) {
+
+                    AISetStock( player, 1, c_TR_InfantryWeapons2 );
+                    AISetStock( player, 1, c_TR_InfantryArmor2 );
+                    AISetStock( player, 1, c_TR_VehicleWeapons1 );
+                    AISetStock( player, 1, c_TR_MechPlating1 );
+                    AISetStock( player, 1, c_TR_ShipWeapons1 );
+
+                }
+            }
+        }
+    }
+    else {  // (buildType == e_buildType_Air) 
+
+
+        if (phase >= c_ldPhaseMid) {
+
+
+            if (phase >= c_ldPhaseLate) {
+
+                AISetStock( player, 1, c_TR_ShipWeapons1 );
+                AISetStock( player, 1, c_TR_MechPlating1 );
+
+                if (phase >= c_ldPhaseFinal) {
+
+                    AISetStock( player, 1, c_TR_ShipWeapons2 );
+                    AISetStock( player, 1, c_TR_MechPlating2 );
+                    if (AITechCount(player, c_TB_MissileTurret, c_techCountInProgressOrBetter) >= 1) {
+                        AISetStock( player, 1, c_TR_MissileTurretRange );
+                    }
+                    AISetStock( player, 1, c_TR_InfantryWeapons1 );
+                    AISetStock( player, 1, c_TR_InfantryArmor1 );
+
+                }
+            }
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenArmyInitEasy
+//--------------------------------------------------------------------------------------------------
+int TerranOpenArmyInitEasy (int player, int buildType) {
+    int armyRoll = 0;
+    int duration = 0;
+
+    if (buildType == e_buildType_Rush) {
+        // next attack should be around 5 foodCost and 300 resCost after about 375 seconds
+        AIAddToStockArmy(player, c_TU_Marine, 3);
+        AIAddToStockArmy(player, c_TU_Marauder, 1);
+        // validation: 4 units above with average cost 5 food and 275 resources
+        duration = 362 + RandomInt(-12, 18);
+    }
+    else if (buildType == e_buildType_Timing) {
+        // next attack should be around 7 foodCost and 400 resCost after about 431 seconds
+        AIAddToStockArmy(player, c_TU_Marine, 3);
+        AIAddToStockArmy(player, c_TU_Marauder, 2);
+        // validation: 5 units above with average cost 7 food and 400 resources
+        duration = 431 + RandomInt(-14, 21);
+    }
+    else if (buildType == e_buildType_Power) {
+        // next attack should be around 9 foodCost and 540 resCost after about 543 seconds
+        AIAddToStockArmy(player, c_TU_Marine, 4);
+        AIAddToStockArmy(player, c_TU_Marauder, 3);
+        // validation: 7 units above with average cost 10 food and 575 resources
+        duration = 572 + RandomInt(-19, 28);
+    }
+    else if (buildType == e_buildType_Macro) {
+        // next attack should be around 5 foodCost and 300 resCost after about 225 seconds
+        AIAddToStockArmy(player, c_TU_Marine, 3);
+        AIAddToStockArmy(player, c_TU_Marauder, 1);
+        // validation: 4 units above with average cost 5 food and 275 resources
+        duration = 218 + RandomInt(-7, 10);
+    }
+    else if (buildType == e_buildType_Air) {
+        // next attack should be around 6 foodCost and 600 resCost after about 581 seconds
+        AIAddToStockArmy(player, c_TU_Viking, 3);
+        // validation: 3 units above with average cost 6 food and 675 resources
+        duration = 611 + RandomInt(-20, 30);
+    }
+    else {
+        return TerranOpenArmyInitEasy(player, e_buildType_Macro);
+    }
+
+    AISetUserInt(player, c_ldNextArmyRoll, armyRoll);
+    return duration;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenInitEasy
+//--------------------------------------------------------------------------------------------------
+void TerranOpenInitEasy (int player) {
+    int buildType = 0;
+
+    AIChooseNextOpeningBuild(player);
+    buildType = AIGetUserInt(player, c_openingBuildType);
+    AISetupNextArmy (player, buildType, c_ldPhaseOpen, TerranOpenArmyInitEasy);
+
+    AISetMainState(player, e_mainState_Open, e_mainSubState_Build);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenBuildEasy
+//--------------------------------------------------------------------------------------------------
+void TerranOpenBuildEasy (int player) {
+    int buildType = AIGetUserInt(player, c_openingBuildType);
+    int armyRoll = AIGetUserInt(player, c_ldNextArmyRoll);
+    int timeOut = AIGetUserInt(player, c_nextArmyTime);
+    bool nextState = false;
+
+    if (AIHasPlayerChangedCurrentOpening(player)) {
+        AISetMainState(player, e_mainState_Open, e_mainSubState_Init);
+        return;
+    }
+
+    AIClearStock(player);
+
+    if (buildType == e_buildType_Rush) {
+        AISetStock( player, 1, c_TB_CommandCenter_Alias );
+        AISetStock( player, 14, c_TU_SCV );
+        AISetStock( player, 1, c_TB_SupplyDepot );
+        AISetStock( player, 16, c_TU_SCV );
+        AISetStock( player, 1, c_TB_Barracks );
+        AISetStock( player, 1, c_TB_Refinery );
+        AISetStock( player, 1, c_TU_Marine );
+        AISetStock( player, 1, c_TB_OrbitalCommand );
+        AISetStock( player, 2, c_TB_SupplyDepot );
+        AISetStock( player, 2, c_TU_Marine );
+        AISetStockFarms( player, c_TB_SupplyDepot, c_stockNormalFarms);
+    }
+    else if (buildType == e_buildType_Timing) {
+        AISetStock( player, 1, c_TB_CommandCenter_Alias );
+        AISetStock( player, 14, c_TU_SCV );
+        AISetStock( player, 1, c_TB_SupplyDepot );
+        AISetStock( player, 16, c_TU_SCV );
+        AISetStock( player, 1, c_TB_Barracks );
+        AISetStock( player, 1, c_TB_Refinery );
+        AISetStock( player, 1, c_TU_Marine );
+        AISetStock( player, 1, c_TB_OrbitalCommand );
+        AISetStock( player, 2, c_TB_SupplyDepot );
+        AISetStock( player, 2, c_TU_Marine );
+        AISetStockFarms( player, c_TB_SupplyDepot, c_stockNormalFarms);
+        AISetStock( player, 2, c_TB_Refinery );
+    }
+    else if (buildType == e_buildType_Power) {
+        AISetStock( player, 1, c_TB_CommandCenter_Alias );
+        AISetStock( player, 14, c_TU_SCV );
+        AISetStock( player, 1, c_TB_SupplyDepot );
+        AISetStock( player, 16, c_TU_SCV );
+        AISetStock( player, 1, c_TB_Barracks );
+        AISetStock( player, 1, c_TB_Refinery );
+        AISetStock( player, 1, c_TU_Marine );
+        AISetStock( player, 1, c_TB_OrbitalCommand );
+        AISetStock( player, 2, c_TB_SupplyDepot );
+        AISetStock( player, 2, c_TU_Marine );
+        AISetStockFarms( player, c_TB_SupplyDepot, c_stockNormalFarms);
+        AISetStock( player, 2, c_TB_Refinery );
+    }
+    else if (buildType == e_buildType_Macro) {
+        AISetStock( player, 1, c_TB_CommandCenter_Alias );
+        AISetStock( player, 14, c_TU_SCV );
+        AISetStock( player, 1, c_TB_SupplyDepot );
+        AISetStock( player, 16, c_TU_SCV );
+        AISetStock( player, 1, c_TB_Barracks );
+        if (TerranMacroExpand(player)) { return; }
+        AISetStock( player, 1, c_TU_Marine );
+        AISetStock( player, 1, c_TB_OrbitalCommand );
+        AISetStock( player, 2, c_TB_SupplyDepot );
+        AISetStock( player, 2, c_TU_Marine );
+        AISetStock( player, 1, c_TB_Refinery );
+        AISetStockUnitNext( player, 22, c_TU_SCV, c_stockIdle );
+        AISetStockFarms( player, c_TB_SupplyDepot, c_stockNormalFarms);
+        AISetStock( player, 2, c_TB_Refinery );
+    }
+    else if (buildType == e_buildType_Air) {
+        AISetStock( player, 1, c_TB_CommandCenter_Alias );
+        AISetStock( player, 14, c_TU_SCV );
+        AISetStock( player, 1, c_TB_SupplyDepot );
+        AISetStock( player, 16, c_TU_SCV );
+        if (TerranMacroExpand(player)) { return; }
+        AISetStock( player, 1, c_TB_Refinery );
+        AISetStock( player, 1, c_TB_Barracks );
+        AISetStock( player, 2, c_TB_Refinery );
+        AISetStock( player, 2, c_TB_SupplyDepot );
+        AISetStock( player, 1, c_TB_Factory );
+        AISetStock( player, 1, c_TB_OrbitalCommand );
+        AISetStockUnitNext( player, 22, c_TU_SCV, c_stockIdle );
+        AISetStockFarms( player, c_TB_SupplyDepot, c_stockNormalFarms);
+        AISetStock( player, 1, c_TB_Starport );
+        AISetStock( player, 1, c_TB_StarportTechLab );
+    }
+
+    TerranBasicDefenseStock(player);
+
+    AISetStockArmyScale(player, 0.35);
+
+    TerranGeneralBuild(player, c_ldPhaseOpen);
+
+    AISetStockArmyScale(player, 0.70);
+
+    TerranUpgradesEasy(player, c_ldPhaseOpen);
+
+    AISetStockArmyScale(player, 1.00);
+
+    AILDStockWorkers( player, 22, c_TU_SCV);
+
+    TerranTechUp(player, c_ldPhaseOpen);
+
+    if (buildType == e_buildType_Air) {
+        AISetStock( player, 1, c_TU_Medivac );
+    }
+
+    AIEnableStock(player);
+
+    AILDGeneralSharedLogic(player);
+
+    nextState = AITestTimeout(player, timeOut, e_mainState_Mid, e_mainSubState_Init);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidArmyInitEasy
+//--------------------------------------------------------------------------------------------------
+int TerranMidArmyInitEasy (int player, int buildType) {
+    int armyRoll = 0;
+    int duration = 0;
+
+    if (buildType == e_buildType_Rush) {
+        // next attack should be around 10 foodCost and 600 resCost after about 340 seconds
+        AIAddToStockArmy(player, c_TU_Marine, 4);
+        AIAddToStockArmy(player, c_TU_Marauder, 2);
+        AIAddToStockArmyPickFrom2Count(player, c_TU_Marauder, 1, c_TU_Reaper, 2);
+        // validation: 8 units above with average cost 10 food and 612 resources
+        duration = 342 + RandomInt(-11, 17);
+    }
+    else if (buildType == e_buildType_Timing) {
+        // next attack should be around 13 foodCost and 760 resCost after about 380 seconds
+        AIAddToStockArmy(player, c_TU_Marine, 6);
+        AIAddToStockArmy(player, c_TU_Marauder, 2);
+        AIAddToStockArmyPickFrom2Count(player, c_TU_Marauder, 1, c_TU_Reaper, 2);
+        AIAddToStockArmyPickFrom2Count(player, c_TU_Marauder, 1, c_TU_Reaper, 2);
+        // validation: 12 units above with average cost 14 food and 874 resources
+        duration = 411 + RandomInt(-13, 20);
+    }
+    else if (buildType == e_buildType_Power) {
+        // next attack should be around 13 foodCost and 790 resCost after about 400 seconds
+        AIAddToStockArmy(player, c_TU_Marine, 8);
+        AIAddToStockArmy(player, c_TU_Marauder, 2);
+        AIAddToStockArmyPickFrom2Count(player, c_TU_Marauder, 1, c_TU_Reaper, 2);
+        // validation: 12 units above with average cost 14 food and 812 resources
+        duration = 412 + RandomInt(-13, 20);
+    }
+    else if (buildType == e_buildType_Macro) {
+        // next attack should be around 18 foodCost and 1080 resCost after about 581 seconds
+        // note: mid macro build did not send opening attack at 225 time
+        AIAddToStockArmy(player, c_TU_Marine, 8);
+        AIAddToStockArmy(player, c_TU_Marauder, 4);
+        AIAddToStockArmyPickFrom2Count(player, c_TU_Marauder, 1, c_TU_Reaper, 2);
+        AIAddToStockArmyPickFrom2Count(player, c_TU_Marauder, 1, c_TU_Reaper, 2);
+        // validation: 16 units above with average cost 20 food and 1224 resources
+        duration = 648 + RandomInt(-29, 43);
+    }
+    else if (buildType == e_buildType_Air) {
+        // next attack should be around 9 foodCost and 900 resCost after about 380 seconds
+        AIAddToStockArmy(player, c_TU_Viking, 2);
+        AIAddToStockArmy(player, c_TU_Banshee, 1);
+        AIAddToStockArmy(player, AIPickFrom2(c_TU_Viking, c_TU_Banshee), 1);
+        // validation: 4 units above with average cost 10 food and 937 resources
+        duration = 397 + RandomInt(-13, 19);
+    }
+    else {
+        return TerranMidArmyInitEasy(player, e_buildType_Macro);
+    }
+
+    AISetUserInt(player, c_ldNextArmyRoll, armyRoll);
+    return duration;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidInitEasy
+//--------------------------------------------------------------------------------------------------
+void TerranMidInitEasy (int player) {
+    int buildType = 0;
+
+    AIChooseNextOpeningBuild(player);
+    buildType = AIGetUserInt(player, c_openingBuildType);
+    AISetupNextArmy (player, buildType, c_ldPhaseMid, TerranMidArmyInitEasy);
+
+    AISetFlag(player, e_flagsScouting, true);
+    AISetFlag(player, e_flagsLateScout, true);
+    AISetFlag(player, e_flagsDetect, true);
+
+    AISetMainState(player, e_mainState_Mid, e_mainSubState_Build);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidBuildEasy
+//--------------------------------------------------------------------------------------------------
+void TerranMidBuildEasy (int player) {
+    int buildType = AIGetUserInt(player, c_openingBuildType);
+    int armyRoll = AIGetUserInt(player, c_ldNextArmyRoll);
+    int timeOut = AIGetUserInt(player, c_nextArmyTime);
+    bool nextState = false;
+
+    if (AIHasPlayerChangedCurrentOpening(player)) {
+        AISetMainState(player, e_mainState_Mid, e_mainSubState_Init);
+        return;
+    }
+
+    AIClearStock(player);
+
+    TerranBasicEconomy(player, c_ldPhaseMid, 16);
+    if (buildType == e_buildType_Air) {
+        AISetStock( player, 1, c_TU_Medivac );
+    }
+    TerranBasicExpansion(player, c_ldPhaseMid, 5500, 1500);
+
+    TerranBasicDefenseStock(player);
+
+    AISetStockArmyScale(player, 0.35);
+
+    TerranGeneralBuild(player, c_ldPhaseMid);
+
+    AILDStockWorkers( player, 22, c_TU_SCV);
+
+    if (buildType == e_buildType_Rush) {
+    }
+    else if (buildType == e_buildType_Timing) {
+    }
+    else if (buildType == e_buildType_Power) {
+        if (TerranMacroExpand(player)) { return; }
+    }
+    else if (buildType == e_buildType_Macro) {
+        if (TerranMacroExpand(player)) { return; }
+    }
+    else if (buildType == e_buildType_Air) {
+        if (TerranMacroExpand(player)) { return; }
+        AISetStock( player, 2, c_TB_Starport );
+        AISetStock( player, 2, c_TB_StarportTechLab );
+    }
+
+    if (AINeedsDetection(player)) {
+        AISetStock( player, 1, c_TU_Raven );
+        AISetStock( player, 1, c_TB_OrbitalCommand );
+    }
+
+    AISetStockArmyScale(player, 0.70);
+
+    AILDStockWorkers( player, 50, c_TU_SCV);
+
+    TerranUpgradesEasy(player, c_ldPhaseMid);
+
+    AISetStockArmyScale(player, 1.00);
+
+    AISetStock( player, 2, c_TU_Raven );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+
+    TerranTechUp(player, c_ldPhaseMid);
+
+    AIEnableStock(player);
+
+    AILDGeneralSharedLogic(player);
+
+    nextState = AITestTimeout(player, timeOut, e_mainState_Late, e_mainSubState_Init);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranLateArmyInitEasy
+//--------------------------------------------------------------------------------------------------
+int TerranLateArmyInitEasy (int player, int buildType) {
+    int armyRoll = 0;
+    int duration = 0;
+
+    if (buildType == e_buildType_Core) {
+        // next attack should be around 17 foodCost and 1000 resCost after about 320 seconds
+        armyRoll = RandomInt(1,4);
+        if (armyRoll <= 3) {
+            AIAddToStockArmy(player, c_TU_Marine, 8);
+            AIAddToStockArmy(player, c_TU_Marauder, 3);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_Marauder, 1, c_TU_Reaper, 2);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_Marauder, 1, c_TU_Reaper, 2);
+            // validation: 15 units above with average cost 18 food and 1099 resources
+            duration = 337 + RandomInt(-11, 16);
+        }
+        else if (armyRoll <= 4) {
+            AIAddToStockArmy(player, c_TU_Marine, 8);
+            AIAddToStockArmy(player, c_TU_Marauder, 4);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_WidowMine, 2, c_TU_Cyclone, 1);
+            // validation: 14 units above with average cost 20 food and 1150 resources
+            duration = 354 + RandomInt(-11, 17);
+        }
+    }
+    else if (buildType == e_buildType_HighTech) {
+        // next attack should be around 19 foodCost and 1100 resCost after about 340 seconds
+        armyRoll = RandomInt(1,4);
+        if (armyRoll <= 3) {
+            AIAddToStockArmy(player, c_TU_Marine, 6);
+            AIAddToStockArmy(player, c_TU_SiegeTank, 3);
+            // validation: 9 units above with average cost 15 food and 1125 resources
+            duration = 326 + RandomInt(-10, 16);
+        }
+        else if (armyRoll <= 4) {
+            AIAddToStockArmy(player, c_TU_Marine, 6);
+            AIAddToStockArmy(player, c_TU_SiegeTank, 1);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_WidowMine, 2, c_TU_Cyclone, 1);
+            AIAddToStockArmy(player, c_TU_Thor, 1);
+            // validation: 10 units above with average cost 19 food and 1325 resources
+            duration = 368 + RandomInt(-12, 18);
+        }
+    }
+    else if (buildType == e_buildType_Special) {
+        // next attack should be around 20 foodCost and 1200 resCost after about 360 seconds
+        armyRoll = RandomInt(1,2);
+        if (armyRoll <= 1) {
+            AIAddToStockArmy(player, c_TU_Marine, 6);
+            AIAddToStockArmy(player, c_TU_Marauder, 2);
+            AIAddToStockArmy(player, c_TU_Ghost, 2);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_Ghost, 1, c_TU_Reaper, 2);
+            // validation: 12 units above with average cost 16 food and 1400 resources
+            duration = 367 + RandomInt(-12, 18);
+        }
+        else if (armyRoll <= 2) {
+            AIAddToStockArmy(player, c_TU_Marine, 6);
+            AIAddToStockArmy(player, c_TU_SiegeTank, 1);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_WidowMine, 2, c_TU_Cyclone, 1);
+            AIAddToStockArmy(player, c_TU_Raven, 2);
+            // validation: 11 units above with average cost 17 food and 1425 resources
+            duration = 374 + RandomInt(-12, 18);
+        }
+    }
+    else if (buildType == e_buildType_Mixed) {
+        // next attack should be around 22 foodCost and 1300 resCost after about 380 seconds
+        armyRoll = RandomInt(1,5);
+        if (armyRoll <= 2) {
+            AIAddToStockArmy(player, c_TU_Marine, 8);
+            AIAddToStockArmy(player, c_TU_Marauder, 4);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_Marauder, 1, c_TU_Reaper, 2);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_Ghost, 1, c_TU_Reaper, 2);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_Ghost, 1, c_TU_Reaper, 2);
+            // validation: 18 units above with average cost 22 food and 1562 resources
+            duration = 411 + RandomInt(-13, 20);
+        }
+        else if (armyRoll <= 4) {
+            AIAddToStockArmy(player, c_TU_Marine, 6);
+            AIAddToStockArmy(player, c_TU_Marauder, 2);
+            AIAddToStockArmy(player, c_TU_Viking, 1);
+            AIAddToStockArmy(player, c_TU_SiegeTank, 2);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_WidowMine, 2, c_TU_Cyclone, 1);
+            // validation: 13 units above with average cost 22 food and 1575 resources
+            duration = 413 + RandomInt(-13, 20);
+        }
+        else if (armyRoll <= 5) {
+            AIAddToStockArmy(player, c_TU_Marine, 6);
+            AIAddToStockArmy(player, c_TU_Marauder, 2);
+            AIAddToStockArmy(player, c_TU_SiegeTank, 1);
+            AIAddToStockArmy(player, AIPickFrom2(c_TU_Battlecruiser, c_TU_Thor), 1);
+            // validation: 10 units above with average cost 19 food and 1425 resources
+            duration = 382 + RandomInt(-12, 19);
+        }
+    }
+    else if (buildType == e_buildType_Air) {
+        // next attack should be around 13 foodCost and 1300 resCost after about 340 seconds
+        armyRoll = RandomInt(1,2);
+        if (armyRoll <= 1) {
+            AIAddToStockArmy(player, c_TU_Viking, 2);
+            AIAddToStockArmy(player, c_TU_Banshee, 2);
+            AIAddToStockArmy(player, AIPickFrom2(c_TU_Viking, c_TU_Banshee), 2);
+            // validation: 6 units above with average cost 15 food and 1425 resources
+            duration = 366 + RandomInt(-12, 18);
+        }
+        else if (armyRoll <= 2) {
+            AIAddToStockArmy(player, c_TU_Viking, 1);
+            AIAddToStockArmy(player, c_TU_Battlecruiser, 2);
+            // validation: 3 units above with average cost 14 food and 1625 resources
+            duration = 381 + RandomInt(-12, 19);
+        }
+    }
+    else {
+        return TerranLateArmyInitEasy(player, e_buildType_Core);
+    }
+
+    AISetUserInt(player, c_ldNextArmyRoll, armyRoll);
+    return duration;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranFinalArmyInitEasy
+//--------------------------------------------------------------------------------------------------
+int TerranFinalArmyInitEasy (int player, int buildType) {
+    int armyRoll = 0;
+    int duration = 0;
+
+    if (buildType == e_buildType_Core) {
+        // next attack should be around 27 foodCost and 1600 resCost after about 290 seconds
+        armyRoll = RandomInt(1,4);
+        if (armyRoll <= 3) {
+            AIAddToStockArmy(player, c_TU_Marine, 16);
+            AIAddToStockArmy(player, c_TU_Marauder, 6);
+            // validation: 22 units above with average cost 28 food and 1550 resources
+            duration = 289 + RandomInt(-9, 14);
+        }
+        else if (armyRoll <= 4) {
+            AIAddToStockArmy(player, c_TU_Marine, 14);
+            AIAddToStockArmy(player, c_TU_Marauder, 5);
+            AIAddToStockArmy(player, c_TU_SiegeTank, 1);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_WidowMine, 2, c_TU_Cyclone, 1);
+            // validation: 22 units above with average cost 31 food and 1850 resources
+            duration = 319 + RandomInt(-10, 15);
+        }
+    }
+    else if (buildType == e_buildType_HighTech) {
+        // next attack should be around 29 foodCost and 1700 resCost after about 310 seconds
+        armyRoll = RandomInt(1,4);
+        if (armyRoll <= 3) {
+            AIAddToStockArmy(player, c_TU_Marine, 8);
+            AIAddToStockArmy(player, c_TU_Hellion, 2);
+            AIAddToStockArmy(player, c_TU_SiegeTank, 4);
+            // validation: 14 units above with average cost 24 food and 1700 resources
+            duration = 297 + RandomInt(-9, 14);
+        }
+        else if (armyRoll <= 4) {
+            AIAddToStockArmy(player, c_TU_Marine, 8);
+            AIAddToStockArmy(player, c_TU_SiegeTank, 3);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_WidowMine, 2, c_TU_Cyclone, 1);
+            AIAddToStockArmy(player, c_TU_Thor, 1);
+            // validation: 14 units above with average cost 27 food and 1975 resources
+            duration = 325 + RandomInt(-10, 16);
+        }
+    }
+    else if (buildType == e_buildType_Special) {
+        // next attack should be around 30 foodCost and 1800 resCost after about 330 seconds
+        armyRoll = RandomInt(1,2);
+        if (armyRoll <= 1) {
+            AIAddToStockArmy(player, c_TU_Marine, 12);
+            AIAddToStockArmy(player, c_TU_Marauder, 2);
+            AIAddToStockArmy(player, c_TU_Ghost, 2);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_Ghost, 1, c_TU_Reaper, 2);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_Ghost, 1, c_TU_Reaper, 2);
+            AIAddToStockArmy(player, c_TU_Raven, 1);
+            // validation: 21 units above with average cost 26 food and 2250 resources
+            duration = 353 + RandomInt(-11, 17);
+        }
+        else if (armyRoll <= 2) {
+            AIAddToStockArmy(player, c_TU_Marine, 12);
+            AIAddToStockArmy(player, c_TU_SiegeTank, 1);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_WidowMine, 4, c_TU_Cyclone, 2);
+            AIAddToStockArmy(player, c_TU_Raven, 2);
+            // validation: 18 units above with average cost 26 food and 1975 resources
+            duration = 332 + RandomInt(-11, 16);
+        }
+    }
+    else if (buildType == e_buildType_Mixed) {
+        // next attack should be around 32 foodCost and 1900 resCost after about 330 seconds
+        armyRoll = RandomInt(1,5);
+        if (armyRoll <= 2) {
+            AIAddToStockArmy(player, c_TU_Marine, 16);
+            AIAddToStockArmy(player, c_TU_Marauder, 8);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_Ghost, 1, c_TU_Reaper, 2);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_Ghost, 1, c_TU_Reaper, 2);
+            // validation: 28 units above with average cost 36 food and 2300 resources
+            duration = 369 + RandomInt(-12, 18);
+        }
+        else if (armyRoll <= 4) {
+            AIAddToStockArmy(player, c_TU_Marine, 6);
+            AIAddToStockArmy(player, c_TU_Marauder, 2);
+            AIAddToStockArmy(player, c_TU_Hellion, 2);
+            AIAddToStockArmy(player, c_TU_SiegeTank, 2);
+            AIAddToStockArmyPickFrom2Count(player, c_TU_WidowMine, 2, c_TU_Cyclone, 1);
+            AIAddToStockArmy(player, AIPickFrom2(c_TU_Battlecruiser, c_TU_Thor), 1);
+            // validation: 15 units above with average cost 30 food and 2150 resources
+            duration = 342 + RandomInt(-11, 17);
+        }
+        else if (armyRoll <= 5) {
+            AIAddToStockArmy(player, c_TU_Marine, 6);
+            AIAddToStockArmy(player, c_TU_Marauder, 2);
+            AIAddToStockArmy(player, c_TU_Viking, 1);
+            AIAddToStockArmy(player, AIPickFrom2(c_TU_Viking, c_TU_Banshee), 1);
+            AIAddToStockArmy(player, AIPickFrom2(c_TU_Viking, c_TU_Banshee), 1);
+            AIAddToStockArmy(player, AIPickFrom2(c_TU_Battlecruiser, c_TU_Thor), 1);
+            AIAddToStockArmy(player, AIPickFrom2(c_TU_Battlecruiser, c_TU_Thor), 1);
+            // validation: 13 units above with average cost 29 food and 2449 resources
+            duration = 361 + RandomInt(-12, 18);
+        }
+    }
+    else if (buildType == e_buildType_Air) {
+        // next attack should be around 18 foodCost and 1800 resCost after about 310 seconds
+        armyRoll = RandomInt(1,2);
+        if (armyRoll <= 1) {
+            AIAddToStockArmy(player, c_TU_Viking, 2);
+            AIAddToStockArmy(player, c_TU_Banshee, 2);
+            AIAddToStockArmy(player, AIPickFrom2(c_TU_Viking, c_TU_Banshee), 2);
+            AIAddToStockArmy(player, AIPickFrom2(c_TU_Viking, c_TU_Banshee), 2);
+            // validation: 8 units above with average cost 20 food and 1900 resources
+            duration = 325 + RandomInt(-10, 16);
+        }
+        else if (armyRoll <= 2) {
+            AIAddToStockArmy(player, c_TU_Viking, 3);
+            AIAddToStockArmy(player, c_TU_Battlecruiser, 2);
+            // validation: 5 units above with average cost 18 food and 2075 resources
+            duration = 329 + RandomInt(-10, 16);
+        }
+    }
+    else {
+        return TerranFinalArmyInitEasy(player, e_buildType_Core);
+    }
+
+    AISetUserInt(player, c_ldNextArmyRoll, armyRoll);
+    return duration;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranLateInitEasy
+//--------------------------------------------------------------------------------------------------
+void TerranLateInitEasy (int player) {
+    int lateLoop = AIGetUserInt(player, c_ldNumLateLoops);
+    int curPhase = c_ldPhaseLate;
+    int buildType = 0;
+
+    AIChooseNextLateGameBuild(player);
+    buildType = AIGetUserInt(player, c_lateGameBuildType);
+
+    if (lateLoop <= 0) { // First Late Loop
+        AISetupNextArmy (player, buildType, curPhase, TerranLateArmyInitEasy);
+    } else {
+        curPhase = c_ldPhaseFinal + lateLoop;
+        AISetupNextArmy (player, buildType, curPhase, TerranFinalArmyInitEasy);
+    }
+
+    AISetFlag(player, e_flagsScouting, true);
+    AISetFlag(player, e_flagsClearObs, true);
+    AISetFlag(player, e_flagsLateScout, true);
+    AISetFlag(player, e_flagsDetect, true);
+
+    AISetMainState(player, e_mainState_Late, e_mainSubState_Build);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranLateBuildEasy
+//--------------------------------------------------------------------------------------------------
+void TerranLateBuildEasy (int player) {
+    int lateLoop = AIGetUserInt(player, c_ldNumLateLoops);
+    int buildType = AIGetUserInt(player, c_lateGameBuildType);
+    int armyRoll = AIGetUserInt(player, c_ldNextArmyRoll);
+    int timeOut = AIGetUserInt(player, c_nextArmyTime);
+    bool nextState = false;
+
+    if (AIHasPlayerChangedCurrentLateGame(player)) {
+        AISetMainState(player, e_mainState_Late, e_mainSubState_Init);
+        return;
+    }
+
+    AIClearStock(player);
+
+    TerranBasicEconomy(player, c_ldPhaseLate, 16);
+    if (buildType == e_buildType_Air) {
+        AISetStock( player, 1, c_TU_Medivac );
+    }
+    TerranBasicExpansion(player, c_ldPhaseLate, 8000, 2000);
+
+    TerranBasicDefenseStock(player);
+
+    AISetStockArmyScale(player, 0.35);
+
+    TerranGeneralBuild(player, c_ldPhaseLate);
+
+    AILDStockWorkers( player, 22, c_TU_SCV);
+
+    if (buildType == e_buildType_Core) {
+        if (TerranMacroExpand(player)) { return; }
+    }
+    else if (buildType == e_buildType_HighTech) {
+        if (TerranMacroExpand(player)) { return; }
+    }
+    else if (buildType == e_buildType_Special) {
+        if (TerranMacroExpand(player)) { return; }
+    }
+    else if (buildType == e_buildType_Mixed) {
+        if (TerranMacroExpand(player)) { return; }
+    }
+    else if (buildType == e_buildType_Air) {
+        if (TerranMacroExpand(player)) { return; }
+    }
+
+    AISetStock( player, 2, c_TU_Raven );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+
+    AISetStockArmyScale(player, 0.70);
+
+    AISetStock( player, 2, c_TU_Medivac );
+    AISetStock( player, 3, c_TU_Raven );
+
+    AISetStockArmyScale(player, 1.00);
+
+    AILDStockWorkers( player, 50, c_TU_SCV);
+
+    if (lateLoop <= 0) { // First Late Loop
+        TerranUpgradesEasy(player, c_ldPhaseLate);
+        TerranTechUp(player, c_ldPhaseLate);
+    } else { // Remaining Loops
+        TerranUpgradesEasy(player, c_ldPhaseFinal);
+        TerranTechUp(player, c_ldPhaseFinal);
+    }
+
+    AIEnableStock(player);
+
+    AILDGeneralSharedLogic(player);
+
+    nextState = AITestTimeout(player, timeOut, e_mainState_Late, e_mainSubState_Init);
+    if (nextState) {
+        lateLoop += 1;
+        AISetUserInt(player, c_ldNumLateLoops, lateLoop);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenEasy
+//--------------------------------------------------------------------------------------------------
+void TerranOpenEasy (int player) {
+    int mainSubState = AIState(player, e_mainSubState);
+
+    if (mainSubState != e_mainSubState_Build) {
+        TerranOpenInitEasy(player);
+        mainSubState = AIState(player, e_mainSubState);
+    }
+
+    if (mainSubState == e_mainSubState_Build) { TerranOpenBuildEasy(player); }
+    else { ErrorMeleeScript(player, "Invalid Open MainSubState TerranEasy"); }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidEasy
+//--------------------------------------------------------------------------------------------------
+void TerranMidEasy (int player) {
+    int mainSubState = AIState(player, e_mainSubState);
+
+    if (mainSubState != e_mainSubState_Build) {
+        TerranMidInitEasy(player);
+        mainSubState = AIState(player, e_mainSubState);
+    }
+
+    if (mainSubState == e_mainSubState_Build) { TerranMidBuildEasy(player);  }
+    else { ErrorMeleeScript(player, "Invalid Mid MainSubState TerranEasy"); }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranLateEasy
+//--------------------------------------------------------------------------------------------------
+void TerranLateEasy (int player) {
+    int mainSubState = AIState(player, e_mainSubState);
+
+    if (mainSubState != e_mainSubState_Build) {
+        TerranLateInitEasy(player);
+        mainSubState = AIState(player, e_mainSubState);
+    }
+
+    if (mainSubState == e_mainSubState_Build) { TerranLateBuildEasy(player);  }
+    else { ErrorMeleeScript(player, "Invalid Late MainSubState TerranEasy"); }
+}
+

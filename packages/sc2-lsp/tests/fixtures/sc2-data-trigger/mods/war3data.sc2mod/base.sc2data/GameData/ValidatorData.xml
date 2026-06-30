@@ -1,0 +1,1188 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CValidatorLocationEnumArea id="AreaContainsDeadUnits">
+        <ResultFailed value="CantFindEnoughTargets,NoUsableCorpses"/>
+        <AreaArray Radius="6"/>
+        <SearchFlags index="ExtendByUnitRadius" value="1"/>
+        <SearchFilters value="Ground,Dead;Self,Robotic,Structure,RawResource,HarvestableResource,Missile,Item,Stasis,Hidden,Summoned"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorUnitCompareBehaviorCount id="DoesNotHaveFaerieFire">
+        <Behavior value="FaerieFire"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="DoesNotHaveCyclone">
+        <Behavior value="Cyclone"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="DoesNotHaveSentinelOwl">
+        <ResultFailed value="Error,SentinelError"/>
+        <Compare value="LT"/>
+        <Value value="1"/>
+        <Behavior value="SentinelOwl"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="HasSentinelOwlBehavior">
+        <WhichUnit Effect="SentinelSet"/>
+        <Value value="1"/>
+        <Behavior value="SentinelOwl"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerRequirement id="HaveNightElfMoonGlaive">
+        <WhichPlayer Value="Caster"/>
+        <Find value="1"/>
+        <Value value="HaveNightelfMoonGlaive"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="DruidoftheClawAdeptNotResearched">
+        <Value value="DruidoftheClawAdeptResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="DruidoftheClawMasterNotResearched">
+        <Value value="DruidoftheClawMasterResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareBehaviorCount id="HeroIsNotRanged">
+        <Behavior value="HeroIsRanged"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="HeroIsNotMelee">
+        <Behavior value="HeroIsMelee"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="IsArcher">
+        <ResultFailed value="Error,CoupleError"/>
+        <Value value="Archer"/>
+    </CValidatorUnitType>
+    <CValidatorUnitCompareBehaviorCount id="IsChannelingManaFlare">
+        <Value value="1"/>
+        <Behavior value="ManaFlare"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="IsHippogryph">
+        <ResultFailed value="Error,CoupleError"/>
+        <Value value="Hippogryph"/>
+    </CValidatorUnitType>
+    <CValidatorUnitCompareField id="IsHuman">
+        <Field value="Race"/>
+        <Value value="huma"/>
+    </CValidatorUnitCompareField>
+    <CValidatorUnitCompareField id="IsOrc">
+        <Field value="Race"/>
+        <Value value="orc"/>
+    </CValidatorUnitCompareField>
+    <CValidatorUnitCompareField id="IsNightElf">
+        <Field value="Race"/>
+        <Value value="nigh"/>
+    </CValidatorUnitCompareField>
+    <CValidatorUnitCompareField id="IsUndead">
+        <Field value="Race"/>
+        <Value value="unde"/>
+    </CValidatorUnitCompareField>
+    <CValidatorUnitCompareField id="CasterIsHuman">
+        <WhichUnit Value="Caster"/>
+        <Field value="Race"/>
+        <Value value="huma"/>
+    </CValidatorUnitCompareField>
+    <CValidatorUnitCompareField id="CasterIsOrc">
+        <WhichUnit Value="Caster"/>
+        <Field value="Race"/>
+        <Value value="orc"/>
+    </CValidatorUnitCompareField>
+    <CValidatorUnitCompareField id="CasterIsNightElf">
+        <WhichUnit Value="Caster"/>
+        <Field value="Race"/>
+        <Value value="nigh"/>
+    </CValidatorUnitCompareField>
+    <CValidatorUnitCompareField id="CasterOuterIsNightElf">
+        <WhichUnit Value="CasterOuter"/>
+        <Field value="Race"/>
+        <Value value="nigh"/>
+    </CValidatorUnitCompareField>
+    <CValidatorUnitCompareField id="CasterIsUndead">
+        <WhichUnit Value="Caster"/>
+        <Field value="Race"/>
+        <Value value="unde"/>
+    </CValidatorUnitCompareField>
+    <CValidatorUnitCompareResourceContents id="NoResources"/>
+    <CValidatorUnitCompareResourceContents id="HasResources">
+        <Compare value="GT"/>
+    </CValidatorUnitCompareResourceContents>
+    <CValidatorCombine id="NotPhysicalImmuneAndNotWard">
+        <Type value="And"/>
+        <CombineArray value="NotPhysicalImmune"/>
+        <CombineArray value="NotWard"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="NotMagicImmuneAndNotWard">
+        <Type value="And"/>
+        <CombineArray value="NotMagicImmune"/>
+        <CombineArray value="NotWard"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareDamageTakenTime id="PhaseShiftDamageTaken">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LT"/>
+        <Value value="0.5"/>
+    </CValidatorUnitCompareDamageTakenTime>
+    <CValidatorUnitWeaponFiring id="TargetIsFiringWeapon"/>
+    <CValidatorUnitCompareBehaviorCount id="TargetHasNoBloodlust">
+        <Behavior value="Bloodlust"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="AbunCargoHoldBurrow">
+        <Value value="Peon"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="TargetIsPrimaryStructure">
+        <CombineArray value="TargetIsTownHall"/>
+        <CombineArray value="TargetIsKeep"/>
+        <CombineArray value="TargetIsCastle"/>
+        <CombineArray value="TargetIsGreathall"/>
+        <CombineArray value="TargetIsStronghold"/>
+        <CombineArray value="TargetIsFortress"/>
+        <CombineArray value="TargetIsTreeoflife"/>
+        <CombineArray value="TargetIsTreeofages"/>
+        <CombineArray value="TargetIsTreeofeternity"/>
+        <CombineArray value="TargetIsNecropolis"/>
+        <CombineArray value="TargetIsHallsofthedead"/>
+        <CombineArray value="TargetIsBlackcitadel"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="TargetIsTownHall">
+        <Value value="Townhall"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="TargetIsKeep">
+        <Value value="Keep"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="TargetIsCastle">
+        <Value value="Castle"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="TargetIsGreathall">
+        <Value value="Greathall"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="TargetIsStronghold">
+        <Value value="Stronghold"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="TargetIsFortress">
+        <Value value="Fortress"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="TargetIsTreeoflife">
+        <Value value="Treeoflife"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="TargetIsTreeofages">
+        <Value value="Treeofages"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="TargetIsTreeofeternity">
+        <Value value="Treeofeternity"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="TargetIsNecropolis">
+        <Value value="Necropolis"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="TargetIsHallsofthedead">
+        <Value value="Necropolis1"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="TargetIsBlackcitadel">
+        <Value value="Necropolis2"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="TargetIsTaurenUnit">
+        <CombineArray value="TargetIsSpiritwalker"/>
+        <CombineArray value="TargetIsSpiritwalkermorph"/>
+        <CombineArray value="TargetIsTauren"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="TargetIsSpiritwalker">
+        <Value value="Spiritwalker"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="TargetIsSpiritwalkermorph">
+        <Value value="Spiritwalkermorph"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="TargetIsTauren">
+        <Value value="Tauren"/>
+    </CValidatorUnitType>
+    <CValidatorUnitCompareBehaviorCount id="BurrowLoadCheckCountLevel0">
+        <WhichUnit Value="Source"/>
+        <Behavior value="BurrowLoad"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="BurrowLoadCheckCountLevel1">
+        <WhichUnit Value="Source"/>
+        <Value value="1"/>
+        <Behavior value="BurrowLoad"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="BurrowLoadCheckCountLevel2">
+        <WhichUnit Value="Source"/>
+        <Value value="2"/>
+        <Behavior value="BurrowLoad"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="BurrowLoadCheckCountLevel3">
+        <WhichUnit Value="Source"/>
+        <Value value="3"/>
+        <Behavior value="BurrowLoad"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="BurrowLoadCheckCountLevel4">
+        <WhichUnit Value="Source"/>
+        <Value value="4"/>
+        <Behavior value="BurrowLoad"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerRequirement id="HaveBerserkerupgrade">
+        <WhichPlayer Value="Caster"/>
+        <Find value="1"/>
+        <Value value="HaveBerserkerupgrade"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareBehaviorCount id="NotHaveDemolisherWeaponCooldown">
+        <WhichUnit Value="Caster"/>
+        <Behavior value="DemolisherWeaponCooldown"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorLocationCompareRange id="DemolisherTargetTooClose">
+        <Compare value="GE"/>
+        <Range value="4"/>
+        <ResultFailed value="TargetIsTooClose"/>
+    </CValidatorLocationCompareRange>
+    <CValidatorUnitCompareBehaviorCount id="HasNoHealingwardHeal">
+        <Behavior value="HealingwardHeal"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitMover id="TargetIsAir"/>
+    <CValidatorUnitFilters id="SourceNotDead">
+        <WhichUnit Value="Source"/>
+        <Filters value="-;Dead"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitFilters id="SourceIsDead">
+        <WhichUnit Value="Source"/>
+        <Filters value="Dead;-"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitCompareBehaviorCount id="NoCarryGatherGold">
+        <WhichUnit Value="Source"/>
+        <Behavior value="CarryGatherGold"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="NoCarryGatherWood">
+        <WhichUnit Value="Source"/>
+        <Behavior value="CarryGatherWood"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerRequirement id="HaveBurningoil">
+        <WhichPlayer Value="Caster"/>
+        <Find value="1"/>
+        <Value value="HaveBurningoil"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="HaveOrcSpikedBarricadeLevel1">
+        <WhichPlayer Value="Caster"/>
+        <Find value="1"/>
+        <Value value="HaveOrcSpikedBarricadeLevel1"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="HaveOrcWyvernVenomSpear">
+        <WhichPlayer Value="Caster"/>
+        <Find value="1"/>
+        <Value value="HaveOrcWyvernVenomSpear"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitFilters id="TargetNotMechanical">
+        <Filters value="-;Mechanical"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitFilters id="IsMechanical">
+        <Filters value="Mechanical;-"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitFilters id="IsStructure"/>
+    <CValidatorPlayerRequirement id="HaveOrcLiquidFire">
+        <WhichPlayer Value="Caster"/>
+        <Find value="1"/>
+        <Value value="HaveOrcLiquidFire"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareBehaviorCount id="NotHaveFarseerChainLightningMarker">
+        <Behavior value="FarseerChainLightningMarker"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="NotHaveShadowHunterHealingWaveMarker">
+        <Behavior value="ShadowHunterHealingWaveMarker"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="Blademaster">
+        <Value value="Blademaster"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="Farseer">
+        <Value value="Farseer"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="Taurenchieftain">
+        <Value value="Taurenchieftain"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="Shadowhunter">
+        <Value value="Shadowhunter"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="Demonhunter">
+        <Value value="Demonhunter"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="Keeperofthegrove">
+        <Value value="Keeperofthegrove"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="Priestessofthemoon">
+        <Value value="Priestessofthemoon"/>
+    </CValidatorUnitType>
+    <CValidatorUnitCompareBehaviorCount id="UnitCastSpell">
+        <Value value="1"/>
+        <Behavior value="ManaFlareCastSpell"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorCombine id="War3BurnableUnits">
+        <CombineArray value="War3IsBuilding"/>
+        <CombineArray value="IsMechanical"/>
+    </CValidatorCombine>
+    <CValidatorUnitFilters id="War3IsBuilding">
+        <Filters value="PreventDefeat;-"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitType id="Warden">
+        <Value value="Warden"/>
+    </CValidatorUnitType>
+    <CValidatorPlayerRequirement id="NotWard">
+        <Value value="NotWard"/>
+        <ResultFailed value="Error,Error/Ward"/>
+        <WhichPlayer Value="Target"/>
+        <WhichUnit Value="Target"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="NotTree">
+        <Value value="NotTree"/>
+        <ResultFailed value="Error,Error/Tree"/>
+        <WhichPlayer Value="Target"/>
+        <WhichUnit Value="Target"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="IsTree">
+        <Value value="IsTree"/>
+        <WhichPlayer Value="Target"/>
+        <WhichUnit Value="Target"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="NotMagicImmune">
+        <Value value="NotMagicImmune"/>
+        <ResultFailed value="Error,Error/MagicImmune"/>
+        <WhichPlayer Value="Target"/>
+        <WhichUnit Value="Target"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="NotPhysicalImmune">
+        <Value value="NotPhysicalImmune"/>
+        <ResultFailed value="Error,Error/PhysicalImmune"/>
+        <WhichPlayer Value="Target"/>
+        <WhichUnit Value="Target"/>
+    </CValidatorPlayerRequirement>
+    <!--CValidatorUnitCompareBehaviorCount id="NotMagicImmune">
+        <Behavior value="MagicImmune"/>
+        <ResultFailed value="Error,Error/MagicImmune"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="NotPhysicalImmune">
+        <Behavior value="PhysicalImmune"/>
+        <ResultFailed value="CantTargetThatUnit"/>
+        <ResultFailed value="Error,Error/PhysicalImmune"/>
+    </CValidatorUnitCompareBehaviorCount-->
+    <CValidatorPlayerRequirement id="HaveStronghold">
+        <WhichPlayer Value="Caster"/>
+        <Find value="1"/>
+        <Value value="HaveStronghold"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="HaveFortress">
+        <WhichPlayer Value="Caster"/>
+        <Find value="1"/>
+        <Value value="HaveFortress"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareBehaviorCount id="HaveBladeMasterCritTestA">
+        <WhichUnit Value="Caster"/>
+        <Value value="1"/>
+        <Behavior value="BladeMasterCritTestA"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="HaveBladeMasterCritTestB">
+        <WhichUnit Value="Caster"/>
+        <Value value="1"/>
+        <Behavior value="BladeMasterCritTestB"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="HaveBladeMasterCritTestC">
+        <WhichUnit Value="Caster"/>
+        <Value value="1"/>
+        <Behavior value="BladeMasterCritTestC"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerRequirement id="BladeMasterCritLevel1">
+        <WhichPlayer Value="Caster"/>
+        <Find value="1"/>
+        <Value value="BladeMasterCritLevel1"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="BladeMasterCritLevel2">
+        <WhichPlayer Value="Caster"/>
+        <Find value="1"/>
+        <Value value="BladeMasterCritLevel2"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="BladeMasterCritLevel3">
+        <WhichPlayer Value="Caster"/>
+        <Find value="1"/>
+        <Value value="BladeMasterCritLevel3"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareDamageTakenTime id="WindwalkDamageTaken">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="0.1"/>
+    </CValidatorUnitCompareDamageTakenTime>
+    <CValidatorUnitFilters id="IsHeroic">
+        <Filters value="Heroic;-"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitFilters id="IsResistant">
+        <Filters value="Resistant;-"/>
+    </CValidatorUnitFilters>
+    <CValidatorCombine id="UseHeroDuration">
+        <CombineArray value="IsHeroic"/>
+        <CombineArray value="IsResistant"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="HaveChieftainReincarnationReviveSuppressed">
+        <WhichUnit Value="Source"/>
+        <Value value="1"/>
+        <Behavior value="ChieftainReincarnationReviveSuppressed"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="NoChieftainReincarnationReviveSuppressed">
+        <WhichUnit Value="Source"/>
+        <Behavior value="ChieftainReincarnationReviveSuppressed"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerRequirement id="NotUnrepairable">
+        <Value value="NotUnrepairable"/>
+        <ResultFailed value="Error,Error/Unrepairable"/>
+        <WhichUnit Value="Target"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitType id="TargetIsAnkhOfReincarnation">
+        <Value value="AnkhOfReincarnation"/>
+    </CValidatorUnitType>
+    <CValidatorUnitCompareBehaviorCount id="HaveOrbOfLightning">
+        <WhichUnit Value="Caster"/>
+        <Value value="1"/>
+        <Behavior value="OrbOfLightning"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="HaveOrbOfVenom">
+        <WhichUnit Value="Caster"/>
+        <Value value="1"/>
+        <Behavior value="OrbOfVenom"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareVital id="LifeNotFullWar3">
+        <Compare value="LT"/>
+        <Value value="1"/>
+        <Type value="Fraction"/>
+        <ResultFailed value="Error,Alert/Text/UnitHPmaxed"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="EnergyNotFullWar3">
+        <Compare value="LT"/>
+        <Value value="1"/>
+        <Type value="Fraction"/>
+        <Vital value="Energy"/>
+        <ResultFailed value="Error,Alert/Text/UnitManaMaxed"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorCombine id="PriestessSearingArrowsCombine">
+        <Type value="And"/>
+        <CombineArray value="HasPriestessSearingArrows"/>
+        <CombineArray value="SearingArrowsManaCheck"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="HasPriestessSearingArrows">
+        <CombineArray value="HasPriestessSearingArrowsA"/>
+        <CombineArray value="HasPriestessSearingArrowsB"/>
+        <CombineArray value="HasPriestessSearingArrowsC"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="HasPriestessSearingArrowsA">
+        <WhichUnit Value="Caster"/>
+        <Value value="1"/>
+        <Behavior value="PriestessSearingArrowsA"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="HasPriestessSearingArrowsB">
+        <WhichUnit Value="Caster"/>
+        <Value value="1"/>
+        <Behavior value="PriestessSearingArrowsB"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="HasPriestessSearingArrowsC">
+        <WhichUnit Value="Caster"/>
+        <Value value="1"/>
+        <Behavior value="PriestessSearingArrowsC"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareVital id="SearingArrowsManaCheck">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="8"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterHasEnergy"/>
+    <CValidatorCombine id="War3BurnDownNormal1">
+        <CombineArray value="LifeGEThreeQuarter"/>
+        <CombineArray value="BurnDownUnderConstruction"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="War3BurnDown1">
+        <Type value="And"/>
+        <CombineArray value="LifeLTThreeQuarter"/>
+        <CombineArray value="BurnDownValid"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="War3BurnDownNormal2">
+        <CombineArray value="LifeGEHalf"/>
+        <CombineArray value="BurnDownUnderConstruction"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="War3BurnDown2">
+        <Type value="And"/>
+        <CombineArray value="LifeLTHalf"/>
+        <CombineArray value="BurnDownValid"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="War3BurnDownNormal3">
+        <CombineArray value="LifeGEOneQuarter"/>
+        <CombineArray value="BurnDownUnderConstruction"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="War3BurnDown3">
+        <Type value="And"/>
+        <CombineArray value="LifeLTOneQuarter"/>
+        <CombineArray value="BurnDownValid"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="IsEntangledGoldMine">
+        <Value value="Entangledgoldmine"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsGoldMine">
+        <Value value="Goldmine"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="IsTreeOrIsEntangledGoldMine">
+        <CombineArray value="IsTree"/>
+        <CombineArray value="IsEntangledGoldMine"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="NoEntangleGoldMineNormalMarker">
+        <WhichUnit Value="Source"/>
+        <Behavior value="EntangleGoldMineNormalMarker"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitFilters id="CasterNotDead"/>
+    <CValidatorUnitFilters id="TargetNotDead">
+        <Filters value="-;Dead"/>
+    </CValidatorUnitFilters>
+    <CValidatorCombine id="CastingEntStationaryAndNotDead">
+        <Type value="And"/>
+        <CombineArray value="CasterNotUprooted"/>
+        <CombineArray value="CasterNotDead"/>
+        <CombineArray value="TargetNotDead"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="CasterNotUprooted">
+        <CombineArray value="CasterIsTreeoflife"/>
+        <CombineArray value="CasterIsTreeofages"/>
+        <CombineArray value="CasterIsTreeofeternity"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="CasterIsTreeoflife">
+        <Value value="Treeoflife"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="CasterIsTreeofages">
+        <Value value="Treeofages"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="CasterIsTreeofeternity">
+        <Value value="Treeofeternity"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsWisp">
+        <Value value="Wisp"/>
+    </CValidatorUnitType>
+    <CValidatorUnitCompareBehaviorCount id="EntangledGoldMineWorkCount">
+        <WhichUnit Value="Source"/>
+        <Value value="5"/>
+        <Behavior value="EntangledGoldMineWork"/>
+        <Compare value="GE"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareVital id="MoonWellWaterFull">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="0.95"/>
+        <Type value="Fraction"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorCombine id="MoonWellWaterHigh">
+        <Type value="And"/>
+        <CombineArray value="MoonWellWaterHighA"/>
+        <CombineArray value="MoonWellWaterHighB"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareVital id="MoonWellWaterHighA">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LT"/>
+        <Value value="0.95"/>
+        <Type value="Fraction"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="MoonWellWaterHighB">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="0.65"/>
+        <Type value="Fraction"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorCombine id="MoonWellWaterMed">
+        <Type value="And"/>
+        <CombineArray value="MoonWellWaterMedA"/>
+        <CombineArray value="MoonWellWaterMedB"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareVital id="MoonWellWaterMedA">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LT"/>
+        <Value value="0.65"/>
+        <Type value="Fraction"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="MoonWellWaterMedB">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="0.3"/>
+        <Type value="Fraction"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorCombine id="MoonWellWaterLow">
+        <Type value="And"/>
+        <CombineArray value="MoonWellWaterLowA"/>
+        <CombineArray value="MoonWellWaterLowB"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareVital id="MoonWellWaterLowA">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LT"/>
+        <Value value="0.3"/>
+        <Type value="Fraction"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="MoonWellWaterLowB">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="0.05"/>
+        <Type value="Fraction"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="MoonWellWaterEmpty">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LT"/>
+        <Value value="0.05"/>
+        <Type value="Fraction"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="MoonwellAutocastEnergy">
+        <Compare value="GE"/>
+        <Value value="20"/>
+        <Vital value="Energy"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="MoonwellMinEnergy">
+        <Compare value="GE"/>
+        <Value value="4"/>
+        <Vital value="Energy"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorLocationCompareRange id="GlaivethrowerTargetTooClose">
+        <Compare value="GE"/>
+        <Range value="4"/>
+        <ResultFailed value="TargetIsTooClose"/>
+    </CValidatorLocationCompareRange>
+    <CValidatorUnitCompareBehaviorCount id="NotHaveGlaivethrowerWeaponCooldown">
+        <WhichUnit Value="Caster"/>
+        <Behavior value="GlaivethrowerWeaponCooldown"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerRequirement id="IsDay">
+        <WhichPlayer Value="Caster"/>
+        <Find value="1"/>
+        <Value value="IsDay"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="NotDay">
+        <WhichPlayer Value="Caster"/>
+        <Find value="1"/>
+        <Value value="NotDay"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="IsNight">
+        <WhichPlayer Value="Caster"/>
+        <Find value="1"/>
+        <Value value="IsNight"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="NotNight">
+        <WhichPlayer Value="Caster"/>
+        <Find value="1"/>
+        <Value value="NotNight"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorLocationEnumArea id="TargetAreaHasPrimaryStructure">
+        <ResultFailed value="Error,TownPortalError"/>
+        <WhichLocation Effect="TownPortalInitialSearchArea" Value="TargetUnitOrPoint"/>
+        <AreaArray>
+            <Compare value="GE"/>
+            <Count value="1"/>
+            <Radius value="10"/>
+            <Validator value="TargetIsPrimaryStructure"/>
+        </AreaArray>
+        <Compare value="GE"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorUnitCompareVital id="DemonHunterManaBurn64">
+        <Compare value="GE"/>
+        <Value value="64"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="DemonHunterManaBurn32">
+        <Compare value="GE"/>
+        <Value value="32"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="DemonHunterManaBurn22">
+        <Compare value="GE"/>
+        <Value value="22"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="DemonHunterManaBurn16">
+        <Compare value="GE"/>
+        <Value value="16"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="DemonHunterManaBurn8">
+        <Compare value="GE"/>
+        <Value value="8"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="DemonHunterManaBurn4">
+        <Compare value="GE"/>
+        <Value value="4"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="DemonHunterManaBurn2">
+        <Compare value="GE"/>
+        <Value value="2"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="DemonHunterManaBurn1">
+        <Compare value="GE"/>
+        <Value value="1"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelLE1">
+        <Behavior value="CreepLevel"/>
+        <Compare value="LE"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelLE2">
+        <Behavior value="CreepLevel"/>
+        <Compare value="LE"/>
+        <Value value="2"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelLE3">
+        <Behavior value="CreepLevel"/>
+        <Compare value="LE"/>
+        <Value value="3"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelLE4">
+        <Behavior value="CreepLevel"/>
+        <Compare value="LE"/>
+        <Value value="4"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelLE5">
+        <Behavior value="CreepLevel"/>
+        <Compare value="LE"/>
+        <Value value="5"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelLE6">
+        <Behavior value="CreepLevel"/>
+        <Compare value="LE"/>
+        <Value value="6"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelLE7">
+        <Behavior value="CreepLevel"/>
+        <Compare value="LE"/>
+        <Value value="7"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelLE8">
+        <Behavior value="CreepLevel"/>
+        <Compare value="LE"/>
+        <Value value="8"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelLE9">
+        <Behavior value="CreepLevel"/>
+        <Compare value="LE"/>
+        <Value value="9"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelLE10">
+        <Behavior value="CreepLevel"/>
+        <Compare value="LE"/>
+        <Value value="10"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelGE1">
+        <Behavior value="CreepLevel"/>
+        <Compare value="GE"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelGE2">
+        <Behavior value="CreepLevel"/>
+        <Compare value="GE"/>
+        <Value value="2"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelGE3">
+        <Behavior value="CreepLevel"/>
+        <Compare value="GE"/>
+        <Value value="3"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelGE4">
+        <Behavior value="CreepLevel"/>
+        <Compare value="GE"/>
+        <Value value="4"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelGE5">
+        <Behavior value="CreepLevel"/>
+        <Compare value="GE"/>
+        <Value value="5"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelGE6">
+        <Behavior value="CreepLevel"/>
+        <Compare value="GE"/>
+        <Value value="6"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelGE7">
+        <Behavior value="CreepLevel"/>
+        <Compare value="GE"/>
+        <Value value="7"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelGE8">
+        <Behavior value="CreepLevel"/>
+        <Compare value="GE"/>
+        <Value value="8"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelGE9">
+        <Behavior value="CreepLevel"/>
+        <Compare value="GE"/>
+        <Value value="9"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CreepLevelGE10">
+        <Behavior value="CreepLevel"/>
+        <Compare value="GE"/>
+        <Value value="10"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="IsMetamorphosisMorphed">
+        <Behavior value="DemonHunterMetamorphosis"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="IsNotMetamorphosisMorphed">
+        <Behavior value="DemonHunterMetamorphosis"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitOrderQueue id="NotInAttackOrder">
+        <AbilLink value="attack"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="NotInMoveOrder">
+        <AbilLink value="move"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="NotInHoldPositionOrder">
+        <AbilLink value="move"/>
+        <AbilCmdIndex value="2"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="NotInPatrolOrder">
+        <AbilLink value="move"/>
+        <AbilCmdIndex value="1"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="NotInAcquireMoveOrder">
+        <AbilLink value="move"/>
+        <AbilCmdIndex value="3"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="NotInCannibalizeOrder">
+        <AbilLink value="AcanCannibalize"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorCombine id="InPeonHarvestLumberOrder">
+        <Type value="And"/>
+        <CombineArray value="InPeonHarvestLumberTreeSearchOrder"/>
+        <CombineArray value="InPeonHarvestLumberDirectedOrder"/>
+        <CombineArray value="InPeonHarvestLumberReturnOrder"/>
+        <CombineArray value="InPeonHarvestLumberReturnSearchOrder"/>
+    </CValidatorCombine>
+    <CValidatorUnitOrderQueue id="InPeonHarvestLumberTreeSearchOrder">
+        <AbilLink value="PeonHarvestLumberTreeSearch"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="InPeonHarvestLumberDirectedOrder">
+        <AbilLink value="PeonHarvestLumberDirected"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="InPeonHarvestLumberReturnOrder">
+        <AbilLink value="PeonHarvestLumberReturn"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="InPeonHarvestLumberReturnSearchOrder">
+        <AbilLink value="PeonHarvestLumberReturnSearch"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorCombine id="InPeasantHarvestLumberOrder">
+        <Type value="And"/>
+        <CombineArray value="InPeasantHarvestLumberTreeSearchOrder"/>
+        <CombineArray value="InPeasantHarvestLumberDirectedOrder"/>
+        <CombineArray value="InPeasantHarvestLumberReturnOrder"/>
+        <CombineArray value="InPeasantHarvestLumberReturnSearchOrder"/>
+    </CValidatorCombine>
+    <CValidatorUnitOrderQueue id="InPeasantHarvestLumberTreeSearchOrder">
+        <AbilLink value="PeasantHarvestLumberTreeSearch"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="InPeasantHarvestLumberDirectedOrder">
+        <AbilLink value="PeasantHarvestLumberDirected"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="InPeasantHarvestLumberReturnOrder">
+        <AbilLink value="PeasantHarvestLumberReturn"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="InPeasantHarvestLumberReturnSearchOrder">
+        <AbilLink value="PeasantHarvestLumberReturnSearch"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorCombine id="InGhoulHarvestLumberOrder">
+        <Type value="And"/>
+        <CombineArray value="InGhoulHarvestLumberTreeSearchOrder"/>
+        <CombineArray value="InGhoulHarvestLumberDirectedOrder"/>
+        <CombineArray value="InGhoulHarvestLumberReturnOrder"/>
+        <CombineArray value="InGhoulHarvestLumberReturnSearchOrder"/>
+    </CValidatorCombine>
+    <CValidatorUnitOrderQueue id="InGhoulHarvestLumberTreeSearchOrder">
+        <AbilLink value="GhoulHarvestLumberTreeSearch"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="InGhoulHarvestLumberDirectedOrder">
+        <AbilLink value="GhoulHarvestLumberDirected"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="InGhoulHarvestLumberReturnOrder">
+        <AbilLink value="GhoulHarvestLumberReturn"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="InGhoulHarvestLumberReturnSearchOrder">
+        <AbilLink value="GhoulHarvestLumberReturnSearch"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorCombine id="IsUndeadLumberDropOff">
+        <CombineArray value="TargetIsNecropolis"/>
+        <CombineArray value="TargetIsHallsofthedead"/>
+        <CombineArray value="TargetIsBlackcitadel"/>
+        <CombineArray value="IsGraveyard"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="IsGraveyard">
+        <Value value="Graveyard"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="IsPeonLumberDropOff">
+        <CombineArray value="TargetIsGreathall"/>
+        <CombineArray value="TargetIsStronghold"/>
+        <CombineArray value="TargetIsFortress"/>
+        <CombineArray value="IsWarmill"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="IsWarmill">
+        <Value value="Warmill"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="IsPeasantLumberDropOff">
+        <CombineArray value="TargetIsTownHall"/>
+        <CombineArray value="TargetIsKeep"/>
+        <CombineArray value="TargetIsCastle"/>
+        <CombineArray value="IsHumanlumbermill"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="IsHumanlumbermill">
+        <Value value="Humanlumbermill"/>
+    </CValidatorUnitType>
+    <CValidatorUnitCompareBehaviorCount id="HasLumberCarry">
+        <Behavior value="LumberCarry"/>
+        <Compare value="GE"/>
+        <Value value="1"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorCombine id="GhoulLumberGatherCheck">
+        <Type value="And"/>
+        <CombineArray value="GhoulLumberCarryNotFull"/>
+        <CombineArray value="NotDead"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="PeonLumberGatherCheck">
+        <Type value="And"/>
+        <CombineArray value="PeonLumberCarryNotFull"/>
+        <CombineArray value="NotDead"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="PeasantLumberGatherCheck">
+        <Type value="And"/>
+        <CombineArray value="PeasantLumberCarryNotFull"/>
+        <CombineArray value="NotDead"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="PeonLumberCarryNotFull">
+        <Behavior value="LumberCarry"/>
+        <Compare value="LT"/>
+        <Value value="10"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="PeonLumberCarryIsFull">
+        <Behavior value="LumberCarry"/>
+        <Compare value="GE"/>
+        <Value value="10"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="PeasantLumberCarryNotFull">
+        <Behavior value="LumberCarry"/>
+        <Compare value="LT"/>
+        <Value value="10"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="PeasantLumberCarryIsFull">
+        <Behavior value="LumberCarry"/>
+        <Compare value="GE"/>
+        <Value value="10"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="GhoulLumberCarryNotFull">
+        <Behavior value="LumberCarry"/>
+        <Compare value="LT"/>
+        <Value value="20"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="GhoulLumberCarryIsFull">
+        <Behavior value="LumberCarry"/>
+        <Compare value="GE"/>
+        <Value value="20"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitFilters id="TreeIsDead">
+        <Filters value="Dead;-"/>
+    </CValidatorUnitFilters>
+    <CValidatorCombine id="TreeDeadAndNotGhoulMaxCarry">
+        <Type value="And"/>
+        <CombineArray value="TreeIsDead"/>
+        <CombineArray value="GhoulLumberCarryNotFull"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="TreeDeadAndNotPeonMaxCarry">
+        <Type value="And"/>
+        <CombineArray value="TreeIsDead"/>
+        <CombineArray value="PeonLumberCarryNotFull"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="TreeDeadAndNotPeasantMaxCarry">
+        <Type value="And"/>
+        <CombineArray value="TreeIsDead"/>
+        <CombineArray value="PeasantLumberCarryNotFull"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="Lumber1">
+        <Behavior value="LumberCarry"/>
+        <Value value="1"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber2">
+        <Behavior value="LumberCarry"/>
+        <Value value="2"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber3">
+        <Behavior value="LumberCarry"/>
+        <Value value="3"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber4">
+        <Behavior value="LumberCarry"/>
+        <Value value="4"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber5">
+        <Behavior value="LumberCarry"/>
+        <Value value="5"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber6">
+        <Behavior value="LumberCarry"/>
+        <Value value="6"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber7">
+        <Behavior value="LumberCarry"/>
+        <Value value="7"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber8">
+        <Behavior value="LumberCarry"/>
+        <Value value="8"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber9">
+        <Behavior value="LumberCarry"/>
+        <Value value="9"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber10">
+        <Behavior value="LumberCarry"/>
+        <Value value="10"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber11">
+        <Behavior value="LumberCarry"/>
+        <Value value="11"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber12">
+        <Behavior value="LumberCarry"/>
+        <Value value="12"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber13">
+        <Behavior value="LumberCarry"/>
+        <Value value="13"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber14">
+        <Behavior value="LumberCarry"/>
+        <Value value="14"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber15">
+        <Behavior value="LumberCarry"/>
+        <Value value="15"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber16">
+        <Behavior value="LumberCarry"/>
+        <Value value="16"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber17">
+        <Behavior value="LumberCarry"/>
+        <Value value="17"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber18">
+        <Behavior value="LumberCarry"/>
+        <Value value="18"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber19">
+        <Behavior value="LumberCarry"/>
+        <Value value="19"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="Lumber20">
+        <Behavior value="LumberCarry"/>
+        <Value value="20"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="NotPossibleEventUnitType">
+        <Value value="War3Unit"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="CasterNotDeadAndTargetNotDeadAndAcolyteInHarvestChannelOrder">
+        <Type value="And"/>
+        <CombineArray value="CasterNotDead"/>
+        <CombineArray value="TargetNotDead"/>
+        <CombineArray value="AcolyteHarvestPositionXChannel"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="NoUndeadGoldminePosition1Used">
+        <Behavior value="UndeadGoldminePosition1Used"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="NoUndeadGoldminePosition2Used">
+        <Behavior value="UndeadGoldminePosition2Used"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="NoUndeadGoldminePosition3Used">
+        <Behavior value="UndeadGoldminePosition3Used"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="NoUndeadGoldminePosition4Used">
+        <Behavior value="UndeadGoldminePosition4Used"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="NoUndeadGoldminePosition5Used">
+        <Behavior value="UndeadGoldminePosition5Used"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="IsHauntedGoldMine">
+        <Value value="Undeadgoldmine2"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="AcolyteHarvestPositionXChannel">
+        <CombineArray value="AcolyteHarvestPosition1Channel"/>
+        <CombineArray value="AcolyteHarvestPosition2Channel"/>
+        <CombineArray value="AcolyteHarvestPosition3Channel"/>
+        <CombineArray value="AcolyteHarvestPosition4Channel"/>
+        <CombineArray value="AcolyteHarvestPosition5Channel"/>
+    </CValidatorCombine>
+    <CValidatorUnitOrderQueue id="AcolyteHarvestPosition1Channel">
+        <AbilLink value="AcolyteHarvestPosition1Channel"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="AcolyteHarvestPosition2Channel">
+        <AbilLink value="AcolyteHarvestPosition2Channel"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="AcolyteHarvestPosition3Channel">
+        <AbilLink value="AcolyteHarvestPosition3Channel"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="AcolyteHarvestPosition4Channel">
+        <AbilLink value="AcolyteHarvestPosition4Channel"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderQueue id="AcolyteHarvestPosition5Channel">
+        <AbilLink value="AcolyteHarvestPosition5Channel"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitCompareBehaviorCount id="UndeadGoldMineWorkCount">
+        <WhichUnit Value="Source"/>
+        <Value value="5"/>
+        <Behavior value="UndeadGoldMineWork"/>
+        <Compare value="GE"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="HasCritNext">
+        <Value value="1"/>
+        <Behavior value="CritNext"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorCombine id="BladeMasterCanCrit">
+        <Type value="Or"/>
+        <CombineArray value="HaveBladeMasterCritTestA"/>
+        <CombineArray value="HaveBladeMasterCritTestB"/>
+        <CombineArray value="HaveBladeMasterCritTestC"/>
+    </CValidatorCombine>
+</Catalog>

@@ -1,0 +1,4075 @@
+include "TriggerLibs/NativeLib"
+include "LibComC"
+include "LibCMMI"
+include "LibNCMI_h"
+include "LibNCUI_h"
+
+include "LibNovC_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Campaign (Nova)
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libNovC_InitLibraries () {
+    libNtve_InitVariables();
+    libComC_InitVariables();
+    libCMMI_InitVariables();
+    libNCMI_InitVariables();
+    libNCUI_InitVariables();
+}
+
+// Variable Initialization
+bool libNovC_InitVariables_completed = false;
+
+void libNovC_InitVariables () {
+    int init_i;
+    int init_j;
+
+    if (libNovC_InitVariables_completed) {
+        return;
+    }
+
+    libNovC_InitVariables_completed = true;
+
+    libNovC_gv_resultsDialog = c_invalidDialogControlId;
+    for (init_i = 0; init_i <= libNovC_gv_nCC_DebugCampaignTechEquipmentGroupCount; init_i += 1) {
+        for (init_j = 0; init_j <= libNovC_gv_nCC_DebugCampaignTechEquipmentItemCount; init_j += 1) {
+            libNovC_gv_nC_DebugCampaignTechEquipmentCheckBox[init_i][init_j] = c_invalidDialogControlId;
+        }
+    }
+    libNovC_gv_nC_DebugCampaignTechUpgradesDialog = c_invalidDialogId;
+    libNovC_gv_nC_DebugCampaignTechUpgradesOpen = c_invalidDialogControlId;
+    libNovC_gv_nC_DebugCampaignTechUpgradesOK = c_invalidDialogControlId;
+    libNovC_gv_nC_DebugCampaignTechUpgradesCancel = c_invalidDialogControlId;
+    for (init_i = 0; init_i <= libNovC_gv_nCC_DebugCampaignTechUpgradesUnitsCountMax; init_i += 1) {
+        libNovC_gv_nC_DebugCampaignTechUpgradesCheckBox[init_i] = c_invalidDialogControlId;
+    }
+    for (init_i = 0; init_i <= libNovC_gv_nCC_DebugCampaignTechUpgradesUnitsCountMax; init_i += 1) {
+        libNovC_gv_nC_DebugCampaignTechUpgradesCheckBoxName[init_i] = c_invalidDialogControlId;
+    }
+    for (init_i = 0; init_i <= libNovC_gv_nCC_DebugCampaignTechUpgradesItemsCountMax; init_i += 1) {
+        libNovC_gv_nC_DebugCampaignTechUpgradesAssignedUnitLabelList[init_i] = c_invalidDialogControlId;
+    }
+    for (init_i = 0; init_i <= libNovC_gv_nCC_DebugCampaignTechUpgradesItemsCountMax; init_i += 1) {
+        libNovC_gv_nC_DebugCampaignTechUpgradesButtonList[init_i] = c_invalidDialogControlId;
+    }
+    libNovC_gv_nC_DebugCampaignTechUpgradesActiveButton = c_invalidDialogControlId;
+    libNovC_gv_NC_DebugCampaignTechDialog = c_invalidDialogId;
+    libNovC_gv_NC_DebugCampaignTechOK = c_invalidDialogControlId;
+    libNovC_gv_NC_DebugCampaignTechCancel = c_invalidDialogControlId;
+    libNovC_gv_NC_DebugCampaignTechRandomizeTechButton = c_invalidDialogControlId;
+    libNovC_gv_NC_DebugProgressDialog = c_invalidDialogId;
+    libNovC_gv_NC_DebugProgressButtonOK = c_invalidDialogControlId;
+    libNovC_gv_NC_DebugProgressButtonCancel = c_invalidDialogControlId;
+    libNovC_gv_NC_DebugProgressButtonReset = c_invalidDialogControlId;
+    libNovC_gv_NC_DebugProgressButtonDirectSelect = c_invalidDialogControlId;
+    libNovC_gv_NC_DebugProgressLabelInfo = c_invalidDialogControlId;
+    libNovC_gv_NC_DebugProgressBonusObjectiveLevel = libNovC_ge_DebugProgressBonusObjectiveAmount_FullObjectives;
+    libNovC_gv_NC_DebugProgressButtonNoObjectives = c_invalidDialogControlId;
+    libNovC_gv_NC_DebugProgressButtonAllObjectives = c_invalidDialogControlId;
+}
+
+// Presets
+// Functions
+void libNovC_gf_PlayCinematic (string lp_scene, bool lp_animatic) {
+    // Variable Declarations
+    bool lv_wasStoryMode;
+
+    // Variable Initialization
+
+    // Deprecated
+    libComC_gf_PlayCinematic(lp_scene, lp_animatic);
+}
+
+trigger auto_libNovC_gf_CampaignAwardAchievement_Trigger = null;
+string auto_libNovC_gf_CampaignAwardAchievement_lp_achievement;
+int auto_libNovC_gf_CampaignAwardAchievement_lp_player;
+
+void libNovC_gf_CampaignAwardAchievement (string lp_achievement, int lp_player) {
+    auto_libNovC_gf_CampaignAwardAchievement_lp_achievement = lp_achievement;
+    auto_libNovC_gf_CampaignAwardAchievement_lp_player = lp_player;
+
+    if (auto_libNovC_gf_CampaignAwardAchievement_Trigger == null) {
+        auto_libNovC_gf_CampaignAwardAchievement_Trigger = TriggerCreate("auto_libNovC_gf_CampaignAwardAchievement_TriggerFunc");
+    }
+
+    TriggerExecute(auto_libNovC_gf_CampaignAwardAchievement_Trigger, false, false);
+}
+
+bool auto_libNovC_gf_CampaignAwardAchievement_TriggerFunc (bool testConds, bool runActions) {
+    string lp_achievement = auto_libNovC_gf_CampaignAwardAchievement_lp_achievement;
+    int lp_player = auto_libNovC_gf_CampaignAwardAchievement_lp_player;
+
+    // Deprecated
+    libComC_gf_CampaignAwardAchievement(lp_achievement, lp_player);
+    return true;
+}
+
+void libNovC_gf_EnableCampaignTechUnit (bool lp_enableDisable, string lp_techUnit, int lp_player) {
+    // Deprecated
+    libComC_gf_EnableCampaignTechUnit(lp_enableDisable, lp_techUnit, lp_player);
+}
+
+bool libNovC_gf_CampaignTechUnitIsEnabled (string lp_techUnit) {
+    // Implementation
+    return (UserDataGetInt("TechUnit", lp_techUnit, "Enabled", 1) > 0);
+}
+
+void libNovC_gf_LoadCampaignData (string lp_map) {
+    // Deprecated
+    libNCMI_gf_InitializeNovaMission(lp_map);
+}
+
+void libNovC_gf_CampaignPlayCutscene (string lp_file, point lp_position, bool lp_waitDontWait, bool lp_allowSkip) {
+    // Deprecated
+    libComC_gf_CampaignPlayCutscene(lp_file, lp_position, lp_waitDontWait, lp_allowSkip);
+}
+
+void libNovC_gf_DisplayConversationTimestamp (string lp_conversation) {
+    // Variable Declarations
+    int lv_index;
+
+    // Variable Initialization
+
+    // Deprecated
+    libComC_gf_DisplayConversationTimestamp(lp_conversation);
+}
+
+void libNovC_gf_DisplayTimestamp (string lp_timestamp, bool lp_waitDontWait) {
+    // Deprecated
+    libComC_gf_DisplayTimestamp(lp_timestamp, lp_waitDontWait);
+}
+
+void libNovC_gf_HaltTimestamp () {
+    // Deprecated
+    libComC_gf_HaltTimestamp();
+}
+
+void libNovC_gf_CampaignPlayCutscene2 (string lp_file, bool lp_waitDontWait, bool lp_allowSkip) {
+    // Deprecated
+    libComC_gf_CampaignPlayMovieCutscene(lp_file, lp_waitDontWait, lp_allowSkip);
+}
+
+void libNovC_gf_CampaignStopCutscene () {
+    // Deprecated
+    libComC_gf_CampaignStopCutscene();
+}
+
+void libNovC_gf_CinematicFade (bool lp_fadeIn, fixed lp_duration, color lp_color, bool lp_waitUntilDone) {
+    // Deprecated
+    libComC_gf_CinematicFade(lp_fadeIn, lp_duration, lp_color, lp_waitUntilDone);
+}
+
+void libNovC_gf_PauseAITimeCampaign (bool lp_pauseUnpause) {
+    // Deprecated
+    libComC_gf_PauseAITimeCampaign(lp_pauseUnpause);
+}
+
+void libNovC_gf_PauseMissionTimeCampaign (bool lp_pauseUnpause) {
+    // Deprecated
+    libComC_gf_PauseMissionTimeCampaign(lp_pauseUnpause);
+}
+
+text libNovC_gf_FormatTimeCampaign (int lp_second) {
+    // Implementation
+    if ((lp_second < 3600)) {
+        return TextTimeFormat(StringExternal("Param/Value/lib_NovC_A4F1A203"), lp_second);
+    }
+    else {
+        return TextTimeFormat(StringExternal("Param/Value/lib_NovC_4E67BE7A"), lp_second);
+    }
+}
+
+actor libNovC_gf_AttachModelToUnit (unit lp_unit, string lp_model, string lp_attachPoint) {
+    // Variable Declarations
+    actorscope lv_scope;
+    actor lv_a;
+
+    // Variable Initialization
+
+    // Deprecated
+    return libNtve_gf_AttachModelToUnitInheritVisibility(lp_unit, lp_model, lp_attachPoint);
+}
+
+void libNovC_gf_ShowHideWorldCover (bool lp_showHide, fixed lp_transparency) {
+    // Deprecated
+    libComC_gf_ShowHideWorldCover(lp_showHide, lp_transparency);
+}
+
+void libNovC_gf_ClearAnimationwithblendtime (string lp_identifier, unit lp_unit, fixed lp_blendTime) {
+    // Deprecated
+    libComC_gf_ClearAnimationwithblendtime(lp_identifier, lp_unit, lp_blendTime);
+}
+
+void libNovC_gf_SetAllSoundChannelVolumesCampaign (int lp_mode) {
+    // Implementation
+    libComC_gf_SetAllSoundChannelVolumesCampaign(libComC_ge_VolumeChannelModeCampaign_Speech);
+}
+
+bool libNovC_gf_CampaignDebugModeIsOn (string lp_mode) {
+    // Implementation
+    return GameIsDebugOptionSet((lp_mode), 1);
+}
+
+void libNovC_gf_NC_DebugCampaignTechUpgradesCreateDialog () {
+    int autoF251B207_ai;
+    int autoF251B207_ae;
+    int auto8AFA6E82_ae;
+    int auto8AFA6E82_ai;
+
+    // Variable Declarations
+    int lv_dialogBackground;
+    int lv_lastItem;
+    int lv_x;
+    int lv_y;
+    string lv_indexTechItem;
+    int lv_techItemIndex;
+    int lv_armyUnitIndex;
+
+    // Variable Initialization
+    lv_dialogBackground = c_invalidDialogControlId;
+    lv_lastItem = c_invalidDialogControlId;
+
+    // Implementation
+    if ((libNovC_gv_nC_DebugCampaignTechUpgradesDialog != c_invalidDialogId)) {
+        return ;
+    }
+
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechUpgradesOK, true);
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechUpgradesCancel, true);
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechUpgradesCheckClicked, true);
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechUpgradesItemClicked, true);
+    DialogSetVisible(libNovC_gv_NC_DebugCampaignTechDialog, PlayerGroupAll(), false);
+    DialogCreate(1600, 1000, c_anchorCenter, 0, 0, true);
+    libNovC_gv_nC_DebugCampaignTechUpgradesDialog = DialogLastCreated();
+    libNtve_gf_CreateDialogItemImage(DialogLastCreated(), (DialogGetWidth(DialogLastCreated()) - 60), (DialogGetHeight(DialogLastCreated()) - 60), c_anchorCenter, 0, 0, StringToText(""), "Assets\\Textures\\white32.dds", c_triggerImageTypeNormal, true, Color(100,100,100), c_triggerBlendModeNormal);
+    lv_dialogBackground = DialogControlLastCreated();
+    libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(0,0,0), PlayerGroupAll());
+    DialogControlFadeTransparency(DialogControlLastCreated(), PlayerGroupAll(), 0.0, 20.0);
+    lv_y = 50;
+    libNtve_gf_CreateDialogItemLabel(DialogLastCreated(), 1200, 50, c_anchorTopLeft, 50, lv_y, StringExternal("Param/Value/lib_NovC_2AB08BE5"), Color(0.00, 100.00, 25.10), false, 2.0);
+    libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ModLeftSize32Bold", PlayerGroupAll());
+    lv_techItemIndex = 0;
+    autoF251B207_ai = 1;
+    autoF251B207_ae = UserDataInstanceCount("CampaignTechItem")+1;
+    while (autoF251B207_ai < autoF251B207_ae) {
+        lv_indexTechItem = UserDataInstance("CampaignTechItem", autoF251B207_ai);
+        autoF251B207_ai = autoF251B207_ai+1;
+        lv_x = (160 + (210 * ModI(lv_techItemIndex, 5)));
+        if ((ModI(lv_techItemIndex, 5) == 0)) {
+            lv_y += 110;
+        }
+
+        lv_techItemIndex += 1;
+        libNtve_gf_CreateDialogItemButton(DialogLastCreated(), 180, 80, c_anchorTopLeft, lv_x, lv_y, StringToText(""), libNovC_gf_NC_ArmyTechItemName(lv_indexTechItem), "");
+        libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ModCenterSize16", PlayerGroupAll());
+        libNovC_gv_nC_DebugCampaignTechUpgradesButtonList[lv_techItemIndex] = DialogControlLastCreated();
+        libNovC_gv_nC_DebugCampaignTechUpgradesItemList[lv_techItemIndex] = lv_indexTechItem;
+        libNovC_gv_nC_DebugCampaignTechUpgradesAssignedUnitList[lv_techItemIndex] = libNovC_gf_NC_ArmyTechItemAssignedUnit(lv_indexTechItem);
+        libNtve_gf_CreateDialogItemLabel(DialogLastCreated(), 180, 60, c_anchorTopLeft, (lv_x + 30), (lv_y + 80), StringExternal("Param/Value/lib_NovC_A7BC7D6A"), Color(100.00, 100.00, 50.20), false, 0.0);
+        libNovC_gv_nC_DebugCampaignTechUpgradesAssignedUnitLabelList[lv_techItemIndex] = DialogControlLastCreated();
+        if ((libNovC_gv_nC_DebugCampaignTechUpgradesAssignedUnitList[lv_techItemIndex] != null)) {
+            libNtve_gf_SetDialogItemText(libNovC_gv_nC_DebugCampaignTechUpgradesAssignedUnitLabelList[lv_techItemIndex], StringToText((libNovC_gv_nC_DebugCampaignTechUpgradesAssignedUnitList[lv_techItemIndex])), PlayerGroupAll());
+        }
+        else {
+            libNtve_gf_SetDialogItemText(libNovC_gv_nC_DebugCampaignTechUpgradesAssignedUnitLabelList[lv_techItemIndex], StringExternal("Param/Value/lib_NovC_20EE50E6"), PlayerGroupAll());
+        }
+    }
+    lv_x = 160;
+    lv_y += 180;
+    libNtve_gf_CreateDialogItemLabel(DialogLastCreated(), 500, 60, c_anchorTopLeft, lv_x, lv_y, StringExternal("Param/Value/lib_NovC_7D0D617A"), Color(0.00, 100.00, 25.10), false, 0.0);
+    lv_y += 20;
+    libNtve_gf_CreateDialogItemImage(DialogLastCreated(), 1000, 100, c_anchorTopLeft, lv_x, lv_y, StringToText(""), "Assets\\Textures\\ui_research_frame_tooltip_protoss.dds", c_triggerImageTypeHorizontalBorder, true, Color(100,100,100), c_triggerBlendModeNormal);
+    auto8AFA6E82_ae = libNovC_gv_nCC_DebugCampaignTechUpgradesUnitsCountMax;
+    auto8AFA6E82_ai = 1;
+    lv_armyUnitIndex = 1;
+    for ( ; ( (auto8AFA6E82_ai >= 0 && lv_armyUnitIndex <= auto8AFA6E82_ae) || (auto8AFA6E82_ai <= 0 && lv_armyUnitIndex >= auto8AFA6E82_ae) ) ; lv_armyUnitIndex += auto8AFA6E82_ai ) {
+        libNtve_gf_CreateDialogItemLabel(DialogLastCreated(), 220, 60, c_anchorTopLeft, lv_x, lv_y, StringExternal("Param/Value/lib_NovC_198090FF"), Color(100.00, 100.00, 100.00), false, 2.0);
+        libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ModCenterSize16", PlayerGroupAll());
+        libNovC_gv_nC_DebugCampaignTechUpgradesCheckBoxName[lv_armyUnitIndex] = DialogControlLastCreated();
+        lv_lastItem = DialogControlLastCreated();
+        libNtve_gf_CreateDialogItemCheckBox(DialogLastCreated(), 50, 50, c_anchorTopLeft, lv_x, lv_y, StringToText(""), false);
+        DialogControlSetPositionRelative(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, lv_lastItem, c_anchorBottom, 0, -20);
+        libNovC_gv_nC_DebugCampaignTechUpgradesCheckBox[lv_armyUnitIndex] = DialogControlLastCreated();
+        libNovC_gv_nC_DebugCampaignTechUpgradesCheckBoxUnit[lv_armyUnitIndex] = null;
+        DialogControlSetVisible(libNovC_gv_nC_DebugCampaignTechUpgradesCheckBox[lv_armyUnitIndex], PlayerGroupAll(), false);
+        DialogControlSetVisible(libNovC_gv_nC_DebugCampaignTechUpgradesCheckBoxName[lv_armyUnitIndex], PlayerGroupAll(), false);
+        lv_x += 180;
+    }
+    libNovC_gv_nC_DebugCampaignTechUpgradesActiveButton = c_invalidDialogControlId;
+    libNovC_gv_nC_DebugCampaignTechUpgradesActiveButtonIndex = 0;
+    libNovC_gv_nC_DebugCampaignTechUpgradesActiveItem = null;
+    libNtve_gf_CreateDialogItemButton(DialogLastCreated(), 150, 50, c_anchorBottomRight, 200, 50, StringToText(""), StringExternal("Param/Value/lib_NovC_0128CD2B"), "");
+    libNovC_gv_nC_DebugCampaignTechUpgradesOK = DialogControlLastCreated();
+    libNtve_gf_CreateDialogItemButton(DialogLastCreated(), 150, 50, c_anchorBottomRight, 50, 50, StringToText(""), StringExternal("Param/Value/lib_NovC_9701AE87"), "");
+    libNovC_gv_nC_DebugCampaignTechUpgradesCancel = DialogControlLastCreated();
+    DialogSetSize(libNovC_gv_nC_DebugCampaignTechUpgradesDialog, 1350, (lv_y + 250));
+    DialogControlSetSize(lv_dialogBackground, PlayerGroupAll(), (DialogGetWidth(libNovC_gv_nC_DebugCampaignTechUpgradesDialog) - 60), (DialogGetHeight(libNovC_gv_nC_DebugCampaignTechUpgradesDialog) - 60));
+    DialogSetVisible(libNovC_gv_nC_DebugCampaignTechUpgradesDialog, PlayerGroupAll(), true);
+    while (!((libNovC_gv_nC_DebugCampaignTechUpgradesDialog == c_invalidDialogId))) {
+        Wait(0.0625, c_timeReal);
+    }
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechUpgradesOK, false);
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechUpgradesCancel, false);
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechUpgradesCheckClicked, false);
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechUpgradesItemClicked, false);
+    DialogSetVisible(libNovC_gv_NC_DebugCampaignTechDialog, PlayerGroupAll(), true);
+}
+
+void libNovC_gf_NC_DebugCampaignTechUpdateDialog () {
+    int auto1ADD736C_ae;
+    int auto1ADD736C_ai;
+    int autoFC22D2BD_ae;
+    int autoFC22D2BD_ai;
+
+    // Variable Declarations
+    int lv_equipmentGroupIndex;
+    int lv_equipmentIndex;
+
+    // Variable Initialization
+
+    // Implementation
+    auto1ADD736C_ae = libNovC_gv_nCC_DebugCampaignTechEquipmentGroupCount;
+    auto1ADD736C_ai = 1;
+    lv_equipmentGroupIndex = 1;
+    for ( ; ( (auto1ADD736C_ai >= 0 && lv_equipmentGroupIndex <= auto1ADD736C_ae) || (auto1ADD736C_ai <= 0 && lv_equipmentGroupIndex >= auto1ADD736C_ae) ) ; lv_equipmentGroupIndex += auto1ADD736C_ai ) {
+        autoFC22D2BD_ae = libNovC_gv_nCC_DebugCampaignTechEquipmentItemCount;
+        autoFC22D2BD_ai = 1;
+        lv_equipmentIndex = 1;
+        for ( ; ( (autoFC22D2BD_ai >= 0 && lv_equipmentIndex <= autoFC22D2BD_ae) || (autoFC22D2BD_ai <= 0 && lv_equipmentIndex >= autoFC22D2BD_ae) ) ; lv_equipmentIndex += autoFC22D2BD_ai ) {
+            if ((libComC_gf_CC_PerkStateCheck(libNovC_gv_nC_DebugCampaignTechEquipment[lv_equipmentGroupIndex][lv_equipmentIndex], libComC_ge_CC_PerkState_Active) == true)) {
+                libNtve_gf_SetDialogItemChecked(libNovC_gv_nC_DebugCampaignTechEquipmentCheckBox[lv_equipmentGroupIndex][lv_equipmentIndex], true, PlayerGroupAll());
+            }
+
+        }
+    }
+}
+
+void libNovC_gf_NC_DebugCampaignTechUpgradesUpdateDialog () {
+    int auto2E10E77E_ae;
+    int auto2E10E77E_ai;
+
+    // Variable Declarations
+    int lv_armyUnitIndex;
+
+    // Variable Initialization
+
+    // Implementation
+    auto2E10E77E_ae = libNovC_gv_nCC_DebugCampaignTechUpgradesUnitsCountMax;
+    auto2E10E77E_ai = 1;
+    lv_armyUnitIndex = 1;
+    for ( ; ( (auto2E10E77E_ai >= 0 && lv_armyUnitIndex <= auto2E10E77E_ae) || (auto2E10E77E_ai <= 0 && lv_armyUnitIndex >= auto2E10E77E_ae) ) ; lv_armyUnitIndex += auto2E10E77E_ai ) {
+        if ((libNovC_gf_NC_ArmyTechItemUnitFromIndex(libNovC_gv_nC_DebugCampaignTechUpgradesActiveItem, lv_armyUnitIndex) != null)) {
+            DialogControlSetVisible(libNovC_gv_nC_DebugCampaignTechUpgradesCheckBox[lv_armyUnitIndex], PlayerGroupAll(), true);
+            DialogControlSetVisible(libNovC_gv_nC_DebugCampaignTechUpgradesCheckBoxName[lv_armyUnitIndex], PlayerGroupAll(), true);
+            libNtve_gf_SetDialogItemText(libNovC_gv_nC_DebugCampaignTechUpgradesCheckBoxName[lv_armyUnitIndex], libComC_gf_StoryArmyUnitName(libNovC_gf_NC_ArmyTechItemUnitFromIndex(libNovC_gv_nC_DebugCampaignTechUpgradesActiveItem, lv_armyUnitIndex)), PlayerGroupAll());
+            libNtve_gf_SetDialogItemTooltip(libNovC_gv_nC_DebugCampaignTechUpgradesCheckBoxName[lv_armyUnitIndex], libNovC_gf_NC_ArmyTechItemDescriptionFromIndex(libNovC_gv_nC_DebugCampaignTechUpgradesActiveItem, lv_armyUnitIndex), PlayerGroupAll());
+            if ((libNovC_gv_nC_DebugCampaignTechUpgradesAssignedUnitList[libNovC_gv_nC_DebugCampaignTechUpgradesActiveButtonIndex] == libNovC_gf_NC_ArmyTechItemUnitFromIndex(libNovC_gv_nC_DebugCampaignTechUpgradesActiveItem, lv_armyUnitIndex))) {
+                libNtve_gf_SetDialogItemChecked(libNovC_gv_nC_DebugCampaignTechUpgradesCheckBox[lv_armyUnitIndex], true, PlayerGroupAll());
+            }
+            else {
+                libNtve_gf_SetDialogItemChecked(libNovC_gv_nC_DebugCampaignTechUpgradesCheckBox[lv_armyUnitIndex], false, PlayerGroupAll());
+            }
+        }
+        else {
+            DialogControlSetVisible(libNovC_gv_nC_DebugCampaignTechUpgradesCheckBox[lv_armyUnitIndex], PlayerGroupAll(), false);
+            DialogControlSetVisible(libNovC_gv_nC_DebugCampaignTechUpgradesCheckBoxName[lv_armyUnitIndex], PlayerGroupAll(), false);
+        }
+    }
+}
+
+void libNovC_gf_NC_DebugCampaignTechUpdateData () {
+    int auto517723FF_ae;
+    int auto517723FF_ai;
+    int autoE9695A20_ae;
+    int autoE9695A20_ai;
+
+    // Variable Declarations
+    int lv_equipmentGroupIndex;
+    int lv_equipmentIndex;
+
+    // Variable Initialization
+
+    // Implementation
+    auto517723FF_ae = libNovC_gv_nCC_DebugCampaignTechEquipmentGroupCount;
+    auto517723FF_ai = 1;
+    lv_equipmentGroupIndex = 1;
+    for ( ; ( (auto517723FF_ai >= 0 && lv_equipmentGroupIndex <= auto517723FF_ae) || (auto517723FF_ai <= 0 && lv_equipmentGroupIndex >= auto517723FF_ae) ) ; lv_equipmentGroupIndex += auto517723FF_ai ) {
+        autoE9695A20_ae = libNovC_gv_nCC_DebugCampaignTechEquipmentItemCount;
+        autoE9695A20_ai = 1;
+        lv_equipmentIndex = 1;
+        for ( ; ( (autoE9695A20_ai >= 0 && lv_equipmentIndex <= autoE9695A20_ae) || (autoE9695A20_ai <= 0 && lv_equipmentIndex >= autoE9695A20_ae) ) ; lv_equipmentIndex += autoE9695A20_ai ) {
+            if ((libNovC_gv_nC_DebugCampaignTechEquipmentCheckBox[lv_equipmentGroupIndex][lv_equipmentIndex] != c_invalidDialogControlId)) {
+                if ((libNtve_gf_DialogItemIsChecked(libNovC_gv_nC_DebugCampaignTechEquipmentCheckBox[lv_equipmentGroupIndex][lv_equipmentIndex], 1) == true)) {
+                    libComC_gf_CC_PerkStateSet(libNovC_gv_nC_DebugCampaignTechEquipment[lv_equipmentGroupIndex][lv_equipmentIndex], libComC_ge_CC_PerkState_Active);
+                }
+                else {
+                    libComC_gf_CC_PerkStateSet(libNovC_gv_nC_DebugCampaignTechEquipment[lv_equipmentGroupIndex][lv_equipmentIndex], libComC_ge_CC_PerkState_Locked);
+                }
+            }
+
+        }
+    }
+}
+
+void libNovC_gf_NC_DebugCampaignTechUpgradesUpdateData () {
+    int autoA6D914FE_ai;
+    int autoA6D914FE_ae;
+    int autoE50E16A8_ae;
+    int autoE50E16A8_ai;
+
+    // Variable Declarations
+    string lv_indexTechItem;
+    string lv_indexArmyUnit;
+    int lv_techItemIndex;
+    int lv_armyUnitIndex;
+
+    // Variable Initialization
+
+    // Implementation
+    autoA6D914FE_ai = 1;
+    autoA6D914FE_ae = UserDataInstanceCount("CampaignTechItem")+1;
+    while (autoA6D914FE_ai < autoA6D914FE_ae) {
+        lv_indexTechItem = UserDataInstance("CampaignTechItem", autoA6D914FE_ai);
+        autoA6D914FE_ai = autoA6D914FE_ai+1;
+        libNovC_gf_NC_ArmyTechItemAssignedUnitSet(lv_indexTechItem, null);
+    }
+    autoE50E16A8_ae = libNovC_gv_nCC_DebugCampaignTechUpgradesItemsCountMax;
+    autoE50E16A8_ai = 1;
+    lv_techItemIndex = 1;
+    for ( ; ( (autoE50E16A8_ai >= 0 && lv_techItemIndex <= autoE50E16A8_ae) || (autoE50E16A8_ai <= 0 && lv_techItemIndex >= autoE50E16A8_ae) ) ; lv_techItemIndex += autoE50E16A8_ai ) {
+        if ((libNovC_gv_nC_DebugCampaignTechUpgradesAssignedUnitList[lv_techItemIndex] != null)) {
+            libNovC_gf_NC_ArmyTechItemAssignedUnitSet(libNovC_gv_nC_DebugCampaignTechUpgradesItemList[lv_techItemIndex], libNovC_gv_nC_DebugCampaignTechUpgradesAssignedUnitList[lv_techItemIndex]);
+        }
+
+    }
+}
+
+void libNovC_gf_NC_DebugCampaignTechUpgradesAssignUnit (int lp_upgradeItemIndex, string lp_activeUpgradeItem) {
+    int autoE6F121B0_ae;
+    int autoE6F121B0_ai;
+
+    // Variable Declarations
+    int lv_armyUnitIndex;
+
+    // Variable Initialization
+
+    // Implementation
+    autoE6F121B0_ae = libNovC_gv_nCC_DebugCampaignTechUpgradesUnitsCountMax;
+    autoE6F121B0_ai = 1;
+    lv_armyUnitIndex = 1;
+    for ( ; ( (autoE6F121B0_ai >= 0 && lv_armyUnitIndex <= autoE6F121B0_ae) || (autoE6F121B0_ai <= 0 && lv_armyUnitIndex >= autoE6F121B0_ae) ) ; lv_armyUnitIndex += autoE6F121B0_ai ) {
+        if ((libNtve_gf_DialogItemIsChecked(libNovC_gv_nC_DebugCampaignTechUpgradesCheckBox[lv_armyUnitIndex], 1) == true) && (DialogControlIsVisible(libNovC_gv_nC_DebugCampaignTechUpgradesCheckBox[lv_armyUnitIndex], 1) == true)) {
+            libNovC_gv_nC_DebugCampaignTechUpgradesAssignedUnitList[lp_upgradeItemIndex] = libNovC_gf_NC_ArmyTechItemUnitFromIndex(lp_activeUpgradeItem, lv_armyUnitIndex);
+            libNtve_gf_SetDialogItemText(libNovC_gv_nC_DebugCampaignTechUpgradesAssignedUnitLabelList[lp_upgradeItemIndex], StringToText((libNovC_gv_nC_DebugCampaignTechUpgradesAssignedUnitList[lp_upgradeItemIndex])), PlayerGroupAll());
+            return ;
+        }
+
+    }
+    libNovC_gv_nC_DebugCampaignTechUpgradesAssignedUnitList[lp_upgradeItemIndex] = null;
+    libNtve_gf_SetDialogItemText(libNovC_gv_nC_DebugCampaignTechUpgradesAssignedUnitLabelList[lp_upgradeItemIndex], StringExternal("Param/Value/lib_NovC_BAF53D89"), PlayerGroupAll());
+}
+
+void libNovC_gf_NC_DebugCampaignTechCreateDialog () {
+    int auto24839C6C_ai;
+    int auto24839C6C_ae;
+    int autoCCC6D65B_ai;
+    int autoCCC6D65B_ae;
+
+    // Variable Declarations
+    int lv_dialogBackground;
+    int lv_lastItem;
+    int lv_frame;
+    int lv_x;
+    int lv_y;
+    string lv_indexEquipmentGroup;
+    string lv_indexEquipment;
+    int lv_equipmentIndex;
+    int lv_equipmentGroupIndex;
+    int lv_unitIndex;
+    string lv_indexMission;
+
+    // Variable Initialization
+    lv_dialogBackground = c_invalidDialogControlId;
+    lv_lastItem = c_invalidDialogControlId;
+    lv_frame = c_invalidDialogControlId;
+
+    // Implementation
+    if ((libNovC_gv_NC_DebugCampaignTechDialog != c_invalidDialogId)) {
+        return ;
+    }
+
+    DialogCreate(1200, 1000, c_anchorCenter, 0, 0, true);
+    libNovC_gv_NC_DebugCampaignTechDialog = DialogLastCreated();
+    libNtve_gf_CreateDialogItemImage(DialogLastCreated(), (DialogGetWidth(DialogLastCreated()) - 60), (DialogGetHeight(DialogLastCreated()) - 60), c_anchorCenter, 0, 0, StringToText(""), "Assets\\Textures\\white32.dds", c_triggerImageTypeNormal, true, Color(100,100,100), c_triggerBlendModeNormal);
+    lv_dialogBackground = DialogControlLastCreated();
+    libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(0,0,0), PlayerGroupAll());
+    DialogControlFadeTransparency(DialogControlLastCreated(), PlayerGroupAll(), 0.0, 20.0);
+    lv_y = 50;
+    libNtve_gf_CreateDialogItemLabel(DialogLastCreated(), 1000, 50, c_anchorTopLeft, 50, lv_y, StringExternal("Param/Value/lib_NovC_4D23591E"), Color(100.00, 50.20, 25.10), false, 2.0);
+    libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ModLeftSize32Bold", PlayerGroupAll());
+    lv_y += 50;
+    lv_equipmentGroupIndex = 0;
+    auto24839C6C_ai = 1;
+    auto24839C6C_ae = UserDataInstanceCount("CampaignPerkGroup")+1;
+    while (auto24839C6C_ai < auto24839C6C_ae) {
+        lv_indexEquipmentGroup = UserDataInstance("CampaignPerkGroup", auto24839C6C_ai);
+        auto24839C6C_ai = auto24839C6C_ai+1;
+        lv_equipmentGroupIndex += 1;
+        lv_x = 50;
+        libNtve_gf_CreateDialogItemLabel(DialogLastCreated(), 500, 60, c_anchorTopLeft, lv_x, lv_y, libComC_gf_CC_PerkGroupName(lv_indexEquipmentGroup), Color(100.00, 50.20, 25.10), false, 0.0);
+        libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ModLeftSize20", PlayerGroupAll());
+        lv_y += 40;
+        libNtve_gf_CreateDialogItemImage(DialogLastCreated(), 1100, 100, c_anchorTopLeft, lv_x, lv_y, StringToText(""), "Assets\\Textures\\ui_research_frame_tooltip_protoss.dds", c_triggerImageTypeHorizontalBorder, true, Color(100,100,100), c_triggerBlendModeNormal);
+        lv_lastItem = DialogControlLastCreated();
+        lv_equipmentIndex = 1;
+        autoCCC6D65B_ai = 1;
+        autoCCC6D65B_ae = UserDataInstanceCount("CampaignPerk")+1;
+        while (autoCCC6D65B_ai < autoCCC6D65B_ae) {
+            lv_indexEquipment = UserDataInstance("CampaignPerk", autoCCC6D65B_ai);
+            autoCCC6D65B_ai = autoCCC6D65B_ai+1;
+            if( libComC_gf_CC_PerkGroupOfPerk(lv_indexEquipment) == lv_indexEquipmentGroup ) {
+                libNtve_gf_CreateDialogItemLabel(DialogLastCreated(), 220, 60, c_anchorTopLeft, lv_x, lv_y, libComC_gf_CC_PerkName(lv_indexEquipment), Color(100.00, 100.00, 100.00), false, 2.0);
+                libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ModCenterSize16", PlayerGroupAll());
+                libNtve_gf_SetDialogItemTooltip(DialogControlLastCreated(), libComC_gf_CC_PerkDescription(lv_indexEquipment), PlayerGroupAll());
+                lv_lastItem = DialogControlLastCreated();
+                libNtve_gf_CreateDialogItemCheckBox(DialogLastCreated(), 50, 50, c_anchorTopLeft, 0, lv_y, StringToText(""), false);
+                libNovC_gv_nC_DebugCampaignTechEquipmentCheckBox[lv_equipmentGroupIndex][lv_equipmentIndex] = DialogControlLastCreated();
+                libNovC_gv_nC_DebugCampaignTechEquipment[lv_equipmentGroupIndex][lv_equipmentIndex] = lv_indexEquipment;
+                DialogControlSetPositionRelative(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, lv_lastItem, c_anchorBottom, 0, -20);
+                lv_x += 220;
+                lv_equipmentIndex += 1;
+            }    
+        }
+        lv_y += 100;
+
+    }
+    libNtve_gf_CreateDialogItemButton(DialogLastCreated(), 150, 50, c_anchorBottomRight, 200, 50, StringToText(""), StringExternal("Param/Value/lib_NovC_447CE194"), "");
+    libNovC_gv_NC_DebugCampaignTechOK = DialogControlLastCreated();
+    libNtve_gf_CreateDialogItemButton(DialogLastCreated(), 150, 50, c_anchorBottomRight, 50, 50, StringToText(""), StringExternal("Param/Value/lib_NovC_8D985BFF"), "");
+    libNovC_gv_NC_DebugCampaignTechCancel = DialogControlLastCreated();
+    libNtve_gf_CreateDialogItemButton(DialogLastCreated(), 300, 50, c_anchorTopRight, 50, 50, StringToText(""), StringExternal("Param/Value/lib_NovC_502FE759"), "");
+    libNovC_gv_nC_DebugCampaignTechUpgradesOpen = DialogControlLastCreated();
+    libNtve_gf_CreateDialogItemButton(DialogLastCreated(), 300, 50, c_anchorBottomLeft, 50, 50, StringExternal("Param/Value/lib_NovC_C4E15843"), StringExternal("Param/Value/lib_NovC_F5A62B9A"), "");
+    libNovC_gv_NC_DebugCampaignTechRandomizeTechButton = DialogControlLastCreated();
+    DialogSetSize(DialogLastCreated(), 1250, (lv_y + 150));
+    DialogControlSetSize(lv_dialogBackground, PlayerGroupAll(), (DialogGetWidth(libNovC_gv_NC_DebugCampaignTechDialog) - 60), (DialogGetHeight(libNovC_gv_NC_DebugCampaignTechDialog) - 60));
+}
+
+void libNovC_gf_NC_DebugCampaignTechCloseDialog () {
+    // Implementation
+    if ((libNovC_gv_NC_DebugCampaignTechDialog == c_invalidDialogId)) {
+        return ;
+    }
+
+    DialogDestroy(libNovC_gv_NC_DebugCampaignTechDialog);
+    libNovC_gv_NC_DebugCampaignTechDialog = c_invalidDialogId;
+    UISetWorldVisible(PlayerGroupAll(), true);
+    libNtve_gf_HideGameUI(true, PlayerGroupAll());
+    UISetCursorVisible(PlayerGroupAll(), false);
+}
+
+void libNovC_gf_NC_DebugCampaignTechDisplayDialog () {
+    // Implementation
+    if ((libNovC_gv_NC_DebugCampaignTechDialog != c_invalidDialogId)) {
+        return ;
+    }
+
+    UISetWorldVisible(PlayerGroupAll(), false);
+    libNtve_gf_HideGameUI(false, PlayerGroupAll());
+    UISetCursorVisible(PlayerGroupAll(), true);
+    libComC_gf_ShowHideWorldCover(true, 0);
+    libNovC_gf_NC_DebugCampaignTechStoreStates();
+    libNovC_gf_NC_DebugCampaignTechCreateDialog();
+    libNovC_gf_NC_DebugCampaignTechUpdateDialog();
+    DialogSetVisible(libNovC_gv_NC_DebugCampaignTechDialog, PlayerGroupAll(), true);
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechOK, true);
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechCancel, true);
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechRandomizeClicked, true);
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechEquipmentCheckClicked, true);
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechUpgradesOpenClicked, true);
+    while (!((libNovC_gv_NC_DebugCampaignTechDialog == c_invalidDialogId))) {
+        Wait(0.25, c_timeReal);
+    }
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechOK, false);
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechCancel, false);
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechRandomizeClicked, false);
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechEquipmentCheckClicked, false);
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechUpgradesOpenClicked, false);
+    libComC_gf_ShowHideWorldCover(false, 0);
+}
+
+void libNovC_gf_NC_DebugCampaignTechStoreStates () {
+    int autoAE49BCF5_ai;
+    int autoAE49BCF5_ae;
+    int autoD57CA587_ai;
+    int autoD57CA587_ae;
+
+    // Variable Declarations
+    string lv_indexEquipment;
+    string lv_indexTechItem;
+
+    // Variable Initialization
+
+    // Implementation
+    autoAE49BCF5_ai = 1;
+    autoAE49BCF5_ae = UserDataInstanceCount("CampaignTechItem")+1;
+    while (autoAE49BCF5_ai < autoAE49BCF5_ae) {
+        lv_indexTechItem = UserDataInstance("CampaignTechItem", autoAE49BCF5_ai);
+        autoAE49BCF5_ai = autoAE49BCF5_ai+1;
+        DataTableSetString(true, ("DebugTechSaveTechItem_" + (lv_indexTechItem)), (libNovC_gf_NC_ArmyTechItemAssignedUnit(lv_indexTechItem)));
+    }
+    autoD57CA587_ai = 1;
+    autoD57CA587_ae = UserDataInstanceCount("CampaignPerk")+1;
+    while (autoD57CA587_ai < autoD57CA587_ae) {
+        lv_indexEquipment = UserDataInstance("CampaignPerk", autoD57CA587_ai);
+        autoD57CA587_ai = autoD57CA587_ai+1;
+        DataTableSetInt(true, ("DebugTechSaveEquipment_" + (lv_indexEquipment)), (libComC_gf_CC_PerkState(lv_indexEquipment)));
+    }
+}
+
+void libNovC_gf_NC_DebugCampaignTechRestoreStates () {
+    int auto1206C1A8_ai;
+    int auto1206C1A8_ae;
+    int auto94F69BB7_ai;
+    int auto94F69BB7_ae;
+    int autoAE0C22D2_val;
+
+    // Variable Declarations
+    string lv_indexEquipment;
+    int lv_equipmentStateValue;
+    string lv_indexTechItem;
+
+    // Variable Initialization
+
+    // Implementation
+    auto1206C1A8_ai = 1;
+    auto1206C1A8_ae = UserDataInstanceCount("CampaignTechItem")+1;
+    while (auto1206C1A8_ai < auto1206C1A8_ae) {
+        lv_indexTechItem = UserDataInstance("CampaignTechItem", auto1206C1A8_ai);
+        auto1206C1A8_ai = auto1206C1A8_ai+1;
+        libNovC_gf_NC_ArmyTechItemAssignedUnitSet(lv_indexTechItem, (DataTableGetString(true, ("DebugTechSaveTechItem_" + (lv_indexTechItem)))));
+    }
+    auto94F69BB7_ai = 1;
+    auto94F69BB7_ae = UserDataInstanceCount("CampaignPerk")+1;
+    while (auto94F69BB7_ai < auto94F69BB7_ae) {
+        lv_indexEquipment = UserDataInstance("CampaignPerk", auto94F69BB7_ai);
+        auto94F69BB7_ai = auto94F69BB7_ai+1;
+        lv_equipmentStateValue = DataTableGetInt(true, ("DebugTechSaveEquipment_" + (lv_indexEquipment)));
+        autoAE0C22D2_val = lv_equipmentStateValue;
+        if (autoAE0C22D2_val == (libComC_ge_CC_PerkState_Active)) {
+            libComC_gf_CC_PerkStateSet(lv_indexEquipment, libComC_ge_CC_PerkState_Active);
+        }
+        else if (autoAE0C22D2_val == (libComC_ge_CC_PerkState_Locked)) {
+            libComC_gf_CC_PerkStateSet(lv_indexEquipment, libComC_ge_CC_PerkState_Locked);
+        }
+        else if (autoAE0C22D2_val == (libComC_ge_CC_PerkState_Unlocked)) {
+            libComC_gf_CC_PerkStateSet(lv_indexEquipment, libComC_ge_CC_PerkState_Unlocked);
+        }
+        else if (autoAE0C22D2_val == (libComC_ge_CC_PerkState_Hidden)) {
+            libComC_gf_CC_PerkStateSet(lv_indexEquipment, libComC_ge_CC_PerkState_Hidden);
+        }
+        else {
+        }
+    }
+}
+
+bool libNovC_gf_NC_DebugCampaignTechIsDupe (string lp_mission, string lp_category) {
+    int auto19F4F4D9_ae;
+    int auto19F4F4D9_ai;
+
+    // Variable Declarations
+    string lv_indexMission;
+
+    // Variable Initialization
+
+    // Implementation
+    auto19F4F4D9_ae = UserDataInstanceCount("Maps");
+    auto19F4F4D9_ai = 1;
+    while (auto19F4F4D9_ai <= auto19F4F4D9_ae) {
+        lv_indexMission = libComC_gf_CC_MapDataFromUserDataInstance(UserDataInstance("Maps", auto19F4F4D9_ai));
+        if (lv_indexMission != null && CatalogFieldValueGet(c_gameCatalogMap, lv_indexMission, "Kind", 1) == "Mission" && libComC_gf_CC_MapInternal(lv_indexMission) == false ) {
+            if ((lv_indexMission == lp_mission)) {
+                return false;
+            }
+
+            if ((libComC_gf_MissionArmyCategoryUnlocked(lv_indexMission) == lp_category)) {
+                return true;
+            }
+
+        }
+        auto19F4F4D9_ai = auto19F4F4D9_ai + 1;
+    }
+    return false;
+}
+
+void libNovC_gf_SetTechRestrictionsCallback (trigger lp_callbackTrigger) {
+    // Implementation
+    libNovC_gv_NC_TechLimitsCallback = lp_callbackTrigger;
+}
+
+void libNovC_gf_PurchaseStorymodeTech () {
+    // Variable Declarations
+    string lv_indexMission;
+    string lv_armyCategory;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((GameIsTransitionMap() == true)) {
+        return ;
+    }
+
+    libNovC_gf_NC_DefaultTechProgress(libComC_gf_CurrentMap());
+    TriggerExecute(libNovC_gv_NC_TechLimitsCallback, true, false);
+}
+
+void libNovC_gf_NC_DefaultTechProgress (string lp_mission) {
+    int autoA603B55C_ae;
+    int autoA603B55C_ai;
+
+    // Variable Declarations
+    string lv_indexMission;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((libComC_gf_CampaignMapTypeCheck(lp_mission, c_mapKindMission) == false)) {
+        return ;
+    }
+
+    TriggerDebugOutput(1, StringExternal("Param/Value/lib_NovC_FAFCC3CA"), false);
+    BankDeleteCampaignBanks(1, libNovC_gf_NC_CampaignSaveIndex());
+    libComC_gv_cC_StoryBank = null;
+    libComC_gv_NC_CampaignBank = null;
+    libComC_gv_cC_ArmyTechBank = null;
+    libComC_gf_CC_ResetCampaignData();
+    autoA603B55C_ae = UserDataInstanceCount("Maps");
+    autoA603B55C_ai = 1;
+    while (autoA603B55C_ai <= autoA603B55C_ae) {
+        lv_indexMission = libComC_gf_CC_MapDataFromUserDataInstance(UserDataInstance("Maps", autoA603B55C_ai));
+        if (lv_indexMission != null && CatalogFieldValueGet(c_gameCatalogMap, lv_indexMission, "Kind", 1) == "Mission" && libComC_gf_CC_MapInternal(lv_indexMission) == false ) {
+            if ((lv_indexMission == lp_mission)) {
+                break;
+            }
+
+            libComC_gf_CC_MissionMarkCompleted(lv_indexMission);
+            libComC_gv_cCX_LastSuccessfulMission = lv_indexMission;
+            TextExpressionSetToken("Param/Expression/lib_NovC_823D4FD3", "A", StringToText((lv_indexMission)));
+            TriggerDebugOutput(1, TextExpressionAssemble("Param/Expression/lib_NovC_823D4FD3"), false);
+        }
+        autoA603B55C_ai = autoA603B55C_ai + 1;
+    }
+    libComC_gf_NS_SaveAllTransitionData(false, false, false);
+    libComC_gf_CC_SaveArmyTechBank(lp_mission, false);
+    libComC_gf_CC_ApplyTech(1);
+}
+
+string libNovC_gf_NC_DebugProgressDataTableID (string lp_type, string lp_name) {
+    // Implementation
+    return ("DebugProg" + lp_type + "&%&" + lp_name);
+}
+
+bool libNovC_gf_NC_DebugProgressDialogOpened () {
+    // Implementation
+    return (libNovC_gv_NC_DebugProgressDialog != c_invalidDialogId);
+}
+
+void libNovC_gf_NC_DebugProgressSetFirstStorymodeEpisode (bool lp_state) {
+    // Implementation
+    BankValueSetFromFlag(libComC_gf_CC_StoryBank(), "Debug", "StartedFirstStorymodeEpisode", lp_state);
+    BankSave(libComC_gf_CC_StoryBank());
+}
+
+void libNovC_gf_NC_DebugProgressAddMissionButton (string lp_mission, fixed lp_col, fixed lp_row) {
+    // Variable Declarations
+    int lv_xX;
+    int lv_yY;
+    int lv_width;
+    int lv_height;
+    int lv_marginX;
+    int lv_marginY;
+    int lv_index;
+    int lv_button;
+    int lv_button2;
+
+    // Variable Initialization
+    lv_button = c_invalidDialogControlId;
+    lv_button2 = c_invalidDialogControlId;
+
+    // Implementation
+    lv_xX = FixedToInt((((lp_col - 1.0) * 285.0) + 40.0));
+    lv_yY = FixedToInt((((lp_row - 1.0) * 70.0) + 35.0));
+    lv_width = 320;
+    lv_height = 75;
+    lv_marginX = 15;
+    lv_marginY = 10;
+    DialogControlCreate(libNovC_gv_NC_DebugProgressDialog, c_triggerControlTypeButton);
+    libNtve_gf_SetDialogItemHandle(DialogControlLastCreated(), ("Nova_DebugProgress_MissionButton" + (lp_mission)), PlayerGroupAll());
+    lv_button = DialogControlLastCreated();
+    libNtve_gf_SaveDataTableValueDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("Button", (lp_mission)), DialogControlLastCreated());
+    DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), lv_width, lv_height);
+    DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTopLeft, lv_xX, lv_yY);
+    libNtve_gf_SetDialogItemText(DialogControlLastCreated(), libNovC_gf_NC_DebugProgressMapName(lp_mission), PlayerGroupAll());
+    libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "DebugProgressPanelMissionHotS", PlayerGroupAll());
+    libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(0.00, 100.00, 0.00), PlayerGroupAll());
+    DialogControlCreate(DialogLastCreated(), c_triggerControlTypeLabel);
+    libNtve_gf_SaveDataTableValueDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("StateLabel", (lp_mission)), DialogControlLastCreated());
+    DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), (lv_width - (lv_marginX * 2)), (lv_height - (lv_marginY * 2)));
+    libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "DebugProgressPanelLabelTopRight", PlayerGroupAll());
+    DialogControlSetPositionRelative(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTopRight, lv_button, c_anchorTopRight, (-1 * lv_marginX), (1 * lv_marginY));
+    DialogControlCreate(DialogLastCreated(), c_triggerControlTypeLabel);
+    libNtve_gf_SaveDataTableValueDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("TechLabel", (lp_mission)), DialogControlLastCreated());
+    DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), (lv_width - (lv_marginX * 2)), (lv_height - (lv_marginY * 2)));
+    libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "DebugProgressPanelLabelTopLeft", PlayerGroupAll());
+    DialogControlSetPositionRelative(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTopLeft, lv_button, c_anchorTopLeft, (1 * lv_marginX), (1 * lv_marginY));
+    DialogControlCreate(DialogLastCreated(), c_triggerControlTypeLabel);
+    libNtve_gf_SaveDataTableValueDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("ChampionLabel", (lp_mission)), DialogControlLastCreated());
+    DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), (lv_width - (lv_marginX * 2)), (lv_height - (lv_marginY * 2)));
+    libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "DebugProgressPanelLabelBottomLeft", PlayerGroupAll());
+    DialogControlSetPositionRelative(DialogControlLastCreated(), PlayerGroupAll(), c_anchorBottomLeft, lv_button, c_anchorBottomLeft, (1 * lv_marginX), (-1 * lv_marginY));
+    DialogControlCreate(libNovC_gv_NC_DebugProgressDialog, c_triggerControlTypeButton);
+    lv_button2 = DialogControlLastCreated();
+    libNtve_gf_SaveDataTableValueDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("PlayButton", (lp_mission)), DialogControlLastCreated());
+    DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), 48, 48);
+    DialogControlSetPositionRelative(DialogControlLastCreated(), PlayerGroupAll(), c_anchorRight, lv_button, c_anchorLeft, 0, 0);
+    TextExpressionSetToken("Param/Expression/lib_NovC_9081F58A", "A", libComC_gf_CC_MapName(lp_mission));
+    libNtve_gf_SetDialogItemTooltip(DialogControlLastCreated(), TextExpressionAssemble("Param/Expression/lib_NovC_9081F58A"), PlayerGroupAll());
+    libNtve_gf_CreateDialogItemImage(libNovC_gv_NC_DebugProgressDialog, 32, 32, c_anchorTopLeft, 50, 50, StringToText(""), "Assets\\Textures\\ui_btn_aicommand_commandcard_assault.dds", c_triggerImageTypeNormal, false, Color(100,100,100), c_triggerBlendModeNormal);
+    libNtve_gf_SaveDataTableValueDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("PlayImage", (lp_mission)), DialogControlLastCreated());
+    DialogControlSetPositionRelative(DialogControlLastCreated(), PlayerGroupAll(), c_anchorCenter, lv_button2, c_anchorCenter, 0, 0);
+}
+
+void libNovC_gf_NC_DebugProgressCreateDialog () {
+    // Variable Declarations
+    int lv_width;
+    int lv_height;
+    int lv_offsetX;
+    int lv_offsetY;
+    int lv_relativeButton;
+    int lv_travelButton;
+
+    // Variable Initialization
+    lv_relativeButton = c_invalidDialogControlId;
+    lv_travelButton = c_invalidDialogControlId;
+
+    // Implementation
+    if ((libNovC_gv_NC_DebugProgressDialog != c_invalidDialogId)) {
+        return ;
+    }
+
+    DialogCreate(1500, 1100, c_anchorCenter, 0, 0, true);
+    libNovC_gv_NC_DebugProgressDialog = DialogLastCreated();
+    libNovC_gf_NC_DebugProgressAddMissionButton("Nova01", 3.0, 1.0);
+    libNovC_gf_NC_DebugProgressAddMissionButton("Nova02", 3.0, 2.0);
+    libNovC_gf_NC_DebugProgressAddMissionButton("Nova03", 3.0, 3.0);
+    libNovC_gf_NC_DebugProgressAddMissionButton("Nova04", 3.0, 4.0);
+    libNovC_gf_NC_DebugProgressAddMissionButton("Nova05", 3.0, 5.0);
+    libNovC_gf_NC_DebugProgressAddMissionButton("Nova06", 3.0, 6.0);
+    libNovC_gf_NC_DebugProgressAddMissionButton("Nova07", 3.0, 7.0);
+    libNovC_gf_NC_DebugProgressAddMissionButton("Nova08", 3.0, 8.0);
+    libNovC_gf_NC_DebugProgressAddMissionButton("Nova09", 3.0, 9.0);
+    libNtve_gf_CreateDialogItemButton(DialogLastCreated(), 150, 50, c_anchorBottomRight, 190, 30, StringToText(""), StringExternal("Param/Value/lib_NovC_7BCF9B13"), "");
+    libNtve_gf_SetDialogItemHandle(DialogControlLastCreated(), "Nova_DebugProgress_OkButton", PlayerGroupAll());
+    libNovC_gv_NC_DebugProgressButtonOK = DialogControlLastCreated();
+    libNtve_gf_CreateDialogItemButton(DialogLastCreated(), 150, 50, c_anchorBottomRight, 40, 30, StringToText(""), StringExternal("Param/Value/lib_NovC_208828FC"), "");
+    libNtve_gf_SetDialogItemHandle(DialogControlLastCreated(), "Nova_DebugProgress_CancelButton", PlayerGroupAll());
+    libNovC_gv_NC_DebugProgressButtonCancel = DialogControlLastCreated();
+    libNtve_gf_CreateDialogItemButton(DialogLastCreated(), 150, 50, c_anchorBottomLeft, 40, 30, StringToText(""), StringExternal("Param/Value/lib_NovC_87B797D4"), "");
+    libNtve_gf_SetDialogItemHandle(DialogControlLastCreated(), "Nova_DebugProgress_ResetButton", PlayerGroupAll());
+    libNovC_gv_NC_DebugProgressButtonReset = DialogControlLastCreated();
+    libNtve_gf_CreateDialogItemButton(DialogLastCreated(), 300, 60, c_anchorTopRight, 40, 40, StringExternal("Param/Value/lib_NovC_1AC0C55D"), StringExternal("Param/Value/lib_NovC_88E4833D"), "");
+    libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), ColorWithAlpha(0,0,0,0), PlayerGroupAll());
+    libNovC_gv_NC_DebugProgressButtonDirectSelect = DialogControlLastCreated();
+    if ((libNovC_gv_NC_DebugProgressRetailMode == true)) {
+        DialogControlSetVisible(DialogControlLastCreated(), PlayerGroupAll(), false);
+    }
+    else {
+        libNtve_gf_CreateDialogItemLabel(DialogLastCreated(), 450, 50, c_anchorTopLeft, 50, 130, StringExternal("Param/Value/lib_NovC_A88CC51D"), ColorWithAlpha(0,0,0,0), false, 0.0);
+        libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ModLeftSize24", PlayerGroupAll());
+        libNtve_gf_CreateDialogItemButton(DialogLastCreated(), 150, 50, c_anchorTopLeft, 50, 170, StringToText(""), StringExternal("Param/Value/lib_NovC_7E2017AF"), "");
+        libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), ColorWithAlpha(0,0,0,0), PlayerGroupAll());
+        libNovC_gv_NC_DebugProgressButtonNoObjectives = DialogControlLastCreated();
+        libNtve_gf_CreateDialogItemButton(DialogLastCreated(), 150, 50, c_anchorTopLeft, 200, 170, StringToText(""), StringExternal("Param/Value/lib_NovC_C8262C22"), "");
+        libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(254*100/255,138*100/255,14*100/255), PlayerGroupAll());
+        libNovC_gv_NC_DebugProgressButtonAllObjectives = DialogControlLastCreated();
+    }
+    libNtve_gf_CreateDialogItemLabel(DialogLastCreated(), 600, 400, c_anchorTopLeft, 50, 50, StringToText(""), ColorWithAlpha(0,0,0,0), false, 2.0);
+    libNovC_gv_NC_DebugProgressLabelInfo = DialogControlLastCreated();
+    libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "DebugProgressPanelCampaignProgress", PlayerGroupAll());
+    lv_width = 300;
+    lv_height = 60;
+    lv_offsetX = 5;
+    lv_offsetY = 0;
+}
+
+void libNovC_gf_NC_DebugProgressUpdateDialog () {
+    int auto11F4A4EE_ae;
+    int auto11F4A4EE_ai;
+    int auto8E338A48_val;
+
+    // Variable Declarations
+    string lv_indexMission;
+    int lv_stateLabel;
+    int lv_techLabel;
+    int lv_button;
+    int lv_button2;
+    int lv_button3;
+    string lv_categoryUnlocked;
+    text lv_techText;
+    int lv_tooltip;
+    text lv_rewardText;
+
+    // Variable Initialization
+    lv_stateLabel = c_invalidDialogControlId;
+    lv_techLabel = c_invalidDialogControlId;
+    lv_button = c_invalidDialogControlId;
+    lv_button2 = c_invalidDialogControlId;
+    lv_button3 = c_invalidDialogControlId;
+    lv_tooltip = c_invalidDialogControlId;
+
+    // Implementation
+    libComC_gf_CC_UpdateCompletedMissionArray();
+    auto11F4A4EE_ae = CatalogEntryCount(c_gameCatalogMap);
+    auto11F4A4EE_ai = 1;
+    while (auto11F4A4EE_ai <= auto11F4A4EE_ae) {
+        lv_indexMission = CatalogEntryGet(c_gameCatalogMap, auto11F4A4EE_ai);
+        auto11F4A4EE_ai = auto11F4A4EE_ai + 1;
+        if (CatalogFieldValueGet(c_gameCatalogMap, lv_indexMission, "Kind", 1) == "Mission" && libComC_gf_CC_MapInternal(lv_indexMission) == false) {
+            lv_stateLabel = libNtve_gf_ValueFromDataTableDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("StateLabel", (lv_indexMission)));
+            lv_techLabel = libNtve_gf_ValueFromDataTableDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("TechLabel", (lv_indexMission)));
+            lv_categoryUnlocked = libComC_gf_MissionArmyCategoryUnlocked(lv_indexMission);
+            if ((lv_categoryUnlocked != null)) {
+                lv_techText = libComC_gf_NC_ArmyCategoryName(lv_categoryUnlocked);
+            }
+            else {
+                lv_techText = StringToText("");
+            }
+            lv_rewardText = null;
+            lv_button = libNtve_gf_ValueFromDataTableDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("Button", (lv_indexMission)));
+            lv_button2 = libNtve_gf_ValueFromDataTableDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("PlayButton", (lv_indexMission)));
+            lv_button3 = libNtve_gf_ValueFromDataTableDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("PlayImage", (lv_indexMission)));
+            if ((lv_stateLabel != c_invalidDialogControlId)) {
+                auto8E338A48_val = libComC_gf_MissionStatus(lv_indexMission);
+                if (auto8E338A48_val == libComC_ge_MissionStatus_Locked) {
+                    DialogControlSetEnabled(lv_button, PlayerGroupAll(), false);
+                    DialogControlSetVisible(lv_button2, PlayerGroupAll(), false);
+                    DialogControlSetVisible(lv_button3, PlayerGroupAll(), false);
+                    DialogControlSetEnabled(lv_stateLabel, PlayerGroupAll(), true);
+                    libNtve_gf_SetDialogItemText(lv_stateLabel, StringExternal("Param/Value/lib_NovC_AD3F2E8D"), PlayerGroupAll());
+                    TextExpressionSetToken("Param/Expression/lib_NovC_02D0E02A", "A", libNovC_gf_NC_DebugProgressMapName(lv_indexMission));
+                    libNtve_gf_SetDialogItemText(lv_button, TextExpressionAssemble("Param/Expression/lib_NovC_02D0E02A"), PlayerGroupAll());
+                    TextExpressionSetToken("Param/Expression/lib_NovC_43997B8A", "A", lv_techText);
+                    libNtve_gf_SetDialogItemText(lv_techLabel, TextExpressionAssemble("Param/Expression/lib_NovC_43997B8A"), PlayerGroupAll());
+                    libNtve_gf_SetDialogItemTooltip(lv_button, lv_rewardText, PlayerGroupAll());
+                }
+                else if (auto8E338A48_val == libComC_ge_MissionStatus_Available) {
+                    DialogControlSetEnabled(lv_button, PlayerGroupAll(), true);
+                    if ((libNovC_gv_NC_DebugProgressRetailMode == false)) {
+                        DialogControlSetVisible(lv_button2, PlayerGroupAll(), true);
+                        DialogControlSetVisible(lv_button3, PlayerGroupAll(), true);
+                    }
+                    else {
+                        DialogControlSetVisible(lv_button2, PlayerGroupAll(), false);
+                        DialogControlSetVisible(lv_button3, PlayerGroupAll(), false);
+                    }
+                    DialogControlSetEnabled(lv_stateLabel, PlayerGroupAll(), true);
+                    TextExpressionSetToken("Param/Expression/lib_NovC_F82DB0D0", "A", IntToText(libComC_gf_MissionStatusAge(lv_indexMission, libComC_ge_MissionStatus_Available)));
+                    libNtve_gf_SetDialogItemText(lv_stateLabel, TextExpressionAssemble("Param/Expression/lib_NovC_F82DB0D0"), PlayerGroupAll());
+                    libNtve_gf_SetDialogItemText(lv_button, libNovC_gf_NC_DebugProgressMapName(lv_indexMission), PlayerGroupAll());
+                    TextExpressionSetToken("Param/Expression/lib_NovC_2BB80ACF", "A", lv_techText);
+                    libNtve_gf_SetDialogItemText(lv_techLabel, TextExpressionAssemble("Param/Expression/lib_NovC_2BB80ACF"), PlayerGroupAll());
+                    libNtve_gf_SetDialogItemTooltip(lv_button, lv_rewardText, PlayerGroupAll());
+                }
+                else if (auto8E338A48_val == libComC_ge_MissionStatus_Completed) {
+                    DialogControlSetEnabled(lv_button, PlayerGroupAll(), false);
+                    DialogControlSetVisible(lv_button2, PlayerGroupAll(), false);
+                    DialogControlSetVisible(lv_button3, PlayerGroupAll(), false);
+                    DialogControlSetEnabled(lv_stateLabel, PlayerGroupAll(), false);
+                    TextExpressionSetToken("Param/Expression/lib_NovC_010ABCE0", "A", IntToText(libComC_gf_MissionStatusAge(lv_indexMission, libComC_ge_MissionStatus_Completed)));
+                    libNtve_gf_SetDialogItemText(lv_stateLabel, TextExpressionAssemble("Param/Expression/lib_NovC_010ABCE0"), PlayerGroupAll());
+                    TextExpressionSetToken("Param/Expression/lib_NovC_2377F211", "A", libNovC_gf_NC_DebugProgressMapName(lv_indexMission));
+                    libNtve_gf_SetDialogItemText(lv_button, TextExpressionAssemble("Param/Expression/lib_NovC_2377F211"), PlayerGroupAll());
+                    TextExpressionSetToken("Param/Expression/lib_NovC_3391F05F", "A", lv_techText);
+                    libNtve_gf_SetDialogItemText(lv_techLabel, TextExpressionAssemble("Param/Expression/lib_NovC_3391F05F"), PlayerGroupAll());
+                    libNtve_gf_SetDialogItemTooltip(lv_button, lv_rewardText, PlayerGroupAll());
+                }
+                else {
+                }
+            }
+
+        }    
+    }
+    if ((libNovC_gv_NC_DebugProgressRetailMode == true)) {
+        DialogControlSetVisible(libNovC_gv_NC_DebugProgressLabelInfo, PlayerGroupAll(), false);
+    }
+
+}
+
+void libNovC_gf_NC_DebugProgressUpdateRequirementLabel (int lp_label, int lp_status) {
+    int auto3A612039_val;
+
+    // Implementation
+    if ((lp_label != c_invalidDialogControlId)) {
+        auto3A612039_val = lp_status;
+        if (auto3A612039_val == libComC_ge_MissionStatus_Locked) {
+            libNtve_gf_SetDialogItemColor(lp_label, Color(100.00, 0.00, 0.00), PlayerGroupAll());
+        }
+        else if (auto3A612039_val == libComC_ge_MissionStatus_Completed) {
+            libNtve_gf_SetDialogItemColor(lp_label, Color(149*100/255,150*100/255,151*100/255), PlayerGroupAll());
+        }
+        else if (auto3A612039_val == libComC_ge_MissionStatus_Available) {
+            libNtve_gf_SetDialogItemColor(lp_label, Color(19.61, 100.00, 19.61), PlayerGroupAll());
+        }
+        else {
+        }
+    }
+
+}
+
+void libNovC_gf_NC_DebugProgressCloseDialog () {
+    // Implementation
+    if ((libNovC_gv_NC_DebugProgressDialog == c_invalidDialogId)) {
+        return ;
+    }
+
+    DialogDestroy(libNovC_gv_NC_DebugProgressDialog);
+    libNovC_gv_NC_DebugProgressDialog = c_invalidDialogId;
+    libComC_gf_ShowHideWorldCover(false, 0);
+}
+
+text libNovC_gf_NC_DebugProgressMapName (string lp_mission) {
+    // Implementation
+    if ((libNovC_gv_NC_DebugProgressRetailMode == true)) {
+        return libComC_gf_CC_MapName(lp_mission);
+    }
+
+    return StringToText(libComC_gf_CC_MapFile(lp_mission));
+}
+
+void libNovC_gf_NC_DebugProgressDisplayDialog (string lp_currentMission, trigger lp_oKCallback, trigger lp_cancelCallback, bool lp_showRewards) {
+    // Implementation
+    if ((libNovC_gv_NC_DebugProgressDialog != c_invalidDialogId)) {
+        return ;
+    }
+
+    UISetWorldVisible(PlayerGroupAll(), false);
+    libNtve_gf_HideGameUI(false, PlayerGroupAll());
+    libNCUI_gf_HideCampaignDirective();
+    if ((GameCheatsEnabled(c_gameCheatCategoryDevelopment) == false)) {
+        libNovC_gv_NC_DebugProgressRetailMode = true;
+    }
+
+    if ((libNovC_gv_NC_DebugProgressRetailMode == true)) {
+        libNovC_gv_NC_DebugProgressBonusObjectiveLevel = libNovC_ge_DebugProgressBonusObjectiveAmount_NoObjectives;
+    }
+    else {
+        libNovC_gv_NC_DebugProgressBonusObjectiveLevel = libNovC_ge_DebugProgressBonusObjectiveAmount_FullObjectives;
+    }
+    UISetCursorVisible(PlayerGroupAll(), true);
+    libComC_gf_ShowHideWorldCover(true, 0);
+    libNovC_gv_NC_DebugProgressExitCallbackOK = lp_oKCallback;
+    libNovC_gv_NC_DebugProgressExitCallbackCancel = lp_cancelCallback;
+    libNovC_gv_NC_DebugProgressShowRewards = lp_showRewards;
+    libNovC_gv_NC_DebugProgressLastMission = libComC_gf_LastSuccessfulMission();
+    libNovC_gv_NC_DebugProgressLastCreditMission = null;
+    libNovC_gv_NC_DebugProgressCurrentMapBak = libComC_gf_CurrentMap();
+    libNovC_gf_NC_DebugProgressSaveStats();
+    libNovC_gf_NC_DebugProgressCreateDialog();
+    libNovC_gf_NC_DebugProgressUpdateDialog();
+    DialogSetVisible(libNovC_gv_NC_DebugProgressDialog, PlayerGroupAll(), true);
+    TriggerEnable(libNovC_gt_NC_DebugProgressMissionButtonClicked, true);
+    TriggerEnable(libNovC_gt_NC_DebugProgressLaunchMission, true);
+    TriggerEnable(libNovC_gt_NC_DebugProgressOK, true);
+    TriggerEnable(libNovC_gt_NC_DebugProgressCancel, true);
+    TriggerEnable(libNovC_gt_NC_DebugProgressReset, true);
+    TriggerEnable(libNovC_gt_NC_DebugProgressDirectSelectButtonClicked, true);
+    TriggerEnable(libNovC_gt_NC_DebugProgressDirectMissionButtonClicked, true);
+    TriggerEnable(libNovC_gt_NC_DebugProgressDirectLaunchMission, true);
+    TriggerEnable(libNovC_gt_NC_DebugProgressBonusObjectiveButtonClicked, true);
+    while (!((libNovC_gv_NC_DebugProgressDialog == c_invalidDialogId))) {
+        Wait(0.25, c_timeReal);
+    }
+    TriggerEnable(libNovC_gt_NC_DebugProgressMissionButtonClicked, false);
+    TriggerEnable(libNovC_gt_NC_DebugProgressLaunchMission, false);
+    TriggerEnable(libNovC_gt_NC_DebugProgressOK, false);
+    TriggerEnable(libNovC_gt_NC_DebugProgressCancel, false);
+    TriggerEnable(libNovC_gt_NC_DebugProgressReset, false);
+    TriggerEnable(libNovC_gt_NC_DebugProgressDirectSelectButtonClicked, false);
+    TriggerEnable(libNovC_gt_NC_DebugProgressDirectMissionButtonClicked, false);
+    TriggerEnable(libNovC_gt_NC_DebugProgressDirectLaunchMission, false);
+    TriggerEnable(libNovC_gt_NC_DebugProgressBonusObjectiveButtonClicked, false);
+}
+
+void libNovC_gf_NC_DebugProgressSaveStats () {
+    // Implementation
+    BankLoad("NDebugProgress", 1);
+    libNovC_gv_NC_DebugProgressBank = BankLastCreated();
+    libComC_gf_CC_TransitionSaveBankVars(BankLastCreated(), null, libComC_gf_CC_TransitionInSimulation(), libComC_gf_CC_TransitionInPlayAgain(), false, false, false);
+}
+
+void libNovC_gf_NC_DebugProgressRestoreStats () {
+    // Variable Declarations
+    string lv_indexMission;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((libNovC_gv_NC_DebugProgressBank == null)) {
+        return ;
+    }
+
+    libComC_gf_CC_TransitionLoadBankVars(libNovC_gv_NC_DebugProgressBank, null);
+    libComC_gf_CC_MapSetCurrent("NStory01");
+    BankRemove(libNovC_gv_NC_DebugProgressBank);
+    libNovC_gv_NC_DebugProgressBank = null;
+}
+
+void libNovC_gf_NC_DebugProgressAdjustBonusObjectives () {
+    int auto0FDD26C1_ae;
+    int auto0FDD26C1_ai;
+    int auto4DA56017_ae;
+    int auto4DA56017_ai;
+
+    // Variable Declarations
+    string lv_indexMission;
+    string lv_indexObjective;
+
+    // Variable Initialization
+
+    // Implementation
+    auto0FDD26C1_ae = libComC_gf_NumberOfMissions(2);
+    auto0FDD26C1_ai = 1;
+    while (auto0FDD26C1_ai <= auto0FDD26C1_ae) {
+        lv_indexMission = libComC_gv_cC_MissionCompleted[auto0FDD26C1_ai];
+        if (libComC_gf_CC_MapInternal(lv_indexMission) == false ) {
+            auto4DA56017_ae = CatalogFieldValueCount(c_gameCatalogMap, lv_indexMission, "ObjectiveArray", 1);
+            auto4DA56017_ai = 1;
+            while (auto4DA56017_ai <= auto4DA56017_ae) {
+                lv_indexObjective = CatalogFieldValueGet(c_gameCatalogMap, lv_indexMission, "ObjectiveArray["+IntToString(auto4DA56017_ai-1)+"]", 1);
+                auto4DA56017_ai = auto4DA56017_ai + 1;
+                if ((libComC_gf_MissionObjectiveIsPrimary(lv_indexObjective) == false)) {
+                    libNovC_gf_NC_DebugProgressSetObjectiveProgress(lv_indexObjective);
+                }
+
+            }
+        }
+        auto0FDD26C1_ai += 1;
+    }
+}
+
+void libNovC_gf_NC_DebugProgressCompleteToMission (string lp_goalMission) {
+    int auto44DBE07C_ae;
+    int auto44DBE07C_ai;
+    int autoE34FCBFA_ae;
+    int autoE34FCBFA_ai;
+
+    // Variable Declarations
+    string lv_indexObjective;
+    string[10] lv_arcMissions;
+    int lv_indexArcMission;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_arcMissions[1] = "Nova01";
+    lv_arcMissions[2] = "Nova02";
+    lv_arcMissions[3] = "Nova03";
+    lv_arcMissions[4] = "Nova04";
+    lv_arcMissions[5] = "Nova05";
+    lv_arcMissions[6] = "Nova06";
+    lv_arcMissions[7] = "Nova07";
+    lv_arcMissions[8] = "Nova08";
+    lv_arcMissions[9] = "Nova09";
+    auto44DBE07C_ae = libComC_gf_NumberOfMissions(libComC_ge_MissionCountOptions_All);
+    auto44DBE07C_ai = 1;
+    lv_indexArcMission = 1;
+    for ( ; ( (auto44DBE07C_ai >= 0 && lv_indexArcMission <= auto44DBE07C_ae) || (auto44DBE07C_ai <= 0 && lv_indexArcMission >= auto44DBE07C_ae) ) ; lv_indexArcMission += auto44DBE07C_ai ) {
+        if ((lv_arcMissions[lv_indexArcMission] == lp_goalMission)) {
+            libNovC_gf_NC_UpdateCampaignIndex(lv_arcMissions[lv_indexArcMission]);
+            return ;
+        }
+        else if ((lv_arcMissions[lv_indexArcMission] != null)) {
+            autoE34FCBFA_ae = CatalogFieldValueCount(c_gameCatalogMap, lv_arcMissions[lv_indexArcMission], "ObjectiveArray", 1);
+            autoE34FCBFA_ai = 1;
+            while (autoE34FCBFA_ai <= autoE34FCBFA_ae) {
+                lv_indexObjective = CatalogFieldValueGet(c_gameCatalogMap, lv_arcMissions[lv_indexArcMission], "ObjectiveArray["+IntToString(autoE34FCBFA_ai-1)+"]", 1);
+                autoE34FCBFA_ai = autoE34FCBFA_ai + 1;
+                libNovC_gf_NC_DebugProgressSetObjectiveProgress(lv_indexObjective);
+            }
+            libComC_gf_CC_MissionMarkCompleted(lv_arcMissions[lv_indexArcMission]);
+            libNovC_gf_NC_DebugProgressUpdateTutorialProgress(lv_arcMissions[lv_indexArcMission]);
+            libNovC_gf_NC_UpdateCampaignIndex(lv_arcMissions[lv_indexArcMission]);
+        }
+    }
+}
+
+void libNovC_gf_NC_DebugProgressSetObjectiveProgress (string lp_missionObjective) {
+    int autoB5021924_val;
+
+    // Implementation
+    if ((lp_missionObjective != null)) {
+        if ((libComC_gf_MissionObjectiveIsPrimary(lp_missionObjective) == false)) {
+            autoB5021924_val = libNovC_gv_NC_DebugProgressBonusObjectiveLevel;
+            if (autoB5021924_val == libNovC_ge_DebugProgressBonusObjectiveAmount_NoObjectives) {
+                libComC_gf_CC_MissionObjectiveProgressDataSet(lp_missionObjective, 0);
+                libCMMI_gf_ZS_SetMissionObjectiveState(lp_missionObjective, libComC_ge_MissionObjectiveState_Failed);
+            }
+            else if (autoB5021924_val == libNovC_ge_DebugProgressBonusObjectiveAmount_FullObjectives) {
+                libComC_gf_CC_MissionObjectiveProgressDataSet(lp_missionObjective, libComC_gf_MissionObjectiveItemCount(lp_missionObjective));
+                libCMMI_gf_ZS_SetMissionObjectiveState(lp_missionObjective, libComC_ge_MissionObjectiveState_Completed);
+            }
+            else {
+            }
+        }
+        else {
+            libComC_gf_CC_MissionObjectiveProgressDataSet(lp_missionObjective, libComC_gf_MissionObjectiveItemCount(lp_missionObjective));
+            libCMMI_gf_ZS_SetMissionObjectiveState(lp_missionObjective, libComC_ge_MissionObjectiveState_Completed);
+        }
+    }
+
+}
+
+void libNovC_gf_NC_DebugProgressUpdateTutorialProgress (string lp_currentMission) {
+    // Implementation
+    if ((lp_currentMission == "Nova02")) {
+        UserDataSetInt("WriterStates", "HaveReigel", "Value", 1, 1);
+    }
+
+}
+
+string libNovC_gf_NC_LocationCutsceneFilter (string lp_location) {
+    string auto824085BB_val;
+
+    // Implementation
+    auto824085BB_val = lp_location;
+    {
+    }
+    return null;
+}
+
+string libNovC_gf_NC_MapNewsReport (string lp_map) {
+    // Implementation
+    return UserDataGetMovie("Maps", libComC_gf_CC_MapUserDataInstance(lp_map), "NewsReport", 1);
+}
+
+int libNovC_gf_NC_MissionRewardsBonusPossible (string lp_map) {
+    int autoE95834CF_ae;
+    int autoE95834CF_ai;
+    int auto035CF837_ai;
+    int auto035CF837_ae;
+    int auto02C35687_ai;
+    int auto02C35687_ae;
+
+    // Variable Declarations
+    string lv_indexObjective;
+    string lv_indexPerk;
+    string lv_indexTechItem;
+    int lv_bonusCount;
+
+    // Variable Initialization
+
+    // Implementation
+    autoE95834CF_ae = CatalogFieldValueCount(c_gameCatalogMap, lp_map, "ObjectiveArray", 1);
+    autoE95834CF_ai = 1;
+    while (autoE95834CF_ai <= autoE95834CF_ae) {
+        lv_indexObjective = CatalogFieldValueGet(c_gameCatalogMap, lp_map, "ObjectiveArray["+IntToString(autoE95834CF_ai-1)+"]", 1);
+        autoE95834CF_ai = autoE95834CF_ai + 1;
+        if ((libComC_gf_MissionObjectiveIsPrimary(lv_indexObjective) == false)) {
+            auto035CF837_ai = 1;
+            auto035CF837_ae = UserDataInstanceCount("CampaignPerk")+1;
+            while (auto035CF837_ai < auto035CF837_ae) {
+                lv_indexPerk = UserDataInstance("CampaignPerk", auto035CF837_ai);
+                auto035CF837_ai = auto035CF837_ai+1;
+                if ((libComC_gf_CC_PerkRequiredObjective(lv_indexPerk) == lv_indexObjective)) {
+                    lv_bonusCount += 1;
+                    break;
+                }
+
+            }
+            auto02C35687_ai = 1;
+            auto02C35687_ae = UserDataInstanceCount("CampaignTechItem")+1;
+            while (auto02C35687_ai < auto02C35687_ae) {
+                lv_indexTechItem = UserDataInstance("CampaignTechItem", auto02C35687_ai);
+                auto02C35687_ai = auto02C35687_ai+1;
+                if ((libNovC_gf_NC_ArmyTechItemRequiredObjective(lv_indexTechItem) == lv_indexObjective)) {
+                    lv_bonusCount += 1;
+                    break;
+                }
+
+            }
+        }
+
+    }
+    return lv_bonusCount;
+}
+
+string libNovC_gf_NC_MissionContainingObjective (string lp_objective) {
+    int auto354DDF56_ae;
+    int auto354DDF56_ai;
+    int autoBE705D75_ae;
+    int autoBE705D75_ai;
+
+    // Variable Declarations
+    string lv_indexMission;
+    string lv_indexObjective;
+
+    // Variable Initialization
+
+    // Implementation
+    auto354DDF56_ae = CatalogEntryCount(c_gameCatalogMap);
+    auto354DDF56_ai = 1;
+    while (auto354DDF56_ai <= auto354DDF56_ae) {
+        lv_indexMission = CatalogEntryGet(c_gameCatalogMap, auto354DDF56_ai);
+        auto354DDF56_ai = auto354DDF56_ai + 1;
+        if (CatalogFieldValueGet(c_gameCatalogMap, lv_indexMission, "Kind", 1) == "Mission" && libComC_gf_CC_MapInternal(lv_indexMission) == false) {
+            autoBE705D75_ae = CatalogFieldValueCount(c_gameCatalogMap, lv_indexMission, "ObjectiveArray", 1);
+            autoBE705D75_ai = 1;
+            while (autoBE705D75_ai <= autoBE705D75_ae) {
+                lv_indexObjective = CatalogFieldValueGet(c_gameCatalogMap, lv_indexMission, "ObjectiveArray["+IntToString(autoBE705D75_ai-1)+"]", 1);
+                autoBE705D75_ai = autoBE705D75_ai + 1;
+                if ((lv_indexObjective == lp_objective)) {
+                    return lv_indexMission;
+                }
+
+            }
+        }    
+    }
+    return null;
+}
+
+string libNovC_gf_NC_MissionCampaignScreenImage (string lp_map) {
+    // Implementation
+    return UserDataGetImagePath("Maps", libComC_gf_CC_MapUserDataInstance(lp_map), "CampaignScreenImage", 1);
+}
+
+bool libNovC_gf_NC_MissionIsInstallation (string lp_mission) {
+    // Implementation
+    if ((lp_mission == "Nova01")) {
+        return true;
+    }
+
+    return false;
+}
+
+string libNovC_gf_NC_MissionFinal () {
+    int autoAFABD537_ae;
+    int autoAFABD537_ai;
+
+    // Variable Declarations
+    int lv_mapIndex;
+    string lv_finalMap;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((GameIsOnline() == false) && (GameCheatsEnabled(c_gameCheatCategoryDevelopment) == true)) {
+        autoAFABD537_ae = 1;
+        autoAFABD537_ai = -1;
+        lv_mapIndex = CatalogEntryCount(c_gameCatalogMap);
+        for ( ; ( (autoAFABD537_ai >= 0 && lv_mapIndex <= autoAFABD537_ae) || (autoAFABD537_ai <= 0 && lv_mapIndex >= autoAFABD537_ae) ) ; lv_mapIndex += autoAFABD537_ai ) {
+            lv_finalMap = ((CatalogEntryGet(c_gameCatalogMap, lv_mapIndex)));
+            if ((libComC_gf_CampaignMapTypeCheck(lv_finalMap, c_mapKindMission) == true)) {
+                return lv_finalMap;
+            }
+
+        }
+    }
+
+    if ((PlayerHasLicense(1, c_playerLicenseNovaPack2) == true) && (PlayerHasLicense(1, c_playerLicenseNovaPack3) == false)) {
+        return "Nova06";
+    }
+    else if ((PlayerHasLicense(1, c_playerLicenseNovaPack3) == true)) {
+        return "Nova09";
+    }
+    return "Nova03";
+}
+
+void libNovC_gf_EnableDisableTechItemForUnit (bool lp_enableDisable, string lp_techItem, string lp_armyUnit) {
+    int autoE0189707_ae;
+    int autoE0189707_ai;
+
+    // Variable Declarations
+    int lv_upgradeLevel;
+    int lv_unitIndex;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((lp_enableDisable == true)) {
+        lv_upgradeLevel = 1;
+    }
+    else {
+        lv_upgradeLevel = 0;
+    }
+    autoE0189707_ae = UserDataFieldValueCount("CampaignTechItem", "UnitList");
+    autoE0189707_ai = 1;
+    lv_unitIndex = 1;
+    for ( ; ( (autoE0189707_ai >= 0 && lv_unitIndex <= autoE0189707_ae) || (autoE0189707_ai <= 0 && lv_unitIndex >= autoE0189707_ae) ) ; lv_unitIndex += autoE0189707_ai ) {
+        if ((libNovC_gf_NC_ArmyTechItemUnitFromIndex(lp_techItem, lv_unitIndex) != null) && (libNovC_gf_NC_ArmyTechItemUnitFromIndex(lp_techItem, lv_unitIndex) == lp_armyUnit)) {
+            if ((libNovC_gf_NC_ArmyTechItemUpgradeFromIndex(lp_techItem, lv_unitIndex) != null)) {
+                libNtve_gf_SetUpgradeLevelForPlayer(libNovC_gv_nCC_NovaPlayerSlot, libNovC_gf_NC_ArmyTechItemUpgradeFromIndex(lp_techItem, lv_unitIndex), lv_upgradeLevel);
+                return ;
+            }
+
+        }
+
+    }
+    TextExpressionSetToken("Param/Expression/lib_NovC_12EA2EFD", "A", StringToText((lp_armyUnit)));
+    TextExpressionSetToken("Param/Expression/lib_NovC_12EA2EFD", "B", UserDataGetText("CampaignTechItem", lp_techItem, "Name", 1));
+    TriggerDebugOutput(1, TextExpressionAssemble("Param/Expression/lib_NovC_12EA2EFD"), true);
+}
+
+void libNovC_gf_EnableDisableTechItemForAllUnits (bool lp_enableDisable, string lp_techItem) {
+    int autoE05CED4F_ae;
+    int autoE05CED4F_ai;
+
+    // Variable Declarations
+    int lv_upgradeLevel;
+    int lv_unitIndex;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((lp_enableDisable == true)) {
+        lv_upgradeLevel = 1;
+    }
+    else {
+        lv_upgradeLevel = 0;
+    }
+    autoE05CED4F_ae = UserDataFieldValueCount("CampaignTechItem", "UnitList");
+    autoE05CED4F_ai = 1;
+    lv_unitIndex = 1;
+    for ( ; ( (autoE05CED4F_ai >= 0 && lv_unitIndex <= autoE05CED4F_ae) || (autoE05CED4F_ai <= 0 && lv_unitIndex >= autoE05CED4F_ae) ) ; lv_unitIndex += autoE05CED4F_ai ) {
+        if ((libNovC_gf_NC_ArmyTechItemUnitFromIndex(lp_techItem, lv_unitIndex) != null)) {
+            if ((libNovC_gf_NC_ArmyTechItemUpgradeFromIndex(lp_techItem, lv_unitIndex) != null)) {
+                libNtve_gf_SetUpgradeLevelForPlayer(libNovC_gv_nCC_NovaPlayerSlot, libNovC_gf_NC_ArmyTechItemUpgradeFromIndex(lp_techItem, lv_unitIndex), lv_upgradeLevel);
+            }
+
+        }
+
+    }
+}
+
+void libNovC_gf_NC_UpdateArmyTechItemStates () {
+    int auto582273BF_ai;
+    int auto582273BF_ae;
+
+    // Variable Declarations
+    string lv_indexTechItem;
+
+    // Variable Initialization
+
+    // Implementation
+    auto582273BF_ai = 1;
+    auto582273BF_ae = UserDataInstanceCount("CampaignTechItem")+1;
+    while (auto582273BF_ai < auto582273BF_ae) {
+        lv_indexTechItem = UserDataInstance("CampaignTechItem", auto582273BF_ai);
+        auto582273BF_ai = auto582273BF_ai+1;
+        if ((libNovC_gf_NC_ArmyTechItemUnlocked(lv_indexTechItem) == true)) {
+            libNovC_gf_NC_ArmyTechItemStateSet(lv_indexTechItem, libNovC_ge_NC_ArmyTechItemState_Unlocked);
+        }
+        else if ((libNovC_gf_NC_ArmyTechItemMissed(lv_indexTechItem) == true)) {
+            libNovC_gf_NC_ArmyTechItemStateSet(lv_indexTechItem, libNovC_ge_NC_ArmyTechItemState_Missed);
+        }
+        else if (true) {
+            libNovC_gf_NC_ArmyTechItemStateSet(lv_indexTechItem, libNovC_ge_NC_ArmyTechItemState_Locked);
+        }
+    }
+}
+
+void libNovC_gf_NC_ArmyTechItemAssignedUnitSet (string lp_techItem, string lp_assignedUnit) {
+    // Implementation
+    UserDataSetGameLink("CampaignTechItem", lp_techItem, "AssignedUnit", 1, lp_assignedUnit);
+}
+
+void libNovC_gf_NC_ArmyTechItemStateSet (string lp_techItem, int lp_armyTechItemState) {
+    // Implementation
+    UserDataSetInt("CampaignTechItem", lp_techItem, "State", 1, (lp_armyTechItemState));
+}
+
+void libNovC_gf_NC_ArmyTechItemIsNewSetFromIndex (string lp_techItem, int lp_unitIndex, bool lp_isNewStatus) {
+    // Implementation
+    UserDataSetInt("CampaignTechItem", lp_techItem, "IsNewList", lp_unitIndex, BoolToInt(lp_isNewStatus));
+}
+
+int libNovC_gf_NC_ArmyTechItemState (string lp_techItem) {
+    // Variable Declarations
+    int lv_techItemStateInt;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_techItemStateInt = UserDataGetInt("CampaignTechItem", lp_techItem, "State", 1);
+    return lv_techItemStateInt;
+}
+
+bool libNovC_gf_NC_ArmyTechItemStateCheck (string lp_techItem, int lp_armyTechItemState) {
+    // Implementation
+    return (UserDataGetInt("CampaignTechItem", lp_techItem, "State", 1) == (lp_armyTechItemState));
+}
+
+bool libNovC_gf_NC_ArmyTechItemUnlocked (string lp_techItem) {
+    // Implementation
+    if ((libNovC_gf_NC_ArmyTechItemRequiredMission(lp_techItem) != null)) {
+        if ((libComC_gf_MissionStatusCheck(libNovC_gf_NC_ArmyTechItemRequiredMission(lp_techItem), libComC_ge_MissionStatus_Completed) == true)) {
+            return true;
+        }
+
+    }
+
+    if ((libNovC_gf_NC_ArmyTechItemRequiredObjective(lp_techItem) != null)) {
+        if ((libComC_gf_MissionObjectiveStateCheck(libNovC_gf_NC_ArmyTechItemRequiredObjective(lp_techItem), libComC_ge_MissionObjectiveState_Completed) == true) && (libComC_gf_MissionStatusCheck(libNovC_gf_NC_MissionContainingObjective(libNovC_gf_NC_ArmyTechItemRequiredObjective(lp_techItem)), libComC_ge_MissionStatus_Completed) == true)) {
+            return true;
+        }
+
+    }
+
+    return false;
+}
+
+bool libNovC_gf_NC_ArmyTechItemMissed (string lp_techItem) {
+    // Implementation
+    if ((libNovC_gf_NC_ArmyTechItemRequiredObjective(lp_techItem) != null) && (libComC_gf_MissionObjectiveStateCheck(libNovC_gf_NC_ArmyTechItemRequiredObjective(lp_techItem), libComC_ge_MissionObjectiveState_Completed) != true) && (libComC_gf_MissionStatusCheck(libNovC_gf_NC_MissionContainingObjective(libNovC_gf_NC_ArmyTechItemRequiredObjective(lp_techItem)), libComC_ge_MissionStatus_Completed) == true)) {
+        return true;
+    }
+
+    return false;
+}
+
+text libNovC_gf_NC_ArmyTechItemName (string lp_techItem) {
+    // Implementation
+    return UserDataGetText("CampaignTechItem", lp_techItem, "Name", 1);
+}
+
+string libNovC_gf_NC_ArmyTechItemImage (string lp_techItem) {
+    // Implementation
+    return UserDataGetImagePath("CampaignTechItem", lp_techItem, "Icon", 1);
+}
+
+text libNovC_gf_NC_ArmyTechItemDescriptionFromIndex (string lp_techItem, int lp_upgradeIndex) {
+    // Implementation
+    return UserDataGetText("CampaignTechItem", lp_techItem, "Description", lp_upgradeIndex);
+}
+
+text libNovC_gf_NC_ArmyTechItemTooltipReward (string lp_techItem) {
+    // Implementation
+    return UserDataGetText("CampaignTechItem", lp_techItem, "TooltipReward", 1);
+}
+
+string libNovC_gf_NC_ArmyTechItemAssignedUnit (string lp_techItem) {
+    // Implementation
+    return UserDataGetGameLink("CampaignTechItem", lp_techItem, "AssignedUnit", 1);
+}
+
+bool libNovC_gf_NC_ArmyTechItemIsNewFromIndex (string lp_techItem, int lp_unitIndex) {
+    // Implementation
+    return (UserDataGetInt("CampaignTechItem", lp_techItem, "IsNewList", lp_unitIndex) == 1);
+}
+
+string libNovC_gf_NC_ArmyTechItemUnitFromIndex (string lp_techItem, int lp_unitIndex) {
+    // Implementation
+    return UserDataGetGameLink("CampaignTechItem", lp_techItem, "UnitList", lp_unitIndex);
+}
+
+string libNovC_gf_NC_ArmyTechItemUpgradeFromIndex (string lp_techItem, int lp_upgradeIndex) {
+    // Implementation
+    return UserDataGetUpgrade("CampaignTechItem", lp_techItem, "UpgradeList", lp_upgradeIndex);
+}
+
+string libNovC_gf_NC_ArmyTechItemMovieFromIndex (string lp_techItem, int lp_upgradeIndex) {
+    // Implementation
+    return UserDataGetMovie("CampaignTechItem", lp_techItem, "MovieList", lp_upgradeIndex);
+}
+
+string libNovC_gf_NC_ArmyTechItemRequiredMission (string lp_techItem) {
+    // Implementation
+    return UserDataGetGameLink("CampaignTechItem", lp_techItem, "RequiredMission", 1);
+}
+
+string libNovC_gf_NC_ArmyTechItemRequiredObjective (string lp_techItem) {
+    // Implementation
+    return UserDataGetGameLink("CampaignTechItem", lp_techItem, "RequiredObjective", 1);
+}
+
+string libNovC_gf_NC_ArmyTechItemSourceMission (string lp_techItem) {
+    int autoF020F810_ae;
+    int autoF020F810_ai;
+    int auto3FA65B61_ae;
+    int auto3FA65B61_ai;
+
+    // Variable Declarations
+    string lv_indexMission;
+    string lv_indexObjective;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((libNovC_gf_NC_ArmyTechItemRequiredMission(lp_techItem) != null)) {
+        return libNovC_gf_NC_ArmyTechItemRequiredMission(lp_techItem);
+    }
+
+    if ((libNovC_gf_NC_ArmyTechItemRequiredObjective(lp_techItem) != null)) {
+        autoF020F810_ae = CatalogEntryCount(c_gameCatalogMap);
+        autoF020F810_ai = 1;
+        while (autoF020F810_ai <= autoF020F810_ae) {
+            lv_indexMission = CatalogEntryGet(c_gameCatalogMap, autoF020F810_ai);
+            autoF020F810_ai = autoF020F810_ai + 1;
+            if (CatalogFieldValueGet(c_gameCatalogMap, lv_indexMission, "Kind", 1) == "Mission" && libComC_gf_CC_MapInternal(lv_indexMission) == false) {
+                auto3FA65B61_ae = CatalogFieldValueCount(c_gameCatalogMap, lv_indexMission, "ObjectiveArray", 1);
+                auto3FA65B61_ai = 1;
+                while (auto3FA65B61_ai <= auto3FA65B61_ae) {
+                    lv_indexObjective = CatalogFieldValueGet(c_gameCatalogMap, lv_indexMission, "ObjectiveArray["+IntToString(auto3FA65B61_ai-1)+"]", 1);
+                    auto3FA65B61_ai = auto3FA65B61_ai + 1;
+                    if ((libNovC_gf_NC_ArmyTechItemRequiredObjective(lp_techItem) == lv_indexObjective)) {
+                        return lv_indexMission;
+                    }
+
+                }
+            }    
+        }
+    }
+
+    return null;
+}
+
+bool libNovC_gf_NC_ArmyTechItemNewItemsAvailable () {
+    int autoB23C1D34_ai;
+    int autoB23C1D34_ae;
+    int auto28D2A37B_ae;
+    int auto28D2A37B_ai;
+
+    // Variable Declarations
+    string lv_indexTechItem;
+    int lv_unitIndex;
+
+    // Variable Initialization
+
+    // Implementation
+    autoB23C1D34_ai = 1;
+    autoB23C1D34_ae = UserDataInstanceCount("CampaignTechItem")+1;
+    while (autoB23C1D34_ai < autoB23C1D34_ae) {
+        lv_indexTechItem = UserDataInstance("CampaignTechItem", autoB23C1D34_ai);
+        autoB23C1D34_ai = autoB23C1D34_ai+1;
+        if ((libNovC_gf_NC_ArmyTechItemStateCheck(lv_indexTechItem, libNovC_ge_NC_ArmyTechItemState_Unlocked) == true)) {
+            auto28D2A37B_ae = UserDataFieldValueCount("CampaignTechItem", "IsNewList");
+            auto28D2A37B_ai = 1;
+            lv_unitIndex = 1;
+            for ( ; ( (auto28D2A37B_ai >= 0 && lv_unitIndex <= auto28D2A37B_ae) || (auto28D2A37B_ai <= 0 && lv_unitIndex >= auto28D2A37B_ae) ) ; lv_unitIndex += auto28D2A37B_ai ) {
+                if ((libComC_gf_NC_StoryArmyUnitState(libNovC_gf_NC_ArmyTechItemUnitFromIndex(lv_indexTechItem, lv_unitIndex)) != c_armyUnitStateLocked) && (libNovC_gf_NC_ArmyTechItemIsNewFromIndex(lv_indexTechItem, lv_unitIndex) == true)) {
+                    return true;
+                }
+
+            }
+        }
+
+    }
+    return false;
+}
+
+void libNovC_gf_NC_UpdateArmyUnitStates () {
+    int auto07B2E483_ae;
+    int auto07B2E483_ai;
+    int auto615627FD_ae;
+    int auto615627FD_ai;
+    int autoAC279DD2_ae;
+    int autoAC279DD2_ai;
+
+    // Variable Declarations
+    string lv_indexCategory;
+    string lv_indexCategory2;
+
+    // Variable Initialization
+
+    // Implementation
+    auto07B2E483_ae = CatalogEntryCount(c_gameCatalogArmyCategory);
+    auto07B2E483_ai = 1;
+    while (auto07B2E483_ai <= auto07B2E483_ae) {
+        lv_indexCategory = CatalogEntryGet(c_gameCatalogArmyCategory, auto07B2E483_ai);
+        if ((libComC_gf_CC_ArmyCategoryState(lv_indexCategory) == c_armyCategoryStateLocked)) {
+            autoAC279DD2_ae = CatalogFieldValueCount(c_gameCatalogArmyCategory, lv_indexCategory, "ArmyUnitArray", 1);
+            autoAC279DD2_ai = 1;
+            while (autoAC279DD2_ai <= autoAC279DD2_ae) {
+                lv_indexCategory2 = CatalogFieldValueGet(c_gameCatalogArmyCategory, lv_indexCategory, "ArmyUnitArray["+IntToString(autoAC279DD2_ai-1)+"]", 1);
+                libComC_gf_NC_SetArmyUnitState(lv_indexCategory2, c_armyUnitStateLocked);
+                autoAC279DD2_ai = autoAC279DD2_ai + 1;
+            }
+        }
+        else {
+            auto615627FD_ae = CatalogFieldValueCount(c_gameCatalogArmyCategory, lv_indexCategory, "ArmyUnitArray", 1);
+            auto615627FD_ai = 1;
+            while (auto615627FD_ai <= auto615627FD_ae) {
+                lv_indexCategory2 = CatalogFieldValueGet(c_gameCatalogArmyCategory, lv_indexCategory, "ArmyUnitArray["+IntToString(auto615627FD_ai-1)+"]", 1);
+                libComC_gf_NC_SetArmyUnitState(lv_indexCategory2, c_armyUnitStateUnlocked);
+                auto615627FD_ai = auto615627FD_ai + 1;
+            }
+        }
+        auto07B2E483_ai = auto07B2E483_ai + 1;
+    }
+}
+
+bool libNovC_gf_ArmyHasUnusedTech () {
+    // Implementation
+    return false;
+}
+
+void libNovC_gf_NC_SaveArmyTechItemsToBank (bank lp_bank, string lp_section) {
+    // Implementation
+    UserDataSaveType("CampaignTechItem", lp_bank, lp_section);
+}
+
+void libNovC_gf_NC_LoadArmyTechItemsFromBank (bank lp_bank, string lp_section) {
+    // Implementation
+    UserDataLoadType("CampaignTechItem", lp_bank, lp_section);
+}
+
+void libNovC_gf_NC_ApplyArmyTechItems () {
+    int autoCAB483C4_ai;
+    int autoCAB483C4_ae;
+    int auto8D373640_ai;
+    int auto8D373640_ae;
+
+    // Variable Declarations
+    string lv_indexTechItem;
+
+    // Variable Initialization
+
+    // Implementation
+    autoCAB483C4_ai = 1;
+    autoCAB483C4_ae = UserDataInstanceCount("CampaignTechItem")+1;
+    while (autoCAB483C4_ai < autoCAB483C4_ae) {
+        lv_indexTechItem = UserDataInstance("CampaignTechItem", autoCAB483C4_ai);
+        autoCAB483C4_ai = autoCAB483C4_ai+1;
+        libNovC_gf_EnableDisableTechItemForAllUnits(false, lv_indexTechItem);
+    }
+    auto8D373640_ai = 1;
+    auto8D373640_ae = UserDataInstanceCount("CampaignTechItem")+1;
+    while (auto8D373640_ai < auto8D373640_ae) {
+        lv_indexTechItem = UserDataInstance("CampaignTechItem", auto8D373640_ai);
+        auto8D373640_ai = auto8D373640_ai+1;
+        if ((libNovC_gf_NC_ArmyTechItemAssignedUnit(lv_indexTechItem) != null)) {
+            libNovC_gf_EnableDisableTechItemForUnit(true, lv_indexTechItem, libNovC_gf_NC_ArmyTechItemAssignedUnit(lv_indexTechItem));
+        }
+
+    }
+}
+
+void libNovC_gf_NC_ResetArmyTechItems () {
+    int auto4ECE4D3A_ai;
+    int auto4ECE4D3A_ae;
+
+    // Variable Declarations
+    string lv_indexTechItem;
+
+    // Variable Initialization
+
+    // Implementation
+    auto4ECE4D3A_ai = 1;
+    auto4ECE4D3A_ae = UserDataInstanceCount("CampaignTechItem")+1;
+    while (auto4ECE4D3A_ai < auto4ECE4D3A_ae) {
+        lv_indexTechItem = UserDataInstance("CampaignTechItem", auto4ECE4D3A_ai);
+        auto4ECE4D3A_ai = auto4ECE4D3A_ai+1;
+        if ((libNovC_gf_NC_ArmyTechItemAssignedUnit(lv_indexTechItem) != null)) {
+            libNovC_gf_EnableDisableTechItemForUnit(false, lv_indexTechItem, libNovC_gf_NC_ArmyTechItemAssignedUnit(lv_indexTechItem));
+        }
+
+        UserDataResetInstance("CampaignTechItem", lv_indexTechItem);
+    }
+}
+
+string libNovC_gf_NovaActiveEquipmentInSlot (string lp_equipmentSlot) {
+    int autoDF5C6C87_ai;
+    int autoDF5C6C87_ae;
+
+    // Variable Declarations
+    string lv_indexEquipment;
+
+    // Variable Initialization
+
+    // Implementation
+    autoDF5C6C87_ai = 1;
+    autoDF5C6C87_ae = UserDataInstanceCount("CampaignPerk")+1;
+    while (autoDF5C6C87_ai < autoDF5C6C87_ae) {
+        lv_indexEquipment = UserDataInstance("CampaignPerk", autoDF5C6C87_ai);
+        autoDF5C6C87_ai = autoDF5C6C87_ai+1;
+        if( libComC_gf_CC_PerkGroupOfPerk(lv_indexEquipment) == lp_equipmentSlot ) {
+            if ((libComC_gf_CC_PerkStateCheck(lv_indexEquipment, libComC_ge_CC_PerkState_Active) == true)) {
+                return lv_indexEquipment;
+            }
+
+        }    
+    }
+    return null;
+}
+
+void libNovC_gf_EnableDisableNovaEquipment (bool lp_enableDisable, string lp_equipment) {
+    int autoA038E9B9_ae;
+    int autoA038E9B9_ai;
+    int autoE0B1E26B_ae;
+    int autoE0B1E26B_ai;
+
+    // Variable Declarations
+    int lv_upgradeLevel;
+    int lv_upgradeIndex;
+    int lv_abilityIndex;
+    bool lv_allowDisallow;
+
+    // Variable Initialization
+    lv_allowDisallow = true;
+
+    // Implementation
+    if ((lp_enableDisable == true)) {
+        lv_upgradeLevel = 1;
+        lv_allowDisallow = true;
+    }
+    else {
+        lv_upgradeLevel = 0;
+        lv_allowDisallow = false;
+    }
+    autoA038E9B9_ae = UserDataFieldValueCount("CampaignPerk", "Upgrade");
+    autoA038E9B9_ai = 1;
+    lv_upgradeIndex = 1;
+    for ( ; ( (autoA038E9B9_ai >= 0 && lv_upgradeIndex <= autoA038E9B9_ae) || (autoA038E9B9_ai <= 0 && lv_upgradeIndex >= autoA038E9B9_ae) ) ; lv_upgradeIndex += autoA038E9B9_ai ) {
+        if ((UserDataGetUpgrade("CampaignPerk", lp_equipment, "Upgrade", lv_upgradeIndex) != null)) {
+            libNtve_gf_SetUpgradeLevelForPlayer(libNovC_gv_nCC_NovaPlayerSlot, UserDataGetUpgrade("CampaignPerk", lp_equipment, "Upgrade", lv_upgradeIndex), lv_upgradeLevel);
+        }
+
+    }
+    autoE0B1E26B_ae = UserDataFieldValueCount("CampaignPerk", "AbilityCommand");
+    autoE0B1E26B_ai = 1;
+    lv_abilityIndex = 1;
+    for ( ; ( (autoE0B1E26B_ai >= 0 && lv_abilityIndex <= autoE0B1E26B_ae) || (autoE0B1E26B_ai <= 0 && lv_abilityIndex >= autoE0B1E26B_ae) ) ; lv_abilityIndex += autoE0B1E26B_ai ) {
+        if ((UserDataGetAbilCmd("CampaignPerk", lp_equipment, "AbilityCommand", lv_abilityIndex) != null)) {
+            TechTreeAbilityAllow(libNovC_gv_nCC_NovaPlayerSlot, UserDataGetAbilCmd("CampaignPerk", lp_equipment, "AbilityCommand", lv_abilityIndex), lv_allowDisallow);
+        }
+
+    }
+}
+
+void libNovC_gf_UnequipNovaEquipmentForSlot (string lp_equipmentSlot) {
+    int autoA0C29A3F_ai;
+    int autoA0C29A3F_ae;
+
+    // Variable Declarations
+    string lv_indexEquipment;
+
+    // Variable Initialization
+
+    // Implementation
+    autoA0C29A3F_ai = 1;
+    autoA0C29A3F_ae = UserDataInstanceCount("CampaignPerk")+1;
+    while (autoA0C29A3F_ai < autoA0C29A3F_ae) {
+        lv_indexEquipment = UserDataInstance("CampaignPerk", autoA0C29A3F_ai);
+        autoA0C29A3F_ai = autoA0C29A3F_ai+1;
+        if ((libComC_gf_CC_PerkGroupOfPerk(lv_indexEquipment) == lp_equipmentSlot)) {
+            libNovC_gf_EnableDisableNovaEquipment(false, lv_indexEquipment);
+        }
+
+    }
+}
+
+void libNovC_gf_NC_PerkIsNewSet (string lp_campaignPerk, bool lp_isNewState) {
+    // Implementation
+    UserDataSetInt("CampaignPerk", lp_campaignPerk, "IsNew", 1, BoolToInt(lp_isNewState));
+}
+
+bool libNovC_gf_NC_EquipmentUnlocked (string lp_equipment) {
+    // Implementation
+    if ((libComC_gf_CC_PerkRequiredMission(lp_equipment) != null)) {
+        if ((libComC_gf_MissionStatusCheck(libComC_gf_CC_PerkRequiredMission(lp_equipment), libComC_ge_MissionStatus_Completed) != true)) {
+            return false;
+        }
+
+    }
+
+    if ((libComC_gf_CC_PerkRequiredObjective(lp_equipment) != null)) {
+        if (((libComC_gf_MissionObjectiveStateCheck(libComC_gf_CC_PerkRequiredObjective(lp_equipment), libComC_ge_MissionObjectiveState_Completed) != true) || (libComC_gf_MissionStatusCheck(libNovC_gf_NC_MissionContainingObjective(libComC_gf_CC_PerkRequiredObjective(lp_equipment)), libComC_ge_MissionStatus_Completed) != true))) {
+            return false;
+        }
+
+    }
+
+    return true;
+}
+
+bool libNovC_gf_NC_EquipmentMissed (string lp_equipment) {
+    // Implementation
+    if ((libComC_gf_CC_PerkRequiredObjective(lp_equipment) != null) && (libComC_gf_MissionObjectiveStateCheck(libComC_gf_CC_PerkRequiredObjective(lp_equipment), libComC_ge_MissionObjectiveState_Completed) != true) && (libComC_gf_MissionStatusCheck(libNovC_gf_NC_MissionContainingObjective(libComC_gf_CC_PerkRequiredObjective(lp_equipment)), libComC_ge_MissionStatus_Completed) == true) && (libNovC_gf_NC_PerkIsSecret(lp_equipment) == false)) {
+        return true;
+    }
+
+    return false;
+}
+
+int libNovC_gf_NC_PerkCost (string lp_campaignPerk) {
+    // Implementation
+    if ((lp_campaignPerk == null)) {
+        return 0;
+    }
+
+    return UserDataGetInt("CampaignPerk", lp_campaignPerk, "Cost", 1);
+}
+
+text libNovC_gf_NC_PerkDescriptionExtra (string lp_campaignPerk) {
+    // Implementation
+    if ((lp_campaignPerk == null)) {
+        return StringToText("");
+    }
+
+    return UserDataGetText("CampaignPerk", lp_campaignPerk, "DescriptionExtra", 1);
+}
+
+string libNovC_gf_NC_PerkUISound (string lp_campaignPerk) {
+    // Implementation
+    if ((lp_campaignPerk == null)) {
+        return null;
+    }
+
+    return UserDataGetSound("CampaignPerk", lp_campaignPerk, "UISound", 1);
+}
+
+text libNovC_gf_NC_PerkTooltipReward (string lp_campaignPerk) {
+    // Implementation
+    return UserDataGetText("CampaignPerk", lp_campaignPerk, "TooltipReward", 1);
+}
+
+bool libNovC_gf_NC_PerkIsNew (string lp_campaignPerk) {
+    // Implementation
+    return (UserDataGetInt("CampaignPerk", lp_campaignPerk, "IsNew", 1) == 1);
+}
+
+bool libNovC_gf_NC_PerkIsSecret (string lp_perk) {
+    // Implementation
+    if ((UserDataGetInt("CampaignPerk", lp_perk, "IsSecret", 1) == 1)) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+bool libNovC_gf_NC_PerkNewEquipmentAvailable () {
+    int auto94FE73FD_ai;
+    int auto94FE73FD_ae;
+
+    // Variable Declarations
+    string lv_indexPerk;
+
+    // Variable Initialization
+
+    // Implementation
+    auto94FE73FD_ai = 1;
+    auto94FE73FD_ae = UserDataInstanceCount("CampaignPerk")+1;
+    while (auto94FE73FD_ai < auto94FE73FD_ae) {
+        lv_indexPerk = UserDataInstance("CampaignPerk", auto94FE73FD_ai);
+        auto94FE73FD_ai = auto94FE73FD_ai+1;
+        if (((libComC_gf_CC_PerkStateCheck(lv_indexPerk, libComC_ge_CC_PerkState_Unlocked) == true) || (libComC_gf_CC_PerkStateCheck(lv_indexPerk, libComC_ge_CC_PerkState_Active) == true)) && (libNovC_gf_NC_PerkIsNew(lv_indexPerk) == true)) {
+            return true;
+        }
+
+    }
+    return false;
+}
+
+bool libNovC_gf_NC_PerkUpgradesActive (string lp_perk, int lp_player) {
+    int auto118F1C02_ae;
+    int auto118F1C02_ai;
+
+    // Variable Declarations
+    int lv_upgradeIndex;
+
+    // Variable Initialization
+
+    // Implementation
+    auto118F1C02_ae = UserDataFieldValueCount("CampaignPerk", "Upgrade");
+    auto118F1C02_ai = 1;
+    lv_upgradeIndex = 1;
+    for ( ; ( (auto118F1C02_ai >= 0 && lv_upgradeIndex <= auto118F1C02_ae) || (auto118F1C02_ai <= 0 && lv_upgradeIndex >= auto118F1C02_ae) ) ; lv_upgradeIndex += auto118F1C02_ai ) {
+        if ((UserDataGetUpgrade("CampaignPerk", lp_perk, "Upgrade", lv_upgradeIndex) != null) && (TechTreeUpgradeCount(lp_player, UserDataGetUpgrade("CampaignPerk", lp_perk, "Upgrade", lv_upgradeIndex), c_techCountCompleteOnly) >= 1)) {
+            return true;
+        }
+
+    }
+    return false;
+}
+
+void libNovC_gf_NC_UpdatePerkStates () {
+    int auto33551025_ai;
+    int auto33551025_ae;
+    int auto9181DAE6_ai;
+    int auto9181DAE6_ae;
+    int autoE516D46A_ai;
+    int autoE516D46A_ae;
+
+    // Variable Declarations
+    string lv_indexPerk;
+    string lv_indexGroup;
+    string lv_activePerk;
+
+    // Variable Initialization
+
+    // Implementation
+    auto33551025_ai = 1;
+    auto33551025_ae = UserDataInstanceCount("CampaignPerk")+1;
+    while (auto33551025_ai < auto33551025_ae) {
+        lv_indexPerk = UserDataInstance("CampaignPerk", auto33551025_ai);
+        auto33551025_ai = auto33551025_ai+1;
+        if ((libNovC_gf_NC_EquipmentUnlocked(lv_indexPerk) == true)) {
+            if ((libComC_gf_CC_PerkStateCheck(lv_indexPerk, libComC_ge_CC_PerkState_Active) == false)) {
+                libComC_gf_CC_PerkStateSet(lv_indexPerk, libComC_ge_CC_PerkState_Unlocked);
+            }
+
+        }
+        else if ((libNovC_gf_NC_EquipmentMissed(lv_indexPerk) == true)) {
+            libComC_gf_CC_PerkStateSet(lv_indexPerk, libComC_ge_CC_PerkState_Missed);
+        }
+        else if (true) {
+            libComC_gf_CC_PerkStateSet(lv_indexPerk, libComC_ge_CC_PerkState_Locked);
+        }
+    }
+    auto9181DAE6_ai = 1;
+    auto9181DAE6_ae = UserDataInstanceCount("CampaignPerkGroup")+1;
+    while (auto9181DAE6_ai < auto9181DAE6_ae) {
+        lv_indexGroup = UserDataInstance("CampaignPerkGroup", auto9181DAE6_ai);
+        auto9181DAE6_ai = auto9181DAE6_ai+1;
+        lv_activePerk = null;
+        autoE516D46A_ai = 1;
+        autoE516D46A_ae = UserDataInstanceCount("CampaignPerk")+1;
+        while (autoE516D46A_ai < autoE516D46A_ae) {
+            lv_indexPerk = UserDataInstance("CampaignPerk", autoE516D46A_ai);
+            autoE516D46A_ai = autoE516D46A_ai+1;
+            if( libComC_gf_CC_PerkGroupOfPerk(lv_indexPerk) == lv_indexGroup ) {
+                if ((lv_activePerk == null) && (libNovC_gf_NC_PerkCost(lv_indexPerk) == 0) && (libComC_gf_CC_PerkUISlot(lv_indexPerk) != 0)) {
+                    lv_activePerk = lv_indexPerk;
+                }
+                else if ((libComC_gf_CC_PerkStateCheck(lv_indexPerk, libComC_ge_CC_PerkState_Active) == true)) {
+                    lv_activePerk = lv_indexPerk;
+                }
+            }    
+        }
+        if ((lv_activePerk != null)) {
+            libComC_gf_CC_PerkStateSet(lv_activePerk, libComC_ge_CC_PerkState_Active);
+        }
+
+    }
+}
+
+void libNovC_gf_NC_ResetTech () {
+    // Implementation
+    libNovC_gf_NC_ResetArmyTechItems();
+}
+
+void libNovC_gf_ApplyUserTechChoicestoPlayer (int lp_player) {
+    // Implementation
+    libComC_gf_CC_ApplyTech(lp_player);
+}
+
+void libNovC_gf_NC_UpdateOptionalTechUnlocks () {
+    int autoEE347AE1_ai;
+    int autoEE347AE1_ae;
+    int auto7F691D82_ai;
+    int auto7F691D82_ae;
+
+    // Variable Declarations
+    string lv_indexPerk;
+    string lv_indexTechItem;
+
+    // Variable Initialization
+
+    // Implementation
+    autoEE347AE1_ai = 1;
+    autoEE347AE1_ae = UserDataInstanceCount("CampaignPerk")+1;
+    while (autoEE347AE1_ai < autoEE347AE1_ae) {
+        lv_indexPerk = UserDataInstance("CampaignPerk", autoEE347AE1_ai);
+        autoEE347AE1_ai = autoEE347AE1_ai+1;
+        if ((libComC_gf_CC_PerkRequiredObjective(lv_indexPerk) != null) && ((libComC_gf_CC_PerkStateCheck(lv_indexPerk, libComC_ge_CC_PerkState_Locked) == true) || (libComC_gf_CC_PerkStateCheck(lv_indexPerk, libComC_ge_CC_PerkState_Missed) == true))) {
+            if ((libComC_gf_MissionObjectiveProgress(libComC_gf_CC_PerkRequiredObjective(lv_indexPerk)) == libComC_gf_MissionObjectiveItemCount(libComC_gf_CC_PerkRequiredObjective(lv_indexPerk)))) {
+                libComC_gf_CC_PerkStateSet(lv_indexPerk, libComC_ge_CC_PerkState_Unlocked);
+            }
+
+        }
+
+    }
+    auto7F691D82_ai = 1;
+    auto7F691D82_ae = UserDataInstanceCount("CampaignTechItem")+1;
+    while (auto7F691D82_ai < auto7F691D82_ae) {
+        lv_indexTechItem = UserDataInstance("CampaignTechItem", auto7F691D82_ai);
+        auto7F691D82_ai = auto7F691D82_ai+1;
+        if ((libNovC_gf_NC_ArmyTechItemRequiredObjective(lv_indexTechItem) != null) && ((libNovC_gf_NC_ArmyTechItemStateCheck(lv_indexTechItem, libNovC_ge_NC_ArmyTechItemState_Locked) == true) || (libNovC_gf_NC_ArmyTechItemStateCheck(lv_indexTechItem, libNovC_ge_NC_ArmyTechItemState_Missed) == true))) {
+            if ((libComC_gf_MissionObjectiveProgress(libNovC_gf_NC_ArmyTechItemRequiredObjective(lv_indexTechItem)) == libComC_gf_MissionObjectiveItemCount(libNovC_gf_NC_ArmyTechItemRequiredObjective(lv_indexTechItem)))) {
+                libNovC_gf_NC_ArmyTechItemStateSet(lv_indexTechItem, libNovC_ge_NC_ArmyTechItemState_Unlocked);
+            }
+
+        }
+
+    }
+}
+
+void libNovC_gf_NC_ApplyGeneralTech (int lp_player) {
+    // Implementation
+    TechTreeUpgradeAllow(lp_player, "CycloneAirUpgrade", false);
+    libNtve_gf_SetUpgradeLevelForPlayer(lp_player, "BlackOps", 1);
+    libNtve_gf_PlayerApplySkinReplacingExistingUnit(lp_player, "Nova_BlackOps", true);
+    libNtve_gf_SetUpgradeLevelForPlayer(lp_player, "NovaWarpOut", 1);
+    libComC_gf_EnableCampaignTechUnit(true, "CommandCenter", lp_player);
+    libComC_gf_EnableCampaignTechUnit(true, "Bunker", lp_player);
+    libComC_gf_EnableCampaignTechUnit(true, "SCV", lp_player);
+    libComC_gf_EnableCampaignTechUnit(true, "MissileTurret", lp_player);
+    libNtve_gf_SetUpgradeLevelForPlayer(lp_player, "SupplyDepotDrop", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(lp_player, "FireSuppressionSystems", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(lp_player, "NeoSteelFrame", 1);
+    TechTreeAbilityAllow(lp_player, AbilityCommand("UpgradeToOrbital", 0), true);
+    TechTreeAbilityAllow(lp_player, AbilityCommand("UpgradeToPlanetaryFortress", 0), false);
+    TechTreeUnitAllow(lp_player, "MercCompound", false);
+    if ((libComC_gf_MissionStatus("Nova02") == libComC_ge_MissionStatus_Completed)) {
+        TechTreeUnitAllow(lp_player, "GhostAcademy", true);
+    }
+    else {
+        TechTreeUnitAllow(lp_player, "GhostAcademy", false);
+    }
+}
+
+void libNovC_gf_NC_UpdateWeaponArmorUpgrades (int lp_player) {
+    // Implementation
+    TechTreeUpgradeAllow(lp_player, "TerranInfantryArmorsLevel1", true);
+    TechTreeUpgradeAllow(lp_player, "TerranInfantryWeaponsLevel1", true);
+    if ((libComC_gf_NC_StoryArmyUnitState("SiegeTank") == c_armyUnitStateUnlocked)) {
+        TechTreeUpgradeAllow(lp_player, "TerranVehicleAndShipArmorsLevel1", true);
+        TechTreeUpgradeAllow(lp_player, "TerranVehicleAndShipWeaponsLevel1", true);
+    }
+
+    if ((libComC_gf_NC_StoryArmyUnitState("Banshee") == c_armyUnitStateUnlocked)) {
+        TechTreeUpgradeAllow(lp_player, "TerranVehicleAndShipArmorsLevel2", true);
+        TechTreeUpgradeAllow(lp_player, "TerranVehicleAndShipWeaponsLevel2", true);
+        TechTreeUpgradeAllow(lp_player, "TerranInfantryArmorsLevel2", true);
+        TechTreeUpgradeAllow(lp_player, "TerranInfantryWeaponsLevel2", true);
+    }
+
+    if ((libComC_gf_MissionStatusCheck("Nova06", libComC_ge_MissionStatus_Completed) == true)) {
+        TechTreeUpgradeAllow(lp_player, "TerranVehicleAndShipArmorsLevel3", true);
+        TechTreeUpgradeAllow(lp_player, "TerranVehicleAndShipWeaponsLevel3", true);
+        TechTreeUpgradeAllow(lp_player, "TerranInfantryArmorsLevel3", true);
+        TechTreeUpgradeAllow(lp_player, "TerranInfantryWeaponsLevel3", true);
+    }
+
+}
+
+void libNovC_gf_NC_UpdateTerranAddOnStates (int lp_player) {
+    // Implementation
+    if ((libNovC_gf_NC_ArmyTechItemAssignedUnit("InternalizedTechModule") == "Marauder")) {
+        TechTreeAbilityAllow(lp_player, AbilityCommand("BarracksAddOns", 0), false);
+    }
+    else {
+        TechTreeAbilityAllow(lp_player, AbilityCommand("BarracksAddOns", 0), true);
+    }
+    if ((libComC_gf_CampaignTechUnitIsEnabled("Hellbat") == true)) {
+        TechTreeAbilityAllow(lp_player, AbilityCommand("FactoryAddOns", 1), true);
+        if ((libNovC_gf_NC_ArmyTechItemAssignedUnit("InternalizedTechModule") == "SiegeTank")) {
+            TechTreeAbilityAllow(lp_player, AbilityCommand("FactoryAddOns", 0), false);
+        }
+        else {
+            TechTreeAbilityAllow(lp_player, AbilityCommand("FactoryAddOns", 0), true);
+        }
+    }
+    else {
+        TechTreeAbilityAllow(lp_player, AbilityCommand("FactoryAddOns", 0), false);
+        TechTreeAbilityAllow(lp_player, AbilityCommand("FactoryAddOns", 1), false);
+    }
+    if ((libComC_gf_CampaignTechUnitIsEnabled("Banshee") == true)) {
+        if ((libComC_gf_CurrentMap() == "Nova04") && (libNovC_gf_NC_ArmyTechItemAssignedUnit("InternalizedTechModule") != "Banshee")) {
+            TechTreeAbilityAllow(lp_player, AbilityCommand("StarportAddOns", 1), false);
+        }
+        else {
+            TechTreeAbilityAllow(lp_player, AbilityCommand("StarportAddOns", 1), true);
+        }
+        if ((libComC_gf_CurrentMap() == "Nova04") && (libNovC_gf_NC_ArmyTechItemAssignedUnit("InternalizedTechModule") == "Banshee")) {
+            TechTreeAbilityAllow(lp_player, AbilityCommand("StarportAddOns", 0), false);
+        }
+        else {
+            TechTreeAbilityAllow(lp_player, AbilityCommand("StarportAddOns", 0), true);
+        }
+    }
+    else {
+        TechTreeAbilityAllow(lp_player, AbilityCommand("StarportAddOns", 0), false);
+        TechTreeAbilityAllow(lp_player, AbilityCommand("StarportAddOns", 1), false);
+    }
+}
+
+void libNovC_gf_NC_Initialize (string lp_map) {
+    playergroup auto015E2278_g;
+    int auto015E2278_p;
+    playergroup auto8236ADDB_g;
+    int auto8236ADDB_p;
+
+    // Variable Declarations
+    int lv_indexPlayer;
+    bool lv_inStoryMode;
+
+    // Variable Initialization
+
+    // Implementation
+    DialogControlHookupStandard(c_triggerControlTypePanel, "$parent/$parent/GameResultDialog");
+    libNovC_gv_resultsDialog = DialogControlLastCreated();
+    libComC_gf_CC_CampaignBankSetName("NCampaign");
+    libComC_gf_CC_ArchiveBankSetName("NArchive");
+    libComC_gf_CC_StoryBankSetName("NStory");
+    libComC_gf_CC_MapSetPath("Campaign/Nova/");
+    libComC_gf_CC_TransitionSetSaveMap("NStory01");
+    libComC_gf_CC_EventRegister(libComC_ge_CC_Event_CC_EventDataReset, libNovC_gt_NC_ResetCampaignData);
+    libComC_gf_CC_EventRegister(libComC_ge_CC_Event_CC_EventTechApply, libNovC_gt_NC_ApplyTech);
+    libComC_gf_CC_EventRegister(libComC_ge_CC_Event_CC_EventTransitionSave, libNovC_gt_NC_SaveTransitionVars);
+    libComC_gf_CC_EventRegister(libComC_ge_CC_Event_CC_EventTransitionLoad, libNovC_gt_NC_LoadTransitionVars);
+    libComC_gf_CC_EventRegister(libComC_ge_CC_Event_CC_EventTechUnitUpdate, libNovC_gt_NC_TechUnitUpdate);
+    libComC_gf_CC_EventRegister(libComC_ge_CC_Event_CC_EventTechUpdate, libNovC_gt_NC_UpdateTechStates);
+    libComC_gf_CC_EventRegister(libComC_ge_CC_Event_CC_EventMissionFlowUpdate, libNovC_gt_NC_UpdateMissionFlow);
+    libComC_gf_CC_EventRegister(libComC_ge_CC_Event_CC_EventStorySimulationStart, libNovC_gt_NC_StorySimulationStart);
+    libComC_gf_CC_EventRegister(libComC_ge_CC_Event_CC_EventStorySimulationEnd, libNovC_gt_NC_StorySimulationEnd);
+    libComC_gf_CC_EventRegister(libComC_ge_CC_Event_CC_EventMissionSimulationAgesUpdate, libNovC_gt_NC_MissionSimulationAgesUpate);
+    libComC_gf_CC_EventDispatch(libNovC_ge_NC_Event_CampaignOverrideEvents, "", "", false);
+    libComC_gf_CC_MapSetInstallation(libNovC_gf_NC_MissionIsInstallation(lp_map));
+    libComC_gf_CC_Initialize(lp_map);
+    libNovC_gf_NC_TransitionChooseNextMap();
+    UISetFrameVisible(PlayerGroupAll(), c_syncFrameTypeTeamResourceButton, false);
+    UISetFrameVisible(PlayerGroupAll(), c_syncFrameTypeAllianceButton, false);
+    libNovC_gf_NC_AutoHeatMapTestMode();
+    lv_inStoryMode = libComC_gf_CampaignMapTypeCheck(libComC_gf_CurrentMap(), c_mapKindStory);
+    libNovC_gf_NC_CampaignPreload();
+    libNCMI_gf_NM_VoidCampaignMissionInit();
+    TriggerDebugOutput(1, StringExternal("Param/Value/lib_NovC_760650CF"), false);
+    TransmissionSetOption(c_transmissionOptionHideAlertPanel, true);
+    auto015E2278_g = PlayerGroupAll(); 
+    auto015E2278_p = 1;
+    for ( ; auto015E2278_p <= PlayerGroupCount(auto015E2278_g) ; auto015E2278_p += BoolToInt(lv_indexPlayer == PlayerGroupPlayer(auto015E2278_g, auto015E2278_p)) ) {
+        lv_indexPlayer = PlayerGroupPlayer(auto015E2278_g, auto015E2278_p);
+        if ((PlayerType(lv_indexPlayer) != c_playerTypeUser)) {
+            PlayerSetState(lv_indexPlayer, c_playerStateDisplayInLeaderPanel, false);
+            PlayerSetState(lv_indexPlayer, c_playerStateDisplayInViewMenu, false);
+            PlayerSetState(lv_indexPlayer, c_playerStateShowScore, false);
+        }
+
+    }
+    if ((libComC_gf_CampaignMapTypeCheck(libComC_gf_CurrentMap(), c_mapKindStory) == true)) {
+        PlayerSetColorIndex(1, libNCMI_gf_CampaignPlayerColor(), true);
+    }
+
+    TriggerDebugOutput(1, StringExternal("Param/Value/lib_NovC_241B874F"), false);
+    auto8236ADDB_g = PlayerGroupAll(); 
+    auto8236ADDB_p = 1;
+    for ( ; auto8236ADDB_p <= PlayerGroupCount(auto8236ADDB_g) ; auto8236ADDB_p += BoolToInt(lv_indexPlayer == PlayerGroupPlayer(auto8236ADDB_g, auto8236ADDB_p)) ) {
+        lv_indexPlayer = PlayerGroupPlayer(auto8236ADDB_g, auto8236ADDB_p);
+        PlayerSetState(lv_indexPlayer, c_playerStateContinueEnabled, false);
+    }
+    if ((lv_inStoryMode == false)) {
+        libComC_gf_CC_LocationActivate(libComC_gf_CC_MissionLocation(lp_map));
+        UISetGameMenuItemVisible(PlayerGroupAll(), c_gameMenuDialogRestartButton, true);
+    }
+    else {
+        UISetGameMenuItemVisible(PlayerGroupAll(), c_gameMenuDialogRestartButton, false);
+    }
+    if ((lv_inStoryMode == false) && ((libComC_gf_CC_TransitionInSimulation() == true) || (lp_map != "Nova01"))) {
+        UISetGameMenuItemVisible(PlayerGroupAll(), c_gameMenuDialogAbortButton, true);
+        if ((libComC_gf_CC_TransitionInSimulation() == true)) {
+            UISetGameMenuItemText(PlayerGroupAll(), c_gameMenuDialogAbortButton, StringExternal("Param/Value/lib_NovC_AA8623D0"));
+        }
+        else if ((lp_map == "Nova02")) {
+            UISetGameMenuItemText(PlayerGroupAll(), c_gameMenuDialogAbortButton, StringExternal("Param/Value/lib_NovC_F3B96077"));
+        }
+    }
+    else {
+        UISetGameMenuItemVisible(PlayerGroupAll(), c_gameMenuDialogAbortButton, false);
+    }
+    UISetAchievementToastStyle(PlayerGroupAll(), c_achievementToastStyleTerran);
+    if ((libComC_gf_LastMap() == null) && (libNovC_gf_CampaignDebugModeIsOn("ProgressCheat") == true) && (libComC_gf_CampaignMapTypeCheck(libComC_gf_CurrentMap(), c_mapKindStory) == true) && (libComC_gf_CurrentMap() == "NStory01")) {
+        libComC_gv_cCX_DebugProgress = true;
+        libNovC_gf_NC_DebugProgressDisplayDialog(null, libNovC_gt_NC_DebugProgressOKCallback, null, false);
+        while (!((libNovC_gv_NC_DebugProgressDialog == c_invalidDialogId))) {
+            Wait(0.5, c_timeGame);
+        }
+    }
+
+}
+
+void libNovC_gf_NC_AutoHeatMapTestMode () {
+    // Variable Declarations
+    trigger lv_disableTrigger;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((GameTestConfigType() != 1)) {
+        return ;
+    }
+
+    UnitPauseAll(true);
+    libNCMI_gf_GameOver(libNCMI_ge_CampaignMissionGameResultType_Victory);
+    while (true) {
+        Wait(10.0, c_timeGame);
+    }
+}
+
+void libNovC_gf_NC_CampaignPreload () {
+    // Implementation
+    if ((libComC_gf_CampaignMapTypeCheck(libComC_gf_CurrentMap(), c_mapKindMission) == true)) {
+        libNtve_gf_PreloadSoundObject("UI_LowHealthWarning_Start", false);
+        libNtve_gf_PreloadSoundObject("UI_LowHealthWarning_BreathLoop", false);
+        libNtve_gf_PreloadSoundObject("UI_LowHealthWarning_HeartBeatLoop", false);
+        SoundLengthQuery(SoundLink("UI_LowHealthWarning_BreathLoop", -1));
+        SoundLengthQuery(SoundLink("UI_LowHealthWarning_HeartBeatLoop", -1));
+    }
+
+}
+
+void libNovC_gf_NC_TransitionChooseNextMap () {
+    // Implementation
+    if ((libComC_gf_CurrentMap() == "Nova01") && (libComC_gf_CurrentMissionIsSimulation() == false)) {
+        libComC_gf_CC_TransitionSetNextMap("Nova02");
+    }
+    else if (true) {
+        libComC_gf_CC_TransitionSetNextMap("NStory01");
+    }
+}
+
+void libNovC_gf_NC_UpdateCampaignScreen (string lp_mission) {
+    // Variable Declarations
+    int lv_index;
+    string lv_campaignID;
+
+    // Variable Initialization
+    lv_campaignID = "NovaDLC1";
+
+    // Implementation
+    if ((lp_mission == null)) {
+        return ;
+    }
+
+    if (((lp_mission == "Nova04") || (lp_mission == "Nova05") || (lp_mission == "Nova06"))) {
+        lv_campaignID = "NovaDLC2";
+    }
+
+    if (((lp_mission == "Nova07") || (lp_mission == "Nova08") || (lp_mission == "Nova09"))) {
+        lv_campaignID = "NovaDLC3";
+    }
+
+    if ((libComC_gf_MissionStatusCheck(libNovC_gf_NC_MissionFinal(), libComC_ge_MissionStatus_Completed) == true)) {
+        if ((libComC_gf_CampaignIsComplete() == false)) {
+            libComC_gf_CC_CampaignSetComplete(true);
+            libComC_gf_CC_ArchiveBankLoad();
+        }
+
+        if ((libNovC_gf_NC_MissionFinal() == "Nova03")) {
+            TextExpressionSetToken("Param/Expression/lib_NovC_51680177", "SUMMARY", libComC_gf_CC_MapSummary(libNovC_gf_NC_MissionFinal()));
+            TextExpressionSetToken("Param/Expression/lib_NovC_51680177", "MISSIONSCOMPLETE", IntToText(libComC_gf_NumberOfMissions(libComC_ge_MissionCountOptions_Completed)));
+            TextExpressionSetToken("Param/Expression/lib_NovC_51680177", "DIFFICULTY", DifficultyNameCampaign(libComC_gf_CC_DifficultyofCampaign()));
+            CampaignProgressSetText(PlayerGroupAll(), lv_campaignID, TextExpressionAssemble("Param/Expression/lib_NovC_51680177"));
+        }
+        else if ((libNovC_gf_NC_MissionFinal() == "Nova06")) {
+            TextExpressionSetToken("Param/Expression/lib_NovC_8B2DEB44", "SUMMARY", libComC_gf_CC_MapSummary(libNovC_gf_NC_MissionFinal()));
+            TextExpressionSetToken("Param/Expression/lib_NovC_8B2DEB44", "MISSIONSCOMPLETE", IntToText(libComC_gf_NumberOfMissions(libComC_ge_MissionCountOptions_Completed)));
+            TextExpressionSetToken("Param/Expression/lib_NovC_8B2DEB44", "DIFFICULTY", DifficultyNameCampaign(libComC_gf_CC_DifficultyofCampaign()));
+            CampaignProgressSetText(PlayerGroupAll(), lv_campaignID, TextExpressionAssemble("Param/Expression/lib_NovC_8B2DEB44"));
+        }
+        else if (true) {
+            TextExpressionSetToken("Param/Expression/lib_NovC_59715DD0", "SUMMARY", libComC_gf_CC_MapSummary(libNovC_gf_NC_MissionFinal()));
+            TextExpressionSetToken("Param/Expression/lib_NovC_59715DD0", "MISSIONSCOMPLETE", IntToText(libComC_gf_NumberOfMissions(libComC_ge_MissionCountOptions_Completed)));
+            TextExpressionSetToken("Param/Expression/lib_NovC_59715DD0", "DIFFICULTY", DifficultyNameCampaign(libComC_gf_CC_DifficultyofCampaign()));
+            CampaignProgressSetText(PlayerGroupAll(), lv_campaignID, TextExpressionAssemble("Param/Expression/lib_NovC_59715DD0"));
+        }
+        CampaignProgressSetImageFilePath(PlayerGroupAll(), lv_campaignID, libNovC_gf_NC_MissionCampaignScreenImage(libNovC_gf_NC_MissionFinal()));
+        CampaignProgressSetCampaignFinished(PlayerGroupAll(), lv_campaignID, true);
+    }
+    else {
+        TextExpressionSetToken("Param/Expression/lib_NovC_B282D0C8", "D", libComC_gf_CC_MapName(lp_mission));
+        TextExpressionSetToken("Param/Expression/lib_NovC_B282D0C8", "A", libComC_gf_CC_MapSummary(lp_mission));
+        TextExpressionSetToken("Param/Expression/lib_NovC_B282D0C8", "B", IntToText(libComC_gf_NumberOfMissions(libComC_ge_MissionCountOptions_Completed)));
+        TextExpressionSetToken("Param/Expression/lib_NovC_B282D0C8", "C", DifficultyNameCampaign(libComC_gf_CC_DifficultyofCampaign()));
+        CampaignProgressSetText(PlayerGroupAll(), lv_campaignID, TextExpressionAssemble("Param/Expression/lib_NovC_B282D0C8"));
+        CampaignProgressSetCampaignFinished(PlayerGroupAll(), lv_campaignID, false);
+        if ((libNovC_gf_NC_MissionCampaignScreenImage(lp_mission) != null)) {
+            CampaignProgressSetImageFilePath(PlayerGroupAll(), lv_campaignID, libNovC_gf_NC_MissionCampaignScreenImage(lp_mission));
+        }
+        else if ((libComC_gf_CC_MapLoadingScreenVictoryImage(lp_mission) == null)) {
+            CampaignProgressSetImageFilePath(PlayerGroupAll(), lv_campaignID, libComC_gf_CC_MapLoadingScreenImage(lp_mission));
+        }
+        else if (true) {
+            CampaignProgressSetImageFilePath(PlayerGroupAll(), lv_campaignID, libComC_gf_CC_MapLoadingScreenVictoryImage(lp_mission));
+        }
+    }
+}
+
+void libNovC_gf_NC_UpdateCampaignIndex (string lp_map) {
+    // Implementation
+    if ((libComC_gf_CurrentMissionIsSimulation() == false) && (libComC_gf_CC_StoryInSimulation() == false) && (lp_map == "Nova04")) {
+        GameSetNextCampaignIndex(PlayerGroupAll(), 6);
+    }
+
+    if ((libComC_gf_CurrentMissionIsSimulation() == false) && (libComC_gf_CC_StoryInSimulation() == false) && (lp_map == "Nova07")) {
+        GameSetNextCampaignIndex(PlayerGroupAll(), 7);
+    }
+
+}
+
+void libNovC_gf_NC_ResetCampaignIndex () {
+    // Implementation
+    GameSetNextCampaignIndex(PlayerGroupAll(), 5);
+}
+
+int libNovC_gf_NC_CampaignSaveIndex () {
+    // Implementation
+    return libNovC_gv_nCC_CampaignNovaIndex;
+}
+
+string libNovC_gf_NC_ClickableConversationLink (string lp_characterInstance) {
+    // Implementation
+    return "char_TerranAdjutant";
+}
+
+string libNovC_gf_NC_ChampResAbility (string lp_champion) {
+    string auto1EC13B9D_val;
+
+    // Variable Declarations
+    string lv_indexChampion;
+
+    // Variable Initialization
+
+    // Implementation
+    auto1EC13B9D_val = lp_champion;
+    if (auto1EC13B9D_val == "NovaHero") {
+        return "Abil/NovaRevive";
+    }
+    else {
+    }
+    return "";
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Time Expired
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_TimeExpired_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(0.0625, c_timeGame);
+    DialogControlSetVisible(libNovC_gv_resultsDialog, PlayerGroupAll(), false);
+    GameSetNextMap("");
+    TriggerEnable(libNovC_gt_QuitDemo, true);
+    UIShowCustomDialog(PlayerGroupAll(), libNtve_ge_CustomDialogType_c_customDialogTypeMessage, StringExternal("Param/Value/lib_NovC_F558D81E"), null, true);
+    Wait(3.0, c_timeReal);
+    GameOver(1, c_gameOverVictory, false, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_TimeExpired_Init () {
+    libNovC_gt_TimeExpired = TriggerCreate("libNovC_gt_TimeExpired_Func");
+    TriggerAddEventPlayerLeft(libNovC_gt_TimeExpired, c_playerAny, c_gameResultTie);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Quit Demo
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_QuitDemo_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    GameOver(1, c_gameOverVictory, false, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_QuitDemo_Init () {
+    libNovC_gt_QuitDemo = TriggerCreate("libNovC_gt_QuitDemo_Func");
+    TriggerEnable(libNovC_gt_QuitDemo, false);
+    TriggerAddEventCustomDialogDismissed(libNovC_gt_QuitDemo, c_playerAny, libNtve_ge_CustomDialogResult_c_customDialogResultAny);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: TestUserOverrides
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_TestUserOverrides_Func (bool testConds, bool runActions) {
+    int auto0C1618E5_ae;
+    int auto0C1618E5_ai;
+
+    // Variable Declarations
+    int lv_userIndex;
+    int lv_unitIndex;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto0C1618E5_ae = UserDataInstanceCount("CampaignTechItem");
+    auto0C1618E5_ai = 1;
+    lv_userIndex = 1;
+    for ( ; ( (auto0C1618E5_ai >= 0 && lv_userIndex <= auto0C1618E5_ae) || (auto0C1618E5_ai <= 0 && lv_userIndex >= auto0C1618E5_ae) ) ; lv_userIndex += auto0C1618E5_ai ) {
+        TextExpressionSetToken("Param/Expression/lib_NovC_D9A99218", "A", IntToText(lv_userIndex));
+        TextExpressionSetToken("Param/Expression/lib_NovC_D9A99218", "B", StringToText((UserDataInstance("CampaignTechItem", lv_userIndex))));
+        TriggerDebugOutput(1, TextExpressionAssemble("Param/Expression/lib_NovC_D9A99218"), true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_TestUserOverrides_Init () {
+    libNovC_gt_TestUserOverrides = TriggerCreate("libNovC_gt_TestUserOverrides_Func");
+    TriggerAddEventChatMessage(libNovC_gt_TestUserOverrides, c_playerAny, "testoverrides", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugCampaignTechOK
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugCampaignTechOK_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    string lv_indexCategory;
+    string lv_indexArmyUnit;
+    string lv_unitUsed;
+    string lv_unitType;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((EventDialogControl() == libNovC_gv_NC_DebugCampaignTechOK))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNovC_gf_NC_DebugCampaignTechUpdateData();
+    libComC_gf_CC_ApplyTech(1);
+    TriggerExecute(libNovC_gv_NC_TechLimitsCallback, true, false);
+    libNovC_gf_NC_DebugCampaignTechCloseDialog();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugCampaignTechOK_Init () {
+    libNovC_gt_NC_DebugCampaignTechOK = TriggerCreate("libNovC_gt_NC_DebugCampaignTechOK_Func");
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechOK, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugCampaignTechOK, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugCampaignTechCancel
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugCampaignTechCancel_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((EventDialogControl() == libNovC_gv_NC_DebugCampaignTechCancel))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNovC_gf_NC_DebugCampaignTechRestoreStates();
+    libNovC_gf_NC_DebugCampaignTechCloseDialog();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugCampaignTechCancel_Init () {
+    libNovC_gt_NC_DebugCampaignTechCancel = TriggerCreate("libNovC_gt_NC_DebugCampaignTechCancel_Func");
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechCancel, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugCampaignTechCancel, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugCampaignTechEquipmentCheckClicked
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugCampaignTechEquipmentCheckClicked_Func (bool testConds, bool runActions) {
+    int auto7A89333F_ae;
+    int auto7A89333F_ai;
+    int auto2ACDDE29_ae;
+    int auto2ACDDE29_ai;
+    int auto0642B64C_ae;
+    int auto0642B64C_ai;
+
+    // Variable Declarations
+    int lv_equipmentGroupIndex;
+    int lv_equipmentIndex;
+    int lv_equipmentInnerLoopIndex;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto7A89333F_ae = libNovC_gv_nCC_DebugCampaignTechEquipmentGroupCount;
+    auto7A89333F_ai = 1;
+    lv_equipmentGroupIndex = 1;
+    for ( ; ( (auto7A89333F_ai >= 0 && lv_equipmentGroupIndex <= auto7A89333F_ae) || (auto7A89333F_ai <= 0 && lv_equipmentGroupIndex >= auto7A89333F_ae) ) ; lv_equipmentGroupIndex += auto7A89333F_ai ) {
+        auto2ACDDE29_ae = libNovC_gv_nCC_DebugCampaignTechEquipmentItemCount;
+        auto2ACDDE29_ai = 1;
+        lv_equipmentIndex = 1;
+        for ( ; ( (auto2ACDDE29_ai >= 0 && lv_equipmentIndex <= auto2ACDDE29_ae) || (auto2ACDDE29_ai <= 0 && lv_equipmentIndex >= auto2ACDDE29_ae) ) ; lv_equipmentIndex += auto2ACDDE29_ai ) {
+            if ((libNovC_gv_nC_DebugCampaignTechEquipmentCheckBox[lv_equipmentGroupIndex][lv_equipmentIndex] != c_invalidDialogControlId) && (EventDialogControl() == libNovC_gv_nC_DebugCampaignTechEquipmentCheckBox[lv_equipmentGroupIndex][lv_equipmentIndex]) && (libNtve_gf_DialogItemIsChecked(EventDialogControl(), 1) == true)) {
+                auto0642B64C_ae = libNovC_gv_nCC_DebugCampaignTechEquipmentItemCount;
+                auto0642B64C_ai = 1;
+                lv_equipmentInnerLoopIndex = 1;
+                for ( ; ( (auto0642B64C_ai >= 0 && lv_equipmentInnerLoopIndex <= auto0642B64C_ae) || (auto0642B64C_ai <= 0 && lv_equipmentInnerLoopIndex >= auto0642B64C_ae) ) ; lv_equipmentInnerLoopIndex += auto0642B64C_ai ) {
+                    if ((libNovC_gv_nC_DebugCampaignTechEquipmentCheckBox[lv_equipmentGroupIndex][lv_equipmentInnerLoopIndex] != c_invalidDialogControlId) && (libNovC_gv_nC_DebugCampaignTechEquipmentCheckBox[lv_equipmentGroupIndex][lv_equipmentInnerLoopIndex] != EventDialogControl()) && (libNtve_gf_DialogItemIsChecked(libNovC_gv_nC_DebugCampaignTechEquipmentCheckBox[lv_equipmentGroupIndex][lv_equipmentInnerLoopIndex], 1) == true)) {
+                        libNtve_gf_SetDialogItemChecked(libNovC_gv_nC_DebugCampaignTechEquipmentCheckBox[lv_equipmentGroupIndex][lv_equipmentInnerLoopIndex], false, PlayerGroupAll());
+                    }
+
+                }
+                return true;
+            }
+
+        }
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugCampaignTechEquipmentCheckClicked_Init () {
+    libNovC_gt_NC_DebugCampaignTechEquipmentCheckClicked = TriggerCreate("libNovC_gt_NC_DebugCampaignTechEquipmentCheckClicked_Func");
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechEquipmentCheckClicked, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugCampaignTechEquipmentCheckClicked, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeChecked);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugCampaignTechRandomizeClicked
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugCampaignTechRandomizeClicked_Func (bool testConds, bool runActions) {
+    int autoF131E556_ae;
+    int autoF131E556_ai;
+    int auto2BE3F109_ae;
+    int auto2BE3F109_ai;
+    int auto6642429A_ae;
+    int auto6642429A_ai;
+
+    // Variable Declarations
+    int lv_equipmentGroupIndex;
+    int lv_equipmentIndex;
+    int[libNovC_gv_nCC_DebugCampaignTechEquipmentGroupCount + 1] lv_equipmentInGroupCount;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((EventDialogControl() == libNovC_gv_NC_DebugCampaignTechRandomizeTechButton))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    autoF131E556_ae = libNovC_gv_nCC_DebugCampaignTechEquipmentGroupCount;
+    autoF131E556_ai = 1;
+    lv_equipmentGroupIndex = 1;
+    for ( ; ( (autoF131E556_ai >= 0 && lv_equipmentGroupIndex <= autoF131E556_ae) || (autoF131E556_ai <= 0 && lv_equipmentGroupIndex >= autoF131E556_ae) ) ; lv_equipmentGroupIndex += autoF131E556_ai ) {
+        auto2BE3F109_ae = libNovC_gv_nCC_DebugCampaignTechEquipmentItemCount;
+        auto2BE3F109_ai = 1;
+        lv_equipmentIndex = 1;
+        for ( ; ( (auto2BE3F109_ai >= 0 && lv_equipmentIndex <= auto2BE3F109_ae) || (auto2BE3F109_ai <= 0 && lv_equipmentIndex >= auto2BE3F109_ae) ) ; lv_equipmentIndex += auto2BE3F109_ai ) {
+            if ((libNovC_gv_nC_DebugCampaignTechEquipmentCheckBox[lv_equipmentGroupIndex][lv_equipmentIndex] != c_invalidDialogControlId)) {
+                lv_equipmentInGroupCount[lv_equipmentGroupIndex] += 1;
+                if ((libNtve_gf_DialogItemIsChecked(libNovC_gv_nC_DebugCampaignTechEquipmentCheckBox[lv_equipmentGroupIndex][lv_equipmentIndex], 1) == true)) {
+                    libNtve_gf_SetDialogItemChecked(libNovC_gv_nC_DebugCampaignTechEquipmentCheckBox[lv_equipmentGroupIndex][lv_equipmentIndex], false, PlayerGroupAll());
+                }
+
+            }
+
+        }
+    }
+    auto6642429A_ae = libNovC_gv_nCC_DebugCampaignTechEquipmentGroupCount;
+    auto6642429A_ai = 1;
+    lv_equipmentGroupIndex = 1;
+    for ( ; ( (auto6642429A_ai >= 0 && lv_equipmentGroupIndex <= auto6642429A_ae) || (auto6642429A_ai <= 0 && lv_equipmentGroupIndex >= auto6642429A_ae) ) ; lv_equipmentGroupIndex += auto6642429A_ai ) {
+        libNtve_gf_SetDialogItemChecked(libNovC_gv_nC_DebugCampaignTechEquipmentCheckBox[lv_equipmentGroupIndex][RandomInt(1, lv_equipmentInGroupCount[lv_equipmentGroupIndex])], true, PlayerGroupAll());
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugCampaignTechRandomizeClicked_Init () {
+    libNovC_gt_NC_DebugCampaignTechRandomizeClicked = TriggerCreate("libNovC_gt_NC_DebugCampaignTechRandomizeClicked_Func");
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechRandomizeClicked, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugCampaignTechRandomizeClicked, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugCampaignTechUpgradesOK
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugCampaignTechUpgradesOK_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((EventDialogControl() == libNovC_gv_nC_DebugCampaignTechUpgradesOK))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libNovC_gv_nC_DebugCampaignTechUpgradesActiveButton != c_invalidDialogControlId)) {
+        libNovC_gf_NC_DebugCampaignTechUpgradesAssignUnit(libNovC_gv_nC_DebugCampaignTechUpgradesActiveButtonIndex, libNovC_gv_nC_DebugCampaignTechUpgradesActiveItem);
+    }
+
+    libNovC_gf_NC_DebugCampaignTechUpgradesUpdateData();
+    libComC_gf_CC_ApplyTech(1);
+    DialogDestroy(libNovC_gv_nC_DebugCampaignTechUpgradesDialog);
+    libNovC_gv_nC_DebugCampaignTechUpgradesDialog = c_invalidDialogId;
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugCampaignTechUpgradesOK_Init () {
+    libNovC_gt_NC_DebugCampaignTechUpgradesOK = TriggerCreate("libNovC_gt_NC_DebugCampaignTechUpgradesOK_Func");
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechUpgradesOK, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugCampaignTechUpgradesOK, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugCampaignTechUpgradesCancel
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugCampaignTechUpgradesCancel_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((EventDialogControl() == libNovC_gv_nC_DebugCampaignTechUpgradesCancel))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    DialogDestroy(libNovC_gv_nC_DebugCampaignTechUpgradesDialog);
+    libNovC_gv_nC_DebugCampaignTechUpgradesDialog = c_invalidDialogId;
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugCampaignTechUpgradesCancel_Init () {
+    libNovC_gt_NC_DebugCampaignTechUpgradesCancel = TriggerCreate("libNovC_gt_NC_DebugCampaignTechUpgradesCancel_Func");
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechUpgradesCancel, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugCampaignTechUpgradesCancel, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugCampaignTechUpgradesCheckClicked
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugCampaignTechUpgradesCheckClicked_Func (bool testConds, bool runActions) {
+    int auto40A26391_ae;
+    int auto40A26391_ai;
+    int auto35EC85DB_ae;
+    int auto35EC85DB_ai;
+
+    // Variable Declarations
+    int lv_armyUnitIndex;
+    int lv_armyUnitInnerLoopIndex;
+    bool lv_noOtherUnitsUnassigned;
+
+    // Variable Initialization
+    lv_noOtherUnitsUnassigned = true;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto40A26391_ae = libNovC_gv_nCC_DebugCampaignTechUpgradesUnitsCountMax;
+    auto40A26391_ai = 1;
+    lv_armyUnitIndex = 1;
+    for ( ; ( (auto40A26391_ai >= 0 && lv_armyUnitIndex <= auto40A26391_ae) || (auto40A26391_ai <= 0 && lv_armyUnitIndex >= auto40A26391_ae) ) ; lv_armyUnitIndex += auto40A26391_ai ) {
+        if ((libNovC_gv_nC_DebugCampaignTechUpgradesCheckBox[lv_armyUnitIndex] == EventDialogControl()) && (libNtve_gf_DialogItemIsChecked(EventDialogControl(), 1) == true)) {
+            lv_armyUnitInnerLoopIndex = 0;
+            auto35EC85DB_ae = libNovC_gv_nCC_DebugCampaignTechUpgradesUnitsCountMax;
+            auto35EC85DB_ai = 1;
+            lv_armyUnitInnerLoopIndex = 1;
+            for ( ; ( (auto35EC85DB_ai >= 0 && lv_armyUnitInnerLoopIndex <= auto35EC85DB_ae) || (auto35EC85DB_ai <= 0 && lv_armyUnitInnerLoopIndex >= auto35EC85DB_ae) ) ; lv_armyUnitInnerLoopIndex += auto35EC85DB_ai ) {
+                if ((libNovC_gv_nC_DebugCampaignTechUpgradesCheckBox[lv_armyUnitInnerLoopIndex] != EventDialogControl()) && (libNtve_gf_DialogItemIsChecked(libNovC_gv_nC_DebugCampaignTechUpgradesCheckBox[lv_armyUnitInnerLoopIndex], 1) == true)) {
+                    libNtve_gf_SetDialogItemChecked(libNovC_gv_nC_DebugCampaignTechUpgradesCheckBox[lv_armyUnitInnerLoopIndex], false, PlayerGroupAll());
+                    lv_noOtherUnitsUnassigned = false;
+                }
+
+            }
+            return true;
+        }
+
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugCampaignTechUpgradesCheckClicked_Init () {
+    libNovC_gt_NC_DebugCampaignTechUpgradesCheckClicked = TriggerCreate("libNovC_gt_NC_DebugCampaignTechUpgradesCheckClicked_Func");
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechUpgradesCheckClicked, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugCampaignTechUpgradesCheckClicked, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeChecked);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugCampaignTechUpgradesOpenClicked
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugCampaignTechUpgradesOpenClicked_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+
+        if (!((EventDialogControl() == libNovC_gv_nC_DebugCampaignTechUpgradesOpen))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libNovC_gf_NC_DebugCampaignTechUpgradesCreateDialog();
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugCampaignTechUpgradesOpenClicked_Init () {
+    libNovC_gt_NC_DebugCampaignTechUpgradesOpenClicked = TriggerCreate("libNovC_gt_NC_DebugCampaignTechUpgradesOpenClicked_Func");
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechUpgradesOpenClicked, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugCampaignTechUpgradesOpenClicked, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugCampaignTechUpgradesItemClicked
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugCampaignTechUpgradesItemClicked_Func (bool testConds, bool runActions) {
+    int auto0FECFA4F_ae;
+    int auto0FECFA4F_ai;
+
+    // Variable Declarations
+    int lv_upgradeButtonIndex;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto0FECFA4F_ae = libNovC_gv_nCC_DebugCampaignTechUpgradesItemsCountMax;
+    auto0FECFA4F_ai = 1;
+    lv_upgradeButtonIndex = 1;
+    for ( ; ( (auto0FECFA4F_ai >= 0 && lv_upgradeButtonIndex <= auto0FECFA4F_ae) || (auto0FECFA4F_ai <= 0 && lv_upgradeButtonIndex >= auto0FECFA4F_ae) ) ; lv_upgradeButtonIndex += auto0FECFA4F_ai ) {
+        if ((libNovC_gv_nC_DebugCampaignTechUpgradesButtonList[lv_upgradeButtonIndex] == EventDialogControl())) {
+            if ((libNovC_gv_nC_DebugCampaignTechUpgradesActiveButton != c_invalidDialogControlId)) {
+                DialogControlSetEnabled(libNovC_gv_nC_DebugCampaignTechUpgradesActiveButton, PlayerGroupAll(), true);
+                libNovC_gf_NC_DebugCampaignTechUpgradesAssignUnit(libNovC_gv_nC_DebugCampaignTechUpgradesActiveButtonIndex, libNovC_gv_nC_DebugCampaignTechUpgradesActiveItem);
+            }
+
+            libNovC_gv_nC_DebugCampaignTechUpgradesActiveButton = EventDialogControl();
+            DialogControlSetEnabled(libNovC_gv_nC_DebugCampaignTechUpgradesActiveButton, PlayerGroupAll(), false);
+            libNovC_gv_nC_DebugCampaignTechUpgradesActiveItem = libNovC_gv_nC_DebugCampaignTechUpgradesItemList[lv_upgradeButtonIndex];
+            libNovC_gv_nC_DebugCampaignTechUpgradesActiveButtonIndex = lv_upgradeButtonIndex;
+            libNovC_gf_NC_DebugCampaignTechUpgradesUpdateDialog();
+            return true;
+        }
+
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugCampaignTechUpgradesItemClicked_Init () {
+    libNovC_gt_NC_DebugCampaignTechUpgradesItemClicked = TriggerCreate("libNovC_gt_NC_DebugCampaignTechUpgradesItemClicked_Func");
+    TriggerEnable(libNovC_gt_NC_DebugCampaignTechUpgradesItemClicked, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugCampaignTechUpgradesItemClicked, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugTech
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugTech_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((GameCheatsEnabled(c_gameCheatCategoryDevelopment) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libComC_gf_CurrentMap() == null)) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libNovC_gf_NC_DebugCampaignTechDisplayDialog();
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugTech_Init () {
+    libNovC_gt_NC_DebugTech = TriggerCreate("libNovC_gt_NC_DebugTech_Func");
+    TriggerAddEventChatMessage(libNovC_gt_NC_DebugTech, c_playerAny, "tech", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugProgressMissionButtonClicked
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugProgressMissionButtonClicked_Func (bool testConds, bool runActions) {
+    int auto89C6DF6E_ae;
+    int auto89C6DF6E_ai;
+    int auto7CC5D7DB_ae;
+    int auto7CC5D7DB_ai;
+
+    // Variable Declarations
+    string lv_indexMission;
+    string lv_clickedMission;
+    int lv_bonusCount;
+    string lv_indexObjective;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libNovC_gv_NC_DebugProgressDirectSelectEnabled == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_clickedMission = null;
+    auto89C6DF6E_ae = CatalogEntryCount(c_gameCatalogMap);
+    auto89C6DF6E_ai = 1;
+    while (auto89C6DF6E_ai <= auto89C6DF6E_ae) {
+        lv_indexMission = CatalogEntryGet(c_gameCatalogMap, auto89C6DF6E_ai);
+        auto89C6DF6E_ai = auto89C6DF6E_ai + 1;
+        if (CatalogFieldValueGet(c_gameCatalogMap, lv_indexMission, "Kind", 1) == "Mission" && libComC_gf_CC_MapInternal(lv_indexMission) == false) {
+            if ((EventDialogControl() == libNtve_gf_ValueFromDataTableDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("Button", (lv_indexMission))))) {
+                lv_clickedMission = lv_indexMission;
+                break;
+            }
+
+        }    
+    }
+    if ((lv_clickedMission == null)) {
+        return true;
+    }
+
+    if ((lv_clickedMission == libNovC_gf_NC_MissionFinal())) {
+        UIShowCustomDialog(PlayerGroupAll(), libNtve_ge_CustomDialogType_c_customDialogTypeMessage, StringExternal("Param/Value/lib_NovC_8BDD7FCF"), null, false);
+        return true;
+    }
+
+    libNovC_gv_NC_DebugProgressDocDirty = true;
+    libNovC_gv_NC_DebugProgressLastMission = lv_clickedMission;
+    auto7CC5D7DB_ae = CatalogFieldValueCount(c_gameCatalogMap, lv_clickedMission, "ObjectiveArray", 1);
+    auto7CC5D7DB_ai = 1;
+    while (auto7CC5D7DB_ai <= auto7CC5D7DB_ae) {
+        lv_indexObjective = CatalogFieldValueGet(c_gameCatalogMap, lv_clickedMission, "ObjectiveArray["+IntToString(auto7CC5D7DB_ai-1)+"]", 1);
+        auto7CC5D7DB_ai = auto7CC5D7DB_ai + 1;
+        libNovC_gf_NC_DebugProgressSetObjectiveProgress(lv_indexObjective);
+    }
+    libComC_gf_CC_MissionMarkCompleted(lv_clickedMission);
+    libNovC_gf_NC_DebugProgressUpdateTutorialProgress(lv_clickedMission);
+    libNovC_gf_NC_UpdateCampaignIndex(lv_clickedMission);
+    libComC_gv_cCX_LastMap = lv_clickedMission;
+    libComC_gv_cCX_LastMapSuccess = true;
+    libComC_gv_cCX_LastMission = lv_clickedMission;
+    libComC_gv_cCX_LastMissionSimulation = false;
+    libComC_gv_cCX_LastMissionSuccess = true;
+    libComC_gv_cCX_LastSuccessfulMission = lv_clickedMission;
+    libComC_gf_CC_MapSetCurrent(lv_clickedMission);
+    libComC_gf_CC_LocationActivate(libComC_gf_CC_MissionLocation(lv_clickedMission));
+    libComC_gf_CC_EventDispatch(libNovC_ge_NC_Event_CampaignProgressMapCompleted, (lv_clickedMission), "", false);
+    libComC_gf_CC_LocationDataUpdate();
+    libNovC_gf_NC_DebugProgressUpdateDialog();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugProgressMissionButtonClicked_Init () {
+    libNovC_gt_NC_DebugProgressMissionButtonClicked = TriggerCreate("libNovC_gt_NC_DebugProgressMissionButtonClicked_Func");
+    TriggerEnable(libNovC_gt_NC_DebugProgressMissionButtonClicked, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugProgressMissionButtonClicked, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugProgressDirectMissionButtonClicked
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugProgressDirectMissionButtonClicked_Func (bool testConds, bool runActions) {
+    int auto4CD0843D_ae;
+    int auto4CD0843D_ai;
+    int auto72D0E94C_ae;
+    int auto72D0E94C_ai;
+
+    // Variable Declarations
+    string lv_indexMission;
+    string lv_clickedMission;
+    int lv_bonusCount;
+    string lv_indexObjective;
+    string[11][4] lv_arcMissions;
+    int lv_currentArc;
+    int lv_indexArc;
+    int lv_indexArcMission;
+    bool lv_foundMission;
+
+    // Variable Initialization
+    lv_currentArc = libNovC_ge_NC_NovaArc_NovaArcNone;
+
+    // Conditions
+    if (testConds) {
+        if (!((libNovC_gv_NC_DebugProgressDirectSelectEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_clickedMission = null;
+    auto4CD0843D_ae = CatalogEntryCount(c_gameCatalogMap);
+    auto4CD0843D_ai = 1;
+    while (auto4CD0843D_ai <= auto4CD0843D_ae) {
+        lv_indexMission = CatalogEntryGet(c_gameCatalogMap, auto4CD0843D_ai);
+        auto4CD0843D_ai = auto4CD0843D_ai + 1;
+        if (CatalogFieldValueGet(c_gameCatalogMap, lv_indexMission, "Kind", 1) == "Mission" && libComC_gf_CC_MapInternal(lv_indexMission) == false) {
+            if ((EventDialogControl() == libNtve_gf_ValueFromDataTableDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("Button", (lv_indexMission))))) {
+                lv_clickedMission = lv_indexMission;
+                break;
+            }
+
+        }    
+    }
+    if ((lv_clickedMission == null)) {
+        return true;
+    }
+
+    if ((lv_clickedMission == libNovC_gf_NC_MissionFinal())) {
+        UIShowCustomDialog(PlayerGroupAll(), libNtve_ge_CustomDialogType_c_customDialogTypeMessage, StringExternal("Param/Value/lib_NovC_61FAE583"), null, false);
+        return true;
+    }
+
+    libNovC_gv_NC_DebugProgressDocDirty = true;
+    libNovC_gf_NC_DebugProgressCompleteToMission(lv_clickedMission);
+    libNovC_gv_NC_DebugProgressLastMission = lv_clickedMission;
+    auto72D0E94C_ae = CatalogFieldValueCount(c_gameCatalogMap, lv_clickedMission, "ObjectiveArray", 1);
+    auto72D0E94C_ai = 1;
+    while (auto72D0E94C_ai <= auto72D0E94C_ae) {
+        lv_indexObjective = CatalogFieldValueGet(c_gameCatalogMap, lv_clickedMission, "ObjectiveArray["+IntToString(auto72D0E94C_ai-1)+"]", 1);
+        auto72D0E94C_ai = auto72D0E94C_ai + 1;
+        libNovC_gf_NC_DebugProgressSetObjectiveProgress(lv_indexObjective);
+    }
+    libComC_gf_CC_MissionMarkCompleted(lv_clickedMission);
+    libComC_gv_cCX_LastMap = lv_clickedMission;
+    libComC_gv_cCX_LastMapSuccess = true;
+    libComC_gv_cCX_LastMission = lv_clickedMission;
+    libComC_gv_cCX_LastMissionSimulation = false;
+    libComC_gv_cCX_LastMissionSuccess = true;
+    libComC_gv_cCX_LastSuccessfulMission = lv_clickedMission;
+    libComC_gf_CC_MapSetCurrent(lv_clickedMission);
+    libComC_gf_CC_LocationActivate(libComC_gf_CC_MissionLocation(lv_clickedMission));
+    libComC_gf_CC_EventDispatch(libNovC_ge_NC_Event_CampaignProgressMapCompleted, (lv_clickedMission), "", false);
+    libComC_gf_CC_LocationDataUpdate();
+    libNovC_gf_NC_DebugProgressUpdateDialog();
+    libNovC_gv_NC_DebugProgressDirectSelectEnabled = false;
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugProgressDirectMissionButtonClicked_Init () {
+    libNovC_gt_NC_DebugProgressDirectMissionButtonClicked = TriggerCreate("libNovC_gt_NC_DebugProgressDirectMissionButtonClicked_Func");
+    TriggerEnable(libNovC_gt_NC_DebugProgressDirectMissionButtonClicked, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugProgressDirectMissionButtonClicked, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugProgressDirectSelectButtonClicked
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugProgressDirectSelectButtonClicked_Func (bool testConds, bool runActions) {
+    int auto6E6C3892_ae;
+    int auto6E6C3892_ai;
+
+    // Variable Declarations
+    string lv_indexMission;
+    int lv_stateLabel;
+    int lv_techLabel;
+    int lv_button;
+    int lv_button2;
+    int lv_button3;
+    string lv_categoryUnlocked;
+    text lv_techText;
+    int lv_indexKit;
+    int lv_tooltip;
+    int lv_bonus;
+    text lv_rewardText;
+    text lv_levelLabel;
+    string lv_indexPlanet;
+
+    // Variable Initialization
+    lv_stateLabel = c_invalidDialogControlId;
+    lv_techLabel = c_invalidDialogControlId;
+    lv_button = c_invalidDialogControlId;
+    lv_button2 = c_invalidDialogControlId;
+    lv_button3 = c_invalidDialogControlId;
+    lv_tooltip = c_invalidDialogControlId;
+
+    // Conditions
+    if (testConds) {
+        if (!((EventDialogControl() == libNovC_gv_NC_DebugProgressButtonDirectSelect))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libNovC_gv_NC_DebugProgressDirectSelectEnabled == true)) {
+        libNovC_gv_NC_DebugProgressDirectSelectEnabled = false;
+        libNovC_gv_NC_DebugProgressDocDirty = true;
+        libNovC_gv_NC_DebugProgressResetUsed = true;
+        libNovC_gv_NC_DebugProgressLastMission = null;
+        libNovC_gv_NC_DebugProgressDirectSelectEnabled = false;
+        libComC_gf_CC_ResetCampaignData();
+        libNovC_gf_NC_ResetCampaignIndex();
+        libComC_gf_UpdateMissionFlow();
+        libNovC_gf_NC_DebugProgressUpdateDialog();
+    }
+    else {
+        libComC_gf_CC_ResetCampaignData();
+        libNovC_gf_NC_ResetCampaignIndex();
+        libNovC_gv_NC_DebugProgressDirectSelectEnabled = true;
+        auto6E6C3892_ae = CatalogEntryCount(c_gameCatalogMap);
+        auto6E6C3892_ai = 1;
+        while (auto6E6C3892_ai <= auto6E6C3892_ae) {
+            lv_indexMission = CatalogEntryGet(c_gameCatalogMap, auto6E6C3892_ai);
+            auto6E6C3892_ai = auto6E6C3892_ai + 1;
+            if (CatalogFieldValueGet(c_gameCatalogMap, lv_indexMission, "Kind", 1) == "Mission" && libComC_gf_CC_MapInternal(lv_indexMission) == false) {
+                lv_stateLabel = libNtve_gf_ValueFromDataTableDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("StateLabel", (lv_indexMission)));
+                lv_techLabel = libNtve_gf_ValueFromDataTableDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("TechLabel", (lv_indexMission)));
+                lv_categoryUnlocked = libComC_gf_MissionArmyCategoryUnlocked(lv_indexMission);
+                if ((lv_categoryUnlocked != null)) {
+                    lv_techText = libComC_gf_NC_ArmyCategoryName(lv_categoryUnlocked);
+                }
+                else {
+                    lv_techText = StringToText("");
+                }
+                lv_button = libNtve_gf_ValueFromDataTableDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("Button", (lv_indexMission)));
+                lv_button2 = libNtve_gf_ValueFromDataTableDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("PlayButton", (lv_indexMission)));
+                lv_button3 = libNtve_gf_ValueFromDataTableDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("PlayImage", (lv_indexMission)));
+                if ((lv_stateLabel != c_invalidDialogControlId)) {
+                    DialogControlSetEnabled(lv_button, PlayerGroupAll(), true);
+                    DialogControlSetVisible(lv_button2, PlayerGroupAll(), true);
+                    DialogControlSetVisible(lv_button3, PlayerGroupAll(), true);
+                    DialogControlSetEnabled(lv_stateLabel, PlayerGroupAll(), true);
+                    TextExpressionSetToken("Param/Expression/lib_NovC_BC414963", "A", IntToText(libComC_gf_MissionStatusAge(lv_indexMission, libComC_ge_MissionStatus_Available)));
+                    libNtve_gf_SetDialogItemText(lv_stateLabel, TextExpressionAssemble("Param/Expression/lib_NovC_BC414963"), PlayerGroupAll());
+                    libNtve_gf_SetDialogItemText(lv_button, libNovC_gf_NC_DebugProgressMapName(lv_indexMission), PlayerGroupAll());
+                    TextExpressionSetToken("Param/Expression/lib_NovC_CB912803", "A", lv_techText);
+                    libNtve_gf_SetDialogItemText(lv_techLabel, TextExpressionAssemble("Param/Expression/lib_NovC_CB912803"), PlayerGroupAll());
+                    libNtve_gf_SetDialogItemTooltip(lv_button, lv_rewardText, PlayerGroupAll());
+                }
+
+            }    
+        }
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugProgressDirectSelectButtonClicked_Init () {
+    libNovC_gt_NC_DebugProgressDirectSelectButtonClicked = TriggerCreate("libNovC_gt_NC_DebugProgressDirectSelectButtonClicked_Func");
+    TriggerEnable(libNovC_gt_NC_DebugProgressDirectSelectButtonClicked, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugProgressDirectSelectButtonClicked, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugProgressOK
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugProgressOK_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((EventDialogControl() == libNovC_gv_NC_DebugProgressButtonOK))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNovC_gf_NC_DebugProgressCloseDialog();
+    if ((libNovC_gf_CampaignDebugModeIsOn("ProgressCheat") == true) && (libNovC_gv_NC_DebugProgressDocDirty == false)) {
+        return true;
+    }
+
+    if ((libNovC_gv_NC_DebugProgressResetUsed == true)) {
+        BankDeleteCampaignBanks(1, libNovC_gf_NC_CampaignSaveIndex());
+        libComC_gv_cC_StoryBank = null;
+        libComC_gv_NC_CampaignBank = null;
+        libComC_gv_cC_ArmyTechBank = null;
+    }
+
+    if ((libNovC_gv_NC_DebugProgressExitCallbackOK != null)) {
+        TriggerExecute(libNovC_gv_NC_DebugProgressExitCallbackOK, true, false);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugProgressOK_Init () {
+    libNovC_gt_NC_DebugProgressOK = TriggerCreate("libNovC_gt_NC_DebugProgressOK_Func");
+    TriggerEnable(libNovC_gt_NC_DebugProgressOK, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugProgressOK, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugProgressLaunchMission
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugProgressLaunchMission_Func (bool testConds, bool runActions) {
+    int autoD959977A_ae;
+    int autoD959977A_ai;
+
+    // Variable Declarations
+    string lv_indexMission;
+    string lv_clickedMission;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libNovC_gv_NC_DebugProgressDirectSelectEnabled == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_clickedMission = null;
+    autoD959977A_ae = CatalogEntryCount(c_gameCatalogMap);
+    autoD959977A_ai = 1;
+    while (autoD959977A_ai <= autoD959977A_ae) {
+        lv_indexMission = CatalogEntryGet(c_gameCatalogMap, autoD959977A_ai);
+        autoD959977A_ai = autoD959977A_ai + 1;
+        if (CatalogFieldValueGet(c_gameCatalogMap, lv_indexMission, "Kind", 1) == "Mission" && libComC_gf_CC_MapInternal(lv_indexMission) == false) {
+            if ((EventDialogControl() == libNtve_gf_ValueFromDataTableDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("PlayButton", (lv_indexMission))))) {
+                lv_clickedMission = lv_indexMission;
+                break;
+            }
+
+        }    
+    }
+    if ((lv_clickedMission == null)) {
+        return true;
+    }
+
+    libNovC_gf_NC_DebugProgressCloseDialog();
+    if ((libNovC_gv_NC_DebugProgressResetUsed == true)) {
+        BankDeleteCampaignBanks(1, libNovC_gf_NC_CampaignSaveIndex());
+        libComC_gv_cC_StoryBank = null;
+        libComC_gv_NC_CampaignBank = null;
+        libComC_gv_cC_ArmyTechBank = null;
+    }
+
+    libNovC_gf_NC_DebugProgressSetFirstStorymodeEpisode(false);
+    libComC_gf_CC_MapSetCurrent("NStory01");
+    libNovC_gf_NC_UpdateCampaignIndex(lv_clickedMission);
+    libComC_gf_CC_LocationActivate(libComC_gf_CC_MissionLocation(lv_clickedMission));
+    libComC_gf_CC_TransitionPrepareMissionLaunch(lv_clickedMission, false, false, libComC_gf_CC_DifficultyofCampaign());
+    GameOver(1, c_gameOverVictory, false, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugProgressLaunchMission_Init () {
+    libNovC_gt_NC_DebugProgressLaunchMission = TriggerCreate("libNovC_gt_NC_DebugProgressLaunchMission_Func");
+    TriggerEnable(libNovC_gt_NC_DebugProgressLaunchMission, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugProgressLaunchMission, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugProgressDirectLaunchMission
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugProgressDirectLaunchMission_Func (bool testConds, bool runActions) {
+    int autoD2157CF2_ae;
+    int autoD2157CF2_ai;
+
+    // Variable Declarations
+    string lv_indexMission;
+    string lv_clickedMission;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libNovC_gv_NC_DebugProgressDirectSelectEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_clickedMission = null;
+    autoD2157CF2_ae = CatalogEntryCount(c_gameCatalogMap);
+    autoD2157CF2_ai = 1;
+    while (autoD2157CF2_ai <= autoD2157CF2_ae) {
+        lv_indexMission = CatalogEntryGet(c_gameCatalogMap, autoD2157CF2_ai);
+        autoD2157CF2_ai = autoD2157CF2_ai + 1;
+        if (CatalogFieldValueGet(c_gameCatalogMap, lv_indexMission, "Kind", 1) == "Mission" && libComC_gf_CC_MapInternal(lv_indexMission) == false) {
+            if ((EventDialogControl() == libNtve_gf_ValueFromDataTableDialogItem(true, libNovC_gf_NC_DebugProgressDataTableID("PlayButton", (lv_indexMission))))) {
+                lv_clickedMission = lv_indexMission;
+                break;
+            }
+
+        }    
+    }
+    if ((lv_clickedMission == null)) {
+        return true;
+    }
+
+    libNovC_gf_NC_DebugProgressCloseDialog();
+    if ((libNovC_gv_NC_DebugProgressResetUsed == true)) {
+        BankDeleteCampaignBanks(1, libNovC_gf_NC_CampaignSaveIndex());
+        libComC_gv_cC_StoryBank = null;
+        libComC_gv_NC_CampaignBank = null;
+        libComC_gv_cC_ArmyTechBank = null;
+    }
+
+    libNovC_gf_NC_DebugProgressSetFirstStorymodeEpisode(false);
+    libNovC_gf_NC_DebugProgressCompleteToMission(lv_clickedMission);
+    libComC_gf_CC_MapSetCurrent("NStory01");
+    libComC_gf_CC_LocationActivate(libComC_gf_CC_MissionLocation(lv_clickedMission));
+    libComC_gf_CC_LocationDataUpdate();
+    libComC_gf_CC_TransitionPrepareMissionLaunch(lv_clickedMission, false, false, libComC_gf_CC_DifficultyofCampaign());
+    GameOver(1, c_gameOverVictory, false, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugProgressDirectLaunchMission_Init () {
+    libNovC_gt_NC_DebugProgressDirectLaunchMission = TriggerCreate("libNovC_gt_NC_DebugProgressDirectLaunchMission_Func");
+    TriggerEnable(libNovC_gt_NC_DebugProgressDirectLaunchMission, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugProgressDirectLaunchMission, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugProgressCancel
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugProgressCancel_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((EventDialogControl() == libNovC_gv_NC_DebugProgressButtonCancel))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNovC_gf_NC_DebugProgressRestoreStats();
+    libComC_gf_CC_MapSetCurrent(libNovC_gv_NC_DebugProgressCurrentMapBak);
+    libNovC_gf_NC_DebugProgressCloseDialog();
+    if ((libNovC_gv_NC_DebugProgressExitCallbackCancel != null)) {
+        TriggerExecute(libNovC_gv_NC_DebugProgressExitCallbackCancel, true, false);
+    }
+
+    libComC_gf_CC_EventDispatch(libNovC_ge_NC_Event_CampaignProgressCheatCancel, "", "", false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugProgressCancel_Init () {
+    libNovC_gt_NC_DebugProgressCancel = TriggerCreate("libNovC_gt_NC_DebugProgressCancel_Func");
+    TriggerEnable(libNovC_gt_NC_DebugProgressCancel, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugProgressCancel, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugProgressReset
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugProgressReset_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((EventDialogControl() == libNovC_gv_NC_DebugProgressButtonReset))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNovC_gv_NC_DebugProgressDocDirty = true;
+    libNovC_gv_NC_DebugProgressResetUsed = true;
+    libNovC_gv_NC_DebugProgressLastMission = null;
+    libNovC_gv_NC_DebugProgressDirectSelectEnabled = false;
+    libNovC_gf_NC_ResetCampaignIndex();
+    libComC_gf_CC_ResetCampaignData();
+    libComC_gf_UpdateMissionFlow();
+    libNovC_gf_NC_DebugProgressUpdateDialog();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugProgressReset_Init () {
+    libNovC_gt_NC_DebugProgressReset = TriggerCreate("libNovC_gt_NC_DebugProgressReset_Func");
+    TriggerEnable(libNovC_gt_NC_DebugProgressReset, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugProgressReset, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugProgressBonusObjectiveButtonClicked
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugProgressBonusObjectiveButtonClicked_Func (bool testConds, bool runActions) {
+    int auto995BA578_val;
+
+    // Conditions
+    if (testConds) {
+        if (!((libNovC_gv_NC_DebugProgressRetailMode == false))) {
+            return false;
+        }
+
+        if (!(((EventDialogControl() == libNovC_gv_NC_DebugProgressButtonAllObjectives) || (EventDialogControl() == libNovC_gv_NC_DebugProgressButtonNoObjectives)))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto995BA578_val = EventDialogControl();
+    if (auto995BA578_val == libNovC_gv_NC_DebugProgressButtonNoObjectives) {
+        libNovC_gv_NC_DebugProgressBonusObjectiveLevel = libNovC_ge_DebugProgressBonusObjectiveAmount_NoObjectives;
+        libNtve_gf_SetDialogItemColor(libNovC_gv_NC_DebugProgressButtonNoObjectives, Color(254*100/255,138*100/255,14*100/255), PlayerGroupAll());
+        libNtve_gf_SetDialogItemColor(libNovC_gv_NC_DebugProgressButtonAllObjectives, ColorWithAlpha(0,0,0,0), PlayerGroupAll());
+    }
+    else if (auto995BA578_val == libNovC_gv_NC_DebugProgressButtonAllObjectives) {
+        libNovC_gv_NC_DebugProgressBonusObjectiveLevel = libNovC_ge_DebugProgressBonusObjectiveAmount_FullObjectives;
+        libNtve_gf_SetDialogItemColor(libNovC_gv_NC_DebugProgressButtonNoObjectives, ColorWithAlpha(0,0,0,0), PlayerGroupAll());
+        libNtve_gf_SetDialogItemColor(libNovC_gv_NC_DebugProgressButtonAllObjectives, Color(254*100/255,138*100/255,14*100/255), PlayerGroupAll());
+    }
+    else {
+    }
+    libNovC_gf_NC_DebugProgressAdjustBonusObjectives();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugProgressBonusObjectiveButtonClicked_Init () {
+    libNovC_gt_NC_DebugProgressBonusObjectiveButtonClicked = TriggerCreate("libNovC_gt_NC_DebugProgressBonusObjectiveButtonClicked_Func");
+    TriggerEnable(libNovC_gt_NC_DebugProgressBonusObjectiveButtonClicked, false);
+    TriggerAddEventDialogControl(libNovC_gt_NC_DebugProgressBonusObjectiveButtonClicked, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugProgress
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugProgress_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libNovC_gv_NC_DebugProgressResetUsed = false;
+    libComC_gf_CC_EventDispatch(libNovC_ge_NC_Event_CampaignProgressCheatStart, "", "", false);
+    libNovC_gf_NC_DebugProgressDisplayDialog(null, libNovC_gt_NC_DebugProgressOKCallback, libNovC_gt_NC_DebugProgressCancelCallback, false);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugProgress_Init () {
+    libNovC_gt_NC_DebugProgress = TriggerCreate("libNovC_gt_NC_DebugProgress_Func");
+    TriggerAddEventCheatUsed(libNovC_gt_NC_DebugProgress, c_playerAny, c_gameCheatProgress);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugProgress Develop
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugProgressDevelop_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((GameCheatsEnabled(c_gameCheatCategoryDevelopment) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libNovC_gv_NC_DebugProgressResetUsed = false;
+    libComC_gf_CC_EventDispatch(libNovC_ge_NC_Event_CampaignProgressCheatStart, "", "", false);
+    libNovC_gf_NC_DebugProgressDisplayDialog(null, libNovC_gt_NC_DebugProgressOKCallback, libNovC_gt_NC_DebugProgressCancelCallback, false);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugProgressDevelop_Init () {
+    libNovC_gt_NC_DebugProgressDevelop = TriggerCreate("libNovC_gt_NC_DebugProgressDevelop_Func");
+    TriggerAddEventChatMessage(libNovC_gt_NC_DebugProgressDevelop, c_playerAny, "PROGRESS", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugProgressOKCallback
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugProgressOKCallback_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNCMI_gf_GameOver(libNCMI_ge_CampaignMissionGameResultType_Victory);
+    if ((libNovC_gv_NC_DebugProgressLastMission == null)) {
+        libComC_gf_CC_LocationActivate("DefendersofManSecretBase");
+        libComC_gf_CC_MapSetCurrent("NStory01");
+        libComC_gf_CC_TransitionPrepareMissionLaunch("Nova01", false, false, libComC_gf_CC_DifficultyofCampaign());
+        GameOver(1, c_gameOverVictory, false, false);
+        return true;
+    }
+
+    libComC_gf_CC_MapSetCurrent(libNovC_gv_NC_DebugProgressLastMission);
+    libComC_gf_CC_TransitionSetNextMap("NStory01");
+    libComC_gf_CC_EventDispatch(libNovC_ge_NC_Event_CampaignMapTransition, "debug", "", true);
+    libComC_gf_CC_TransitionPrepareMissionEnd(c_gameOverVictory, libComC_gv_cCX_CampaignDifficulty);
+    GameOver(1, c_gameOverVictory, false, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugProgressOKCallback_Init () {
+    libNovC_gt_NC_DebugProgressOKCallback = TriggerCreate("libNovC_gt_NC_DebugProgressOKCallback_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugProgressCancelCallback
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugProgressCancelCallback_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UISetWorldVisible(PlayerGroupAll(), true);
+    libNtve_gf_HideGameUI(true, PlayerGroupAll());
+    UISetCursorVisible(PlayerGroupAll(), false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugProgressCancelCallback_Init () {
+    libNovC_gt_NC_DebugProgressCancelCallback = TriggerCreate("libNovC_gt_NC_DebugProgressCancelCallback_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_DebugProgressRetailMode
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_DebugProgressRetailMode_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((GameCheatsEnabled(c_gameCheatCategoryDevelopment) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNovC_gv_NC_DebugProgressRetailMode = true;
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_DebugProgressRetailMode_Init () {
+    libNovC_gt_NC_DebugProgressRetailMode = TriggerCreate("libNovC_gt_NC_DebugProgressRetailMode_Func");
+    TriggerAddEventChatMessage(libNovC_gt_NC_DebugProgressRetailMode, c_playerAny, "retailprogress", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_MissionSimulationAgesUpate
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_MissionSimulationAgesUpate_Func (bool testConds, bool runActions) {
+    string auto5A45A8BA_val;
+
+    // Variable Declarations
+    bool lv_lockMissionGroup2;
+    bool lv_lockMissionGroup3;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto5A45A8BA_val = (libComC_gf_CC_EventParameter(libComC_ge_CC_Event_CC_EventMissionSimulationAgesUpdate, 1));
+    if (auto5A45A8BA_val == "Nova01") {
+        libComC_gf_CC_MissionStatusSet("Nova02", libComC_ge_MissionStatus_Locked);
+        libComC_gf_CC_MissionStatusSet("Nova03", libComC_ge_MissionStatus_Locked);
+        lv_lockMissionGroup2 = true;
+        lv_lockMissionGroup3 = true;
+    }
+    else if (auto5A45A8BA_val == "Nova02") {
+        libComC_gf_CC_MissionStatusSet("Nova03", libComC_ge_MissionStatus_Locked);
+        lv_lockMissionGroup2 = true;
+        lv_lockMissionGroup3 = true;
+    }
+    else if (auto5A45A8BA_val == "Nova03") {
+        lv_lockMissionGroup2 = true;
+        lv_lockMissionGroup3 = true;
+    }
+    else if (auto5A45A8BA_val == "Nova04") {
+        libComC_gf_CC_MissionStatusSet("Nova05", libComC_ge_MissionStatus_Locked);
+        libComC_gf_CC_MissionStatusSet("Nova06", libComC_ge_MissionStatus_Locked);
+        lv_lockMissionGroup3 = true;
+    }
+    else if (auto5A45A8BA_val == "Nova05") {
+        libComC_gf_CC_MissionStatusSet("Nova06", libComC_ge_MissionStatus_Locked);
+        lv_lockMissionGroup3 = true;
+    }
+    else if (auto5A45A8BA_val == "Nova06") {
+        lv_lockMissionGroup3 = true;
+    }
+    else if (auto5A45A8BA_val == "Nova07") {
+        libComC_gf_CC_MissionStatusSet("Nova08", libComC_ge_MissionStatus_Locked);
+        libComC_gf_CC_MissionStatusSet("Nova09", libComC_ge_MissionStatus_Locked);
+    }
+    else if (auto5A45A8BA_val == "Nova08") {
+        libComC_gf_CC_MissionStatusSet("Nova09", libComC_ge_MissionStatus_Locked);
+    }
+    else {
+    }
+    if ((lv_lockMissionGroup2 == true)) {
+        libComC_gf_CC_MissionStatusSet("Nova04", libComC_ge_MissionStatus_Locked);
+        libComC_gf_CC_MissionStatusSet("Nova05", libComC_ge_MissionStatus_Locked);
+        libComC_gf_CC_MissionStatusSet("Nova06", libComC_ge_MissionStatus_Locked);
+    }
+
+    if ((lv_lockMissionGroup3 == true)) {
+        libComC_gf_CC_MissionStatusSet("Nova07", libComC_ge_MissionStatus_Locked);
+        libComC_gf_CC_MissionStatusSet("Nova08", libComC_ge_MissionStatus_Locked);
+        libComC_gf_CC_MissionStatusSet("Nova09", libComC_ge_MissionStatus_Locked);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_MissionSimulationAgesUpate_Init () {
+    libNovC_gt_NC_MissionSimulationAgesUpate = TriggerCreate("libNovC_gt_NC_MissionSimulationAgesUpate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_UpdateMissionFlow
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_UpdateMissionFlow_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libComC_gf_CC_MissionConditionalLockUnlock(false, "Nova01", true);
+    libComC_gf_CC_MissionConditionalLockUnlock(false, "Nova02", libComC_gf_MissionStatusCheck("Nova01", libComC_ge_MissionStatus_Completed));
+    libComC_gf_CC_MissionConditionalLockUnlock(false, "Nova03", libComC_gf_MissionStatusCheck("Nova02", libComC_ge_MissionStatus_Completed));
+    libComC_gf_CC_MissionConditionalLockUnlock(false, "Nova04", libComC_gf_MissionStatusCheck("Nova03", libComC_ge_MissionStatus_Completed));
+    libComC_gf_CC_MissionConditionalLockUnlock(false, "Nova05", libComC_gf_MissionStatusCheck("Nova04", libComC_ge_MissionStatus_Completed));
+    libComC_gf_CC_MissionConditionalLockUnlock(false, "Nova06", libComC_gf_MissionStatusCheck("Nova05", libComC_ge_MissionStatus_Completed));
+    libComC_gf_CC_MissionConditionalLockUnlock(false, "Nova07", libComC_gf_MissionStatusCheck("Nova06", libComC_ge_MissionStatus_Completed));
+    libComC_gf_CC_MissionConditionalLockUnlock(false, "Nova08", libComC_gf_MissionStatusCheck("Nova07", libComC_ge_MissionStatus_Completed));
+    libComC_gf_CC_MissionConditionalLockUnlock(false, "Nova09", libComC_gf_MissionStatusCheck("Nova08", libComC_ge_MissionStatus_Completed));
+    UserDataSetInt("WriterStates", "MissionsCompleted", "Value", 1, libComC_gf_NumberOfMissions(libComC_ge_MissionCountOptions_Completed));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_UpdateMissionFlow_Init () {
+    libNovC_gt_NC_UpdateMissionFlow = TriggerCreate("libNovC_gt_NC_UpdateMissionFlow_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_ObjectiveBonusText
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_ObjectiveBonusText_Func (bool testConds, bool runActions) {
+    int autoA75C237D_ai;
+    int autoA75C237D_ae;
+
+    // Variable Declarations
+    string lv_indexPerk;
+    string lv_currentObjective;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_currentObjective = (libComC_gf_CC_EventParameter(libComC_ge_CC_Event_CC_EventObjectiveBonusText, 1));
+    autoA75C237D_ai = 1;
+    autoA75C237D_ae = UserDataInstanceCount("CampaignPerk")+1;
+    while (autoA75C237D_ai < autoA75C237D_ae) {
+        lv_indexPerk = UserDataInstance("CampaignPerk", autoA75C237D_ai);
+        autoA75C237D_ai = autoA75C237D_ai+1;
+        if ((libComC_gf_CC_PerkRequiredObjective(lv_indexPerk) == lv_currentObjective)) {
+            TextExpressionSetToken("Param/Expression/lib_NovC_20549BEA", "A", libComC_gf_CC_PerkName(lv_indexPerk));
+            libComC_gf_CC_EventReturnValueSetText(libComC_ge_CC_Event_CC_EventObjectiveBonusText, TextExpressionAssemble("Param/Expression/lib_NovC_20549BEA"));
+            return true;
+        }
+
+    }
+    libComC_gf_CC_EventReturnValueSetText(libComC_ge_CC_Event_CC_EventObjectiveBonusText, null);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_ObjectiveBonusText_Init () {
+    libNovC_gt_NC_ObjectiveBonusText = TriggerCreate("libNovC_gt_NC_ObjectiveBonusText_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_ApplyTech
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_ApplyTech_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_techPlayer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_techPlayer = StringToInt(libComC_gf_CC_EventParameter(libComC_ge_CC_Event_CC_EventTechApply, 1));
+    libNovC_gf_NC_ApplyGeneralTech(lv_techPlayer);
+    libNovC_gf_NC_ApplyArmyTechItems();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_ApplyTech_Init () {
+    libNovC_gt_NC_ApplyTech = TriggerCreate("libNovC_gt_NC_ApplyTech_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_UpdateTechStates
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_UpdateTechStates_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNovC_gf_NC_UpdatePerkStates();
+    libNovC_gf_NC_UpdateArmyTechItemStates();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_UpdateTechStates_Init () {
+    libNovC_gt_NC_UpdateTechStates = TriggerCreate("libNovC_gt_NC_UpdateTechStates_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_TechUnitUpdate
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_TechUnitUpdate_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_updatePlayer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_updatePlayer = StringToInt(libComC_gf_CC_EventParameter(libComC_ge_CC_Event_CC_EventTechUnitUpdate, 1));
+    libNovC_gf_NC_UpdateWeaponArmorUpgrades(lv_updatePlayer);
+    libNovC_gf_NC_UpdateTerranAddOnStates(lv_updatePlayer);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_TechUnitUpdate_Init () {
+    libNovC_gt_NC_TechUnitUpdate = TriggerCreate("libNovC_gt_NC_TechUnitUpdate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_TrackLoadingComplete
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_TrackLoadingComplete_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(0.1, c_timeGame);
+    libNovC_gv_NC_LoadingComplete = true;
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_TrackLoadingComplete_Init () {
+    libNovC_gt_NC_TrackLoadingComplete = TriggerCreate("libNovC_gt_NC_TrackLoadingComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_SaveTransitionVars
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_SaveTransitionVars_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    string lv_bankMap;
+    bank lv_targetBank;
+    string lv__SectionName;
+
+    // Variable Initialization
+    lv__SectionName = "";
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    BankLoad(libComC_gf_CC_EventParameter(libComC_ge_CC_Event_CC_EventTransitionSave, 1), 1);
+    lv_targetBank = BankLastCreated();
+    lv_bankMap = (libComC_gf_CC_EventParameter(libComC_ge_CC_Event_CC_EventTransitionSave, 2));
+    if ((lv_bankMap == null)) {
+        if ((libComC_gf_CC_TransitionSaveBankVarsResultFromSimulation() == false) && (libComC_gf_CC_TransitionSaveBankVarsResultFromVictoryAgain() == false)) {
+            lv__SectionName = libComC_gf_CC_BankSectionName(lv_bankMap, "CampaignSetting");
+            BankSectionCreate(lv_targetBank, lv__SectionName);
+            libComC_gf_CC_SaveTransitionVarBoolean(lv_targetBank, lv__SectionName, ("UpgradesTaught"), libNovC_gv_nCX_UpgradesTaught, false);
+            lv__SectionName = libComC_gf_CC_BankSectionName(lv_bankMap, "CharacterStatus");
+            BankSectionCreate(lv_targetBank, lv__SectionName);
+            UserDataSaveType("CharacterStatus", lv_targetBank, lv__SectionName);
+        }
+
+    }
+
+    if ((libComC_gf_CC_TransitionSaveBankVarsResultFromDefeat() == true)) {
+        return true;
+    }
+
+    if (((lv_bankMap != null) || ((libComC_gf_CC_TransitionSaveBankVarsResultFromSimulation() == false) && (libComC_gf_CC_TransitionSaveBankVarsResultFromVictoryAgain() == false)))) {
+        lv__SectionName = libComC_gf_CC_BankSectionName(lv_bankMap, "ArmyTechItem");
+        BankSectionCreate(lv_targetBank, lv__SectionName);
+        libNovC_gf_NC_SaveArmyTechItemsToBank(lv_targetBank, lv__SectionName);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_SaveTransitionVars_Init () {
+    libNovC_gt_NC_SaveTransitionVars = TriggerCreate("libNovC_gt_NC_SaveTransitionVars_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_LoadTransitionVars
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_LoadTransitionVars_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    string lv_bankMap;
+    bank lv_sourceBank;
+    string lv__SectionName;
+
+    // Variable Initialization
+    lv__SectionName = "";
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    BankLoad(libComC_gf_CC_EventParameter(libComC_ge_CC_Event_CC_EventTransitionLoad, 1), 1);
+    lv_sourceBank = BankLastCreated();
+    lv_bankMap = (libComC_gf_CC_EventParameter(libComC_ge_CC_Event_CC_EventTransitionLoad, 2));
+    if ((lv_bankMap == null)) {
+        lv__SectionName = libComC_gf_CC_BankSectionName(lv_bankMap, "CampaignSetting");
+        libNovC_gv_nCX_UpgradesTaught = libComC_gf_CC_LoadTransitionVarBoolean(lv_sourceBank, lv__SectionName, ("UpgradesTaught"), false);
+        libNovC_gf_NC_UpdateCampaignScreen(libComC_gf_LastSuccessfulMission());
+    }
+
+    lv__SectionName = libComC_gf_CC_BankSectionName(lv_bankMap, "ArmyTechItem");
+    libNovC_gf_NC_LoadArmyTechItemsFromBank(lv_sourceBank, lv__SectionName);
+    lv__SectionName = libComC_gf_CC_BankSectionName(lv_bankMap, "CharacterStatus");
+    UserDataLoadType("CharacterStatus", lv_sourceBank, lv__SectionName);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_LoadTransitionVars_Init () {
+    libNovC_gt_NC_LoadTransitionVars = TriggerCreate("libNovC_gt_NC_LoadTransitionVars_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_ResetCampaignData
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_ResetCampaignData_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libComC_gf_CC_LocationActivate("DefendersofManSecretBase");
+    libNovC_gv_nCX_UpgradesTaught = false;
+    libNovC_gf_NC_ResetTech();
+    libComC_gf_CC_MissionStatusSet("Nova01", libComC_ge_MissionStatus_Available);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_ResetCampaignData_Init () {
+    libNovC_gt_NC_ResetCampaignData = TriggerCreate("libNovC_gt_NC_ResetCampaignData_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_StorySimulationStart
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_StorySimulationStart_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNovC_gf_NC_SaveArmyTechItemsToBank(libComC_gf_CC_StorySimulationBank(), libComC_gf_CC_BankSectionName(null, "ArmyTechItem"));
+    if ((libComC_gf_NC_MissionSectionExists(libComC_gf_CC_StorySimulationMission()) == true)) {
+        libNovC_gf_NC_LoadArmyTechItemsFromBank(libComC_gf_CC_CampaignBank(), libComC_gf_CC_BankSectionName(libComC_gf_CC_StorySimulationMission(), "ArmyTechItem"));
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_StorySimulationStart_Init () {
+    libNovC_gt_NC_StorySimulationStart = TriggerCreate("libNovC_gt_NC_StorySimulationStart_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: NC_StorySimulationEnd
+//--------------------------------------------------------------------------------------------------
+bool libNovC_gt_NC_StorySimulationEnd_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNovC_gf_NC_SaveArmyTechItemsToBank(libComC_gf_CC_CampaignBank(), libComC_gf_CC_BankSectionName(libComC_gf_CC_StorySimulationMission(), "ArmyTechItem"));
+    libNovC_gf_NC_LoadArmyTechItemsFromBank(libComC_gf_CC_StorySimulationBank(), libComC_gf_CC_BankSectionName(null, "ArmyTechItem"));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libNovC_gt_NC_StorySimulationEnd_Init () {
+    libNovC_gt_NC_StorySimulationEnd = TriggerCreate("libNovC_gt_NC_StorySimulationEnd_Func");
+}
+
+void libNovC_InitTriggers () {
+    libNovC_gt_TimeExpired_Init();
+    libNovC_gt_QuitDemo_Init();
+    libNovC_gt_TestUserOverrides_Init();
+    libNovC_gt_NC_DebugCampaignTechOK_Init();
+    libNovC_gt_NC_DebugCampaignTechCancel_Init();
+    libNovC_gt_NC_DebugCampaignTechEquipmentCheckClicked_Init();
+    libNovC_gt_NC_DebugCampaignTechRandomizeClicked_Init();
+    libNovC_gt_NC_DebugCampaignTechUpgradesOK_Init();
+    libNovC_gt_NC_DebugCampaignTechUpgradesCancel_Init();
+    libNovC_gt_NC_DebugCampaignTechUpgradesCheckClicked_Init();
+    libNovC_gt_NC_DebugCampaignTechUpgradesOpenClicked_Init();
+    libNovC_gt_NC_DebugCampaignTechUpgradesItemClicked_Init();
+    libNovC_gt_NC_DebugTech_Init();
+    libNovC_gt_NC_DebugProgressMissionButtonClicked_Init();
+    libNovC_gt_NC_DebugProgressDirectMissionButtonClicked_Init();
+    libNovC_gt_NC_DebugProgressDirectSelectButtonClicked_Init();
+    libNovC_gt_NC_DebugProgressOK_Init();
+    libNovC_gt_NC_DebugProgressLaunchMission_Init();
+    libNovC_gt_NC_DebugProgressDirectLaunchMission_Init();
+    libNovC_gt_NC_DebugProgressCancel_Init();
+    libNovC_gt_NC_DebugProgressReset_Init();
+    libNovC_gt_NC_DebugProgressBonusObjectiveButtonClicked_Init();
+    libNovC_gt_NC_DebugProgress_Init();
+    libNovC_gt_NC_DebugProgressDevelop_Init();
+    libNovC_gt_NC_DebugProgressOKCallback_Init();
+    libNovC_gt_NC_DebugProgressCancelCallback_Init();
+    libNovC_gt_NC_DebugProgressRetailMode_Init();
+    libNovC_gt_NC_MissionSimulationAgesUpate_Init();
+    libNovC_gt_NC_UpdateMissionFlow_Init();
+    libNovC_gt_NC_ObjectiveBonusText_Init();
+    libNovC_gt_NC_ApplyTech_Init();
+    libNovC_gt_NC_UpdateTechStates_Init();
+    libNovC_gt_NC_TechUnitUpdate_Init();
+    libNovC_gt_NC_TrackLoadingComplete_Init();
+    libNovC_gt_NC_SaveTransitionVars_Init();
+    libNovC_gt_NC_LoadTransitionVars_Init();
+    libNovC_gt_NC_ResetCampaignData_Init();
+    libNovC_gt_NC_StorySimulationStart_Init();
+    libNovC_gt_NC_StorySimulationEnd_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libNovC_InitLib_completed = false;
+
+void libNovC_InitLib () {
+    if (libNovC_InitLib_completed) {
+        return;
+    }
+
+    libNovC_InitLib_completed = true;
+
+    libNovC_InitLibraries();
+    libNovC_InitVariables();
+    libNovC_InitTriggers();
+}
+
+include "LibNCMI"
+include "LibNCUI"
+

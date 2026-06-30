@@ -1,0 +1,827 @@
+//==================================================================================================
+//  Melee AI Wave Functions
+//==================================================================================================
+
+// wave eval ranges
+const fixed c_evalDefendRange   = 16;
+const fixed c_evalRange         = 10;
+const fixed c_evalHarassRange   = 8;
+const fixed c_harassRetreatRange = 12;
+
+// drop attack variables
+const fixed c_dropCheckRollFreq = 120.0;
+const fixed c_dropCheckAttackFreq = 900.0;  // since our drops are predictable, don't do two drops without a large gap in time
+const int c_dropAttackChance = 50;
+
+// divert variables
+const fixed c_wasAttackedRecently = 2.0;
+
+//--------------------------------------------------------------------------------------------------
+string AttackStateName (int state) {
+    if (state == e_attackState_Wait)           {  return "Wait";           }
+    if (state == e_attackState_Attack)         {  return "Attack";         }
+    if (state == e_attackState_DropAttack)     {  return "DropAttack";     }
+    if (state == e_attackState_Idle)           {  return "Idle";           }
+    if (state == e_attackState_Scared)         {  return "Scared";         }
+    if (state == e_attackState_Retreat)        {  return "Retreat";        }
+    if (state == e_attackState_DropRetreat)    {  return "DropRetreat";    }
+    if (state == e_attackState_InRetreat)      {  return "InRetreat";      }
+    return "?" + IntToString(state) + "?";
+}
+
+//--------------------------------------------------------------------------------------------------
+string WaveStateName (int state) {
+    if (state == c_waveStateIdle)           { return "Idle";        }
+    if (state == c_waveStateSuicide)        { return "Suicide";     }
+    if (state == c_waveStateMerge)          { return "Merge";       }
+    if (state == c_waveStateAttack)         { return "Attack";      }
+    if (state == c_waveStateDefend)         { return "Defend";      }
+    if (state == c_waveStateScout)          { return "Scout";       }
+    if (state == c_waveStateRetreat)        { return "Retreat";     }
+    if (state == c_waveStateClearObs)       { return "ClearObs";    }
+    if (state == c_waveStateGuardHome)      { return "Home";        }
+    return "?" + IntToString(state) + "?";
+}
+
+//--------------------------------------------------------------------------------------------------
+void DebugWave (int player, string name, wave w) {
+    string threat;
+    if (AIDefenseThreat(c_dtAnyThreat, player, w)) {
+        threat = "true";
+    }
+    else {
+        threat = "false";
+    }
+    DebugAIPlayer(
+        player,
+        "wave="         + name                                          +
+        ", units="      + IntToString(AIWaveUnitCount(w))               +
+        ", state="      + WaveStateName(AIWaveState(w))                 +
+        ", ratio="      + IntToString(AIWaveEvalRatio(w, c_evalRange))  +
+        ", combat="     + IntToString(AIWaveGetTimeInCombat(w))         +
+        ", safe="       + IntToString(AIWaveGetTimeSinceCombat(w))      +
+        ", threat="     + threat
+    );
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIDefendSelfWithWave
+//--------------------------------------------------------------------------------------------------
+void AIDefendSelfWithWave (int player, wave w) {
+    int eval = AIWaveEvalRatio(w, c_evalDefendRange);
+    int staticPercent = AILastWaveEvalStaticRatio();
+    int neededEval = 50;
+
+    if (staticPercent > 90) {
+        neededEval = 70;
+    }
+    else if (staticPercent > 40) {
+        neededEval = 60;
+    }
+
+    if (eval < neededEval) {
+        if (AIWaveState(w) != c_waveStateRetreat) {
+DebugAIPlayerWave(player, "self defend1 set wave = retreat to gather defense");
+            AIWaveSetType(w, c_waveStateRetreat, AIWaveTargetGatherD(player, c_townMain));
+        }
+    }
+    else if (AIWaveState(w) != c_waveStateDefend) {
+        if (eval > neededEval+10) {
+            if (AIWaveGetTimeSinceOrdered(w) >= 20) {
+DebugAIPlayerWave(player, "self defend2 set wave = defend vs. threats");
+                AIWaveSetType(w, c_waveStateDefend, AIWaveTargetMeleeDefend(player));
+            }
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIDefendAllyWithWave
+//--------------------------------------------------------------------------------------------------
+void AIDefendAllyWithWave (int player, wave w) {
+    int eval = AIWaveEvalRatio(w, c_evalDefendRange);
+    int neededEval = 30;
+
+    if (eval < neededEval) {
+        if (AIWaveState(w) != c_waveStateRetreat) {
+DebugAIPlayerWave(player, "ally defend1 set wave = retreat to gather defense");
+            AIWaveSetType(w, c_waveStateRetreat, AIWaveTargetGatherD(player, c_townMain));
+        }
+    }
+    else if (AIWaveState(w) != c_waveStateDefend) {
+        if (eval > neededEval+10) {
+            if (AIWaveGetTimeSinceOrdered(w) >= 5) {
+DebugAIPlayerWave(player, "ally defend2 set wave = defend vs. threats");
+                AIWaveSetType(w, c_waveStateDefend, AIWaveTargetMeleeDefend(player));
+            }
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIWaveDefend
+//--------------------------------------------------------------------------------------------------
+void AIWaveDefend (int player, wave w) {
+    if (PlayerBeaconIsSet(player, c_beaconArmy)) {
+        AIWaveMerge(player, c_waveDefend, c_waveAttack);
+        return;
+    }
+
+    if (AIDefenseThreat(c_dtAnyThreat, player, w)) {
+        AIDefendSelfWithWave(player, w);
+    }
+    else if (AIAnyAllyNeedsDefending(player, w)) {
+        AIDefendAllyWithWave(player, w);
+    }
+    else if (AIWaveState(w) != c_waveStateIdle) {
+DebugAIPlayerWave(player, "defend3 set defend = idle at gather defense");
+        AIWaveSetType(w, c_waveStateIdle, AIWaveTargetGatherMelee(player));
+    }
+    else {
+        // if we've been idle for 30 seconds, just merge back into the attack wave
+        if (AIWaveGetTimeSinceOrdered(w) >= 30) {
+            DebugAIPlayerWave(player, "defend4 merge defend back into attack");
+            AIWaveMerge(player, c_waveDefend, c_waveAttack);
+            return;
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIWaveMain
+//--------------------------------------------------------------------------------------------------
+void AIWaveMain (int player, wave w) {
+    unit obstruction = null;
+    int count = AIWaveUnitCount(w);
+    int state = AIWaveState(w);
+    int attackState = AIState(player, e_attackState);
+
+    if (count >= 5 && PlayerBeaconIsSet(player, c_beaconArmy)) {
+        AIWaveMerge(player, c_waveMain, c_waveAttack);
+        return;
+    }
+
+    if (AIDefenseThreat(c_dtAnyThreat, player, w)) {
+        AIDefendSelfWithWave(player, w);
+        return;
+    }
+    else if (AIAnyAllyNeedsDefending(player, w)) {
+        AIDefendAllyWithWave(player, w);
+        return;
+    }
+
+    if (AIWaveIsInCombat(w)) {
+        return;
+    }
+
+    if (count >= 6 && AIGetFlag(player, e_flagsTimeout)) {
+        if (attackState != e_attackState_DropAttack && attackState != e_attackState_DropRetreat) {
+            AIWaveMerge(player, c_waveMain, c_waveAttack);
+            return;
+        }
+    }
+
+    if (state != c_waveStateIdle) {
+DebugAIPlayerWave(player, "main2 set main = idle at gather offense");
+        AIWaveSetType(w, c_waveStateIdle, AIWaveTargetGatherMelee(player));
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIWaveDivert
+//--------------------------------------------------------------------------------------------------
+void AIWaveDivert (int player, wave w, int type) {
+    int state;
+    int count;
+    unit leader;
+    string leaderType;
+    
+    state = AIWaveState(w);
+
+    if (type == c_waveDivert2) {
+        // only use divert2 for defense/beacons (banshee = 2,  reaper&oracle = 1)
+        if (PlayerBeaconIsSet(player, c_beaconArmy)) {
+            if (state != c_waveStateBeacon) {
+                AIWaveSetType(w, c_waveStateBeacon, AIWaveTargetMeleeBeacon(player));
+            }
+            return;
+        }
+        if (AIDefenseThreat(c_dtRealThreat, player, w)) {
+            AIDefendSelfWithWave(player, w);
+            return;
+        }
+        else if (AIAnyAllyNeedsDefending(player, w)) {
+            AIDefendAllyWithWave(player, w);
+            return;
+        }
+    }
+    
+    if (state == c_waveStateDefend || state == c_waveStateBeacon) {
+DebugAIPlayerWave(player, "return to divert control from defend/beacon");
+        AIWaveSetType(w, c_waveStateIdle, AIWaveTargetGatherD(player, c_townMain));
+        return;
+    }
+
+    if (!AIGetFlag(player, e_flagsDiversion)) {
+        if (AIWaveUnitCount(w) != 0) {
+            if (type == c_waveDivert1) {
+                AIWaveMerge(player, c_waveDivert1, c_waveAttack);
+            }
+            else if(type == c_waveDivert2) {
+                AIWaveMerge(player, c_waveDivert2, c_waveAttack);
+            }
+        }
+        return;
+    }
+
+    leader = AIWaveCurrentLeader(w);
+    if (leader == c_nullUnit) {
+        return;
+    }
+
+    leaderType = UnitGetType(leader);
+    if ((leaderType == c_PU_Oracle) && (AILastAttack(leader) > (AIGetTime()-c_wasAttackedRecently))) {
+        if (state != c_waveStateRetreat) {
+DebugAIPlayerWave(player, "set divert = retreat to harass point");
+            AIWaveSetType(w, c_waveStateRetreat, AIWaveHarassRetreat(player, w, c_harassRetreatRange));            
+        }
+    }
+    else if (AIWaveEvalRatio(w, c_evalHarassRange) < 100) {
+        if (state != c_waveStateRetreat) {
+DebugAIPlayerWave(player, "set divert = retreat to harass point");
+            AIWaveSetType(w, c_waveStateRetreat, AIWaveHarassRetreat(player, w, c_harassRetreatRange));            
+        }
+    }
+    else if (state != c_waveStateAttack) {
+        if (AIWaveGetTimeSinceOrdered(w) >= RandomInt(8, 12)) {
+DebugAIPlayerWave(player, "set divert = attack harass target");
+            AIWaveSetType(w, c_waveStateAttack, AIWaveTargetMeleeHarass(player));
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIWaveHome
+//--------------------------------------------------------------------------------------------------
+void AIWaveHome (int player, wave w) {
+    int state;
+    
+    state = AIWaveState(w);
+    if (state != c_waveStateGuardHome) {
+DebugAIPlayerWave(player, "home set divert = idle at gather defense");
+        AIWaveSetType(w, c_waveStateGuardHome, AIWaveTargetGatherD(player, c_townMain));
+        return;
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+// AIWaveClearObs
+//--------------------------------------------------------------------------------------------------
+void AIWaveClearObs (int player, wave w) {
+    unit obstruction = AIGetObstruction(player);
+    unit oldTarget = null;
+    int obsLife;
+    int state = AIWaveState(w);
+
+    // If we're supposed to be obeying the player, merge back into the main wave
+    if (PlayerBeaconIsSet(player, c_beaconArmy)) {
+        AIWaveMerge(player, c_waveClearObs, c_waveAttack);
+        return;
+    }
+
+    // If there are no longer any obstructions, merge back into the main wave
+    if (obstruction == null) {
+DebugAIPlayerWave(player, "clearobs1 merge clear obstruction -> main");
+        AIWaveMerge(player, c_waveClearObs, c_waveMain);
+        return;
+    }
+
+    // Defend against threats, unless we're almost done destroying the obstruction
+    obsLife = UnitGetPropertyInt(obstruction, c_unitPropLifePercent, c_unitPropCurrent);
+    if (obsLife > 15) {
+        if (AIDefenseThreat(c_dtRealThreat, player, w)) {
+            AIDefendSelfWithWave(player, w);
+            return;
+        }
+        else if (AIAnyAllyNeedsDefending(player, w)) {
+            AIDefendAllyWithWave(player, w);
+            return;
+        }
+    }
+
+    // Let's hunt some rock!
+    oldTarget = AIWaveTargetGetUnit(AIWaveGetTarget(w));
+    if (state != c_waveStateClearObs || obstruction != oldTarget) {
+DebugAIPlayerWave(player, "clearobs2 set clear obstruction = clear obstruction");
+        AIWaveSetType(w, c_waveStateClearObs, AIWaveTargetUnit(obstruction));
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+// AIWaveNeedClearObsUnits
+//--------------------------------------------------------------------------------------------------
+bool AIWaveNeedClearObsUnits (int player) {
+    unit obstruction = null;
+    wave waveClob = null;
+    wave waveAtck = null;
+    int countClob = 0;
+    int countAtck = 0;
+    int evalAtck = 0;
+
+    // Check global option
+    if (AIGetFlag(player, e_flagsClearObs) == false) {
+        return false;
+    }
+
+    // Don't clear obstructions in the first 10 minutes (leaves the AI too open to being rushed)
+    if (AIGetTime() < 600) {
+        return false;
+    }
+
+    // See if there is any obstruction
+    obstruction = AIGetObstruction(player);
+    if (obstruction == null) {
+        return false;
+    }
+
+    // See if the clear obstruction wave is already full
+    waveClob = AIWaveGet(player, c_waveClearObs);
+    countClob = AIWaveUnitCount(waveClob);
+    if (countClob >= 4) {
+        return false;
+    }
+
+    // If the attack wave is getting weak, keep units available for it instead
+    waveAtck = AIWaveGet(player, c_waveAttack);
+    countAtck = AIWaveUnitCount(waveAtck);
+    evalAtck = AIWaveEvalRatio(waveAtck, c_evalRange);
+    if (countAtck > 0 && evalAtck < 90) {
+        return false;
+    }
+
+    // Yes, units are needed for clear obstruction duty
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIWaveAttackDefend
+//--------------------------------------------------------------------------------------------------
+static bool AIWaveAttackDefend (int player, wave w, int state) {
+    fixed defenseEval = 0;
+
+    if (PlayerBeaconIsSet(player, c_beaconArmy)) {
+        return false;
+    }
+   
+    if (AIAnyAllyNeedsDefending(player, w)) {
+        return true;
+    }
+
+    if (AIDefenseThreat(c_dtRealSelfThreat, player, w)) {
+        return true;
+    }
+
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIIsAttacking
+//--------------------------------------------------------------------------------------------------
+bool AIIsAttacking (int player) {
+    wave waveAttack = null;
+
+    // for now I'm not counting e_attackState_DropAttack as attacking, it is a specialized attack
+    // and not easy for other AI's to coordinate with it
+
+    if (AIState(player, e_attackState) != e_attackState_Attack) {
+        return false;
+    }
+
+    waveAttack = AIWaveGet(player, c_waveAttack);
+    if (AIWaveUnitCount(waveAttack) == 0) {
+        return false;
+    }
+
+    if (AIWaveState(waveAttack) != c_waveStateAttack) {
+        return false;
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIGetAttackLocation
+//--------------------------------------------------------------------------------------------------
+point AIGetAttackLocation (int player) {
+    wave waveAttack = null;
+
+    // for now I'm not counting e_attackState_DropAttack as attacking, it is a specialized attack
+    // and not easy for other AI's to coordinate with it
+
+    if (AIState(player, e_attackState) != e_attackState_Attack) {
+        return c_nullPoint;
+    }
+
+    waveAttack = AIWaveGet(player, c_waveAttack);
+    if (AIWaveUnitCount(waveAttack) == 0) {
+        return c_nullPoint;
+    }
+
+    if (AIWaveState(waveAttack) != c_waveStateAttack) {
+        return c_nullPoint;
+    }
+
+    return AIWaveGoal(waveAttack);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AINeedsDefending
+//--------------------------------------------------------------------------------------------------
+bool AINeedsDefending (int player) {
+    fixed defenseEval = 0;
+    
+    if (!AIDefenseThreat(c_dtRealSelfThreat | c_dtIncludeCantAttack, player, c_nullWave)) {
+        return false;
+    }
+
+    defenseEval = AISelfDefenseThreatEval(c_dtRealSelfThreat, player);
+    if (defenseEval >= 100) {
+        if (AIEvalAllSelf(player) + 80 < defenseEval) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  WaveTestUseDropAttack
+//--------------------------------------------------------------------------------------------------
+bool WaveTestUseDropAttack (int player, wave w) {
+    // see if we can and want to do a drop attack
+    int numMobileTransports;
+
+    if (!AIGetFlag(player, e_flagsAllowDropAttack)) {
+        return false;
+    }
+
+    numMobileTransports = AIGetNumMobileTransports(player);
+
+    if (numMobileTransports >= 1) {
+        // we have a transport, so request more so we can use them to do a drop later
+        AISetWantsMultipleTransport(player, true);
+    }
+    else {
+        // don't worry about drops if we have no transports.
+        return false;
+    }
+
+    if (numMobileTransports < 3) {
+        // wait until we have at least 3 transports to try a drop
+        return false;
+    }
+
+    if (AIGetNextDropTimeCheck(player) >= AIGetTime()) {
+        // only check drop attacks every so often
+        return false;
+    }
+
+    AISetNextDropTimeCheck(player, AIGetTime() + c_dropCheckRollFreq);
+
+    if (RandomInt(1,100) > c_dropAttackChance) {
+        return false;
+    }
+
+    if (!AIFindDropAttackTarget(player, AIGetGatherLocation(player, c_townMain))) {
+        return false;
+    }
+
+    AISetNextDropTimeCheck(player, AIGetTime() + c_dropCheckAttackFreq);
+
+    AISetAttackState(player, e_attackState_DropAttack);
+DebugAIPlayerWave(player, "attack1drop merge main -> attack; set attack = drop attack");
+    AIWaveMerge(player, c_waveMain, c_waveAttack);
+    AIWaveSetType(w, c_waveStateDropAttack, AIWaveTargetMeleeDrop(player, AILastDropLocation(), AILastDropGoal()));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  WaveDetermineStateAfterBeacon
+//--------------------------------------------------------------------------------------------------
+void WaveDetermineStateAfterBeacon (int player, wave w) {
+    int state = AIState(player, e_attackState);
+    unit leader;
+    point leaderPos;
+    int distEnemy;
+    int distFriend;
+    int delay = FixedToInt(AIGetTime()) + RandomInt(60, 90);
+
+    AIWaveSetType(w, c_waveStateIdle, AIWaveTargetGatherMelee(player));
+    AISetUserInt(player, c_delayNextAttack, delay);
+    if (state == e_attackState_Wait) {
+        return;
+    }
+
+    leader = AIWaveCurrentLeader(w);
+    if (leader == c_nullUnit) {
+        AISetAttackState(player, e_attackState_Idle);
+        return;
+    }
+
+    leaderPos = UnitGetPosition(leader);
+    distEnemy = AIPathDistToNearestKnownEnemyStructure(player, leaderPos, true);
+    distFriend = AIPathDistToNearestFriendlyStructure(player, leaderPos, true);
+
+    if (AIWaveGetTimeInCombat(w) > 0) {
+        // currently in combat
+        if ((distEnemy >= 0 )&& (distEnemy < distFriend)) {
+            // if on other half of the map, go fight, else go to idle
+            AISetAttackState(player, e_attackState_Attack);
+        } else {
+            AISetAttackState(player, e_attackState_Idle);
+        }
+    }
+    else if (AIWaveGetTimeSinceCombat(w) < 30) {
+        // recently in combat
+        if ((distEnemy >= 0 )&& (distEnemy * 6 < distFriend * 4)) {
+            // if 60% of the way toward the enemy, go fight, else go to idle
+            AISetAttackState(player, e_attackState_Attack);
+        } else {
+            AISetAttackState(player, e_attackState_Idle);
+        }
+    }
+    else {
+        // a while since combat
+        if ((distEnemy >= 0 )&& (distEnemy * 7 < distFriend * 3)) {
+            // if 70% of the way toward the enemy, go fight, else go to idle
+            AISetAttackState(player, e_attackState_Attack);
+        } else {
+            AISetAttackState(player, e_attackState_Idle);
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  WaveAdvancedIdleAttackLogic
+//--------------------------------------------------------------------------------------------------
+void WaveAdvancedIdleAttackLogic (int player, wave w, int count) {
+    // hard/insane logic for when to attack again
+    int eval;
+    bool enoughForce = false;
+    int foodUsed;
+
+    if (AILastAttackRatio(w) >= 130) {
+        // if the last attack was successful (we killed a good bit more than we lost)
+        // then attack again as soon as we've gathered 30 units or it's been a short amount of time
+        if (count >= 30) {
+            AISetAttackState(player, e_attackState_Attack);
+        }
+        else if (count >= 15 && AIGetFlag(player, e_flagsTimeout) && AIWaveGetTimeSinceCombat(w) >= 150) {
+            AISetAttackState(player, e_attackState_Attack);
+        }
+    }
+    else if (AILastAttackRatio(w) >= 90) {
+        // if the last attack was even (we did fight and we killed about as much as we lost)
+        // then wait to attack until we've regrouped a bit
+        if (count >= 40) {
+            AISetAttackState(player, e_attackState_Attack);
+        }
+        else if (count >= 20 && AIGetFlag(player, e_flagsTimeout) && AIWaveGetTimeSinceCombat(w) >= 300 - 4*count) {
+            AISetAttackState(player, e_attackState_Attack);
+        }
+    }
+    else { // AILastAttackRatio(w) < 80
+        // if the last attack was a failure (we either retreated right away or lost more then we killed)
+
+        if (AIWaveGetTimeSinceCombat(w) >= 60) {
+            if (count >= 8 && count < 12) {
+                if (WaveTestUseDropAttack(player,w)) {
+                    return;
+                }
+            }
+        }
+
+        foodUsed = PlayerGetPropertyInt(player, c_playerPropSuppliesUsed);
+        if (count < 30 && foodUsed < 120) {
+            return;
+        }
+
+        // force us to gather more units than last time, or use at least 170 food cap
+        if (foodUsed > 170) {
+            enoughForce = true;
+        }
+        else {
+            eval = AIWaveEval(w) + AIWaveEval(AIWaveGet(player, c_waveMain));
+            if (IntToFixed(eval) > IntToFixed(AILastAttackStartEval(w)) * 1.33) {
+                enoughForce = true;
+            }
+        }
+
+        if (enoughForce) {
+            AISetAttackState(player, e_attackState_Attack);
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIWaveAttack
+//--------------------------------------------------------------------------------------------------
+void AIWaveAttack (int player, wave w) {
+    int state = AIState(player, e_attackState);
+    int eval;
+    int time;
+    int count;
+
+    if (PlayerBeaconIsSet(player, c_beaconArmy)) {
+        if (AIWaveState(w) != c_waveStateBeacon) {
+            DebugAIPlayerWave(player, "AIWaveMain set wave = beacon");
+            AIWaveSetType(w, c_waveStateBeacon, AIWaveTargetMeleeBeacon(player));
+        }
+        return;
+    }
+    else if (AIWaveState(w) == c_waveStateBeacon) {
+        // was previously obeying a beacon order, need to transition back to auto control
+        WaveDetermineStateAfterBeacon(player, w);
+    }
+
+    //--- DEFEND ---
+    if (AIWaveAttackDefend(player, w, state)) {
+        AIDefaultMeleeSplitArmyToDefend(player, w, c_waveDefend);
+    }
+
+    //--- WAIT ---
+
+    if (state == e_attackState_Wait) {
+        return;
+    }
+    if (AIGetCoopFlag(player, c_coopTurtle)) {
+        if (AIWaveState(w) != c_waveStateIdle) {
+            DebugAIPlayerWave(player, "turtle set attack = idle at gather offense");
+            AIWaveSetType(w, c_waveStateIdle, AIWaveTargetGatherMelee(player));
+        }
+        return;
+    }
+
+    //--- ATTACK ---
+
+    if (state == e_attackState_Attack) {
+        if (AIGetFlag(player, e_flagsAllowRetreat) && !AIGetCoopFlag(player, c_coopWaveAttacker)) {
+            // retreat logic
+            time = AIWaveGetTimeInCombat(w);
+            eval = AIWaveEvalRatio(w, c_evalRange);
+            if (eval >= 75 && eval <= 85 && time <= 3) { // when not fighting and only a little weak
+                if (AIGetFlag(player, e_flagsRunScared)) { // need to add check for ranges & max eval
+                    AISetAttackState(player, e_attackState_Scared);
+                }
+                else {
+                    AISetAttackState(player, e_attackState_Retreat);
+                }
+            }
+            else if (eval < 75) { // need to add check for faster/retreat blocked
+                AISetAttackState(player, e_attackState_Retreat);
+            }
+        }
+
+        if (AIWaveState(w) != c_waveStateAttack) {
+            if (AIState(player, e_attackState) == e_attackState_Attack) {
+                DebugAIPlayerWave(player, "attack1 merge main -> attack; set attack = attack vs. melee target");
+                AIWaveMerge(player, c_waveMain, c_waveAttack);
+                AIWaveSetType(w, c_waveStateAttack, AIWaveTargetMelee(player));
+            }
+        }
+        return;
+    }
+
+    //--- DROP-ATTACK ---
+
+    else if (state == e_attackState_DropAttack) {        
+        eval = AIWaveEvalRatio(w, c_evalRange);
+        if (eval < 60) { // need to add check for can we retreat successfully
+            AISetAttackState(player, e_attackState_DropRetreat);
+        }
+        else if (AIWaveState(w) != c_waveStateDropAttack) {
+DebugAIPlayerWave(player, "attack1a In drop attack state, but not drop attack wave state?");
+            AISetAttackState(player, e_attackState_DropRetreat);
+        }
+    }
+
+    //--- SCARED ---
+
+    else if (state == e_attackState_Scared) {
+        eval = AIWaveEvalRatio(w, c_evalRange);
+        if (eval > 90) { // turn and fight when strong
+            AISetAttackState(player, e_attackState_Attack);
+        }
+        else if (eval < 70) { // retreat entirely if getting picked off
+            AISetAttackState(player, e_attackState_Retreat);
+        }
+        else if (AIWaveState(w) != c_waveStateRetreat) {
+DebugAIPlayerWave(player, "attack2 merge main -> attack; set attack = retreat to gather offense");
+            AIWaveMerge(player, c_waveMain, c_waveAttack);
+            AIWaveSetType(w, c_waveStateRetreat, AIWaveTargetGatherMelee(player));
+        }
+        return;
+    }
+
+    //--- RETREAT ---
+
+    else if (state == e_attackState_Retreat) {        
+DebugAIPlayerWave(player, "attack3 set attack = retreat to gather offense");
+        AIWaveSetType(w, c_waveStateRetreat, AIWaveTargetGatherMelee(player));
+        AISetAttackState(player, e_attackState_InRetreat);
+        return;
+    }
+
+    //--- DROP RETREAT ---
+
+    else if (state == e_attackState_DropRetreat) {        
+DebugAIPlayerWave(player, "attack3drop set attack = drop retreat to gather offense");
+        AIWaveSetType(w, c_waveStateDropRetreat, AIWaveTargetGatherMelee(player));
+        AISetAttackState(player, e_attackState_InRetreat);
+        return;
+    }
+
+    //--- IN RETREAT ---
+
+    else if (state == e_attackState_InRetreat) {
+        if (AIWaveState(w) != c_waveStateRetreat && AIWaveState(w) != c_waveStateDropRetreat) {
+DebugAIPlayerWave(player, "attack4 merge main -> attack");
+            AIWaveMerge(player, c_waveMain, c_waveAttack);
+            AISetAttackState(player, e_attackState_Idle);
+        }
+        return;
+    }
+    
+    //--- IDLE ---
+
+    else if (state == e_attackState_Idle) {
+        count = AIWaveUnitCount(w) + AIWaveUnitCount(AIWaveGet(player, c_waveMain));
+
+        if ((AIWaveGetTimeSinceRetreat(w) > 120) && (AIGetUserInt(player, c_delayNextAttack) < AIGetTime())) {            
+            // if we're allowed to attack && we've waited at least 120 seonds after retreating, consider attacking
+
+            // always support allies attacking
+            if (AIAnyAllyAttacking(player)) {
+                AISetAttackState(player, e_attackState_Attack);
+            }
+            if (AIPlayerDifficulty(player) >= c_skirVeryHard) {
+                if (AIWaveState(w) == c_waveStateIdle) {
+                    // wait until the wave is idle before considering attacking again
+                    WaveAdvancedIdleAttackLogic(player, w, count);
+                }
+            }
+            else {
+                // most low difficulty attacks should happen via AITestTimeout, but just in case here is
+                // some backup logic if the wave gets quite big or enough time has elapsed
+                if (PlayerGetPropertyInt(player, c_playerPropSuppliesUsed) > 180) {
+                    AISetAttackState(player, e_attackState_Attack);
+                }
+                else if (AIGetFlag(player, e_flagsTimeout) && AIWaveGetTimeSinceCombat(w) >= 600 - 2*count) {
+                    AISetAttackState(player, e_attackState_Attack);
+                }
+            }
+        }
+        
+        if (AIState(player, e_attackState) == e_attackState_Idle) {
+            if (AIWaveState(w) != c_waveStateIdle) {
+                DebugAIPlayerWave(player, "attack5 set attack = idle at gather offense");
+                AIWaveSetType(w, c_waveStateIdle, AIWaveTargetGatherMelee(player));
+            }
+        }
+        return;
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIWaveThinkDefault
+//--------------------------------------------------------------------------------------------------
+void AIWaveThinkDefault (int player, wave w, int type) {
+
+    if (DEBUG_WITH_MESSAGE) {
+        if (!g_debugMeleeInit) {
+            DebugMeleeInit();
+        }
+    }
+
+    if (AIWaveUnitCount(w) < 1) {
+        return;
+    }
+    if (type == c_waveMain) {
+        AIWaveMain(player, w);
+    }
+    else if (type == c_waveDefend) {
+        AIWaveDefend(player, w);
+    }
+    else if (type == c_waveAttack) {
+        AIWaveAttack(player, w);
+    }
+    else if (type == c_waveDivert1 || type == c_waveDivert2) {
+        AIWaveDivert(player, w, type);
+    }
+    else if (type == c_waveClearObs) {
+        AIWaveClearObs(player, w);
+    }
+    else if (type == c_waveHome) {
+        AIWaveHome(player, w);
+    }
+}

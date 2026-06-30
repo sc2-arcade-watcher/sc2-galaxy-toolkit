@@ -1,0 +1,2775 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CBankConditionCompareValueInteger default="1" id="ZCampaignCompareValueInteger">
+        <Bank value="ZCampaign"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueCount default="1" id="ZCampaignCompareValueCount">
+        <Bank value="ZCampaign"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCombine id="AmbientZerglingActive">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InZStoryChar"/>
+        <CombineArray value="ZC_InZStoryExpedition"/>
+        <CombineArray value="zzzAmbientZerglingActiveForHybrid"/>
+        <CombineArray value="zzzAmbientZerglingActiveForSpace"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="AmbientZerglingActiveNext">
+        <Type value="Or"/>
+        <CombineArray value="NextSetIsChar"/>
+        <CombineArray value="NextSetIsExpedition"/>
+        <CombineArray value="ZC_InZSpace01"/>
+        <CombineArray value="ZC_InZHybrid02"/>
+        <CombineArray value="ZC_InZHybrid03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArcsCompletedAtLeast1">
+        <CombineArray value="ZC_ZLab03Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArcsCompletedAtLeast2">
+        <CombineArray value="MissionsCompletedAtLeast6"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArcsCompletedAtLeast3">
+        <CombineArray value="MissionsCompletedAtLeast9"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArcsCompletedAtLeast4">
+        <CombineArray value="MissionsCompletedAtLeast112"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyBanelingEvoUnlocked" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="Splitterling"/>
+        <Value value="1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmyBanelingEvoUnlockedNext">
+        <CombineArray value="ZC_InMission"/>
+        <CombineArray value="ZChar03InOrComplete"/>
+        <CombineArray value="ArmyBanelingIsUnevolved"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyBanelingIsLocked">
+        <CombineArray value="ArmyBanelingUnlocked"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyBanelingIsSiegeling" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="Hunter"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ArmyBanelingIsSplitter" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="Splitterling"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmyBanelingIsUnevolved">
+        <CombineArray value="ArmyBanelingIsSplitter"/>
+        <CombineArray value="ArmyBanelingIsSiegeling"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyBanelingUnlocked" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyCategory"/>
+        <Key value="Baneling"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmyBroodlordOnMissionNext">
+        <CombineArray value="ArmyMutaliskEvoUnlocked"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyBroodlordOnSet">
+        <CombineArray value="ArmyMutaliskIsBroodlord"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyBroodlordOnSetNext">
+        <CombineArray value="ArmyMutaliskIsBroodlord"/>
+        <CombineArray value="ZC_InMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyBroodlordPresent">
+        <Type value="Or"/>
+        <CombineArray value="ArmyBroodlordOnSet"/>
+        <CombineArray value="ZC_InZEvolutionMutalisk"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyBroodlordPresentNext">
+        <Type value="Or"/>
+        <CombineArray value="ArmyBroodlordOnMissionNext"/>
+        <CombineArray value="ArmyBroodlordOnSetNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyCarrionOnMissionNext">
+        <CombineArray value="ArmySwarmHostEvoUnlocked"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyCarrionOnSet">
+        <CombineArray value="ArmySwarmHostIsCarrion"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyCarrionOnSetNext">
+        <CombineArray value="ArmySwarmHostIsCarrion"/>
+        <CombineArray value="ZC_InMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyCarrionPresent">
+        <Type value="Or"/>
+        <CombineArray value="ArmyCarrionOnSet"/>
+        <CombineArray value="ZC_InZEvolutionSwarmHost"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyCarrionPresentNext">
+        <Type value="Or"/>
+        <CombineArray value="ArmyCarrionOnMissionNext"/>
+        <CombineArray value="ArmyCarrionOnSetNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyCorpserOnMissionNext">
+        <CombineArray value="ArmyRoachEvoUnlocked"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyCorpserOnSet">
+        <CombineArray value="ArmyRoachIsCorpser"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyCorpserOnSetNext">
+        <CombineArray value="ArmyRoachIsCorpser"/>
+        <CombineArray value="ZC_InMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyCorpserPresent">
+        <Type value="Or"/>
+        <CombineArray value="ArmyCorpserOnSet"/>
+        <CombineArray value="ZC_InZEvolutionRoach"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyCorpserPresentNext">
+        <Type value="Or"/>
+        <CombineArray value="ArmyCorpserOnMissionNext"/>
+        <CombineArray value="ArmyCorpserOnSetNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyCreeperOnMissionNext">
+        <CombineArray value="ArmySwarmHostEvoUnlocked"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyCreeperOnSet">
+        <CombineArray value="ArmySwarmHostIsCreeper"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyCreeperOnSetNext">
+        <CombineArray value="ArmySwarmHostIsCreeper"/>
+        <CombineArray value="ZC_InMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyCreeperPresent">
+        <Type value="Or"/>
+        <CombineArray value="ArmyCreeperOnSet"/>
+        <CombineArray value="ZC_InZEvolutionSwarmHost"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyCreeperPresentNext">
+        <Type value="Or"/>
+        <CombineArray value="ArmyCreeperOnMissionNext"/>
+        <CombineArray value="ArmyCreeperOnSetNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyFreezerOnMissionNext">
+        <CombineArray value="ArmyRoachEvoUnlocked"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyFreezerOnSet">
+        <CombineArray value="ArmyRoachIsFreezer"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyFreezerOnSetNext">
+        <CombineArray value="ArmyRoachIsFreezer"/>
+        <CombineArray value="ZC_InMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyFreezerPresent">
+        <Type value="Or"/>
+        <CombineArray value="ArmyFreezerOnSet"/>
+        <CombineArray value="ZC_InZEvolutionRoach"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyFreezerPresentNext">
+        <Type value="Or"/>
+        <CombineArray value="ArmyFreezerOnMissionNext"/>
+        <CombineArray value="ArmyFreezerOnSetNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyHydraliskEvoUnlocked" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="HydraliskImpaler"/>
+        <Value value="1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmyHydraliskEvoUnlockedNext">
+        <CombineArray value="ZC_InMission"/>
+        <CombineArray value="ZHybrid01InOrComplete"/>
+        <CombineArray value="ArmyHydraliskIsUnevolved"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyHydraliskIsImpaler" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="HydraliskImpaler"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmyHydraliskIsLocked">
+        <CombineArray value="ArmyHydraliskUnlocked"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyHydraliskIsLurker" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="HydraliskLurker"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmyHydraliskIsUnevolved">
+        <CombineArray value="ArmyHydraliskIsLurker"/>
+        <CombineArray value="ArmyHydraliskIsImpaler"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyHydraliskUnlocked" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyCategory"/>
+        <Key value="Hydralisk"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmyImpalerOnMissionNext">
+        <CombineArray value="ArmyHydraliskEvoUnlocked"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyImpalerOnSet">
+        <CombineArray value="ArmyHydraliskIsImpaler"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyImpalerOnSetNext">
+        <CombineArray value="ArmyHydraliskIsImpaler"/>
+        <CombineArray value="ZC_InMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyImpalerPresent">
+        <Type value="Or"/>
+        <CombineArray value="ArmyImpalerOnSet"/>
+        <CombineArray value="ZC_InZEvolutionHydralisk"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyImpalerPresentNext">
+        <Type value="Or"/>
+        <CombineArray value="ArmyImpalerOnMissionNext"/>
+        <CombineArray value="ArmyImpalerOnSetNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyLurkerOnMissionNext">
+        <CombineArray value="ArmyHydraliskEvoUnlocked"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyLurkerOnSet">
+        <CombineArray value="ArmyHydraliskIsLurker"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyLurkerOnSetNext">
+        <CombineArray value="ArmyHydraliskIsLurker"/>
+        <CombineArray value="ZC_InMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyLurkerPresent">
+        <Type value="Or"/>
+        <CombineArray value="ArmyLurkerOnSet"/>
+        <CombineArray value="ZC_InZEvolutionHydralisk"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyLurkerPresentNext">
+        <Type value="Or"/>
+        <CombineArray value="ArmyLurkerOnMissionNext"/>
+        <CombineArray value="ArmyLurkerOnSetNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyMutaliskEvoUnlocked" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="MutaliskViper"/>
+        <Value value="1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmyMutaliskEvoUnlockedNext">
+        <CombineArray value="ZC_InMission"/>
+        <CombineArray value="ZHybrid02InOrComplete"/>
+        <CombineArray value="ArmyMutaliskIsUnevolved"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyMutaliskIsBroodlord" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="MutaliskBroodlord"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmyMutaliskIsLocked">
+        <CombineArray value="ArmyMutaliskUnlocked"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyMutaliskIsUnevolved">
+        <CombineArray value="ArmyMutaliskIsBroodlord"/>
+        <CombineArray value="ArmyMutaliskIsViper"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyMutaliskIsViper" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="MutaliskViper"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ArmyMutaliskUnlocked" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyCategory"/>
+        <Key value="Mutalisk"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmyNoxiousOnMissionNext">
+        <CombineArray value="ArmyUltraliskEvoUnlocked"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyNoxiousOnSet">
+        <CombineArray value="ArmyUltraliskIsNoxious"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyNoxiousOnSetNext">
+        <CombineArray value="ArmyUltraliskIsNoxious"/>
+        <CombineArray value="ZC_InMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyNoxiousPresent">
+        <Type value="Or"/>
+        <CombineArray value="ArmyNoxiousOnSet"/>
+        <CombineArray value="ZC_InZEvolutionUltralisk"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyNoxiousPresentNext">
+        <Type value="Or"/>
+        <CombineArray value="ArmyNoxiousOnSetNext"/>
+        <CombineArray value="ArmyNoxiousOnMissionNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyRaptorOnMissionNext">
+        <CombineArray value="ArmyZerglingEvoUnlocked"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyRaptorOnSet">
+        <CombineArray value="ArmyZerglingIsRaptor"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyRaptorOnSetNext">
+        <CombineArray value="ArmyZerglingIsRaptor"/>
+        <CombineArray value="ZC_InMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyRaptorPresent">
+        <Type value="Or"/>
+        <CombineArray value="ArmyRaptorOnSet"/>
+        <CombineArray value="ZC_InZEvolutionZergling"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyRaptorPresentNext">
+        <Type value="Or"/>
+        <CombineArray value="ArmyRaptorOnMissionNext"/>
+        <CombineArray value="ArmyRaptorOnSetNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyRoachEvoUnlocked" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="Vile"/>
+        <Value value="1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmyRoachEvoUnlockedNext">
+        <CombineArray value="ZC_InMission"/>
+        <CombineArray value="ZExpedition03InOrComplete"/>
+        <CombineArray value="ArmyRoachIsUnevolved"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyRoachIsCorpser" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="Corpser"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ArmyRoachIsFreezer" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="Vile"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmyRoachIsLocked">
+        <CombineArray value="ArmyRoachUnlocked"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyRoachIsUnevolved">
+        <CombineArray value="ArmyRoachIsCorpser"/>
+        <CombineArray value="ArmyRoachIsFreezer"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyRoachUnlocked" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyCategory"/>
+        <Key value="Roach"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmySiegelingOnMissionNext">
+        <CombineArray value="ArmyBanelingEvoUnlocked"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmySiegelingOnSet">
+        <CombineArray value="ArmyBanelingIsSiegeling"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmySiegelingOnSetNext">
+        <CombineArray value="ArmyBanelingIsSiegeling"/>
+        <CombineArray value="ZC_InMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmySiegelingPresent">
+        <Type value="Or"/>
+        <CombineArray value="ArmySiegelingOnSet"/>
+        <CombineArray value="ZC_InZEvolutionBaneling"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmySiegelingPresentNext">
+        <Type value="Or"/>
+        <CombineArray value="ArmySiegelingOnMissionNext"/>
+        <CombineArray value="ArmySiegelingOnSetNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmySplitterlingOnMissionNext">
+        <CombineArray value="ArmyBanelingEvoUnlocked"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmySplitterlingOnSet">
+        <CombineArray value="ArmyBanelingIsSplitter"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmySplitterlingOnSetNext">
+        <CombineArray value="ArmyBanelingIsSplitter"/>
+        <CombineArray value="ZC_InMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmySplitterlingPresent">
+        <Type value="Or"/>
+        <CombineArray value="ArmySplitterlingOnSet"/>
+        <CombineArray value="ZC_InZEvolutionBaneling"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmySplitterlingPresentNext">
+        <Type value="Or"/>
+        <CombineArray value="ArmySplitterlingOnMissionNext"/>
+        <CombineArray value="ArmySplitterlingOnSetNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmySwarmHostEvoUnlocked" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="SwarmHostSplitA"/>
+        <Value value="1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmySwarmHostEvoUnlockedNext">
+        <CombineArray value="ZC_InMission"/>
+        <CombineArray value="ZSpace02InOrComplete"/>
+        <CombineArray value="ArmySwarmHostIsUnevolved"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmySwarmHostIsCarrion" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="SwarmHostSplitA"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ArmySwarmHostIsCreeper" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="SwarmHostSplitB"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmySwarmHostIsLocked">
+        <CombineArray value="ArmySwarmHostUnlocked"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmySwarmHostIsUnevolved">
+        <CombineArray value="ArmySwarmHostIsCarrion"/>
+        <CombineArray value="ArmySwarmHostIsCreeper"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmySwarmHostUnlocked" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyCategory"/>
+        <Key value="SwarmHost"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmySwarmlingOnMissionNext">
+        <CombineArray value="ArmyZerglingEvoUnlocked"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmySwarmlingOnSet">
+        <CombineArray value="ArmyZerglingIsSwarmling"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmySwarmlingOnSetNext">
+        <CombineArray value="ArmyZerglingIsSwarmling"/>
+        <CombineArray value="ZC_InMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmySwarmlingPresent">
+        <Type value="Or"/>
+        <CombineArray value="ArmySwarmlingOnSet"/>
+        <CombineArray value="ZC_InZEvolutionZergling"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmySwarmlingPresentNext">
+        <Type value="Or"/>
+        <CombineArray value="ArmySwarmlingOnMissionNext"/>
+        <CombineArray value="ArmySwarmlingOnSetNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyTorrasqueOnMissionNext">
+        <CombineArray value="ArmyUltraliskEvoUnlocked"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyTorrasqueOnSet">
+        <CombineArray value="ArmyUltraliskIsTorrasque"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyTorrasqueOnSetNext">
+        <CombineArray value="ArmyUltraliskIsTorrasque"/>
+        <CombineArray value="ZC_InMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyTorrasquePresent">
+        <Type value="Or"/>
+        <CombineArray value="ArmyTorrasqueOnSet"/>
+        <CombineArray value="ZC_InZEvolutionUltralisk"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyTorrasquePresentNext">
+        <Type value="Or"/>
+        <CombineArray value="ArmyTorrasqueOnSetNext"/>
+        <CombineArray value="ArmyTorrasqueOnMissionNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyUINotVisited">
+        <CombineArray value="ArmyUIVisited"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyUIVisited" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|StoryStates"/>
+        <Key value="StoryStates.Army UI Visited"/>
+        <ValueName value="value.0.Int"/>
+        <Value value="1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ArmyUltraliskEvoUnlocked" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="Torrasque"/>
+        <Value value="1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmyUltraliskEvoUnlockedNext">
+        <CombineArray value="ZC_InMission"/>
+        <CombineArray value="ZKorhal01InOrComplete"/>
+        <CombineArray value="ArmyUltraliskIsUnevolved"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyUltraliskIsLocked">
+        <CombineArray value="ArmyUltraliskUnlocked"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyUltraliskIsNoxious" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="Noxious"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ArmyUltraliskIsTorrasque" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="Torrasque"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmyUltraliskIsUnevolved">
+        <CombineArray value="ArmyUltraliskIsNoxious"/>
+        <CombineArray value="ArmyUltraliskIsTorrasque"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyUltraliskUnlocked" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyCategory"/>
+        <Key value="Ultralisk"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmyViperOnMissionNext">
+        <CombineArray value="ArmyMutaliskEvoUnlocked"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyViperOnSet">
+        <CombineArray value="ArmyMutaliskIsViper"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyViperOnSetNext">
+        <CombineArray value="ArmyMutaliskIsViper"/>
+        <CombineArray value="ZC_InMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyViperPresent">
+        <Type value="Or"/>
+        <CombineArray value="ArmyViperOnSet"/>
+        <CombineArray value="ZC_InZEvolutionMutalisk"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ArmyViperPresentNext">
+        <Type value="Or"/>
+        <CombineArray value="ArmyViperOnMissionNext"/>
+        <CombineArray value="ArmyViperOnSetNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyZerglingEvoUnlocked" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="Raptor"/>
+        <Value value="1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmyZerglingEvoUnlockedNext">
+        <CombineArray value="ZC_InMission"/>
+        <CombineArray value="MissionsCompletedAtLeast4"/>
+        <CombineArray value="ArmyZerglingIsUnevolved"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyZerglingIsRaptor" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="Raptor"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ArmyZerglingIsSwarmling" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyUnit"/>
+        <Key value="Swarmling"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ArmyZerglingIsUnevolved">
+        <CombineArray value="ArmyZerglingIsSwarmling"/>
+        <CombineArray value="ArmyZerglingIsRaptor"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ArmyZerglingUnlocked" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|ArmyCategory"/>
+        <Key value="Zergling"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Character_Zagara_Enabled_Equal_0_Immediate">
+        <CombineArray value="ZC_ZChar01Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Character_Zagara_Enabled_Equal_0_Queued">
+        <CombineArray value="Character_Zagara_Enabled_Equal_1_Queued"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Character_Zagara_Enabled_Equal_1_Immediate">
+        <CombineArray value="ZC_ZChar01Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Character_Zagara_Enabled_Equal_1_Queued">
+        <CombineArray value="ZChar01InOrComplete"/>
+        <CombineArray value="ZC_InMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="EvoMissionAvailable">
+        <Type value="Or"/>
+        <CombineArray value="ArmyBanelingEvoUnlocked"/>
+        <CombineArray value="ArmyZerglingEvoUnlocked"/>
+        <CombineArray value="ArmyRoachEvoUnlocked"/>
+        <CombineArray value="ArmyHydraliskEvoUnlocked"/>
+        <CombineArray value="ArmyMutaliskEvoUnlocked"/>
+        <CombineArray value="ArmySwarmHostEvoUnlocked"/>
+        <CombineArray value="ArmyUltraliskEvoUnlocked"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="EvolutionMasterTalkTimes0" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|WriterStates"/>
+        <Key value="WriterStates.EvolutionMaster TalkTimes"/>
+        <ValueName value="Value.0.Int"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="FALSE">
+        <Map value="false"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="HornerMissionAvailable">
+        <Type value="Or"/>
+        <CombineArray value="zzzHornerMissionAvailableHelpA"/>
+        <CombineArray value="zzzHornerMissionAvailableHelpB"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="HornerMissionAvailableNext">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InZLab02"/>
+        <CombineArray value="zzzHornerMissionAvailableNextHelp"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="HybridArcNotComplete">
+        <CombineArray value="ZC_ZHybrid03Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InPostZagaraMission">
+        <CombineArray value="ZC_InMission"/>
+        <CombineArray value="ZC_ZChar01Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_InStorymodeOrInMission">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InStorymodeSet"/>
+        <CombineArray value="ZC_InEvoMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InZChar02Exp02Zerus03">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InZChar02"/>
+        <CombineArray value="ZC_InZExpedition02"/>
+        <CombineArray value="ZC_InZZerus03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InZSpace01Or02">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InZSpace01"/>
+        <CombineArray value="ZC_InZSpace02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InZZerus01Or02">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InZZerus01"/>
+        <CombineArray value="ZC_InZZerus02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="IzshaMissionAvailable">
+        <CombineArray value="ZC_InStorymodeSet"/>
+        <CombineArray value="IzshaMissionAvailableHelp"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="IzshaMissionAvailableHelp">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZChar01Available"/>
+        <CombineArray value="ZC_ZChar02Available"/>
+        <CombineArray value="ZC_ZChar03Available"/>
+        <CombineArray value="ZC_ZExpedition01Available"/>
+        <CombineArray value="ZC_ZExpedition02Available"/>
+        <CombineArray value="ZC_ZExpedition03Available"/>
+        <CombineArray value="ZC_ZKorhal01Available"/>
+        <CombineArray value="ZC_ZKorhal03Available"/>
+        <CombineArray value="ZC_ZZerus01Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="IzshaMissionAvailableNext">
+        <CombineArray value="IzshaMissionAvailableNextHelp"/>
+        <CombineArray value="NotInZZerus01"/>
+        <CombineArray value="NotInZZerus02"/>
+        <CombineArray value="NotInZZerus03"/>
+        <CombineArray value="NotInZKorhal01"/>
+        <CombineArray value="NotInZKorhal02"/>
+        <CombineArray value="ZC_InMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="IzshaMissionAvailableNextHelp">
+        <Type value="Or"/>
+        <CombineArray value="NextSetIsChar"/>
+        <CombineArray value="NextSetIsExpedition"/>
+        <CombineArray value="NextSetIsKorhal"/>
+        <CombineArray value="NextSetIsZerus"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="KerriganOnMap">
+        <CombineArray value="ZC_InMission"/>
+        <CombineArray value="NotInEvoMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="KerriganStates_Alive_Value_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="KerriganStates_Alive_Value_Queued">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="KerriganStates_Dead_Value_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="KerriganStates_Dead_Value_Queued">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="LastMapIsStory">
+        <Type value="Or"/>
+        <CombineArray value="LastMapZStoryChar"/>
+        <CombineArray value="LastMapZStoryExpedition"/>
+        <CombineArray value="LastMapZStoryHybrid"/>
+        <CombineArray value="LastMapZStoryLab"/>
+        <CombineArray value="LastMapZStorySpace"/>
+        <CombineArray value="LastMapZStoryZerus"/>
+        <CombineArray value="LastMapZStoryKorhal"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueString id="LastMapZStoryChar">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastMap"/>
+        <Value value="ZStoryChar"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="LastMapZStoryExpedition">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastMap"/>
+        <Value value="ZStoryExpedition"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="LastMapZStoryHybrid">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastMap"/>
+        <Value value="ZStoryHybrid"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="LastMapZStoryKorhal">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastMap"/>
+        <Value value="ZStoryKorhal"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="LastMapZStoryLab">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastMap"/>
+        <Value value="ZStoryLab"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="LastMapZStorySpace">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastMap"/>
+        <Value value="ZStorySpace"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="LastMapZStoryZerus">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastMap"/>
+        <Value value="ZStoryZerus"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCombine id="LastMissionChar02Exp02Zerus03">
+        <Type value="Or"/>
+        <CombineArray value="LastMissionZChar02"/>
+        <CombineArray value="LastMissionZExpedition02"/>
+        <CombineArray value="ZC_LastMissionZZerus03"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueString id="LastMissionZChar01">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="ZChar1"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="LastMissionZChar02">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="ZChar2"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="LastMissionZExpedition01">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="ZExpedition1"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="LastMissionZExpedition02">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="ZExpedition2"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="LastMissionZHybrid02">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="ZHybrid2"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="LastMissionZKorhal01">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="ZKorhal1"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="LastMissionZSpace01">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="ZSpace1"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCombine id="Maps_ZChar1_AvailableAge_Equal_1_Queued">
+        <CombineArray value="ZC_TravelPanelAccessibleNext"/>
+        <CombineArray value="ZChar01NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZChar1_AvailableAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZC_TravelPanelAccessibleNext"/>
+        <CombineArray value="ZChar01NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZChar1_AvailableAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZChar1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZChar1_AvailableAge_LessEqual_0_Queued">
+        <CombineArray value="Maps_ZChar1_AvailableAge_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZChar1_AvailableAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZChar1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZChar1_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZChar01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZChar2_AvailableAge_Equal_1_Queued">
+        <CombineArray value="ZChar01InOrComplete"/>
+        <CombineArray value="ZChar02NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZChar2_AvailableAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZChar01InOrComplete"/>
+        <CombineArray value="ZChar02NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZChar2_AvailableAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZChar2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZChar2_AvailableAge_LessEqual_0_Queued">
+        <CombineArray value="Maps_ZChar2_AvailableAge_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZChar2_AvailableAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZChar2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZChar2_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZChar02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZChar3_AvailableAge_Equal_1_Queued">
+        <CombineArray value="ZChar02InOrComplete"/>
+        <CombineArray value="ZChar03NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZChar3_AvailableAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZChar02InOrComplete"/>
+        <CombineArray value="ZChar03NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZChar3_AvailableAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZChar3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZChar3_AvailableAge_LessEqual_0_Queued">
+        <CombineArray value="Maps_ZChar3_AvailableAge_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZChar3_AvailableAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZChar3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZChar3_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZChar03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZEvolutionHydralisk_IsCurrent_Equal_1_Queued">
+        <CombineArray value="ArmyHydraliskEvoUnlocked"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZEvolutionHydralisk_IsCurrent_Immediate">
+        <CombineArray value="ZC_InZEvolutionHydralisk"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZEvolutionMutalisk_IsCurrent_Equal_1_Immediate">
+        <CombineArray value="ZC_InZEvolutionMutalisk"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZEvolutionMutalisk_IsCurrent_Equal_1_Queued">
+        <CombineArray value="ArmyMutaliskEvoUnlocked"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZExpedition1_AvailableAge_Equal_1_Queued">
+        <CombineArray value="ZC_TravelPanelAccessibleNext"/>
+        <CombineArray value="ZExpedition01NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZExpedition1_AvailableAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZC_TravelPanelAccessibleNext"/>
+        <CombineArray value="ZExpedition01NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZExpedition1_AvailableAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZExpedition1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZExpedition1_AvailableAge_LessEqual_0_Queued">
+        <CombineArray value="Maps_ZExpedition1_AvailableAge_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZExpedition1_AvailableAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZExpedition1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZExpedition1_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZExpedition01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZExpedition2_AvailableAge_Equal_1_Queued">
+        <CombineArray value="ZExpedition01InOrComplete"/>
+        <CombineArray value="ZExpedition02NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZExpedition2_AvailableAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZExpedition01InOrComplete"/>
+        <CombineArray value="ZExpedition02NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZExpedition2_AvailableAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZExpedition2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZExpedition2_AvailableAge_LessEqual_0_Queued">
+        <CombineArray value="Maps_ZExpedition2_AvailableAge_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZExpedition2_AvailableAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZExpedition2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZExpedition2_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZExpedition02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZExpedition3_AvailableAge_Equal_1_Queued" parent="AmbientZerglingActive">
+        <Type value="And"/>
+        <CombineArray index="0" value="ZExpedition02InOrComplete"/>
+        <CombineArray index="1" value="ZExpedition03NotComplete"/>
+        <CombineArray index="2" removed="1"/>
+        <CombineArray index="3" removed="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZExpedition3_AvailableAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZExpedition02InOrComplete"/>
+        <CombineArray value="ZExpedition03NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZExpedition3_AvailableAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZExpedition3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZExpedition3_AvailableAge_LessEqual_0_Queued">
+        <CombineArray value="Maps_ZExpedition3_AvailableAge_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZExpedition3_AvailableAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZExpedition3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZExpedition3_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZExpedition03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZHybrid1_AvailableAge_Equal_1_Queued">
+        <CombineArray value="ZC_TravelPanelAccessibleNext"/>
+        <CombineArray value="ZHybrid01NotComplete"/>
+        <CombineArray value="ArcsCompletedAtLeast3"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZHybrid1_AvailableAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZC_TravelPanelAccessibleNext"/>
+        <CombineArray value="ZHybrid01NotComplete"/>
+        <CombineArray value="ArcsCompletedAtLeast3"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZHybrid1_AvailableAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZHybrid1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZHybrid1_AvailableAge_LessEqual_0_Queued">
+        <CombineArray value="Maps_ZHybrid1_AvailableAge_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZHybrid1_AvailableAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZHybrid1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZHybrid2_AvailableAge_Equal_1_Queued">
+        <CombineArray value="ZHybrid01InOrComplete"/>
+        <CombineArray value="ZHybrid02NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZHybrid2_AvailableAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZHybrid01InOrComplete"/>
+        <CombineArray value="ZHybrid02NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZHybrid2_AvailableAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZHybrid2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZHybrid2_AvailableAge_LessEqual_0_Queued">
+        <CombineArray value="Maps_ZHybrid2_AvailableAge_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZHybrid2_AvailableAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZHybrid2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZHybrid3_AvailableAge_Equal_1_Queued">
+        <CombineArray value="ZHybrid02InOrComplete"/>
+        <CombineArray value="ZHybrid03NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZHybrid3_AvailableAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZHybrid02InOrComplete"/>
+        <CombineArray value="ZHybrid03NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZHybrid3_AvailableAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZHybrid3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZHybrid3_AvailableAge_LessEqual_0_Queued">
+        <CombineArray value="Maps_ZHybrid3_AvailableAge_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZHybrid3_AvailableAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZHybrid3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZKorhal1_AvailableAge_Equal_1_Queued">
+        <CombineArray value="ZC_MissionsCompleted16"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZKorhal1_AvailableAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZC_MissionsCompleted16"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZKorhal1_AvailableAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZKorhal1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZKorhal1_AvailableAge_LessEqual_0_Queued">
+        <CombineArray value="Maps_ZKorhal1_AvailableAge_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZKorhal1_AvailableAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZKorhal1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZKorhal2_AvailableAge_Equal_1_Queued">
+        <CombineArray value="ZKorhal01InOrComplete"/>
+        <CombineArray value="ZKorhal02NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZKorhal2_AvailableAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZKorhal01InOrComplete"/>
+        <CombineArray value="ZKorhal02NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZKorhal2_AvailableAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZKorhal2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZKorhal2_AvailableAge_LessEqual_0_Queued">
+        <CombineArray value="Maps_ZKorhal2_AvailableAge_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZKorhal2_AvailableAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZKorhal2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZKorhal3_AvailableAge_Equal_1_Queued">
+        <CombineArray value="ZKorhal02InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZKorhal3_AvailableAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZKorhal02InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZKorhal3_AvailableAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZKorhal3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZKorhal3_AvailableAge_LessEqual_0_Queued">
+        <CombineArray value="Maps_ZKorhal3_AvailableAge_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZKorhal3_AvailableAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZKorhal3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZSpace1_AvailableAge_Equal_1_Queued">
+        <CombineArray value="ZC_TravelPanelAccessibleNext"/>
+        <CombineArray value="ZSpace01NotComplete"/>
+        <CombineArray value="ArcsCompletedAtLeast3"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZSpace1_AvailableAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZC_TravelPanelAccessibleNext"/>
+        <CombineArray value="ZSpace01NotComplete"/>
+        <CombineArray value="ArcsCompletedAtLeast3"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZSpace1_AvailableAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZSpace1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZSpace1_AvailableAge_LessEqual_0_Queued">
+        <CombineArray value="Maps_ZSpace1_AvailableAge_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZSpace1_AvailableAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZSpace1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZSpace2_AvailableAge_Equal_1_Queued">
+        <CombineArray value="ZSpace01InOrComplete"/>
+        <CombineArray value="ZSpace02NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZSpace2_AvailableAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZSpace01InOrComplete"/>
+        <CombineArray value="ZSpace02NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZSpace2_AvailableAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZSpace2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZSpace2_AvailableAge_LessEqual_0_Queued">
+        <CombineArray value="Maps_ZSpace2_AvailableAge_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZSpace2_AvailableAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZSpace2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZZerus1_AvailableAge_Equal_1_Queued">
+        <CombineArray value="ZC_TravelPanelAccessibleNext"/>
+        <CombineArray value="ZZerus01NotComplete"/>
+        <CombineArray value="ArcsCompletedAtLeast1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZZerus1_AvailableAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZC_TravelPanelAccessibleNext"/>
+        <CombineArray value="ZZerus01NotComplete"/>
+        <CombineArray value="ArcsCompletedAtLeast1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZZerus1_AvailableAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZZerus1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZZerus1_AvailableAge_LessEqual_0_Queued">
+        <CombineArray value="Maps_ZZerus1_AvailableAge_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZZerus1_AvailableAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZZerus1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZZerus1_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZZerus01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZZerus2_AvailableAge_Equal_1_Queued">
+        <CombineArray value="ZZerus01InOrComplete"/>
+        <CombineArray value="ZZerus02NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZZerus2_AvailableAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZZerus01InOrComplete"/>
+        <CombineArray value="ZZerus02NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZZerus2_AvailableAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZZerus2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZZerus2_AvailableAge_LessEqual_0_Queued">
+        <CombineArray value="Maps_ZZerus2_AvailableAge_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZZerus2_AvailableAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZZerus2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZZerus2_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZZerus02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZZerus3_AvailableAge_Equal_1_Queued">
+        <CombineArray value="ZZerus02InOrComplete"/>
+        <CombineArray value="ZZerus03NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZZerus3_AvailableAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZZerus02InOrComplete"/>
+        <CombineArray value="ZZerus03NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZZerus3_AvailableAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZZerus3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZZerus3_AvailableAge_LessEqual_0_Queued">
+        <CombineArray value="Maps_ZZerus3_AvailableAge_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZZerus3_AvailableAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZZerus3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZZerus3_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZZerus03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZSpace1_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZSpace01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZSpace2_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZSpace02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZLab1_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZLab01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZLab2_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZLab02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZLab3_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZLab03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZHybrid1_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZHybrid01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZHybrid2_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZHybrid02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZHybrid3_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZHybrid03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZKorhal1_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZKorhal01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZKorhal2_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZKorhal02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZKorhal3_CompletedAge_Equal_1_Queued">
+        <CombineArray value="ZC_InZKorhal03"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZChar1_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZChar1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_ZChar2_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZChar2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_ZChar3_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZChar3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_ZExpedition1_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZExpedition1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_ZExpedition2_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZExpedition2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_ZExpedition3_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZExpedition3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_ZHybrid1_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZHybrid1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_ZHybrid2_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZHybrid2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_ZHybrid3_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZHybrid3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_ZKorhal1_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZKorhal1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_ZKorhal2_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZKorhal2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_ZKorhal3_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZKorhal3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZLab1_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZLab01InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZLab1_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZLab1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZLab1_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZLab01InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZLab1_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZLab1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZLab2_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZLab02InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZLab2_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZLab2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZLab2_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZLab02InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZLab2_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZLab2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZLab3_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZLab03InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZLab3_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZLab3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZLab3_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZLab03InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZChar1_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZChar01InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZChar1_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZChar1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZChar1_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZChar01InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZChar2_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZChar02InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZChar2_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZChar2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZChar2_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZChar02InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZChar3_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZChar03InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZChar3_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZChar3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZChar3_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZChar03InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZExpedition1_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZExpedition01InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZExpedition1_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZExpedition1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZExpedition1_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZExpedition01InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZExpedition2_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZExpedition02InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZExpedition2_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZExpedition2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZExpedition2_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZExpedition02InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZExpedition3_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZExpedition03InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZExpedition3_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZExpedition3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZExpedition3_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZExpedition03InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZLab3_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZLab3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_ZSpace1_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZSpace1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_ZSpace2_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZSpace2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZZerus1_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZZerus01InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZZerus1_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZZerus1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZZerus1_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZZerus01InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZZerus1_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZZerus1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZZerus2_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZZerus02InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZZerus2_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZZerus2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZZerus2_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZZerus02InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZZerus2_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZZerus2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZZerus3_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZZerus03InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZZerus3_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZZerus3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZZerus3_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZZerus03InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZHybrid1_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZHybrid01InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZHybrid1_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZHybrid1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZHybrid1_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZHybrid01InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZHybrid2_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZHybrid02InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZHybrid2_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZHybrid2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZHybrid2_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZHybrid02InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZHybrid3_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZHybrid03InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZHybrid3_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZHybrid3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZHybrid3_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZHybrid03InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZSpace1_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZSpace01InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZSpace1_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZSpace1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZSpace1_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZSpace01InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZSpace2_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZSpace02InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZSpace2_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZSpace2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZSpace2_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZSpace02InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZKorhal1_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZKorhal01InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZKorhal1_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZKorhal1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZKorhal1_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZKorhal01InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZKorhal2_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZKorhal02InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZKorhal2_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZKorhal2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZKorhal2_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZKorhal02InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_ZKorhal3_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="ZKorhal03InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZKorhal3_CompletedAge_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZKorhal3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_ZKorhal3_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="ZKorhal03InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_ZZerus3_CompletedAge_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZZerus3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="MissionArchivesAvailable">
+        <CombineArray value="MissionsCompletedAtLeast4"/>
+        <CombineArray value="ZC_InStorymode"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionArchivesAvailableNext">
+        <CombineArray value="ZC_InMission"/>
+        <CombineArray value="ZC_ZLab03Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="MissionsCompleted11" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="11"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompleted12" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="12"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompleted13" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="13"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompleted4" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="4"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompleted7" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="7"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompleted9" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="9"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedAtLeast11" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Compare value="GE"/>
+        <Value value="11"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedAtLeast112" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Compare value="GE"/>
+        <Value value="12"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedAtLeast16" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Compare value="GE"/>
+        <Value value="16"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedAtLeast4" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Compare value="GE"/>
+        <Value value="4"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedAtLeast5" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Compare value="GE"/>
+        <Value value="5"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedAtLeast6" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Compare value="GE"/>
+        <Value value="6"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedAtLeast7" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Compare value="GE"/>
+        <Value value="7"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedAtLeast8" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Compare value="GE"/>
+        <Value value="8"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedAtLeast9" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Compare value="GE"/>
+        <Value value="9"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="MissionsCompleted_GreaterEqual_100_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionsCompleted_GreaterEqual_100_Queued">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionsCompleted_GreaterEqual_99_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionsCompleted_GreaterEqual_99_Queued">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="MissionsCompleted_Immediate">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="MissionsCompleted_LessEqual_100_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionsCompleted_LessEqual_100_Queued">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionsCompleted_LessEqual_99_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionsCompleted_LessEqual_99_Queued">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="MissionsCompleted_Queued">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCountNext"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="NextSetIsChar">
+        <CombineArray value="zzzNextSetIsCharHelp"/>
+        <CombineArray value="ZC_CharArcNotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NextSetIsExpedition">
+        <CombineArray value="zzzNextSetIsExpeditionHelp"/>
+        <CombineArray value="ZC_KaldirArcNotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NextSetIsHybrid">
+        <CombineArray value="zzzNextSetIsHybridHelp"/>
+        <CombineArray value="HybridArcNotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NextSetIsKorhal">
+        <CombineArray value="ZC_InMission"/>
+        <CombineArray value="MissionsCompletedAtLeast16"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NextSetIsSpace">
+        <CombineArray value="zzzNextSetIsSpaceHelp"/>
+        <CombineArray value="ZSpace02NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NextSetIsZerus">
+        <CombineArray value="zzzNextSetIsZerusHelp"/>
+        <CombineArray value="ZC_ZerusArcNotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInEvoMission">
+        <CombineArray value="ZC_InEvoMission"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="NotInSimulation" parent="ZCampaignCompareValueInteger"/>
+    <CBankConditionCombine id="NotInZChar01">
+        <CombineArray value="ZC_InZChar01"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZChar02">
+        <CombineArray value="ZC_InZChar02"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZChar03">
+        <CombineArray value="ZC_InZChar03"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZEvolutionBaneling">
+        <CombineArray value="ZC_InZEvolutionBaneling"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZEvolutionHydralisk">
+        <CombineArray value="ZC_InZEvolutionHydralisk"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZEvolutionMutalisk">
+        <CombineArray value="ZC_InZEvolutionMutalisk"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZEvolutionRoach">
+        <CombineArray value="ZC_InZEvolutionRoach"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZEvolutionSwarmHost">
+        <CombineArray value="ZC_InZEvolutionSwarmHost"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZEvolutionUltralisk">
+        <CombineArray value="ZC_InZEvolutionUltralisk"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZEvolutionZergling">
+        <CombineArray value="ZC_InZEvolutionZergling"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZExpedition01">
+        <CombineArray value="ZC_InZExpedition01"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZExpedition02">
+        <CombineArray value="ZC_InZExpedition02"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZHybrid03">
+        <CombineArray value="ZC_InZHybrid03"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZKorhal01">
+        <CombineArray value="ZC_InZKorhal01"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZKorhal02">
+        <CombineArray value="ZC_InZKorhal02"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZLab01">
+        <CombineArray value="ZC_InZZerus01"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZZerus01">
+        <CombineArray value="ZC_InZZerus01"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZZerus02">
+        <CombineArray value="ZC_InZZerus02"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="NotInZZerus03">
+        <CombineArray value="ZC_InZZerus03"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Char_Active_NotEqual_0_Immediate">
+        <CombineArray value="ZC_InZStoryChar"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Char_Active_NotEqual_0_Queued">
+        <CombineArray value="NextSetIsChar"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Expedition_Active_NotEqual_0_Immediate">
+        <CombineArray value="ZC_InZStoryExpedition"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Expedition_Active_NotEqual_0_Queued">
+        <CombineArray value="NextSetIsExpedition"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Hybrid_Active_NotEqual_0_Immediate">
+        <CombineArray value="ZC_InZStoryHybrid"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Hybrid_Active_NotEqual_0_Queued">
+        <CombineArray value="NextSetIsHybrid"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Korhal_Active_NotEqual_0_Immediate">
+        <CombineArray value="ZC_InZStoryKorhal"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Korhal_Active_NotEqual_0_Queued">
+        <CombineArray value="NextSetIsKorhal"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Space_Active_NotEqual_0_Immediate">
+        <CombineArray value="ZC_InZStorySpace"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Space_Active_NotEqual_0_Queued">
+        <CombineArray value="NextSetIsSpace"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Zerus_Active_Equal_1_Immediate">
+        <CombineArray value="ZC_InZStoryZerus"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Zerus_Active_Equal_1_Queued">
+        <CombineArray value="NextSetIsZerus"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Zerus_Active_NotEqual_0_Immediate">
+        <CombineArray value="ZC_InZStoryZerus"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Zerus_Active_NotEqual_0_Queued">
+        <CombineArray value="NextSetIsZerus"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Zerus_Available_Equal_0_Immediate">
+        <Type value="Or"/>
+        <CombineArray value="ZC_TravelPanelNotAccessible"/>
+        <CombineArray value="ZC_ZZerus01Complete"/>
+        <CombineArray value="ZC_InZStoryLab"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Zerus_Available_Equal_0_Queued">
+        <Type value="Or"/>
+        <CombineArray value="ZC_TravelPanelNotAccessibleNext"/>
+        <CombineArray value="ZC_ZZerus01Complete"/>
+        <CombineArray value="ZC_InZLab03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="StoryStates_ArmyUIVisited_value_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="StoryStates_ArmyUIVisited_value_Queued">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="StoryStates_UnitUpgradeUIVisited_value_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="StoryStates_UnitUpgradeUIVisited_value_Queued">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="StukovOnSet">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InZStoryHybrid"/>
+        <CombineArray value="ZC_ZHybrid03Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TRUE"/>
+    <CBankConditionCombine id="TemporaryStoryStates_DoNotPlay_NotEqual_0_Immediate">
+        <CombineArray value="FALSE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TemporaryStoryStates_DoNotPlay_NotEqual_0_Queued">
+        <CombineArray value="FALSE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TemporaryStoryStates_EvoPitchHeard_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TemporaryStoryStates_EvoPitchHeard_Queued">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TemporaryStoryStates_FirstDoWJustPlayed_Immediate">
+        <CombineArray value="zzzDoWJustPlayedHelp"/>
+        <CombineArray value="MissionsCompletedAtLeast11"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TemporaryStoryStates_FirstDoWJustPlayed_Queued">
+        <CombineArray value="zzzDoWJustPlayedHelp"/>
+        <CombineArray value="ArcsCompletedAtLeast3"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TemporaryStoryStates_IzshaIdleTT_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TemporaryStoryStates_IzshaIdleTT_Queued">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ToshChoiceIsA">
+        <CombineArray value="ToshChoiceIsB"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="UnitUpgradeUINotVisited" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|StoryStates"/>
+        <Key value="StoryStates.Unit Upgrade UI Visited"/>
+        <ValueName value="value.0.Int"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="WriterStates_HansonChoice_Value_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|WriterStates"/>
+        <Key value="WriterStates.HansonChoice"/>
+        <ValueName value="Value.0.Int"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="WriterStates_HansonChoice_Value_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|WriterStates"/>
+        <Key value="WriterStates.HansonChoice"/>
+        <ValueName value="Value.0.Int"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ToshChoiceIsB" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|WriterStates"/>
+        <Key value="WriterStates.ToshChoice"/>
+        <ValueName value="Value.0.Int"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="WriterStates_ToshChoice_Value_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|WriterStates"/>
+        <Key value="WriterStates.ToshChoice"/>
+        <ValueName value="Value.0.Int"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="WriterStates_EvolutionExplain_Value_Immediate" parent="ZCampaignCompareValueInteger">
+        <Bank value="ZStory"/>
+        <Section value="WriterStateSnapshot"/>
+        <Key value="WriterStates.Evolution Explain"/>
+        <ValueName value="Value.0.Int"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="WriterStates_WriterStates_Value_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|WriterStates"/>
+        <Key value="WriterStates.CharChoice"/>
+        <ValueName value="Value.0.Int"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="WriterStates_EvolutionExplain_Value_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|WriterStates"/>
+        <Key value="WriterStates.Evolution Explain"/>
+        <ValueName value="Value.0.Int"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="WriterStates_KerriganFirstTier_Value_Equal_1_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="WriterStates_KerriganFirstTier_Value_Equal_1_Queued">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="WriterStates_KerriganFirstTier_Value_NotEqual_1_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="WriterStates_KerriganFirstTier_Value_NotEqual_1_Queued">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="WriterStates_KerriganFirstVisit_Value_Equal_1_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="WriterStates_KerriganFirstVisit_Value_Equal_1_Queued">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="WriterStates_KerriganFirstVisit_Value_NotEqual_1_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="WriterStates_KerriganFirstVisit_Value_NotEqual_1_Queued">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="WriterStates_KerriganPrimalColumn_Value_Equal_1_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="WriterStates_KerriganPrimalColumn_Value_Equal_1_Queued">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="WriterStates_KerriganPrimalColumn_Value_NotEqual_1_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="WriterStates_KerriganPrimalColumn_Value_NotEqual_1_Queued">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="WriterStates_CharChoice_Value_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|WriterStates"/>
+        <Key value="WriterStates.CharChoice"/>
+        <ValueName value="Value.0.Int"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="WriterStates_ToshChoice_Value_Immediate" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|WriterStates"/>
+        <Key value="WriterStates.ToshChoice"/>
+        <ValueName value="Value.0.Int"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="WriterStates_ZagaraTalkTimes_Value_Equal_0_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="WriterStates_ZagaraTalkTimes_Value_Equal_1_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="WriterStates_ZagaraTalkTimes_Value_GreaterEqual_1_Immediate">
+        <CombineArray value="TRUE"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="WriterStates_ZagaraTalkTimes_Value_Queued" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|WriterStates"/>
+        <Key value="WriterStates.ZagaraTalkTimes"/>
+        <ValueName value="Value.0.Int"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ZC_CharArcNotComplete">
+        <CombineArray value="ZC_ZChar03Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_CharTravelAvailable">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZChar01Available"/>
+        <CombineArray value="ZC_ZChar02Available"/>
+        <CombineArray value="ZC_ZChar03Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ZC_EvoUnlockSceneNotPlayed" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|StoryStates"/>
+        <Key value="StoryStates.Evolution Scene Played"/>
+        <ValueName value="value"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ZC_ExpeditionTravelAvailable">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZExpedition01Available"/>
+        <CombineArray value="ZC_ZExpedition02Available"/>
+        <CombineArray value="ZC_ZExpedition03Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_InCampaignMission">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InZLab01"/>
+        <CombineArray value="ZC_InZLab02"/>
+        <CombineArray value="ZC_InZLab03"/>
+        <CombineArray value="ZC_InZChar01"/>
+        <CombineArray value="ZC_InZChar02"/>
+        <CombineArray value="ZC_InZChar03"/>
+        <CombineArray value="ZC_InZExpedition01"/>
+        <CombineArray value="ZC_InZExpedition02"/>
+        <CombineArray value="ZC_InZExpedition03"/>
+        <CombineArray value="ZC_InZZerus01"/>
+        <CombineArray value="ZC_InZZerus02"/>
+        <CombineArray value="ZC_InZZerus03"/>
+        <CombineArray value="ZC_InZHybrid01"/>
+        <CombineArray value="ZC_InZHybrid02"/>
+        <CombineArray value="ZC_InZHybrid03"/>
+        <CombineArray value="ZC_InZKorhal01"/>
+        <CombineArray value="ZC_InZKorhal02"/>
+        <CombineArray value="ZC_InZKorhal03"/>
+        <CombineArray value="ZC_InZSpace01"/>
+        <CombineArray value="ZC_InZSpace02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_InEvoMission">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InZEvolutionBaneling"/>
+        <CombineArray value="ZC_InZEvolutionHydralisk"/>
+        <CombineArray value="ZC_InZEvolutionMutalisk"/>
+        <CombineArray value="ZC_InZEvolutionRoach"/>
+        <CombineArray value="ZC_InZEvolutionSwarmHost"/>
+        <CombineArray value="ZC_InZEvolutionUltralisk"/>
+        <CombineArray value="ZC_InZEvolutionZergling"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_InLabArcEndStorymode">
+        <CombineArray value="ZC_InZStoryLab"/>
+        <CombineArray value="ZC_LastMissionZLab03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_InMission">
+        <CombineArray value="ZC_InStorymode"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_InStorymode">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InZStoryChar"/>
+        <CombineArray value="ZC_InZStoryExpedition"/>
+        <CombineArray value="ZC_InZStoryHybrid"/>
+        <CombineArray value="ZC_InZStoryKorhal"/>
+        <CombineArray value="ZC_InZStoryLab"/>
+        <CombineArray value="ZC_InZStorySpace"/>
+        <CombineArray value="ZC_InZStoryZerus"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_InStorymodeSet">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InZStoryChar"/>
+        <CombineArray value="ZC_InZStoryExpedition"/>
+        <CombineArray value="ZC_InZStoryHybrid"/>
+        <CombineArray value="ZC_InZStoryKorhal"/>
+        <CombineArray value="ZC_InZStorySpace"/>
+        <CombineArray value="ZC_InZStoryZerus"/>
+    </CBankConditionCombine>
+    <CBankConditionCurrentMap id="ZC_InZChar01">
+        <Map value="ZChar01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZChar02">
+        <Map value="ZChar02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZChar03">
+        <Map value="ZChar03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZEvolutionBaneling">
+        <Map value="ZEvolutionBaneling"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZEvolutionHydralisk">
+        <Map value="ZEvolutionHydralisk"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZEvolutionMutalisk">
+        <Map value="ZEvolutionMutalisk"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZEvolutionRoach">
+        <Map value="ZEvolutionRoach"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZEvolutionSwarmHost">
+        <Map value="ZEvolutionSwarmHost"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZEvolutionUltralisk">
+        <Map value="ZEvolutionUltralisk"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZEvolutionZergling">
+        <Map value="ZEvolutionZergling"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZExpedition01">
+        <Map value="ZExpedition01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZExpedition02">
+        <Map value="ZExpedition02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZExpedition03">
+        <Map value="ZExpedition03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZHybrid01">
+        <Map value="ZHybrid01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZHybrid02">
+        <Map value="ZHybrid02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZHybrid03">
+        <Map value="ZHybrid03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZKorhal01">
+        <Map value="ZKorhal01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZKorhal02">
+        <Map value="ZKorhal02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZKorhal03">
+        <Map value="ZKorhal03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZLab01">
+        <Map value="ZLab01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZLab02">
+        <Map value="ZLab02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZLab03">
+        <Map value="ZLab03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZSpace01">
+        <Map value="ZSpace01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZSpace02">
+        <Map value="ZSpace02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZStoryLab">
+        <Map value="ZStoryLab"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZZerus01">
+        <Map value="ZZerus01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZZerus02">
+        <Map value="ZZerus02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZZerus03">
+        <Map value="ZZerus03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="ZC_KaldirArcNotComplete">
+        <CombineArray value="ZC_ZExpedition03Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_KerriganIsGhost">
+        <CombineArray value="ZC_KerriganIsPrimal"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_KerriganIsPrimal">
+        <CombineArray value="ZC_ZZerus02Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_KorhalTravelAvailable">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZKorhal01Available"/>
+        <CombineArray value="ZC_ZKorhal02Available"/>
+        <CombineArray value="ZC_ZKorhal03Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueString id="ZC_LastMissionZLab01">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="ZLab1"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="ZC_LastMissionZLab03">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="ZLab3"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="ZC_LastMissionZZerus02">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="ZZerus2"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCombine id="ZC_MissionPanelAccessible">
+        <CombineArray value="ZC_TravelPanelNotAccessible"/>
+        <CombineArray value="ZC_InStorymode"/>
+        <CombineArray value="ZC_ZLab01Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ZC_MissionsCompleted16" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="16"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_MissionsCompleted5" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="5"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_MissionsCompleted6" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="6"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_MissionsCompleted8" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="8"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ZC_SpaceTravelAvailable">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZSpace01Available"/>
+        <CombineArray value="ZC_ZSpace02Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_TravelPanelAccessibleNext">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InZLab03"/>
+        <CombineArray value="ZC_InZChar03"/>
+        <CombineArray value="ZC_InZExpedition03"/>
+        <CombineArray value="ZC_InZZerus03"/>
+        <CombineArray value="ZC_InZSpace02"/>
+        <CombineArray value="ZC_InZHybrid03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_TravelPanelNotAccessible">
+        <CombineArray value="ZC_TravelPanelAccessible"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_TravelPanelNotAccessibleNext">
+        <CombineArray value="ZC_TravelPanelAccessibleNext"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ZC_ZChar01Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZChar1"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZChar02Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZChar2"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZChar03Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZChar3"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZExpedition01Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZExpedition1"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZExpedition02Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZExpedition2"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZExpedition03Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZExpedition3"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZHybrid01Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZHybrid1"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZHybrid02Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZHybrid2"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZHybrid03Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZHybrid3"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZKorhal01Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZKorhal1"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZKorhal02Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZKorhal2"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZKorhal03Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZKorhal3"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ZC_ZKorhal03NotComplete">
+        <CombineArray value="ZC_ZKorhal03Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ZC_ZLab01Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZLab1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZLab01Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZLab1"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZLab02Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZLab2"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZLab02Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZLab2"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZLab03Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZLab3"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZLab03Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZLab3"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZSpace01Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZSpace1"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZSpace02Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZSpace2"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZZerus01Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZZerus1"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZZerus02Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZZerus2"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZZerus03Complete" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionCompletedAge"/>
+        <Key value="ZZerus3"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ZC_ZerusArcNotComplete">
+        <CombineArray value="ZC_ZZerus03Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_ZerusTravelAvailable">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZZerus01Available"/>
+        <CombineArray value="ZC_ZZerus02Available"/>
+        <CombineArray value="ZC_ZZerus03Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_InHybridArcEndStorymode">
+        <CombineArray value="ZC_InZStoryHybrid"/>
+        <CombineArray value="ZC_LastMissionZHybrid03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_InPostHybrid01Storymode">
+        <CombineArray value="ZC_InZStoryHybrid"/>
+        <CombineArray value="ZC_LastMissionZHybrid01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_InSpaceArcEndStorymode">
+        <CombineArray value="ZC_InZStorySpace"/>
+        <CombineArray value="ZC_LastMissionZSpace02"/>
+    </CBankConditionCombine>
+    <CBankConditionCurrentMap id="ZC_InZStoryHybrid">
+        <Map value="ZStoryHybrid"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZStoryKorhal">
+        <Map value="ZStoryKorhal"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZStorySpace">
+        <Map value="ZStorySpace"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="ZC_InCharArcEndStorymode">
+        <CombineArray value="ZC_InZStoryChar"/>
+        <CombineArray value="ZC_LastMissionZChar03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZC_InExpeditionArcEndStorymode">
+        <CombineArray value="ZC_InZStoryExpedition"/>
+        <CombineArray value="ZC_LastMissionZExpedition03"/>
+    </CBankConditionCombine>
+    <CBankConditionCurrentMap id="ZC_InZStoryChar">
+        <Map value="ZStoryChar"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZStoryExpedition">
+        <Map value="ZStoryExpedition"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="ZC_InZStoryZerus">
+        <Map value="ZStoryZerus"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="ZC_InZerusArcEndStorymode">
+        <CombineArray value="ZC_InZStoryZerus"/>
+        <CombineArray value="ZC_LastMissionZZerus03"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueString id="ZC_LastMissionZChar03">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="ZChar3"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="ZC_LastMissionZExpedition03">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="ZExpedition3"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="ZC_LastMissionZHybrid03">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="ZHybrid3"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="ZC_LastMissionZZerus03">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="ZZerus3"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="ZC_LastMissionZHybrid01">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="ZHybrid1"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="ZC_LastMissionZSpace02">
+        <Bank value="ZCampaign"/>
+        <Section value="ZCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="ZSpace2"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCombine id="ZC_TravelPanelAccessible">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InCharArcEndStorymode"/>
+        <CombineArray value="ZC_InExpeditionArcEndStorymode"/>
+        <CombineArray value="ZC_InHybridArcEndStorymode"/>
+        <CombineArray value="ZC_InPostHybrid01Storymode"/>
+        <CombineArray value="ZC_InSpaceArcEndStorymode"/>
+        <CombineArray value="ZC_InZerusArcEndStorymode"/>
+        <CombineArray value="ZC_InLabArcEndStorymode"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="ZC_ZChar01Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZChar1"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZChar03Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZChar3"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZChar02Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZChar2"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZExpedition01Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZExpedition1"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZExpedition02Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZExpedition2"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZExpedition03Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZExpedition3"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZHybrid02Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZHybrid2"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZHybrid03Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZHybrid3"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZKorhal01Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZKorhal1"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZKorhal02Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZKorhal2"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZKorhal03Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZKorhal3"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZSpace01Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZSpace1"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZSpace02Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZSpace2"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZZerus01Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZZerus1"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZHybrid01Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZHybrid1"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZZerus02Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZZerus2"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="ZC_ZZerus03Available" parent="ZCampaignCompareValueInteger">
+        <Section value="ZCampaign|MissionAvailableAge"/>
+        <Key value="ZZerus3"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="ZC_HybridTravelAvailable">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZHybrid01Available"/>
+        <CombineArray value="ZC_ZHybrid02Available"/>
+        <CombineArray value="ZC_ZHybrid03Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZChar01InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZChar01Complete"/>
+        <CombineArray value="ZC_InZChar01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZChar01NotComplete">
+        <CombineArray value="ZC_ZChar01Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZChar02InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZChar02Complete"/>
+        <CombineArray value="ZC_InZChar02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZChar02NotComplete">
+        <CombineArray value="ZC_ZChar02Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZChar03InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZChar03Complete"/>
+        <CombineArray value="ZC_InZChar03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZChar03NotComplete">
+        <CombineArray value="ZC_ZChar03Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZExpedition01InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZExpedition01Complete"/>
+        <CombineArray value="ZC_InZExpedition01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZExpedition01NotComplete">
+        <CombineArray value="ZC_ZExpedition01Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZExpedition02InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZExpedition02Complete"/>
+        <CombineArray value="ZC_InZExpedition02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZExpedition02NotComplete">
+        <CombineArray value="ZC_ZExpedition02Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZExpedition03InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZExpedition03Complete"/>
+        <CombineArray value="ZC_InZExpedition03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZExpedition03NotComplete">
+        <CombineArray value="ZC_ZExpedition03Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZExpedition03NotInOrComplete">
+        <CombineArray value="ZExpedition03InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZHybrid01InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZHybrid01Complete"/>
+        <CombineArray value="ZC_InZHybrid01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZHybrid01NotComplete">
+        <CombineArray value="ZC_ZHybrid01Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZHybrid02InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZHybrid02Complete"/>
+        <CombineArray value="ZC_InZHybrid02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZHybrid02NotComplete">
+        <CombineArray value="ZC_ZHybrid02Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZHybrid02NotInOrComplete">
+        <CombineArray value="ZHybrid02InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZHybrid03InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZHybrid03Complete"/>
+        <CombineArray value="ZC_InZHybrid03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZHybrid03NotComplete">
+        <CombineArray value="ZC_ZHybrid03Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZKorhal01InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZKorhal01Complete"/>
+        <CombineArray value="ZC_InZKorhal01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZKorhal02InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZKorhal02Complete"/>
+        <CombineArray value="ZC_InZKorhal02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZKorhal02NotComplete">
+        <CombineArray value="ZC_ZKorhal02Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZKorhal03InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZKorhal03Complete"/>
+        <CombineArray value="ZC_InZKorhal03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZLab01InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZLab01Complete"/>
+        <CombineArray value="ZC_InZLab01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZLab02InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZLab02Complete"/>
+        <CombineArray value="ZC_InZLab02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZLab03InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZLab03Complete"/>
+        <CombineArray value="ZC_InZLab03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZSpace01InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZSpace01Complete"/>
+        <CombineArray value="ZC_InZSpace01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZSpace01NotComplete">
+        <CombineArray value="ZC_ZSpace01Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZSpace02InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZSpace02Complete"/>
+        <CombineArray value="ZC_InZSpace02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZZerus01InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZZerus01Complete"/>
+        <CombineArray value="ZC_InZZerus01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZZerus01NotComplete">
+        <CombineArray value="ZC_ZZerus01Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZZerus02InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZZerus02Complete"/>
+        <CombineArray value="ZC_InZZerus02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZLab01OrZLab02Available">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZLab01Available"/>
+        <CombineArray value="ZC_ZLab02Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZLab02NotComplete">
+        <CombineArray value="ZC_ZLab02Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZLab03NotComplete">
+        <CombineArray value="ZC_ZLab03Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZSpace02NotComplete">
+        <CombineArray value="ZC_ZSpace02Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZZerus02NotComplete">
+        <CombineArray value="ZC_ZZerus02Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZZerus03InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="ZC_ZZerus03Complete"/>
+        <CombineArray value="ZC_InZZerus03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZZerus03NotComplete">
+        <CombineArray value="ZC_ZZerus03Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ZagaraAvailableNext">
+        <Type value="Or"/>
+        <CombineArray value="InPostZagaraMission"/>
+        <CombineArray value="ZC_InZChar01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="zzzAmbientZerglingActiveForHybrid">
+        <CombineArray value="ZC_InZStoryHybrid"/>
+        <CombineArray value="ZC_ZHybrid02Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="zzzAmbientZerglingActiveForSpace">
+        <CombineArray value="ZC_InZStorySpace"/>
+        <CombineArray value="ZSpace02NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="zzzDoWJustPlayedHelp">
+        <Type value="Or"/>
+        <CombineArray value="ZC_LastMissionZZerus03"/>
+        <CombineArray value="LastMissionZChar02"/>
+        <CombineArray value="LastMissionZExpedition02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="zzzDoWJustPlayedHelpQ">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InZZerus03"/>
+        <CombineArray value="ZC_InZChar02"/>
+        <CombineArray value="ZC_InZExpedition02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="zzzHornerMissionAvailableHelpA">
+        <CombineArray value="ZC_ZSpace01Available"/>
+        <CombineArray value="ZC_InZStorySpace"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="zzzHornerMissionAvailableHelpB">
+        <CombineArray value="ZC_ZLab03Available"/>
+        <CombineArray value="ZC_InZStoryLab"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="zzzHornerMissionAvailableNextHelp">
+        <CombineArray value="ZC_TravelPanelAccessibleNext"/>
+        <CombineArray value="ArcsCompletedAtLeast3"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="zzzNextSetIsCharHelp">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InZLab03"/>
+        <CombineArray value="ZC_InZChar01"/>
+        <CombineArray value="ZC_InZChar02"/>
+        <CombineArray value="ZC_InZChar03"/>
+        <CombineArray value="ZC_InZExpedition03"/>
+        <CombineArray value="ZC_InZZerus03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="zzzNextSetIsExpeditionHelp">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InZLab03"/>
+        <CombineArray value="ZC_InZExpedition01"/>
+        <CombineArray value="ZC_InZExpedition02"/>
+        <CombineArray value="ZC_InZExpedition03"/>
+        <CombineArray value="ZC_InZChar03"/>
+        <CombineArray value="ZC_InZZerus03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="zzzNextSetIsHybridHelp">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InZSpace02"/>
+        <CombineArray value="ZC_InZZerus03"/>
+        <CombineArray value="ZC_InZExpedition03"/>
+        <CombineArray value="ZC_InZChar03"/>
+        <CombineArray value="ZC_InZHybrid01"/>
+        <CombineArray value="ZC_InZHybrid02"/>
+        <CombineArray value="ZC_InZHybrid03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="zzzNextSetIsSpaceHelp">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InZSpace01"/>
+        <CombineArray value="ZC_InZSpace02"/>
+        <CombineArray value="ZC_InZZerus03"/>
+        <CombineArray value="ZC_InZExpedition03"/>
+        <CombineArray value="ZC_InZChar03"/>
+        <CombineArray value="ZC_InZHybrid03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="zzzNextSetIsZerusHelp">
+        <Type value="Or"/>
+        <CombineArray value="ZC_InZZerus01"/>
+        <CombineArray value="ZC_InZZerus02"/>
+        <CombineArray value="ZC_InZZerus03"/>
+        <CombineArray value="ZC_InZExpedition03"/>
+        <CombineArray value="ZC_InZChar03"/>
+    </CBankConditionCombine>
+</Catalog>

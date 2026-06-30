@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CAttachMethodPattern id="AMPatternMPOdin">
+        <Keyword value="Weapon"/>
+        <Driver value="MPOdinsGugnirDamage"/>
+    </CAttachMethodPattern>
+    <CAttachMethodFilter id="AMFilterTurret">
+        <Keys Keyword="TurretZ"/>
+    </CAttachMethodFilter>
+    <CAttachMethodPattern id="AMPatternSJMercSentryTower">
+        <Keyword value="Weapon"/>
+        <Base value="::RollingIndex"/>
+        <Multiplier value="2"/>
+        <Driver value="SJMercSentryTowerLM"/>
+    </CAttachMethodPattern>
+    <CAttachMethodPattern id="AMPatternMengskGoliath">
+        <Keyword value="SetB"/>
+        <Base value="::RollingIndex"/>
+        <Multiplier value="2"/>
+        <Driver value="MengskGoliathALM"/>
+    </CAttachMethodPattern>
+    <CAttachMethodPattern id="AMPatternMengskViking">
+        <Keyword value="Weapon"/>
+        <Driver value="MengskVikingFighterLM"/>
+    </CAttachMethodPattern>
+    <CAttachMethodFilter id="AMFilterWarHound">
+        <Logic value="OR"/>
+        <Keys Keyword="Weapon" Index="1"/>
+        <Keys Keyword="Weapon" Index="2"/>
+        <Keys Keyword="Weapon" Index="3"/>
+    </CAttachMethodFilter>
+    <CAttachMethodPattern id="AMPatternWarHound">
+        <Keyword value="Weapon"/>
+        <Driver value="TornadoMissileLM"/>
+    </CAttachMethodPattern>
+    <CAttachMethodFilter id="AMFilterWarHoundDummy">
+        <Logic value="OR"/>
+        <Keys Keyword="Weapon" Index="3"/>
+        <Keys Keyword="Weapon" Index="2"/>
+        <Keys Keyword="Weapon" Index="1"/>
+    </CAttachMethodFilter>
+    <CAttachMethodPattern id="AMPatternWarHoundDummy">
+        <Keyword value="Weapon"/>
+        <Driver value="TornadoMissileLM"/>
+    </CAttachMethodPattern>
+    <CAttachMethodPattern id="AMPatternMengskBanshee">
+        <Keyword value="Weapon"/>
+        <Driver value="MengskBansheeLM"/>
+    </CAttachMethodPattern>
+    <CAttachMethodFilter id="AMFilterMengskBCCannons">
+        <Logic value="OR"/>
+        <Keys Keyword="Weapon" Index="10"/>
+        <Keys Keyword="Weapon" Index="11"/>
+    </CAttachMethodFilter>
+    <CAttachMethodPattern id="AMPatternMengskBCCannonsG">
+        <Keyword value="Weapon"/>
+        <Base value="::RollingIndex"/>
+        <Driver value="MengskBCCannonsG"/>
+    </CAttachMethodPattern>
+    <CAttachMethodPattern id="AMPatternMengskBCCannonsA">
+        <Keyword value="Weapon"/>
+        <Base value="::RollingIndex"/>
+        <Driver value="MengskBCCannonsA"/>
+    </CAttachMethodPattern>
+    <CAttachMethodPattern id="AMPatternMagni">
+        <Keyword value="Weapon"/>
+        <Base value="::RollingIndex"/>
+        <Driver value="MagnisHammerDamage"/>
+    </CAttachMethodPattern>
+    <CAttachMethodFilter id="AMFilterBroodLordWings">
+        <Logic value="OR"/>
+        <Keys Keyword="Target" Index="1"/>
+        <Keys Keyword="Target" Index="2"/>
+    </CAttachMethodFilter>
+    <CAttachMethodReduction id="AMReductionForBodySquibs">
+        <RequestCount value="2"/>
+        <RequestCountRange value="2"/>
+        <PassChanceEach value="100.000000"/>
+    </CAttachMethodReduction>
+</Catalog>

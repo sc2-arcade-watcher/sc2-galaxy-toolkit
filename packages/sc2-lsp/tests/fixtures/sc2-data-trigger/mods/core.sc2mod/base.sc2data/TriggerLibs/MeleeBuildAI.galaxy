@@ -1,0 +1,594 @@
+//==================================================================================================
+//  Melee AI Build Functions
+//==================================================================================================
+
+// global build types exposed to lobby menus
+const int e_buildType_Custom                =  1;
+// generic openings (AI Comm controlled)
+const int e_buildType_Rush                  =  2;
+const int e_buildType_Timing                =  3;
+const int e_buildType_Power                 =  4;
+const int e_buildType_Macro                 =  5;
+// air is both an opening and late game
+const int e_buildType_Air                   =  6;
+// generic lategames  (AI Comm controlled)
+const int e_buildType_Core                  =  7;
+const int e_buildType_HighTech              =  8;
+const int e_buildType_Special               =  9;
+const int e_buildType_Mixed                 = 10;
+// zerg 1 base openings  (timing)
+const int e_buildType_z1b_LingBane          = 30;
+const int e_buildType_z1b_Roach             = 31;
+const int e_buildType_z1b_LingRoach         = 32;
+// zerg 2-3 base openings  (power)
+const int e_buildType_z2b_PureMuta          = 40;
+const int e_buildType_z2b_LingBaneMuta      = 41;
+const int e_buildType_z2b_CapPureRoach      = 42;
+const int e_buildType_z2b_RoachInfest       = 43;
+const int e_buildType_z2b_RoachHydra        = 44;
+const int e_buildType_z2b_SwarmHost         = 45;  // Swarm Only
+const int e_buildType_z2b_RoachRavager      = 46;  // Void Only
+// zerg macro/lategame (macro)
+const int e_buildType_zm_MacroInfest        = 50;
+const int e_buildType_zm_MacroHydraLurker   = 51;  // Void Only
+const int e_buildType_zm_MacroUltra         = 52;
+const int e_buildType_zm_MacroBrood         = 53;
+// terran 1 base openings  (timing)
+const int e_buildType_t1b_MMStim            = 70;
+const int e_buildType_t1b_HellionMara       = 71;
+const int e_buildType_t1b_MariSiege         = 72;
+const int e_buildType_t1b_CloakBanshee      = 73;
+// terran 2-3 base openings  (power)
+const int e_buildType_t2b_MMMedivac         = 80;
+const int e_buildType_t2b_MMSiege           = 81;
+const int e_buildType_t2b_SiegeBanshee      = 82;
+const int e_buildType_t2b_HellionSiege      = 83;
+const int e_buildType_t2b_SiegeThor         = 84;
+// terran macro/lategame (macro)
+const int e_buildType_tm_MacroMMM           = 90;
+const int e_buildType_tm_MacroMech          = 91;
+const int e_buildType_tm_MacroThorBC        = 92;
+// protoss 1 base openings  (timing)
+const int e_buildType_p1b_FourGate          = 110;
+const int e_buildType_p1b_Adept             = 111;  // Void Only
+const int e_buildType_p1b_StalkerRobo       = 112;
+const int e_buildType_p1b_StalkerBlink      = 113;
+const int e_buildType_p1b_DTRush            = 114;
+// protoss 2-3 base openings  (power)
+const int e_buildType_p2b_SevenGate         = 120;
+const int e_buildType_p2b_GateImmortal      = 121;
+const int e_buildType_p2b_GateColossi       = 122;
+const int e_buildType_p2b_GateAir           = 123;
+const int e_buildType_p2b_VoidPhoenix       = 124;
+// protoss macro/lategame (macro)
+const int e_buildType_pm_MacroGateImm       = 130;
+const int e_buildType_pm_MacroColossi       = 131;
+const int e_buildType_pm_MacroGateAir       = 132;
+
+//--------------------------------------------------------------------------------------------------
+//  AISetupGenericCustomBuildMenusAll
+//--------------------------------------------------------------------------------------------------
+static bool buildMenusInitialized = false;
+void AISetupGenericCustomBuildMenusAll () {
+    int i = 0;
+
+    if (buildMenusInitialized) {
+        return;
+    }
+
+    // all races are sharing custom build menu buttons for consistency, this could be done per race
+    for (i = 0; i <= c_maxPlayers; i+=1) { // include c_maxPlayers for the "all" button list
+        // four opening choices
+        PlayerBeaconBuildMenuSetSlotInfo(i, c_buildMenuOpening,  c_customBuildOpeningOne,    StringExternal("UI/AIBuild/OpenRushIcon"),    StringExternal("UI/AIBuild/OpenRushName"),    StringExternal("UI/AIBuild/OpenRushTip"));
+        PlayerBeaconBuildMenuSetSlotInfo(i, c_buildMenuOpening,  c_customBuildOpeningTwo,    StringExternal("UI/AIBuild/OpenQuickIcon"),   StringExternal("UI/AIBuild/OpenQuickName"),   StringExternal("UI/AIBuild/OpenQuickTip"));
+        PlayerBeaconBuildMenuSetSlotInfo(i, c_buildMenuOpening,  c_customBuildOpeningThree,  StringExternal("UI/AIBuild/OpenPowerIcon"),   StringExternal("UI/AIBuild/OpenPowerName"),   StringExternal("UI/AIBuild/OpenPowerTip"));
+        PlayerBeaconBuildMenuSetSlotInfo(i, c_buildMenuOpening,  c_customBuildOpeningFour,   StringExternal("UI/AIBuild/OpenMacroIcon"),   StringExternal("UI/AIBuild/OpenMacroName"),   StringExternal("UI/AIBuild/OpenMacroTip"));
+              
+        // four late game choices
+        PlayerBeaconBuildMenuSetSlotInfo(i, c_buildMenuLateGame, c_customBuildLateGameOne,   StringExternal("UI/AIBuild/LateCoreIcon"),    StringExternal("UI/AIBuild/LateCoreName"),    StringExternal("UI/AIBuild/LateCoreTip"));
+        PlayerBeaconBuildMenuSetSlotInfo(i, c_buildMenuLateGame, c_customBuildLateGameTwo,   StringExternal("UI/AIBuild/LateTechIcon"),    StringExternal("UI/AIBuild/LateTechName"),    StringExternal("UI/AIBuild/LateTechTip"));
+        PlayerBeaconBuildMenuSetSlotInfo(i, c_buildMenuLateGame, c_customBuildLateGameThree, StringExternal("UI/AIBuild/LateAirIcon"),     StringExternal("UI/AIBuild/LateAirName"),     StringExternal("UI/AIBuild/LateAirTip"));
+        PlayerBeaconBuildMenuSetSlotInfo(i, c_buildMenuLateGame, c_customBuildLateGameFour,  StringExternal("UI/AIBuild/LateSpecialIcon"), StringExternal("UI/AIBuild/LateSpecialName"), StringExternal("UI/AIBuild/LateSpecialTip"));
+                
+        // not using any custom beacons for now
+        //PlayerBeaconBuildMenuSetSlotInfo(i, c_buildMenuBeacons, c_beaconCustom1, "IconPath", "Name", "Tip");
+    }
+
+    buildMenusInitialized = true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIGetOpeningScriptTypeFromBuildMenu
+//--------------------------------------------------------------------------------------------------
+int AIGetOpeningScriptTypeFromBuildMenu(int player) {
+    int aicommBuild = PlayerBeaconBuildMenuCurrentGet(player, c_buildMenuOpening);
+
+    if (aicommBuild == c_customBuildOpeningOne) {
+        return e_buildType_Rush;
+    }
+    if (aicommBuild == c_customBuildOpeningTwo) {
+        return e_buildType_Timing;
+    }
+    if (aicommBuild == c_customBuildOpeningThree) {
+        return e_buildType_Power;
+    }
+    if (aicommBuild == c_customBuildOpeningFour) {
+        return e_buildType_Macro;
+    }
+
+    return e_buildType_Invalid;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AISetOpeningBuildMenuFromScriptType
+//--------------------------------------------------------------------------------------------------
+void AISetOpeningBuildMenuFromScriptType(int player) {
+    int currentOpening;
+
+    // only set the build menu if it wasn't from the player
+    if (!PlayerBeaconBuildMenuWasFromPlayer(player, c_buildMenuOpening)) {
+        currentOpening = AIGetUserInt(player, c_openingBuildType);
+
+        if (currentOpening == e_buildType_Rush) {
+            PlayerBeaconBuildMenuCurrentSet(player, c_buildMenuOpening, c_customBuildOpeningOne);
+        } else if (currentOpening == e_buildType_Timing) {
+            PlayerBeaconBuildMenuCurrentSet(player, c_buildMenuOpening, c_customBuildOpeningTwo);
+        } else if (currentOpening == e_buildType_Power) {
+            PlayerBeaconBuildMenuCurrentSet(player, c_buildMenuOpening, c_customBuildOpeningThree);
+        } else {
+            // default to macro, for both macro and air
+            PlayerBeaconBuildMenuCurrentSet(player, c_buildMenuOpening, c_customBuildOpeningFour);
+        }
+    }
+
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIGetLateGameScriptTypeFromBuildMenu
+//--------------------------------------------------------------------------------------------------
+int AIGetLateGameScriptTypeFromBuildMenu(int player) {
+    int aicommBuild = PlayerBeaconBuildMenuCurrentGet(player, c_buildMenuLateGame);
+
+    if (aicommBuild == c_customBuildLateGameOne) {
+        return e_buildType_Core;
+    }
+    if (aicommBuild == c_customBuildLateGameTwo) {
+        return e_buildType_HighTech;
+    }
+    if (aicommBuild == c_customBuildLateGameThree) {
+        return e_buildType_Air;
+    }
+    if (aicommBuild == c_customBuildLateGameFour) {
+        return e_buildType_Special;
+    }
+
+    return e_buildType_Invalid;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AISetLateGameBuildMenuFromScriptType
+//--------------------------------------------------------------------------------------------------
+void AISetLateGameBuildMenuFromScriptType(int player) {
+    int currentLateGame;
+
+    // only set the build menu if it wasn't from the player
+    if (!PlayerBeaconBuildMenuWasFromPlayer(player, c_buildMenuLateGame)) {
+        currentLateGame = AIGetUserInt(player, c_lateGameBuildType);
+
+        if (currentLateGame == e_buildType_HighTech) {
+            PlayerBeaconBuildMenuCurrentSet(player, c_buildMenuLateGame, c_customBuildLateGameTwo);
+        } else if (currentLateGame == e_buildType_Air) {
+            PlayerBeaconBuildMenuCurrentSet(player, c_buildMenuLateGame, c_customBuildLateGameThree);
+        } else if (currentLateGame == e_buildType_Special) {
+            PlayerBeaconBuildMenuCurrentSet(player, c_buildMenuLateGame, c_customBuildLateGameFour);
+        } else {
+            // default to core for any other build
+            PlayerBeaconBuildMenuCurrentSet(player, c_buildMenuLateGame, c_customBuildLateGameOne);
+        }
+    }
+
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AISetNextBuildFromPlayerInput
+//--------------------------------------------------------------------------------------------------
+void AISetNextBuildFromPlayerInput (int player) {
+    int lobbyBuild = PlayerAIBuildNumber(player);
+    int aicommBuild;
+
+    // clear all build variables first
+    AISetUserInt(player, c_specificLobbyBuild, e_buildType_Invalid);
+    AISetUserInt(player, c_openingBuildType, e_buildType_Invalid);
+    AISetUserInt(player, c_lateGameBuildType, e_buildType_Invalid);
+    AISetUserInt(player, c_currentBuildIndex, e_buildType_Invalid);
+    
+    // air map default logic
+    if (AIGetUserInt(player, c_numGroundStartLocs) == 0) {
+        AISetUserInt(player, c_openingBuildType, e_buildType_Air);
+        AISetUserInt(player, c_lateGameBuildType, e_buildType_Air);
+    }
+
+    // lobby general builds
+    if (lobbyBuild >= e_buildType_Rush && lobbyBuild <= e_buildType_Air) {
+        AISetUserInt(player, c_openingBuildType, lobbyBuild);
+
+        if (lobbyBuild == e_buildType_Air) {
+            AISetUserInt(player, c_lateGameBuildType, e_buildType_Air);
+        }
+    }
+
+    // lobby zerg builds
+    else if (lobbyBuild >= e_buildType_z1b_LingBane && lobbyBuild <= e_buildType_z1b_LingRoach) {
+        AISetUserInt(player, c_specificLobbyBuild, lobbyBuild);
+        AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+    }
+    else if (lobbyBuild >= e_buildType_z2b_PureMuta && lobbyBuild <= e_buildType_z2b_RoachRavager) {
+        AISetUserInt(player, c_specificLobbyBuild, lobbyBuild);
+        AISetUserInt(player, c_openingBuildType, e_buildType_Power);
+    }
+    else if (lobbyBuild == e_buildType_zm_MacroInfest || lobbyBuild == e_buildType_zm_MacroHydraLurker) {
+        AISetUserInt(player, c_specificLobbyBuild, lobbyBuild);
+        AISetUserInt(player, c_openingBuildType, e_buildType_Macro);
+        AISetUserInt(player, c_lateGameBuildType, e_buildType_Core);
+    }
+    else if (lobbyBuild == e_buildType_zm_MacroUltra) {
+        AISetUserInt(player, c_specificLobbyBuild, lobbyBuild);
+        AISetUserInt(player, c_openingBuildType, e_buildType_Macro);
+        AISetUserInt(player, c_lateGameBuildType, e_buildType_HighTech);
+    }
+    else if (lobbyBuild == e_buildType_zm_MacroBrood) {
+        AISetUserInt(player, c_specificLobbyBuild, lobbyBuild);
+        AISetUserInt(player, c_openingBuildType, e_buildType_Macro);
+        AISetUserInt(player, c_lateGameBuildType, e_buildType_Air);
+    }
+    // lobby terran builds
+    else if (lobbyBuild >= e_buildType_t1b_MMStim && lobbyBuild <= e_buildType_t1b_CloakBanshee) {
+        AISetUserInt(player, c_specificLobbyBuild, lobbyBuild);
+        AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+    }
+    else if (lobbyBuild >= e_buildType_t2b_MMMedivac && lobbyBuild <= e_buildType_t2b_SiegeThor) {
+        AISetUserInt(player, c_specificLobbyBuild, lobbyBuild);
+        AISetUserInt(player, c_openingBuildType, e_buildType_Power);
+    }
+    else if (lobbyBuild == e_buildType_tm_MacroMMM) {
+        AISetUserInt(player, c_specificLobbyBuild, lobbyBuild);
+        AISetUserInt(player, c_openingBuildType, e_buildType_Macro);
+        AISetUserInt(player, c_lateGameBuildType, e_buildType_Core);
+    }
+    else if (lobbyBuild == e_buildType_tm_MacroMech) {
+        AISetUserInt(player, c_specificLobbyBuild, lobbyBuild);
+        AISetUserInt(player, c_openingBuildType, e_buildType_Macro);
+        AISetUserInt(player, c_lateGameBuildType, e_buildType_HighTech);
+    }
+    else if (lobbyBuild == e_buildType_tm_MacroThorBC) {
+        AISetUserInt(player, c_specificLobbyBuild, lobbyBuild);
+        AISetUserInt(player, c_openingBuildType, e_buildType_Macro);
+        AISetUserInt(player, c_lateGameBuildType, e_buildType_Air);
+    }
+    // lobby protoss builds
+    else if (lobbyBuild >= e_buildType_p1b_FourGate && lobbyBuild <= e_buildType_p1b_DTRush) {
+        AISetUserInt(player, c_specificLobbyBuild, lobbyBuild);
+        AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+    }
+    else if (lobbyBuild >= e_buildType_p2b_SevenGate && lobbyBuild <= e_buildType_p2b_VoidPhoenix) {
+        AISetUserInt(player, c_specificLobbyBuild, lobbyBuild);
+        AISetUserInt(player, c_openingBuildType, e_buildType_Power);
+    }
+    else if (lobbyBuild == e_buildType_pm_MacroGateImm) {
+        AISetUserInt(player, c_specificLobbyBuild, lobbyBuild);
+        AISetUserInt(player, c_openingBuildType, e_buildType_Macro);
+        AISetUserInt(player, c_lateGameBuildType, e_buildType_Core);
+    }
+    else if (lobbyBuild == e_buildType_pm_MacroColossi) {
+        AISetUserInt(player, c_specificLobbyBuild, lobbyBuild);
+        AISetUserInt(player, c_openingBuildType, e_buildType_Macro);
+        AISetUserInt(player, c_lateGameBuildType, e_buildType_HighTech);
+    }
+    else if (lobbyBuild == e_buildType_pm_MacroGateAir) {
+        AISetUserInt(player, c_specificLobbyBuild, lobbyBuild);
+        AISetUserInt(player, c_openingBuildType, e_buildType_Macro);
+        AISetUserInt(player, c_lateGameBuildType, e_buildType_Air);
+    }
+
+    // AI communication panel can override lobby builds.
+    if (PlayerBeaconBuildMenuWasFromPlayer(player, c_buildMenuOpening)) {
+        // opening overridden
+        aicommBuild = AIGetOpeningScriptTypeFromBuildMenu(player);
+
+        if (aicommBuild == e_buildType_Macro) {
+            if (AIGetUserInt(player, c_numGroundStartLocs) == 0) {
+                // macro on an air map = air
+                aicommBuild = e_buildType_Air;
+            }
+        }
+
+        AISetUserInt(player, c_openingBuildType, aicommBuild);
+        AISetUserInt(player, c_specificLobbyBuild, e_buildType_Invalid);
+    }
+    if (PlayerBeaconBuildMenuWasFromPlayer(player, c_buildMenuLateGame)) {
+        // late game overridden
+        aicommBuild = AIGetLateGameScriptTypeFromBuildMenu(player);
+        AISetUserInt(player, c_lateGameBuildType, aicommBuild);
+        AISetUserInt(player, c_specificLobbyBuild, e_buildType_Invalid);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIRandomlyChooseOpeningBuild
+//--------------------------------------------------------------------------------------------------
+int AIRandomlyChooseOpeningBuild (int player) {
+    int enemyRace = AIGetEnemyRaceVal(player);
+    int selfRace = AIGetSelfRaceVal(player);
+    int randomRoll;
+    int rushChance;
+    int timingChance;
+    int powerChance;
+
+    //return e_buildType_Macro;  // force a build type for testing
+    
+    if (enemyRace == c_raceMulti) {
+        // multiple opponents
+        if (!AIHasNearbyOpenExpansion(player)) {
+            // no nearby expansion, avoid macro & power builds
+            if (AIGetNumTeams() > 2) {
+                // FFA game, also avoid rushing
+                rushChance      = 0;
+                timingChance    = 50;
+                powerChance     = 50;
+                //macroChance   = 0;
+            } else {
+                // team game with 2 teams
+                rushChance      = 5;
+                timingChance    = 95;
+                powerChance     = 0;
+                //macroChance   = 0;
+            }
+        } else if (AIGetNumTeams() > 2) {
+            // don't rush in FFA games, prefer power/macro builds
+                                                  // AU, VE,  E,  M, MH,  H, HV, VH, CV, CR, CI
+            rushChance   = AIMeleeDiffSelect(player,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 );
+            timingChance = AIMeleeDiffSelect(player,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5 );
+            powerChance  = AIMeleeDiffSelect(player, 65, 85, 80, 75, 70, 65, 60, 55, 55, 60, 65 );
+          //macroChance  = AIMeleeDiffSelect(player, 30, 10, 15, 20, 25, 30, 35, 40, 40, 35, 30 );
+        } else {
+            // team game with 2 teams, avoid macro builds they're too susceptible to team rushes
+                                                  // AU, VE,  E,  M, MH,  H, HV, VH, CV, CR, CI
+            rushChance   = AIMeleeDiffSelect(player,  2,  4,  4,  4,  4,  2,  2,  2,  2,  2,  4 );
+            timingChance = AIMeleeDiffSelect(player, 26, 34, 38, 34, 30, 26, 22, 22, 22, 22, 30 );
+            powerChance  = AIMeleeDiffSelect(player, 72, 62, 58, 62, 66, 72, 76, 76, 76, 76, 66 );
+          //macroChance  = AIMeleeDiffSelect(player,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 );
+        }
+    }
+    else {
+        // single opponent
+        if (!AIHasNearbyOpenExpansion(player)) {
+            // no nearby expansion, avoid macro & power builds
+            rushChance      = 5;
+            timingChance    = 85;
+            powerChance     = 10;
+            //macroChance   = 0;
+        } else if (enemyRace == selfRace) {
+            // mirror match, be a bit more conservative about macro (ie rushing/cheese is common in mirrors)
+                                                  // AU, VE,  E,  M, MH,  H, HV, VH, CV, CR, CI
+            rushChance   = AIMeleeDiffSelect(player,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  5 );
+            timingChance = AIMeleeDiffSelect(player, 47, 52, 52, 47, 42, 47, 52, 52, 42, 42, 40 );
+            powerChance  = AIMeleeDiffSelect(player, 35, 40, 40, 40, 40, 35, 35, 35, 35, 40, 45 );
+          //macroChance  = AIMeleeDiffSelect(player, 15,  5,  5, 10, 15, 15, 10, 10, 20, 15, 10 );
+        } else {
+                                                  // AU, VE,  E,  M, MH,  H, HV, VH, CV, CR, CI
+            rushChance   = AIMeleeDiffSelect(player,  2,  4,  4,  4,  4,  2,  2,  2,  2,  2,  4 );
+            timingChance = AIMeleeDiffSelect(player, 38, 41, 51, 41, 36, 28, 18, 18, 18, 28, 36 );
+            powerChance  = AIMeleeDiffSelect(player, 35, 50, 40, 45, 45, 50, 45, 40, 40, 45, 45 );
+          //macroChance  = AIMeleeDiffSelect(player, 25,  5,  5, 10, 15, 20, 35, 40, 40, 25, 15 );
+        }
+    }
+
+    if (AIGetTotalStartLocs() > AIGetNumEnemies(player)+AIGetNumAllies(player)+1) {   // ie numStartLocs > numPlayers
+        // don't rush if we can't be sure of the opponent's start location, just do a timing attack instead
+        timingChance += rushChance;
+        rushChance = 0;
+    }
+
+    // choose the actual build
+    randomRoll = RandomInt(1, 100);
+    if (randomRoll < rushChance) {
+        return e_buildType_Rush;
+    } else if (randomRoll < rushChance + timingChance) {
+        return e_buildType_Timing;
+    } else if (randomRoll < rushChance + timingChance + powerChance) {
+        return e_buildType_Power;
+    } else {
+        return e_buildType_Macro;
+    }
+    //e_buildType_Air only on air maps, set by AISetNextBuildFromPlayerInput, never randomly choosen
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIChooseNextOpeningBuild
+//--------------------------------------------------------------------------------------------------
+void AIChooseNextOpeningBuild (int player) {
+    int currentOpening = AIGetUserInt(player, c_openingBuildType);
+    int currentBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int playerChosenBuild;
+    int buildType;
+
+    // first see if the player has chosen a specific build
+    AISetNextBuildFromPlayerInput(player);
+    playerChosenBuild = AIGetUserInt(player, c_openingBuildType);
+
+    // if it wasn't overriden by the player, preserve our existing opening build
+    if (playerChosenBuild == e_buildType_Invalid) {
+        AISetUserInt(player, c_openingBuildType, currentOpening);
+        AISetUserInt(player, c_currentBuildIndex, currentBuildIndex);
+    }
+    else if (playerChosenBuild == currentOpening) {
+        AISetUserInt(player, c_currentBuildIndex, currentBuildIndex);
+    }
+    
+    // if we haven't choosen an opening build type, do so now
+    if (AIGetUserInt(player, c_openingBuildType) == e_buildType_Invalid) {
+        if (AIGetCoopFlag(player, c_coopTraining)) {
+            AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+        }
+        else {
+            buildType = AIRandomlyChooseOpeningBuild(player);
+            AISetUserInt(player, c_openingBuildType, buildType);
+        }
+    }
+
+    AISetOpeningBuildMenuFromScriptType(player);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIRandomlyChooseLateGameBuild
+//--------------------------------------------------------------------------------------------------
+bool AIHighLateGameUnderHeavyAttack(int player); // defined in MeleeHighAI.galaxy
+
+int AIRandomlyChooseLateGameBuild (int player) {
+    int selfRace = AIGetSelfRaceVal(player);
+    int randomRoll;
+    int airChance;
+    int specialChance;
+    int mixedChance;
+    int highTechChance;
+    int diff = AIPlayerDifficulty(player);
+    
+    //return e_buildType_Core;  // force a build type for testing
+
+    if ( diff > c_skirHard && (AIGetTime() < 900 || AIHighLateGameUnderHeavyAttack(player)) ) {
+        // higher difficulty scripts, have a limited selection on their initial transition to late game or when under attack
+        
+        if (selfRace == c_raceZerg) {
+            specialChance = 0;
+            mixedChance = 0;
+            if (AITechCount(player, c_ZB_Hive, c_techCountCompleteOnly) > 0) {
+                airChance       = AIMeleeDiffSelect(player, 0, 0, 0, 0, 0, 0, 20, 20, 20, 25, 25 );
+                highTechChance  = AIMeleeDiffSelect(player, 0, 0, 0, 0, 0, 0, 20, 20, 20, 25, 25 );
+            }
+        } else if (selfRace == c_raceProtoss) {
+            airChance = 0;
+            specialChance = 0;
+            mixedChance = 0;
+            if (AITechCount(player, c_PB_RoboticsFacility, c_techCountCompleteOnly) > 0) {
+                highTechChance  = AIMeleeDiffSelect(player, 0, 0, 0, 0, 0, 0, 20, 20, 20, 25, 25 );
+            }
+        } else { // if (selfRace == c_raceTerran)
+            airChance = 0;
+            specialChance = 0;
+            mixedChance = 0;
+            if (AITechCount(player, c_TB_Factory, c_techCountCompleteOnly) >= 2) {  // only going to have 2 if going mech, so stay mostly mech
+                highTechChance  = AIMeleeDiffSelect(player, 0, 0, 0, 0, 0, 0, 70, 70, 70, 75, 75 );
+            }
+        }
+    } else {
+        // setup the build chances by self race
+        if (selfRace == c_raceZerg) {
+            // air for higher difficulty = mostly standard broodlord builds
+            // AU, VE,  E,  M, MH,  H, HV, VH, CV, CR, CI
+            airChance       = AIMeleeDiffSelect(player, 10, 10, 10, 10, 10, 10, 35, 35, 35, 40, 40 );
+            specialChance   = AIMeleeDiffSelect(player,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5 );
+            mixedChance     = AIMeleeDiffSelect(player, 10, 10, 10, 10, 10, 10,  0,  0,  0,  0,  0 );
+            highTechChance  = AIMeleeDiffSelect(player, 40, 40, 40, 40, 40, 40, 30, 30, 30, 35, 35 );
+            //coreChance    = AIMeleeDiffSelect(player, 35, 35, 35, 35, 35, 35, 30, 30, 30, 20, 20 );
+        } else if (selfRace == c_raceProtoss) {
+            // AU, VE,  E,  M, MH,  H, HV, VH, CV, CR, CI
+            airChance       = AIMeleeDiffSelect(player,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5 );
+            specialChance   = AIMeleeDiffSelect(player,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5 );
+            mixedChance     = AIMeleeDiffSelect(player, 10, 10, 10, 10, 10, 10,  0,  0,  0,  0,  0 );
+            highTechChance  = AIMeleeDiffSelect(player, 45, 45, 45, 45, 45, 45, 50, 50, 50, 55, 55 );
+            //coreChance    = AIMeleeDiffSelect(player, 35, 35, 35, 35, 35, 35, 40, 40, 40, 35, 35 );
+        } else { // if (selfRace == c_raceTerran)
+            // AU, VE,  E,  M, MH,  H, HV, VH, CV, CR, CI
+            airChance       = AIMeleeDiffSelect(player,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5 );
+            specialChance   = AIMeleeDiffSelect(player,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5 );
+            mixedChance     = AIMeleeDiffSelect(player, 10, 10, 10, 10, 10, 10,  0,  0,  0,  0,  0 );
+            highTechChance  = AIMeleeDiffSelect(player, 35, 35, 35, 35, 35, 35, 40, 40, 40, 45, 45 );
+            //coreChance    = AIMeleeDiffSelect(player, 45, 45, 45, 45, 45, 45, 50, 50, 50, 45, 45 );
+        }
+    }
+
+    specialChance += airChance;
+    mixedChance += specialChance;
+    highTechChance += mixedChance;
+
+    // choose the actual build
+    randomRoll = RandomInt(1, 100);
+    if (randomRoll < airChance) {
+        return e_buildType_Air;
+    } else if (randomRoll < specialChance) {
+        return e_buildType_Special;
+    } else if (randomRoll < mixedChance) {
+        return e_buildType_Mixed;
+    } else if (randomRoll < highTechChance) {
+        return e_buildType_HighTech;
+    } else { // coreChance
+        return e_buildType_Core;
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIChooseNextLateGameBuild
+//--------------------------------------------------------------------------------------------------
+void AIChooseNextLateGameBuild (int player) {
+    int randomRoll;
+    int buildChoice;
+
+    // first see if the player has chosen a specific build
+    AISetNextBuildFromPlayerInput(player);
+
+    // if the player hasn't choosen a late game build type, do so now
+    if (AIGetUserInt(player, c_lateGameBuildType) == e_buildType_Invalid) {
+        randomRoll = RandomInt(1, 100);
+
+        if (AIGetCoopFlag(player, c_coopTraining)) {
+            if (randomRoll < 10) {              // 10%
+                AISetUserInt(player, c_lateGameBuildType, e_buildType_Mixed);
+            } else if (randomRoll < 45) {       // 35%
+                AISetUserInt(player, c_lateGameBuildType, e_buildType_HighTech);
+            } else {                            // 55%  
+                AISetUserInt(player, c_lateGameBuildType, e_buildType_Core);
+            }
+        }
+        else if (AIEnemyBuildingsOnlyOnOtherIslands(player)) {
+            AISetUserInt(player, c_lateGameBuildType, e_buildType_Air);
+        }
+        else {
+            buildChoice = AIRandomlyChooseLateGameBuild(player);
+            AISetUserInt(player, c_lateGameBuildType, buildChoice);
+        }
+    }
+
+    AISetLateGameBuildMenuFromScriptType(player);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIHasPlayerChangedCurrentOpening
+//--------------------------------------------------------------------------------------------------
+bool AIHasPlayerChangedCurrentOpening (int player) {
+    int aicommBuild;
+
+    if (PlayerBeaconBuildMenuWasFromPlayer(player, c_buildMenuOpening)) {
+        aicommBuild = AIGetOpeningScriptTypeFromBuildMenu(player);
+        if (aicommBuild != e_buildType_Invalid && aicommBuild != AIGetUserInt(player, c_openingBuildType)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIHasPlayerChangedCurrentLateGame
+//--------------------------------------------------------------------------------------------------
+bool AIHasPlayerChangedCurrentLateGame (int player) {
+    int aicommBuild;
+
+    if (PlayerBeaconBuildMenuWasFromPlayer(player, c_buildMenuLateGame)) {
+        aicommBuild = AIGetLateGameScriptTypeFromBuildMenu(player);
+        if (aicommBuild != e_buildType_Invalid && aicommBuild != AIGetUserInt(player, c_lateGameBuildType)) {
+            return true;
+        }
+    }
+
+    return false;
+}

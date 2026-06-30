@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib6FB02C78_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Black Death
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib6FB02C78_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib6FB02C78_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "Plague");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib6FB02C78_gt_Initialization_Init () {
+    lib6FB02C78_gt_Initialization = TriggerCreate("lib6FB02C78_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib6FB02C78_gt_Initialization);
+}
+
+void lib6FB02C78_InitTriggers () {
+    lib6FB02C78_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib6FB02C78_InitLib_completed = false;
+
+void lib6FB02C78_InitLib () {
+    if (lib6FB02C78_InitLib_completed) {
+        return;
+    }
+
+    lib6FB02C78_InitLib_completed = true;
+
+    lib6FB02C78_InitLibraries();
+    lib6FB02C78_InitTriggers();
+}
+

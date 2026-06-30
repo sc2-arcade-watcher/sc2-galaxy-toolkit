@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibCCAEA0BF_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Vertigo
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libCCAEA0BF_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libCCAEA0BF_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "Vertigo");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libCCAEA0BF_gt_Initialization_Init () {
+    libCCAEA0BF_gt_Initialization = TriggerCreate("libCCAEA0BF_gt_Initialization_Func");
+    TriggerAddEventMapInit(libCCAEA0BF_gt_Initialization);
+}
+
+void libCCAEA0BF_InitTriggers () {
+    libCCAEA0BF_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libCCAEA0BF_InitLib_completed = false;
+
+void libCCAEA0BF_InitLib () {
+    if (libCCAEA0BF_InitLib_completed) {
+        return;
+    }
+
+    libCCAEA0BF_InitLib_completed = true;
+
+    libCCAEA0BF_InitLibraries();
+    libCCAEA0BF_InitTriggers();
+}
+

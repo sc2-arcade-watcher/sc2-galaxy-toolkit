@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib01695C3B_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Custom Mode
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib01695C3B_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib01695C3B_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableMutatorCustomMode();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib01695C3B_gt_Initialization_Init () {
+    lib01695C3B_gt_Initialization = TriggerCreate("lib01695C3B_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib01695C3B_gt_Initialization);
+}
+
+void lib01695C3B_InitTriggers () {
+    lib01695C3B_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib01695C3B_InitLib_completed = false;
+
+void lib01695C3B_InitLib () {
+    if (lib01695C3B_InitLib_completed) {
+        return;
+    }
+
+    lib01695C3B_InitLib_completed = true;
+
+    lib01695C3B_InitLibraries();
+    lib01695C3B_InitTriggers();
+}
+

@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibF3B26EEC_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Naughty or Nice
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libF3B26EEC_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libF3B26EEC_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "KillKarma");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libF3B26EEC_gt_Initialization_Init () {
+    libF3B26EEC_gt_Initialization = TriggerCreate("libF3B26EEC_gt_Initialization_Func");
+    TriggerAddEventMapInit(libF3B26EEC_gt_Initialization);
+}
+
+void libF3B26EEC_InitTriggers () {
+    libF3B26EEC_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libF3B26EEC_InitLib_completed = false;
+
+void libF3B26EEC_InitLib () {
+    if (libF3B26EEC_InitLib_completed) {
+        return;
+    }
+
+    libF3B26EEC_InitLib_completed = true;
+
+    libF3B26EEC_InitLibraries();
+    libF3B26EEC_InitTriggers();
+}
+

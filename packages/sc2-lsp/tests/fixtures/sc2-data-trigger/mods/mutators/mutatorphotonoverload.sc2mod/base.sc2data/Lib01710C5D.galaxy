@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib01710C5D_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Photon Overload
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib01710C5D_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib01710C5D_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "PhotonOverload");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib01710C5D_gt_Initialization_Init () {
+    lib01710C5D_gt_Initialization = TriggerCreate("lib01710C5D_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib01710C5D_gt_Initialization);
+}
+
+void lib01710C5D_InitTriggers () {
+    lib01710C5D_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib01710C5D_InitLib_completed = false;
+
+void lib01710C5D_InitLib () {
+    if (lib01710C5D_InitLib_completed) {
+        return;
+    }
+
+    lib01710C5D_InitLib_completed = true;
+
+    lib01710C5D_InitLibraries();
+    lib01710C5D_InitTriggers();
+}
+

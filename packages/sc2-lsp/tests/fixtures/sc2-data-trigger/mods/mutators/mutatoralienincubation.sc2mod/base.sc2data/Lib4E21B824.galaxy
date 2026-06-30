@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib4E21B824_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Alien Incubation
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib4E21B824_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib4E21B824_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "SpawnBroodlings");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib4E21B824_gt_Initialization_Init () {
+    lib4E21B824_gt_Initialization = TriggerCreate("lib4E21B824_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib4E21B824_gt_Initialization);
+}
+
+void lib4E21B824_InitTriggers () {
+    lib4E21B824_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib4E21B824_InitLib_completed = false;
+
+void lib4E21B824_InitLib () {
+    if (lib4E21B824_InitLib_completed) {
+        return;
+    }
+
+    lib4E21B824_InitLib_completed = true;
+
+    lib4E21B824_InitLibraries();
+    lib4E21B824_InitTriggers();
+}
+

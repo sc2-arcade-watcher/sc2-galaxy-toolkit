@@ -1,0 +1,1348 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <SAbilArmMagazineInfo/>
+    <SMarker>
+        <Link value="Abil/##id##"/>
+        <MatchFlags index="Link" value="1"/>
+        <MismatchFlags index="Id" value="1"/>
+    </SMarker>
+    <SCost>
+        <Charge Link="Abil/##id##"/>
+        <Cooldown Link="Abil/##id##"/>
+    </SCost>
+    <SAbilMorphInfo>
+        <RallyResetPhase value="Duration"/>
+        <RallyResetSection value="Stats"/>
+    </SAbilMorphInfo>
+    <SAbilCmdButton>
+        <Flags index="AllowMinimap" value="1"/>
+    </SAbilCmdButton>
+    <CAbil default="1">
+        <Name value="Abil/Name/##id##"/>
+        <TechPlayer value="Upkeep"/>
+        <EditorCategories value="Race:Neutral,AbilityorEffectType:Units"/>
+        <TargetMessage value="Abil/TargetMessage/DefaultTargetMessage"/>
+        <OrderArray>
+            <DisplayType value="Confirm"/>
+            <Color value="255,0,255,0"/>
+            <Model value="Assets\UI\Cursors\WayPointConfirm_Void\WayPointConfirm_Void.m3"/>
+            <LineTexture value="Assets\Textures\WayPointLine.dds"/>
+        </OrderArray>
+        <SharedFlags index="DisableWhileDead" value="1"/>
+    </CAbil>
+    <CAbilEffect default="1">
+        <OrderArray index="0">
+            <DisplayType value="Confirm"/>
+            <Color value="255,0,255,0"/>
+            <Model value="Assets\UI\Cursors\WayPointAttack_Void\WayPointAttack_Void.m3"/>
+            <LineTexture value="Assets\Textures\WayPointLine.dds"/>
+        </OrderArray>
+        <RangeSlop value="1"/>
+        <ArcSlop value="11.25"/>
+        <AutoCastAcquireLevel value="Offensive"/>
+        <AutoCastFilters value="Visible;Player,Ally"/>
+        <Flags index="AbortOnAllianceChange" value="1"/>
+        <Flags index="ChannelingMinimum" value="1"/>
+        <Flags index="RangeUseCasterRadius" value="1"/>
+        <Flags index="ReApproachable" value="1"/>
+        <Flags index="RequireTargetVision" value="1"/>
+        <Flags index="WaitToSpend" value="1"/>
+        <Flags index="UpdateChargesOnLevelChange" value="1"/>
+        <Effect value="##id##"/>
+        <EffectRange value="0,500"/>
+        <AINotifyEffect value="##id##"/>
+        <RefundArray index="Approach" value="1"/>
+        <RefundArray index="Prep" value="1"/>
+        <RefundArray index="Cast" value="1"/>
+        <RefundFraction Charge="-1" Cooldown="-1">
+            <Resource index="Minerals" value="-1"/>
+            <Resource index="Vespene" value="-1"/>
+            <Resource index="Terrazine" value="-1"/>
+            <Resource index="Custom" value="-1"/>
+        </RefundFraction>
+        <UseMarkerArray index="Approach" value="1"/>
+        <UseMarkerArray index="Prep" value="1"/>
+        <UseMarkerArray index="Cast" value="1"/>
+        <UseMarkerArray index="Channel" value="1"/>
+        <PauseableArray index="Approach" value="1"/>
+        <PauseableArray index="Prep" value="1"/>
+        <PauseableArray index="Cast" value="1"/>
+        <PauseableArray index="Channel" value="1"/>
+        <PauseableArray index="Finish" value="1"/>
+        <PreemptableArray index="Approach" value="1"/>
+        <PreemptableArray index="Prep" value="1"/>
+        <PreemptableArray index="Cast" value="1"/>
+        <PreemptableArray index="Channel" value="1"/>
+        <PreemptableArray index="Finish" value="1"/>
+        <ValidatedArray index="Approach" value="1"/>
+        <ValidatedArray index="Prep" value="1"/>
+        <ValidatedArray index="Cast" value="1"/>
+        <ValidatedArray index="Channel" value="1"/>
+        <DefaultError value="MustTargetUnit"/>
+        <AcquirePriority value="3"/>
+        <SetLastTarget value="Unknown"/>
+    </CAbilEffect>
+    <CAbilQueueable default="1">
+        <ErrorAlert value="Error"/>
+        <Activity value="UI/Training"/>
+        <RefundFraction Charge="-1" Cooldown="-1">
+            <Vital index="Life" value="-1"/>
+            <Vital index="Shields" value="-1"/>
+            <Vital index="Energy" value="-1"/>
+            <Resource index="Minerals" value="-1"/>
+            <Resource index="Vespene" value="-1"/>
+            <Resource index="Terrazine" value="-1"/>
+            <Resource index="Custom" value="-1"/>
+        </RefundFraction>
+    </CAbilQueueable>
+    <CAbilProgress default="1">
+        <Cancelable value="1"/>
+    </CAbilProgress>
+    <CAbilRedirect default="1">
+        <Flags index="IncludeSelf" value="1"/>
+    </CAbilRedirect>
+    <CAbilArmMagazine default="1">
+        <Flags index="AutoCastOffOwnerLeave" value="1"/>
+        <Flags index="ShowStatus" value="1"/>
+        <Flags index="WaitForFood" value="1"/>
+        <Leash value="500"/>
+        <Alert value="AmmoComplete"/>
+    </CAbilArmMagazine>
+    <CAbilAttack default="1">
+        <AbilSetId value="Attack"/>
+        <Alignment value="Negative"/>
+        <AcquireFilters value="-;Player,Ally,Neutral,Dead,Hidden,Invulnerable,Benign"/>
+        <SmartFilters value="-;Player,Ally"/>
+        <SupportedFilters value="-;Self,Outer"/>
+        <OrderArray index="0">
+            <DisplayType value="Attack"/>
+            <Color value="255,255,0,0"/>
+            <Model value="Assets\UI\Cursors\WayPointAttack_Void\WayPointAttack_Void.m3"/>
+            <LineTexture value="Assets\Textures\WayPointLine.dds"/>
+        </OrderArray>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Attack">
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="Towards" DefaultButtonFace="AttackTowards">
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="Barrage" DefaultButtonFace="AttackBarrage">
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+        <MaxAttackSpeedMultiplier value="1"/>
+        <MinAttackSpeedMultiplier value="0.125"/>
+        <AcquirePriority value="2"/>
+    </CAbilAttack>
+    <CAbilAugment default="1">
+        <CmdButtonArray index="Execute">
+            <Flags index="ShowInGlossary" value="1"/>
+        </CmdButtonArray>
+        <Alignment value="Positive"/>
+        <Effect value="##id##"/>
+        <AutoCastFilters value="Visible;Player,Ally"/>
+    </CAbilAugment>
+    <CAbilBattery default="1">
+        <CmdButtonArray index="Execute">
+            <Flags index="ShowInGlossary" value="1"/>
+        </CmdButtonArray>
+        <Alignment value="Positive"/>
+        <TargetFilters value="-;Ally,Neutral,Enemy,Structure,Missile,Stasis,Dead,Hidden,Hallucination"/>
+        <Range value="3"/>
+        <EnumRange value="3"/>
+        <Effect value="##id##"/>
+    </CAbilBattery>
+    <CAbilBeacon default="1"/>
+    <CAbilBehavior default="1">
+        <CmdButtonArray index="On">
+            <Flags index="ShowInGlossary" value="1"/>
+        </CmdButtonArray>
+    </CAbilBehavior>
+    <CAbilBuild default="1">
+        <TechPlayer value="Owner"/>
+        <HaltCmdButton DefaultButtonFace="Cancel"/>
+        <Alert value="BuildComplete"/>
+        <ErrorAlert value="Error"/>
+        <FlagArray index="BestUnit" value="1"/>
+        <FlagArray index="Cancelable" value="1"/>
+        <FlagArray index="PeonMaintained" value="1"/>
+        <FlagArray index="RangeIncludesBuilding" value="1"/>
+        <RefundFraction Charge="-1" Cooldown="-1">
+            <Resource index="Minerals" value="-0.75"/>
+            <Resource index="Vespene" value="-0.75"/>
+            <Resource index="Terrazine" value="-0.75"/>
+            <Resource index="Custom" value="-0.75"/>
+        </RefundFraction>
+        <InfoArray index="Build1">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build2">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build3">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build4">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build5">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build6">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build7">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build8">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build9">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build10">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build11">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build12">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build13">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build14">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build15">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build16">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build17">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build18">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build19">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build20">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build21">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build22">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build23">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build24">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build25">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build26">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build27">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build28">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build29">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Build30">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+    </CAbilBuild>
+    <CAbilBuildable default="1">
+        <Activity value="UI/Building"/>
+        <VitalStartFactor index="Life" value="0.1"/>
+        <VitalStartFactor index="Shields" value="0.1"/>
+        <VitalStartFactor index="Energy" value="1"/>
+        <CmdButtonArray index="Cancel" DefaultButtonFace="Cancel"/>
+        <CmdButtonArray index="Halt" DefaultButtonFace="Cancel"/>
+    </CAbilBuildable>
+    <CAbilEffectInstant default="1">
+        <CmdButtonArray index="Execute">
+            <Flags index="ShowInGlossary" value="1"/>
+        </CmdButtonArray>
+    </CAbilEffectInstant>
+    <CAbilEffectTarget default="1">
+        <CmdButtonArray index="Execute">
+            <Flags index="ShowInGlossary" value="1"/>
+        </CmdButtonArray>
+        <Flags index="BestUnit" value="1"/>
+        <FollowRange value="5"/>
+    </CAbilEffectTarget>
+    <CAbilHarvest default="1">
+        <CmdButtonArray index="Gather" DefaultButtonFace="Gather">
+            <Flags index="ShowInGlossary" value="1"/>
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="Return" DefaultButtonFace="ReturnCargo">
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+        <AcquireRadius value="10"/>
+        <AbilSetId value="Harv"/>
+        <ReservedMarker Link="Abil/HarvestDefault"/>
+        <ResourceAllowed index="Minerals" value="1"/>
+        <ResourceAllowed index="Vespene" value="1"/>
+        <ResourceAllowed index="Terrazine" value="1"/>
+        <ResourceAllowed index="Custom" value="1"/>
+        <ResourceAcquire index="Minerals" value="1"/>
+        <ResourceDestroy index="Minerals" value="1"/>
+        <ResourceDestroy index="Vespene" value="1"/>
+        <ResourceAmountMultiplier index="Minerals" value="1"/>
+        <ResourceAmountMultiplier index="Vespene" value="1"/>
+        <ResourceAmountMultiplier index="Terrazine" value="1"/>
+        <ResourceAmountMultiplier index="Custom" value="1"/>
+        <ResourceTimeMultiplier index="Minerals" value="1"/>
+        <ResourceTimeMultiplier index="Vespene" value="1"/>
+        <ResourceTimeMultiplier index="Terrazine" value="1"/>
+        <ResourceTimeMultiplier index="Custom" value="1"/>
+        <UninterruptibleArray index="WaitToReturn" value="1"/>
+    </CAbilHarvest>
+    <CAbilInteract default="1"/>
+    <CAbilInventory default="1">
+        <CmdButtonArray index="Drop" DefaultButtonFace="Drop"/>
+    </CAbilInventory>
+    <CAbilLearn default="1">
+        <Flags index="BestUnit" value="1"/>
+        <InfoArray index="Learn1">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn2">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn3">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn4">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn5">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn6">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn7">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn8">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn9">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn10">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn11">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn12">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn13">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn14">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn15">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn16">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn17">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn18">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn19">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Learn20">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+    </CAbilLearn>
+    <CAbilMerge default="1">
+        <CmdButtonArray index="SelectedUnits">
+            <Flags index="ShowInGlossary" value="1"/>
+        </CmdButtonArray>
+        <Flags index="BestUnit" value="1"/>
+        <Alert value="MergeComplete"/>
+    </CAbilMerge>
+    <CAbilMergeable default="1">
+        <Activity value="UI/Merging"/>
+        <VitalStartFactor index="Life" value="1"/>
+        <VitalStartFactor index="Shields" value="1"/>
+        <VitalStartFactor index="Energy" value="1"/>
+        <CmdButtonArray index="Cancel" DefaultButtonFace="Cancel"/>
+    </CAbilMergeable>
+    <CAbilMorph default="1">
+        <CmdButtonArray index="Execute">
+            <Flags index="ShowInGlossary" value="1"/>
+        </CmdButtonArray>
+        <ActorKey value="##id##"/>
+        <ErrorAlert value="Error"/>
+        <Activity value="UI/Morphing"/>
+        <AutoCastAcquireLevel value="Offensive"/>
+        <Flags index="IgnoreCollision" value="1"/>
+        <Flags index="IgnorePlacement" value="1"/>
+        <Flags index="WaitUntilStopped" value="1"/>
+        <RefundFraction Charge="-1" Cooldown="-1">
+            <Resource index="Minerals" value="-0.75"/>
+            <Resource index="Vespene" value="-0.75"/>
+            <Resource index="Terrazine" value="-0.75"/>
+            <Resource index="Custom" value="-0.75"/>
+        </RefundFraction>
+        <AbilClassEnableArray index="CAbilRally" value="1"/>
+        <AbilClassDisableArray index="CAbilQueue" value="1"/>
+        <AcquirePriority value="3"/>
+    </CAbilMorph>
+    <CAbilMorphPlacement default="1">
+        <Flags index="BestUnit" value="1"/>
+        <Flags index="MoveBlockers" value="1"/>
+        <Flags index="ShowPlaceholder" value="1"/>
+    </CAbilMorphPlacement>
+    <CAbilMove default="1">
+        <OrderArray index="0">
+            <DisplayType value="Move"/>
+            <Color value="255,0,255,0"/>
+            <Model value="Assets\UI\Cursors\WayPointMove_Void\WayPointMove_Void.m3"/>
+            <LineTexture value="Assets\Textures\WayPointLine.dds"/>
+        </OrderArray>
+        <OrderArray>
+            <DisplayType value="Move"/>
+            <Color value="255,35,125,255"/>
+            <Model value="Assets\UI\Cursors\WayPointConfirm_Void\WayPointConfirm_Void.m3"/>
+            <LineTexture value="Assets\Textures\WayPointLine.dds"/>
+        </OrderArray>
+        <CmdButtonArray index="Move" DefaultButtonFace="Move">
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="Patrol" DefaultButtonFace="MovePatrol">
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="HoldPos" DefaultButtonFace="MoveHoldPosition">
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="AcquireMove" DefaultButtonFace="AcquireMove">
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="Turn" DefaultButtonFace="Turn">
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+    </CAbilMove>
+    <CAbilPawn default="1">
+        <InfoArray index="Pawn1">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn2">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn3">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn4">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn5">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn6">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn7">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn8">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn9">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn10">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn11">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn12">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn13">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn14">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn15">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn16">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn17">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn18">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn19">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Pawn20">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+    </CAbilPawn>
+    <CAbilQueue default="1">
+        <QueueCount value="1"/>
+        <Flags index="BestUnit" value="1"/>
+        <Flags index="NotifyAddOn" value="1"/>
+        <CmdButtonArray index="CancelLast" DefaultButtonFace="Cancel"/>
+        <CmdButtonArray index="CancelSlot" DefaultButtonFace="CancelSlot"/>
+    </CAbilQueue>
+    <CAbilRally default="1">
+        <OrderArray index="0">
+            <DisplayType value="Rally"/>
+            <Color value="255,200,200,200"/>
+            <Model value="Assets\UI\Feedback\WayPointRally\WayPointRally.m3"/>
+            <LineTexture value="Assets\Textures\WayPointLine.dds"/>
+        </OrderArray>
+        <OrderArray>
+            <DisplayType value="Rally"/>
+            <Color value="255,245,140,70"/>
+            <Model value="Assets\UI\Feedback\WayPointRally\WayPointRally.m3"/>
+            <LineTexture value="Assets\Textures\WayPointLine.dds"/>
+        </OrderArray>
+        <OrderArray>
+            <DisplayType value="Rally"/>
+            <Color value="255,200,40,200"/>
+            <Model value="Assets\UI\Feedback\WayPointRally\WayPointRally.m3"/>
+            <LineTexture value="Assets\Textures\WayPointLine.dds"/>
+        </OrderArray>
+        <AbilSetId value="Rall"/>
+        <CmdButtonArray index="Rally1" DefaultButtonFace="Rally">
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="Rally2" DefaultButtonFace="RallyExtra">
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="Rally3" DefaultButtonFace="RallyExtra">
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+        <InfoArray/>
+    </CAbilRally>
+    <CAbilResearch default="1">
+        <Activity value="UI/Researching"/>
+        <Flags index="BestUnit" value="1"/>
+        <InfoArray index="Research1">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research2">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research3">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research4">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research5">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research6">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research7">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research8">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research9">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research10">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research11">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research12">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research13">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research14">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research15">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research16">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research17">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research18">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research19">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research20">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research21">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research22">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research23">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research24">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research25">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research26">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research27">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research28">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research29">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Research30">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+    </CAbilResearch>
+    <CAbilRevive default="1">
+        <CmdButtonArray index="Revive2" ReviverIndex="1"/>
+        <CmdButtonArray index="Revive3" ReviverIndex="2"/>
+        <CmdButtonArray index="Revive4" ReviverIndex="3"/>
+        <CmdButtonArray index="Revive5" ReviverIndex="4"/>
+        <CmdButtonArray index="Revive6" ReviverIndex="5"/>
+        <CmdButtonArray index="Revive7" ReviverIndex="6"/>
+        <CmdButtonArray index="Revive8" ReviverIndex="7"/>
+        <CmdButtonArray index="Revive9" ReviverIndex="8"/>
+        <CmdButtonArray index="Revive10" ReviverIndex="9"/>
+        <CmdButtonArray index="Revive11" ReviverIndex="10"/>
+        <CmdButtonArray index="Revive12" ReviverIndex="11"/>
+        <CmdButtonArray index="Revive13" ReviverIndex="12"/>
+        <CmdButtonArray index="Revive14" ReviverIndex="13"/>
+        <CmdButtonArray index="Revive15" ReviverIndex="14"/>
+        <CmdButtonArray index="Revive16" ReviverIndex="15"/>
+        <CmdButtonArray index="Revive17" ReviverIndex="16"/>
+        <CmdButtonArray index="Revive18" ReviverIndex="17"/>
+        <CmdButtonArray index="Revive19" ReviverIndex="18"/>
+        <CmdButtonArray index="Revive20" ReviverIndex="19"/>
+        <CmdButtonArray index="ReviveAtTarget2" ReviverIndex="1"/>
+        <CmdButtonArray index="ReviveAtTarget3" ReviverIndex="2"/>
+        <CmdButtonArray index="ReviveAtTarget4" ReviverIndex="3"/>
+        <CmdButtonArray index="ReviveAtTarget5" ReviverIndex="4"/>
+        <CmdButtonArray index="ReviveAtTarget6" ReviverIndex="5"/>
+        <CmdButtonArray index="ReviveAtTarget7" ReviverIndex="6"/>
+        <CmdButtonArray index="ReviveAtTarget8" ReviverIndex="7"/>
+        <CmdButtonArray index="ReviveAtTarget9" ReviverIndex="8"/>
+        <CmdButtonArray index="ReviveAtTarget10" ReviverIndex="9"/>
+        <Alert value="ReviveComplete"/>
+        <ErrorAlert value="ReviveError"/>
+        <Activity value="UI/Reviving"/>
+        <Flags index="BestUnit" value="1"/>
+        <Flags index="WaitForFood" value="1"/>
+        <NameOverride value="UI/Revive_S"/>
+        <SelfReviveCmd value="Unknown"/>
+        <TargetType value="UnitOrPoint"/>
+        <VitalArray index="Life" value="Ignore"/>
+        <VitalArray index="Shields" value="Ignore"/>
+        <VitalArray index="Energy" value="Ignore"/>
+    </CAbilRevive>
+    <CAbilSpecialize default="1">
+        <Activity value="UI/Specializing"/>
+        <Alert value="SpecializeComplete"/>
+        <Flags index="AutoCastOffOwnerLeave" value="1"/>
+        <Flags index="BestUnit" value="1"/>
+        <InfoArray index="Specialize1">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize2">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize3">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize4">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize5">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize6">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize7">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize8">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize9">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize10">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize11">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize12">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize13">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize14">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize15">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize16">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize17">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize18">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize19">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Specialize20">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+    </CAbilSpecialize>
+    <CAbilStop default="1">
+        <AbilSetId value="Stop"/>
+        <CmdButtonArray index="Stop" DefaultButtonFace="Stop">
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="HoldFire" DefaultButtonFace="HoldFire">
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="Cheer" DefaultButtonFace="Cheer">
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="Dance" DefaultButtonFace="Dance">
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+    </CAbilStop>
+    <CAbilTrain default="1">
+        <Alert value="TrainComplete"/>
+        <ErrorAlert value="TrainError"/>
+        <Flags index="AutoCastOffOwnerLeave" value="1"/>
+        <Flags index="BestUnit" value="1"/>
+        <Flags index="WaitForFood" value="1"/>
+        <Range value="2"/>
+        <!--DeathTypeOnFinish value="Normal"/>
+        <DeathTypeOnCancel value="Normal"/-->
+        <DeathTypeOnFinish value="TrainingComplete"/>
+        <DeathTypeOnCancel value="TrainingCancel"/>
+        <InfoArray index="Train1">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train2">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train3">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train4">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train5">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train6">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train7">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train8">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train9">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train10">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train11">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train12">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train13">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train14">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train15">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train16">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train17">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train18">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train19">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train20">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train21">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train22">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train23">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train24">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train25">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train26">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train27">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train28">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train29">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train30">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+    </CAbilTrain>
+    <CAbilTransport default="1">
+        <CmdButtonArray index="Load">
+            <Flags index="ShowInGlossary" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="LoadAll">
+            <Flags index="ShowInGlossary" value="1"/>
+        </CmdButtonArray>
+        <Alignment value="Positive"/>
+        <Range value="1"/>
+        <MaxUnloadRange value="3"/>
+        <TargetFilters value="Visible;Ally,Neutral,Enemy,Buried,Dead,Hidden"/>
+        <Flags index="AllowPassengerSmartCmd" value="1"/>
+        <Flags index="AllowSmartCmd" value="1"/>
+        <Flags index="ShowCargoSize" value="1"/>
+        <Flags index="ShowStatus" value="1"/>
+        <TargetSorts>
+            <SortArray value="TSInterruptible"/>
+            <SortArray value="TSDistance"/>
+        </TargetSorts>
+        <ErrorAlert value="Error"/>
+    </CAbilTransport>
+    <CAbilWarpable default="1">
+        <Cancelable value="0"/>
+        <Activity value="UI/Warping"/>
+        <VitalStartFactor index="Life" value="0.1"/>
+        <VitalStartFactor index="Shields" value="0.1"/>
+        <VitalStartFactor index="Energy" value="1"/>
+        <CmdButtonArray index="Cancel" DefaultButtonFace="Cancel"/>
+    </CAbilWarpable>
+    <CAbilWarpTrain default="1">
+        <Alert value="WarpTrainComplete"/>
+        <Flags index="IgnoreRampTest" value="1"/>
+        <Flags index="WarpTrainersButton" value="1"/>
+        <RefundFraction Charge="-1" Cooldown="-1">
+            <Resource index="Minerals" value="-1"/>
+            <Resource index="Vespene" value="-1"/>
+            <Resource index="Terrazine" value="-1"/>
+            <Resource index="Custom" value="-1"/>
+        </RefundFraction>
+        <InfoArray index="Train1">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train2">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train3">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train4">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train5">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train6">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train7">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train8">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train9">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train10">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train11">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train12">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train13">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train14">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train15">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train16">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train17">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train18">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train19">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+        <InfoArray index="Train20">
+            <Button>
+                <Flags index="AllowMinimap" value="0"/>
+            </Button>
+        </InfoArray>
+    </CAbilWarpTrain>
+    <CAbilRevive default="1" id="ReviveSelf">
+        <SharedFlags index="DisableWhileDead" value="0"/>
+        <SelfReviveCmd value="Revive1"/>
+    </CAbilRevive>
+    <CAbilRevive default="1" id="ReviveSelfAtTarget" parent="ReviveSelf">
+        <SelfReviveCmd value="ReviveAtTarget1"/>
+    </CAbilRevive>
+    <CAbilRevive default="1" id="ReviveSelfReplaceTarget" parent="ReviveSelfAtTarget">
+        <ReplaceFilters value="Ground;Self,Ally,Neutral,Enemy,Structure,Missile,Destructible,Stasis,Dead,Hidden,Invulnerable"/>
+    </CAbilRevive>
+    <CAbilRevive default="1" id="ReviveSelfOnCreep" parent="ReviveSelfAtTarget">
+        <ValidatorArray value="HasVisionOfTarget"/>
+        <ValidatorArray value="TargetOnCreep"/>
+        <TargetType value="Point"/>
+    </CAbilRevive>
+    <CAbilEffectTarget id="Taunt">
+        <Effect index="0" value="taunt"/>
+        <Range value="10"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Taunt"/>
+    </CAbilEffectTarget>
+    <CAbilStop id="stop">
+        <CmdButtonArray index="HoldFire" DefaultButtonFace="HoldFireSpecial"/>
+    </CAbilStop>
+    <CAbilStop id="HoldFire">
+        <Flags index="HoldFire" value="1"/>
+        <CmdButtonArray index="Stop" DefaultButtonFace="StopSpecial"/>
+        <CmdButtonArray index="Cheer" DefaultButtonFace=""/>
+        <CmdButtonArray index="Dance" DefaultButtonFace=""/>
+    </CAbilStop>
+    <CAbilMove id="move">
+        <FleeRange value="5"/>
+        <FleeTime value="5"/>
+        <FollowRangeSlop value="1"/>
+        <FollowAcquireRange value="6"/>
+        <MinPatrolDistance value="1"/>
+    </CAbilMove>
+    <CAbilBeacon id="Beacon">
+        <CmdButtonArray index="Cancel" DefaultButtonFace="Cancel"/>
+        <CmdButtonArray index="Move" DefaultButtonFace="BeaconMove"/>
+    </CAbilBeacon>
+</Catalog>

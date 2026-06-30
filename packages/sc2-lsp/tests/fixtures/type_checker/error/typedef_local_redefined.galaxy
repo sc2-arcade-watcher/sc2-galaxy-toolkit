@@ -1,0 +1,19 @@
+typedef int foo;
+typedef int bar;
+
+struct st_t {
+    int foo;
+    // ^ERR foo redefined
+    foo bar;
+    // ^ERR bar redefined
+};
+
+void fn(bool foo)
+// ^ERR foo redefined
+{
+}
+
+void asd() {
+    foo foo;
+    // ^ERR foo redefined
+}

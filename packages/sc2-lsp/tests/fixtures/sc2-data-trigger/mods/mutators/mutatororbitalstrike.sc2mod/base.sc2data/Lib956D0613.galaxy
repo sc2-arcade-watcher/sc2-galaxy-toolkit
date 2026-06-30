@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib956D0613_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Orbital Strike
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib956D0613_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib956D0613_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "OrbitalStrike");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib956D0613_gt_Initialization_Init () {
+    lib956D0613_gt_Initialization = TriggerCreate("lib956D0613_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib956D0613_gt_Initialization);
+}
+
+void lib956D0613_InitTriggers () {
+    lib956D0613_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib956D0613_InitLib_completed = false;
+
+void lib956D0613_InitLib () {
+    if (lib956D0613_InitLib_completed) {
+        return;
+    }
+
+    lib956D0613_InitLib_completed = true;
+
+    lib956D0613_InitLibraries();
+    lib956D0613_InitTriggers();
+}
+

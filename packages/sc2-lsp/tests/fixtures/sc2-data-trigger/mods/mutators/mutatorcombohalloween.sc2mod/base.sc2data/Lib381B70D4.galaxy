@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib381B70D4_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib381B70D4_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib381B70D4_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(26);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib381B70D4_gt_Initialization_Init () {
+    lib381B70D4_gt_Initialization = TriggerCreate("lib381B70D4_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib381B70D4_gt_Initialization);
+}
+
+void lib381B70D4_InitTriggers () {
+    lib381B70D4_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib381B70D4_InitLib_completed = false;
+
+void lib381B70D4_InitLib () {
+    if (lib381B70D4_InitLib_completed) {
+        return;
+    }
+
+    lib381B70D4_InitLib_completed = true;
+
+    lib381B70D4_InitLibraries();
+    lib381B70D4_InitTriggers();
+}
+

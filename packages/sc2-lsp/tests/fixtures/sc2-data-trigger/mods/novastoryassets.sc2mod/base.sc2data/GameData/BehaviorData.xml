@@ -1,0 +1,1456 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CBehaviorBuff id="AllPurposeLaserBatteryTarget1">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="1"/>
+        <MaxStackCount value="0"/>
+        <MaxStackCountPerCaster value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="AllPurposeLaserBatteryTarget2">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="1"/>
+        <MaxStackCount value="0"/>
+        <MaxStackCountPerCaster value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="AllPurposeLaserBatteryTarget3">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="1"/>
+        <MaxStackCount value="0"/>
+        <MaxStackCountPerCaster value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="AllPurposeLaserBatteryTarget4">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="1"/>
+        <MaxStackCount value="0"/>
+        <MaxStackCountPerCaster value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="BansheeFlyInLeft">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="4"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="BansheeFlyInRight">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="4"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ColonyInfestation">
+        <InfoFlags index="Hidden" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DisableAbils2">
+        <Cost>
+            <Charge Link="Behavior/DisableAbils"/>
+            <Cooldown Link="Behavior/DisableAbils"/>
+        </Cost>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+        </Modification>
+        <DamageResponse>
+            <Cost>
+                <Charge Link="Behavior/DisableAbils"/>
+                <Cooldown Link="Behavior/DisableAbils"/>
+            </Cost>
+        </DamageResponse>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaAlarmBotDetectionMode">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaEMPStoneDecloak">
+        <Alignment value="Negative"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-emp.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisplayDuration index="Self" value="1"/>
+        <RemoveValidatorArray value="IsNotBuried"/>
+        <Duration value="10"/>
+        <Modification>
+            <StateFlags index="SuppressCloak" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DetectorFlagOnly">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Modification>
+            <StateFlags index="Detector" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="HellbatLeapStun">
+        <InfoIcon value="Assets\Textures\btn-upgrade-terran-jumpjets.dds"/>
+        <BehaviorCategories index="Stun" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Modification>
+            <ModifyFlags index="Reveal" value="1"/>
+            <ModifyFlags index="Detected" value="1"/>
+            <StateFlags index="Stun" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <AbilClassDisableArray index="CAbilAttack" value="1"/>
+        </Modification>
+        <Duration value="0.5"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="HoverHellion">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisableValidatorArray value="HaveHoverHellbat"/>
+        <Modification Height="0.5">
+            <WeaponArray Link="HoverHellbat"/>
+            <WeaponDisableArray value="HellionTank"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaDominationStoneBehavior">
+        <InfoFlags index="Hidden" value="1"/>
+        <InfoIcon value="Assets\Textures\stunswirl1_orange.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <DisplayDuration index="Neutral" value="1"/>
+        <DisplayDuration index="Enemy" value="1"/>
+        <Duration value="2"/>
+        <FinalEffect value="NovaDominationStoneBehaviorFinalSet"/>
+        <Modification>
+            <StateFlags index="Silence" value="1"/>
+            <StateFlags index="Stun" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaHelmetGhostVisorDetector">
+        <Modification Detect="20" RadarFilters="-;Player,Ally,Neutral,RawResource,HarvestableResource,Missile,Destructible,Invulnerable"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaHyperionJumpOutroDelay">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <BuffFlags index="Countdown" value="0"/>
+        <Duration value="2"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <StateFlags index="NoDraw" value="1"/>
+            <BehaviorLinkDisableArray value="NovaHyperionJump"/>
+        </Modification>
+        <DamageResponse Chance="1" ModifyFraction="0"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaJumpJetRegen">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisableValidatorArray value="CasterNotInCombat10s"/>
+        <DisableValidatorArray value="NotFullLife"/>
+        <!--Modification>
+            <VitalRegenArray index="Life" value="20"/>
+        </Modification-->
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Requirements value="HaveNovaArmorJumpSuit"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaStoneDeathPrevent">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <DamageResponse>
+            <Chance value="1"/>
+            <Fatal value="1"/>
+            <Handled value="NovaStoneDeathPreventSet"/>
+            <ModifyFraction value="0"/>
+        </DamageResponse>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaStoneStunMoniter">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisableValidatorArray value="LifeLE15Percent"/>
+        <Period value="0.0625"/>
+        <PeriodicEffect value="NovaStoneDeathPreventSet"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaStoneIncapacitated">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="Stun" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+        </Modification>
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <DamageResponse Chance="1" ModifyFraction="0"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaSuppressCloakWhileMoving">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisableValidatorArray value="TargetIsMoving"/>
+        <Modification>
+            <StateFlags index="SuppressCloak" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaXThosFighterHeight">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Modification Height="2">
+            <HeightTime index="Start" value="0.5"/>
+            <HeightTime index="Stop" value="0.5"/>
+        </Modification>
+        <DisableValidatorArray value="TargetNotFiringOrAnimatingWeapon"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaXThosFighterHeightTransation">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="0.5"/>
+        <Modification MoveSpeedMaximum="2.5"/>
+    </CBehaviorBuff>
+    <CBehaviorConjoined id="NovaXanthosConjoined">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <ConjoinedFlags index="ShareLife" value="0"/>
+        <ConjoinedFlags index="ShareVisible" value="1"/>
+        <ConjoinedFlags index="ShareAcquire" value="0"/>
+        <Radius value="10"/>
+        <InfoFlags index="Hidden" value="1"/>
+    </CBehaviorConjoined>
+    <CBehaviorBuff id="NovaXanthosFlameTurretFiring">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaXanthosNukeResistant">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DamageResponse Chance="1" ModifyFraction="0.5">
+            <RequireEffectArray value="SplashDamage"/>
+            <RequireEffectInChainArray value="NukeDamage"/>
+            <RequireEffectInChainArray value="HeroNukeDamage"/>
+            <RequireEffectInChainArray value="OdinNukeDamage"/>
+        </DamageResponse>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaXanthosPlaneMode">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaXanthosTurretPlaneMode">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Modification MoveSpeedMultiplier="4">
+            <ModifyFlags index="DisableWeapons" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaXanthosFinalMode">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaXanthosTurretFinalMode">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Modification MoveSpeedMultiplier="4">
+            <ModifyFlags index="DisableWeapons" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PersonalDefensiveMatrix">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-defensivematrix.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <RemoveValidatorArray value="TempShieldsNotEmptyOrNoTempShields"/>
+        <Modification>
+            <VitalMaxArray index="Shields" value="500"/>
+        </Modification>
+        <DamageResponse Chance="1" ClampMaximum="10" Minimum="10">
+            <Kind index="Spell" value="0"/>
+        </DamageResponse>
+        <Duration value="10"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DOMGhostPersonalDefensiveMatrix">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-defensivematrix.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <RemoveValidatorArray value="TempShieldsNotEmptyOrNoTempShields"/>
+        <Modification>
+            <VitalMaxArray index="Shields" value="50"/>
+        </Modification>
+        <Duration value="20"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaUnstoppable">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoIcon value="Assets\Textures\btn-research-zerg-cellularreactor.dds"/>
+        <Modification>
+            <StateFlags index="Unstoppable" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ScientistScared">
+        <InfoIcon value="Assets\Textures\fearex3_coop.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Period value="2"/>
+        <PeriodicEffect value="ScientistScaredSearch"/>
+        <Modification MoveSpeedMultiplier="1.5"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SealedTerrazineNodeDeathPrevent">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <DamageResponse>
+            <Chance value="1"/>
+            <Fatal value="1"/>
+            <Handled value="FlowingTerrazineNodeDeathPrevent"/>
+            <ModifyFraction value="0"/>
+        </DamageResponse>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SkyHook">
+        <Cost>
+            <Charge Link="Behavior/SkyHookLift"/>
+            <Cooldown Link="Behavior/SkyHookLift"/>
+        </Cost>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Duration value="1.5"/>
+        <FinalEffect value="SkyHookLift"/>
+        <Modification>
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+        </Modification>
+        <DamageResponse>
+            <Cost>
+                <Charge Link="Behavior/SkyHookLift"/>
+                <Cooldown Link="Behavior/SkyHookLift"/>
+            </Cost>
+        </DamageResponse>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SubwayEntrancePowerOff">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Modification>
+            <StateFlags index="SuppressPassenger" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <AbilClassDisableArray index="CAbilTransport" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SwarmGrenade">
+        <Alignment value="Negative"/>
+        <InfoIcon value="Assets\Textures\btn-ability-zerg-blindingcloud.dds"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Duration value="0.625"/>
+        <Modification MoveSpeedMultiplier="0.5">
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="SuppressEnergy" value="1"/>
+            <AbilClassDisableArray index="CAbilAttack" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="HoverHellbatReady">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="4"/>
+    </CBehaviorBuff>
+    <CBehaviorResource id="FlowingTerrazineHarvest">
+        <InfoFlags index="Hidden" value="1"/>
+        <InfoIcon value="Assets\Textures\icon-mineral.dds"/>
+        <Capacity value="1"/>
+        <Contents value="1"/>
+        <HarvestTime value="60"/>
+        <HarvestAmount value="1"/>
+        <ReturnDelay value="0.5"/>
+        <CarryResourceBehavior value="CarryTerrazineNode"/>
+    </CBehaviorResource>
+    <CBehaviorBuff id="FlowingTerrazineHarvestCheck">
+        <InfoFlags index="Hidden" value="1"/>
+        <RemoveValidatorArray value="FlowingTerrazineCheck"/>
+        <FinalEffect value="MorphTerrazineUnsealedtoDepleted"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SiegeTankJumpJetCreateTimeOut">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="1.75"/>
+        <FinalEffect value="SuicideRemove"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ThorDontDie">
+        <DisableValidatorArray value="HaveMechanicalRebirth"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="LockOnDisableAttack">
+        <Modification>
+            <WeaponArray Link="CycloneLockOnDummy"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="GunTurretBurrow">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Structures"/>
+        <Period value="5"/>
+        <PeriodicEffect value="GunTurretBurrowOrder"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="FlameTurretBurrow">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Structures"/>
+        <DisableValidatorArray value="FlameTurretEnemySearch"/>
+        <Period value="3"/>
+        <PeriodicEffect value="FlameTurretBurrowOrder"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="FlameTurretDamageActive">
+        <InfoFlags index="Hidden" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="FlameTurretTargetTrackingBehavior">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Structures"/>
+        <DisableValidatorArray value="CasterHasFlameTurretDamageActive"/>
+        <Period value="0.5"/>
+        <PeriodicEffect value="FlameTurretFire"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="FlameTurretTargetSuicide">
+        <InfoFlags index="Hidden" value="1"/>
+        <RemoveValidatorArray value="CasterNotDead"/>
+        <FinalEffect value="SuicideRemove"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="RotatingTurretTargetTrackingBehavior">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Structures"/>
+        <DisableValidatorArray value="CasterHasRotatingTurretPassive"/>
+        <Period value="0.25"/>
+        <PeriodicEffect value="RotatingTurretDetection"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="RotatingTurretTargetSuicide">
+        <InfoFlags index="Hidden" value="1"/>
+        <RemoveValidatorArray value="CasterNotDead"/>
+        <FinalEffect value="SuicideRemove"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="RotatingTurretPassive">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Structures"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="RotatingTurretActive">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Structures"/>
+        <Duration value="4"/>
+        <!--ExpireEffect value="RotatingTurretPassiveMorphIssueOrder"/-->
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SiegeTankDummyWeaponDisable">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="4"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <WeaponDisableArray value="90mmCannonsFake"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SiegeTankUnloadDelay">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="2"/>
+        <Modification>
+            <StateFlags index="SuppressAttack" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SiegeTankUnmorphDummyWeaponDisable">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="3.5"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <WeaponDisableArray value="90mmCannonsFake"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="HoverHellionTankReady">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="4"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SuperStim">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-upgrade-terran-superstimppack.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="15"/>
+        <Modification MoveSpeedMultiplier="1.5" AttackSpeedMultiplier="1.5"/>
+        <RemoveValidatorArray value="SourceIsNotHellion"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="AlwaysVisibleDetector8">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <InfoFlags index="Hidden" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="GarrisonMarine">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <InitialEffect value="GarrisonWatchCP"/>
+        <Modification WeaponRange="4">
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="GarrisonReaper">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <InitialEffect value="GarrisonWatchGroundCP"/>
+        <Modification WeaponRange="5">
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SkyHookLift">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Duration value="6"/>
+        <FinalEffect value="SuicideRemove"/>
+        <Modification Height="25">
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <HeightTime index="Start" value="10"/>
+            <HeightTime index="Stop" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="GarrisonMarauder">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <InitialEffect value="GarrisonWatchGroundCP"/>
+        <Modification WeaponRange="3">
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DOMSnipeCombatBeamDummy">
+        <InfoFlags index="Hidden" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Detector6" parent="Detector">
+        <Alignment value="Positive"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <InfoIcon value="Assets\Textures\btn-status-detector.dds"/>
+        <Modification Detect="6"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SOAGravitonBomb">
+        <Modification>
+            <BehaviorLinkDisableArray value="Detector6"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ArbiterMPStasisField">
+        <Modification>
+            <BehaviorLinkDisableArray value="Detector6"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="LockdownB">
+        <Modification>
+            <BehaviorLinkDisableArray value="Detector6"/>
+            <BehaviorLinkDisableArray value="Detector7"/>
+            <BehaviorLinkDisableArray value="Detector8"/>
+            <BehaviorLinkDisableArray value="Detector9"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SpectreLockdownB">
+        <Modification>
+            <BehaviorLinkDisableArray value="Detector6"/>
+            <BehaviorLinkDisableArray value="Detector7"/>
+            <BehaviorLinkDisableArray value="Detector8"/>
+            <BehaviorLinkDisableArray value="Detector9"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="VoodooLockdown">
+        <Modification>
+            <BehaviorLinkDisableArray value="Detector6"/>
+            <BehaviorLinkDisableArray value="Detector7"/>
+            <BehaviorLinkDisableArray value="Detector8"/>
+            <BehaviorLinkDisableArray value="Detector9"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DetectorCone9">
+        <InfoFlags index="Hidden" value="1"/>
+        <DisableValidatorArray value="Flashbanged"/>
+        <Period value="0.25"/>
+        <PeriodicEffect value="DetectorCone9"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DetectorConeDetected">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="0.3"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaShipFiring">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Period value="0.125"/>
+        <PeriodicEffect value="NovaShipFiring"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="GiantEMPDecloak">
+        <Alignment value="Negative"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-emp.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <RemoveValidatorArray value="IsNotBuried"/>
+        <Duration value="10"/>
+        <Modification>
+            <StateFlags index="SuppressCloak" value="1"/>
+            <StateFlags index="SuppressEnergyRegen" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="VultureLaidMine">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <PeriodicEffect value="VultureLaidMineExplodeSearch"/>
+        <Period value="0.0124"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="VultureLaidMineTimedLife">
+        <InfoFlags index="Hidden" value="1"/>
+        <InfoIcon value="Assets\Textures\btn-ability-zerg-explode.dds"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Duration value="30"/>
+        <DurationRandomMax value="0.5"/>
+        <ExpireEffect value="TimedLifeFate"/>
+        <KillCredit Value="Caster"/>
+        <Modification>
+            <StateFlags index="Summoned" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="VultureSpiderMineBurrowFirst">
+        <Duration value="3"/>
+        <InitialEffect value=""/>
+        <FinalEffect value="VultureSpiderMineBurrowOrder"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SpiderMineAttackSearch">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <PeriodicEffect value="SpiderMineAttackOrderSet"/>
+        <InfoFlags index="Hidden" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="GhostVultureAnimationControllerEnable">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="1.38"/>
+        <Modification>
+            <WeaponEnableArray value="GhostVultureAnimationController"/>
+            <WeaponDisableArray value="C10CanisterRifleVulture"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaVultureAnimationControllerEnable">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="1.38"/>
+        <Modification>
+            <WeaponEnableArray value="NovaVultureAnimationController"/>
+            <WeaponDisableArray value="NovaVultureWeaponCanisterRifle"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SkyTankKnockback">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Period value="0.0625"/>
+        <PeriodicEffect value="SkyTankKnockbackSearch"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SkyTankKnockbackTarget">
+        <InfoFlags index="Hidden" value="1"/>
+        <Alignment value="Negative"/>
+        <InfoIcon value="Assets\Textures\btn-upgrade-vorazun-shadowstun.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="0.125"/>
+        <Modification>
+            <StateFlags index="Stun" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DOMEMPDecloak">
+        <Alignment value="Negative"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-emp.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisplayDuration index="Self" value="1"/>
+        <RemoveValidatorArray value="IsNotBuried"/>
+        <Duration value="10"/>
+        <Modification>
+            <StateFlags index="SuppressCloak" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="RotatingTurretAutoWeapon">
+        <Duration value="2"/>
+        <Modification>
+            <WeaponEnableArray value="RotatingTurretAuto"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="RotatingTurretAutoStart">
+        <Duration value="0.0625"/>
+        <FinalEffect value="RotatingTurretAutoInit"/>
+    </CBehaviorBuff>
+    <!-- this makes the turret auto follow the 2nd unit, stops tracking when removed -->
+    <CBehaviorBuff id="RotatingTurretAutoCasterTurretRotating">
+        <InitialEffect value="RotatingTurretAutoInitKinetic"/>
+        <Period value="0.25"/>
+        <PeriodicEffect value="RotatingTurretAutoTargetDistanceWarpSet"/>
+        <FinalEffect value="RotatingTurretAutoRemoveKinetic"/>
+    </CBehaviorBuff>
+    <!-- this is the detection area, if something is detected follow is disabled and the snd unit chases the target to make the turret also look that way -->
+    <CBehaviorBuff id="RotatingTurretAutoTargetTrackingBehavior">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Structures"/>
+        <Period value="0.25"/>
+        <PeriodicEffect value="RotatingTurretAutoDetection"/>
+    </CBehaviorBuff>
+    <!-- this means the turret is trackign something, is reapplying as long as something remains visible -->
+    <CBehaviorBuff id="RotatingTurretAutoTargetActiveChasing">
+        <Duration value="2"/>
+        <FinalEffect value="RotatingTurretAutoCasterTurretRotatingAB"/>
+        <MaxStackCount value="8"/>
+        <Period value="0.25"/>
+        <PeriodicEffect value="RotatingTurretAutoWeaponActiveAB"/>
+        <BuffFlags index="RefreshStack" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="StoneDontDie">
+        <InfoFlags index="Hidden" value="1"/>
+        <DamageResponse>
+            <Chance value="1"/>
+            <Fatal value="1"/>
+            <Handled value="StoneLowHPSet"/>
+            <ModifyFraction value="0"/>
+        </DamageResponse>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="StoneInvulnerable">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="SuppressCollision" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="WalkSlow">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification MoveSpeedMultiplier="0.6"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaMothershipDisableAttack">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Modification>
+            <ModifyFlags index="DisableWeapons" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <AbilClassDisableArray index="CAbilArmMagazine" value="1"/>
+            <AbilClassDisableArray index="CAbilAttack" value="1"/>
+            <BehaviorLinkDisableArray value="NovaMothershipInvulnerabilityShield"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="HercBanelingImmunity">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units,Race:Terran"/>
+        <DamageResponse>
+            <Chance value="1"/>
+            <Handled value="HercDamageImmunityDummy"/>
+            <ModifyFraction value="0"/>
+            <ModifyMinimumDamage value="1"/>
+            <RequireEffectArray value="HotSBanelingExplodeLargeDirect"/>
+            <RequireEffectArray value="HotSBanelingExplodeLargeSearchDamage"/>
+            <RequireEffectArray value="HotSBanelingExplodeSmallDirect"/>
+            <RequireEffectArray value="HotSBanelingExplodeSmallSearchDamage"/>
+        </DamageResponse>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaMothershipInvulnerabilityShield">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-shieldbattery-color.dds"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Modification>
+            <StateFlags index="Invulnerable" value="1"/>
+        </Modification>
+        <DamageResponse Chance="1" ModifyFraction="0"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="RegenerativeBioSteelGoliath">
+        <InfoIcon value="Assets\Textures\btn-research-zerg-regenerativebio-steel.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisableValidatorArray value="CasterNotInCombat"/>
+        <DisableValidatorArray value="NotMaxHP"/>
+        <DisableValidatorArray value="HaveRegenerativeBioSteelGoliath"/>
+        <Modification>
+            <VitalRegenArray index="Life" value="10"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaMothershipTurretDisabler">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="8"/>
+        <Modification>
+            <TurretDisableArray value="MothershipRotate"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaMothershipWarpInInvulnerable">
+        <InfoFlags index="Hidden" value="1"/>
+        <BehaviorCategories index="Permanent" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="8"/>
+        <Modification>
+            <StateFlags index="Invulnerable" value="1"/>
+            <BehaviorLinkDisableArray value="NovaMothershipInvulnerabilityShield"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="LockOn">
+        <Modification>
+            <ModifyFlags index="Reveal" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaMothershipHide">
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification SightMaximum="0">
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="SuppressCollision" value="1"/>
+            <StateFlags index="NoDraw" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+            <AbilLinkEnableArray value="NovaMothershipWarpIn"/>
+            <BehaviorClassDisableArray index="CBehaviorPowerSource" value="1"/>
+            <BehaviorClassDisableArray index="CBehaviorPowerUser" value="1"/>
+            <TurretDisableArray value="MothershipRotate"/>
+        </Modification>
+        <InitialEffect value="NovaMothershipHangarClear"/>
+    </CBehaviorBuff>
+    <!--CBehaviorBuff id="NovaInfestedBansheeHeightTime">-->
+    <!--        <InfoFlags index="Hidden" value="1"/>-->
+    <!--        <EditorCategories value="AbilityorEffectType:Units"/>-->
+    <!--        <Modification Height="3.75">-->
+    <!--            <HeightTime index="Start" value="2"/>-->
+    <!--            <HeightTime index="Stop" value="2"/>-->
+    <!--            <AbilLinkEnableArray value="NovaInfestedBansheeLand"/>-->
+    <!--        </Modification>-->
+    <!--        <BehaviorFlags index="Permanent" value="1"/>-->
+    <!--    </CBehaviorBuff-->
+    <CBehaviorBuff id="OracleSearchlightRevealerWarmup">
+        <Duration value="2"/>
+        <FinalEffect value="OracleSearchlightRevealerAB"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="OracleSearchlightRevealer">
+        <Period value="0.125"/>
+        <PeriodicEffect value="OracleSearchlightRevealSearch"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="OracleSearchlightRevealed">
+        <Duration value="0.25"/>
+        <Modification>
+            <StateFlags index="SuppressCloak" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="OracleSearchlightTimedLife">
+        <InfoFlags index="Hidden" value="1"/>
+        <RemoveValidatorArray value="OracleSearchlightRange"/>
+        <BuffFlags index="Channeled" value="1"/>
+        <FinalEffect value="Suicide"/>
+        <Modification>
+            <StateFlags index="Summoned" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaMothershipRecalling">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="0.25"/>
+        <ExpireEffect value="NovaMothershipMassRecallSet"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="SuppressPassenger" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <AbilClassDisableArray index="CAbilAttack" value="1"/>
+            <AbilClassDisableArray index="CAbilMove" value="1"/>
+            <AbilLinkEnableArray value="VolatileBurstBuilding"/>
+            <AbilLinkEnableArray value="GhostCloak"/>
+            <AbilLinkEnableArray value="BansheeCloak"/>
+            <AbilLinkEnableArray value="LiberatorMorphtoAG"/>
+            <AbilLinkEnableArray value="LiberatorMorphtoAA"/>
+            <AbilLinkEnableArray value="LiberatorAATarget"/>
+            <AbilLinkEnableArray value="NovaMothershipVoidrayHangar"/>
+        </Modification>
+        <RemoveValidatorArray value="CasterNotDead"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaMothershipRecalled">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="6"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="SuppressPassenger" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <AbilClassDisableArray index="CAbilAttack" value="1"/>
+            <AbilClassDisableArray index="CAbilMove" value="1"/>
+            <AbilLinkEnableArray value="VolatileBurstBuilding"/>
+            <AbilLinkEnableArray value="GhostCloak"/>
+            <AbilLinkEnableArray value="BansheeCloak"/>
+            <AbilLinkEnableArray value="LiberatorMorphtoAG"/>
+            <AbilLinkEnableArray value="LiberatorMorphtoAA"/>
+            <AbilLinkEnableArray value="LiberatorAATarget"/>
+            <AbilLinkEnableArray value="NovaMothershipVoidrayHangar"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="BansheePermanentCloak">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-cloak.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisableValidatorArray value="NotHaveBansheeCloakingTechnology"/>
+        <Modification>
+            <StateFlags index="Cloak" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ReaperPermanentCloak">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-cloak.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Requirements value="CloakingTechnologyReaper"/>
+        <Modification>
+            <StateFlags index="Cloak" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="LiberatorCloak">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-cloak.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <RemoveValidatorArray value="CanSpendEnergy"/>
+        <RemoveValidatorArray value="hasEnergy"/>
+        <Modification>
+            <StateFlags index="Cloak" value="1"/>
+            <VitalRegenArray index="Energy" value="-1.4765"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="BattlecruiserCloak">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-cloak.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <RemoveValidatorArray value="CanSpendEnergy"/>
+        <RemoveValidatorArray value="hasEnergy"/>
+        <Modification>
+            <StateFlags index="Cloak" value="1"/>
+            <VitalRegenArray index="Energy" value="-1.4765"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ReaperCloak">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-cloak.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <RemoveValidatorArray value="CanSpendEnergy"/>
+        <RemoveValidatorArray value="hasEnergy"/>
+        <Modification>
+            <StateFlags index="Cloak" value="1"/>
+            <VitalRegenArray index="Energy" value="-1.4765"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="HealingDroneTimedLife" parent="TimedLife">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisplayDuration index="Enemy" value="1"/>
+        <Duration value="30"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="RailGunTurretTimedLife" parent="TimedLife">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisplayDuration index="Enemy" value="1"/>
+        <Duration value="180"/>
+    </CBehaviorBuff>
+    <CBehaviorJump id="GoliathCliffJump">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <TriggerHeightDeltaMin value="1.5"/>
+        <TriggerHeightDeltaMax value="4.5"/>
+        <InitiateRangeUp value="1.5"/>
+        <InitiateRangeDown value="0.5"/>
+        <JumpRangeMax value="12"/>
+        <Mover value="CliffJumper"/>
+        <MoverUp value="ReaperJumpDown"/>
+        <MoverDown value="ReaperJumpDown"/>
+        <DurationPreLaunch value="0.05"/>
+        <DurationPostLand value="0.075"/>
+        <DurationMoveOut value="0.08"/>
+        <Placeholder value="ReaperPlaceholder"/>
+        <LandAdjustmentDown value="1"/>
+        <LandArrivalRange value="0.05"/>
+        <LandCheckRadius value="5"/>
+    </CBehaviorJump>
+    <CBehaviorBuff id="OracleRevelation">
+        <Duration value="10"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="RegenerativeBioSteelLiberator">
+        <InfoIcon value="Assets\Textures\btn-research-zerg-regenerativebio-steel.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisableValidatorArray value="CasterNotInCombat"/>
+        <DisableValidatorArray value="NotMaxHP"/>
+        <DisableValidatorArray value="HaveRegenerativeBioSteelLiberator"/>
+        <Modification>
+            <VitalRegenArray index="Life" value="10"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="RegenerativeBioSteelSiegeTank">
+        <InfoIcon value="Assets\Textures\btn-research-zerg-regenerativebio-steel.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisableValidatorArray value="CasterNotInCombat"/>
+        <DisableValidatorArray value="NotMaxHP"/>
+        <DisableValidatorArray value="HaveRegenerativeBioSteelSiegeTank"/>
+        <Modification>
+            <VitalRegenArray index="Life" value="10"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="RegenerativeBioSteelBanshee">
+        <InfoIcon value="Assets\Textures\btn-research-zerg-regenerativebio-steel.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisableValidatorArray value="CasterNotInCombat"/>
+        <DisableValidatorArray value="NotMaxHP"/>
+        <DisableValidatorArray value="HaveRegenerativeBioSteelBanshee"/>
+        <Modification>
+            <VitalRegenArray index="Life" value="10"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SuppressAttack1s">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <Duration value="1"/>
+        <Modification>
+            <StateFlags index="Passive" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <AbilClassDisableArray index="CAbilAttack" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="TaldarimDeathFleet_Beam">
+        <InfoFlags index="Hidden" value="1"/>
+        <Period value="0.6"/>
+        <PeriodicEffect value="TaldarimDeathFleetBeamSearch"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="AlarakWarpIn">
+        <Alignment value="Positive"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="5"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="OracleRevelationV2">
+        <Alignment value="Negative"/>
+        <InfoIcon value="Assets\Textures\btn-status-detector.dds"/>
+        <Duration value="10"/>
+        <FinalEffect value="RevelationDestroy"/>
+        <ExpireEffect value="RevelationDestroy"/>
+        <Modification>
+            <ModifyFlags index="Reveal" value="1"/>
+            <StateFlags index="SuppressCloak" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="BeachCivilianScared">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <AbilClassDisableArray index="CAbilMove" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="FlashBangGrenade">
+        <Modification>
+            <DamageTakenFraction index="Spell" value="0.15"/>
+            <DamageTakenFraction index="Melee" value="0.15"/>
+            <DamageTakenFraction index="Ranged" value="0.15"/>
+            <DamageTakenFraction index="Splash" value="0.15"/>
+            <DamageTakenFraction index="NoProc" value="0.15"/>
+            <BehaviorLinkDisableArray value="NovaAlarmBotAura"/>
+            <BehaviorLinkDisableArray value="NovaAlarmBotDetectionMode"/>
+        </Modification>
+        <DurationOverride Duration="2.5">
+            <ValidatorArray value="IsHeroic"/>
+        </DurationOverride>
+        <DurationOverride Duration="2.5">
+            <ValidatorArray value="IsStone"/>
+        </DurationOverride>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaHolographicDecoy">
+        <Modification>
+            <DamageDealtFraction index="Spell" value="-0.75"/>
+            <DamageDealtFraction index="Melee" value="-0.75"/>
+            <DamageDealtFraction index="Ranged" value="-0.75"/>
+            <DamageDealtFraction index="Splash" value="-0.75"/>
+            <DamageDealtFraction index="NoProc" value="-0.75"/>
+        </Modification>
+        <DamageResponse ModifyFraction="0.75"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaSonarPingAlerted">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="2"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaTripWireStun">
+        <InfoIcon value="Assets\Textures\stunswirl1_orange.dds"/>
+        <BehaviorCategories index="Stun" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="0.5"/>
+        <Modification>
+            <ModifyFlags index="Reveal" value="1"/>
+            <ModifyFlags index="Detected" value="1"/>
+            <StateFlags index="Stun" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <AbilClassDisableArray index="CAbilAttack" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaAlarmBotAura">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Period value="0.125"/>
+        <PeriodicEffect value="NovaAlarmBotAuraSearch"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaGunTurretCloakFieldEffect">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-cloak.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <TimeScaleSource Value="Global"/>
+        <Duration value="0.5417"/>
+        <Modification>
+            <StateFlags index="Cloak" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaGunTurretCloakField">
+        <Alignment value="Positive"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-cloak.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisableValidatorArray value="TargetNotStunned"/>
+        <BuffFlags index="DisableWhileUnderConstruction" value="1"/>
+        <Period value="0.2"/>
+        <PeriodicEffect value="NovaGunTurretCloakFieldSearch"/>
+    </CBehaviorBuff>
+    <!--Map Wide Sonar Experimental-->
+    <CBehaviorBuff id="MapWideSonarDetected">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <!--Modification>
+            <ModifyFlags index="Detected" value="1"/>
+        </Modification-->
+        <Duration value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MapWideSonarSearchBehavior">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Period value="0.125"/>
+        <PeriodicEffect value="MapWideSonarSearch"/>
+        <DisableValidatorArray value="SourceIsNotStationary"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Nova07PassiveWithAttackScan">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <DisableValidatorArray value="NotInAttackMove"/>
+        <Modification>
+            <StateFlags index="Passive" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaHyperionJump">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Modification SightMaximum="0">
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="SuppressCollision" value="1"/>
+            <StateFlags index="NoDraw" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+            <AbilLinkEnableArray value="NovaHyperionJump"/>
+        </Modification>
+        <FinalEffect value="NovaHyperionJumpIntroDelay"/>
+        <InitialEffect value="NovaHyperionJumpOutroDelay"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaHyperionJumpFatal">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DamageResponse>
+            <Chance value="1"/>
+            <Fatal value="1"/>
+            <Handled value="NovaHyperionJumpOutOrder"/>
+            <ModifyFraction value="0"/>
+            <ModifyMinimumDamage value="1"/>
+        </DamageResponse>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaHyperionJumpIntroDelay">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="30"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+        </Modification>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <BuffFlags index="Countdown" value="0"/>
+        <ExpireEffect value="NovaHyperionTimedLifeApplyBehavior"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaSonarDroneController">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <FinalEffect value="KillCreatedNovaSonarDrone"/>
+        <RemoveValidatorArray value="IsControllingaSonarDrone"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaSonarDroneSubject">
+        <Cost>
+            <Charge Link="Behavior/NovaSonarDroneController"/>
+            <Cooldown Link="Behavior/NovaSonarDroneController"/>
+        </Cost>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DamageResponse>
+            <Cost>
+                <Charge Link="Behavior/NovaSonarDroneController"/>
+                <Cooldown Link="Behavior/NovaSonarDroneController"/>
+            </Cost>
+        </DamageResponse>
+        <FinalEffect value="NovaSonarDroneControllerRB"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaSonarPingDetected">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="0.3"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaStoneDefensiveMatrix">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-defensivematrix.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Modification>
+            <VitalMaxArray index="Shields" value="100"/>
+        </Modification>
+        <DamageResponse Chance="1" ClampMaximum="10" Minimum="10"/>
+        <RemoveValidatorArray value="TempShieldsNotEmptyOrNoTempShields"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaXThosCovered">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <ModifyFlags index="DisableWeapons" value="1"/>
+            <ModifyFlags index="EnableMove" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Unstoppable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+            <AbilLinkEnableArray value="NovaXThosToggleExposed"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="RegenerativeBioSteelBattlecruiser">
+        <InfoIcon value="Assets\Textures\btn-research-zerg-regenerativebio-steel.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisableValidatorArray value="CasterNotInCombat"/>
+        <DisableValidatorArray value="NotMaxHP"/>
+        <Modification>
+            <VitalRegenArray index="Life" value="10"/>
+        </Modification>
+        <Requirements value="RegenerativeBioSteelBattlecruiser"/>
+    </CBehaviorBuff>
+    <!--Map Wide Sonar Experimental End-->
+    <CBehaviorBuff id="SensorDroneLockOn">
+        <InfoIcon value="Assets\Textures\btn-ability-terran-snipe.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <MaxStackCount value="65535"/>
+        <MaxStackCountPerCaster value="1"/>
+        <Alignment value="Negative"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SensorDroneLockedOn">
+        <InfoFlags index="Hidden" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SensorDroneMissile">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="0.0625"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaSuppressCloak">
+        <Alignment value="Negative"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-emp.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <DisplayDuration index="Neutral" value="1"/>
+        <DisplayDuration index="Enemy" value="1"/>
+        <Duration value="5"/>
+        <Modification>
+            <StateFlags index="SuppressCloak" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Nova07Passive">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Modification>
+            <StateFlags index="Passive" value="1"/>
+        </Modification>
+        <InfoFlags index="Hidden" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SensorDroneCloak">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-cloak.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Modification>
+            <StateFlags index="Cloak" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SensorDroneCloakFieldSearch">
+        <Alignment value="Positive"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-cloak.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisableValidatorArray value="TargetNotStunned"/>
+        <BuffFlags index="DisableWhileUnderConstruction" value="1"/>
+        <Period value="0.2"/>
+        <PeriodicEffect value="SensorDroneCloakFieldSearch"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SensorDroneCloakField">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-cloak.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <TimeScaleSource Value="Global"/>
+        <Duration value="0.5417"/>
+        <Modification>
+            <StateFlags index="Cloak" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaXanthosTurretFatal">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <DamageResponse>
+            <Chance value="1"/>
+            <Fatal value="1"/>
+            <Handled value="NovaXanthosTurretFatalSet"/>
+            <ModifyFraction value="0"/>
+            <ModifyMinimumDamage value="1"/>
+        </DamageResponse>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="FlashBangGrenadeNovaTripWire">
+        <InfoFlags index="Hidden" value="1"/>
+        <Alignment value="Negative"/>
+        <InfoIcon value="Assets\Textures\btn-upgrade-vorazun-shadowstun.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="5"/>
+        <Modification>
+            <StateFlags index="Stun" value="1"/>
+        </Modification>
+        <Period value="3"/>
+        <PeriodicEffect value="FlashBangGrenadeNovaTripWireRestartWarning"/>
+        <PeriodCount value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaTripWireStartupDelay">
+        <InfoFlags index="Hidden" value="1"/>
+        <Alignment value="Negative"/>
+        <InfoIcon value="Assets\Textures\btn-upgrade-vorazun-shadowstun.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="2"/>
+        <Modification>
+            <StateFlags index="Stun" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaStoneSilence">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SightIncreasement">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <BuffFlags index="RefreshStack" value="1"/>
+        <MaxStackCount value="0"/>
+        <Duration value="0.125"/>
+        <Modification SightBonus="0.125"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SuperStimpackStone">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-stimpack.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="10"/>
+        <InitialEffect value="SuperStimpackMarineDamage"/>
+        <Modification MoveSpeedMultiplier="1.5">
+            <VitalRegenArray index="Life" value="20"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaXanthosRepairMode">
+        <Alignment value="Positive"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <ModifyFlags index="DisableWeapons" value="1"/>
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/>
+            <BehaviorLinkDisableArray value="NovaXanthosFinalMode"/>
+            <BehaviorLinkDisableArray value="NovaXanthosTravelMode"/>
+        </Modification>
+        <!--TurretDisableArray value="NovaXThosPartTurretLeg"/-->
+        <Period value="0.2"/>
+        <PeriodicEffect value="NovaXanthosRepairModeSearch"/>
+        <FinalEffect value="NovaXanthosRepairModeExitDelay"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaXanthosRepairModeExitDelay">
+        <Alignment value="Positive"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <StateFlags index="Stun" value="1"/>
+            <BehaviorLinkDisableArray value="NovaXanthosFinalMode"/>
+            <BehaviorLinkDisableArray value="NovaXanthosTravelMode"/>
+        </Modification>
+        <Duration value="3.333"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaXanthosRepair">
+        <Alignment value="Positive"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="0.3"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <ModifyFlags index="DisableWeapons" value="1"/>
+            <ModifyFlags index="EnableMove" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Unstoppable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+            <VitalRegenArray index="Life" value="5.5546"/>
+            <AbilLinkEnableArray value="NovaXThosToggleExposed"/>
+        </Modification>
+        <InitialEffect value="NovaXanthosTurretUncover"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaXanthosTravelMode">
+        <Alignment value="Positive"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification MoveSpeedMultiplier="4">
+            <ModifyFlags index="DisableWeapons" value="1"/>
+        </Modification>
+        <Period value="0.2"/>
+        <PeriodicEffect value="NovaXanthosTravelModeSearch"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaXanthosTurretTravel">
+        <Alignment value="Positive"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="0.3"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <ModifyFlags index="DisableWeapons" value="1"/>
+            <ModifyFlags index="EnableMove" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Unstoppable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+            <AbilLinkEnableArray value="NovaXThosToggleExposed"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaHyperionTimedLife">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="180"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <ExpireEffect value="NovaHyperionJumpOutOrder"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="XanthosTurretInactive">
+        <BehaviorFlags index="Permanent" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <ModifyFlags index="DisableWeapons" value="1"/>
+            <ModifyFlags index="EnableMove" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Unstoppable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+            <AbilLinkEnableArray value="NovaXThosToggleExposed"/>
+            <BehaviorLinkDisableArray value="NovaXanthosRepair"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaXanthosFlameThrowerBurning">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="3"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Period value="0.0625"/>
+        <PeriodicEffect value="NovaXanthosFlameThrowerBurningDamage"/>
+        <BuffFlags index="RefreshStack" value="1"/>
+        <MaxStackCount value="100"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NovaXanthosRailGunTurretVulnerability">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DamageResponse Chance="1" ModifyFraction="1.2">
+            <RequireEffectArray value="NovaXanthosRailGunTurretDamage"/>
+        </DamageResponse>
+        <Duration value="6"/>
+        <BuffFlags index="RefreshStack" value="1"/>
+        <MaxStackCount value="100"/>
+    </CBehaviorBuff>
+</Catalog>

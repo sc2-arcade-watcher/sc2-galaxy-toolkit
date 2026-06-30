@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibA0A40B9E_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libA0A40B9E_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libA0A40B9E_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(3137);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libA0A40B9E_gt_Initialization_Init () {
+    libA0A40B9E_gt_Initialization = TriggerCreate("libA0A40B9E_gt_Initialization_Func");
+    TriggerAddEventMapInit(libA0A40B9E_gt_Initialization);
+}
+
+void libA0A40B9E_InitTriggers () {
+    libA0A40B9E_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libA0A40B9E_InitLib_completed = false;
+
+void libA0A40B9E_InitLib () {
+    if (libA0A40B9E_InitLib_completed) {
+        return;
+    }
+
+    libA0A40B9E_InitLib_completed = true;
+
+    libA0A40B9E_InitLibraries();
+    libA0A40B9E_InitTriggers();
+}
+

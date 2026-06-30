@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <!-- VoidRay Attack Beam - Increases in intensity with each Charge -->
+    <CActorBeamSimple id="VoidRayAttackBeam">
+        <On Terms="ActorCreation; !ValidateUnit NotQuadAndNotDoubleDamage" Send="AnimPlay Attack Attack,02 PlayForever"/>
+        <On Terms="ActorCreation; ValidateUnit DoubleDamage" Send="AnimPlay Attack Attack,02 PlayForever"/>
+        <On Terms="ActorCreation; ValidateUnit QuadDamage" Send="AnimPlay Attack Attack,06 PlayForever"/>
+        <!-- Beam will persist through death anim if we don't have this. -->
+        <On Terms="ActorOrphan" Send="Destroy"/>
+        <On Terms="Effect.VoidRayChargeEffect01.Start; FromEffectTreeDescendant" Send="AnimPlay Attack Attack,02 PlayForever"/>
+        <On Terms="Effect.VoidRayChargeEffect02.Start; FromEffectTreeDescendant" Send="TimerSet 0.600000 DelayAnim2"/>
+        <On Terms="TimerExpired; TimerName DelayAnim2" Send="AnimPlay Attack Attack,02 PlayForever"/>
+        <On Terms="Effect.VoidRayChargeEffect03.Start; FromEffectTreeDescendant" Send="TimerSet 0.600000 DelayAnim3"/>
+        <On Terms="TimerExpired; TimerName DelayAnim3" Send="AnimPlay Attack Attack,06 PlayForever"/>
+        <On Terms="Effect.VoidRayChargeChain.Stop; FromEffectTreeDescendant" Send="Destroy"/>
+    </CActorBeamSimple>
+    <CActorUnit id="VoidRay">
+        <On Terms="Behavior.WarpInEffect.On" Send="ModelSwap VoidRayWarpInStargate"/>
+        <On Terms="Behavior.WarpInEffect.On" Send="$Spell"/>
+        <On Terms="Behavior.WarpInEffect.Off" Send="ModelSwap VoidRay"/>
+    </CActorUnit>
+    <CActorUnit id="WarpPrism">
+        <On Terms="Behavior.WarpInEffect15.On" Send="ModelSwap WarpPrismWarpIn"/>
+        <On Terms="Behavior.WarpInEffect15.On" Send="$Birth"/>
+        <On Terms="Behavior.WarpInEffect15.Off" Send="ModelSwap WarpPrism"/>
+        <On Terms="Behavior.WarpInEffect15.Off" Send="AnimBaselineStart"/>
+    </CActorUnit>
+    <CActorUnit id="Carrier">
+        <On Terms="Behavior.WarpInEffect.On" Send="ModelSwap CarrierWarpInStargate"/>
+        <On Terms="Behavior.WarpInEffect.On" Send="$Spell"/>
+        <On Terms="Behavior.WarpInEffect.Off" Send="ModelSwap Carrier"/>
+    </CActorUnit>
+    <CActorUnit id="Phoenix">
+        <DeathActorModel value="PhoenixDeathModel"/>
+    </CActorUnit>
+    <CActorSiteOpForward id="SOpPhoenixDeath">
+        <HostForward Subject="PhoenixTurret" Actor="Find"/>
+    </CActorSiteOpForward>
+    <CActorModel id="PhoenixDeathModel" parent="UnitDeathModel">
+        <HostSiteOps Ops="SOpAttachOrigin SOpPhoenixDeath"/>
+    </CActorModel>
+    <CActorTurret id="PhoenixTurret">
+        <On Terms="TurretEnable.Phoenix" Send="Create"/>
+    </CActorTurret>
+    <CActorUnit id="SporeCrawler">
+        <Remove Terms="AbilMorph.*.Start; MorphTo SporeCrawler" Send="AnimBracketStart Morph IGNORE Burrow Stand,Burrow ContentPlayOnce"/>
+        <On Terms="AbilMorph.*.Start; MorphTo SporeCrawler" Send="AnimBracketStart Morph IGNORE Burrow,Superior Stand,Burrow ContentPlayOnce"/>
+    </CActorUnit>
+    <CActorUnit id="SpineCrawler">
+        <Remove Terms="AbilMorph.*.Start; MorphTo SpineCrawler" Send="AnimBracketStart Morph IGNORE Burrow Stand,Burrow ContentPlayOnce"/>
+        <On Terms="AbilMorph.*.Start; MorphTo SpineCrawler" Send="AnimBracketStart Morph IGNORE Burrow,Superior Stand,Burrow ContentPlayOnce"/>
+    </CActorUnit>
+    <CActorUnit id="Thor">
+        <BarWidth value="140"/>
+        <BarOffset value="120"/>
+    </CActorUnit>
+    <CActorModel id="CorruptionModel">
+        <AutoScaleFactor value="1.00000"/>
+    </CActorModel>
+    <CActorUnit id="Bunker">
+        <On Terms="UnitBirth.Bunker; ValidateUnit NeosteelFramePurchased" Send="ModelSwap JumboBunker"/>
+        <On Terms="Upgrade.NeosteelFrame.Add; ValidateUnit NotDeadOrConstruction" Send="ModelSwap JumboBunker"/>
+    </CActorUnit>
+    <CActorModel id="UnitDeathModel">
+        <On Terms="Signal.*.ClearDeathModel" Send="Destroy"/>
+    </CActorModel>
+    <CActorModel id="UnitDeathModelNoTeamColor">
+        <On Terms="Signal.*.ClearDeathModel" Send="Destroy"/>
+    </CActorModel>
+</Catalog>

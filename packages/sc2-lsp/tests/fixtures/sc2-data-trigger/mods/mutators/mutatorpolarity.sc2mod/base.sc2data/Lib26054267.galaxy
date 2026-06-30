@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib26054267_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Polarity
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib26054267_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib26054267_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "Polarity");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib26054267_gt_Initialization_Init () {
+    lib26054267_gt_Initialization = TriggerCreate("lib26054267_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib26054267_gt_Initialization);
+}
+
+void lib26054267_InitTriggers () {
+    lib26054267_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib26054267_InitLib_completed = false;
+
+void lib26054267_InitLib () {
+    if (lib26054267_InitLib_completed) {
+        return;
+    }
+
+    lib26054267_InitLib_completed = true;
+
+    lib26054267_InitLibraries();
+    lib26054267_InitTriggers();
+}
+

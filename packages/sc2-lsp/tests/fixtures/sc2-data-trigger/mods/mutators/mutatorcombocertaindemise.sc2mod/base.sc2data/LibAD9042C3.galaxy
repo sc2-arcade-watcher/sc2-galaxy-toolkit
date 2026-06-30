@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibAD9042C3_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libAD9042C3_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Set Mutator Weekly Challenge On
+//--------------------------------------------------------------------------------------------------
+bool libAD9042C3_gt_SetMutatorWeeklyChallengeOn_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(3110);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libAD9042C3_gt_SetMutatorWeeklyChallengeOn_Init () {
+    libAD9042C3_gt_SetMutatorWeeklyChallengeOn = TriggerCreate("libAD9042C3_gt_SetMutatorWeeklyChallengeOn_Func");
+    TriggerAddEventMapInit(libAD9042C3_gt_SetMutatorWeeklyChallengeOn);
+}
+
+void libAD9042C3_InitTriggers () {
+    libAD9042C3_gt_SetMutatorWeeklyChallengeOn_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libAD9042C3_InitLib_completed = false;
+
+void libAD9042C3_InitLib () {
+    if (libAD9042C3_InitLib_completed) {
+        return;
+    }
+
+    libAD9042C3_InitLib_completed = true;
+
+    libAD9042C3_InitLibraries();
+    libAD9042C3_InitTriggers();
+}
+

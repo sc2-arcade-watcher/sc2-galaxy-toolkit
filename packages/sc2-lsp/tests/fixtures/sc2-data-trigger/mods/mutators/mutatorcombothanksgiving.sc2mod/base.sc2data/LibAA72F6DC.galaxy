@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibAA72F6DC_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libAA72F6DC_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libAA72F6DC_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(27);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libAA72F6DC_gt_Initialization_Init () {
+    libAA72F6DC_gt_Initialization = TriggerCreate("libAA72F6DC_gt_Initialization_Func");
+    TriggerAddEventMapInit(libAA72F6DC_gt_Initialization);
+}
+
+void libAA72F6DC_InitTriggers () {
+    libAA72F6DC_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libAA72F6DC_InitLib_completed = false;
+
+void libAA72F6DC_InitLib () {
+    if (libAA72F6DC_InitLib_completed) {
+        return;
+    }
+
+    libAA72F6DC_InitLib_completed = true;
+
+    libAA72F6DC_InitLibraries();
+    libAA72F6DC_InitTriggers();
+}
+

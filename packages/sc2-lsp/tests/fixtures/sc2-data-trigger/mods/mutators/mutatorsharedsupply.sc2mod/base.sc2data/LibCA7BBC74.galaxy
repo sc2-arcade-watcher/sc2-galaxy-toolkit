@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibCA7BBC74_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Shared Supply
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libCA7BBC74_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libCA7BBC74_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "SharedSupply");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libCA7BBC74_gt_Initialization_Init () {
+    libCA7BBC74_gt_Initialization = TriggerCreate("libCA7BBC74_gt_Initialization_Func");
+    TriggerAddEventMapInit(libCA7BBC74_gt_Initialization);
+}
+
+void libCA7BBC74_InitTriggers () {
+    libCA7BBC74_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libCA7BBC74_InitLib_completed = false;
+
+void libCA7BBC74_InitLib () {
+    if (libCA7BBC74_InitLib_completed) {
+        return;
+    }
+
+    libCA7BBC74_InitLib_completed = true;
+
+    libCA7BBC74_InitLibraries();
+    libCA7BBC74_InitTriggers();
+}
+

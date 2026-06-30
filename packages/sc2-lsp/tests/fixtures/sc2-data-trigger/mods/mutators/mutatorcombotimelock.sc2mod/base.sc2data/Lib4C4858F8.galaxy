@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib4C4858F8_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib4C4858F8_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib4C4858F8_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(3);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib4C4858F8_gt_Initialization_Init () {
+    lib4C4858F8_gt_Initialization = TriggerCreate("lib4C4858F8_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib4C4858F8_gt_Initialization);
+}
+
+void lib4C4858F8_InitTriggers () {
+    lib4C4858F8_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib4C4858F8_InitLib_completed = false;
+
+void lib4C4858F8_InitLib () {
+    if (lib4C4858F8_InitLib_completed) {
+        return;
+    }
+
+    lib4C4858F8_InitLib_completed = true;
+
+    lib4C4858F8_InitLibraries();
+    lib4C4858F8_InitTriggers();
+}
+

@@ -1,0 +1,17 @@
+void fprototype(int a, string b);
+typedef funcref<fprototype> fprototype_t;
+
+struct st_t {
+    fprototype_t fn;
+};
+
+fprototype_t func;
+
+st_t gv_st;
+
+void test_funcref(structref<st_t> stref)
+{
+    func(1, "1");
+    gv_st.fn(2, "2");
+    stref.fn(3, "3");
+}

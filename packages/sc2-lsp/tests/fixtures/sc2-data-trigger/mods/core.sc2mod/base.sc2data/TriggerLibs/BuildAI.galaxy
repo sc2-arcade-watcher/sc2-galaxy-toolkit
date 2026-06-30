@@ -1,0 +1,140 @@
+//--------------------------------------------------------------------------------------------------
+//  AI Building Functions
+//--------------------------------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------------------------------
+//  Build Flags
+//--------------------------------------------------------------------------------------------------
+
+const int c_makeNoFlags             = 0x00000000;
+
+const int c_avoidClosePowerOrCreep  = 0x00000001;
+const int c_avoidCloseFactory       = 0x00000002;
+const int c_avoidCloseDefense       = 0x00000004;
+const int c_avoidCloseDropoff       = 0x00000008;
+
+const int c_avoidFarPowerOrCreep    = 0x00000010;
+const int c_avoidFarFactory         = 0x00000020;
+const int c_avoidFarDefense         = 0x00000040;
+const int c_avoidFarDropoff         = 0x00000080;
+
+const int c_nearClosePowerOrCreep   = 0x00000100;
+const int c_nearCloseFactory        = 0x00000200;
+const int c_nearCloseDefense        = 0x00000400;
+const int c_nearCloseDropoff        = 0x00000800;
+
+const int c_nearFarPowerOrCreep     = 0x00001000;
+const int c_nearFarFactory          = 0x00002000;
+const int c_nearFarDefense          = 0x00004000;
+const int c_nearFarDropoff          = 0x00008000;
+
+const int c_avoidResource           = 0x00010000;
+const int c_avoidChokePoint         = 0x00020000;
+const int c_nearResource            = 0x00040000;
+const int c_nearChokePoint          = 0x00080000;
+
+const int c_valueSpaceMinor         = 0x00100000;
+const int c_valueSpaceMajor         = 0x00200000;
+const int c_valueTouchingEdges      = 0x00400000;
+
+const int c_canBlock                = 0x0c000000;
+const int c_canLower                = 0x08000000;
+const int c_onVespeneGas            = 0x10000000;
+const int c_onlyHere                = 0x20000000;
+const int c_ignoreDanger            = 0x40000000;
+
+const int c_avoidPowerOrCreep       = c_avoidClosePowerOrCreep | c_avoidFarPowerOrCreep;
+const int c_avoidFactory            = c_avoidCloseFactory | c_avoidFarFactory;
+const int c_avoidDefense            = c_avoidCloseDefense | c_avoidFarDefense;
+const int c_avoidDropoff            = c_avoidCloseDropoff | c_avoidFarDropoff;
+
+const int c_nearPowerOrCreep        = c_nearClosePowerOrCreep | c_nearFarPowerOrCreep;
+const int c_nearFactory             = c_nearCloseFactory | c_nearFarFactory;
+const int c_nearDefense             = c_nearCloseDefense | c_nearFarDefense;
+const int c_nearDropoff             = c_nearCloseDropoff | c_nearFarDropoff;
+
+const int c_makeStandard            = c_makeNoFlags;
+const int c_makeCenter              = c_nearResource;
+const int c_makeCreep               = c_valueSpaceMajor | c_avoidPowerOrCreep;
+const int c_makePower               = c_valueSpaceMajor | c_avoidPowerOrCreep | c_nearFarDropoff;
+const int c_makeExpanPower          = c_nearResource | c_nearDropoff | c_avoidClosePowerOrCreep;
+const int c_makeDarkPower           = c_nearResource | c_nearDropoff;
+const int c_makeCollector           = c_onVespeneGas | c_nearDropoff;
+const int c_makeDefense             = c_avoidCloseDefense | c_nearResource | c_nearFarDropoff | c_nearFarFactory | c_nearFarPowerOrCreep | c_nearChokePoint;
+const int c_makeResourceDefense     = c_avoidCloseDefense | c_nearResource;
+const int c_makeLowerable           = c_makeStandard | c_canLower;
+const int c_makeWall                = c_nearChokePoint | c_canBlock;
+
+const int c_makeDefault = -1;
+
+//--------------------------------------------------------------------------------------------------
+//  AI Get Default Build Flags Functions
+//--------------------------------------------------------------------------------------------------
+int AIGetDefaultBuildFlags (int player, string objType) {
+
+	// special protoss units
+    if (objType == c_PB_Nexus) {
+        return c_makeCenter;
+    }
+    if (objType == c_PB_Pylon) {
+        return c_makePower;
+    }
+    if (objType == c_PB_Obelisk) {
+        return c_makeDarkPower;
+    }
+    if (objType == c_PB_PhotonCannon) {
+        return c_makeDefense;
+    }
+    if (objType == c_PB_Assimilator) {
+        return c_makeCollector;
+    }
+    
+    // special terran units
+    if (objType == c_TB_CommandCenter) {
+        return c_makeCenter;
+    }
+    if (objType == c_TB_Bunker) {
+        return c_makeDefense;
+    }
+    if (objType == c_TB_MissileTurret) {
+        return c_makeResourceDefense;
+    }
+    if (objType == c_TB_SensorTower) {
+        return c_nearChokePoint;
+    }
+    if (objType == c_TB_PlanetaryFortress) {
+        return c_makeDefense;
+    }
+    if (objType == c_TB_Refinery) {
+        return c_makeCollector;
+    }
+    if (objType == c_TB_SupplyDepot) {
+        return c_makeLowerable;
+    }
+    
+    // special zerg units
+    if (objType == c_ZB_Hatchery) {
+        return c_makeCenter;
+    }
+    if (objType == c_ZB_Lair) {
+        return c_makeCenter;
+    }
+    if (objType == c_ZB_Hive) {
+        return c_makeCenter;
+    }
+    if (objType == c_ZB_CreepTumor || objType == c_ZB_CreepTumorBurrowed) {
+        return c_makeCreep;
+    }
+    if (objType == c_ZB_SpineCrawler) {
+        return c_makeDefense;
+    }
+    if (objType == c_ZB_SporeCrawler) {
+        return c_makeResourceDefense;
+    }
+    if (objType == c_ZB_Extractor) {
+        return c_makeCollector;
+    }
+    
+    // default
+    return c_makeStandard;
+}

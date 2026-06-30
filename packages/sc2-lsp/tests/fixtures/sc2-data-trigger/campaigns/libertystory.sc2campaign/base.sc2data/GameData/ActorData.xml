@@ -1,0 +1,727 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <!--                                                                                         -->
+    <!-- Battlecruiser ......................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="Battlecruiser">
+        <DeathArray index="Normal" ModelLink="BattlecruiserDeathA"/>
+        <SoundArray index="Help" value="Battlecruiser_Help2"/>
+        <On Terms="ActorCreation" Send="AnimBlendTimeApply 0.000000"/>
+        <On Terms="ActorCreation" Send="AnimGroupApply A"/>
+        <On Terms="ActorCreation" Send="AnimBlendTimeApply"/>
+    </CActorUnit>
+    <CActorSound id="NydusWorm_Birth">
+        <FogVisibility value="Hidden"/>
+    </CActorSound>
+    <CActorUnit id="Bunker">
+        <PlacementActorModel value="BunkerPlacementModelCampaign"/>
+        <PlaceholderActorModel value="BunkerPlaceholderModelCampaign"/>
+        <On Terms="UnitBirth.Bunker" Send="StatusSet BunkerBuilt 1"/>
+        <On Terms="Behavior.ShrikeTurret.On" Send="StatusSet ShrikeTurret 1"/>
+        <On Terms="Behavior.ShrikeTurret.On" Send="Create ShrikeTurret"/>
+        <On Terms="Behavior.ShrikeTurret.On; IsStatus BunkerBuilt 0" Send="Create ShrikeTurretPlaceholder"/>
+        <On Terms="Behavior.ShrikeTurret.On; IsStatus BunkerBuilt 0" Target="ShrikeTurret" Send="Signal TurretHide"/>
+        <On Terms="UnitDeathCustomize; IsStatus ShrikeTurret 1" Target="ShrikeTurret" Send="Signal TurretDeath"/>
+        <On Terms="UnitDeathCustomize; IsStatus ShrikeTurret 1" Target="ShrikeTurretPlaceholder" Send="Signal TurretDeath"/>
+        <On Terms="UnitBirth.Bunker" Target="ShrikeTurretPlaceholder" Send="Destroy"/>
+        <On Terms="UnitBirth.Bunker" Target="ShrikeTurret" Send="Signal TurretShow"/>
+        <On Terms="Upgrade.FortifiedBunkerCarapace.Add; ValidateUnit NotDeadOrConstruction" Send="ModelSwap JumboBunker"/>
+        <On Terms="UnitBirth.Bunker; ValidatePlayer FortifiedNoShrike" Send="ModelSwap JumboBunker"/>
+    </CActorUnit>
+    <CActorModel id="BunkerPlacementModelCampaign" parent="PlacementModel">
+        <On Terms="ActorCreation; ValidatePlayer FortifiedNoShrike; ModelIsLowQuality" Send="ModelSwap JumboBunker"/>
+        <On Terms="ActorCreation; ValidatePlayer FortifiedNoShrike; !ModelIsLowQuality" Send="ModelSwap BunkerUpgradePlacement"/>
+        <On Terms="ActorCreation; ValidatePlayer FortifiedAndShrike; ModelIsLowQuality" Send="ModelSwap JumboBunker"/>
+        <On Terms="ActorCreation; ValidatePlayer FortifiedAndShrike; !ModelIsLowQuality" Send="ModelSwap BunkerShrikeUpgradePlacement"/>
+        <On Terms="ActorCreation; ValidatePlayer ShrikeNoFortified; !ModelIsLowQuality" Send="ModelSwap BunkerShrikePlacement"/>
+    </CActorModel>
+    <CActorModel id="BunkerPlaceholderModelCampaign" parent="PlacementModel">
+        <On Terms="ActorCreation; ValidatePlayer FortifiedNoShrike; ModelIsLowQuality" Send="ModelSwap JumboBunker"/>
+        <On Terms="ActorCreation; ValidatePlayer FortifiedNoShrike; !ModelIsLowQuality" Send="ModelSwap BunkerUpgradePlacement"/>
+        <On Terms="ActorCreation; ValidatePlayer FortifiedAndShrike; ModelIsLowQuality" Send="ModelSwap JumboBunker"/>
+        <On Terms="ActorCreation; ValidatePlayer FortifiedAndShrike; !ModelIsLowQuality" Send="ModelSwap BunkerShrikeUpgradePlacement"/>
+        <On Terms="ActorCreation; ValidatePlayer ShrikeNoFortified; !ModelIsLowQuality" Send="ModelSwap BunkerShrikePlacement"/>
+    </CActorModel>
+    <CActorDoodad id="ThunderLightning">
+        <On Terms="ModelEvent; ModelEventName Ambience_Thunder_OneShot; PassChance 25.000000" Send="Create Ambience_Thunder_OneShot"/>
+    </CActorDoodad>
+    <CActorModel id="PlacementModel">
+        <On Terms="ActorCreation; ModelName RefineryPlacement; ValidatePlayer HaveAutoHarvester" Send="ModelSwap AutomatedRefineryPlacement"/>
+        <On Terms="ActorCreation; ModelName Bunker; ValidatePlayer HasShrikeTurret" Send="Create ShrikePlacement"/>
+        <On Terms="ActorCreation; ModelName HiveMindEmulatorPlacement" Send="Create HiveMindEmulatorProtectRange"/>
+        <On Terms="ActorCreation; ModelName HiveMindEmulator; ModelIsLowQuality" Send="Create HiveMindEmulatorProtectRange"/>
+        <On Terms="ActorDestruction" Target="HiveMindEmulatorProtectRange" Send="Destroy"/>
+        <On Terms="ActorCreation; ModelName PsiDisruptorPlacement" Send="Create PsiDisruptorProtectRange"/>
+        <On Terms="ActorCreation; ModelName PsiDisruptor; ModelIsLowQuality" Send="Create PsiDisruptorProtectRange"/>
+        <On Terms="ActorDestruction" Target="SigmaProjectorProtectRange" Send="Destroy"/>
+        <On Terms="ActorCreation; ModelName PerditionTurretPlacement" Send="Create PerditionTurretProtectRange"/>
+        <On Terms="ActorCreation; ModelName PerditionTurret; ModelIsLowQuality" Send="Create PerditionTurretProtectRange"/>
+        <On Terms="ActorDestruction" Target="PerditionTurretProtectRange" Send="Destroy"/>
+    </CActorModel>
+    <CActorModel id="UnloadFX">
+        <On Terms="AbilTransport.SpecOpsDropshipTransport.CargoUnload" Send="Create"/>
+        <On Terms="AbilTransport.SpecOpsDropshipTransport.TransportUnload" Send="Create"/>
+        <On Terms="AbilTransport.HerculesTransport.CargoUnload" Send="Create"/>
+    </CActorModel>
+    <!--                                                                                         -->
+    <!-- Missile turret extra campaign data..................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="MissileTurret">
+        <On Terms="ActorCreation; ValidateUnit MissileTurretUpgraded" Send="ModelSwap MissileTurretTitaniumHousing"/>
+        <On Terms="Upgrade.ReinforcedSuperstructure.Add" Send="ModelSwap MissileTurretTitaniumHousing"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit MissileTurretUpgradedNoConstruction" Send="DeathCustomize Upgrade"/>
+        <DeathCustoms ModelLink="MissileTurretTitaniumHousingDeath" Name="Upgrade"/>
+    </CActorUnit>
+    <CActorModel id="CarryHarvestableVespeneGeyserGas">
+        <On Terms="ActorCreation; ValidateUnit HasMicroFiltering" Send="ModelSwap CarryMicroFilterHarvestableVespeneGeyserGas"/>
+    </CActorModel>
+    <CActorUnit id="SupplyDepot">
+        <!--On Terms="AbilMorph.*.Finish; MorphFrom SupplyDepotDrop" Send="Create"/-->
+        <On Terms="AbilMorph.*.Finish; MorphFrom SupplyDepotDrop" Send="Create BuildingTerrainFlatten"/>
+        <On Terms="AbilMorph.*.Finish; MorphFrom SupplyDepotDrop" Send="QueryRadius 1.750000 BuildingCrushQueryResponse"/>
+    </CActorUnit>
+    <CActorUnit id="Refinery">
+        <On Terms="AbilMorph.*.Finish; MorphFrom Refinery" Send="Destroy"/>
+    </CActorUnit>
+    <CActorStateMonitor id="ZergBloodMediumBuilding">
+        <On Terms="UnitCreation.Virophage" Send="Create"/>
+        <On Terms="UnitCreation.SporeCannon" Send="Create"/>
+    </CActorStateMonitor>
+    <CActorStateMonitor id="TerranFlamesSmallBuilding">
+        <On Terms="UnitCreation.HiveMindEmulator" Send="Create"/>
+        <On Terms="UnitCreation.PsiDisruptor" Send="Create"/>
+        <On Terms="UnitCreation.PerditionTurret" Send="Create"/>
+        <On Terms="UnitCreation.HomeSmall" Send="Create"/>
+    </CActorStateMonitor>
+    <CActorStateMonitor id="TerranFlamesMediumBuilding">
+        <On Terms="UnitCreation.AutomatedRefinery" Send="Create"/>
+        <On Terms="UnitCreation.HomeLarge" Send="Create"/>
+        <On Terms="UnitCreation.ScienceFacility" Send="Create"/>
+        <On Terms="UnitCreation.FacilityPOwerCore" Send="Create"/>
+    </CActorStateMonitor>
+    <CActorStateMonitor id="TerranFlamesLargeBuilding">
+        <On Terms="UnitCreation.BioDomeCommand" Send="Create"/>
+        <On Terms="UnitCreation.JoriumStockpile" Send="Create"/>
+        <On Terms="UnitCreation.TerrazineTank" Send="Create"/>
+        <On Terms="UnitCreation.PsiIndoctrinator" Send="Create"/>
+        <On Terms="UnitCreation.MercenaryFortress" Send="Create"/>
+    </CActorStateMonitor>
+    <!-- Doodads that animate when units get near -->
+    <CActorDoodad id="CharRibs">
+        <On Terms="ActorCreation" Send="Create CharDoodadAnimMonitor"/>
+        <On Terms="StatusOn.*.NumUnits" Send="AnimGroupApply Cover Burrow Unburrow"/>
+        <On Terms="StatusOff.*.NumUnits" Send="AnimGroupRemove Cover"/>
+    </CActorDoodad>
+    <CActorDoodad id="CharWeed">
+        <On Terms="ActorCreation" Send="Create CharDoodadAnimMonitor"/>
+        <On Terms="StatusOn.*.NumUnits" Send="AnimBracketStart Burrowed Burrow Cover Unburrow"/>
+        <On Terms="StatusOff.*.NumUnits" Send="AnimBracketStop Burrowed"/>
+    </CActorDoodad>
+    <CActorUnit id="Mutalisk">
+        <On Terms="Effect.SpawnMutaliskCreateMutalisk.Create" Send="$Birth"/>
+        <On Terms="Effect.InfestedVentSpawnMutaliskCreateMutalisk.Create" Send="$Birth"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit IsKillerPhantasm" Send="DeathCustomize Hallucination"/>
+        <DeathCustoms ModelLink="HallucinationDeath" SoundLink="Spectre_KillerPhantasmDeath" Name="Hallucination"/>
+    </CActorUnit>
+    <CActorUnit id="Corruptor">
+        <On Terms="Effect.InfestedVentSpawnCorruptorCreateCorruptor.Create" Send="$Birth 0 -1.000000 -1.000000 0.500000 AsDuration"/>
+    </CActorUnit>
+    <CActorUnit id="BroodLord">
+        <On Terms="Effect.InfestedVentSpawnBroodLordCreateBroodLord.Create" Send="$Birth"/>
+    </CActorUnit>
+    <CActorUnit id="Hydralisk">
+        <On Terms="UnitDeathCustomize; ValidateUnit IsKillerPhantasm" Send="DeathCustomize Hallucination"/>
+        <DeathCustoms ModelLink="HallucinationDeath" SoundLink="Spectre_KillerPhantasmDeath" Name="Hallucination"/>
+    </CActorUnit>
+    <CActorUnit id="Zergling">
+        <On Terms="UnitDeathCustomize; ValidateUnit IsKillerPhantasm" Send="DeathCustomize Hallucination"/>
+        <DeathCustoms ModelLink="HallucinationDeath" SoundLink="Spectre_KillerPhantasmDeath" Name="Hallucination"/>
+    </CActorUnit>
+    <CActorAction id="VikingFighterAttack">
+        <On index="3" Terms="Effect.LanzerTorpedoesLM.Start; At Caster; !ValidateEffect HALORocketsResearched"/>
+    </CActorAction>
+    <!--                                                                                         -->
+    <!-- Handle Morph To Tech Reactor .......................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="TechLab">
+        <On Terms="AbilMorph.*.Finish; MorphTo TechReactor" Target="TechLabSplat" Send="Destroy"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo TechReactor" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="BarracksTechLab">
+        <On Terms="AbilMorph.*.Finish; MorphTo TechReactor" Target="BarracksTechLabSplat" Send="Destroy"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo TechReactor" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="FactoryTechLab">
+        <On Terms="AbilMorph.*.Finish; MorphTo TechReactor" Target="FactoryTechLabSplat" Send="Destroy"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo TechReactor" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="StarportTechLab">
+        <On Terms="AbilMorph.*.Finish; MorphTo TechReactor" Target="StarportTechLabSplat" Send="Destroy"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo TechReactor" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="Reactor">
+        <On Terms="AbilMorph.*.Finish; MorphTo TechReactor" Target="ReactorSplat" Send="Destroy"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo TechReactor" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="BarracksReactor">
+        <On Terms="AbilMorph.*.Finish; MorphTo TechReactor" Target="BarracksReactorSplat" Send="Destroy"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo TechReactor" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="FactoryReactor">
+        <On Terms="AbilMorph.*.Finish; MorphTo TechReactor" Target="FactoryReactorSplat" Send="Destroy"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo TechReactor" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="StarportReactor">
+        <On Terms="AbilMorph.*.Finish; MorphTo TechReactor" Target="StarportReactorSplat" Send="Destroy"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo TechReactor" Send="Destroy"/>
+    </CActorUnit>
+    <CActorModel id="250mmStrikeCannonsImpact" parent="ModelAnimationStyleOneShot">
+        <HostSiteOps Ops="SOpShadow ThorBarrageVariance"/>
+        <On Terms="Effect.250mmStrikeCannonsDamage.Start; At Target" Send="Create"/>
+    </CActorModel>
+    <CActorUnit id="Thor">
+        <!-- When picked up by a Medivac -->
+        <On Terms="AbilTransport.SpecOpsDropshipTransport.CargoUnload" Send="AnimPlay Unload Spell,A 0 0.000000"/>
+        <On Terms="AbilTransport.HerculesTransport.CargoUnload" Send="AnimPlay Unload Spell,A 0 0.000000"/>
+        <!-- Thunder Cannons -->
+        <On Terms="Abil.330mmBarrageCannons.SourceCastStart" Send="AnimPlay Morph Morph NonLooping"/>
+        <On Terms="Abil.330mmBarrageCannons.SourceCastStop" Send="AnimClear Morph"/>
+        <On Terms="Abil.330mmBarrageCannons.SourceCastStop" Target="330mmBarrageCannonsMorph" Send="SoundSetMuted 1 0"/>
+        <On Terms="Abil.330mmBarrageCannons.SourceChannelStart" Send="$Spell PlayForever"/>
+        <On Terms="Abil.330mmBarrageCannons.SourceChannelStop" Send="AnimClear Spell"/>
+        <On Terms="Abil.330mmBarrageCannons.SourceFinishStart" Send="AnimPlay MorphEnd Morph,End NonLooping"/>
+        <On Terms="Abil.330mmBarrageCannons.SourceFinishStop" Send="AnimClear MorphEnd"/>
+    </CActorUnit>
+    <CActorModel id="ThorTransit">
+        <On Terms="AbilTransport.SpecOpsDropshipTransport.TransportUnload; AbilTransport Thor" Send="Destroy"/>
+        <On Terms="AbilTransport.SpecOpsDropshipTransport.CargoUnload; AbilTransport Thor" Send="Destroy"/>
+    </CActorModel>
+    <CActorUnit id="Queen">
+        <On Terms="Abil.EggPop.SourceCastStart" Send="$Spell,B 0 -1.000000 -1.000000 1.500000 AsDuration"/>
+        <On Terms="Abil.QueenShockwave.SourceCastStart" Send="$Spell"/>
+    </CActorUnit>
+    <CActorSound id="VortexBirthSound" parent="SoundOneShot">
+        <On Terms="Effect.VortexCreatePersistent.Start" Send="Create"/>
+        <Sound value="Mothership_VortexStart"/>
+        <HostSiteOps Ops="SOpShadow"/>
+    </CActorSound>
+    <CActorUnit id="Medivac">
+        <On Terms="ActorCreation; ValidateUnit MedivacUpgrade" Send="ModelSwap MedivacUpgrade"/>
+        <On Terms="Abil.MedivacDoubleBeamHeal.SourceChannelStart" Send="$Spell PlayForever"/>
+        <On Terms="Abil.MedivacDoubleBeamHeal.SourceChannelStop" Send="AnimClear Spell"/>
+    </CActorUnit>
+    <CActorUnit id="Marine">
+        <On Terms="Upgrade.CombatShield.Add" Send="AnimClear Cover"/>
+        <On Terms="Upgrade.CombatShield.Remove" Send="AnimPlay Cover Cover PlayForever"/>
+    </CActorUnit>
+    <!--                                                                                         -->
+    <!-- Hellion ................................................................... -->
+    <!--                                                                                         -->
+    <CActorBeamSimple id="HellionAttackBeam">
+        <On Terms="ActorCreation; ValidateUnit HasHellionInfernalPreIgniter" Send="ModelSwap HellionUpgradeAttackBeam"/>
+        <On Terms="ActorCreation; ValidateUnit HasTwinLinkedFlameThrowers" Send="SetScale 1.800000,1.000000,1.000000"/>
+    </CActorBeamSimple>
+    <CActorAction id="HellionAttack" parent="HellionAttackBase">
+        <ImpactMap index="None" Model="HellionAttackDamageReaction" Sound="Hellion_AttackImpact"/>
+        <On Terms="Effect.InfernalFlameThrowerCP.Start; At Caster; !ValidatePlayer HasHellionInfernalPreIgniter" Send="Create"/>
+    </CActorAction>
+    <CActorAction id="HellionUpgradedAttack" parent="HellionAttackBase">
+        <ImpactMap index="None" Model="HellionUpgradedAttackDamageReaction" Sound="Hellion_AttackImpact"/>
+        <On Terms="Effect.InfernalFlameThrowerCP.Start; At Caster; ValidatePlayer HasHellionInfernalPreIgniter" Send="Create"/>
+    </CActorAction>
+    <CActorUnit id="Banshee">
+        <On Terms="Behavior.BansheeCloakCrossSpectrumDampeners.On" Target="::PortraitGameSelf" Send="AnimBracketStart Visor Morph,Start Morph,Stand Morph,End"/>
+        <On Terms="Behavior.BansheeCloakCrossSpectrumDampeners.Off" Target="::PortraitGameSelf" Send="AnimBracketStop Visor"/>
+    </CActorUnit>
+    <CActorSound id="Banshee_CloakOn">
+        <On Terms="Behavior.BansheeCloakCrossSpectrumDampeners.On" Send="Create"/>
+    </CActorSound>
+    <CActorSound id="Banshee_CloakOff">
+        <On Terms="Behavior.BansheeCloakCrossSpectrumDampeners.Off" Send="Create"/>
+    </CActorSound>
+    <!--                                                                                         -->
+    <!-- Archon ................................................................................ -->
+    <!--                                                                                         -->
+    <CActorUnit id="Archon">
+        <On Terms="ProgressLevel.ProtossWarpIn.Start" Send="ModelSwap ProtossUnitBirth"/>
+        <On Terms="Behavior.PowerUserWarpable.Off" Send="ModelSwap Archon"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="ModelSwap DarkProtossArchon"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkProtossArchon"/>
+        <On Terms="Abil.ArchonWarp.Start; ValidateUnit NoDarkProtoss" Send="SetTintColor 255,255,64"/>
+        <On Terms="Abil.ArchonWarp.Stop; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkProtossArchon"/>
+        <On Terms="Abil.ArchonWarp.Stop; ValidateUnit NoDarkProtoss" Send="SetTintColor 255,255,255"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit NoDarkProtoss" Send="DeathCustomize DarkProtoss"/>
+        <DeathCustoms ModelLink="DarkProtossArchonDeath" Name="DarkProtoss"/>
+    </CActorUnit>
+    <CActorTurret id="SiegeTankTurret">
+        <On Terms="AbilMorph.*.Start; MorphFrom SiegeBreaker" Send="Destroy"/>
+    </CActorTurret>
+    <CActorTurret id="SiegeTankSiegedTurret">
+        <On Terms="AbilMorph.*.Start; MorphFrom SiegeBreakerSieged" Send="Destroy"/>
+    </CActorTurret>
+    <CActorMissile id="Reaper">
+        <!--On Terms="UnitBirth.ReaperPlacement" Send="Create"/-->
+        <Macros value="D8ChargeAnim"/>
+        <AbilSoundArray AbilCmd="D8Charge,Execute" Sound="Reaper_D8ChargeVO"/>
+    </CActorMissile>
+    <CActorAction id="ReaperD8Attack">
+        <On Terms="Effect.D8Charge.Start; At Caster" Send="Create"/>
+    </CActorAction>
+    <CActorSound id="Marine_Death">
+        <On Terms="UnitDeath.WarPig; PassChance 100.000000" Send="Create"/>
+    </CActorSound>
+    <CActorUnit id="TemplarArchive">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById TemplarArchivesDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById TemplarArchivesDarkSpecular"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById TemplarArchivesDarkEmissive"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GlowGreen"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GradRaysGreen"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById TemplarArchivesDarkDiffuse"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById TemplarArchivesDarkSpecular"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById TemplarArchivesDarkEmissive"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById GlowGreen"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById GradRaysGreen"/>
+    </CActorUnit>
+    <CActorUnit id="RoboticsFacility">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById RoboticsFacilityDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById RoboticsFacilityDarkSpecular"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById RoboticsFacilityDarkEmissive"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PulseGreen"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GradRaysGreen"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById TronSquareGreen"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById RoboticsFacilityDarkDiffuse"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById RoboticsFacilityDarkSpecular"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById RoboticsFacilityDarkEmissive"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById PulseGreen"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById GradRaysGreen"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById TronSquareGreen"/>
+    </CActorUnit>
+    <CActorUnit id="Assimilator">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById AssimilatorDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById AssimilatorDarkSpecular"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById AssimilatorDarkDiffuse"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById AssimilatorDarkSpecular"/>
+    </CActorUnit>
+    <CActorUnit id="TwilightCouncil">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById TwilightCouncilDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById TwilightCouncilDarkSpecular"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById TwilightCouncilDarkEmissive"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PulseGreen"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GradRaysGreen"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById TwilightCouncilDarkDiffuse"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById TwilightCouncilDarkSpecular"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById TwilightCouncilDarkEmissive"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById PulseGreen"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById GradRaysGreen"/>
+    </CActorUnit>
+    <CActorUnit id="WarpGate">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GatewayDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GatewayDarkSpecular"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GatewayDarkEmissive"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PylonDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PylonDarkSpecular"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PylonDarkEmissive"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById GatewayDarkDiffuse"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById GatewayDarkSpecular"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById GatewayDarkEmissive"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById PylonDarkDiffuse"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById PylonDarkSpecular"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById PylonDarkEmissive"/>
+    </CActorUnit>
+    <CActorUnit id="Gateway">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GatewayDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GatewayDarkSpecular"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GatewayDarkEmissive"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PylonDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PylonDarkSpecular"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PylonDarkEmissive"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById GatewayDarkDiffuse"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById GatewayDarkSpecular"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById GatewayDarkEmissive"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById PylonDarkDiffuse"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById PylonDarkSpecular"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById PylonDarkEmissive"/>
+    </CActorUnit>
+    <CActorUnit id="Stargate">
+        <On Terms="AbilTrain.StargateTrain.Start; AbilTrainProduced Phoenix; !ValidateUnit HasNoPower" Target="ScoutWarpInStargate" Send="Destroy"/>
+        <On Terms="AbilTrain.StargateTrain.Start; AbilTrainProduced VoidRay; !ValidateUnit HasNoPower" Target="ScoutWarpInStargate" Send="Destroy"/>
+        <On Terms="AbilTrain.StargateTrain.Start; AbilTrainProduced Carrier; !ValidateUnit HasNoPower" Target="ScoutWarpInStargate" Send="Destroy"/>
+        <On Terms="AbilTrain.StargateTrain.Start; AbilTrainProduced Scout; !ValidateUnit HasNoPower" Send="Create ScoutWarpInStargate"/>
+        <On Terms="AbilTrain.StargateTrain.Start; AbilTrainProduced Scout; !ValidateUnit HasNoPower" Target="PhoenixWarpInStargate" Send="Destroy"/>
+        <On Terms="AbilTrain.StargateTrain.Start; AbilTrainProduced Scout; !ValidateUnit HasNoPower" Target="VoidRayWarpInStargate" Send="Destroy"/>
+        <On Terms="AbilTrain.StargateTrain.Start; AbilTrainProduced Scout; !ValidateUnit HasNoPower" Target="CarrierWarpInStargate" Send="Destroy"/>
+        <On Terms="AbilTrain.StargateTrain.Start; AbilTrainProduced Scout; !ValidateUnit HasNoPower" Send="StatusSet WarpingIn 4"/>
+        <On Terms="AbilTrain.StargateTrain.Start; AbilTrainProduced Scout; ValidateUnit HasNoPower" Send="StatusSet WarpingIn 14"/>
+        <On Terms="Abil.que5.Stop; IsStatus WarpingIn 4" Send="StatusSet WarpingIn 14"/>
+        <On Terms="Abil.que5.Start; IsStatus WarpingIn 14" Send="Create ScoutWarpInStargate"/>
+        <On Terms="Abil.que5.Start; IsStatus WarpingIn 14" Send="StatusSet WarpingIn 4"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById StargateDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById StargateDarkSpecular"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById StargateDarkEmissive"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PulseGreen"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GradRaysGreen"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById TronSquareGreen"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById StargateDarkDiffuse"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById StargateDarkSpecular"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById StargateDarkEmissive"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById PulseGreen"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById GradRaysGreen"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById TronSquareGreen"/>
+    </CActorUnit>
+    <CActorUnit id="Forge">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById ForgeDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById ForgeDarkSpecular"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById ForgeDarkEmissive"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GradRaysGreen"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById TronSquareGreen"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PulseGreen"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById ForgeDarkDiffuse"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById ForgeDarkSpecular"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById ForgeDarkEmissive"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById GradRaysGreen"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById TronSquareGreen"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById PulseGreen"/>
+    </CActorUnit>
+    <CActorUnit id="PhotonCannon">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PhotonCannonDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PhotonCannonDarkSpecular"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PhotonCannonDarkEmissive"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PhotonCannonBaseDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PhotonCannonBaseDarkSpecular"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PhotonCannonBaseDarkEmissive"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById LazerBoltGreen"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GradRaysGreen"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById TronSquareGreen"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById WarpLineGreen"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById PhotonCannonDarkDiffuse"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById PhotonCannonDarkSpecular"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById PhotonCannonDarkEmissive"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById PhotonCannonBaseDarkDiffuse"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById PhotonCannonBaseDarkSpecular"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById PhotonCannonBaseDarkEmissive"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById LazerBoltGreen"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById GradRaysGreen"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById TronSquareGreen"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById WarpLineGreen"/>
+    </CActorUnit>
+    <CActorUnit id="RoboticsBay">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById RoboticsSupportDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById RoboticsSupportDarkSpecular"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById RoboticsSupportDarkEmissive"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById TronSquareGreen"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GradRaysGreen"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById RoboticsSupportDarkDiffuse"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById RoboticsSupportDarkSpecular"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById RoboticsSupportDarkEmissive"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById TronSquareGreen"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById GradRaysGreen"/>
+    </CActorUnit>
+    <CActorUnit id="FleetBeacon">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById FleetBeaconDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById FleetBeaconDarkSpecular"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById FleetBeaconDarkEmissive"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GradRaysGreen"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById FleetBeaconDarkDiffuse"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById FleetBeaconDarkSpecular"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById FleetBeaconDarkEmissive"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById GradRaysGreen"/>
+    </CActorUnit>
+    <CActorUnit id="DarkShrine">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById DarkShrineDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById DarkShrineDarkSpecular"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById DarkShrineDarkEmissive"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GradRaysGreen"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GlowGreen"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PylonDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PylonDarkSpecular"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PylonDarkEmissive"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById DarkShrineDarkDiffuse"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById DarkShrineDarkSpecular"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById DarkShrineDarkEmissive"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById GradRaysGreen"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById GlowGreen"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById PylonDarkDiffuse"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById PylonDarkSpecular"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById PylonDarkEmissive"/>
+    </CActorUnit>
+    <CActorUnit id="CyberneticsCore">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById CyberneticsCoreDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById CyberneticsCoreDarkSpecular"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById CyberneticsCoreDarkEmissive"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById CyberneticsCoreDarkDiffuse"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById CyberneticsCoreDarkSpecular"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById CyberneticsCoreDarkEmissive"/>
+    </CActorUnit>
+    <CActorUnit id="Pylon">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById GlowGreen"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PylonDarkDiffuse"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PylonDarkSpecular"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="TextureSelectById PylonDarkEmissive"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="TextureSelectById GlowGreen"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById PylonDarkDiffuse"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById PylonDarkSpecular"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="TextureSelectById PylonDarkEmissive"/>
+    </CActorUnit>
+    <CActorUnit id="Nexus">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="ModelSwap TZNexus"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="ModelSwap TZNexus"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit DarkProtossIsConstructing" Send="DeathCustomize Variation0"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit DarkProtossIsNotConstructing" Send="DeathCustomize DarkProtoss"/>
+        <On Terms="UnitConstruction; ValidateUnit NoDarkProtoss" Send="TextureSelectById NexusDarkDiffuse"/>
+        <On Terms="UnitConstruction; ValidateUnit NoDarkProtoss" Send="TextureSelectById NexusDarkSpecular"/>
+        <On Terms="UnitConstruction; ValidateUnit NoDarkProtoss" Send="TextureSelectById NexusDarkEmissive"/>
+        <DeathCustoms ModelLink="TZNexusDeath" Name="DarkProtoss"/>
+        <DeathCustoms ModelLink="ProtossWarpInDeath" Name="Variation0"/>
+    </CActorUnit>
+    <CActorModel id="BlinkOriginModel">
+        <On Terms="Effect.Blink.Start; At Source; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkBlinkOriginModel"/>
+    </CActorModel>
+    <CActorModel id="BlinkStopModel" parent="ModelAnimationStyleOneShot">
+        <On Terms="Effect.Blink.Stop; At Source; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkBlinkStopModel"/>
+    </CActorModel>
+    <CActorAction id="ImmortalAttack">
+        <On Terms="Signal.*.DarkProtossTest" Send="RefSetFromMsg ::actor.sender ::Sender"/>
+        <On Terms="Signal.*.DarkProtossTest; ValidateUnit NoDarkProtoss" Target="::actor.sender" Send="Signal DarkProtossSwap"/>
+    </CActorAction>
+    <CActorAction id="InterceptorAttack">
+        <On Terms="Signal.*.DarkProtossTest" Send="RefSetFromMsg ::actor.sender ::Sender"/>
+        <On Terms="Signal.*.DarkProtossTest; ValidateUnit NoDarkProtoss" Target="::actor.sender" Send="Signal DarkProtossSwap"/>
+    </CActorAction>
+    <CActorAction id="StalkerAttack">
+        <On Terms="Signal.*.DarkProtossTest" Send="RefSetFromMsg ::actor.sender ::Sender"/>
+        <On Terms="Signal.*.DarkProtossTest; ValidateUnit NoDarkProtoss" Target="::actor.sender" Send="Signal DarkProtossSwap"/>
+    </CActorAction>
+    <CActorUnit id="Immortal">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="ModelSwap DarkImmortal"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkImmortal"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit NoDarkProtoss" Send="DeathCustomize DarkProtoss"/>
+        <DeathCustoms ModelLink="DarkImmortalDeath" Name="DarkProtoss"/>
+    </CActorUnit>
+    <CActorUnit id="Carrier">
+        <On Terms="Behavior.WarpInEffect.On; !ValidateUnit NoDarkProtoss" Send="ModelSwap CarrierWarpInStargate"/>
+        <On Terms="Behavior.WarpInEffect.On; !ValidateUnit NoDarkProtoss" Send="$Spell"/>
+        <On Terms="Behavior.WarpInEffect.Off; !ValidateUnit NoDarkProtoss" Send="ModelSwap Carrier"/>
+        <On Terms="Behavior.WarpInEffect.Off; !ValidateUnit NoDarkProtoss" Send="AnimBracketStart GL_BSD GLbirth GLstand GLdeath"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="ModelSwap DarkCarrier"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkCarrier"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit NoDarkProtoss" Send="DeathCustomize DarkProtoss"/>
+        <DeathCustoms ModelLink="DarkCarrierDeath" Name="DarkProtoss"/>
+    </CActorUnit>
+    <CActorUnit id="Interceptor">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="ModelSwap DarkInterceptor"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkInterceptor"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit NoDarkProtoss" Send="DeathCustomize DarkProtoss"/>
+        <DeathCustoms ModelLink="DarkInterceptorDeath" Name="DarkProtoss"/>
+    </CActorUnit>
+    <CActorUnit id="VoidRay">
+        <On Terms="Behavior.WarpInEffect.On; !ValidateUnit NoDarkProtoss" Send="ModelSwap VoidRayWarpInStargate"/>
+        <On Terms="Behavior.WarpInEffect.On; !ValidateUnit NoDarkProtoss" Send="$Spell"/>
+        <On Terms="Behavior.WarpInEffect.Off; !ValidateUnit NoDarkProtoss" Send="ModelSwap VoidRay"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="ModelSwap DarkVoidRay"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkVoidRay"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit NoDarkProtoss" Send="DeathCustomize DarkProtoss"/>
+        <DeathCustoms ModelLink="DarkVoidRayDeath" Name="DarkProtoss"/>
+    </CActorUnit>
+    <CActorUnit id="WarpPrism">
+        <On Terms="Behavior.WarpInEffect15.On; !ValidateUnit NoDarkProtoss" Send="ModelSwap WarpPrismWarpIn"/>
+        <On Terms="Behavior.WarpInEffect15.On; !ValidateUnit NoDarkProtoss" Send="$Birth"/>
+        <On Terms="Behavior.WarpInEffect15.Off; !ValidateUnit NoDarkProtoss" Send="ModelSwap WarpPrism"/>
+        <On Terms="Behavior.WarpInEffect15.Off; !ValidateUnit NoDarkProtoss" Send="AnimBaselineStart"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="ModelSwap DarkWarpPrism"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkWarpPrism"/>
+        <On Terms="AbilMorph.*.Start; MorphFrom WarpPrismPhasing; MorphTo WarpPrism; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkWarpPrism"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit NoDarkProtoss" Send="DeathCustomize DarkProtoss"/>
+        <DeathCustoms ModelLink="DarkWarpPrismDeath" Name="DarkProtoss"/>
+    </CActorUnit>
+    <CActorUnit id="WarpPrismPhasing">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="ModelSwap DarkWarpPrism"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkWarpPrism"/>
+        <On Terms="AbilMorph.*.Start; MorphFrom WarpPrism; MorphTo WarpPrismPhasing; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkWarpPrism"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit NoDarkProtoss" Send="DeathCustomize DarkProtoss"/>
+        <DeathCustoms ModelLink="DarkWarpPrismOpenDeath" Name="DarkProtoss"/>
+    </CActorUnit>
+    <CActorUnit id="HighTemplar">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="ModelSwap DarkHighTemplar"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkHighTemplar"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit NoDarkProtoss" Send="DeathCustomize DarkProtoss"/>
+        <DeathCustoms ModelLink="DarkHighTemplarDeath" Name="DarkProtoss"/>
+    </CActorUnit>
+    <CActorBeamSimple id="InterceptorAttackBeam">
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkInterceptorAttackBeam"/>
+    </CActorBeamSimple>
+    <CActorModel id="VoidRayChargeX01">
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkVoidRayChargeBase"/>
+    </CActorModel>
+    <CActorModel id="VoidRayChargeX02">
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkVoidRayChargeBase"/>
+    </CActorModel>
+    <CActorModel id="VoidRayChargeX03">
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkVoidRayChargeBase"/>
+    </CActorModel>
+    <CActorBeamSimple id="VoidRayAttackBeam">
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkVoidRayAttackBeam"/>
+    </CActorBeamSimple>
+    <CActorBeamSimple id="ArchonAttackBeam">
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkArchonAttackBeam"/>
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="AnimBracketStart BSDb Birth Stand Death ContentPlayOnce"/>
+        <On Terms="AnimBracketState.*.AfterClosing; AnimName BSDb" Send="Destroy"/>
+    </CActorBeamSimple>
+    <CActorMissile id="StalkerAttackMissile">
+        <On Terms="ActorCreation; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkStalkerWeapon"/>
+    </CActorMissile>
+    <CActorUnit id="Zealot">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="ModelSwap DarkZealot"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkZealot"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit NoDarkProtoss" Send="DeathCustomize DarkProtoss"/>
+        <DeathCustoms ModelLink="DarkZealotDeath" Name="DarkProtoss"/>
+    </CActorUnit>
+    <CActorUnit id="Stalker">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="ModelSwap DarkStalker"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkStalker"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit NoDarkProtoss" Send="DeathCustomize DarkProtoss"/>
+        <DeathCustoms ModelLink="DarkStalkerDeath" Name="DarkProtoss"/>
+    </CActorUnit>
+    <CActorUnit id="Sentry">
+        <On Terms="Upgrade.DarkProtoss.Add" Send="ModelSwap DarkSentry"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkSentry"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit NoDarkProtoss" Send="DeathCustomize DarkProtoss"/>
+        <DeathCustoms ModelLink="DarkSentryDeath" Name="DarkProtoss"/>
+    </CActorUnit>
+    <CActorUnit id="Probe">
+        <Macros value="CarryTerrazineNodeAnim"/>
+        <Macros value="CarryAnimCampaign"/>
+        <On Terms="Upgrade.DarkProtoss.Add" Send="ModelSwap DarkProbe"/>
+        <On Terms="UnitBirth; ValidateUnit NoDarkProtoss" Send="ModelSwap DarkProbe"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit NoDarkProtoss" Send="DeathCustomize DarkProtoss"/>
+        <DeathCustoms ModelLink="DarkProbeDeath" Name="DarkProtoss"/>
+    </CActorUnit>
+    <CActorUnit id="SCV">
+        <On Terms="Abil.GatherSpecialObject.SourcePrepStart" Send="TimerSet 0.000000,0.300000 Gather"/>
+        <On Terms="Abil.GatherSpecialObject.SourceCastStop" Send="AnimClear Gather"/>
+        <On Terms="Abil.GatherSpecialObject.SourceCastStop" Send="TimerKill Gather"/>
+        <On Terms="AnimDone.*.Complete; AnimName Gather" Send="TimerSet 0.000000,0.300000 Gather"/>
+        <On Terms="TimerExpired; TimerName Gather" Send="AnimPlay Gather Work NonLooping"/>
+        <On Terms="TimerExpired; TimerName Gather" Send="Create SCVGatherSound"/>
+        <On Terms="Behavior.CarryChrysalisEgg.Create" Send="AnimGroupApply Gather"/>
+        <On Terms="Behavior.CarryChrysalisEgg.Destroy" Send="AnimGroupRemove Gather"/>
+        <On Terms="ActorCreation; ValidateUnit SCVUpgraded" Send="ModelSwap SCVFusionWelder"/>
+        <On Terms="Upgrade.FusionWelder.Add" Send="ModelSwap SCVFusionWelder"/>
+        <On Terms="Upgrade.DualFusionWelders.Add" Send="ModelSwap SCVFusionWelder"/>
+        <Macros value="CarryTerrazineNodeAnim"/>
+        <Macros value="CarryAnimCampaign"/>
+    </CActorUnit>
+    <CActorSetQueried id="TerranFlameSetFire">
+        <On Terms="ActorCreation; ValidateUnit FireSuppressionSystemsPurchased" Send="TimerSet 6.000000 Die"/>
+        <On Terms="TimerExpired; TimerName Die" Send="Destroy"/>
+    </CActorSetQueried>
+    <CActorSetQueried id="TerranFlameSetFireTransition">
+        <On Terms="ActorCreation; ValidateUnit FireSuppressionSystemsPurchased" Send="TimerSet 6.000000 Die"/>
+        <On Terms="TimerExpired; TimerName Die" Send="Destroy"/>
+    </CActorSetQueried>
+    <CActorSound id="TerranFlameLoopSmall">
+        <On Terms="ActorCreation; ValidateUnit FireSuppressionSystemsPurchased" Send="TimerSet 6.000000 Die"/>
+        <On Terms="TimerExpired; TimerName Die" Send="Destroy"/>
+    </CActorSound>
+    <CActorSound id="TerranFlameLoopMedium">
+        <On Terms="ActorCreation; ValidateUnit FireSuppressionSystemsPurchased" Send="TimerSet 6.000000 Die"/>
+        <On Terms="TimerExpired; TimerName Die" Send="Destroy"/>
+    </CActorSound>
+    <CActorSound id="TerranFlameLoopLarge">
+        <On Terms="ActorCreation; ValidateUnit FireSuppressionSystemsPurchased" Send="TimerSet 6.000000 Die"/>
+        <On Terms="TimerExpired; TimerName Die" Send="Destroy"/>
+    </CActorSound>
+    <CActorUnit id="Drone">
+        <Macros value="CarryTerrazineNodeAnim"/>
+        <Macros value="CarryAnimCampaign"/>
+    </CActorUnit>
+    <CActorUnit id="NydusCanal">
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorUnit id="GreaterSpire">
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorUnit id="CreepTumor">
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorUnit id="SpineCrawler">
+        <On Terms="Behavior.ZeratulStun.On" Send="AnimSetPaused Morph"/>
+        <On Terms="Behavior.ZeratulStun.Off" Send="AnimSetPaused Morph 0"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorUnit id="SporeCrawler">
+        <On Terms="Behavior.ZeratulStun.On" Send="AnimSetPaused Morph"/>
+        <On Terms="Behavior.ZeratulStun.Off" Send="AnimSetPaused Morph 0"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorUnit id="Hatchery">
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorUnit id="Lair">
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorUnit id="Hive">
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorUnit id="InfestationPit">
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorUnit id="NydusNetwork">
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorUnit id="BanelingNest">
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorUnit id="RoachWarren">
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorUnit id="UltraliskCavern">
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorUnit id="Spire">
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorUnit id="HydraliskDen">
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorUnit id="EvolutionChamber">
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorUnit id="Extractor">
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorUnit id="SpawningPool">
+        <On Terms="UnitDeathCustomize; ValidateUnit HasZergGenericDeath" Send="DeathCustomize Detached"/>
+        <DeathCustoms ModelLink="ZergGenericBuildingDeath" Name="Detached"/>
+    </CActorUnit>
+    <CActorAction id="SiegeTankSiegedAttack">
+        <On Terms="Effect.CrucioShockCannonFriendlyDamage.Start; At Caster" Send="Create"/>
+        <On Terms="Effect.CrucioShockCannonEnemyDamage.Start; At Caster" Send="Create"/>
+    </CActorAction>
+    <CActorEventMacro id="UnloadDropAnim">
+        <On Terms="AbilTransport.SpecOpsDropshipTransport.CargoLoad" Send="AnimBracketStart Unload IGNORE Unload Unload,End"/>
+        <On Terms="AbilTransport.SpecOpsDropshipTransport.CargoUnload" Send="AnimBracketStop Unload"/>
+        <On Terms="AbilTransport.SpecOpsDropshipTransport.TransportLoad" Send="AnimBracketStart Unload IGNORE Unload Unload,End"/>
+        <On Terms="AbilTransport.SpecOpsDropshipTransport.TransportUnload" Send="AnimBracketStop Unload"/>
+        <On Terms="AbilTransport.HerculesTransport.CargoLoad" Send="AnimBracketStart Unload IGNORE Unload Unload,End"/>
+        <On Terms="AbilTransport.HerculesTransport.CargoUnload" Send="AnimBracketStop Unload"/>
+        <On Terms="AbilTransport.HerculesTransport.TransportLoad" Send="AnimBracketStart Unload IGNORE Unload Unload,End"/>
+        <On Terms="AbilTransport.HerculesTransport.TransportUnload" Send="AnimBracketStop Unload"/>
+    </CActorEventMacro>
+</Catalog>

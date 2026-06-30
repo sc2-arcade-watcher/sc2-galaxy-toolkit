@@ -1,0 +1,510 @@
+//==================================================================================================
+//  Melee AI Functions
+//==================================================================================================
+
+//include "TriggerLibs/Test"
+
+// limit of 16 states in CCaptain
+const int e_mainState       = 1;
+const int e_mainSubState    = 2;
+const int e_attackState     = 3;
+const int e_divert1State    = 4;
+const int e_divert2State    = 5;
+const int e_openRollState   = 6;
+const int e_middleRollState = 7;
+const int e_lateRollState   = 8;
+
+// main states
+const int e_mainState_Disabled      = -1;
+const int e_mainState_Off           =  0;
+const int e_mainState_Init          =  1;
+const int e_mainState_Open          =  2;
+const int e_mainState_Mid           =  3;
+const int e_mainState_Late          =  4;
+
+// main sub states
+const int e_mainSubState_Unset      = 1;
+const int e_mainSubState_Init       = 2;
+const int e_mainSubState_Build      = 3;
+
+// attack states
+const int e_attackState_Wait        = 1;
+const int e_attackState_Idle        = 2;
+const int e_attackState_Attack      = 3;
+const int e_attackState_DropAttack  = 4;
+const int e_attackState_Scared      = 5;
+const int e_attackState_Retreat     = 6;
+const int e_attackState_DropRetreat = 7;
+const int e_attackState_InRetreat   = 8;
+
+// default global build type, remaining types in MeleeBuildAI.galaxy
+const int e_buildType_Invalid       =  0;
+
+// default global build index, remaining types in ProtossHigh, TerranHigh, & ZergHigh
+const int e_hdBuildIndex_Invalid      =  0;
+
+//--------------------------------------------------------------------------------------------------
+//  Debug messages
+//--------------------------------------------------------------------------------------------------
+string MainStateName (int state) {
+
+    if (state == e_mainState_Init)              { return "Init";       }
+    else if (state == e_mainState_Open)         { return "Open";       }
+    else if (state == e_mainState_Mid)          { return "Mid";        }
+    else if (state == e_mainState_Late)         { return "Late";       }
+    else if (state == e_mainState_Off)          { return "Off";        }
+
+    return "?" + IntToString(state) + "?";
+}
+
+//--------------------------------------------------------------------------------------------------
+// helper functions defined in MeleeWaveAI.galaxy
+//--------------------------------------------------------------------------------------------------
+string AttackStateName (int state);
+void DebugWave (int player, string name, wave w); 
+
+//--------------------------------------------------------------------------------------------------
+void DebugMelee (int player) {
+
+    DebugWave(player, "main", AIWaveGet(player, c_waveMain));
+    DebugWave(player, "atck", AIWaveGet(player, c_waveAttack));
+    DebugWave(player, "dfnd", AIWaveGet(player, c_waveDefend));
+    DebugWave(player, "div1", AIWaveGet(player, c_waveDivert1));
+    DebugWave(player, "div2", AIWaveGet(player, c_waveDivert2));
+    DebugWave(player, "clob", AIWaveGet(player, c_waveClearObs));
+    DebugWave(player, "home", AIWaveGet(player, c_waveHome));
+    
+    DebugVarInt2(
+        "peons cur",    AIGetCurPeonCount(player, c_townMax),
+        "max",          AIGetMaxPeonCount(player, c_townMax)
+    );
+    DebugVarBool("e_flagsScouting", AIGetFlag(player, e_flagsScouting));
+    DebugVarBool("e_flagsTimeout", AIGetFlag(player, e_flagsTimeout));
+}
+
+//--------------------------------------------------------------------------------------------------
+bool DebugMeleeTrigger (bool c, bool a) {
+    if (a) {
+        DebugMelee(StringToInt(StringWord(EventChatMessage(false), 2)));
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool g_debugMeleeInit = false;
+void DebugMeleeInit () {
+    trigger t;
+
+    if (DEBUG_WITH_MESSAGE) {
+        if (!g_debugMeleeInit) {
+            t = TriggerCreate("DebugMeleeTrigger");
+            TriggerAddEventChatMessage(t, 1, "waves", false);
+
+            g_debugMeleeInit = true;
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIMeleeDiffSelect
+//--------------------------------------------------------------------------------------------------
+void AIMeleeCheatResources (int player) {
+    int diff = AIPlayerDifficulty(player);
+    fixed harvestBonus;
+
+    // bonus resource collection for the 2 highest difficulties
+    harvestBonus = 1.0; 
+    if (diff == c_skirChMoney) {
+        // 0 - 2  minutes at 1.0
+        // 2 - 20 minutes ramp to 1.5
+        if (AIGetTime() > 1200) {
+            harvestBonus = 1.5;
+        }
+        else if (AIGetTime() > 120) {
+            // (1200 - 120) = 1080,  1080*2 = 2160   (ie at 1200 seconds this will be (1200 - 120) / 2160 = 0.5)
+            harvestBonus = 1.0 + ((AIGetTime() - 120) / 2160);
+        }
+    }
+    else if (diff == c_skirChInsane) {
+        // 0 - 20 minutes ramp from 1.2 to 2.0
+        if (AIGetTime() > 1200) {
+            harvestBonus = 2.0;
+        }
+        else {
+            harvestBonus = 1.2 + (AIGetTime() / 1500);
+        }
+    }
+    AIHarvestBonus(player, harvestBonus);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIMeleeDiffSelect
+//--------------------------------------------------------------------------------------------------
+int AIMeleeDiffSelect (int player, int d0, int d1, int d2, int d3, int d4, int d5, 
+                       int d6, int d7, int d8, int d9, int d10) {
+    int diff = AIPlayerDifficulty(player);
+    if (diff == c_skirAuto) {
+        return d0;
+    }
+    if (diff == c_skirVeryEasy) {
+        return d1;
+    }
+    if (diff == c_skirEasy) {
+        return d2;
+    }
+    if (diff == c_skirMedium) {
+        return d3;
+    }
+    if (diff == c_skirMed_Hard) {
+        return d4;
+    }
+    if (diff == c_skirHard) {
+        return d5;
+    }
+    if (diff == c_skirHard_VH) {
+        return d6;
+    }
+    if (diff == c_skirVeryHard) {
+        return d7;
+    }
+    if (diff == c_skirChVision) {
+        return d8;
+    }
+    if (diff == c_skirChMoney) {
+        return d9;
+    }
+    if (diff == c_skirChInsane) {
+        return d10;
+    }
+
+    return 0;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AISetAttackState
+//--------------------------------------------------------------------------------------------------
+void AISetAttackState (int player, int attackState) {
+    string msg;
+    int oldState = AIState(player, e_attackState);
+
+    AISetSpecificState(player, e_attackState, attackState);
+    
+    if (DEBUG_ATTACK_STATE) {
+        msg = "Player " + IntToString(player) + "-" + PlayerRace(player) + " attack state " + 
+            AttackStateName(oldState) + " -> " + AttackStateName(attackState);
+        DebugAI(msg);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AISetMainState
+//--------------------------------------------------------------------------------------------------
+void AISetMainState (int player, int mainState, int mainSubState) {
+    string msg;
+    int oldMainState = AIState(player, e_mainState);  
+    int oldSubState = AIState(player, e_mainSubState);
+
+    AISetSpecificState(player, e_mainState, mainState);
+    AISetSpecificState(player, e_mainSubState, mainSubState);
+
+    if (DEBUG_MAIN_STATE) {
+        msg = "Player " + IntToString(player) + "-" + PlayerRace(player) + " main state " + 
+            MainStateName(oldMainState) + "(" + IntToString(oldSubState) + ") --> " + 
+            MainStateName(mainState)  + "(" + IntToString(mainSubState) + ")";
+        DebugAI(msg);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  EndMeleeScript
+//--------------------------------------------------------------------------------------------------
+void EndMeleeScript (int player) {
+    string msg = "Reached end of script for player " + IntToString(player) + "-" + 
+        PlayerRace(player) + " : More AI code coming soon.";
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringToText(msg));
+    DebugAI(msg);
+    AISetMainState(player, e_mainState_Disabled, e_mainSubState_Unset);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ErrorMeleeScript
+//--------------------------------------------------------------------------------------------------
+void ErrorMeleeScript (int player, string error) {
+    string msg = "A script logic error occurred for player " + IntToString(player) +
+        "-" + PlayerRace(player) + " : " + error;
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringToText(msg));
+    DebugAI(msg);
+    AISetMainState(player, e_mainState_Disabled, e_mainSubState_Unset);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AISetStockAll
+//--------------------------------------------------------------------------------------------------
+void AISetStockAll (int player, string source, int max, string what) {
+    int make = AITechCount(player, what, c_techCountCompleteOnly)
+             + 2 * AITechCount(player, source, c_techCountCompleteOnly);
+    if (make > max) {
+        make = max;
+    }
+    AISetStock(player, make, what);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIMergeUnit
+//--------------------------------------------------------------------------------------------------
+void AIMergeUnit (int player, unit u, wave w) {
+    wave merge = AIWaveCreate(AIWaveInfoCreate(), player, AIGetGatherLocation(player, c_townMain));
+    AIWaveAddUnit(merge, u);
+    AIWaveSetType(merge, c_waveStateMerge, AIWaveTargetMerge(w));
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AINewUnitDefault
+//--------------------------------------------------------------------------------------------------
+void AINewUnitDefault (int player, unit u) {
+    wave w = AIWaveGet(player, c_waveMain);
+    AIMergeUnit(player, u, w);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIIsExpandingOrHasExpanded
+//--------------------------------------------------------------------------------------------------
+bool AIIsExpandingOrHasExpanded (int player) {
+    int state;
+    int count = 0;
+    int i = 0;
+
+    while (i < c_townMax) {
+        state = AIGetTownState(player, i);
+        i = i + 1;
+        if (state == c_townStateClaimed || state == c_townStateBuilding) {
+            return true; // already expanding
+        }
+        if (state != c_townStateEstablished) {
+            continue;
+        }
+        if (count == 1) {
+            return true; // found 2nd town
+        }
+        count = 1;
+    }
+
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AICombatPriority
+//--------------------------------------------------------------------------------------------------
+unit AICombatPriority (unitgroup attackers, unitgroup enemies, int maxAttackerLimit) {
+    // - attackers is a list of all of our units in a combat area
+    // = enemies is a list of all known enemy units anywhere near that area
+    // - maxAttackerLimit is a hard limit on how many units can be ordered to change targets at once 
+    //      (each unit changing is one additional APM, to shift-select it into the group selection).
+
+    // this function needs to do to things:
+    // find the best target, which is the unit returned
+    // find the attackers who need to switch to attack that target (up to maxAttackerLimit)
+    //    the attackers unitGroup should be updated to only contain those attackers
+
+    // return c_nullUnit if no units need to switch target
+
+    return AIDefaultCombatPriority(attackers, enemies, maxAttackerLimit);
+}
+
+//--------------------------------------------------------------------------------------------------
+// AINewDetector
+//--------------------------------------------------------------------------------------------------
+void AINewDetector (int player, unit u, bool offerToScout) {
+    wave defendWave = AIWaveGet(player, c_waveDefend); 
+    wave attackWave = AIWaveGet(player, c_waveAttack);
+
+    // first offer it to the attack wave if that wave has some units in it
+    if (AIWaveUnitCount(attackWave) >= 4) {
+        if (AIWaveDetectorCount(attackWave) == 0) {
+            AIWaveAddUnitPriority(attackWave, u, c_prioWavePeon);
+            return;
+        }
+    }
+
+    // next offer it to the defense wave
+    if (AIWaveDetectorCount(defendWave) == 0) {
+        AIWaveAddUnitPriority(defendWave, u, c_prioWavePeon);
+        return;
+    }
+
+    // last offer it to the scout synapse
+    if (offerToScout) {
+        if (AIOfferNewScout(player, u)) {
+            return;
+        }
+    }
+
+    // let the attack wave claim a second one
+    if (AIWaveUnitCount(attackWave) >= 4) {
+        if (AIWaveDetectorCount(attackWave) < 2) {
+            AIWaveAddUnitPriority(attackWave, u, c_prioWavePeon);
+            return;
+        }
+    }
+
+    // else add the detector to the extra scout group
+    AIAddToExtraScoutGroup(player, u);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIAddDetectionDangerUnits
+//--------------------------------------------------------------------------------------------------
+void AIAddDetectionDangerUnits (int player) {
+    AIAddDetectionDanger(player, c_TU_WidowMine);
+    AIAddDetectionDanger(player, c_TU_Ghost);
+    AIAddDetectionDanger(player, c_TU_Banshee);
+    AIAddDetectionDanger(player, c_TB_GhostAcademy);
+    AIAddDetectionDanger(player, c_TB_StarportTechLab);
+    AIAddDetectionDanger(player, c_PU_DarkTemplar);
+    AIAddDetectionDanger(player, c_PB_DarkShrine);
+    AIAddDetectionDanger(player, c_ZU_SwarmHost);
+    AIAddDetectionDanger(player, c_ZU_Locust);
+    AIAddDetectionDanger(player, c_ZU_Lurker);
+    AIAddDetectionDanger(player, c_ZB_LurkerDen);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIAddAirDangerUnits
+//--------------------------------------------------------------------------------------------------
+void AIAddAirDangerUnits (int player) {
+    AIAddAirDanger(player, c_TU_Banshee);
+    AIAddAirDanger(player, c_TU_Liberator);
+    AIAddAirDanger(player, c_TU_Battlecruiser);
+    AIAddAirDanger(player, c_TB_StarportTechLab);
+    AIAddAirDanger(player, c_TB_FusionCore);
+    AIAddAirDanger(player, c_PU_VoidRay);
+    AIAddAirDanger(player, c_PU_Carrier);
+    AIAddAirDanger(player, c_PU_Tempest);
+    AIAddAirDanger(player, c_PU_Mothership);
+    AIAddAirDanger(player, c_PB_Stargate);
+    AIAddAirDanger(player, c_PB_FleetBeacon);
+    AIAddAirDanger(player, c_ZU_Mutalisk);
+    AIAddAirDanger(player, c_ZU_Viper);
+    AIAddAirDanger(player, c_ZU_BroodLord);
+    AIAddAirDanger(player, c_ZB_Spire);
+    AIAddAirDanger(player, c_ZB_GreaterSpire);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIAddEmergencyDefenseStock
+//--------------------------------------------------------------------------------------------------
+void AIAddEmergencyDefenseStock (int player, int count, string what, bool onlyIfTechInPlace) {
+    int want;
+
+    if (onlyIfTechInPlace) {
+        if (AIGetFirstUnfinishedReq(player, what) != null) {
+            // it would require making some other tech building/unit first,
+            // we only want to build defense available now
+            return;
+        }
+    }
+    
+    want = AITechCount(player, what, c_techCountInProgressOrBetter) + 1;
+    if (want >= count) {
+        want = count;
+    }
+
+    AISetStockEx(player, c_townMain, want, what, c_makeDefault, c_stockDefense);
+}
+
+//--------------------------------------------------------------------------------------------------
+// helper function defined in MeleeWaveAI.galaxy
+//--------------------------------------------------------------------------------------------------
+bool AINeedsDefending (int player);
+
+//--------------------------------------------------------------------------------------------------
+//  TerranBasicDefenseStock
+//--------------------------------------------------------------------------------------------------
+void TerranBasicDefenseStock (int player) {
+    if (!AINeedsDefending(player)) {
+        return;
+    }
+    
+    AISetStockFarms( player, c_TB_SupplyDepot, c_stockNormalFarms);
+    AIAddEmergencyDefenseStock(player, 8, c_TU_Marine, false);
+    AISetStock( player, 1, c_TB_Refinery );
+    AIAddEmergencyDefenseStock(player, 4, c_TU_Viking, true);
+    AIAddEmergencyDefenseStock(player, 4, c_TU_Hellion, true);
+    AIAddEmergencyDefenseStock(player, 4, c_TU_Marauder, true);
+    AIAddEmergencyDefenseStock(player, 20, c_TU_SCV, true);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergBasicDefenseStock
+//--------------------------------------------------------------------------------------------------
+void ZergBasicDefenseStock (int player) {
+    if (!AINeedsDefending(player)) {
+        return;
+    }
+    
+    AISetStockFarms( player, c_ZU_Overlord_Alias, c_stockNormalFarms);
+    AISetStock( player, 1, c_ZU_Queen );
+    AIAddEmergencyDefenseStock(player, 6, c_ZU_Hydralisk, true);
+    AIAddEmergencyDefenseStock(player, 12, c_ZU_Zergling, false);
+    AISetStock( player, 1, c_ZB_Extractor );
+    AIAddEmergencyDefenseStock(player, 6, c_ZU_Roach, true);
+    AIAddEmergencyDefenseStock(player, 6, c_ZU_Mutalisk, true);
+    AIAddEmergencyDefenseStock(player, 20, c_ZU_Drone, true);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossBasicDefenseStock
+//--------------------------------------------------------------------------------------------------
+void ProtossBasicDefenseStock (int player) {
+    if (!AINeedsDefending(player)) {
+        return;
+    }
+    
+    AISetStockFarms( player, c_PB_Pylon, c_stockNormalFarms);
+    AIAddEmergencyDefenseStock(player, 6, c_PU_Stalker, false);
+    if (AIPlayerDifficulty(player) >= c_skirHard) {
+        AISetStock( player, 1, c_PU_MothershipCore );
+    }
+    AIAddEmergencyDefenseStock(player, 4, c_PU_Zealot, false);
+    AISetStock( player, 1, c_PB_Assimilator );
+    AIAddEmergencyDefenseStock(player, 4, c_PU_VoidRay, true);
+    AIAddEmergencyDefenseStock(player, 4, c_PU_Immortal, true);
+    AIAddEmergencyDefenseStock(player, 20, c_PU_Probe, true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// helper functions defined in MeleeBuildAI.galaxy
+//--------------------------------------------------------------------------------------------------
+void AISetupGenericCustomBuildMenusAll ();
+void AIChooseNextOpeningBuild (int player);
+void AIChooseNextLateGameBuild (int player);
+
+//--------------------------------------------------------------------------------------------------
+//  AIMeleeSharedInit
+//--------------------------------------------------------------------------------------------------
+void AILowDifficultyInit (int player);
+
+void AIMeleeSharedInit (int player) {
+    AISetUserInt(player, c_ldNumLateLoops, 0);
+    AIAddDetectionDangerUnits(player);
+    AIAddAirDangerUnits(player);
+    AISetupGenericCustomBuildMenusAll();
+    AIForceTacticalDelay(player, AIMeleeDiffSelect(player, 0, 10, 7, 5, 3, 2, 1, 0, 0, 0, 0));
+    AILowDifficultyInit(player);
+
+    // clear all build variables and choose starting builds
+    AISetUserInt(player, c_specificLobbyBuild, e_buildType_Invalid);
+    AISetUserInt(player, c_openingBuildType, e_buildType_Invalid);
+    AISetUserInt(player, c_lateGameBuildType, e_buildType_Invalid);
+    AISetUserInt(player, c_currentBuildIndex, e_buildType_Invalid);
+    AIChooseNextOpeningBuild(player);
+    AIChooseNextLateGameBuild(player);
+}
+
+include "TriggerLibs/MeleeBuildAI"
+include "TriggerLibs/MeleeWaveAI"
+include "TriggerLibs/MeleeHighAI"
+include "TriggerLibs/MeleeLowAI"
+include "TriggerLibs/Terran/Terran"
+include "TriggerLibs/Protoss/Protoss"
+include "TriggerLibs/Zerg/Zerg"

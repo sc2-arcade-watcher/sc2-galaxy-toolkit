@@ -149,9 +149,6 @@ importers:
       sc2-xml:
         specifier: workspace:*
         version: link:../sc2-xml
-      vscode-jsonrpc:
-        specifier: ^4.0.0
-        version: 4.0.0
       vscode-languageserver:
         specifier: ^10.0.1
         version: 10.0.1
@@ -197,6 +194,73 @@ importers:
         version: 6.0.3
 
   packages/sc2-layout-schema: {}
+
+  packages/sc2-lsp:
+    dependencies:
+      fast-glob:
+        specifier: ^3.2.11
+        version: 3.3.3
+      sax:
+        specifier: ^1.2.4
+        version: 1.6.0
+      sc2-data:
+        specifier: workspace:*
+        version: link:../sc2-data
+      sc2-galaxy-lang:
+        specifier: workspace:*
+        version: link:../sc2-galaxy-lang
+      sc2-layout-lang:
+        specifier: workspace:*
+        version: link:../sc2-layout-lang
+      sc2-mod:
+        specifier: workspace:*
+        version: link:../sc2-mod
+      sc2-text:
+        specifier: workspace:*
+        version: link:../sc2-text
+      sc2-trigger:
+        specifier: workspace:*
+        version: link:../sc2-trigger
+      vscode-languageserver:
+        specifier: ^10.0.1
+        version: 10.0.1
+      vscode-languageserver-textdocument:
+        specifier: ^1.0.4
+        version: 1.0.13
+      vscode-uri:
+        specifier: ^3.0.0
+        version: 3.1.0
+      winston:
+        specifier: ^3.2.1
+        version: 3.19.0
+      xml2js:
+        specifier: ^0.4.19
+        version: 0.4.23
+    devDependencies:
+      '@types/chai':
+        specifier: ^4.3.0
+        version: 4.3.20
+      '@types/mocha':
+        specifier: ^10
+        version: 10.0.10
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.20.0
+      '@types/sax':
+        specifier: ^1.0.0
+        version: 1.2.7
+      '@types/xml2js':
+        specifier: ^0.4.2
+        version: 0.4.14
+      chai:
+        specifier: ^4.3.6
+        version: 4.5.0
+      mocha:
+        specifier: ^10
+        version: 10.8.2
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
 
   packages/sc2-mod:
     dependencies:
@@ -1574,10 +1638,6 @@ packages:
     resolution: {integrity: sha512-ZZKSmDAEFOijERBLkmYfJ+vmk3w+7hOLYDNkRCuRuMJGEmqYNCNLyBBFwWKVMhfwaEF3WOd0Zlw86U/WC/+nYw==}
     engines: {'0': node >=0.6.0}
 
-  vscode-jsonrpc@4.0.0:
-    resolution: {integrity: sha512-perEnXQdQOJMTDFNv+UF3h1Y0z4iSiaN9jIlb0OqIYgosPCZGYh/MCUlkFtV2668PL69lRDO32hmvL2yiidUYg==}
-    engines: {node: '>=8.0.0 || >=10.0.0'}
-
   vscode-jsonrpc@9.0.0:
     resolution: {integrity: sha512-+VvMmQPJhtvJ+8O+zu2JKIRiLxXF8NW7krWgyMGeOHrp4Cn23T5hc0v2LknNeopDOB70wghHAds7mKtcZ0I4Sg==}
     engines: {node: '>=14.0.0'}
@@ -2940,8 +3000,6 @@ snapshots:
       assert-plus: 1.0.0
       core-util-is: 1.0.2
       extsprintf: 1.3.0
-
-  vscode-jsonrpc@4.0.0: {}
 
   vscode-jsonrpc@9.0.0: {}
 

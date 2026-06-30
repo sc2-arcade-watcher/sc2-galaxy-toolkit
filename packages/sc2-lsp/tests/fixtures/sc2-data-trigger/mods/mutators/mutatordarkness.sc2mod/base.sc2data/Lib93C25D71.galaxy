@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib93C25D71_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Darkness
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib93C25D71_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib93C25D71_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "BlackFog");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib93C25D71_gt_Initialization_Init () {
+    lib93C25D71_gt_Initialization = TriggerCreate("lib93C25D71_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib93C25D71_gt_Initialization);
+}
+
+void lib93C25D71_InitTriggers () {
+    lib93C25D71_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib93C25D71_InitLib_completed = false;
+
+void lib93C25D71_InitLib () {
+    if (lib93C25D71_InitLib_completed) {
+        return;
+    }
+
+    lib93C25D71_InitLib_completed = true;
+
+    lib93C25D71_InitLibraries();
+    lib93C25D71_InitTriggers();
+}
+

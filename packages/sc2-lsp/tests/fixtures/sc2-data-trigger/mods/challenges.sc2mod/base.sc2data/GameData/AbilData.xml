@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CAbilEffectTarget id="250mmStrikeCannons">
+        <Cost index="0">
+            <Vital index="Energy" value="150"/>
+        </Cost>
+        <CmdButtonArray index="Execute" Requirements="UseStrikeCannons"/>
+    </CAbilEffectTarget>
+    <CAbilMerge id="ArchonWarp">
+        <Flags index="IgnoreUnitCost" value="1"/>
+        <Info Time="12">
+            <Resource index="Minerals" value="0"/>
+            <Resource index="Vespene" value="0"/>
+        </Info>
+    </CAbilMerge>
+    <CAbilResearch id="BarracksTechLabResearch">
+        <InfoArray index="Research1">
+            <Resource index="Minerals" value="100"/>
+            <Resource index="Vespene" value="100"/>
+        </InfoArray>
+        <InfoArray index="Research2">
+            <Resource index="Minerals" value="100"/>
+            <Resource index="Vespene" value="100"/>
+        </InfoArray>
+        <InfoArray index="Research3" Time="60">
+            <Resource index="Minerals" value="50"/>
+            <Resource index="Vespene" value="50"/>
+        </InfoArray>
+    </CAbilResearch>
+    <CAbilTrain id="BarracksTrain">
+        <InfoArray index="Train2" Time="45"/>
+    </CAbilTrain>
+    <CAbilEffectTarget id="Corruption">
+        <TargetFilters index="0" value="Visible;Player,Ally,Neutral,Structure,Missile,Stasis,Dead,Invulnerable"/>
+        <Range index="0" value="6"/>
+    </CAbilEffectTarget>
+    <CAbilResearch id="FactoryTechLabResearch">
+        <InfoArray index="Research3" Time="110" Upgrade="StrikeCannons">
+            <Resource index="Minerals" value="150"/>
+            <Resource index="Vespene" value="150"/>
+            <Button DefaultButtonFace="ResearchStrikeCannons" Requirements="LearnStrikeCannons"/>
+        </InfoArray>
+    </CAbilResearch>
+    <CAbilTrain id="FactoryTrain"/>
+    <CAbilEffectTarget id="Frenzy">
+        <Cost index="0">
+            <Vital index="Energy" value="25"/>
+        </Cost>
+    </CAbilEffectTarget>
+    <CAbilTrain id="GatewayTrain">
+        <InfoArray index="Train1" Time="38"/>
+    </CAbilTrain>
+    <CAbilResearch id="InfestationPitResearch">
+        <InfoArray index="Research4" Time="110" Upgrade="NeuralParasite">
+            <Resource index="Minerals" value="150"/>
+            <Resource index="Vespene" value="150"/>
+            <Button DefaultButtonFace="ResearchNeuralParasite" Requirements="LearnNeuralParasite"/>
+        </InfoArray>
+    </CAbilResearch>
+    <CAbilResearch id="LairResearch">
+        <InfoArray index="Research2">
+            <Resource index="Minerals" value="100"/>
+            <Resource index="Vespene" value="100"/>
+        </InfoArray>
+    </CAbilResearch>
+    <CAbilTrain id="LarvaTrain"/>
+    <CAbilResearch id="MercCompoundResearch">
+        <InfoArray index="Research4">
+            <Resource index="Minerals" value="50"/>
+            <Resource index="Vespene" value="50"/>
+        </InfoArray>
+    </CAbilResearch>
+    <CAbilEffectTarget id="NeuralParasite">
+        <Range index="0" value="9"/>
+        <Cost index="0">
+            <Vital index="Energy" value="100"/>
+        </Cost>
+        <TargetFilters index="0" value="Visible;Self,Player,Ally,Neutral,Structure,Heroic,Stasis,Invulnerable"/>
+        <CmdButtonArray index="Execute" Requirements="UseNeuralParasite"/>
+    </CAbilEffectTarget>
+    <CAbilBuild id="ProtossBuild">
+        <InfoArray index="Build5" Time="45"/>
+    </CAbilBuild>
+    <CAbilEffectTarget id="PsiStorm">
+        <Cost index="0">
+            <Cooldown TimeUse="2"/>
+        </Cost>
+    </CAbilEffectTarget>
+    <CAbilResearch id="RoboticsBayResearch">
+        <InfoArray index="Research1" Time="80" Upgrade="IncreasedRange">
+            <Resource index="Minerals" value="100"/>
+            <Resource index="Vespene" value="100"/>
+            <Button DefaultButtonFace="ResearchIncreasedRange" State="Restricted" Requirements="LearnIncreasedRange"/>
+        </InfoArray>
+    </CAbilResearch>
+    <CAbilTrain id="RoboticsFacilityTrain">
+        <InfoArray index="Train4" Time="55"/>
+    </CAbilTrain>
+    <CAbilEffectTarget id="SeekerMissile">
+        <Range index="0" value="6"/>
+    </CAbilEffectTarget>
+    <CAbilEffectInstant id="SpawnChangeling">
+        <Cost index="0">
+            <Vital index="Energy" value="50"/>
+        </Cost>
+    </CAbilEffectInstant>
+    <CAbilMorphPlacement id="SpineCrawlerRoot">
+        <InfoArray index="0">
+            <SectionArray index="Abils">
+                <DurationArray index="Delay" value="12"/>
+            </SectionArray>
+            <SectionArray index="Actor">
+                <DurationArray index="Duration" value="12"/>
+            </SectionArray>
+            <SectionArray index="Stats">
+                <DurationArray index="Delay" value="12"/>
+            </SectionArray>
+        </InfoArray>
+    </CAbilMorphPlacement>
+    <CAbilMorphPlacement id="SporeCrawlerRoot">
+        <InfoArray index="0">
+            <SectionArray index="Abils">
+                <DurationArray index="Delay" value="12"/>
+            </SectionArray>
+            <SectionArray index="Actor">
+                <DurationArray index="Duration" value="12"/>
+            </SectionArray>
+            <SectionArray index="Stats">
+                <DurationArray index="Delay" value="12"/>
+            </SectionArray>
+        </InfoArray>
+    </CAbilMorphPlacement>
+    <CAbilTrain id="StarportTrain">
+        <InfoArray index="Train4" Time="90"/>
+    </CAbilTrain>
+    <CAbilBuild id="TerranBuild">
+        <InfoArray index="Build7" Time="40"/>
+        <InfoArray index="Build16" Time="65"/>
+    </CAbilBuild>
+    <CAbilWarpTrain id="WarpGateTrain">
+        <InfoArray index="Train1">
+            <Cooldown TimeUse="28"/>
+        </InfoArray>
+    </CAbilWarpTrain>
+<!--    <CAbilEffectTarget id="InfestedTerrans">
+        <Range index="0" value="3"/>
+        <Flags index="AllowMovement" value="1"/>
+        <Flags index="NoDeceleration" value="1"/>
+    </CAbilEffectTarget> -->
+</Catalog>

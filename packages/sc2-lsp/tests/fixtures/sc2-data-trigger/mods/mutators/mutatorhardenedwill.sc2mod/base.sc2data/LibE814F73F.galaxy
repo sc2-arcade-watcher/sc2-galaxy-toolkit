@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibE814F73F_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: HardenedWill
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libE814F73F_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libE814F73F_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "HardenedWill");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libE814F73F_gt_Initialization_Init () {
+    libE814F73F_gt_Initialization = TriggerCreate("libE814F73F_gt_Initialization_Func");
+    TriggerAddEventMapInit(libE814F73F_gt_Initialization);
+}
+
+void libE814F73F_InitTriggers () {
+    libE814F73F_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libE814F73F_InitLib_completed = false;
+
+void libE814F73F_InitLib () {
+    if (libE814F73F_InitLib_completed) {
+        return;
+    }
+
+    libE814F73F_InitLib_completed = true;
+
+    libE814F73F_InitLibraries();
+    libE814F73F_InitTriggers();
+}
+

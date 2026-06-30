@@ -1,0 +1,334 @@
+//==================================================================================================
+//  Tactical AI Functions
+//==================================================================================================
+
+//==================================================================================================
+//
+//  Tactical AI System Known Issues:
+//  * Marker Bug With Abilities that are missiles (Assigned to Andy / Dave)
+//      - i.e. infestor, hunter seeker missile
+//      - marker dissapears after cast, but before effect, so multiple casters may cast on the same unit
+//
+//  Wish List
+//  * Need equivalent of AITime from synapses for tactical ai thinks
+//      - scale it back when too much thinking, scale it up when too little
+//  
+//==================================================================================================
+
+//--------------------------------------------------------------------------------------------------
+//  CATALOG ACCESSOR CONSTANTS
+//--------------------------------------------------------------------------------------------------
+
+const string c_fieldAmount          = "Amount";
+const string c_fieldAreaRadius0     = "AreaArray[0].Radius";
+const string c_fieldAreaRadius1     = "AreaArray[1].Radius";
+const string c_fieldAreaRadius2     = "AreaArray[2].Radius";
+const string c_fieldAreaFraction0   = "AreaArray[0].Fraction";
+const string c_fieldAreaFraction1   = "AreaArray[1].Fraction";
+const string c_fieldAreaFraction2   = "AreaArray[2].Fraction";
+const string c_fieldAttrStructure   = "AttributeBonus[Structure]";
+const string c_fieldAttrArmored     = "AttributeBonus[Armored]";
+const string c_fieldAttrPsionic     = "AttributeBonus[Psionic]";
+const string c_fieldAttrLight       = "AttributeBonus[Light]";
+const string c_fieldDrainFactor     = "DrainVitalCostFactor";
+const string c_fieldEffectChange0   = "VitalArray[0].Change";
+const string c_fieldEffectChange1   = "VitalArray[1].Change";
+const string c_fieldEffectChange2   = "VitalArray[2].Change";
+const string c_fieldEnergyCost      = "Cost[0].Vital[Energy]";
+const string c_fieldEnergyMax       = "EnergyMax";
+const string c_fieldFilters         = "SearchFilters";
+const string c_fieldMinRange        = "MinimumRange";
+const string c_fieldModification0   = "Modification.VitalRegenArray[Energy]";
+const string c_fieldPeriodCount     = "PeriodCount";
+const string c_fieldRadius          = "Radius";
+const string c_fieldRadiusBonus0    = "AreaArray[0].RadiusBonus";
+const string c_fieldRange0          = "Range[0]";
+const string c_fieldRange           = "Range";
+const string c_fieldSightRange       = "Sight";
+const string c_fieldTargetFilters   = "TargetFilters";
+const string c_fieldTargetFiltersAB = "TargetFilters[0]";
+const string c_fieldTargetFilters0  = "ValidatorArray[0].value.value";
+
+//--------------------------------------------------------------------------------------------------
+//  TACTICAL API
+//
+//  Usage:
+//      filter = AIFilter(owner);
+//      ...set various filter information...
+//      newGroup = AIGetFilterGroup(filter, oldGroup);
+//--------------------------------------------------------------------------------------------------
+native aifilter AIFilter (int player);
+
+native void AISetFilterAlliance (aifilter filter, int want);
+native void AISetFilterMarker (aifilter filter, int min, int max, marker m);
+native void AISetFilterSelf (aifilter filter, unit exclude);
+native void AISetFilterBits (aifilter filter, unitfilter uf);
+native void AISetFilterRange (aifilter filter, unit center, fixed radius);
+native void AISetFilterInCombat (aifilter filter, bool inCombat);
+native void AISetFilterLife (aifilter filter, fixed min, fixed max);
+native void AISetFilterLifeLost (aifilter filter, fixed min, fixed max);
+native void AISetFilterLifePercent (aifilter filter, fixed min, fixed max);
+native void AISetFilterLifeSortReference (aifilter filter, fixed value, fixed distance);
+native void AISetFilterLifeMod (aifilter filter, int type, fixed mod);
+native void AISetFilterLifePerMarker (aifilter filter, fixed each, marker m);
+native void AISetFilterShields (aifilter filter, fixed min, fixed max);
+native void AISetFilterPlane (aifilter filter, int plane);
+native void AISetFilterCanAttackEnemy (aifilter filter, int enemyGroundCount, int enemyAirCount);
+native void AISetFilterCanAttackAlly (aifilter filter, bool groundAllies, bool airAllies);
+native void AISetFilterBehaviorCount (aifilter filter, int minBehavior, int maxBehavior, string behaviorType);
+native void AISetFilterMelee (aifilter filter, bool want);
+native void AISetFilterValidPassenger (aifilter filter, unit transport);
+
+const fixed c_minDamageFraction = .5;
+const fixed c_distanceFromDamage = .2;
+
+const int c_noMarkersMin = 0;
+const int c_noMarkersMax = 0;
+
+const int c_noBehaviorMin = 0;
+const int c_noBehaviorMax = 0;
+
+const int c_noMax = -1;
+const int c_noMin = -1;
+
+const bool c_groundAlliesNearby = true;
+const bool c_airAlliesNearby = true;
+
+const bool c_onlyInCombat = true;
+const bool c_notInCombat = false;
+
+const bool c_onlyMelee = true;
+const bool c_onlyRanged = false;
+
+const fixed c_noThreshold = 0;
+
+native unitgroup AIGetFilterGroup (aifilter filter, unitgroup group);
+
+const fixed c_maxDistanceToMinerals = 10;
+
+const bool c_activeOnly = true;
+const bool c_anyProduction = false;
+
+native unitgroup AIFilterProduction (unitgroup group, bool activeOnly);
+native unitgroup AIFilterCasters (unitgroup group);
+native unitgroup AIFilterPathable (unitgroup group, point inStart);
+native unitgroup AIFilterGathering (unitgroup group, int inResource, fixed distance);
+
+const int c_buildingTypeAll         = 0x0;
+const int c_buildingTypeProduction  = 0x1;
+const int c_buildingTypeTownHall    = 0x2;
+const int c_buildingTypeActive      = 0x4;
+native unitgroup AIGetBuildingGroup (int player, int flags);
+native unitgroup AIGetWorkers (int player);
+native unit AIGetClosestUnit (unit u, unitgroup group, bool needsPath);
+
+native fixed AIUnitGroupStrength (unitgroup inGroup);
+native fixed AIAllyEnemyRatio (int player, point p, unitfilter filter, fixed range, fixed minThreshold);
+
+native bool AIIsFollowingUnit (unit aiUnit, string unitType);
+native int AIGetPlayerGroup (unitgroup inGroup);
+native bool AINearbyPlaneTest (point p, int player, fixed range, int inPlane, int inAlliance);
+
+native bool AIUnitGroupHasRanged (unitgroup inGroup);
+native bool AIUnitGroupHasMelee (unitgroup inGroup);
+
+//--------------------------------------------------------------------------------------------------
+//  *** CATALOG INFO ***
+//--------------------------------------------------------------------------------------------------
+string AIAbilityStr (int player, string entry, string field) {
+    return CatalogFieldValueGet(c_gameCatalogAbil, entry, field, player);
+}
+string AIEffectStr (int player, string entry, string field) {
+    return CatalogFieldValueGet(c_gameCatalogEffect, entry, field, player);
+}
+string AIWeaponStr (int player, string entry, string field) {
+    return CatalogFieldValueGet(c_gameCatalogWeapon, entry, field, player);
+}
+string AIUnitStr (int player, string entry, string field) {
+    return CatalogFieldValueGet(c_gameCatalogUnit, entry, field, player);
+}
+string AIBehaviorStr (int player, string entry, string field) {
+    return CatalogFieldValueGet(c_gameCatalogBehavior, entry, field, player);
+}
+
+fixed AIAbilityFixed (int player, string entry, string field) {
+    return StringToFixed(AIAbilityStr(player, entry, field));
+}
+fixed AIEffectFixed (int player, string entry, string field) {
+    return StringToFixed(AIEffectStr(player, entry, field));
+}
+fixed AIWeaponFixed (int player, string entry, string field) {
+    return StringToFixed(AIWeaponStr(player, entry, field));
+}
+fixed AIUnitFixed (int player, string entry, string field) {
+    return StringToFixed(AIUnitStr(player, entry, field));
+}
+fixed AIBehaviorFixed (int player, string entry, string field) {
+    return StringToFixed(AIBehaviorStr(player, entry, field));
+}
+
+int AIAbilityInt (int player, string entry, string field) {
+    return StringToInt(AIAbilityStr(player, entry, field));
+}
+int AIEffectInt (int player, string entry, string field) {
+    return StringToInt(AIEffectStr(player, entry, field));
+}
+int AIWeaponInt (int player, string entry, string field) {
+    return StringToInt(AIWeaponStr(player, entry, field));
+}
+int AIUnitInt (int player, string entry, string field) {
+    return StringToInt(AIUnitStr(player, entry, field));
+}
+int AIBehaviorInt (int player, string entry, string field) {
+    return StringToInt(AIBehaviorStr(player, entry, field));
+}
+
+unitgroup AIAbilityGroup (int player, string entry, unitgroup base) {
+    return UnitGroupFilter(null, c_playerAny, base,
+        UnitFilterStr(AIAbilityStr(player, entry, c_fieldTargetFiltersAB)), 0);
+}
+unitgroup AIEffectGroup (int player, string entry, unitgroup base) {
+    return UnitGroupFilter(null, c_playerAny, base,
+        UnitFilterStr(AIEffectStr(player, entry, c_fieldFilters)), 0);
+}
+unitgroup AIWeaponGroup (int player, string entry, unitgroup base) {
+    return UnitGroupFilter(null, c_playerAny, base,
+        UnitFilterStr(AIWeaponStr(player, entry, c_fieldTargetFilters)), 0);
+}
+
+//--------------------------------------------------------------------------------------------------
+native void AISetTacticalAttackTargetPoint (unit u, point t);
+native void AISetTacticalAttackTargetUnit (unit u, unit t);
+
+//--------------------------------------------------------------------------------------------------
+//  AIUnitGroupGetValidOrder
+//--------------------------------------------------------------------------------------------------
+const bool c_forwards = true;
+const bool c_backwards = false;
+
+//  Loops over a unitgroup forwards or backwards until finding a unit that makes a valid order.
+//
+native order AIUnitGroupGetValidOrder(unitgroup inGroup, order inOrder, unit caster, bool forwards);
+
+//--------------------------------------------------------------------------------------------------
+//  AICampSkirDiffTest
+//--------------------------------------------------------------------------------------------------
+bool AICampSkirDiffTest (int player, int campMinDiff, int skirMinDiff) {
+    if (AIIsCampaign(player)) {
+        return AIPlayerDifficulty(player) >= campMinDiff;
+    }
+    return AIPlayerDifficulty(player) >= skirMinDiff;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AICastStandard
+//--------------------------------------------------------------------------------------------------
+bool AICastStandard (unit aiUnit, order ord, marker mark, bool retreat) {
+    if (!UnitOrderIsValid(aiUnit, ord)) {
+        return false;
+    }
+    AICast(aiUnit, ord, mark, retreat);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIMarker
+//--------------------------------------------------------------------------------------------------
+marker AIMarker (unit aiUnit, string name) {
+    marker mark = MarkerCastingUnit(name, aiUnit);
+    MarkerSetMatchFlag(mark, c_markerMatchLink, true);
+    MarkerSetMatchFlag(mark, c_markerMatchCasterPlayer, true);
+    return mark;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AISpellPriority
+//--------------------------------------------------------------------------------------------------
+void AISpellPriority (unitgroup src, unitgroup dst) {
+    // Function to choose which unit(s) should have highest priority casting spells.
+
+    // At the moment when this function is called by the game, the src unitgroup is pre-sorted in 
+    // the following way.  Idle units are sorted before units with an order. Units with lower 
+    // LifeFraction (ie injured) are sorted before units with higher LifeFraction. Press-forward 
+    // requests are sorted after all cast requests.
+
+    // this simple AI just takes the first unit plus all following that share the same command
+    //
+    int count = UnitGroupCount(src, c_unitCountAll);
+    unit first = UnitGroupUnit(src, 1);
+    unit test;
+
+    UnitGroupAdd(dst, first);
+    
+    while (count > 1) {
+        test = UnitGroupUnit(src, count);
+        count = count - 1;
+
+        if (AISameCommand(first, test)) {
+            UnitGroupAdd(dst, test);
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIIsAttackOrder
+//--------------------------------------------------------------------------------------------------
+bool AIIsAttackOrder (order o) {
+    return StringEqual(AbilityCommandGetAbility(OrderGetAbilityCommand(o)), c_AB_Attack, true);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIIsMoveOrder
+//--------------------------------------------------------------------------------------------------
+bool AIIsMoveOrder (order o) {
+    return StringEqual(AbilityCommandGetAbility(OrderGetAbilityCommand(o)), c_AB_Move, true);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  PointAlongLine
+//--------------------------------------------------------------------------------------------------
+point PointAlongLine (point from, point toward, fixed distance) {
+    return PointWithOffsetPolar(from, distance, AngleBetweenPoints(from, toward));
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AICreateOrder
+//--------------------------------------------------------------------------------------------------
+order AICreateOrder (int player, string abilLink, int abilIndex) {
+    abilcmd cmd = AbilityCommand(abilLink, abilIndex);
+    order ord;
+    if (cmd == c_nullCmd) {
+        return null;
+    }
+    ord = Order(cmd);
+    OrderSetPlayer(ord, player);
+    return ord;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AITacticalOrder
+//--------------------------------------------------------------------------------------------------
+order AITacticalOrder (int player, unit aiUnit, string abilLink) {
+    order ord = AICreateOrder(player, abilLink, 0);
+    if (!UnitOrderIsValid(aiUnit, ord)) {
+        return null;
+    }
+    return ord;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AITacticalOrderIndex
+//--------------------------------------------------------------------------------------------------
+order AITacticalOrderIndex (int player, unit aiUnit, string abilLink, int abilIndex) {
+    order ord = AICreateOrder(player, abilLink, abilIndex);
+    if (!UnitOrderIsValid(aiUnit, ord)) {
+        return null;
+    }
+    return ord;
+}
+
+//--------------------------------------------------------------------------------------------------
+include "TriggerLibs/Tactical/TactProtAI"
+include "TriggerLibs/Tactical/TactTerrAI"
+include "TriggerLibs/Tactical/TactZergAI"
+include "TriggerLibs/Tactical/TactCampAI"

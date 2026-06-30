@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib38ED2A9C_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib38ED2A9C_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Set Mutator Weekly Challenge On
+//--------------------------------------------------------------------------------------------------
+bool lib38ED2A9C_gt_SetMutatorWeeklyChallengeOn_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(3134);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib38ED2A9C_gt_SetMutatorWeeklyChallengeOn_Init () {
+    lib38ED2A9C_gt_SetMutatorWeeklyChallengeOn = TriggerCreate("lib38ED2A9C_gt_SetMutatorWeeklyChallengeOn_Func");
+    TriggerAddEventMapInit(lib38ED2A9C_gt_SetMutatorWeeklyChallengeOn);
+}
+
+void lib38ED2A9C_InitTriggers () {
+    lib38ED2A9C_gt_SetMutatorWeeklyChallengeOn_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib38ED2A9C_InitLib_completed = false;
+
+void lib38ED2A9C_InitLib () {
+    if (lib38ED2A9C_InitLib_completed) {
+        return;
+    }
+
+    lib38ED2A9C_InitLib_completed = true;
+
+    lib38ED2A9C_InitLibraries();
+    lib38ED2A9C_InitTriggers();
+}
+

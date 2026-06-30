@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <!--
+    
+    Reaper D8Charge Targetfind
+    
+    -->
+    <CTargetFindSet id="TacticalD8ChargeTarget">
+        <Type value="Successful"/>
+        <Array value="D8ChargeBuildingOnly"/>
+        <Array value="D8ChargeAllUnits"/>
+    </CTargetFindSet>
+    <CTargetFindEnumArea id="D8ChargeBuildingOnly">
+        <CasterValidator value="CasterLifeLT60Percent"/>
+        <SearchFlags index="ExtendByUnitRadius" value="1"/>
+        <AreaArray/>
+        <Abil value="D8Charge"/>
+        <SearchFilters value="Ground,Structure;Self,Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Hallucination,Invulnerable"/>
+        <TargetValidator value="D8ChargeTargetValidator"/>
+    </CTargetFindEnumArea>
+    <CTargetFindEnumArea id="D8ChargeAllUnits" parent="D8ChargeBuildingOnly">
+        <CasterValidator value="D8ChargeAllUnitValidator"/>
+        <SearchFilters value="Ground;Self,Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Hallucination,Invulnerable"/>
+    </CTargetFindEnumArea>
+    <!--
+    
+    Phoenix AntiGrav Targetfind
+    
+    -->
+    <CTargetFindSet id="GravitonBeamTarget">
+        <Type value="Successful"/>
+        <CasterValidator value="IdleAttackAirGroundValidator"/>
+        <Array value="GravitonBeamThreat"/>
+        <Array value="GravitonBeamHostileSomeEnergy"/>
+        <Array value="GravitonBeamHostileNearFullEnergy"/>
+    </CTargetFindSet>
+    <CTargetFindEnumArea id="GravitonBeamThreat">
+        <ExtendRadius value="3"/>
+        <SearchFlags index="ExtendByUnitRadius" value="1"/>
+        <AreaArray/>
+        <TargetValidator value="GravitonBeamThreatValidatorTarget"/>
+        <Abil value="GravitonBeam"/>
+        <SearchFilters value="-;Self,Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Hallucination,Invulnerable"/>
+        <TargetSorts>
+            <SortArray value="TSLife"/>
+        </TargetSorts>
+    </CTargetFindEnumArea>
+    <CTargetFindEnumArea id="GravitonBeamHostileSomeEnergy" parent="GravitonBeamThreat">
+        <CasterValidator value="GravitonBeamHostileValidatorCasterSomeEnergy"/>
+        <TargetValidator value="GravitonBeamHostileValidatorTargetSomeEnergy"/>
+        <TargetSorts>
+            <SortArray value="TSLifeLargestFirst"/>
+        </TargetSorts>
+    </CTargetFindEnumArea>
+    <CTargetFindEnumArea id="GravitonBeamHostileNearFullEnergy" parent="GravitonBeamThreat">
+        <CasterValidator value="GravitonBeamHostileValidatorCasterNearFullEnergy"/>
+        <TargetValidator value="GravitonBeamHostileValidatorTargetNearFullEnergy"/>
+        <TargetSorts>
+            <SortArray value="TSLifeLargestFirst"/>
+        </TargetSorts>
+    </CTargetFindEnumArea>
+    <!--
+    
+    Worker Rally Point
+    
+    -->
+    <CTargetFindSet id="WorkerRallyPoint">
+        <Type value="Sequential"/>
+        <Array value="TargetFindWorkerRallyPoint"/>
+    </CTargetFindSet>
+    <CTargetFindWorkerRallyPoint id="TargetFindWorkerRallyPoint"/>
+    <CTargetFindSet id="WorkerRallyPointHatchery">
+        <Type value="Sequential"/>
+        <Array value="TargetFindWorkerRallyPointHatchery"/>
+    </CTargetFindSet>
+    <CTargetFindWorkerRallyPoint id="TargetFindWorkerRallyPointHatchery" parent="TargetFindWorkerRallyPoint">
+        <CommandIndex value="1"/>
+    </CTargetFindWorkerRallyPoint>
+    <!--
+    
+    Default Rally Point
+    
+    -->
+    <CTargetFindSet id="DefaultRallyPoint">
+        <Type value="Sequential"/>
+        <Array value="TargetFindDefaultRallyPoint"/>
+    </CTargetFindSet>
+    <CTargetFindRallyPoint id="TargetFindDefaultRallyPoint"/>
+    <!--
+    
+    Ghost Emp
+    
+    -->
+    <CTargetFindSet id="EMP">
+        <Type value="Sequential"/>
+        <Array value="EMP2A"/>
+        <Array value="EMPBestPoint"/>
+    </CTargetFindSet>
+    <CTargetFindEffect id="EMP2A">
+        <TargetValidator value="EMPValidTargets"/>
+        <Effect value="EMPSearch"/>
+    </CTargetFindEffect>
+    <CTargetFindBestPoint id="EMPBestPoint">
+        <Flags index="EvaluateCmd" value="1"/>
+        <DamageBase value="20"/>
+        <MinCount value="4"/>
+        <MinScore value="1"/>
+        <Effect value="EMPSearch"/>
+    </CTargetFindBestPoint>
+    <!--
+    
+    Raven Auto Turret
+    
+    -->
+    <CTargetFindSet id="TacticalAutoTurret">
+        <Type value="Sequential"/>
+        <Array value="AutoTurret"/>
+        <Array value="AutoTurretBestPoint"/>
+    </CTargetFindSet>
+    <CTargetFindEffect id="AutoTurret"/>
+    <CTargetFindBestPoint id="AutoTurretBestPoint">
+        <Flags index="EvaluateCmd" value="1"/>
+        <DamageBase value="40"/>
+        <MinCount value="2"/>
+        <MinScore value="1.5"/>
+        <Effect value="AutoTurret"/>
+    </CTargetFindBestPoint>
+    <!--
+    
+    Infestor Disease
+    
+    -->
+    <CTargetFindSet id="InfestorDisease">
+        <Type value="Sequential"/>
+        <Array value="InfestorDiseaseSearch"/>
+        <Array value="InfestorDiseaseBestPoint"/>
+    </CTargetFindSet>
+    <CTargetFindEffect id="InfestorDiseaseSearch">
+        <TargetValidator value="DiseaseTestBuff"/>
+    </CTargetFindEffect>
+    <CTargetFindBestPoint id="InfestorDiseaseBestPoint">
+        <Flags index="EvaluateCmd" value="1"/>
+        <DamageBase value="50"/>
+        <MinCount value="4"/>
+        <MinScore value="2"/>
+        <Effect value="InfestorDiseaseSearch"/>
+    </CTargetFindBestPoint>
+    <!--
+    
+    Battlecruiser MissilePods
+    
+    -->
+    <CTargetFindSet id="MissilePods">
+        <Type value="Sequential"/>
+        <Array value="HurricaneMissileDamage"/>
+        <Array value="MissilePodsBestPoint"/>
+    </CTargetFindSet>
+    <CTargetFindEffect id="HurricaneMissileDamage"/>
+    <CTargetFindBestPoint id="MissilePodsBestPoint">
+        <Flags index="EvaluateCmd" value="1"/>
+        <DamageBase value="40"/>
+        <MinCount value="3"/>
+        <MinScore value="2.5"/>
+        <BonusAttri value="Light"/>
+        <Effect value="HurricaneMissileDamage"/>
+    </CTargetFindBestPoint>
+    <!--
+    
+    Loki MissilePods
+    
+    -->
+    <CTargetFindSet id="LokiMissilePods">
+        <Type value="Sequential"/>
+        <Array value="LokiHurricaneMissileDamage"/>
+        <Array value="LokiMissilePodsBestPoint"/>
+    </CTargetFindSet>
+    <CTargetFindEffect id="LokiHurricaneMissileDamage"/>
+    <CTargetFindBestPoint id="LokiMissilePodsBestPoint">
+        <Flags index="EvaluateCmd" value="1"/>
+        <DamageBase value="40"/>
+        <MinCount value="3"/>
+        <MinScore value="2"/>
+        <BonusAttri value="Light"/>
+        <Effect value="LokiHurricaneMissileDamage"/>
+    </CTargetFindBestPoint>
+    <!--
+    
+    High Templar PsiStorm
+    
+    -->
+    <CTargetFindSet id="PsiStorm">
+        <Type value="Successful"/>
+        <Array value="PsiStormNormal"/>
+        <Array value="PsiStormLow"/>
+    </CTargetFindSet>
+    <CTargetFindSet id="PsiStormNormal">
+        <Type value="Sequential"/>
+        <Array value="PsiStormSearch"/>
+        <Array value="PsiStormBestPointNormal"/>
+    </CTargetFindSet>
+    <CTargetFindSet id="PsiStormLow">
+        <CasterValidator value="CasterLifeLT60Percent"/>
+        <Type value="Sequential"/>
+        <Array value="PsiStormSearch"/>
+        <Array value="PsiStormBestPointLow"/>
+    </CTargetFindSet>
+    <CTargetFindEffect id="PsiStormSearch">
+        <TargetValidator value="PsiStormTestBuff"/>
+    </CTargetFindEffect>
+    <CTargetFindBestPoint id="PsiStormBestPointNormal">
+        <Flags index="EvaluateCmd" value="1"/>
+        <DamageBase value="40"/>
+        <MinCount value="3"/>
+        <MinScore value="2.5"/>
+        <Effect value="PsiStormSearch"/>
+    </CTargetFindBestPoint>
+    <CTargetFindBestPoint id="PsiStormBestPointLow">
+        <Flags index="EvaluateCmd" value="1"/>
+        <DamageBase value="30"/>
+        <MinScore value="0.5"/>
+        <Effect value="PsiStormSearch"/>
+    </CTargetFindBestPoint>
+    <!--
+    
+    Stalker Blink
+    
+    -->
+    <CTargetFindSet id="Blink">
+        <CasterValidator value="CasterNotCampaign"/>
+        <Type value="Successful"/>
+        <Array value="BlinkRetreat"/>
+        <Array value="BlinkAttack"/>
+    </CTargetFindSet>
+    <!-- Run away if we're low on health and being attacked. -->
+    <CTargetFindSet id="BlinkRetreat">
+        <CasterValidator value="CasterVitalityLT60Percent"/>
+        <Type value="Sequential"/>
+        <Array value="BlinkAttacker"/>
+        <Array value="BlinkAwayOffset"/>
+    </CTargetFindSet>
+    <CTargetFindLastAttacker id="BlinkAttacker">
+        <TargetValidator value="TacticalBlinkRetreatTest"/>
+    </CTargetFindLastAttacker>
+    <CTargetFindOffset id="BlinkAwayOffset">
+        <Flags index="EvaluateCmd" value="1"/>
+        <Angle value="180"/>
+        <Distance value="8,8"/>
+    </CTargetFindOffset>
+    <!-- If we have an attack target and it is outside of attack range, blink to within attack range. -->
+    <CTargetFindSet id="BlinkAttack">
+        <CasterValidator value="CasterVitalityGT70Percent"/>
+        <Type value="Sequential"/>
+        <Array value="BlinkAttackTarget"/>
+        <Array value="BlinkAttackOffset"/>
+    </CTargetFindSet>
+    <CTargetFindOrder id="BlinkAttackTarget" parent="AttackOrderTarget">
+        <TargetValidator value="TacticalBlinkAttackRange"/>
+    </CTargetFindOrder>
+    <CTargetFindOffset id="BlinkAttackOffset">
+        <Flags index="EvaluateCmd" value="1"/>
+        <Distance value="-4,-4"/>
+    </CTargetFindOffset>
+    <!-- If the target is retreating, blink a random distance in its direction. -->
+    <!-- No longer used 
+    <CTargetFindSet id="BlinkChase">
+        <Type value="Sequential"/>
+        <Array value="BlinkChaseTarget"/>
+        <Array value="BlinkChaseOffset"/>
+    </CTargetFindSet>
+    <CTargetFindOrder id="BlinkChaseTarget" parent="AttackOrderTarget">
+        <TargetValidator value="TacticalBlinkChaseTest"/>
+    </CTargetFindOrder>
+    <CTargetFindOffset id="BlinkChaseOffset">
+        <Flags index="EvaluateCmd" value="1"/>
+        <Distance value="4,8"/>
+    </CTargetFindOffset> -->
+</Catalog>

@@ -1,0 +1,12 @@
+typedef undeclared_type something_t;
+// ^ERR
+
+typedef int enum;
+typedef int enum;
+// ^ERR
+
+typedef enum EClassIdCCharacter;
+static EClassIdCCharacter foo(EClassIdCCharacter a);
+EClassIdCCharacter e_classIdCCharacter = 0;
+const EClassIdCCharacter bah = 0;
+// ^ERR

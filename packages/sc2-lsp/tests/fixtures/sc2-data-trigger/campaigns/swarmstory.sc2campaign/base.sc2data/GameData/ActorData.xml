@@ -1,0 +1,1073 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CActorUnit default="1" id="SMHighlightable" parent="GenericUnitSM">
+        <On Terms="UnitHighlightLocal.*.Start" Send="AnimBracketStart Highlight Highlight,Start Highlight Highlight,End"/>
+        <On Terms="UnitHighlightLocal.*.Stop" Send="AnimBracketStop Highlight"/>
+    </CActorUnit>
+    <CActorUnit default="1" id="SMEggRoomHS" parent="SMBGCharacter">
+        <On Terms="Signal.*.Rawr; !AnimPlaying Work" Send="AnimPlay Work Stand,Work 0 0.600000"/>
+    </CActorUnit>
+    <CActorUnit id="Beacon_Zerg">
+        <NameOffset value="70"/>
+    </CActorUnit>
+    <CActorUnit id="NaturalGas">
+        <HighlightTooltip value="Unit/Highlight/NaturalGas"/>
+    </CActorUnit>
+    <CActorUnit id="NaturalMinerals">
+        <HighlightTooltip value="Unit/Highlight/NaturalMinerals"/>
+    </CActorUnit>
+    <CActorUnit id="PalletGas">
+        <HighlightTooltip value="Unit/Highlight/PalletGas"/>
+    </CActorUnit>
+    <CActorUnit id="PalletMinerals">
+        <HighlightTooltip value="Unit/Highlight/PalletMinerals"/>
+    </CActorUnit>
+    <CActorModel id="GhostNukeDrop">
+        <On Terms="Effect.NukeDetonate.Stop" Send="Destroy"/>
+    </CActorModel>
+    <!--                                                                                         -->
+    <!-- SMX1CharSet04 ................................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1CharSet04" parent="GenericUnitSM" unitName="SMX1CharSet04"/>
+    <!--                                                                                         -->
+    <!-- SMX1CharSetCameras ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1CharSetCameras" parent="GenericUnitSM" unitName="SMX1CharSetCameras"/>
+    <!--                                                                                         -->
+    <!-- SMBridgePlanets ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMBridgePlanetAlbion" parent="GenericUnitStandard">
+        <On Terms="ActorCreation" Send="TextureSelectById SMBridgePlanetAlbion"/>
+    </CActorUnit>
+    <!--                                                                                         -->
+    <!-- SMX1EggRoomSet ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1EggRoomSet" parent="GenericUnitSM" unitName="SMX1EggRoomSet"/>
+    <!--                                                                                         -->
+    <!-- SMX1EggRoomSetCalloutPositions ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1EggRoomSetCalloutPositions" parent="GenericUnitSM" unitName="SMX1EggRoomSetCalloutPositions"/>
+    <!--                                                                                         -->
+    <!-- SMX1EggRoom Eggs ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1EggRoomEgg" parent="SMCharacter" unitName="SMX1EggRoomBanelingEgg">
+        <On Terms="ActorCreation" Send="Create SoundEmitter SetPiece_EggroomZerglingEgg_Stand"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1EggRoomEggMonsterEgg" parent="SMCharacter" unitName="SMX1EggRoomEggMonsterEgg"/>
+    <CActorUnit id="SMX1EggRoomHydraliskEgg" parent="SMCharacter" unitName="SMX1EggRoomHydraliskEgg">
+        <On Terms="ActorCreation" Send="Create SoundEmitter SetPiece_EggroomZerglingEgg_Stand"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1EggRoomInfestorEgg" parent="SMCharacter" unitName="SMX1EggRoomInfestorEgg"/>
+    <CActorUnit id="SMX1EggRoomLurkerEgg" parent="SMCharacter" unitName="SMX1EggRoomLurkerEgg"/>
+    <CActorUnit id="SMX1EggRoomMutaliskEgg" parent="SMCharacter" unitName="SMX1EggRoomMutaliskEgg"/>
+    <CActorUnit id="SMX1EggRoomRoachEgg" parent="SMCharacter" unitName="SMX1EggRoomRoachEgg">
+        <On Terms="ActorCreation" Send="Create SoundEmitter SetPiece_EggroomZerglingEgg_Stand"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1EggRoomUltraliskEgg" parent="SMCharacter" unitName="SMX1EggRoomUltraliskEgg"/>
+    <CActorUnit id="SMX1EggRoomZergFlyerEgg" parent="SMCharacter" unitName="SMX1EggRoomZergFlyerEgg"/>
+    <CActorUnit id="SMX1EggRoomZerglingEgg" parent="SMCharacter" unitName="SMX1EggRoomZerglingEgg">
+        <!--On Terms="ActorCreation" Send="Create SoundEmitter SetPiece_EggroomZerglingEgg_Stand"/-->
+    </CActorUnit>
+    <!--                                                                                         -->
+    <!-- SMX1ArmyEvolutionSet ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1ArmyEvolutionSet" parent="GenericUnitSM" unitName="SMX1ArmyEvolutionSet"/>
+    <!--                                                                                         -->
+    <!-- SMX1ArmyEvolutionSet ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1ArmyEvolutionSet2" parent="SMHighlightable" unitName="SMX1ArmyEvolutionSet2"/>
+    <!--                                                                                         -->
+    <!-- SMX1ArmyEvolutionSet ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1ArmyEvolutionSet3" parent="SMHighlightable" unitName="SMX1ArmyEvolutionSet3"/>
+    <!--                                                                                         -->
+    <!-- SMX1ArmyUpgradeSet ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1ArmyUpgradeSet" parent="GenericUnitSM" unitName="SMX1ArmyUpgradeSet"/>
+    <CActorUnit id="SMX1KaldrSet02" parent="GenericUnitSM" unitName="SMX1KaldrSet02"/>
+    <!--                                                                                         -->
+    <!-- SMX1KerriganUpgradeSet ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1KerriganUpgradeSet" parent="GenericUnitSM" unitName="SMX1KerriganUpgradeSet"/>
+    <!--                                                                                         -->
+    <!-- SMX1KerriganUpgradeBackground ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1KerriganUpgradeBackground" parent="GenericUnitSM" unitName="SMX1KerriganUpgradeBackground"/>
+    <!--                                                                                         -->
+    <!-- SMX1LeviathanSet ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1LeviathanSet" parent="GenericUnitSM" unitName="SMX1LeviathanSet"/>
+    <CActorUnit id="SMX1LeviathanSet01" parent="GenericUnitSM" unitName="SMX1LeviathanSet01"/>
+    <CActorUnit id="SMX1LeviathanSet02" parent="GenericUnitSM" unitName="SMX1LeviathanSet02"/>
+    <CActorUnit id="SMX1LeviathanSet03" parent="GenericUnitSM" unitName="SMX1LeviathanSet03">
+        <On Terms="ActorCreation" Send="Create SoundEmitter Set_Spawning_Pool_Loop"/>
+    </CActorUnit>
+    <!--                                                                                         -->
+    <!-- SMX1LeviathanSetCalloutPositions ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1LeviathanSetCalloutPositions" parent="GenericUnitSM" unitName="SMX1LeviathanSetCalloutPositions"/>
+    <!--                                                                                         -->
+    <!-- SMX1DominionSpaceSet ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1DominionSpaceSet" parent="GenericUnitSM" unitName="SMX1DominionSpaceSet"/>
+    <!--                                                                                         -->
+    <!-- SMX1DominionSpaceSet 02 .................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1DominionSpaceSet02" parent="GenericUnitSM" unitName="SMX1DominionSpaceSet02"/>
+    <!-- SMX1DominionSpaceSet ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1DominionSpaceSet01" parent="SMClickable" unitName="SMX1DominionSpaceSet01">
+        <On Terms="ActorCreation" Send="Create Set_Hyperion_Loop"/>
+        <On Terms="ModelEvent; ModelEventName Set_Hyperion_Loop_Stop" Target="Set_Hyperion_Loop" Send="Destroy"/>
+        <On Terms="ModelEvent; ModelEventName Set_Hyperion_Loop_Start" Send="Create Set_Hyperion_Loop"/>
+    </CActorUnit>
+    <CActorSound id="Set_Hyperion_Loop" parent="SoundContinuous">
+        <Host Subject="_Unit"/>
+    </CActorSound>
+    <!-- SMX1CharSet ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1CharSet" parent="GenericUnitSM" unitName="SMX1CharSet"/>
+    <!--                                                                                         -->
+    <!-- SMX1CharLavaCapHS ................................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1CharLavaCapHS" parent="SMClickable" unitName="SMX1CharLavaCapHS"/>
+    <!--                                                                                         -->
+    <!-- SMX1CharSet03 ................................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1CharSet03" parent="GenericUnitSM" unitName="SMX1CharSet03"/>
+    <!--                                                                                         -->
+    <!-- SMX1CharSet05 ................................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1CharSet05" parent="GenericUnitSM" unitName="SMX1CharSet05"/>
+    <!--                                                                                         -->
+    <!-- SMX1CharWarfieldsCompoundHS ................................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1CharWarfieldsCompoundHS" parent="SMClickable" unitName="SMX1CharWarfieldsCompoundHS"/>
+    <!--                                                                                         -->
+    <!-- SMX1KaldrSet ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1KaldrSet00" parent="GenericUnitSM" unitName="SMX1KaldrSet00"/>
+    <CActorUnit id="SMX1KaldrSet01" parent="SMClickable" unitName="SMX1KaldrSet01"/>
+    <!--                                                                                         -->
+    <!-- SMX1KaldrKerriganHS ................................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1KaldrKerriganHS" parent="SMClickable" unitName="SMX1KaldrKerriganHS"/>
+    <!--                                                                                         -->
+    <!-- SMX1KaldrLilithHS ................................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1KaldrLilithHS" parent="SMClickable" unitName="SMX1KaldrLilithHS">
+        <EventDataFootprint index="0" Model="SMX1KaldrLilithHS"/>
+        <HighlightTooltip value="Unit/Name/MX1KaldrLilithHS"/>
+    </CActorUnit>
+    <!--                                                                                         -->
+    <!-- SMX1KaldrIcedZergHS ................................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1KaldrIcedZergHS" parent="SMClickable" unitName="SMX1KaldrIcedZergHS"/>
+    <!--                                                                                         -->
+    <!-- SMX1KaldrProtossHS ................................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1KaldrProtossHS" parent="SMClickable" unitName="SMX1KaldrProtossHS"/>
+    <!--                                                                                         -->
+    <!-- SMX1_KorhalSet ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_KorhalSet_01" parent="SMClickable" unitName="SMX1_KorhalSet_01"/>
+    <!-- SMX1_KorhalSpaceSet_01 ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_KorhalSpaceSet_01" parent="SMClickable" unitName="SMX1_KorhalSpaceSet_01">
+        <On Terms="ActorCreation" Send="Create SMX1_KorhalSpaceSet_01_Loop"/>
+    </CActorUnit>
+    <CActorSound id="SMX1_KorhalSpaceSet_01_Loop" parent="SoundContinuous">
+        <Sound value="Set_Satellite_Loop"/>
+        <Host Subject="_Unit"/>
+    </CActorSound>
+    <!--                                                                                         -->
+    <!-- SMX1_LabSet ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_LabSet" parent="GenericUnitSM" unitName="SMX1_LabSet"/>
+    <!--                                                                                         -->
+    <!-- SMX1_LabSet01 ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_LabSet01" parent="GenericUnitSM" unitName="SMX1_LabSet01"/>
+    <!--                                                                                         -->
+    <!-- SMX1_LabSet02 ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_LabSet02" parent="GenericUnitSM" unitName="SMX1_LabSet02"/>
+    <!--                                                                                         -->
+    <!-- SMX1_KorhalSet ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_KorhalSet" parent="GenericUnitSM" unitName="SMX1_KorhalSet"/>
+    <!--                                                                                         -->
+    <!-- SMX1_KorhalSet_Close ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_KorhalSet_Close" parent="GenericUnitSM" unitName="SMX1_KorhalSet_Close"/>
+    <!--                                                                                         -->
+    <!-- SMX1KorhalSetxtrasCalloutPos ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1KorhalSetxtrasCalloutPos" parent="GenericUnitSM" unitName="SMX1KorhalSetxtrasCalloutPos"/>
+    <CActorUnit id="SMX1_MobiusSet_Dusk02" parent="SMClickable" unitName="SMX1_MobiusSet_Dusk02"/>
+    <!--                                                                                         -->
+    <!-- SMX1_MobiusSet_Night_01 ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_MobiusSet_Night_01" parent="SMClickable" unitName="SMX1_MobiusSet_Night_01"/>
+    <!-- SMX1_ZerusSet ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_ZerusSet" parent="GenericUnitSM" unitName="SMX1_ZerusSet"/>
+    <!-- SMX1_ZerusSet01 ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_ZerusSet_01" parent="GenericUnitSM" unitName="SMX1_ZerusSet_01"/>
+    <!-- SMX1_ZerusSet02 ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_ZerusSet_02" parent="SMClickable" unitName="SMX1_ZerusSet_02"/>
+    <!-- SMX1_ZerusSet03 ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_ZerusSet_03" parent="SMClickable" unitName="SMX1_ZerusSet_03">
+        <On Terms="ActorCreation" Send="Create SMX1_ZerusSet_03_Loop"/>
+    </CActorUnit>
+    <CActorSound id="SMX1_ZerusSet_03_Loop" parent="SoundContinuous">
+        <Sound value="Set_Voidseeker_Loop"/>
+        <Host Subject="_Unit"/>
+    </CActorSound>
+    <!-- SMX1_ZerusSet04 ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_ZerusSet_04" parent="GenericUnitSM" unitName="SMX1_ZerusSet_04"/>
+    <!-- SMX1_ZerusSet05 ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_ZerusSet_05" parent="GenericUnitSM" unitName="SMX1_ZerusSet_05"/>
+    <!-- SMX1_ZerusSet06 ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_ZerusSet_06" parent="GenericUnitSM" unitName="SMX1_ZerusSet_06"/>
+    <!-- SMX1_MobiusSet_Dusk ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_MobiusSet_Dusk" parent="GenericUnitSM" unitName="SMX1_MobiusSet_Dusk"/>
+    <!-- SMX1_MobiusSet_Dusk ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_MobiusSet_Dusk01" parent="GenericUnitSM" unitName="SMX1_MobiusSet_Dusk01"/>
+    <CActorUnit id="SMX1_MobiusSet_Dusk03" parent="GenericUnitSM" unitName="SMX1_MobiusSet_Dusk03"/>
+    <!--                                                                                         -->
+    <!-- SMX1_MobiusSet_Night ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_MobiusSet_Night" parent="GenericUnitSM" unitName="SMX1_MobiusSet_Night"/>
+    <!--                                                                                         -->
+    <!-- SMX1_MobiusSet ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_MobiusSet" parent="GenericUnitSM" unitName="SMX1_MobiusSet"/>
+    <!--                                                                                         -->
+    <!-- SMX1_MobiusSet01 ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_MobiusSet01" parent="GenericUnitSM" unitName="SMX1_MobiusSet01"/>
+    <!--                                                                                         -->
+    <!-- SMX1_MobiusSet ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_MobiusSet02" parent="GenericUnitSM" unitName="SMX1_MobiusSet02"/>
+    <!-- SMX1_LeviathanPlanetShot ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_LeviathanPlanetShot" parent="GenericUnitSM" unitName="SMX1_LeviathanPlanetShot"/>
+    <!-- SMX1_LeviathanPlanetShotChar ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_LeviathanPlanetShotChar" parent="GenericUnitSM" unitName="SMX1_LeviathanPlanetShotChar"/>
+    <!-- SMX1_LeviathanPlanetShotKaldir ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_LeviathanPlanetShotKaldir" parent="GenericUnitSM" unitName="SMX1_LeviathanPlanetShotKaldir"/>
+    <!-- SMX1_LeviathanDock ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_LeviathanDock" parent="GenericUnitSM" unitName="SMX1_LeviathanDock"/>
+    <!-- SMX1_LeviathanDockDoor ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_LeviathanDockDoor" parent="GenericUnitSM" unitName="SMX1_LeviathanDockDoor"/>
+    <!-- SMX1_LeviathanDockDoor ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_LeviathanDoorLarge" parent="GenericUnitSM" unitName="SMX1_LeviathanDoorLarge"/>
+    <!-- SMX1_TerranLabT1 ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_TerranLabT1" parent="GenericUnitSM" unitName="SMX1_TerranLabT1"/>
+    <!-- SMX1_DropShipT1 ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_DropShipT1" parent="GenericUnitSM" unitName="SMX1_DropShipT1"/>
+    <!-- SMX1_DropShipInteriorT1 ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_DropShipInteriorT1" parent="GenericUnitSM" unitName="SMX1_DropShipInteriorT1"/>
+    <!-- SMX1_TerranLabExterior ............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_TerranLabExterior" parent="GenericUnitSM" unitName="SMX1_TerranLabExterior"/>
+    <!-- SMX1_KorhalSpaceSet ....................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1_KorhalSpaceSet" parent="GenericUnitSM" unitName="SMX1_KorhalSpaceSet"/>
+    <!--                                                                                         -->
+    <!-- SMX1EvolutionMaster                                                             -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1EvolutionMaster" parent="SMCharacter" unitName="SMX1EvolutionMaster">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="Create set_abathur_move_loop_near"/>
+        <On Terms="ActorCreation" Send="Create set_abathur_move_loop_mid"/>
+        <!-- On Terms="ActorCreation" Send="Create SMX1EvolutionMasterLight"/ -->
+    </CActorUnit>
+    <CActorModel id="SMX1EvolutionMasterLight" parent="ModelAddition"/>
+    <CActorSound id="set_abathur_move_loop_near" parent="SoundContinuous">
+        <Host Subject="_Unit"/>
+    </CActorSound>
+    <CActorSound id="set_abathur_move_loop_mid" parent="SoundContinuous">
+        <Host Subject="_Unit"/>
+    </CActorSound>
+    <!--                                                                                         -->
+    <!-- SMX1EvolutionMasterBase                                                             -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1EvolutionMasterBase" parent="SMCharacter" unitName="SMX1EvolutionMasterBase">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <!--                                                                                         -->
+    <!-- SMX1EvolutionMaster02                                                             -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1EvolutionMaster02" parent="SMCharacter" unitName="SMX1EvolutionMaster02">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="Create SMX1EvolutionMasterLight"/>
+    </CActorUnit>
+    <!--                                                                                         -->
+    <!-- SMX1EvolutionMaster02Base                                                             -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1EvolutionMaster02Base" parent="SMCharacter" unitName="SMX1EvolutionMaster02Base">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <!--                                                                                           -->
+    <!-- EvolutionMissionPitchPortrait                                                             -->
+    <!--    CompositePortraitAddition                                                              -->
+    <CActorPortrait id="EvolutionMissionPitchPortrait" parent="CompositePortrait">
+        <On Terms="ActorCreation" Send="Create EvolutionMissionPitchPortraitEggRoomAddition"/>
+        <On Terms="ActorDestruction" Target="EvolutionMissionPitchPortraitEggRoomAddition" Send="Destroy"/>
+    </CActorPortrait>
+    <CActorModel id="EvolutionMissionPitchPortraitAddition" parent="ModelAddition">
+        <Model value="SMX1EvolutionMaster"/>
+        <Host Subject="EvolutionMissionPitchPortrait"/>
+        <HostSiteOps Ops="SOpAttachHardPoint"/>
+    </CActorModel>
+    <CActorModel id="EvolutionMissionPitchPortraitEggRoomAddition" parent="ModelAddition">
+        <Model value="SMX1EggRoomSet"/>
+        <Host Subject="EvolutionMissionPitchPortrait"/>
+    </CActorModel>
+    <!--                                                                                         -->
+    <!-- SMX1ZergAdjutant                                                             -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1ZergAdjutant" parent="SMCharacter" unitName="SMX1ZergAdjutant">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="Create ZergAdjutantMoveLoop"/>
+    </CActorUnit>
+    <CActorModel id="SMX1ZergAdjutantLight" parent="ModelAddition"/>
+    <!-- Space Cow Corpse............................................................................. -->
+    <CActorUnit id="SpaceCowCorpse">
+        <UnitFlags index="SuppressDefaultStatusBar" value="1"/>
+    </CActorUnit>
+    <CActorSound id="ZergAdjutantMoveLoop" parent="SoundContinuous">
+        <Sound value="set_izsha_move_loop_close"/>
+        <Host Subject="_Unit"/>
+    </CActorSound>
+    <!--                                                                                         -->
+    <!-- SMX1KerriganDezerged                                                             -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1KerriganDezerged" parent="SMCharacter" unitName="SMX1KerriganDezerged">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <!--                                                                                         -->
+    <!-- SMX1KerriganDezergedWithLight                                                             -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1KerriganDezergedWithLight" parent="SMCharacter" unitName="SMX1KerriganDezergedWithLight">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <!--On Terms="ActorCreation" Send="Create SMX1KerriganDezergedLightAddition"/-->
+    </CActorUnit>
+    <CActorModel id="SMX1KerriganDezergedLightAddition" parent="ModelAddition"/>
+    <!--                                                                                         -->
+    <!-- SMX1KerriganInfested                                                             -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1KerriganInfested" parent="SMCharacter" unitName="SMX1KerriganInfested">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <!--                                                                                         -->
+    <!-- SMX1KerriganInfestedWithLight                                                             -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1KerriganInfestedWithLight" parent="SMCharacter" unitName="SMX1KerriganInfestedWithLight">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <!--On Terms="ActorCreation" Send="Create SMX1KerriganInfestedLightAddition"/-->
+    </CActorUnit>
+    <CActorModel id="SMX1KerriganInfestedLightAddition" parent="ModelAddition"/>
+    <CActorModel id="KerriganLightingChar" parent="ModelAddition">
+        <Aliases value="_KerriganLighting"/>
+    </CActorModel>
+    <CActorModel id="KerriganLightingKorhal" parent="ModelAddition">
+        <Aliases value="_KerriganLighting"/>
+    </CActorModel>
+    <CActorModel id="KerriganLightingKaldir" parent="ModelAddition">
+        <Aliases value="_KerriganLighting"/>
+    </CActorModel>
+    <CActorModel id="KerriganLightingZerus" parent="ModelAddition">
+        <Aliases value="_KerriganLighting"/>
+    </CActorModel>
+    <!--                                                                                         -->
+    <!-- SMX1Zagara                                                             -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1Zagara" parent="SMCharacter" unitName="SMX1Zagara">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="Create ZagaraMoveLoop"/>
+    </CActorUnit>
+    <CActorSound id="ZagaraMoveLoop" parent="SoundContinuous">
+        <Sound value="set_zagara_move_loop_close"/>
+        <Host Subject="_Unit"/>
+    </CActorSound>
+    <!--                                                                                         -->
+    <!-- SMX1Lasarra                                                             -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1Lasarra" parent="SMCharacter" unitName="SMX1Lasarra">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="Create LasarraMoveLoop"/>
+        <On Terms="ActorCreation" Send="SetTeamColor 28,167,234 17,132,187"/>
+    </CActorUnit>
+    <CActorSound id="LasarraMoveLoop" parent="SoundContinuous">
+        <Sound value="Set_Lasarra_Move_Loop"/>
+        <Host Subject="_Unit"/>
+    </CActorSound>
+    <CActorUnit id="Lasarra">
+        <On Terms="ActorCreation" Send="SetTeamColor 28,167,234 17,132,187"/>
+        <!--On Terms="UnitPortrait.*.Configure" Target="::PortraitGameSelf" Send="SetTeamColor {28,167,234 1.000000} {17,132,187 1.000000}"/-->
+    </CActorUnit>
+    <CActorModel id="LasarraPortraitAddition">
+        <On Terms="ActorCreation" Send="SetTeamColor 28,167,234 17,132,187"/>
+    </CActorModel>
+    <CActorPortrait id="LasarraPortrait">
+        <On Terms="ActorCreation" Send="SetTeamColor 28,167,234 17,132,187"/>
+    </CActorPortrait>
+    <!--                                                                                         -->
+    <!-- SMX1Zurvan                                                             -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1Zurvan" parent="SMCharacter" unitName="SMX1Zurvan">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <!--                                                                                         -->
+    <!-- SMX1InfestedStukov                                                             -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1InfestedStukov" parent="SMCharacter" unitName="SMX1InfestedStukov">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="Create StukovPersistentLoop"/>
+    </CActorUnit>
+    <CActorSound id="StukovPersistentLoop" parent="SoundContinuous">
+        <Sound value="set_stukov_move_loop_close"/>
+        <Host Subject="_Unit"/>
+    </CActorSound>
+    <!--                                                                                         -->
+    <!-- SMX1PrimalZergCommanderT1                                                             -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMX1PrimalZergCommanderT1" parent="SMCharacter" unitName="SMX1PrimalZergCommanderT1">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <!--                                                                                         -->
+    <!-- SMX1 evolution set kerrigans                                                            -->
+    <!--                                                                                         -->
+    <CActorModel id="SMX1KerriganCustomizationGhost" parent="ModelAnimationStyleContinuous">
+        <Model value="SMX1KerriganDezergedWithLight"/>
+    </CActorModel>
+    <CActorModel id="SMX1KerriganCustomizationInfested" parent="ModelAnimationStyleContinuous">
+        <Model value="SMX1KerriganInfestedWithLight"/>
+    </CActorModel>
+    <CActorModel id="SMX1KerriganCustomizationFusion" parent="ModelAnimationStyleContinuous"/>
+    <!--                                                                                         -->
+    <!-- SMX1 model actors for A/B unit choices                                                             -->
+    <!--                                                                                         -->
+    <CActorModel id="SMX1EvolutionSetZergling" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetZerglingEx1A" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetZerglingEx1B" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetBaneling" parent="ModelAnimationStyleContinuous">
+        <On Terms="ActorCreation" Send="SetTeamColor 131,141,27 {131,141,27 1.390000}"/>
+    </CActorModel>
+    <CActorModel id="SMX1EvolutionSetBanelingEx1A" parent="ModelAnimationStyleContinuous">
+        <On Terms="ActorCreation" Send="SetTeamColor 100,194,53 {100,194,53 1.450000}"/>
+    </CActorModel>
+    <CActorModel id="SMX1EvolutionSetBanelingEx1B" parent="ModelAnimationStyleContinuous">
+        <On Terms="ActorCreation" Send="SetTeamColor 117,4,255 {117,4,255 1.550000}"/>
+    </CActorModel>
+    <CActorModel id="SMX1EvolutionSetRoach" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetRoachEx1A" parent="ModelAnimationStyleContinuous">
+        <On Terms="ActorCreation" Send="SetTeamColor 100,194,53 {100,194,53 1.390000}"/>
+    </CActorModel>
+    <CActorModel id="SMX1EvolutionSetRoachEx1B" parent="ModelAnimationStyleContinuous">
+        <On Terms="ActorCreation" Send="SetTeamColor 117,4,255 {117,4,255 1.550000}"/>
+    </CActorModel>
+    <CActorModel id="SMX1EvolutionSetHydralisk" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetHydraliskEx1A" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetHydraliskEx1B" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetMutalisk" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetMutaliskEx1A" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetMutaliskEx1B" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetZergFlyer" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetZergFlyerEx1A" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetZergFlyerEx1B" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetUltralisk" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetUltraliskEx1A" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetUltraliskEx1B" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetInfestor" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetInfestorEx1A" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetInfestorEx1B" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetLurker" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetLurkerEx1A" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetLurkerEx1B" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetZergAirSiege" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetZergAirSiegeEx1A" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetZergAirSiegeEx1B" parent="ModelAnimationStyleContinuous"/>
+    <!-- More models -->
+    <CActorModel id="SMX1EvolutionSetZerglingT1" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetZerglingT1A" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetZerglingT1B" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetBanelingT1" parent="ModelAnimationStyleContinuous">
+        <On Terms="ActorCreation" Send="SetTeamColor 131,141,27 {131,141,27 1.390000}"/>
+    </CActorModel>
+    <CActorModel id="SMX1EvolutionSetBanelingT1A" parent="ModelAnimationStyleContinuous">
+        <On Terms="ActorCreation" Send="SetTeamColor 100,194,53 {100,194,53 1.450000}"/>
+    </CActorModel>
+    <CActorModel id="SMX1EvolutionSetBanelingT1B" parent="ModelAnimationStyleContinuous">
+        <On Terms="ActorCreation" Send="SetTeamColor 117,4,255 {117,4,255 1.550000}"/>
+    </CActorModel>
+    <CActorModel id="SMX1EvolutionSetRoachT1" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetRoachT1A" parent="ModelAnimationStyleContinuous">
+        <On Terms="ActorCreation" Send="SetTeamColor 100,194,53 {100,194,53 1.390000}"/>
+    </CActorModel>
+    <CActorModel id="SMX1EvolutionSetRoachT1B" parent="ModelAnimationStyleContinuous">
+        <On Terms="ActorCreation" Send="SetTeamColor 117,4,255 {117,4,255 1.550000}"/>
+    </CActorModel>
+    <CActorModel id="SMX1EvolutionSetHydraliskT1" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetHydraliskT1A" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetHydraliskT1B" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetMutaliskT1" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetMutaliskT1A" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetMutaliskT1B" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetZergFlyerT1" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetZergFlyerT1A" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetZergFlyerT1B" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetUltraliskT1" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetUltraliskT1A" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetUltraliskT1B" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetInfestorT1" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetInfestorT1A" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetInfestorT1B" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetLurkerT1" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetLurkerT1A" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetLurkerT1B" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetZergAirSiegeT1" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetZergAirSiegeT1A" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetZergAirSiegeT1B" parent="ModelAnimationStyleContinuous"/>
+    <CActorModel id="SMX1EvolutionSetEggMonsterT1" parent="ModelAnimationStyleContinuous"/>
+    <!--                                                                                         -->
+    <!-- SMX1 Units                                                                         -->
+    <!--                                                                                         -->
+    <!--CActorUnit id="SMX1Zergling" parent="SMEggRoomHS" unitName="SMX1Zergling">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1ZerglingEx1A" parent="SMEggRoomHS" unitName="SMX1ZerglingEx1A">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1ZerglingEx1B" parent="SMEggRoomHS" unitName="SMX1ZerglingEx1B">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1Baneling" parent="SMEggRoomHS" unitName="SMX1Baneling">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="SetTeamColor 131,141,27 {131,141,27 1.390000}"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1BanelingEx1A" parent="SMEggRoomHS" unitName="SMX1BanelingEx1A">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="SetTeamColor 100,194,53 {100,194,53 1.450000}"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1BanelingEx1B" parent="SMEggRoomHS" unitName="SMX1BanelingEx1B">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="SetTeamColor 117,4,255 {117,4,255 1.550000}"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1Roach" parent="SMEggRoomHS" unitName="SMX1Roach">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1RoachEx1A" parent="SMEggRoomHS" unitName="SMX1RoachEx1A">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="SetTeamColor 100,194,53 {100,194,53 1.390000}"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1RoachEx1B" parent="SMEggRoomHS" unitName="SMX1RoachEx1B">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="SetTeamColor 117,4,255 {117,4,255 1.550000}"/>
+    </CActorUnit-->
+    <CActorUnit id="SMX1Hydralisk" parent="SMEggRoomHS" unitName="SMX1Hydralisk">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1HydraliskA" parent="SMEggRoomHS" unitName="SMX1HydraliskA">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1HydraliskB" parent="SMEggRoomHS" unitName="SMX1HydraliskB">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1Mutalisk" parent="SMEggRoomHS" unitName="SMX1Mutalisk">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1MutaliskA" parent="SMEggRoomHS" unitName="SMX1MutaliskA">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1MutaliskB" parent="SMEggRoomHS" unitName="SMX1MutaliskB">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1ZergFlyer" parent="SMEggRoomHS" unitName="SMX1ZergFlyer">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1ZergFlyerA" parent="SMEggRoomHS" unitName="SMX1ZergFlyerA">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1ZergFlyerB" parent="SMEggRoomHS" unitName="SMX1ZergFlyerB">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1Ultralisk" parent="SMEggRoomHS" unitName="SMX1Ultralisk">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1UltraliskA" parent="SMEggRoomHS" unitName="SMX1UltraliskA">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1UltraliskB" parent="SMEggRoomHS" unitName="SMX1UltraliskB">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1Infestor" parent="SMEggRoomHS" unitName="SMX1Infestor">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1InfestorA" parent="SMEggRoomHS" unitName="SMX1InfestorA">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1InfestorB" parent="SMEggRoomHS" unitName="SMX1InfestorB">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1Lurker" parent="SMEggRoomHS" unitName="SMX1Lurker">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1LurkerA" parent="SMEggRoomHS" unitName="SMX1LurkerA">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1LurkerB" parent="SMEggRoomHS" unitName="SMX1LurkerB">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1ZergAirSiege" parent="SMEggRoomHS" unitName="SMX1ZergAirSiege">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1ZergAirSiegeA" parent="SMEggRoomHS" unitName="SMX1ZergAirSiegeA">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1ZergAirSiegeB" parent="SMEggRoomHS" unitName="SMX1ZergAirSiegeB">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <!-- More units -->
+    <CActorUnit id="SMX1ZerglingT1" parent="SMEggRoomHS" unitName="SMX1ZerglingT1">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <!-- On Terms="ActorCreation" Send="Create SMX1ZerglingT1Light"/ -->
+    </CActorUnit>
+    <CActorModel id="SMX1ZerglingT1Light" parent="ModelAddition"/>
+    <CActorUnit id="SMX1ZerglingT1A" parent="SMEggRoomHS" unitName="SMX1ZerglingT1A">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <!-- On Terms="ActorCreation" Send="Create SMX1ZerglingT1Light"/ -->
+    </CActorUnit>
+    <CActorUnit id="SMX1ZerglingT1B" parent="SMEggRoomHS" unitName="SMX1ZerglingT1B">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <!-- On Terms="ActorCreation" Send="Create SMX1ZerglingT1Light"/ -->
+    </CActorUnit>
+    <CActorUnit id="SMX1BanelingT1" parent="SMEggRoomHS" unitName="SMX1BanelingT1">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="SetTeamColor 131,141,27 {131,141,27 1.390000}"/>
+        <!-- On Terms="ActorCreation" Send="Create SMX1BanelingT1Light"/ -->
+    </CActorUnit>
+    <CActorModel id="SMX1BanelingT1Light" parent="ModelAddition"/>
+    <CActorUnit id="SMX1BanelingT1A" parent="SMEggRoomHS" unitName="SMX1BanelingT1A">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="SetTeamColor 100,194,53 {100,194,53 1.450000}"/>
+        <!-- On Terms="ActorCreation" Send="Create SMX1BanelingT1Light"/ -->
+    </CActorUnit>
+    <CActorUnit id="SMX1BanelingT1B" parent="SMEggRoomHS" unitName="SMX1BanelingT1B">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="SetTeamColor 117,4,255 {117,4,255 1.550000}"/>
+        <!-- On Terms="ActorCreation" Send="Create SMX1BanelingT1Light"/ -->
+    </CActorUnit>
+    <CActorUnit id="SMX1RoachT1" parent="SMEggRoomHS" unitName="SMX1RoachT1">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <!-- On Terms="ActorCreation" Send="Create SMX1RoachT1Light"/ -->
+    </CActorUnit>
+    <CActorModel id="SMX1RoachT1Light" parent="ModelAddition"/>
+    <CActorUnit id="SMX1RoachT1A" parent="SMEggRoomHS" unitName="SMX1RoachT1A">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="SetTeamColor 100,194,53 {100,194,53 1.390000}"/>
+        <!-- On Terms="ActorCreation" Send="Create SMX1RoachT1Light"/ -->
+    </CActorUnit>
+    <CActorUnit id="SMX1RoachT1B" parent="SMEggRoomHS" unitName="SMX1RoachT1B">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="SetTeamColor 117,4,255 {117,4,255 1.550000}"/>
+        <!-- On Terms="ActorCreation" Send="Create SMX1RoachT1Light"/ -->
+    </CActorUnit>
+    <CActorUnit id="SMX1HydraliskT1" parent="SMEggRoomHS" unitName="SMX1HydraliskT1">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <!--On Terms="ActorCreation" Send="Create SMX1HydraliskT1Light"/-->
+    </CActorUnit>
+    <CActorModel id="SMX1HydraliskT1Light" parent="ModelAddition"/>
+    <CActorUnit id="SMX1HydraliskT1A" parent="SMEggRoomHS" unitName="SMX1HydraliskT1A">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <!-- On Terms="ActorCreation" Send="Create SMX1HydraliskT1Light"/ -->
+    </CActorUnit>
+    <CActorUnit id="SMX1HydraliskT1B" parent="SMEggRoomHS" unitName="SMX1HydraliskT1B">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <!-- On Terms="ActorCreation" Send="Create SMX1HydraliskT1Light"/ -->
+    </CActorUnit>
+    <CActorUnit id="SMX1MaggotT1" parent="SMEggRoomHS" unitName="SMX1MaggotT1">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <!--On Terms="ActorCreation" Send="Create SMX1MaggotT1Light"/-->
+    </CActorUnit>
+    <CActorUnit id="SMX1MutaliskT1" parent="SMEggRoomHS" unitName="SMX1MutaliskT1">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <!--On Terms="ActorCreation" Send="Create SMX1MutaliskT1Light"/-->
+    </CActorUnit>
+    <CActorModel id="SMX1MutaliskT1Light" parent="ModelAddition"/>
+    <CActorUnit id="SMX1MutaliskT1A" parent="SMEggRoomHS" unitName="SMX1MutaliskT1A">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <!-- On Terms="ActorCreation" Send="Create SMX1MutaliskT1Light"/ -->
+    </CActorUnit>
+    <CActorUnit id="SMX1MutaliskT1B" parent="SMEggRoomHS" unitName="SMX1MutaliskT1B">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <!-- On Terms="ActorCreation" Send="Create SMX1MutaliskT1Light"/ -->
+    </CActorUnit>
+    <CActorUnit id="SMX1ZergFlyerT1" parent="SMEggRoomHS" unitName="SMX1ZergFlyerT1">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1ZergFlyerT1A" parent="SMEggRoomHS" unitName="SMX1ZergFlyerT1A">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1ZergFlyerT1B" parent="SMEggRoomHS" unitName="SMX1ZergFlyerT1B">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1UltraliskT1" parent="SMEggRoomHS" unitName="SMX1UltraliskT1">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <!--On Terms="ActorCreation" Send="Create SMX1UltraliskT1Light"/-->
+    </CActorUnit>
+    <CActorModel id="SMX1UltraliskT1Light" parent="ModelAddition"/>
+    <CActorUnit id="SMX1UltraliskT1A" parent="SMEggRoomHS" unitName="SMX1UltraliskT1A">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <!-- On Terms="ActorCreation" Send="Create SMX1UltraliskT1Light"/ -->
+    </CActorUnit>
+    <CActorUnit id="SMX1UltraliskT1B" parent="SMEggRoomHS" unitName="SMX1UltraliskT1B">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <!-- On Terms="ActorCreation" Send="Create SMX1UltraliskT1Light"/ -->
+    </CActorUnit>
+    <CActorUnit id="SMX1EggMonsterT1" parent="SMEggRoomHS" unitName="SMX1EggMonsterT1">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1EggMonsterT1A" parent="SMEggRoomHS" unitName="SMX1EggMonsterT1A">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1EggMonsterT1B" parent="SMEggRoomHS" unitName="SMX1EggMonsterT1B">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1InfestorT1" parent="SMEggRoomHS" unitName="SMX1InfestorT1">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1InfestorT1A" parent="SMEggRoomHS" unitName="SMX1InfestorT1A">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1InfestorT1B" parent="SMEggRoomHS" unitName="SMX1InfestorT1B">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1LurkerT1" parent="SMEggRoomHS" unitName="SMX1LurkerT1">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1LurkerT1A" parent="SMEggRoomHS" unitName="SMX1LurkerT1A">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1LurkerT1B" parent="SMEggRoomHS" unitName="SMX1LurkerT1B">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1ZergAirSiegeT1" parent="SMEggRoomHS" unitName="SMX1ZergAirSiegeT1">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1ZergAirSiegeT1A" parent="SMEggRoomHS" unitName="SMX1ZergAirSiegeT1A">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1ZergAirSiegeT1B" parent="SMEggRoomHS" unitName="SMX1ZergAirSiegeT1B">
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorModel id="SMX1LightConvoEggRoom" parent="ModelAddition"/>
+    <CActorModel id="SMX1LightConvoLeviathanChar" parent="ModelAddition"/>
+    <CActorModel id="SMX1LightConvoLeviathanIce" parent="ModelAddition"/>
+    <CActorModel id="SMX1LightSetEggRoom" parent="ModelAddition"/>
+    <CActorModel id="SMX1LightSetLeviathanChar" parent="ModelAddition"/>
+    <CActorModel id="SMX1LightSetLeviathanIce" parent="ModelAddition"/>
+    <CActorSiteOpForward id="TalkBubbleAttach">
+        <HostForwardSiteOps Ops="SOpAttachOverhead"/>
+    </CActorSiteOpForward>
+    <CActorModel id="TalkIconBubble">
+        <HostSiteOps Ops="TalkBubbleAttach"/>
+    </CActorModel>
+    <CActorSiteOpRotationExplicit id="SOpPitch10">
+        <Forward value="0.000000,-0.984810,-0.173650"/>
+        <IsLocal value="1"/>
+    </CActorSiteOpRotationExplicit>
+    <CActorSiteOpRotationExplicit id="SOpPitch3">
+        <Forward value="0.000000,-0.998630,-0.052330"/>
+        <IsLocal value="1"/>
+    </CActorSiteOpRotationExplicit>
+    <CActorSiteOpRotationExplicit id="SOpEvoUltra">
+        <Up value="-0.104529,0.000000,0.994522"/>
+        <!--Forward value="-0.087156,-0.996195,0.000000"/-->
+        <Forward value="0.000000,-1.000000,0.000000"/>
+        <IsLocal value="1"/>
+    </CActorSiteOpRotationExplicit>
+    <!--
+    <CActorModel id="Thinger">
+        <Model value="ShapeApple"/>
+        <On Terms="ActorCreation" Send="RefSet ::global.thinger ::Self"/>
+    </CActorModel>
+    <CActorUnit id="Marine">
+        <On Terms="ActorCreation" Send="RefSet ::global.thinger ::Self"/>
+    </CActorUnit>
+    <CActorLookAt id="Lookatoid">
+        <HostTarget Subject="::global.thinger"/>
+        <Supporter Subject="::Creator"/>
+        <On Terms="ActorCreation" Send="LookAtStart"/>
+        <Type value="Default"/>
+        <Types Id="Default">
+            <Start Group="Chest" Weight="0.5" Rate="3"/>
+            <Start Group="Head" Weight="0.75" Rate="3"/>
+            <Start Group="EyeLeft" Weight="1" Rate="3"/>
+            <Start Group="EyeRight" Weight="1" Rate="3"/>
+            <Stop Group="Chest" Weight="0.5" Time="250"/>
+            <Stop Group="Head" Weight="0.75" Time="250"/>
+            <Stop Group="EyeLeft" Weight="1" Time="250"/>
+            <Stop Group="EyeRight" Weight="1" Time="250"/>
+        </Types>
+    </CActorLookAt>
+    <CActorModel id="Guy">
+        <Model value="SMX1PrimalZergCommanderT1"/>
+        <On Terms="ActorCreation" Send="Create Lookatoid"/>
+    </CActorModel>
+-->
+</Catalog>

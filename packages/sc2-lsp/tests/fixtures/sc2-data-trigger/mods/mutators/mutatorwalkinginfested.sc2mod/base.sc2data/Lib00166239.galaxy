@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib00166239_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Walking Dead
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib00166239_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib00166239_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "WalkingInfested");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib00166239_gt_Initialization_Init () {
+    lib00166239_gt_Initialization = TriggerCreate("lib00166239_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib00166239_gt_Initialization);
+}
+
+void lib00166239_InitTriggers () {
+    lib00166239_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib00166239_InitLib_completed = false;
+
+void lib00166239_InitLib () {
+    if (lib00166239_InitLib_completed) {
+        return;
+    }
+
+    lib00166239_InitLib_completed = true;
+
+    lib00166239_InitLibraries();
+    lib00166239_InitTriggers();
+}
+

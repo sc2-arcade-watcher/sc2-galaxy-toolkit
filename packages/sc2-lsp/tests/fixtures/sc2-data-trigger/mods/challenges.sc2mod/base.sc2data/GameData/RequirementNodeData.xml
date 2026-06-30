@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CRequirementCountUnit id="CountUnitNukeCompleteOnly456190206">
+        <Count Link="Nuke" State="CompleteOnly"/>
+    </CRequirementCountUnit>
+    <CRequirementCountUpgrade id="CountUpgradeHunterSeekerCompleteOnly2523578748TechTreeCheat">
+        <Tooltip value="RequirementNode/Tooltip/CountUpgradeHunterSeekerCompleteOnly2523578748"/>
+        <Count Link="HunterSeeker" State="CompleteOnly"/>
+    </CRequirementCountUpgrade>
+    <CRequirementCountUpgrade id="CountUpgradeHunterSeekerQueuedOrBetter"/>
+    <CRequirementCountUpgrade id="CountUpgradeNeuralParasiteCompleteOnly598353696TechTreeCheat">
+        <Tooltip value="RequirementNode/Tooltip/CountUpgradeNeuralParasiteCompleteOnly598353696"/>
+        <Count Link="NeuralParasite" State="CompleteOnly"/>
+    </CRequirementCountUpgrade>
+    <CRequirementCountUpgrade id="CountUpgradeNeuralParasiteQueuedOrBetter">
+        <Count Link="NeuralParasite" State="QueuedOrBetter"/>
+    </CRequirementCountUpgrade>
+    <CRequirementCountUpgrade id="CountUpgradePunisherGrenadesCompleteOnly1926426333TechTreeCheat">
+        <Tooltip value="RequirementNode/Tooltip/CountUpgradePunisherGrenadesCompleteOnly1926426333"/>
+        <Count Link="PunisherGrenades" State="CompleteOnly"/>
+    </CRequirementCountUpgrade>
+    <CRequirementNot id="NotCountUpgradeHunterSeekerQueuedOrBetter"/>
+    <CRequirementNot id="NotCountUpgradeNeuralParasiteQueuedOrBetter">
+        <OperandArray index="0" value="CountUpgradeNeuralParasiteQueuedOrBetter"/>
+    </CRequirementNot>
+    <CRequirementAnd id="AndLTCountUnitLarvaCompleteOnlyAtUnit3CountBehaviorSpawnLarvaInstantQueuedOrBetterAtUnit">
+        <OperandArray value="LTCountUnitLarvaCompleteOnlyAtUnit3"/>
+        <OperandArray value="CountBehaviorSpawnLarvaInstantQueuedOrBetterAtUnit"/>
+    </CRequirementAnd>
+    <CRequirementCountBehavior id="CountBehaviorSpawnLarvaInstantQueuedOrBetterAtUnit">
+        <Count Link="SpawnLarvaInstant" State="QueuedOrBetterAtUnit"/>
+    </CRequirementCountBehavior>
+</Catalog>

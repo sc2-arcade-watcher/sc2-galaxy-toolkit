@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib496D3CE0_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib496D3CE0_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib496D3CE0_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(3135);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib496D3CE0_gt_Initialization_Init () {
+    lib496D3CE0_gt_Initialization = TriggerCreate("lib496D3CE0_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib496D3CE0_gt_Initialization);
+}
+
+void lib496D3CE0_InitTriggers () {
+    lib496D3CE0_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib496D3CE0_InitLib_completed = false;
+
+void lib496D3CE0_InitLib () {
+    if (lib496D3CE0_InitLib_completed) {
+        return;
+    }
+
+    lib496D3CE0_InitLib_completed = true;
+
+    lib496D3CE0_InitLibraries();
+    lib496D3CE0_InitTriggers();
+}
+

@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib757E3E1F_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib757E3E1F_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib757E3E1F_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(49);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib757E3E1F_gt_Initialization_Init () {
+    lib757E3E1F_gt_Initialization = TriggerCreate("lib757E3E1F_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib757E3E1F_gt_Initialization);
+}
+
+void lib757E3E1F_InitTriggers () {
+    lib757E3E1F_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib757E3E1F_InitLib_completed = false;
+
+void lib757E3E1F_InitLib () {
+    if (lib757E3E1F_InitLib_completed) {
+        return;
+    }
+
+    lib757E3E1F_InitLib_completed = true;
+
+    lib757E3E1F_InitLibraries();
+    lib757E3E1F_InitTriggers();
+}
+

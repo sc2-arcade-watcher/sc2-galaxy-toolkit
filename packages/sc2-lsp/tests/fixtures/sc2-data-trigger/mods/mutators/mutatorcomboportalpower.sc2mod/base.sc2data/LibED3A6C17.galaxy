@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibED3A6C17_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libED3A6C17_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libED3A6C17_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(35);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libED3A6C17_gt_Initialization_Init () {
+    libED3A6C17_gt_Initialization = TriggerCreate("libED3A6C17_gt_Initialization_Func");
+    TriggerAddEventMapInit(libED3A6C17_gt_Initialization);
+}
+
+void libED3A6C17_InitTriggers () {
+    libED3A6C17_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libED3A6C17_InitLib_completed = false;
+
+void libED3A6C17_InitLib () {
+    if (libED3A6C17_InitLib_completed) {
+        return;
+    }
+
+    libED3A6C17_InitLib_completed = true;
+
+    libED3A6C17_InitLibraries();
+    libED3A6C17_InitTriggers();
+}
+

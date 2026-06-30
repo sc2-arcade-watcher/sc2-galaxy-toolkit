@@ -1,0 +1,401 @@
+include "TriggerLibs/NativeLib"
+
+include "LibCMUI_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: UI (Common)
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libCMUI_InitLibraries () {
+    libNtve_InitVariables();
+}
+
+// Variable Initialization
+bool libCMUI_InitVariables_completed = false;
+
+void libCMUI_InitVariables () {
+    if (libCMUI_InitVariables_completed) {
+        return;
+    }
+
+    libCMUI_InitVariables_completed = true;
+
+    libCMUI_gv_cU_ProgressBarPanel = c_invalidDialogControlId;
+    libCMUI_gv_cU_ProgressBarLabelTitle = c_invalidDialogControlId;
+    libCMUI_gv_cU_ProgressBarLabelBarLeft = c_invalidDialogControlId;
+    libCMUI_gv_cU_ProgressBarImageBar = c_invalidDialogControlId;
+    libCMUI_gv_cU_ProgressBarMax = 100;
+    libCMUI_gv_cUC_ProgressBarWidth = 280;
+    libCMUI_gv_cUC_ProgressBarHeight = 20;
+}
+
+// Presets
+// Functions
+trigger auto_libCMUI_gf_DisplayProgressBar_Trigger = null;
+text auto_libCMUI_gf_DisplayProgressBar_lp_title;
+int auto_libCMUI_gf_DisplayProgressBar_lp_min;
+int auto_libCMUI_gf_DisplayProgressBar_lp_max;
+
+void libCMUI_gf_DisplayProgressBar (text lp_title, int lp_min, int lp_max) {
+    auto_libCMUI_gf_DisplayProgressBar_lp_title = lp_title;
+    auto_libCMUI_gf_DisplayProgressBar_lp_min = lp_min;
+    auto_libCMUI_gf_DisplayProgressBar_lp_max = lp_max;
+
+    if (auto_libCMUI_gf_DisplayProgressBar_Trigger == null) {
+        auto_libCMUI_gf_DisplayProgressBar_Trigger = TriggerCreate("auto_libCMUI_gf_DisplayProgressBar_TriggerFunc");
+    }
+
+    TriggerExecute(auto_libCMUI_gf_DisplayProgressBar_Trigger, false, false);
+}
+
+bool auto_libCMUI_gf_DisplayProgressBar_TriggerFunc (bool testConds, bool runActions) {
+    text lp_title = auto_libCMUI_gf_DisplayProgressBar_lp_title;
+    int lp_min = auto_libCMUI_gf_DisplayProgressBar_lp_min;
+    int lp_max = auto_libCMUI_gf_DisplayProgressBar_lp_max;
+
+    // Variable Declarations
+    string lv_image;
+
+    // Variable Initialization
+    lv_image = "Assets\\Textures\\ui_loadingbar_metalframe_protoss.dds";
+
+    // Implementation
+    if ((libCMUI_gv_cU_ProgressBarPanel == c_invalidDialogControlId)) {
+        DialogControlHookupStandard(c_triggerControlTypePanel, "UIContainer/ConsoleUIContainer/ProgressFrameTemplate");
+        libCMUI_gv_cU_ProgressBarPanel = DialogControlLastCreated();
+        DialogControlHookup(libCMUI_gv_cU_ProgressBarPanel, c_triggerControlTypeLabel, "NameLabel");
+        libCMUI_gv_cU_ProgressBarLabelTitle = DialogControlLastCreated();
+        DialogControlHookup(libCMUI_gv_cU_ProgressBarPanel, c_triggerControlTypeImage, "BarImage");
+        libCMUI_gv_cU_ProgressBarImageBar = DialogControlLastCreated();
+        DialogControlHookup(libCMUI_gv_cU_ProgressBarPanel, c_triggerControlTypeLabel, "BarLabel");
+        libCMUI_gv_cU_ProgressBarLabelBarLeft = DialogControlLastCreated();
+    }
+
+    libCMUI_gf_SetProgressBarTitle(lp_title);
+    libCMUI_gf_SetProgressBarValueRange(lp_min, lp_max);
+    DialogControlSetVisible(libCMUI_gv_cU_ProgressBarPanel, PlayerGroupAll(), true);
+    libCMUI_gv_cU_ProgressBarShowing = true;
+    while (true) {
+        if ((libCMUI_gv_cU_ProgressBarPanel == c_invalidDialogControlId)) {
+            return true;
+        }
+
+        if ((DialogControlIsVisible(libCMUI_gv_cU_ProgressBarPanel, 1) == true)) {
+            libCMUI_gf_CU_UpdateProgressBar();
+        }
+
+        Wait(0.25, c_timeGame);
+    }
+    return true;
+}
+
+void libCMUI_gf_SetProgressBarTitle (text lp_title) {
+    // Implementation
+    libNtve_gf_SetDialogItemText(libCMUI_gv_cU_ProgressBarLabelTitle, lp_title, PlayerGroupAll());
+}
+
+void libCMUI_gf_SetProgressBarValueRange (int lp_min, int lp_max) {
+    // Implementation
+    libCMUI_gv_cU_ProgressBarMin = lp_min;
+    libCMUI_gv_cU_ProgressBarMax = lp_max;
+}
+
+void libCMUI_gf_SetProgressBarLabel (text lp_label) {
+    // Implementation
+    libNtve_gf_SetDialogItemText(libCMUI_gv_cU_ProgressBarLabelBarLeft, lp_label, PlayerGroupAll());
+}
+
+void libCMUI_gf_SetProgressBarProgress (int lp_progress) {
+    // Implementation
+    libCMUI_gv_cU_ProgressBarProgress = lp_progress;
+}
+
+void libCMUI_gf_SetProgressBarColor (color lp_color) {
+    // Implementation
+    libNtve_gf_SetDialogItemColor(libCMUI_gv_cU_ProgressBarImageBar, lp_color, PlayerGroupAll());
+}
+
+void libCMUI_gf_ShowHideProgressBar (bool lp_showHide) {
+    // Implementation
+    if ((libCMUI_gv_cU_ProgressBarPanel == c_invalidDialogControlId)) {
+        return ;
+    }
+
+    if ((lp_showHide == true)) {
+        libCMUI_gf_CU_UpdateProgressBar();
+    }
+
+    DialogControlSetVisible(libCMUI_gv_cU_ProgressBarPanel, PlayerGroupAll(), lp_showHide);
+}
+
+void libCMUI_gf_CU_UpdateProgressBar () {
+    // Variable Declarations
+    int lv_index;
+
+    // Variable Initialization
+
+    // Implementation
+    DialogControlSetSize(libCMUI_gv_cU_ProgressBarImageBar, PlayerGroupAll(), MaxI(FixedToInt((IntToFixed(libCMUI_gv_cUC_ProgressBarWidth) * (IntToFixed(libCMUI_gv_cU_ProgressBarProgress) / IntToFixed(libCMUI_gv_cU_ProgressBarMax)))), 1), libCMUI_gv_cUC_ProgressBarHeight);
+    DialogControlSetVisible(libCMUI_gv_cU_ProgressBarImageBar, PlayerGroupAll(), true);
+}
+
+trigger auto_libCMUI_gf_DisplayUnitProgressBar_Trigger = null;
+unit auto_libCMUI_gf_DisplayUnitProgressBar_lp_unit;
+text auto_libCMUI_gf_DisplayUnitProgressBar_lp_title;
+int auto_libCMUI_gf_DisplayUnitProgressBar_lp_minValue;
+int auto_libCMUI_gf_DisplayUnitProgressBar_lp_maxValue;
+
+void libCMUI_gf_DisplayUnitProgressBar (unit lp_unit, text lp_title, int lp_minValue, int lp_maxValue) {
+    auto_libCMUI_gf_DisplayUnitProgressBar_lp_unit = lp_unit;
+    auto_libCMUI_gf_DisplayUnitProgressBar_lp_title = lp_title;
+    auto_libCMUI_gf_DisplayUnitProgressBar_lp_minValue = lp_minValue;
+    auto_libCMUI_gf_DisplayUnitProgressBar_lp_maxValue = lp_maxValue;
+
+    if (auto_libCMUI_gf_DisplayUnitProgressBar_Trigger == null) {
+        auto_libCMUI_gf_DisplayUnitProgressBar_Trigger = TriggerCreate("auto_libCMUI_gf_DisplayUnitProgressBar_TriggerFunc");
+    }
+
+    TriggerExecute(auto_libCMUI_gf_DisplayUnitProgressBar_Trigger, false, false);
+}
+
+bool auto_libCMUI_gf_DisplayUnitProgressBar_TriggerFunc (bool testConds, bool runActions) {
+    unit lp_unit = auto_libCMUI_gf_DisplayUnitProgressBar_lp_unit;
+    text lp_title = auto_libCMUI_gf_DisplayUnitProgressBar_lp_title;
+    int lp_minValue = auto_libCMUI_gf_DisplayUnitProgressBar_lp_minValue;
+    int lp_maxValue = auto_libCMUI_gf_DisplayUnitProgressBar_lp_maxValue;
+
+    // Variable Declarations
+    int lv_progressBar;
+    int lv_progressBarLabel;
+    int lv_progressBarValue;
+    int lv_progressBarBorder;
+
+    // Variable Initialization
+    lv_progressBar = c_invalidDialogControlId;
+    lv_progressBarLabel = c_invalidDialogControlId;
+    lv_progressBarValue = c_invalidDialogControlId;
+    lv_progressBarBorder = c_invalidDialogControlId;
+
+    // Implementation
+    if (((libNtve_gf_ValueFromDataTableDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Bar)) != c_invalidDialogControlId) || (libNtve_gf_ValueFromDataTableDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Broder)) != c_invalidDialogControlId) || (libNtve_gf_ValueFromDataTableDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Label)) != c_invalidDialogControlId) || (libNtve_gf_ValueFromDataTableDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Value)) != c_invalidDialogControlId))) {
+        DialogControlDestroy(libNtve_gf_ValueFromDataTableDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Bar)));
+        DialogControlDestroy(libNtve_gf_ValueFromDataTableDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Broder)));
+        DialogControlDestroy(libNtve_gf_ValueFromDataTableDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Label)));
+        DialogControlDestroy(libNtve_gf_ValueFromDataTableDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Value)));
+    }
+
+    UnitStatusBarOverride(lp_unit, c_unitStatusGroupAll);
+    DialogControlHookupUnitStatus(c_triggerControlTypeLabel, "NameLabel", lp_unit);
+    lv_progressBarLabel = DialogControlLastCreated();
+    libNtve_gf_SetDialogItemText(lv_progressBarLabel, lp_title, PlayerGroupAll());
+    DialogControlHookupUnitStatus(c_triggerControlTypeLabel, "ValueLabel", lp_unit);
+    lv_progressBarValue = DialogControlLastCreated();
+    DialogControlHookupUnitStatus(c_triggerControlTypeImage, "BarImage", lp_unit);
+    lv_progressBar = DialogControlLastCreated();
+    DialogControlHookupUnitStatus(c_triggerControlTypeImage, "BorderImage", lp_unit);
+    lv_progressBarBorder = DialogControlLastCreated();
+    libNtve_gf_SaveDataTableValueDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Label), lv_progressBarLabel);
+    libNtve_gf_SaveDataTableValueDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Value), lv_progressBarValue);
+    libNtve_gf_SaveDataTableValueDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Bar), lv_progressBar);
+    libNtve_gf_SaveDataTableValueDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Broder), lv_progressBarBorder);
+    DataTableSetInt(true, libCMUI_gf_CU_UnitProgressBar_Data(lp_unit, libCMUI_ge_CU_UnitProgressBarDataName_MinValue), lp_minValue);
+    DataTableSetInt(true, libCMUI_gf_CU_UnitProgressBar_Data(lp_unit, libCMUI_ge_CU_UnitProgressBarDataName_MaxValue), lp_maxValue);
+    DataTableSetInt(true, libCMUI_gf_CU_UnitProgressBar_Data(lp_unit, libCMUI_ge_CU_UnitProgressBarDataName_CurValue), lp_minValue);
+    libCMUI_gf_ShowHideUnitProgressBar(lp_unit, true);
+    libCMUI_gf_CU_UpdateUnitProgressBar(lp_unit);
+    return true;
+}
+
+void libCMUI_gf_SetUnitProgressBarProgress (unit lp_unit, int lp_value) {
+    // Variable Declarations
+    int lv_realValue;
+    int lv_realValue2;
+    int lv_minValue;
+    int lv_maxValue;
+
+    // Variable Initialization
+    lv_minValue = DataTableGetInt(true, libCMUI_gf_CU_UnitProgressBar_Data(lp_unit, libCMUI_ge_CU_UnitProgressBarDataName_MinValue));
+    lv_maxValue = DataTableGetInt(true, libCMUI_gf_CU_UnitProgressBar_Data(lp_unit, libCMUI_ge_CU_UnitProgressBarDataName_MaxValue));
+
+    // Implementation
+    lv_realValue = lp_value;
+    if ((lv_minValue > lv_maxValue)) {
+        lv_realValue2 = lv_minValue;
+        lv_minValue = lv_maxValue;
+        lv_maxValue = lv_realValue2;
+    }
+
+    if ((lp_value < lv_minValue)) {
+        lv_realValue = lv_minValue;
+    }
+    else {
+        if ((lp_value > lv_maxValue)) {
+            lv_realValue = lv_maxValue;
+        }
+
+    }
+    DataTableSetInt(true, libCMUI_gf_CU_UnitProgressBar_Data(lp_unit, libCMUI_ge_CU_UnitProgressBarDataName_CurValue), lv_realValue);
+    libCMUI_gf_CU_UpdateUnitProgressBar(lp_unit);
+}
+
+void libCMUI_gf_SetUnitProgresBarTitle (unit lp_unit, text lp_titleText) {
+    // Variable Declarations
+    int lv_progressBarLabel;
+
+    // Variable Initialization
+    lv_progressBarLabel = c_invalidDialogControlId;
+
+    // Implementation
+    lv_progressBarLabel = libNtve_gf_ValueFromDataTableDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Label));
+    libNtve_gf_SetDialogItemText(lv_progressBarLabel, lp_titleText, PlayerGroupAll());
+}
+
+void libCMUI_gf_SetUnitProgressBarValueRange (unit lp_unit, int lp_minValue, int lp_maxValue) {
+    // Implementation
+    DataTableSetInt(true, libCMUI_gf_CU_UnitProgressBar_Data(lp_unit, libCMUI_ge_CU_UnitProgressBarDataName_MinValue), lp_minValue);
+    DataTableSetInt(true, libCMUI_gf_CU_UnitProgressBar_Data(lp_unit, libCMUI_ge_CU_UnitProgressBarDataName_MaxValue), lp_maxValue);
+    libCMUI_gf_SetUnitProgressBarProgress(lp_unit, DataTableGetInt(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Value)));
+}
+
+void libCMUI_gf_ShowHideUnitProgressBar (unit lp_unit, bool lp_showHide) {
+    // Variable Declarations
+    int lv_progressBarLabel;
+    int lv_progressBarValue;
+    int lv_progressBarBar;
+    int lv_progressBarBorder;
+
+    // Variable Initialization
+    lv_progressBarLabel = c_invalidDialogControlId;
+    lv_progressBarValue = c_invalidDialogControlId;
+    lv_progressBarBar = c_invalidDialogControlId;
+    lv_progressBarBorder = c_invalidDialogControlId;
+
+    // Implementation
+    UnitStatusBarOverride(lp_unit, c_unitStatusGroupAll);
+    lv_progressBarLabel = libNtve_gf_ValueFromDataTableDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Label));
+    DialogControlSetVisible(lv_progressBarLabel, PlayerGroupAll(), lp_showHide);
+    lv_progressBarValue = libNtve_gf_ValueFromDataTableDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Value));
+    DialogControlSetVisible(lv_progressBarValue, PlayerGroupAll(), lp_showHide);
+    lv_progressBarBar = libNtve_gf_ValueFromDataTableDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Bar));
+    DialogControlSetVisible(lv_progressBarBar, PlayerGroupAll(), lp_showHide);
+    lv_progressBarBorder = libNtve_gf_ValueFromDataTableDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Broder));
+    DialogControlSetVisible(lv_progressBarBorder, PlayerGroupAll(), lp_showHide);
+    libCMUI_gf_CU_UpdateUnitProgressBar(lp_unit);
+}
+
+void libCMUI_gf_CU_UpdateUnitProgressBar (unit lp_unit) {
+    // Variable Declarations
+    int lv_progressBarLabel;
+    int lv_progressBarValue;
+    int lv_progressBarProgressBar;
+    const int lv_c_Width = 252;
+    const int lv_c_Height = 12;
+    string lv_dataTableString;
+    string lv_attachmentPreset;
+    fixed lv_progressBarWidth;
+    int lv_minValue;
+    int lv_curValue;
+    int lv_maxValue;
+    int lv_swapValue;
+
+    // Variable Initialization
+    lv_progressBarLabel = c_invalidDialogControlId;
+    lv_progressBarValue = c_invalidDialogControlId;
+    lv_progressBarProgressBar = c_invalidDialogControlId;
+    lv_attachmentPreset = lv_dataTableString;
+
+    // Implementation
+    lv_minValue = DataTableGetInt(true, libCMUI_gf_CU_UnitProgressBar_Data(lp_unit, libCMUI_ge_CU_UnitProgressBarDataName_MinValue));
+    lv_maxValue = DataTableGetInt(true, libCMUI_gf_CU_UnitProgressBar_Data(lp_unit, libCMUI_ge_CU_UnitProgressBarDataName_MaxValue));
+    lv_curValue = DataTableGetInt(true, libCMUI_gf_CU_UnitProgressBar_Data(lp_unit, libCMUI_ge_CU_UnitProgressBarDataName_CurValue));
+    lv_progressBarProgressBar = libNtve_gf_ValueFromDataTableDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Bar));
+    lv_progressBarValue = libNtve_gf_ValueFromDataTableDialogItem(true, libCMUI_gf_CU_UnitProgressBar_Dialog(lp_unit, libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Value));
+    if (((lv_progressBarProgressBar == c_invalidDialogControlId) || (lv_progressBarValue == c_invalidDialogControlId))) {
+        return ;
+    }
+
+    libNtve_gf_SetDialogItemText(lv_progressBarValue, TextTimeFormat(StringToText("<mintotal/>:<sec2/>"), lv_curValue), PlayerGroupAll());
+    if ((lv_minValue > lv_maxValue)) {
+        lv_swapValue = lv_minValue;
+        lv_minValue = lv_maxValue;
+        lv_maxValue = lv_swapValue;
+        lv_curValue = (lv_maxValue-lv_curValue);
+    }
+
+    lv_progressBarWidth = (lv_c_Width * ( (IntToFixed(lv_curValue) - IntToFixed(lv_minValue)) / (IntToFixed(lv_maxValue) - IntToFixed(lv_minValue)) ));
+    DialogControlSetSize(lv_progressBarProgressBar, PlayerGroupAll(), MaxI(FixedToInt(lv_progressBarWidth), 1), lv_c_Height);
+}
+
+string libCMUI_gf_CU_UnitProgressBar_Data (unit lp_unit, int lp_type) {
+    int auto15657D6A_val;
+
+    // Variable Declarations
+    string lv_name;
+
+    // Variable Initialization
+    lv_name = "";
+
+    // Implementation
+    lv_name = "ProgressBar_DataName_";
+    auto15657D6A_val = lp_type;
+    if (auto15657D6A_val == libCMUI_ge_CU_UnitProgressBarDataName_CurValue) {
+        lv_name = (lv_name + "_" + "CurValue");
+    }
+    else if (auto15657D6A_val == libCMUI_ge_CU_UnitProgressBarDataName_MaxValue) {
+        lv_name = (lv_name + "_" + "MaxValue");
+    }
+    else if (auto15657D6A_val == libCMUI_ge_CU_UnitProgressBarDataName_MinValue) {
+        lv_name = (lv_name + "_" + "MinValue");
+    }
+    else {
+    }
+    lv_name = (lv_name + "_" + IntToString(UnitGetTag(lp_unit)));
+    return lv_name;
+}
+
+string libCMUI_gf_CU_UnitProgressBar_Dialog (unit lp_unit, int lp_type) {
+    int autoD886397D_val;
+
+    // Variable Declarations
+    string lv_name;
+
+    // Variable Initialization
+    lv_name = "";
+
+    // Implementation
+    lv_name = "ProgressBar_DialogType_";
+    autoD886397D_val = lp_type;
+    if (autoD886397D_val == libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Label) {
+        lv_name = (lv_name + "_" + "Label");
+    }
+    else if (autoD886397D_val == libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Value) {
+        lv_name = (lv_name + "_" + "Value");
+    }
+    else if (autoD886397D_val == libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Bar) {
+        lv_name = (lv_name + "_" + "ProgressBar");
+    }
+    else if (autoD886397D_val == libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Broder) {
+        lv_name = (lv_name + "_" + "ProgressBarBorder");
+    }
+    else {
+    }
+    lv_name = (lv_name + "_" + IntToString(UnitGetTag(lp_unit)));
+    return lv_name;
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libCMUI_InitLib_completed = false;
+
+void libCMUI_InitLib () {
+    if (libCMUI_InitLib_completed) {
+        return;
+    }
+
+    libCMUI_InitLib_completed = true;
+
+    libCMUI_InitLibraries();
+    libCMUI_InitVariables();
+}
+

@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib8FC3081F_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib8FC3081F_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib8FC3081F_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(20);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib8FC3081F_gt_Initialization_Init () {
+    lib8FC3081F_gt_Initialization = TriggerCreate("lib8FC3081F_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib8FC3081F_gt_Initialization);
+}
+
+void lib8FC3081F_InitTriggers () {
+    lib8FC3081F_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib8FC3081F_InitLib_completed = false;
+
+void lib8FC3081F_InitLib () {
+    if (lib8FC3081F_InitLib_completed) {
+        return;
+    }
+
+    lib8FC3081F_InitLib_completed = true;
+
+    lib8FC3081F_InitLibraries();
+    lib8FC3081F_InitTriggers();
+}
+

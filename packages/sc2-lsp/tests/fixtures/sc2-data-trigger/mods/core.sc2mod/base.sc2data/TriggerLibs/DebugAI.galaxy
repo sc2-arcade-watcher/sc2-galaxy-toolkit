@@ -1,0 +1,72 @@
+//==================================================================================================
+//  Debug AI Functions
+//==================================================================================================
+
+const bool DEBUG_AI             = false;
+const bool DEBUG_MAIN_STATE     = false;
+const bool DEBUG_ATTACK_STATE   = false;
+const bool DEBUG_WAVE           = false;
+const bool DEBUG_WITH_MESSAGE   = false;
+
+//--------------------------------------------------------------------------------------------------
+//  DebugAI
+//--------------------------------------------------------------------------------------------------
+void DebugAI (string s) {
+    if (DEBUG_AI) {
+        TriggerDebugOutput(1, StringToText(s), true);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+void DebugAIPlayer (int player, string s) {
+    if (DEBUG_AI) {
+        TriggerDebugOutput(
+            1,
+            StringToText("[") +
+            PlayerColorName(PlayerGetColorIndex(player, false)) +
+            StringToText("] ") +
+            StringToText(s),
+            true
+        );
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+void DebugAIPlayerWave (int player, string s) {
+    if (DEBUG_WAVE) {
+        DebugAIPlayer(player, s);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+void DebugVarInt (string s, int value) {
+    DebugAI(s + "= " + IntToString(value));
+}
+
+//--------------------------------------------------------------------------------------------------
+void DebugVarString (string s, string value) {
+    DebugAI(s + "= " + value);
+}
+
+//--------------------------------------------------------------------------------------------------
+void DebugVarInt2 (string s1, int value1, string s2, int value2) {
+    DebugAI(s1 + "= " + IntToString(value1) + ", " + s2 + "= " + IntToString(value2));
+}
+
+//--------------------------------------------------------------------------------------------------
+void DebugVarInt3 (string s1, int value1, string s2, int value2, string s3, int value3) {
+    DebugAI(s1 + "= " + IntToString(value1) + ", "
+          + s2 + "= " + IntToString(value2) + ", "
+          + s3 + "= " + IntToString(value3)
+    );
+}
+
+//--------------------------------------------------------------------------------------------------
+void DebugVarBool (string s, bool value) {
+    if (value) {
+        DebugAI(s + "= true");
+    }
+    else {
+        DebugAI(s + "= false");
+    }
+}

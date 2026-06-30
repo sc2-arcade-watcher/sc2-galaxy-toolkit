@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CBehaviorBuff id="ArmorpiercingMode">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Modification>
+            <WeaponEnableArray value="LanceMissileLaunchers"/>
+            <WeaponDisableArray value="JavelinMissileLaunchers"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="BurrowChargingRevD">
+        <Modification MoveSpeedBonus="5.0468"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ExplosiveMode">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Modification>
+            <WeaponEnableArray value="JavelinMissileLaunchers"/>
+            <WeaponDisableArray value="LanceMissileLaunchers"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorResource id="HighYieldMineralFieldMinerals">
+        <IdealHarvesterCount value="2"/>
+    </CBehaviorResource>
+    <CBehaviorResource id="HighYieldMineralFieldMinerals750">
+        <IdealHarvesterCount value="2"/>
+    </CBehaviorResource>
+    <!-- Cant parent from TimedLife due to the morph applying the InfestedTerranTimedLife behavior,-->
+    <!--        as the TimedLife parent would use <KillCredit Value="Caster"/> which sets kill credit to the egg -->
+    <CBehaviorBuff id="InfestedTerranTimedLife">
+        <DisplayDuration index="Enemy" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="LightofAiur">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-envision.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="60"/>
+        <Modification Detect="14">
+            <StateFlags index="Detector" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="LocustMPTimedLife">
+        <DisplayDuration index="Neutral" value="1"/>
+        <DisplayDuration index="Enemy" value="1"/>
+        <Duration value="25"/>
+    </CBehaviorBuff>
+    <CBehaviorResource id="MineralFieldMinerals">
+        <IdealHarvesterCount value="2"/>
+    </CBehaviorResource>
+    <CBehaviorResource id="MineralFieldMinerals750">
+        <IdealHarvesterCount value="2"/>
+    </CBehaviorResource>
+    <CBehaviorBuff id="MothershipCoreDeath">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <FinalEffect value="MothershipCoreMassRecallDeathSearch"/>
+        <ExpireEffect value="MothershipCoreMassRecallDeathSearch"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MothershipDeath">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <FinalEffect value="MothershipMassRecallDeathSearch"/>
+        <ExpireEffect value="MothershipMassRecallDeathSearch"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MothershipCoreRecalled">
+        <Modification>
+            <AbilLinkEnableArray value="BansheeCloak"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MothershipCoreRecalling">
+        <Modification>
+            <AbilLinkEnableArray value="BansheeCloak"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MothershipRecalled">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="5"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="SuppressPassenger" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <AbilClassDisableArray index="CAbilAttack" value="1"/>
+            <AbilClassDisableArray index="CAbilMove" value="1"/>
+            <AbilLinkEnableArray value="VolatileBurstBuilding"/>
+            <AbilLinkEnableArray value="GhostCloak"/>
+            <AbilLinkEnableArray value="BansheeCloak"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MothershipRecalling">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="2"/>
+        <ExpireEffect value="MothershipMassRecallSet"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="SuppressPassenger" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <AbilClassDisableArray index="CAbilAttack" value="1"/>
+            <AbilClassDisableArray index="CAbilMove" value="1"/>
+            <AbilLinkEnableArray value="VolatileBurstBuilding"/>
+            <AbilLinkEnableArray value="GhostCloak"/>
+            <AbilLinkEnableArray value="BansheeCloak"/>
+        </Modification>
+        <RemoveValidatorArray value="CasterNotDead"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="OracleRevelation">
+        <Duration value="0.3"/>
+        <RemoveValidatorArray value="NotHidden"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="OracleRevelationController">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Duration value="60"/>
+        <Period value="0.25"/>
+        <InitialEffect value="RevelationReapplySet"/>
+        <PeriodicEffect value="RevelationReapplySet"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="OracleWeapon">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <RemoveValidatorArray value="CanSpendEnergy"/>
+        <RemoveValidatorArray value="OracleHasEnergy"/>
+        <Modification>
+            <VitalRegenArray index="Energy" value="-2"/>
+            <WeaponEnableArray value="Oracle"/>
+        </Modification>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-oraclepulsarcannonon.dds"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PointDefenseDroneTimedLife">
+        <Duration value="20"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PulsarBeam">
+        <Alignment value="Positive"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-cloak.dds"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <RemoveValidatorArray value="CanSpendEnergy"/>
+        <RemoveValidatorArray value="hasEnergy"/>
+        <Duration value="1"/>
+        <Modification>
+            <VitalRegenArray index="Energy" value="-2"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Purify">
+        <Modification Detect="0">
+            <WeaponArray Link="MothershipCoreWeapon"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Recalled">
+        <Modification>
+            <AbilLinkEnableArray value="BansheeCloak"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Recalling">
+        <Modification>
+            <AbilLinkEnableArray value="BansheeCloak"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="RockCrushSearch">
+        <Duration value="0.5"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SeekerMissile">
+        <InfoIcon value="Assets\Textures\btn-ability-terran-huntermissile-color.dds"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Duration value="0.2"/>
+        <Alignment value="Negative"/>
+        <AINotifyEffect value="SeekerMissileDamage"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SeekerMissileTimeout">
+        <Duration value="5"/>
+        <ExpireEffect value=""/>
+        <Modification MoveSpeedMaximum="0"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SwarmHostEggAnimationMP">
+        <Duration value="60"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="TemporalField">
+        <Alignment value="Negative"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-timewarp.dds"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="0.125"/>
+        <Modification MoveSpeedMultiplier="0.5"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="TemporalFieldDecelerationBuff">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Modification DecelerationBonus="1000"/>
+        <Duration value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="VoidRaySwarmDamageBoost">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-prismaticbeam.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="20"/>
+        <Modification>
+            <DamageDealtAttributeScaled index="Armored" value="6"/>
+        </Modification>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <DisplayDuration index="Enemy" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="VolatileBurstBuilding">
+        <Modification>
+            <WeaponEnableArray index="0" value="VolatileBurstBuilding"/>
+            <WeaponDisableArray index="0" value="VolatileBurst"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MedivacSpeedBoost">
+        <Duration value="8"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <InfoIcon value="Assets\Textures\btn-upgrade-terran-jotunboosters.dds"/>
+        <Modification AccelerationBonus="500" DecelerationBonus="500"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="VortexKill">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="3"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <ModifyFlags index="Reveal" value="1"/>
+            <ModifyFlags index="Detected" value="1"/>
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="Passive" value="1"/>
+            <StateFlags index="Stasis" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="SuppressCloak" value="1"/>
+            <StateFlags index="SuppressCollision" value="1"/>
+            <StateFlags index="SuppressDetection" value="1"/>
+            <StateFlags index="SuppressPassenger" value="1"/>
+            <StateFlags index="SuppressRadar" value="1"/>
+            <StateFlags index="SuppressLifeRegen" value="1"/>
+            <StateFlags index="SuppressShieldsRegen" value="1"/>
+            <StateFlags index="SuppressEnergyRegen" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+            <AbilClassDisableArray index="CAbilAttack" value="1"/>
+            <AbilClassDisableArray index="CAbilMove" value="1"/>
+            <BehaviorClassDisableArray index="CBehaviorCreepSource" value="1"/>
+            <BehaviorClassDisableArray index="CBehaviorPowerSource" value="1"/>
+            <BehaviorClassDisableArray index="CBehaviorResource" value="1"/>
+            <BehaviorClassDisableArray index="CBehaviorSpawn" value="1"/>
+        </Modification>
+        <ExpireEffect value="SuicideRemove"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NydusDetect">
+        <InfoFlags index="Hidden" value="1"/>
+        <FinalEffect value="NydusDetect"/>
+        <RemoveValidatorArray value="IsConstructing"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="FungalGrowthMovement">
+        <Modification>
+            <AbilLinkDisableArray value="ThorAPMode"/>
+            <AbilLinkDisableArray value="ThorNormalMode"/>
+            <AbilLinkDisableArray value="LocustMPFlyingSwoop"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="LocustMPFlyingSwoopPrecursor">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification SightMaximum="0">
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="NoDraw" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="LocustMPFlyingSwoopUncommandable">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="0.875"/>
+        <Modification>
+            <StateFlags index="Uncommandable" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+</Catalog>

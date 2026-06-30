@@ -1,0 +1,2203 @@
+//==================================================================================================
+//  Protoss Melee Hard - Very Hard
+//==================================================================================================
+
+// very similar to Very Hard builds, but with minor deliberate delays/weakness
+
+bool ProtossOpenRushZealotStalkerHdVH (int player);            // zealot/stalker rush
+bool ProtossOpenRushProxyGateHdVH (int player);                // proxygate rush
+bool ProtossOpenRushCannonRushHdVH (int player);               // cannon rush
+bool ProtossOpenTimingFourGateHdVH (int player);               // four gate timing
+bool ProtossOpenTimingGateImmortalHdVH (int player);           // stalker/immortal timing
+bool ProtossOpenTimingStalkerBlinkHdVH (int player);           // blink stalker timing
+bool ProtossOpenTimingDTRushHdVH (int player);                 // dt rush
+bool ProtossOpenPowerMacroQuickExpGndHdVH (int player);        // aggresive quick expand
+bool ProtossOpenPowerMacroGateExpGndHdVH (int player);         // expand guarded by zealot/stalker
+bool ProtossOpenPowerMacroDefenseExpGndHdVH (int player);      // safer stalker/robo expand
+bool ProtossOpenAirOneBaseAirHdVH (int player);                // single base "island" air build
+bool ProtossOpenAirOneBaseDropHdVH (int player);                // single base "island" drop build
+bool ProtossOpenAirQuickExpandAirHdVH (int player);            // quick expand air build
+
+bool ProtossMidRushTimingFourGateRoboHdVH (int player);        // continued four gate pressure
+bool ProtossMidRushTimingDefensiveExpandHdVH (int player);     // transition from early pressure to a macro game
+bool ProtossMidPowerSevenGateHdVH (int player);                // pure gateway attack
+bool ProtossMidPowerGateImmortalHdVH (int player);             // gateway/immortal attack
+bool ProtossMidPowerGateColossiHdVH (int player);              // gateway/colossi attack
+bool ProtossMidPowerGateAirHdVH (int player);                  // gateway/air attack
+bool ProtossMidPowerGateVoidPhoenixHdVH (int player);          // air harrass (w/ gateway for defense)
+bool ProtossMidMacroGateRoboHdVH (int player);                 // macro toward a gateway/robo late game
+bool ProtossMidMacroGateAirHdVH (int player);                  // macro toward a gateway/stargate late game
+bool ProtossMidAirOneBasePureAirHdVH (int player);             // continue single base "island" air build
+bool ProtossMidAirOneBasePureDropHdVH (int player);            // continue single base "island" drop build
+bool ProtossMidAirExpansionVoidrayHdVH (int player);           // quick expand voidray/pheonix attack
+bool ProtossMidAirExpansionCapitalAirHdVH (int player);        // quick expand carrier attack
+bool ProtossMidAirExpansionDropAirHdVH (int player);           // quick expand drop + air attack
+bool ProtossMidAirMacroHdVH (int player);                      // macro toward a large late game air force
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossOpenHdVH
+//--------------------------------------------------------------------------------------------------
+void ProtossOpenHdVH (int player) {
+    bool done = false;
+    int buildIndex;
+
+    AIEarlyDefenseScouting(player);
+
+    // see if we need to switch builds
+    UpdateHDProtossOpening(player);
+    
+    buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (buildIndex == e_hdBuildIndex_POpenRush_ZealotStalker)               { done = ProtossOpenRushZealotStalkerHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenRush_ProxyGate)              { done = ProtossOpenRushProxyGateHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenRush_CannonRush)             { done = ProtossOpenRushCannonRushHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenTiming_FourGate)             { done = ProtossOpenTimingFourGateHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenTiming_GateImmortal)         { done = ProtossOpenTimingGateImmortalHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenTiming_StalkerBlink)         { done = ProtossOpenTimingStalkerBlinkHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenTiming_DTRush)               { done = ProtossOpenTimingDTRushHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenPowerMacro_QuickExpGnd)      { done = ProtossOpenPowerMacroQuickExpGndHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenPowerMacro_GateExpGnd)       { done = ProtossOpenPowerMacroGateExpGndHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenPowerMacro_DefenseExpGnd)    { done = ProtossOpenPowerMacroDefenseExpGndHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenAir_OneBaseAir)              { done = ProtossOpenAirOneBaseAirHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenAir_OneBaseDrop)             { done = ProtossOpenAirOneBaseDropHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenAir_QuickExpandAir)          { done = ProtossOpenAirQuickExpandAirHdVH (player); }
+    else { ErrorMeleeScript(player, "Invalid Open BuildIndex ProtossHdVH"); }
+
+    if (done) {
+        ProtossHDInitMid(player); // Transition to MidGame
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMidHdVH
+//--------------------------------------------------------------------------------------------------
+void ProtossMidHdVH (int player) {
+    bool done = false;
+    int buildIndex;
+    
+    // enable scouting as appropriate
+    if (AIGetUserInt(player, c_numGroundStartLocs) > 0) {
+        AIScoutingEnable(player, 15, c_PU_Probe);
+        AIEarlyDefenseScouting(player);
+    }
+    else {
+        AIScoutingEnable(player, 1, c_PU_Observer);
+    }
+
+    // see if we need to switch builds
+    UpdateHDProtossMidGame(player);
+    
+    buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (buildIndex == e_hdBuildIndex_PMidRushTiming_FourGateRobo)           { done = ProtossMidRushTimingFourGateRoboHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidRushTiming_DefensiveExpand)   { done = ProtossMidRushTimingDefensiveExpandHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidPower_SevenGate)              { done = ProtossMidPowerSevenGateHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidPower_GateImmortal)           { done = ProtossMidPowerGateImmortalHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidPower_GateColossi)            { done = ProtossMidPowerGateColossiHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidPower_GateAir)                { done = ProtossMidPowerGateAirHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidPower_GateVoidPhoenix)        { done = ProtossMidPowerGateVoidPhoenixHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidMacro_GateRobo)               { done = ProtossMidMacroGateRoboHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidMacro_GateAir)                { done = ProtossMidMacroGateAirHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidAir_OneBasePureAir)           { done = ProtossMidAirOneBasePureAirHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidAir_OneBasePureDrop)          { done = ProtossMidAirOneBasePureDropHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidAir_ExpansionVoidray)         { done = ProtossMidAirExpansionVoidrayHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidAir_ExpansionCapitalAir)      { done = ProtossMidAirExpansionCapitalAirHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidAir_ExpansionDropAir)         { done = ProtossMidAirExpansionDropAirHdVH (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidAir_Macro)                    { done = ProtossMidAirMacroHdVH (player); }
+    else { ErrorMeleeScript(player, "Invalid Mid BuildIndex ProtossHdVH"); }
+
+    if (done) {
+        ProtossHDInitLate(player); // Transition to LateGame
+    }
+}
+
+//==================================================================================================
+//  OPENINGS
+//==================================================================================================
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossOpenRushZealotStalkerHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossOpenRushZealotStalkerHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 12, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 17, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 20, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Zealot );
+    AISetStock( player, 2, c_PB_Gateway );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 22, c_PU_Probe );
+    AISetStock( player, 3, c_PU_Stalker );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 24, c_PU_Probe );
+    AISetStock( player, 5, c_PU_Stalker );
+    AISetStock( player, 3, c_PB_Gateway );
+    AISetStock( player, 5, c_PB_Pylon );              // proxy
+    AISetStock( player, 1, c_PB_RoboticsFacility ); 
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 7, c_PU_Stalker );
+    AISetStock( player, 6, c_PB_Pylon );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 12, c_PU_Probe, 1, c_PB_Gateway, c_techCountInProgressOrBetter);
+    AISetAttackStatus(player, c_PU_Zealot, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_PU_Stalker, 2, 999, c_continuousMerge);
+    if (AITechCount(player, c_PU_Zealot, c_techCountCompleteOnly) >= 2) {
+        AISetAttackStatus(player, c_PU_Stalker, 1, 3, c_continuousMerge);
+    }
+    
+    if (AIGetTime() < 450) {
+        if (AITechCount(player, c_PU_Stalker, c_techCountInProgressOrBetter) < 7) {
+            return false;
+        }
+    }
+    
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossOpenRushProxyGateHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossOpenRushProxyGateHdVH (int player) {
+
+    // not yet a proxy build, needs to be fixed
+    // this build is not used
+
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );        // proxy
+    AISetStock( player, 12, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );      // proxy
+    AISetStock( player, 15, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Gateway );      // proxy
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );        // proxy
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 19, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Zealot );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 3, c_PU_Zealot );
+    AISetStock( player, 20, c_PU_Probe );
+    AISetStock( player, 5, c_PU_Zealot );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 21, c_PU_Probe );
+    AISetStock( player, 6, c_PU_Zealot );
+    AISetStock( player, 22, c_PU_Probe );
+    AISetStock( player, 7, c_PU_Zealot );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+
+    AIScoutingEnableWithPreReq(player, 12, c_PU_Probe, 1, c_PB_Gateway, c_techCountInProgressOrBetter);
+    AISetAttackStatus(player, c_PU_Zealot, 1, 1, c_continuousMerge);
+
+    if (AIGetTime() < 300) {
+        if (AITechCount(player, c_PU_Zealot, c_techCountInProgressOrBetter) < 5) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossOpenRushCannonRushHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossOpenRushCannonRushHdVH (int player) {
+    AIClearStock(player);
+
+    // not yet a proxy build, needs to be fixed
+    // this build is not used
+
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 10, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );            // proxy
+    AISetStock( player, 1, c_PB_Forge );            // proxy
+    AISetStock( player, 12, c_PU_Probe );
+    AISetStock( player, 2, c_PB_PhotonCannon );     // proxy
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );            // proxy
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 4, c_PB_PhotonCannon );     // proxy
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 20, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 22, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 24, c_PU_Probe );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+
+    AIScoutingEnableWithPreReq(player, 9, c_PU_Probe, 1, c_PB_Nexus, c_techCountInProgressOrBetter);
+    AISetAttackStatus(player, c_PU_Zealot, 1, 999, c_continuousMerge);
+
+    if (AIGetTime() < 300) {
+        if (AITechCount(player, c_PB_Gateway, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossOpenTimingFourGateHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossOpenTimingFourGateHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 12, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 17, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 20, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Zealot );
+    AISetStock( player, 21, c_PU_Probe );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 22, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 2, c_PB_Gateway );
+    AISetStock( player, 23, c_PU_Probe );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 24, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Stalker );
+    AISetStock( player, 4, c_PB_Gateway );
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 4, c_PU_Stalker );
+    AISetStock( player, 6, c_PB_Pylon );
+    AISetStock( player, 8, c_PU_Stalker );
+    AISetStock( player, 7, c_PB_Pylon );         // proxy
+    AISetStock( player, 4, c_PU_Zealot );
+    AISetStock( player, 10, c_PU_Stalker );
+    AISetStock( player, 28, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 8, c_PB_Pylon );
+    AISetStock( player, 30, c_PU_Probe );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 12, c_PU_Probe, 1, c_PB_Gateway, c_techCountInProgressOrBetter);
+    AISetAttackStatus(player, c_PU_Zealot, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_PU_Stalker, 2, 999, c_continuousMerge);
+    if (AITechCount(player, c_PU_Zealot, c_techCountCompleteOnly) >= 2) {
+        AISetAttackStatus(player, c_PU_Stalker, 1, 8, c_continuousMerge);
+    }
+    
+    if (AIGetTime() < 510) {
+        if (AITechCount(player, c_PB_Assimilator, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+    
+    AISetAttackStatus(player, c_PU_Stalker, 1, 6, c_continuousMerge);
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossOpenTimingGateImmortalHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossOpenTimingGateImmortalHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 12, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 17, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 20, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Zealot );
+    AISetStock( player, 1, c_PB_RoboticsFacility );
+    AISetStock( player, 21, c_PU_Probe );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 22, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 23, c_PU_Probe );
+    AISetStock( player, 3, c_PU_Zealot );
+    AISetStock( player, 24, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Immortal );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 2, c_PB_Gateway );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 2, c_PU_Immortal );
+    AISetStock( player, 6, c_PB_Pylon );
+    AISetStock( player, 3, c_PU_Stalker );
+    AISetStock( player, 3, c_PU_Immortal );
+    AISetStock( player, 5, c_PU_Stalker );
+    AISetStock( player, 26, c_PU_Probe );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 12, c_PU_Probe, 1, c_PB_Gateway, c_techCountInProgressOrBetter);
+    AISetAttackStatus(player, c_PU_Zealot, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_PU_Stalker, 2, 999, c_continuousMerge);
+    if (AITechCount(player, c_PU_Stalker, c_techCountCompleteOnly) >= 5) {
+        AISetAttackStatus(player, c_PU_Immortal, 1, 2, c_continuousMerge);
+    }
+    
+    if (AIGetTime() < 480) {
+        if (AITechCount(player, c_PU_Stalker, c_techCountCompleteOnly) < 5) {
+            return false;
+        }
+    }
+    
+    if (AITechCount(player, c_PU_Immortal, c_techCountCompleteOnly) >= 1) {
+        AISetAttackStatus(player, c_PU_Stalker, 2, 5, c_continuousMerge);
+    }
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossOpenTimingStalkerBlinkHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossOpenTimingStalkerBlinkHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 12, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 17, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 20, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 21, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Zealot );
+    AISetStock( player, 1, c_PB_TwilightCouncil );
+    AISetStock( player, 22, c_PU_Probe );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 23, c_PU_Probe );
+    AISetStock( player, 1, c_PR_StalkerBlink );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 24, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Gateway );
+    AISetStock( player, 2, c_PU_Stalker );
+    AISetStock( player, 3, c_PB_Gateway );
+    AISetStock( player, 5, c_PB_Pylon );       // proxy
+    AISetStock( player, 25, c_PU_Probe );
+    AISetStock( player, 5, c_PU_Stalker );
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 8, c_PU_Stalker );
+    AISetStock( player, 6, c_PB_Pylon );
+    AISetStock( player, 11, c_PU_Stalker );
+    AISetStock( player, 7, c_PB_Pylon );
+    AISetStock( player, 27, c_PU_Probe );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 12, c_PU_Probe, 1, c_PB_Gateway, c_techCountInProgressOrBetter);
+    AISetAttackStatus(player, c_PU_Zealot, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_PU_Stalker, 1, 8, c_continuousMerge);
+
+    if (AIGetTime() < 510) {
+        if (AITechCount(player, c_PU_Stalker, c_techCountInProgressOrBetter) < 11) {
+            return false;
+        }
+    }
+    
+    AISetAttackStatus(player, c_PU_Stalker, 1, 7, c_continuousMerge);
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossOpenTimingDTRushHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossOpenTimingDTRushHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 10, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 13, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 15, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 17, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PB_TwilightCouncil );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    AISetStock( player, 19, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 20, c_PU_Probe );
+    AISetStock( player, 1, c_PB_DarkShrine );
+    AISetStock( player, 3, c_PB_Gateway );
+    AISetStock( player, 21, c_PU_Probe );
+    AISetStock( player, 3, c_PB_Pylon );         // proxy
+    AISetStock( player, 24, c_PU_Probe );
+    AISetStock( player, 3, c_PU_DarkTemplar );
+    AISetStock( player, 25, c_PU_Probe );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 5, c_PU_DarkTemplar );
+    AISetStock( player, 2, c_PU_Zealot );
+    AISetStock( player, 28, c_PU_Probe );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 12, c_PU_Probe, 1, c_PB_Gateway, c_techCountInProgressOrBetter);
+    AISetAttackStatus(player, c_PU_Zealot, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_PU_DarkTemplar, 1, 3, c_continuousMerge);
+
+    if (AIGetTime() < 420) {
+        if (AITechCount(player, c_PU_DarkTemplar, c_techCountInProgressOrBetter) < 5) {
+            return false;
+        }
+    }
+    
+    AISetAttackStatus(player, c_PU_DarkTemplar, 1, 2, c_continuousMerge);
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossOpenPowerMacroQuickExpGndHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossOpenPowerMacroQuickExpGndHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 13, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 16, c_PU_Probe );
+    
+    ProtossBasicDefenseStock(player);
+
+    if (AITechCount(player, c_PU_Probe, c_techCountQueuedOrBetter) >= 16) {
+        if (ProtossHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 22, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 24, c_PU_Probe );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 18, c_PU_Probe, 1, c_PB_Gateway, c_techCountCompleteOnly);
+
+    if (AIGetTime() < 270) {
+        if (AITechCount(player, c_PB_Nexus, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossOpenPowerMacroGateExpGndHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossOpenPowerMacroGateExpGndHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 12, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 17, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 21, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    AISetStock( player, 22, c_PU_Probe );
+
+    if (AITechCount(player, c_PU_Probe, c_techCountQueuedOrBetter) >= 22) {
+        if (ProtossHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 23, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Stalker );
+    AISetStock( player, 2, c_PB_Gateway );
+    AISetStock( player, 24, c_PU_Probe );
+    AISetStock( player, 3, c_PB_Gateway );
+    AISetStock( player, 25, c_PU_Probe );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 3, c_PU_Stalker );
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 28, c_PU_Probe );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 18, c_PU_Probe, 1, c_PB_Gateway, c_techCountCompleteOnly);
+
+    if (AIGetTime() < 300) {
+        if (AITechCount(player, c_PB_Nexus, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossOpenPowerMacroDefenseExpGndHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossOpenPowerMacroDefenseExpGndHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 12, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 17, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 20, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Zealot );
+    AISetStock( player, 21, c_PU_Probe );
+    AISetStock( player, 1, c_PB_RoboticsFacility );
+    AISetStock( player, 22, c_PU_Probe );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    AISetStock( player, 3, c_PU_Zealot );
+    AISetStock( player, 23, c_PU_Probe );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 24, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Immortal );
+    AISetStock( player, 25, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 26, c_PU_Probe );
+
+    if (AITechCount(player, c_PU_Probe, c_techCountQueuedOrBetter) >= 26) {
+        if (ProtossHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 27, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Stalker );
+    AISetStock( player, 5, c_PB_Pylon );
+    AISetStock( player, 28, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Immortal );
+    AISetStock( player, 29, c_PU_Probe );
+    AISetStock( player, 3, c_PU_Stalker );
+    AISetStock( player, 30, c_PU_Probe );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 18, c_PU_Probe, 1, c_PB_Gateway, c_techCountCompleteOnly);
+
+    if (AIGetTime() < 390) {
+        if (AITechCount(player, c_PB_Nexus, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossOpenAirOneBaseAirHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossOpenAirOneBaseAirHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 13, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 15, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 17, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 20, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Stargate );
+    AISetStock( player, 22, c_PU_Probe );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 24, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 1, c_PU_VoidRay );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 2, c_PU_Zealot );
+    AISetStock( player, 2, c_PU_VoidRay );
+    AISetStock( player, 5, c_PB_Pylon );
+    AISetStock( player, 1, c_PB_RoboticsFacility );
+    AISetStock( player, 3, c_PU_Zealot );
+    AISetStock( player, 3, c_PU_VoidRay );
+    AISetStock( player, 6, c_PB_Pylon );
+    AISetStock( player, 4, c_PU_Zealot );
+    AISetStock( player, 2, c_PB_Gateway );
+    AISetStock( player, 1, c_PU_Observer );
+    AISetStock( player, 4, c_PU_VoidRay );
+    AISetStock( player, 7, c_PB_Pylon );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 12, c_PU_Observer, 1, c_PB_RoboticsFacility, c_techCountInProgressOrBetter);
+    AISetAttackStatus(player, c_PU_VoidRay, 1, 2, c_continuousMerge);
+
+    if (AIGetTime() < 480) {
+        if (AITechCount(player, c_PU_VoidRay, c_techCountCompleteOnly) < 3) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossOpenAirOneBaseDropHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossOpenAirOneBaseDropHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 13, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 20, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Zealot );
+    AISetStock( player, 1, c_PB_RoboticsFacility );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 3, c_PU_Zealot );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 22, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 2, c_PB_Gateway );
+    AISetStock( player, 1, c_PU_Observer );
+    AISetStock( player, 1, c_PU_WarpPrism );
+    AISetStock( player, 2, c_PU_Stalker );
+    AISetStock( player, 5, c_PB_Pylon );
+    AISetStock( player, 3, c_PU_Stalker );
+    AISetStock( player, 24, c_PU_Probe );
+    AISetStock( player, 2, c_PU_WarpPrism );
+    AISetStock( player, 5, c_PU_Zealot );
+    AISetStock( player, 6, c_PB_Pylon );
+    AISetStock( player, 2, c_PB_Stargate );
+    AISetStock( player, 2, c_PU_Observer );
+    AISetStock( player, 7, c_PB_Pylon );
+    AISetStock( player, 5, c_PU_Stalker );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 12, c_PU_Observer, 1, c_PB_RoboticsFacility, c_techCountInProgressOrBetter);
+    if (AITechCount(player, c_PU_WarpPrism, c_techCountCompleteOnly) >= 2) {
+        AISetAttackStatus(player, c_PU_Zealot, 2, 3, c_continuousMerge);
+        AISetAttackStatus(player, c_PU_Stalker, 2, 3, c_continuousMerge);
+    }
+
+    if (AIGetTime() < 480) {
+        if (AITechCount(player, c_PB_Stargate, c_techCountCompleteOnly) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossOpenAirQuickExpandAirHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossOpenAirQuickExpandAirHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 16, c_PU_Probe );
+    
+    ProtossBasicDefenseStock(player);
+    
+    if (AITechCount(player, c_PU_Probe, c_techCountQueuedOrBetter) >= 16) {
+        if (ProtossHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 17, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 20, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    AISetStock( player, 28, c_PU_Probe );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+
+    if (AIGetTime() < 300) {
+        if (AITechCount(player, c_PB_Nexus, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//==================================================================================================
+//  MID GAME
+//==================================================================================================
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMidRushTimingFourGateRoboHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossMidRushTimingFourGateRoboHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 12, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 17, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 21, c_PU_Probe );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 22, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Gateway );
+    AISetStock( player, 23, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Stalker );
+    AISetStock( player, 2, c_PB_Assimilator );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 24, c_PU_Probe );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 25, c_PU_Probe );
+    AISetStock( player, 4, c_PU_Stalker );
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 1, c_PB_RoboticsFacility ); 
+    AISetStock( player, 27, c_PU_Probe );
+    AISetStock( player, 3, c_PB_Gateway );
+    AISetStock( player, 6, c_PU_Stalker );
+    AISetStock( player, 6, c_PB_Pylon );
+    AISetStock( player, 28, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Immortal );
+    AISetStock( player, 9, c_PU_Stalker );
+    AISetStock( player, 7, c_PB_Pylon );
+    AISetStock( player, 2, c_PU_Immortal );
+    AISetStock( player, 12, c_PU_Stalker );
+    AISetStock( player, 3, c_PU_Immortal );
+    AISetStock( player, 15, c_PU_Stalker );
+    AISetStock( player, 9, c_PB_Pylon );
+    AISetStock( player, 1, c_PU_Observer );
+    AISetStock( player, 30, c_PU_Probe );
+
+    ProtossHDDefaultExtraMidStock(player);
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+   
+    AISetAttackStatus(player, c_PU_Zealot, 1, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_PU_Stalker, 1, 999, c_continuousMerge);
+    if (AITechCount(player, c_PU_Stalker, c_techCountInProgressOrBetter) >= 8) {
+        AISetAttackStatus(player, c_PU_Immortal, 1, 2, c_continuousMerge);
+    }
+
+    if (AIGetTime() < 600) {
+        if (AITechCount(player, c_PU_Immortal, c_techCountInProgressOrBetter) < 3) {
+            return false;
+        }
+    }
+    
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMidRushTimingDefensiveExpandHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossMidRushTimingDefensiveExpandHdVH (int player) {    
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 12, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 17, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 20, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Zealot );
+    AISetStock( player, 22, c_PU_Probe );
+    AISetStock( player, 1, c_PB_RoboticsFacility );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 3, c_PU_Zealot );
+    AISetStock( player, 23, c_PU_Probe );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Immortal );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 28, c_PU_Probe );
+
+    if (AITechCount(player, c_PU_Probe, c_techCountQueuedOrBetter) >= 28) {
+        if (ProtossHDFastExpand(player)) { return false; }
+    }
+
+    ProtossHDDefaultExtraMidStock(player);
+
+    AISetStock( player, 5, c_PB_Pylon );
+    AISetStock( player, 2, c_PU_Stalker );
+    AISetStock( player, 2, c_PB_Gateway );
+    AISetStock( player, 30, c_PU_Probe );
+    AISetStock( player, 3, c_PU_Stalker );
+    AISetStock( player, 6, c_PB_Pylon );
+    AISetStock( player, 2, c_PU_Immortal );
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    // don't attack alone, but be willing to support an attack
+    AISetAttackStatus(player, c_PU_Stalker, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_PU_Immortal, 2, 999, c_continuousMerge);
+
+    if (AIGetTime() < 480) {
+        if (AITechCount(player, c_PB_Nexus, c_techCountQueuedOrBetter) < 2) {
+            return false;
+        }
+    }
+    
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMidPowerSevenGateHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossMidPowerSevenGateHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 13, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 21, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 22, c_PU_Probe );
+
+    if (AITechCount(player, c_PU_Probe, c_techCountQueuedOrBetter) >= 22) {
+        if (ProtossHDFastExpand(player)) { return false; }
+    }
+ 
+    ProtossHDDefaultExtraMidStock(player);  
+
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 23, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Stalker );
+    AISetStock( player, 25, c_PU_Probe );
+    AISetStock( player, 3, c_PB_Gateway );
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 3, c_PU_Stalker );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 28, c_PU_Probe );
+
+    AIDefaultEconomy(player, c_PB_Nexus, c_PB_Assimilator, c_PB_Pylon, c_PU_Probe, 40, c_stockAlways);
+
+    AISetStock( player, 12, c_PU_Stalker );
+    AISetStock( player, 6, c_PB_Gateway );
+    AISetStock( player, 15, c_PU_Stalker );
+    AISetStockPeons( player, 50, c_PU_Probe, c_stockMaxPeons, c_stockAlways);
+    AISetStock( player, 4, c_PU_Zealot );
+    AISetStock( player, 18, c_PU_Stalker );
+    AISetStock( player, 7, c_PB_Gateway );
+    AISetStockPeons( player, 60, c_PU_Probe, c_stockMaxPeons, c_stockAlways);
+    AISetStock( player, 3, c_PU_Sentry );
+    AISetStock( player, 7, c_PU_Zealot );
+    AISetStock( player, 21, c_PU_Stalker );
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+ 
+    AISetAttackStatus(player, c_PU_Zealot, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_PU_Stalker, 2, 999, c_continuousMerge);
+    if (AITechCount(player, c_PU_Stalker, c_techCountCompleteOnly) >= 15) {
+        AISetAttackStatus(player, c_PU_Sentry, 1, 1, c_continuousMerge);
+    }
+    
+    if (AIGetTime() < 720) {
+        if (AITechCount(player, c_PU_Sentry, c_techCountInProgressOrBetter) < 3) {
+            return false;
+        }
+    }
+    
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMidPowerGateImmortalHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossMidPowerGateImmortalHdVH (int player) {
+    int numStalker;
+
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 13, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 21, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 22, c_PU_Probe );
+
+    if (AITechCount(player, c_PU_Probe, c_techCountQueuedOrBetter) >= 22) {
+        if (ProtossHDFastExpand(player)) { return false; }
+    }
+
+    ProtossHDDefaultExtraMidStock(player);  
+
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 23, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Stalker );
+    AISetStock( player, 25, c_PU_Probe );
+    AISetStock( player, 3, c_PB_Gateway );
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 3, c_PU_Stalker );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 28, c_PU_Probe );
+
+    AIDefaultEconomy(player, c_PB_Nexus, c_PB_Assimilator, c_PB_Pylon, c_PU_Probe, 40, c_stockAlways);
+
+    AISetStock( player, 9, c_PU_Stalker );
+    AISetStock( player, 2, c_PB_RoboticsFacility );
+    AISetStockPeons( player, 50, c_PU_Probe, c_stockMaxPeons, c_stockAlways);
+    AISetStock( player, 12, c_PU_Stalker );
+    AISetStock( player, 2, c_PU_Immortal );
+    AISetStockPeons( player, 60, c_PU_Probe, c_stockMaxPeons, c_stockAlways);
+    AISetStock( player, 14, c_PU_Stalker );
+    AISetStock( player, 1, c_PU_Sentry );
+    AISetStock( player, 1, c_PU_Observer );
+    AISetStock( player, 3, c_PU_Immortal );
+    AISetStock( player, 17, c_PU_Stalker );
+    AISetStock( player, 5, c_PU_Immortal );
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AISetAttackStatus(player, c_PU_Zealot, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_PU_Stalker, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_PU_Immortal, 1, 3, c_continuousMerge);
+    
+    if (AIGetTime() < 720) {
+        if (AITechCount(player, c_PU_Immortal, c_techCountInProgressOrBetter) < 3) {
+            return false;
+        }
+    }
+    
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMidPowerGateColossiHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossMidPowerGateColossiHdVH (int player) {
+    AIClearStock(player); 
+    
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 13, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 21, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 22, c_PU_Probe );
+
+    if (AITechCount(player, c_PU_Probe, c_techCountQueuedOrBetter) >= 22) {
+        if (ProtossHDFastExpand(player)) { return false; }
+    }
+    
+    ProtossHDDefaultExtraMidStock(player);
+
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 23, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Stalker );
+    AISetStock( player, 25, c_PU_Probe );
+    AISetStock( player, 3, c_PB_Gateway );
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 3, c_PU_Stalker );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 28, c_PU_Probe );
+
+    AIDefaultEconomy(player, c_PB_Nexus, c_PB_Assimilator, c_PB_Pylon, c_PU_Probe, 40, c_stockAlways);
+
+    AISetStock( player, 9, c_PU_Stalker );
+    AISetStock( player, 2, c_PB_RoboticsFacility );
+    AISetStockPeons( player, 50, c_PU_Probe, c_stockMaxPeons, c_stockAlways);
+    AISetStock( player, 12, c_PU_Stalker );
+    AISetStock( player, 1, c_PU_Observer );
+    AISetStock( player, 1, c_PU_Immortal );
+    AISetStockPeons( player, 60, c_PU_Probe, c_stockMaxPeons, c_stockAlways);
+    AISetStock( player, 1, c_PB_RoboticsBay );
+    AISetStock( player, 14, c_PU_Stalker );
+    AISetStock( player, 1, c_PU_Sentry );
+    AISetStock( player, 2, c_PU_Colossus );
+    AISetStock( player, 1, c_PR_ColossusRange );
+    AISetStock( player, 17, c_PU_Stalker );
+    AISetStock( player, 4, c_PU_Colossus );
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AISetAttackStatus(player, c_PU_Zealot, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_PU_Stalker, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_PU_Colossus, 1, 4, c_continuousMerge);
+
+    if (AIGetTime() < 720) {
+        if (AITechCount(player, c_PU_Colossus, c_techCountInProgressOrBetter) < 3) {
+            return false;
+        }
+    }
+    
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMidPowerGateAirHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossMidPowerGateAirHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 13, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 21, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 22, c_PU_Probe );
+
+    if (AITechCount(player, c_PU_Probe, c_techCountQueuedOrBetter) >= 22) {
+        if (ProtossHDFastExpand(player)) { return false; }
+    }
+  
+    ProtossHDDefaultExtraMidStock(player);   
+
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 23, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Stalker );
+    AISetStock( player, 25, c_PU_Probe );
+    AISetStock( player, 3, c_PB_Gateway );
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 3, c_PU_Stalker );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 28, c_PU_Probe );
+
+    AIDefaultEconomy(player, c_PB_Nexus, c_PB_Assimilator, c_PB_Pylon, c_PU_Probe, 40, c_stockAlways);
+
+    AISetStock( player, 9, c_PU_Stalker );
+    AISetStock( player, 2, c_PB_Stargate );
+    AISetStockPeons( player, 50, c_PU_Probe, c_stockMaxPeons, c_stockAlways);
+    AISetStock( player, 12, c_PU_Stalker );
+    AISetStock( player, 2, c_PU_VoidRay );
+    AISetStock( player, 3, c_PB_Stargate );
+    AISetStockPeons( player, 60, c_PU_Probe, c_stockMaxPeons, c_stockAlways);
+    AISetStock( player, 15, c_PU_Stalker );
+    AISetStock( player, 4, c_PU_VoidRay );
+    AISetStock( player, 2, c_PU_Phoenix );
+    AISetStock( player, 8, c_PU_VoidRay );
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+
+    AISetAttackStatus(player, c_PU_Zealot, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_PU_Stalker, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_PU_VoidRay, 1, 2, c_continuousMerge);
+
+    if (AIGetTime() < 720) {
+        if (AITechCount(player, c_PU_VoidRay, c_techCountCompleteOnly) < 4) {
+            return false;
+        }
+    }
+    
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMidPowerGateVoidPhoenixHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossMidPowerGateVoidPhoenixHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 13, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 21, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Stalker );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 22, c_PU_Probe );
+
+    if (AITechCount(player, c_PU_Probe, c_techCountQueuedOrBetter) >= 22) {
+        if (ProtossHDFastExpand(player)) { return false; }
+    }
+
+    ProtossHDDefaultExtraMidStock(player);  
+
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 23, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Stalker );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 24, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Stargate );
+    AISetStock( player, 25, c_PU_Probe );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 2, c_PU_Zealot );
+    AISetStock( player, 27, c_PU_Probe );
+    AISetStock( player, 1, c_PU_VoidRay );
+    AISetStock( player, 3, c_PU_Zealot );
+    AISetStock( player, 4, c_PB_Assimilator );
+    AISetStock( player, 29, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Stargate );
+    AISetStock( player, 31, c_PU_Probe );
+    AISetStock( player, 5, c_PB_Pylon );
+    AISetStock( player, 2, c_PU_VoidRay );
+    
+    AIDefaultEconomy(player, c_PB_Nexus, c_PB_Assimilator, c_PB_Pylon, c_PU_Probe, 40, c_stockAlways);
+    
+    AISetStock( player, 3, c_PU_VoidRay );
+    AISetStock( player, 6, c_PB_Pylon );
+    AISetStock( player, 4, c_PU_VoidRay );
+    AISetStock( player, 7, c_PB_Pylon );
+    AISetStock( player, 5, c_PU_VoidRay );
+    AISetStock( player, 8, c_PB_Pylon );
+    AISetStock( player, 6, c_PU_VoidRay );
+    AISetStockPeons( player, 50, c_PU_Probe, c_stockMaxPeons, c_stockAlways);
+    AISetStock( player, 9, c_PB_Pylon );
+    AISetStock( player, 1, c_PB_RoboticsFacility );
+    AISetStock( player, 2, c_PU_Phoenix );
+    AISetStock( player, 10, c_PB_Pylon );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    AISetStock( player, 3, c_PU_Stalker );
+    AISetStock( player, 11, c_PB_Pylon );
+    AISetStock( player, 4, c_PU_Phoenix );
+    AISetStock( player, 1, c_PU_Observer );
+    AISetStock( player, 3, c_PB_Gateway );
+    AISetStock( player, 4, c_PU_Stalker );
+    AISetStockPeons( player, 60, c_PU_Probe, c_stockMaxPeons, c_stockAlways);
+    AISetStock( player, 8, c_PU_VoidRay );
+    AISetStock( player, 5, c_PU_Stalker );
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_PU_Zealot, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_PU_Stalker, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_PU_VoidRay, 1, 999, c_continuousMerge);
+
+    if (AITechCount(player, c_PU_VoidRay, c_techCountCompleteOnly) >= 4) {
+        AISetAttackStatus(player, c_PU_Phoenix, 1, 2, c_continuousMerge);
+    }
+
+    if (AIGetTime() < 750) {
+        if (AITechCount(player, c_PU_Phoenix, c_techCountInProgressOrBetter) < 4) {
+            return false;
+        }
+    }
+    
+    AISetAttackStatus(player, c_PU_Phoenix, 1, 2, c_continuousMerge);
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMidMacroGateRoboHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossMidMacroGateRoboHdVH (int player) {
+    int numStalker;
+
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 13, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 21, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 22, c_PU_Probe );
+
+    if (AITechCount(player, c_PU_Probe, c_techCountQueuedOrBetter) >= 22) {
+        if (ProtossHDFastExpand(player)) { return false; }
+    }
+
+    ProtossHDDefaultExtraMidStock(player);  
+
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 23, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Stalker );
+    AISetStock( player, 25, c_PU_Probe );
+    AISetStock( player, 3, c_PB_Gateway );
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 3, c_PU_Stalker );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 28, c_PU_Probe );
+
+    AIDefaultEconomy(player, c_PB_Nexus, c_PB_Assimilator, c_PB_Pylon, c_PU_Probe, 40, c_stockAlways);
+
+    AISetStock( player, 9, c_PU_Stalker );
+    AISetStock( player, 2, c_PB_RoboticsFacility );
+    AISetStockPeons( player, 50, c_PU_Probe, c_stockMaxPeons, c_stockAlways);
+    AISetStock( player, 12, c_PU_Stalker );
+    AISetStock( player, 1, c_PU_Observer );
+    AISetStock( player, 1, c_PU_Immortal );
+    AISetStockPeons( player, 60, c_PU_Probe, c_stockMaxPeons, c_stockAlways);
+    AISetStock( player, 1, c_PB_RoboticsBay );
+    AISetStock( player, 14, c_PU_Stalker );
+    AISetStock( player, 1, c_PU_Sentry );
+    
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    // don't attack alone, but be willing to support an attack
+    AISetAttackStatus(player, c_PU_Stalker, 2, 999, c_continuousMerge);
+
+    if (AIGetTime() < 720) {
+        if (AITechCount(player, c_PB_RoboticsBay, c_techCountQueuedOrBetter) < 1) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMidMacroGateAirHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossMidMacroGateAirHdVH (int player) {
+    int numStalker;
+
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 13, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 21, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 22, c_PU_Probe );
+
+    if (AITechCount(player, c_PU_Probe, c_techCountQueuedOrBetter) >= 22) {
+        if (ProtossHDFastExpand(player)) { return false; }
+    }
+
+    ProtossHDDefaultExtraMidStock(player);   
+
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 23, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Stalker );
+    AISetStock( player, 25, c_PU_Probe );
+    AISetStock( player, 3, c_PB_Gateway );
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 3, c_PU_Stalker );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 28, c_PU_Probe );
+
+    AIDefaultEconomy(player, c_PB_Nexus, c_PB_Assimilator, c_PB_Pylon, c_PU_Probe, 40, c_stockAlways);
+    
+    AISetStock( player, 9, c_PU_Stalker );
+    AISetStock( player, 2, c_PB_Stargate );
+    AISetStockPeons( player, 50, c_PU_Probe, c_stockMaxPeons, c_stockAlways);
+    AISetStock( player, 12, c_PU_Stalker );
+    AISetStock( player, 2, c_PU_VoidRay );
+    AISetStock( player, 3, c_PB_Stargate );
+    AISetStockPeons( player, 60, c_PU_Probe, c_stockMaxPeons, c_stockAlways);
+    AISetStock( player, 15, c_PU_Stalker );
+    AISetStock( player, 4, c_PU_VoidRay );
+    
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+
+    // don't attack alone, but be willing to support an attack
+    AISetAttackStatus(player, c_PU_Stalker, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_PU_VoidRay, 2, 999, c_continuousMerge);
+
+    if (AIGetTime() < 720) {
+        if (AITechCount(player, c_PB_Stargate, c_techCountQueuedOrBetter) < 3) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMidAirOneBasePureAirHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossMidAirOneBasePureAirHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 13, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 15, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 17, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    AISetStock( player, 20, c_PU_Probe );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 1, c_PB_Stargate );
+    AISetStock( player, 22, c_PU_Probe );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 24, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 1, c_PU_VoidRay );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 2, c_PU_Zealot );
+    AISetStock( player, 2, c_PU_VoidRay );
+    AISetStock( player, 5, c_PB_Pylon );
+    AISetStock( player, 1, c_PB_RoboticsFacility );
+    AISetStock( player, 3, c_PU_Zealot );
+    AISetStock( player, 3, c_PU_VoidRay );
+    AISetStock( player, 6, c_PB_Pylon );
+    AISetStock( player, 4, c_PU_Zealot );
+    AISetStock( player, 2, c_PB_Gateway );
+    AISetStock( player, 1, c_PU_Observer );
+    AISetStock( player, 4, c_PU_VoidRay );
+    AISetStock( player, 7, c_PB_Pylon );
+    
+    ProtossHDDefaultExtraMidStock(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_PU_VoidRay, 1, 1, c_continuousMerge);
+
+    if (AIGetTime() < 480) {
+        if (AITechCount(player, c_PU_VoidRay, c_techCountCompleteOnly) < 3) {
+            return false;
+        }
+    }
+    
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMidAirOneBasePureDropHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossMidAirOneBasePureDropHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 13, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 14, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    
+    ProtossBasicDefenseStock(player);
+
+    AISetStock( player, 16, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    AISetStock( player, 1, c_PU_Zealot );
+    AISetStock( player, 20, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Zealot );
+    AISetStock( player, 1, c_PB_RoboticsFacility );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 3, c_PU_Zealot );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    AISetStock( player, 2, c_PB_Assimilator );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 22, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 2, c_PB_Gateway );
+    AISetStock( player, 1, c_PU_Observer );
+    AISetStock( player, 1, c_PU_WarpPrism );
+    AISetStock( player, 2, c_PU_Stalker );
+    AISetStock( player, 5, c_PB_Pylon );
+    AISetStock( player, 3, c_PU_Stalker );
+    AISetStock( player, 24, c_PU_Probe );
+    AISetStock( player, 2, c_PU_WarpPrism );
+    AISetStock( player, 5, c_PU_Zealot );
+    AISetStock( player, 6, c_PB_Pylon );
+    AISetStock( player, 2, c_PB_Stargate );
+    AISetStock( player, 2, c_PU_Observer );
+    AISetStock( player, 7, c_PB_Pylon );
+    AISetStock( player, 5, c_PU_Stalker );
+    
+    ProtossHDDefaultExtraMidStock(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    if (AITechCount(player, c_PU_WarpPrism, c_techCountCompleteOnly) >= 2) {
+        AISetAttackStatus(player, c_PU_Zealot, 2, 3, c_continuousMerge);
+        AISetAttackStatus(player, c_PU_Stalker, 2, 3, c_continuousMerge);
+    }
+
+    if (AIGetTime() < 480) {
+        if (AITechCount(player, c_PB_Stargate, c_techCountCompleteOnly) < 2) {
+            return false;
+        }
+    }
+    
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMidAirExpansionVoidrayHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossMidAirExpansionVoidrayHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 16, c_PU_Probe );
+    
+    ProtossBasicDefenseStock(player);
+    
+    if (AITechCount(player, c_PU_Probe, c_techCountQueuedOrBetter) >= 16) {
+        if (ProtossHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 17, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 20, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 32, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Stargate );
+    AISetStock( player, 4, c_PB_Assimilator );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 38, c_PU_Probe );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 2, c_PU_VoidRay );
+    AISetStock( player, 5, c_PB_Pylon );
+    AISetStock( player, 42, c_PU_Probe );
+    AISetStock( player, 6, c_PB_Pylon );
+    AISetStock( player, 44, c_PU_Probe );
+    AISetStock( player, 4, c_PU_VoidRay );
+    AISetStock( player, 48, c_PU_Probe );
+    AISetStock( player, 8, c_PB_Pylon );
+    AISetStock( player, 6, c_PU_VoidRay );
+    AISetStock( player, 9, c_PB_Pylon );
+    AISetStock( player, 52, c_PU_Probe );
+    AISetStock( player, 8, c_PU_VoidRay );
+    AISetStock( player, 56, c_PU_Probe );
+    AISetStock( player, 11, c_PB_Pylon );
+    
+    ProtossHDDefaultExtraMidStock(player);
+    
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_PU_VoidRay, 1, 6, c_continuousMerge);
+    
+    if (AIGetTime() < 570) {
+        if (AITechCount(player, c_PU_VoidRay, c_techCountInProgressOrBetter) < 8) {
+            return false;
+        }
+    }
+    
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMidAirExpansionCapitalAirHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossMidAirExpansionCapitalAirHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 16, c_PU_Probe );
+    
+    ProtossBasicDefenseStock(player);
+    
+    if (AITechCount(player, c_PU_Probe, c_techCountQueuedOrBetter) >= 16) {
+        if (ProtossHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 17, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 20, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 32, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Stargate );
+    AISetStock( player, 4, c_PB_Assimilator );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 38, c_PU_Probe );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 2, c_PU_Phoenix );
+    AISetStock( player, 5, c_PB_Pylon );
+    AISetStock( player, 42, c_PU_Probe );
+    AISetStock( player, 1, c_PB_FleetBeacon );
+    AISetStock( player, 2, c_PU_VoidRay );
+    AISetStock( player, 7, c_PB_Pylon );
+    AISetStock( player, 46, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Carrier );
+    AISetStock( player, 48, c_PU_Probe );
+    AISetStock( player, 9, c_PB_Pylon );
+    AISetStock( player, 52, c_PU_Probe );
+    AISetStock( player, 4, c_PU_Carrier );
+    AISetStock( player, 56, c_PU_Probe );
+    
+    ProtossHDDefaultExtraMidStock(player);
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AISetAttackStatus(player, c_PU_Carrier, 1, 2, c_continuousMerge);
+    
+    if (AIGetTime() < 570) {
+        if (AITechCount(player, c_PU_Carrier, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+    
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMidAirExpansionDropAirHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossMidAirExpansionDropAirHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 16, c_PU_Probe );
+    
+    ProtossBasicDefenseStock(player);
+    
+    if (AITechCount(player, c_PU_Probe, c_techCountQueuedOrBetter) >= 16) {
+        if (ProtossHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 17, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 20, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 28, c_PU_Probe );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 32, c_PU_Probe );
+    AISetStock( player, 1, c_PB_RoboticsFacility );
+    AISetStock( player, 1, c_PU_Stalker );
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+    AISetStock( player, 34, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Gateway );
+    AISetStock( player, 36, c_PU_Probe );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 2, c_PU_Stalker );
+    AISetStock( player, 38, c_PU_Probe );
+    AISetStock( player, 1, c_PU_Observer );
+    AISetStock( player, 40, c_PU_Probe );
+    AISetStock( player, 3, c_PU_Stalker );
+    AISetStock( player, 5, c_PB_Pylon );
+    AISetStock( player, 42, c_PU_Probe );
+    AISetStock( player, 4, c_PU_Stalker );
+    AISetStock( player, 6, c_PB_Pylon );
+    AISetStock( player, 1, c_PB_Stargate );
+    AISetStock( player, 46, c_PU_Probe );
+    AISetStock( player, 7, c_PB_Pylon );
+    AISetStock( player, 1, c_PU_WarpPrism );
+    AISetStock( player, 6, c_PU_Stalker );
+    AISetStock( player, 48, c_PU_Probe );
+    AISetStock( player, 8, c_PB_Pylon );
+    AISetStock( player, 4, c_PB_Assimilator );
+    AISetStock( player, 2, c_PU_WarpPrism );
+    AISetStock( player, 1, c_PU_Phoenix );
+    AISetStock( player, 8, c_PU_Stalker );
+    AISetStock( player, 3, c_PU_WarpPrism );
+    AISetStock( player, 10, c_PB_Pylon );
+    AISetStock( player, 52, c_PU_Probe );
+    AISetStock( player, 2, c_PU_Phoenix );
+    AISetStock( player, 12, c_PU_Stalker );
+    AISetStock( player, 1, c_PU_Immortal );
+    AISetStock( player, 12, c_PB_Pylon );
+    AISetStock( player, 56, c_PU_Probe );
+    
+    ProtossHDDefaultExtraMidStock(player);
+    
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    if (AITechCount(player, c_PU_WarpPrism, c_techCountCompleteOnly) >= 3) {
+        AISetAttackStatus(player, c_PU_Stalker, 2, 8, c_continuousMerge);
+    }
+    
+    if (AIGetTime() < 570) {
+        if (AITechCount(player, c_PU_Immortal, c_techCountInProgressOrBetter) < 21) {
+            return false;
+        }
+    }
+    
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMidAirMacroHdVH
+//--------------------------------------------------------------------------------------------------
+bool ProtossMidAirMacroHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 9, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Pylon );
+    AISetStock( player, 16, c_PU_Probe );
+    
+    ProtossBasicDefenseStock(player);
+    
+    if (AITechCount(player, c_PU_Probe, c_techCountQueuedOrBetter) >= 16) {
+        if (ProtossHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 17, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Pylon );
+    AISetStock( player, 18, c_PU_Probe );
+    AISetStock( player, 1, c_PB_Assimilator );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 20, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 26, c_PU_Probe );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    
+    ProtossHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 32, c_PU_Probe );
+    AISetStock( player, 2, c_PB_Stargate );
+    AISetStock( player, 4, c_PB_Assimilator );
+    AISetStock( player, 3, c_PB_Pylon );
+    AISetStock( player, 38, c_PU_Probe );
+    AISetStock( player, 4, c_PB_Pylon );
+    AISetStock( player, 2, c_PU_VoidRay );
+    AISetStock( player, 5, c_PB_Pylon );
+    AISetStock( player, 42, c_PU_Probe );
+    AISetStock( player, 6, c_PB_Pylon );
+    AISetStock( player, 44, c_PU_Probe );
+    AISetStock( player, 4, c_PU_VoidRay );
+    AISetStock( player, 48, c_PU_Probe );
+    AISetStock( player, 8, c_PB_Pylon );
+    AISetStock( player, 6, c_PU_VoidRay );
+    AISetStock( player, 9, c_PB_Pylon );
+    AISetStock( player, 52, c_PU_Probe );
+    AISetStock( player, 8, c_PU_VoidRay );
+    AISetStock( player, 1, c_PB_FleetBeacon );
+    AISetStock( player, 56, c_PU_Probe );
+    AISetStock( player, 11, c_PB_Pylon );
+    
+    ProtossHDDefaultExtraMidStock(player);
+    
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    // don't attack alone, but be willing to support an attack
+    AISetAttackStatus(player, c_PU_VoidRay, 2, 999, c_continuousMerge);
+    
+    if (AIGetTime() < 570) {
+        if (AITechCount(player, c_PB_FleetBeacon, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+    }
+    
+    return true;  // Transition to LateGame
+}
+
+//==================================================================================================
+//  LATE GAME
+//==================================================================================================
+
+// Late Game is very similar to VyHd, but with delayed expanding and upgrading to make it weaker
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossLateHdVH
+//--------------------------------------------------------------------------------------------------
+void ProtossLateHdVH (int player) {
+    int armyCompareEstimate = AIArmyComparisonEstimate(player);
+    int foodUsed = PlayerGetPropertyInt(player, c_playerPropSuppliesUsed);
+    int minPylonCount;
+
+    // only allow scouting if I have an observer to scout with, ie stop using workers
+    AIScoutingEnable(player, 1, c_PU_Observer);
+    // calculate a limit on how much simultaneous teching can happen
+    AISetTechLimitLevels(player);
+
+
+// ****************** Start Restock ****************** //
+    AIClearStock(player);
+
+// Very basic recovery start
+    ProtossHDRecoveryStart(player);
+    
+// Minimum farms & peons
+    AISetStockFarms( player, c_PB_Pylon, c_stockNormalFarms);
+    AISetStockPeons( player, 16, c_PU_Probe, c_stockMinPeons, c_stockAlways);
+
+// Desperate expand (we're about to run out of minerals/gas)
+    AIDefaultExpansion(player, c_PB_Nexus, 3000, 1000, c_expandVitalHard);
+
+// Choose what type of endgame army we'd like to make
+    UpdateHDProtossLateGameArmy(player);
+
+// Bare minimum army
+    if (foodUsed < 180) {
+        ProtossHDLateGameArmy(player, e_armyTypeMinimum);
+    }
+
+// Basic peons
+    AISetStockPeons( player, 24, c_PU_Probe, c_stockMinPeons, c_stockAlways);
+
+// Make sure we have enough pylon space to build things at the main town
+    minPylonCount = 2;
+    if (AIIsTownFull(player, c_townMain)) { 
+        minPylonCount = 6;
+    }
+    if (AIGetBuildingCountInTown(player, c_townMain, c_PB_Pylon, c_techCountQueuedOrBetter) < minPylonCount) {
+        minPylonCount = AITechCount(player, c_PB_Pylon, c_techCountQueuedOrBetter) + 1;
+        AISetStockUnitNext( player, minPylonCount, c_PB_Pylon, c_stockAlways );
+    }
+
+// Urgent early detection
+    if (AINeedsDetection(player)) {
+        AISetStock( player, 1, c_PU_Observer );
+    }
+
+// Barely adequete army including anti-air
+    if (foodUsed < 180) {
+        ProtossHDLateGameArmy(player, e_armyTypeBase);
+    }
+   
+// Basic towns, farms, & peons
+    AIDefaultEconomy(player, c_PB_Nexus, c_PB_Assimilator, c_PB_Pylon, c_PU_Probe, 70, c_stockAlways);
+
+// Low expand (we're running low on minerals/gas)
+    AIAdjustedDefaultExpansion(player, c_PB_Nexus, 6000, 2000, c_expandVitalHard, armyCompareEstimate);
+ 
+// Minimum normal detection
+    if (AISuspectDetectionDanger(player, c_lateDetectionDangerTime)) {
+        AISetStock( player, 1, c_PU_Observer );
+    }
+
+// On an air map build at least one transport as long as we have some other units/army
+    if (AIGetUserInt(player, c_numGroundStartLocs) == 0) {
+        AISetStock( player, 1, c_PU_WarpPrism );
+    }
+
+// Nearly food capped units
+    if (foodUsed > 160) {
+        AISetStock( player, 3, c_PU_Observer );
+        AISetStock( player, 2, c_PU_WarpPrism );
+
+        if (foodUsed >= 180) {
+            ProtossHDLateGameArmy(player, e_armyTypeMinimum);
+            ProtossHDLateGameArmy(player, e_armyTypeBase);
+        }
+    }
+
+// Basic small army
+    ProtossHDLateGameArmy(player, e_armyTypeSmall);
+    
+// Very important tech
+    AISetStock( player, 1, c_PR_WarpGateResearch );
+
+// Basic production buildings
+    AISetStock( player, 2,  c_PB_Gateway );
+    AISetStock( player, 1,  c_PB_RoboticsFacility );
+    
+// Normal expand
+    AIAdjustedDefaultExpansion(player, c_PB_Nexus, 10000, 4000, c_expandNormalHard, armyCompareEstimate);
+
+// Make Counter Units
+    ProtossHDMakeCounters(player);
+    
+// Medium sized army
+    ProtossHDLateGameArmy(player, e_armyTypeMedium);
+
+// Vital upgrades
+    ProtossHDVitalUpgrades(player);
+
+// Observer to scout/detect
+    AISetStock( player, 1, c_PU_Observer );
+
+// Addition production buildings
+    AISetStockUnitNext( player, 3, c_PB_Gateway, c_stockIdle );
+
+// Other towns defense
+    ProtossHDDefenseOtherTowns(player);
+
+// Large sized army
+    ProtossHDLateGameArmy(player, e_armyTypeLarge);
+
+// General upgrades
+    ProtossHDGeneralUpgrades(player);
+    
+// Main base defense
+    ProtossHDDefenseMainTown(player);
+
+// Multiple detectors & scouts & a transport
+    AISetStockUnitNext( player, 2, c_PU_Observer, c_stockAlways );
+    AISetStock( player, 1, c_PU_WarpPrism );
+
+// Middle expand
+    AIAdjustedDefaultExpansion(player, c_PB_Nexus, 15000, 6000, c_expandNormalHard, armyCompareEstimate);
+
+// Extra detection & scouts & transports
+    AISetStockUnitNext( player, 3, c_PU_Observer, c_stockAlways );
+    AISetStockUnitNext( player, 2, c_PU_WarpPrism, c_stockAlways );
+
+// Late expand
+    AIAdjustedDefaultExpansion(player, c_PB_Nexus, 20000, 8000, c_expandNormalHard, armyCompareEstimate);
+
+// Extra production buildings
+    AISetStockUnitNext( player, 6, c_PB_Gateway, c_stockIdle );
+    AISetStockUnitNext( player, 1, c_PB_TwilightCouncil, c_stockIdle );
+    AISetStockUnitNext( player, 3, c_PB_RoboticsFacility, c_stockIdle );
+    AISetStockUnitNext( player, 1, c_PB_Stargate, c_stockIdle );
+
+// Extra research buildings
+    if (AIHasRes(player,700,500)) {
+        AISetStockUnitNext( player, 3, c_PB_Forge, c_stockAlways );
+    }
+
+// Minor upgrades
+    ProtossHDMinorUpgrades(player);
+
+// Idle expand (very low priority, to prevent us from sitting around with idle peons)
+    AIAdjustedDefaultExpansion(player, c_PB_Nexus, 30000, 10000, c_expandIdleHard, armyCompareEstimate);
+
+// Entire Army
+    ProtossHDLateGameArmy(player, e_armyTypeFull);
+
+    AIEnableStock(player);    
+// ****************** End Restock ****************** //
+
+}

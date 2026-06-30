@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CUser id="DifficultySettings">
+        <Fields Id="DamageTakenRatio" Type="Fixed" EditorColumn="2"/>
+        <Fields>
+            <Id value="Name"/>
+            <Type value="Text"/>
+            <EditorColumn value="1"/>
+            <EditorText value="Name"/>
+        </Fields>
+        <Instances Id="[Default]"/>
+        <Instances Id="Casual">
+            <Fixed Fixed="0.5">
+                <Field Id="DamageTakenRatio"/>
+            </Fixed>
+            <Text Text="UserData/DifficultySettings/Casual_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Hard">
+            <Fixed Fixed="1">
+                <Field Id="DamageTakenRatio"/>
+            </Fixed>
+            <Text Text="UserData/DifficultySettings/Hard_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Normal">
+            <Fixed Fixed="1">
+                <Field Id="DamageTakenRatio"/>
+            </Fixed>
+            <Text Text="UserData/DifficultySettings/Normal_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Brutal">
+            <Fixed Fixed="1">
+                <Field Id="DamageTakenRatio"/>
+            </Fixed>
+            <Text Text="UserData/DifficultySettings/Brutal_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+    </CUser>
+    <CUser id="CampaignPerk">
+        <Fields Id="AbilityCommand" Type="AbilCmd" Count="5"/>
+        <Fields Id="Upgrade" Type="Upgrade" Count="5"/>
+        <Fields>
+            <Id value="Name"/>
+            <Type value="Text"/>
+            <EditorColumn value="1"/>
+            <EditorText value="Name"/>
+        </Fields>
+        <Fields>
+            <Id value="Group"/>
+            <Type value="User"/>
+            <UserType value="CampaignPerkGroup"/>
+            <EditorColumn value="4"/>
+        </Fields>
+        <Fields Id="Cost" Type="Int" EditorColumn="2"/>
+        <Fields Id="Icon" Type="Image"/>
+        <Fields Id="UISlot" Type="Int" EditorColumn="3"/>
+        <Fields Id="Tooltip" Type="Text"/>
+        <Fields Id="State" Type="Int">
+            <Flags index="Modifiable" value="1"/>
+        </Fields>
+        <Fields Id="RequiredMission" Type="GameLink" GameLinkType="Map"/>
+        <Fields Id="Description" Type="Text"/>
+        <Fields Id="Movie" Type="Movie"/>
+        <Fields Id="RequiredLevel" Type="Int" Count="4"/>
+        <Fields Id="RequiredRace" Type="GameLink" GameLinkType="Race"/>
+        <Fields Id="Effect" Type="GameLink" GameLinkType="Effect"/>
+        <Fields Id="TargetInstructions" Type="Text" Count="2"/>
+        <Fields Id="RequiredObjective" Type="GameLink" GameLinkType="Objective"/>
+        <Instances Id="[Default]"/>
+    </CUser>
+    <CUser id="CampaignPerkGroup">
+        <Fields>
+            <Id value="Name"/>
+            <Type value="Text"/>
+            <EditorColumn value="1"/>
+            <EditorText value="Name"/>
+        </Fields>
+        <Fields Id="Icon" Type="Image"/>
+        <Fields Id="Prefix" Type="Text" EditorText="Prefix"/>
+        <Fields Id="UIOrderX" Type="Int" EditorColumn="3"/>
+        <Fields Id="UIOrderY" Type="Int"/>
+        <Fields Id="MissionUIOrder" Type="Int" EditorColumn="4"/>
+        <Instances Id="[Default]"/>
+    </CUser>
+    <CUser id="CampaignTips">
+        <Fields>
+            <Id value="Icon"/>
+            <Type value="Image"/>
+            <GameLinkType value="Abil"/>
+            <EditorColumn value="2"/>
+        </Fields>
+        <Fields>
+            <Id value="Name"/>
+            <Type value="Text"/>
+            <GameLinkType value="Abil"/>
+            <EditorColumn value="1"/>
+        </Fields>
+        <Fields>
+            <Id value="Description"/>
+            <Type value="Text"/>
+            <GameLinkType value="Abil"/>
+            <EditorColumn value="3"/>
+        </Fields>
+        <Fields Id="Created" Type="Int" GameLinkType="Abil">
+            <Flags index="Modifiable" value="1"/>
+        </Fields>
+        <Fields>
+            <Id value="Prefix"/>
+            <Type value="Text"/>
+            <EditorColumn value="1"/>
+            <EditorText value="Prefix"/>
+        </Fields>
+        <Fields Id="Display Limit" Type="Int"/>
+        <Instances Id="[Default]"/>
+        <Instances Id="SampleTip">
+            <Image Image="Assets\Textures\btn-tips-tutorial.dds" Edge="Top" Attach="Pos_RaynorToTychus">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="1">
+                <Field Id="Display Limit"/>
+            </Int>
+            <Text Text="UserData/CampaignTips/SampleTip_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/SampleTip_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/SampleTip_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+        </Instances>
+    </CUser>
+    <CUser id="Locations">
+        <Fields>
+            <Id value="StoryUI Name"/>
+            <Type value="Text"/>
+            <EditorColumn value="1"/>
+            <EditorText value="Name"/>
+        </Fields>
+        <Fields Id="Active" Type="Int" GameLinkType="Abil">
+            <Flags index="Modifiable" value="1"/>
+            <Flags index="ConvState" value="1"/>
+        </Fields>
+        <Fields Id="Available" Type="Int" GameLinkType="Abil">
+            <Flags index="Modifiable" value="1"/>
+            <Flags index="ConvState" value="1"/>
+        </Fields>
+        <Fields Id="Travel Summary" Type="Text" Count="4"/>
+        <Fields>
+            <Id value="Travel Summary Origin"/>
+            <Type value="GameLink"/>
+            <GameLinkType value="Location"/>
+            <Count value="4"/>
+        </Fields>
+        <Fields Id="SortIndex" Type="Int"/>
+        <Fields Id="Pitch" Type="GameLink" GameLinkType="Conversation"/>
+        <Fields Id="Unit" Type="Unit"/>
+        <Fields Id="UIFluffCategories" Type="Text"/>
+        <Fields Id="UIFluffData" Type="Text"/>
+        <Fields Id="LoadingImage" Type="Image"/>
+        <Fields Id="Default" Type="Int"/>
+        <Instances Id="[Default]">
+            <Text Text="UserData/Locations/[Default]_StoryUI Name">
+                <Field Id="StoryUI Name"/>
+            </Text>
+        </Instances>
+    </CUser>
+    <CUser id="Maps">
+        <Fields Id="BestTime" Type="Int" Count="4">
+            <Flags index="Modifiable" value="1"/>
+        </Fields>
+        <Fields Id="CompletedAge" Type="Int" GameLinkType="Abil">
+            <Flags index="Modifiable" value="1"/>
+            <Flags index="ConvState" value="1"/>
+        </Fields>
+        <Fields Id="AvailableAge" Type="Int" GameLinkType="Abil">
+            <Flags index="Modifiable" value="1"/>
+            <Flags index="ConvState" value="1"/>
+        </Fields>
+        <Fields Id="LoadingScreenVictoryTitle" Type="Text"/>
+        <Fields Id="LoadingScreenVictorySubtitle" Type="Text"/>
+        <Fields Id="LoadingScreenVictoryBody" Type="Text"/>
+        <Fields Id="UI_VictoryScreen_Background" Type="Image"/>
+        <Fields Id="LoadingScreenVictoryImage" Type="Image"/>
+        <Fields Id="IsCurrent" Type="Int">
+            <Flags index="Modifiable" value="1"/>
+            <Flags index="ConvState" value="1"/>
+        </Fields>
+        <Fields>
+            <Id value="CompletionAchievementTerms"/>
+            <Type value="GameLink"/>
+            <GameLinkType value="AchievementTerm"/>
+            <Count value="4"/>
+        </Fields>
+        <Fields>
+            <Id value="Achievements"/>
+            <Type value="GameLink"/>
+            <GameLinkType value="Achievement"/>
+            <Count value="3"/>
+        </Fields>
+        <Fields Id="Pitch" Type="GameLink" GameLinkType="Conversation"/>
+        <Fields>
+            <Id value="Location"/>
+            <Type value="User"/>
+            <UserType value="Locations"/>
+            <EditorColumn value="1"/>
+        </Fields>
+        <Fields>
+            <Id value="ExtraArmyCategoryUnlock"/>
+            <Type value="GameLink"/>
+            <GameLinkType value="ArmyCategory"/>
+            <Count value="4"/>
+            <EditorColumn value="1"/>
+        </Fields>
+        <Fields Id="UIAmbience" Type="GameLink" GameLinkType="Soundtrack"/>
+        <Fields Id="BonusAchievementTerm" Type="GameLink" GameLinkType="AchievementTerm"/>
+        <Fields Id="ArchivesImageSettings" Type="Fixed" Count="3"/>
+        <Fields Id="Internal" Type="Int"/>
+        <Instances Id="[Default]">
+            <Fixed Fixed="0.5">
+                <Field Id="ArchivesImageSettings"/>
+            </Fixed>
+            <Fixed Fixed="0.5">
+                <Field Id="ArchivesImageSettings" Index="1"/>
+            </Fixed>
+            <Fixed Fixed="1">
+                <Field Id="ArchivesImageSettings" Index="2"/>
+            </Fixed>
+            <GameLink GameLink="pAmbience_MissionLaunchScreen">
+                <Field Id="UIAmbience"/>
+            </GameLink>
+            <Image>
+                <Field Id="LoadingScreenVictoryImage"/>
+            </Image>
+        </Instances>
+        <Instances Id="Placeholder">
+            <Int Int="1">
+                <Field Id="Internal"/>
+            </Int>
+        </Instances>
+    </CUser>
+    <CUser id="MissionObjective">
+        <Fields Id="Progress" Type="Int" GameLinkType="Abil">
+            <Flags index="Modifiable" value="1"/>
+        </Fields>
+        <Fields Id="Complete" Type="Int" GameLinkType="Abil">
+            <Flags index="Modifiable" value="1"/>
+            <Flags index="ConvState" value="1"/>
+        </Fields>
+        <Fields Id="Available" Type="Int" GameLinkType="Abil">
+            <Flags index="Modifiable" value="1"/>
+            <Flags index="ConvState" value="1"/>
+        </Fields>
+        <Fields Id="RewardText" Type="Text"/>
+        <Fields Id="FormatText" Type="Text"/>
+        <Fields Id="FormatTextSingle" Type="Text"/>
+        <Fields Id="CountDown" Type="Int"/>
+        <Fields Id="IsSecret" Type="Int"/>
+        <Instances Id="[Default]">
+            <Text Text="UserData/MissionObjective/[Default]_FormatText">
+                <Field Id="FormatText"/>
+            </Text>
+            <Text Text="UserData/MissionObjective/[Default]_FormatTextSingle">
+                <Field Id="FormatTextSingle"/>
+            </Text>
+        </Instances>
+    </CUser>
+    <CUser id="SceneTypes">
+        <Fields>
+            <Id value="Name"/>
+            <Type value="Text"/>
+            <EditorColumn value="1"/>
+            <EditorText value="Name"/>
+        </Fields>
+        <Instances Id="[Default]"/>
+        <Instances Id="Prerender">
+            <Text Text="UserData/SceneTypes/Prerender_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Ingame">
+            <Text Text="UserData/SceneTypes/Ingame_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="CutScene">
+            <Text Text="UserData/SceneTypes/CutScene_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="LevelCinematic">
+            <Text Text="UserData/SceneTypes/LevelCinematic_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+    </CUser>
+    <CUser id="Scenes">
+        <Fields>
+            <Id value="Name"/>
+            <Type value="Text"/>
+            <EditorColumn value="2"/>
+            <EditorText value="Name"/>
+        </Fields>
+        <Fields>
+            <Id value="Type"/>
+            <Type value="User"/>
+            <UserType value="SceneTypes"/>
+            <EditorColumn value="4"/>
+        </Fields>
+        <Fields Id="Notes" Type="String" EditorColumn="3"/>
+        <Fields Id="Image" Type="Image"/>
+        <Fields Id="Played" Type="Int">
+            <Flags index="Modifiable" value="1"/>
+            <Flags index="ConvState" value="1"/>
+        </Fields>
+        <Fields Id="Conversation" Type="GameLink" GameLinkType="Conversation"/>
+        <Fields Id="SceneFile" Type="Movie"/>
+        <Fields>
+            <Id value="Prefix"/>
+            <Type value="Text"/>
+            <EditorColumn value="1"/>
+            <EditorText value="Prefix"/>
+        </Fields>
+        <Fields Id="Cutscene" Type="String"/>
+        <Instances Id="[Default]"/>
+    </CUser>
+    <CUser id="StoryStates">
+        <Fields Id="Value" Type="Int">
+            <Flags index="Modifiable" value="1"/>
+            <Flags index="ConvState" value="1"/>
+        </Fields>
+        <Fields Id="Snapshot" Type="Int"/>
+        <Instances Id="[Default]"/>
+        <Instances Id="MissionCompletedCount"/>
+        <Instances Id="Can Travel"/>
+        <Instances Id="ArcsCompletedCount"/>
+        <Instances Id="ArcsVisitedCount"/>
+    </CUser>
+    <CUser id="TechUnit">
+        <Fields Id="Enabled" Type="Int" Count="16">
+            <Flags index="Modifiable" value="1"/>
+        </Fields>
+        <Fields Id="IsNew" Type="Int">
+            <Flags index="Modifiable" value="1"/>
+        </Fields>
+        <Fields>
+            <Id value="Name"/>
+            <Type value="Text"/>
+            <EditorColumn value="2"/>
+            <EditorText value="Name"/>
+        </Fields>
+        <Fields>
+            <Id value="Suffix"/>
+            <Type value="Text"/>
+            <EditorColumn value="3"/>
+            <EditorText value="Suffix"/>
+        </Fields>
+        <Fields Id="PlanetPanelCamera" Type="String"/>
+        <Fields Id="DescriptionShort" Type="Text"/>
+        <Fields Id="ArmyUnitName" Type="Text"/>
+        <Fields>
+            <Id value="Prefix"/>
+            <Type value="Text"/>
+            <EditorColumn value="1"/>
+            <EditorText value="Prefix"/>
+        </Fields>
+        <Fields Id="StartsLocked" Type="Int" EditorColumn="4"/>
+        <Fields Id="UIUnit" Type="Unit"/>
+        <Fields Id="PortraitModel" Type="GameLink" GameLinkType="Model"/>
+        <Fields Id="Movie" Type="Movie"/>
+        <Fields Id="UIOrder" Type="Int" EditorColumn="5"/>
+        <Fields Id="RequiredMission" Type="GameLink" GameLinkType="Map"/>
+        <Instances Id="[Default]">
+            <Int Int="1">
+                <Field Id="IsNew"/>
+            </Int>
+            <String String="Star2CameraMid02">
+                <Field Id="PlanetPanelCamera"/>
+            </String>
+        </Instances>
+    </CUser>
+    <CUser id="Timestamps">
+        <Fields Id="StartDelay" Type="Fixed" EditorColumn="6"/>
+        <Fields Id="WaitDuration" Type="Fixed" EditorColumn="5"/>
+        <Fields Id="Title" Type="Text" EditorColumn="2"/>
+        <Fields Id="Wait" Type="Int" EditorColumn="4"/>
+        <Fields Id="FlashDuration" Type="Fixed"/>
+        <Fields>
+            <Id value="Conversation"/>
+            <Type value="GameLink"/>
+            <GameLinkType value="Conversation"/>
+            <EditorColumn value="7"/>
+        </Fields>
+        <Fields Id="Description" Type="Text" EditorColumn="3"/>
+        <Fields Id="Scene" Type="User" UserType="Scenes"/>
+        <Fields Id="FromBookmark" Type="Int"/>
+        <Instances Id="[Default]">
+            <Fixed Fixed="1">
+                <Field Id="StartDelay"/>
+            </Fixed>
+            <Fixed Fixed="6">
+                <Field Id="WaitDuration"/>
+            </Fixed>
+            <Fixed Fixed="6">
+                <Field Id="FlashDuration"/>
+            </Fixed>
+        </Instances>
+        <Instances Id="DefaultPlaceholder">
+            <Text Text="UserData/Timestamps/DefaultPlaceholder_Title">
+                <Field Id="Title"/>
+            </Text>
+            <Text Text="UserData/Timestamps/DefaultPlaceholder_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+    </CUser>
+</Catalog>

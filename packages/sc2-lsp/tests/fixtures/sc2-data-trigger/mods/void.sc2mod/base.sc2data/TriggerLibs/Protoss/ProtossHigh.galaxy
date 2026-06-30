@@ -1,0 +1,2002 @@
+//==================================================================================================
+//  Protoss higher difficulty shared logic
+//==================================================================================================
+
+//==================================================================================================
+//  Protoss Openings
+//==================================================================================================
+// rush builds
+const int e_hdBuildIndex_POpenRush_ZealotStalker         = 200;   // zealot/stalker rush
+const int e_hdBuildIndex_POpenRush_Adept                 = 201;   // adept rush
+const int e_hdBuildIndex_POpenRush_ProxyGate             = 202;   // proxygate rush
+const int e_hdBuildIndex_POpenRush_CannonRush            = 203;   // cannon rush
+// 1 base timing builds
+const int e_hdBuildIndex_POpenTiming_FourGate            = 204;   // four gate timing
+const int e_hdBuildIndex_POpenTiming_Adept               = 205;   // adept timing
+const int e_hdBuildIndex_POpenTiming_GateImmortal        = 206;   // stalker/immortal timing
+const int e_hdBuildIndex_POpenTiming_StalkerBlink        = 207;   // blink stalker timing
+const int e_hdBuildIndex_POpenTiming_DTRush              = 208;   // dt rush
+// power & macro builds
+const int e_hdBuildIndex_POpenPowerMacro_QuickExpGnd     = 209;   // aggresive quick expand
+const int e_hdBuildIndex_POpenPowerMacro_GateExpGnd      = 210;   // expand guarded by zealot/stalker
+const int e_hdBuildIndex_POpenPowerMacro_DefenseExpGnd   = 211;   // safer stalker/robo expand
+// air openings
+const int e_hdBuildIndex_POpenAir_OneBaseAir             = 212;   // single base "island" air build
+const int e_hdBuildIndex_POpenAir_OneBaseDrop            = 213;    // single base "island" drop build
+const int e_hdBuildIndex_POpenAir_QuickExpandAir         = 214;   // quick expand air build
+
+//==================================================================================================
+//  Protoss MidGame
+//==================================================================================================
+// rush/timing continuation builds
+const int e_hdBuildIndex_PMidRushTiming_FourGateRobo     = 230;   // continued four gate pressure
+const int e_hdBuildIndex_PMidRushTiming_DefensiveExpand  = 231;   // transition from early pressure to a macro game
+// 2-3 base power attack builds
+const int e_hdBuildIndex_PMidPower_SevenGateStalker      = 232;   // pure gateway attack
+const int e_hdBuildIndex_PMidPower_SevenGateAdept        = 233;   // pure gateway with adept attack
+const int e_hdBuildIndex_PMidPower_GateImmortal          = 234;   // gateway/immortal attack
+const int e_hdBuildIndex_PMidPower_GateColossi           = 235;   // gateway/colossi attack
+const int e_hdBuildIndex_PMidPower_GateAir               = 236;   // gateway/air attack
+const int e_hdBuildIndex_PMidPower_GateVoidPhoenix       = 237;   // air harrass (w/ gateway for defense)
+// 3 base macro oriented builds
+const int e_hdBuildIndex_PMidMacro_GateRobo              = 238;   // macro toward a gateway/robo late game
+const int e_hdBuildIndex_PMidMacro_GateAir               = 239;   // macro toward a gateway/stargate late game
+// air/island builds
+const int e_hdBuildIndex_PMidAir_OneBasePureAir          = 240;   // continue single base "island" air build
+const int e_hdBuildIndex_PMidAir_OneBasePureDrop         = 241;   // continue single base "island" drop build
+const int e_hdBuildIndex_PMidAir_ExpansionVoidray        = 242;   // quick expand voidray/pheonix attack
+const int e_hdBuildIndex_PMidAir_ExpansionCapitalAir     = 243;   // quick expand carrier/tempest attack
+const int e_hdBuildIndex_PMidAir_ExpansionDropAir        = 244;   // quick expand drop + air attack
+const int e_hdBuildIndex_PMidAir_Macro                   = 245;   // macro toward a large late game air force
+
+//==================================================================================================
+//  Protoss LateGame
+//==================================================================================================
+// core builds
+const int e_hdBuildIndex_PLateCore_ZSSImmortal           = 260;   // Gateway + Immortal
+const int e_hdBuildIndex_PLateCore_ZSSHighTemplar        = 261;   // Gateway + HT w/ storm
+// high tech builds
+const int e_hdBuildIndex_PLateHighTech_ZSSArchon         = 262;   // Gateway + archon late game
+const int e_hdBuildIndex_PLateHighTech_ZSSColossi        = 263;   // Standard Gateway/Colossi late game
+const int e_hdBuildIndex_PLateHighTech_ZSSImmColossi     = 264;   // Very heavy robo build, mostly for PvP
+// air builds
+const int e_hdBuildIndex_PLateAir_ZSSAir                 = 265;   // ZSS with Voidray/Tempest
+const int e_hdBuildIndex_PLateAir_Voidray                = 266;   // Voidray focussed
+const int e_hdBuildIndex_PLateAir_TempestCarrier         = 267;   // Tempest/Carrier focussed
+// special/caster builds
+const int e_hdBuildIndex_PLateSpecial_ZSSTemplar         = 268;   // Gateway with High & Dark Templar
+const int e_hdBuildIndex_PLateSpecial_Mixed              = 269;   // Variety of support casters with main army
+
+
+//==================================================================================================
+//  ChooseHDProtossBuildFromSpecificBuild
+//==================================================================================================
+int ChooseHDProtossBuildFromSpecificBuild (int player, int specific, int mainState) {
+    int randomRoll = RandomInt(1, 100);
+
+    if (mainState == e_mainState_Open) {
+        if (specific == e_buildType_p1b_FourGate) {
+            return e_hdBuildIndex_POpenTiming_FourGate;
+        } else if (specific == e_buildType_p1b_Adept) {
+            return e_hdBuildIndex_POpenTiming_Adept;
+        } else if (specific == e_buildType_p1b_StalkerRobo) {
+            return e_hdBuildIndex_POpenTiming_GateImmortal;
+        } else if (specific == e_buildType_p1b_StalkerBlink) {
+            return e_hdBuildIndex_POpenTiming_StalkerBlink;
+        } else if (specific == e_buildType_p1b_DTRush) {
+            return e_hdBuildIndex_POpenTiming_DTRush;
+        } else if (specific == e_buildType_p2b_SevenGate) {
+            if (randomRoll < 15)       { return e_hdBuildIndex_POpenPowerMacro_QuickExpGnd; }        // 15%
+            else if (randomRoll < 30)  { return e_hdBuildIndex_POpenPowerMacro_DefenseExpGnd; }      // 15%
+            else                       { return e_hdBuildIndex_POpenPowerMacro_GateExpGnd; }         // 70%
+        } else if (specific == e_buildType_p2b_GateImmortal) {
+            if (randomRoll < 15)       { return e_hdBuildIndex_POpenPowerMacro_QuickExpGnd; }        // 15%
+            else if (randomRoll < 30)  { return e_hdBuildIndex_POpenPowerMacro_DefenseExpGnd; }      // 15%
+            else                       { return e_hdBuildIndex_POpenPowerMacro_GateExpGnd; }         // 70%
+        } else if (specific == e_buildType_p2b_GateColossi) {
+            if (randomRoll < 15)       { return e_hdBuildIndex_POpenPowerMacro_QuickExpGnd; }        // 15%
+            else if (randomRoll < 30)  { return e_hdBuildIndex_POpenPowerMacro_DefenseExpGnd; }      // 15%
+            else                       { return e_hdBuildIndex_POpenPowerMacro_GateExpGnd; }         // 70%
+        } else if (specific == e_buildType_p2b_GateAir) {
+            if (randomRoll < 15)       { return e_hdBuildIndex_POpenPowerMacro_QuickExpGnd; }        // 15%
+            else if (randomRoll < 30)  { return e_hdBuildIndex_POpenPowerMacro_DefenseExpGnd; }      // 15%
+            else                       { return e_hdBuildIndex_POpenPowerMacro_GateExpGnd; }         // 70%
+        } else if (specific == e_buildType_p2b_VoidPhoenix) { // do a riskier expand to get to air quicker
+            if (randomRoll < 70)       { return e_hdBuildIndex_POpenPowerMacro_QuickExpGnd; }        // 70%
+            else if (randomRoll < 85)  { return e_hdBuildIndex_POpenPowerMacro_DefenseExpGnd; }      // 15%
+            else                       { return e_hdBuildIndex_POpenPowerMacro_GateExpGnd; }         // 15%
+        } else if (specific == e_buildType_pm_MacroGateImm) {
+            if (randomRoll < 15)       { return e_hdBuildIndex_POpenPowerMacro_QuickExpGnd; }        // 15%
+            else if (randomRoll < 30)  { return e_hdBuildIndex_POpenPowerMacro_DefenseExpGnd; }      // 15%
+            else                       { return e_hdBuildIndex_POpenPowerMacro_GateExpGnd; }         // 70%
+        } else if (specific == e_buildType_pm_MacroColossi) {
+            if (randomRoll < 15)       { return e_hdBuildIndex_POpenPowerMacro_QuickExpGnd; }        // 15%
+            else if (randomRoll < 30)  { return e_hdBuildIndex_POpenPowerMacro_DefenseExpGnd; }      // 15%
+            else                       { return e_hdBuildIndex_POpenPowerMacro_GateExpGnd; }         // 70%
+        } else if (specific == e_buildType_pm_MacroGateAir) {
+            if (randomRoll < 15)       { return e_hdBuildIndex_POpenPowerMacro_QuickExpGnd; }        // 15%
+            else if (randomRoll < 30)  { return e_hdBuildIndex_POpenPowerMacro_DefenseExpGnd; }      // 15%
+            else                       { return e_hdBuildIndex_POpenPowerMacro_GateExpGnd; }         // 70%
+        }
+    }
+    else if (mainState == e_mainState_Mid) {
+        if (specific == e_buildType_p1b_FourGate) {
+            if (randomRoll < 25)      { return e_hdBuildIndex_PMidRushTiming_FourGateRobo; }        // 25%
+            else                      { return e_hdBuildIndex_PMidRushTiming_DefensiveExpand; }     // 75%
+        } else if (specific == e_buildType_p1b_Adept) {
+            if (randomRoll < 25)      { return e_hdBuildIndex_PMidRushTiming_FourGateRobo; }        // 25%
+            else                      { return e_hdBuildIndex_PMidRushTiming_DefensiveExpand; }     // 75%
+        } else if (specific == e_buildType_p1b_StalkerRobo) {
+            if (randomRoll < 25)      { return e_hdBuildIndex_PMidRushTiming_FourGateRobo; }        // 25%
+            else                      { return e_hdBuildIndex_PMidRushTiming_DefensiveExpand; }     // 75%
+        } else if (specific == e_buildType_p1b_StalkerBlink) {
+            if (randomRoll < 25)      { return e_hdBuildIndex_PMidRushTiming_FourGateRobo; }        // 25%
+            else                      { return e_hdBuildIndex_PMidRushTiming_DefensiveExpand; }     // 75%
+        } else if (specific == e_buildType_p1b_DTRush) {
+            if (randomRoll < 30)      { return e_hdBuildIndex_PMidRushTiming_FourGateRobo; }        // 30%
+            else                      { return e_hdBuildIndex_PMidRushTiming_DefensiveExpand; }     // 70%
+        } else if (specific == e_buildType_p2b_SevenGate) {
+            if (randomRoll < 25)      { return e_hdBuildIndex_PMidPower_SevenGateAdept; }           // 25%
+            else                      { return e_hdBuildIndex_PMidPower_SevenGateStalker; }         // 75%
+        } else if (specific == e_buildType_p2b_GateImmortal) {
+            return e_hdBuildIndex_PMidPower_GateImmortal;
+        } else if (specific == e_buildType_p2b_GateColossi) {
+            return e_hdBuildIndex_PMidPower_GateColossi;
+        } else if (specific == e_buildType_p2b_GateAir) {
+            return e_hdBuildIndex_PMidPower_GateAir;
+        } else if (specific == e_buildType_p2b_VoidPhoenix) {
+            return e_hdBuildIndex_PMidPower_GateVoidPhoenix;
+        } else if (specific == e_buildType_pm_MacroGateImm) {
+            return e_hdBuildIndex_PMidMacro_GateRobo;
+        } else if (specific == e_buildType_pm_MacroColossi) {
+            return e_hdBuildIndex_PMidMacro_GateRobo;
+        } else if (specific == e_buildType_pm_MacroGateAir) {
+            return e_hdBuildIndex_PMidMacro_GateAir;
+        }
+    }
+    else if (mainState == e_mainState_Late) {
+        // only the macro builds are still applicable late game
+        if (specific == e_buildType_pm_MacroGateImm) {
+            if (randomRoll < 80)      { return e_hdBuildIndex_PLateCore_ZSSImmortal; }              // 80%
+            else                      { return e_hdBuildIndex_PLateHighTech_ZSSImmColossi; }        // 20%
+        } else if (specific == e_buildType_pm_MacroColossi) {
+            if (randomRoll < 80)      { return e_hdBuildIndex_PLateHighTech_ZSSColossi; }           // 80%
+            else                      { return e_hdBuildIndex_PLateHighTech_ZSSImmColossi; }        // 20%
+        } else if (specific == e_buildType_pm_MacroGateAir) {
+            if (randomRoll < 90)      { return e_hdBuildIndex_PLateAir_ZSSAir; }                    // 90%
+            else                      { return e_hdBuildIndex_PLateAir_Voidray; }                   // 10%
+        }
+    } 
+
+    // not forced into a specific build at this stage
+    return e_buildType_Invalid;
+}
+
+//==================================================================================================
+//  OpenChooseHDProtossBuildFromType
+//==================================================================================================
+int OpenChooseHDProtossBuildFromType (int player, int openingType) {
+
+    AINewChooseSubState(player, e_openRollState, 1, 1000, e_hdBuildIndex_POpenPowerMacro_GateExpGnd);
+
+    if (openingType == e_buildType_Rush) {
+        //                                                              random protoss terran  zerg
+        AISetSubStateChanceRace( e_hdBuildIndex_POpenRush_ZealotStalker,    35,    70,    25,    20 ); //  35,  70,  25,  20
+        AISetSubStateChanceRace( e_hdBuildIndex_POpenRush_Adept,            65,    30,    75,    80 ); // 100, 100, 100, 100
+        // For now not using e_hdBuildIndex_POpenRush_ProxyGate && e_hdBuildIndex_POpenRush_CannonRush
+    } else if (openingType == e_buildType_Timing) {
+        //                                                              random protoss terran  zerg
+        AISetSubStateChanceRace( e_hdBuildIndex_POpenTiming_FourGate,       20,    25,    15,    20 ); //  20,  25,  15,  20
+        AISetSubStateChanceRace( e_hdBuildIndex_POpenTiming_Adept,          25,    15,    35,    30 ); //  45,  40,  50,  50
+        AISetSubStateChanceRace( e_hdBuildIndex_POpenTiming_GateImmortal,   25,    25,    30,    25 ); //  70,  65,  80,  75
+        AISetSubStateChanceRace( e_hdBuildIndex_POpenTiming_StalkerBlink,   20,    25,    15,    10 ); //  90,  90,  95,  85
+        AISetSubStateChanceRace( e_hdBuildIndex_POpenTiming_DTRush,         10,    10,     5,    15 ); // 100, 100, 100, 100
+    } else if (openingType == e_buildType_Macro) {
+        // on average play a bit safer and head toward late game
+        //                                                                  random protoss terran  zerg
+        AISetSubStateChanceRace( e_hdBuildIndex_POpenPowerMacro_QuickExpGnd,    20,    10,    20,    20 ); //  20,  10,  20,  20
+        AISetSubStateChanceRace( e_hdBuildIndex_POpenPowerMacro_GateExpGnd,     60,    70,    60,    60 ); //  80,  80,  80,  80
+        AISetSubStateChanceRace( e_hdBuildIndex_POpenPowerMacro_DefenseExpGnd,  20,    20,    20,    20 ); // 100, 100, 100, 100
+    } else if (openingType == e_buildType_Air) {
+        if (!AIHasNearbyOpenExpansion(player) && !AIIsExpandingOrHasExpanded(player)) {
+            // can't easily expand, go for a one base attack
+            AISetSubStateChance( e_hdBuildIndex_POpenAir_OneBaseAir,        70 ); //   70
+            AISetSubStateChance( e_hdBuildIndex_POpenAir_OneBaseDrop,       30 ); //  100
+        } else {
+            AISetSubStateChance( e_hdBuildIndex_POpenAir_OneBaseAir,        10 ); //   10
+            AISetSubStateChance( e_hdBuildIndex_POpenAir_OneBaseDrop,        5 ); //   15
+            AISetSubStateChance( e_hdBuildIndex_POpenAir_QuickExpandAir,    85 ); //  100
+        }
+    } else {  ///if (openingType == e_buildType_Power)
+        // be a bit more aggresive to hit a power timing
+        //                                                                  random protoss terran  zerg
+        AISetSubStateChanceRace( e_hdBuildIndex_POpenPowerMacro_QuickExpGnd,    25,    20,    30,    30 ); //  25,  20,  30,  30
+        AISetSubStateChanceRace( e_hdBuildIndex_POpenPowerMacro_GateExpGnd,     70,    75,    65,    65 ); //  95,  95,  95, 95
+        AISetSubStateChanceRace( e_hdBuildIndex_POpenPowerMacro_DefenseExpGnd,   5,     5,     5,     5 ); // 100, 100, 100, 100
+    }
+
+    return  AIChooseSubState();
+}
+
+//==================================================================================================
+//  MidChooseHDProtossBuildFromType
+//==================================================================================================
+int MidChooseHDProtossBuildFromType (int player, int openingType, int prevBuildIdx) {
+
+    AINewChooseSubState(player, e_middleRollState, 1, 1000, e_hdBuildIndex_PMidPower_GateColossi);
+
+    if (openingType == e_buildType_Rush) {
+        AISetSubStateChance( e_hdBuildIndex_PMidRushTiming_FourGateRobo,     40 ); //   40
+        AISetSubStateChance( e_hdBuildIndex_PMidRushTiming_DefensiveExpand,  60 ); //  100
+    } else if (openingType == e_buildType_Timing) {
+        AISetSubStateChance( e_hdBuildIndex_PMidRushTiming_FourGateRobo,     35 ); //   35
+        AISetSubStateChance( e_hdBuildIndex_PMidRushTiming_DefensiveExpand,  65 ); //  100
+    } else if (openingType == e_buildType_Macro) {
+        AISetSubStateChance( e_hdBuildIndex_PMidMacro_GateRobo,          90 ); //   90
+        AISetSubStateChance( e_hdBuildIndex_PMidMacro_GateAir,           10 ); //  100
+    } else if (openingType == e_buildType_Air) {
+        if (prevBuildIdx == e_hdBuildIndex_POpenAir_OneBaseAir ||
+            prevBuildIdx == e_hdBuildIndex_PMidAir_OneBasePureAir) {
+            AISetSubStateChance( e_hdBuildIndex_PMidAir_OneBasePureAir,      15 ); //   15
+            AISetSubStateChance( e_hdBuildIndex_PMidAir_ExpansionVoidray,    20 ); //   35
+            AISetSubStateChance( e_hdBuildIndex_PMidAir_ExpansionCapitalAir, 25 ); //   60
+            AISetSubStateChance( e_hdBuildIndex_PMidAir_Macro,               40 ); //  100
+        }
+        else if (prevBuildIdx == e_hdBuildIndex_POpenAir_OneBaseDrop ||
+                 prevBuildIdx == e_hdBuildIndex_PMidAir_OneBasePureDrop) {
+            AISetSubStateChance( e_hdBuildIndex_PMidAir_OneBasePureDrop,     25 ); //   25
+            AISetSubStateChance( e_hdBuildIndex_PMidAir_ExpansionDropAir,    35 ); //   60
+            AISetSubStateChance( e_hdBuildIndex_PMidAir_Macro,               40 ); //  100
+        }
+        else if (!AIHasNearbyOpenExpansion(player) && !AIIsExpandingOrHasExpanded(player)) {
+            // can't easily expand, continue to be a bit more aggressive
+            AISetSubStateChance( e_hdBuildIndex_PMidAir_ExpansionVoidray,     30 ); //   30
+            AISetSubStateChance( e_hdBuildIndex_PMidAir_ExpansionCapitalAir,  30 ); //   60
+            AISetSubStateChance( e_hdBuildIndex_PMidAir_ExpansionDropAir,     20 ); //   80
+            AISetSubStateChance( e_hdBuildIndex_PMidAir_Macro,                20 ); //  100
+        } else {
+            AISetSubStateChance( e_hdBuildIndex_PMidAir_ExpansionVoidray,     25 ); //   25
+            AISetSubStateChance( e_hdBuildIndex_PMidAir_ExpansionCapitalAir,  25 ); //   50
+            AISetSubStateChance( e_hdBuildIndex_PMidAir_ExpansionDropAir,     10 ); //   60
+            AISetSubStateChance( e_hdBuildIndex_PMidAir_Macro,                40 ); //  100
+        }
+    } else {  ///if (openingType == e_buildType_Power)
+        //                                                                random protoss terran  zerg
+        AISetSubStateChanceRace( e_hdBuildIndex_PMidPower_SevenGateStalker,   10,    15,     5,    15 ); //  10,  15,   5,  15
+        AISetSubStateChanceRace( e_hdBuildIndex_PMidPower_SevenGateAdept,     10,    15,    10,    10 ); //  20,  30,  15,  25
+        AISetSubStateChanceRace( e_hdBuildIndex_PMidPower_GateImmortal,       35,    30,    35,    35 ); //  55,  60,  50,  60
+        AISetSubStateChanceRace( e_hdBuildIndex_PMidPower_GateColossi,        35,    30,    40,    30 ); //  90,  90,  90,  90
+        AISetSubStateChanceRace( e_hdBuildIndex_PMidPower_GateAir,             5,     5,     5,     5 ); //  95,  95,  95,  95
+        AISetSubStateChanceRace( e_hdBuildIndex_PMidPower_GateVoidPhoenix,     5,     5,     5,     5 ); // 100, 100, 100, 100
+    }
+
+    return  AIChooseSubState();
+}
+
+//==================================================================================================
+//  LateChooseHDProtossBuildFromType
+//==================================================================================================
+int LateChooseHDProtossBuildFromType (int player, int lateGameType, int prevBuildIdx) {
+
+    AINewChooseSubState(player, e_lateRollState, 1, 1000, e_hdBuildIndex_PLateHighTech_ZSSColossi);
+
+    if (lateGameType == e_buildType_HighTech) {
+        AISetSubStateChance( e_hdBuildIndex_PLateHighTech_ZSSArchon,            20 ); //   20
+        AISetSubStateChance( e_hdBuildIndex_PLateHighTech_ZSSColossi,           50 ); //   70
+        AISetSubStateChance( e_hdBuildIndex_PLateHighTech_ZSSImmColossi,        30 ); //  100
+    } else if (lateGameType == e_buildType_Special) {
+        AISetSubStateChance( e_hdBuildIndex_PLateSpecial_ZSSTemplar,            65 ); //   65
+        AISetSubStateChance( e_hdBuildIndex_PLateSpecial_Mixed,                 35 ); //  100
+    } else if (lateGameType == e_buildType_Air) {
+        if (AIEnemyBuildingsOnlyOnOtherIslands(player)) {
+            AISetSubStateChance( e_hdBuildIndex_PLateAir_ZSSAir,                     5 ); //    5
+            AISetSubStateChance( e_hdBuildIndex_PLateAir_Voidray,                   15 ); //   20
+            AISetSubStateChance( e_hdBuildIndex_PLateAir_TempestCarrier,            80 ); //  100
+        } else {
+            AISetSubStateChance( e_hdBuildIndex_PLateAir_ZSSAir,                    20 ); //   20
+            AISetSubStateChance( e_hdBuildIndex_PLateAir_Voidray,                   40 ); //   60
+            AISetSubStateChance( e_hdBuildIndex_PLateAir_TempestCarrier,            40 ); //  100
+        }
+    } else {  //if (lateGameType == e_buildType_Core)
+        //                                                                  random protoss terran  zerg
+        AISetSubStateChanceRace( e_hdBuildIndex_PLateCore_ZSSImmortal,          75,    90,    60,    65 ); //  75,  90,  60,  65
+        AISetSubStateChanceRace( e_hdBuildIndex_PLateCore_ZSSHighTemplar,       25,    10,    40,    35 ); // 100, 100, 100, 100
+    }
+    // e_buildType_Mixed should be unused, but will map to a Core build if used
+
+    return  AIChooseSubState();
+}
+
+//==================================================================================================
+//  OpenChooseHDProtossCounterBuild
+//==================================================================================================
+int OpenChooseHDProtossCounterBuild (int player, bool onlyMustSwitch) {
+    // counter logic is primarily aimed at 1v1 games and does not consider allies under attack etc
+    int currentOpening = AIGetUserInt(player, c_openingBuildType);
+    int lobbyBuild = PlayerAIBuildNumber(player);
+
+    // don't use counter logic if we were told to do a specific opening
+    if (PlayerBeaconBuildMenuWasFromPlayer(player, c_buildMenuOpening)) {
+        return e_buildType_Invalid;
+    }
+    if (AIGetUserInt(player, c_specificLobbyBuild) != e_buildType_Invalid) {
+        return e_buildType_Invalid;
+    }
+    if (lobbyBuild >= e_buildType_Rush && lobbyBuild <= e_buildType_Air) {
+        return e_buildType_Invalid;
+    }
+
+    if (currentOpening == e_buildType_Rush) {
+        if (AIHighDontRush(player))  {
+            // we were planning to rush, but enemy is well prepared, switch to a timing attack
+            AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+            AISetOpeningBuildMenuFromScriptType(player);
+
+            // choose either 4-gate or gate-robo to defend
+            if (AITechCount(player, c_PB_RoboticsFacility, c_techCountInProgressOrBetter) > 0) {
+                return e_hdBuildIndex_POpenTiming_GateImmortal;
+            }
+            
+            // choose a gate based build
+            if (RandomInt(1, 100) > 50) {
+                return e_hdBuildIndex_POpenTiming_Adept; // 50%
+            }
+            return e_hdBuildIndex_POpenTiming_FourGate; // 50%
+        }
+    }
+    else if (currentOpening == e_buildType_Timing) {
+        if (AIHighCurrentlyUnderHeavyAttack(player))  {
+            if (AIGetUserInt(player, c_currentBuildIndex) == e_hdBuildIndex_POpenTiming_DTRush) {
+                if (AITechCount(player, c_PB_DarkShrine, c_techCountInProgressOrBetter) <= 0) {
+                    // unless we're close to getting dt, switch to gateway build
+                    if (RandomInt(1, 100) > 50) {
+                        return e_hdBuildIndex_POpenTiming_Adept; // 50%
+                    }
+                    return e_hdBuildIndex_POpenTiming_FourGate; // 50%
+                }
+            }
+            else if (AIGetUserInt(player, c_currentBuildIndex) == e_hdBuildIndex_POpenTiming_StalkerBlink) {
+                if (AITechCount(player, c_PR_StalkerBlink, c_techCountInProgressOrBetter) <= 0) {
+                    // unless we're close to getting blink, switch to gateway build
+                    if (RandomInt(1, 100) > 50) {
+                        return e_hdBuildIndex_POpenTiming_Adept; // 50%
+                    }
+                    return e_hdBuildIndex_POpenTiming_FourGate; // 50%
+                }
+            }
+        }
+    }
+    else if (currentOpening == e_buildType_Power) {
+        if (AIIsExpandingOrHasExpanded(player)) {
+            // if we've already expanded, just stick with a power build, but use the defensive one
+            if (AIGetUserInt(player, c_currentBuildIndex) != e_hdBuildIndex_POpenPowerMacro_DefenseExpGnd) {
+                return e_hdBuildIndex_POpenPowerMacro_DefenseExpGnd;
+            }
+            // already using e_hdBuildIndex_POpenPowerMacro_DefenseExpGnd
+            return e_buildType_Invalid;
+        }
+        
+        if (AIHighOpponentLikelyRushing(player) || AIHighCurrentlyUnderHeavyAttack(player))  {
+            // switch to a timing build (since that is more oriented toward immediate army)
+            AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+            AISetOpeningBuildMenuFromScriptType(player);
+            
+            // choose either 4-gate or gate-robo to defend
+            if (AITechCount(player, c_PB_RoboticsFacility, c_techCountInProgressOrBetter) > 0) {
+                return e_hdBuildIndex_POpenTiming_GateImmortal;
+            }
+
+            // choose a gate based build
+            if (RandomInt(1, 100) > 50) {
+                return e_hdBuildIndex_POpenTiming_Adept; // 50%
+            }
+            return e_hdBuildIndex_POpenTiming_FourGate; // 50%
+        }
+    }
+    else if (currentOpening == e_buildType_Macro) {
+        if (!AIHighOpponentLikelyRushing(player) && 
+            !AIHighCurrentlyUnderHeavyAttack(player) && 
+            !AIHighEnemyArmyLarger(player))  {
+            // not aware that we should switch, so stay with the macro build
+            return e_buildType_Invalid;
+        }
+
+        if (AIIsExpandingOrHasExpanded(player)) {
+            // if we've already expanded, switch to defensive power build instead of macro
+            AISetUserInt(player, c_openingBuildType, e_buildType_Power);
+            AISetOpeningBuildMenuFromScriptType(player);
+            return e_hdBuildIndex_POpenPowerMacro_DefenseExpGnd;
+        }
+        else {
+            // haven't already expanded, switch to a timing build 
+            // (since that is more oriented toward immediate army)
+            AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+            AISetOpeningBuildMenuFromScriptType(player);
+
+            // choose either 4-gate or gate-robo to defend
+            if (AITechCount(player, c_PB_RoboticsFacility, c_techCountInProgressOrBetter) > 0) {
+                return e_hdBuildIndex_POpenTiming_GateImmortal;
+            }
+            // choose a gate based build
+            if (RandomInt(1, 100) > 50) {
+                return e_hdBuildIndex_POpenTiming_Adept; // 50%
+            }
+            return e_hdBuildIndex_POpenTiming_FourGate; // 50%
+        }
+    }
+
+    return e_buildType_Invalid;
+}
+
+//==================================================================================================
+//  MidHDProtossCounterPowerBuild
+//==================================================================================================
+int MidHDProtossCounterPowerBuild (int player, int currentExactBuild) {
+    int rand;
+
+    if (currentExactBuild == e_hdBuildIndex_PMidPower_GateVoidPhoenix) {
+        if (AITechCount(player, c_PB_Stargate, c_techCountInProgressOrBetter) > 0) {
+            // allowed to keep this build
+            return e_buildType_Invalid;
+        }
+    }
+    else if (currentExactBuild == e_hdBuildIndex_PMidPower_GateAir) {
+        if (AITechCount(player, c_PB_Stargate, c_techCountInProgressOrBetter) > 0) {
+            // allowed to keep this build
+            return e_buildType_Invalid;
+        }
+    }
+    else if (currentExactBuild == e_hdBuildIndex_PMidPower_GateColossi) {
+        if (AITechCount(player, c_PB_RoboticsBay, c_techCountInProgressOrBetter) > 0 &&
+            AITechCount(player, c_PB_RoboticsFacility, c_techCountInProgressOrBetter) > 0) {
+            // allowed to keep this build
+            return e_buildType_Invalid;
+        }
+    }
+    else if (currentExactBuild == e_hdBuildIndex_PMidPower_SevenGateStalker || 
+             currentExactBuild == e_hdBuildIndex_PMidPower_SevenGateAdept || 
+             currentExactBuild == e_hdBuildIndex_PMidPower_GateImmortal) {
+        // allowed to keep this build
+        return e_buildType_Invalid;
+    }
+
+    // choose a gate based build
+    rand = RandomInt(1, 100);
+    if (rand > 80) {
+        return e_hdBuildIndex_PMidPower_SevenGateStalker; // 20%
+    }
+    if (rand > 70) {
+        return e_hdBuildIndex_PMidPower_SevenGateAdept; // 10%
+    }
+    return e_hdBuildIndex_PMidPower_GateImmortal; // 70%
+}
+
+//==================================================================================================
+//  MidChooseHDProtossCounterBuild
+//==================================================================================================
+int MidChooseHDProtossCounterBuild (int player, bool onlyMustSwitch) {
+    // counter logic is primarily aimed at 1v1 games and does not consider allies under attack etc
+    int currentOpening = AIGetUserInt(player, c_openingBuildType);
+    int currentExactBuild = AIGetUserInt(player, c_currentBuildIndex);
+    int lobbyBuild = PlayerAIBuildNumber(player);
+
+    // don't use counter logic if we were told to do a specific opening
+    if (PlayerBeaconBuildMenuWasFromPlayer(player, c_buildMenuOpening)) {
+        return e_buildType_Invalid;
+    }
+    if (AIGetUserInt(player, c_specificLobbyBuild) != e_buildType_Invalid) {
+        return e_buildType_Invalid;
+    }
+    if (lobbyBuild >= e_buildType_Rush && lobbyBuild <= e_buildType_Air) {
+        return e_buildType_Invalid;
+    }
+
+    if (currentOpening == e_buildType_Rush || currentOpening == e_buildType_Timing) {
+        if (!AIIsExpandingOrHasExpanded(player)) {
+            if (AIHighCurrentlyUnderHeavyAttack(player) || AIHighEnemyArmyLarger(player))  {
+                if (currentExactBuild == e_hdBuildIndex_PMidRushTiming_FourGateRobo) {
+                    // don't expand if we're under attack or behind on army
+                    return e_hdBuildIndex_PMidRushTiming_FourGateRobo;
+                }
+            }
+        }
+    }
+    else if (currentOpening == e_buildType_Power) {          
+        if (!AIIsExpandingOrHasExpanded(player)) {
+            if (AIHighOpponentLikelyRushing(player) || AIHighCurrentlyUnderHeavyAttack(player))  {
+                // don't expand if we're under attack or behind on army, instead switch to an army heavy timing build
+                AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+                AISetOpeningBuildMenuFromScriptType(player);
+
+                return e_hdBuildIndex_PMidRushTiming_FourGateRobo;
+            }
+        }
+        else {
+            // we've already expanded, just stick with a power build, but use the one that best fits our tech
+            return MidHDProtossCounterPowerBuild(player, currentExactBuild);
+        }
+    }
+    else if (currentOpening == e_buildType_Macro) {
+        if (!AIHighOpponentLikelyRushing(player) && 
+            !AIHighCurrentlyUnderHeavyAttack(player) && 
+            !AIHighEnemyArmyLarger(player))  {
+            // not aware that we should switch, so stay with the macro build
+            return e_buildType_Invalid;
+        }
+
+        if (AIIsExpandingOrHasExpanded(player)) {
+            // if we've already expanded, switch to defensive power build instead of macro
+            AISetUserInt(player, c_openingBuildType, e_buildType_Power);
+            AISetOpeningBuildMenuFromScriptType(player);
+            return MidHDProtossCounterPowerBuild(player, currentExactBuild);
+        }
+        else {
+            // haven't already expanded, switch to an army heavy timing build 
+            AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+            AISetOpeningBuildMenuFromScriptType(player);
+
+            return e_hdBuildIndex_PMidRushTiming_FourGateRobo;
+        }
+    }
+
+    return e_buildType_Invalid;
+}
+
+//==================================================================================================
+//  LateChooseHDProtossCounterBuild
+//==================================================================================================
+int LateChooseHDProtossCounterBuild (int player, bool onlyMustSwitch) {
+    // counter logic is primarily aimed at 1v1 games and does not consider allies under attack etc
+    int currentLateGame = AIGetUserInt(player, c_lateGameBuildType);
+    int currentBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int newLateGame = e_buildType_Core;
+    bool needsNewBuild = false;
+
+    // don't use counter logic if we were told to do a specific opening
+    if (PlayerBeaconBuildMenuWasFromPlayer(player, c_buildMenuLateGame)) {
+        return e_buildType_Invalid;
+    }
+
+    // for variety not much counter logic, only need to worry about using an advanced build when under attack
+    if (!AIHighLateGameUnderHeavyAttack(player)) {
+        return e_buildType_Invalid;
+    }
+
+    // we're under heavy attack, don't use caster builds or builds we don't have tech for
+    // note this logic can't conflict with UpdateHDProtossLateGameArmy or it will switch back and forth
+    if (currentLateGame == e_buildType_Special || currentLateGame == e_buildType_Mixed) {
+        needsNewBuild = true;
+    }
+    else if (currentLateGame == e_buildType_Air) {
+        if (!AIEnemyBuildingsOnlyOnOtherIslands(player)) {
+            if (AITechCount(player, c_PB_Stargate, c_techCountCompleteOnly) < 2) {
+                needsNewBuild = true;
+            }
+        }
+    }
+    else if (currentLateGame == e_buildType_HighTech) {
+        if (AITechCount(player, c_PB_RoboticsFacility, c_techCountCompleteOnly) <= 0) {
+            needsNewBuild = true;
+        }
+    }
+
+    if (!needsNewBuild) {
+        return e_buildType_Invalid;
+    }
+
+    // pick a new build
+    newLateGame = AIRandomlyChooseLateGameBuild(player);
+    if (newLateGame == currentLateGame) {
+        // this shouldn't happen, but just in case
+        return e_buildType_Invalid;
+    }
+
+    AISetUserInt(player, c_lateGameBuildType, newLateGame);
+    AISetLateGameBuildMenuFromScriptType(player);
+    return LateChooseHDProtossBuildFromType(player, newLateGame, currentBuildIndex);
+}
+
+//==================================================================================================
+//  PickHDProtossOpening
+//==================================================================================================
+int PickHDProtossOpening(int player) {
+    int race = AIGetEnemyRaceVal(player);
+    int currentBuildIndex;
+    int openingType;
+    int specificBuild;
+
+    if (AIState(player, e_mainState) != e_mainState_Open) {
+        AISetUserInt(player, c_currentBuildIndex, e_buildType_Invalid);
+    }
+    
+    // read opening data from lobby / build options menu
+    AIChooseNextOpeningBuild(player);
+
+    // if a specific build was choosen use that
+    specificBuild = AIGetUserInt(player, c_specificLobbyBuild);
+    if (specificBuild != e_buildType_Invalid) {
+        currentBuildIndex = ChooseHDProtossBuildFromSpecificBuild(player, specificBuild, e_mainState_Open);
+        if (currentBuildIndex != e_buildType_Invalid) {
+            return currentBuildIndex;
+        }
+    }
+
+    // should we do a specific counter build?
+    currentBuildIndex = OpenChooseHDProtossCounterBuild(player, false);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // if our previous current build is still valid then keep that
+    currentBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // otherwise pick an opening within the openingBuildType constraint
+    openingType = AIGetUserInt(player, c_openingBuildType);
+    currentBuildIndex = OpenChooseHDProtossBuildFromType(player, openingType);
+    return currentBuildIndex;
+}
+
+//==================================================================================================
+//  UpdateHDProtossOpening
+//==================================================================================================
+void UpdateHDProtossOpening (int player) {
+    int mainSubState = AIState(player, e_mainSubState);
+    int buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int counterBuild;
+    
+    if  ( mainSubState != e_mainSubState_Build || 
+          buildIndex == e_hdBuildIndex_Invalid || 
+          AIHasPlayerChangedCurrentOpening(player) ) {
+        // we should pick a new opening build
+        AISetMainState(player, e_mainState_Open, e_mainSubState_Init);        
+        buildIndex = PickHDProtossOpening(player);
+        AISetUserInt(player, c_currentBuildIndex, buildIndex);
+        AISetMainState(player, e_mainState_Open, e_mainSubState_Build);
+    } else {
+        counterBuild = OpenChooseHDProtossCounterBuild(player, true);
+        if (counterBuild != e_buildType_Invalid) {
+            AISetUserInt(player, c_currentBuildIndex, counterBuild);
+        }
+    }
+}
+
+//==================================================================================================
+//  PickHDProtossMidGame
+//==================================================================================================
+int PickHDProtossMidGame(int player) {
+    int prevBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int race = AIGetEnemyRaceVal(player);
+    int currentBuildIndex;
+    int openingType;
+    int specificBuild;
+
+    if (AIState(player, e_mainState) != e_mainState_Mid) {
+        AISetUserInt(player, c_currentBuildIndex, e_buildType_Invalid);
+    }
+    
+    // read opening data from lobby / build options menu
+    AIChooseNextOpeningBuild(player);
+
+    // if a specific build was choosen use that
+    specificBuild = AIGetUserInt(player, c_specificLobbyBuild);
+    if (specificBuild != e_buildType_Invalid) {
+        currentBuildIndex = ChooseHDProtossBuildFromSpecificBuild(player, specificBuild, e_mainState_Mid);
+        if (currentBuildIndex != e_buildType_Invalid) {
+            return currentBuildIndex;
+        }
+    }
+
+    // should we do a specific counter build?
+    currentBuildIndex = MidChooseHDProtossCounterBuild(player, false);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // if our previous current build is still valid then keep that
+    currentBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // otherwise pick an midgame within the openingBuildType constraint
+    openingType = AIGetUserInt(player, c_openingBuildType);
+    currentBuildIndex = MidChooseHDProtossBuildFromType(player, openingType, prevBuildIndex);
+    return currentBuildIndex;
+}
+
+//==================================================================================================
+//  UpdateHDProtossMidGame
+//==================================================================================================
+void UpdateHDProtossMidGame (int player) {
+    int mainSubState = AIState(player, e_mainSubState);
+    int buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int counterBuild;
+    
+    if  ( mainSubState != e_mainSubState_Build || 
+          buildIndex == e_hdBuildIndex_Invalid || 
+          AIHasPlayerChangedCurrentOpening(player) ) {
+        // we should pick a new midGame build
+        AISetMainState(player, e_mainState_Mid, e_mainSubState_Init);        
+        buildIndex = PickHDProtossMidGame(player);
+        AISetUserInt(player, c_currentBuildIndex, buildIndex);
+        AISetMainState(player, e_mainState_Mid, e_mainSubState_Build);
+    } else {
+        counterBuild = MidChooseHDProtossCounterBuild(player, true);
+        if (counterBuild != e_buildType_Invalid) {
+            AISetUserInt(player, c_currentBuildIndex, counterBuild);
+        }
+    }
+}
+
+//==================================================================================================
+//  PickHDProtossLateGame
+//==================================================================================================
+int PickHDProtossLateGame(int player) {
+    int prevBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int race = AIGetEnemyRaceVal(player);
+    int currentBuildIndex;
+    int lateGameType;
+    int specificBuild;
+
+    if (AIState(player, e_mainState) != e_mainState_Late) {
+        AISetUserInt(player, c_currentBuildIndex, e_buildType_Invalid);
+    }
+    
+    // read late game data from lobby / build options menu
+    AIChooseNextLateGameBuild(player);
+
+    // if a specific build was choosen use that
+    specificBuild = AIGetUserInt(player, c_specificLobbyBuild);
+    if (specificBuild != e_buildType_Invalid) {
+        currentBuildIndex = ChooseHDProtossBuildFromSpecificBuild(player, specificBuild, e_mainState_Late);
+        if (currentBuildIndex != e_buildType_Invalid) {
+            return currentBuildIndex;
+        }
+    }
+
+    // should we do a specific counter build?
+    currentBuildIndex = LateChooseHDProtossCounterBuild(player, false);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // if our previous current build is still valid then keep that
+    currentBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // otherwise pick an opening within the lateGameBuildType constraint
+    lateGameType = AIGetUserInt(player, c_lateGameBuildType);
+    currentBuildIndex = LateChooseHDProtossBuildFromType(player, lateGameType, prevBuildIndex);
+    return currentBuildIndex;
+}
+
+//==================================================================================================
+//  UpdateHDProtossLateGameArmy
+//==================================================================================================
+void UpdateHDProtossLateGameArmy (int player) {
+    int mainSubState = AIState(player, e_mainSubState);
+    int buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int lateGameType = AIGetUserInt(player, c_lateGameBuildType);
+    int newArmyTime = AIGetUserInt(player, c_nextArmyTime);
+    bool pickNewArmy = false;
+    int counterBuild;
+    
+    // should we choose a very specific counter build given the current game situation
+    counterBuild = LateChooseHDProtossCounterBuild(player, true);
+    if (counterBuild != e_buildType_Invalid) {
+        AIHighSetLateGameArmy(player, counterBuild);
+        return;
+    }
+
+    if  (mainSubState != e_mainSubState_Build || buildIndex == e_hdBuildIndex_Invalid) {
+        // if we haven't picked a lategame build, we should do so now
+        pickNewArmy = true;
+    }
+    else if (AIHasPlayerChangedCurrentLateGame(player)) {
+        // or the player has ordered us to change, pick a new build now
+        pickNewArmy = true;
+    }
+    else if (newArmyTime < FixedToInt(AIGetTime()) && !AIHighCurrentlyUnderHeavyAttack(player)) {
+        // been using the previous army a while and not currently under attack, switch to a new one
+        pickNewArmy = true;
+    }
+    else if (AIEnemyBuildingsOnlyOnOtherIslands(player) && (lateGameType != e_buildType_Air)) {
+        // if the enemy is hiding on an island and we're not using an air build, switch to air
+        pickNewArmy = true;
+    }
+
+    if (pickNewArmy) {
+        AISetMainState(player, e_mainState_Late, e_mainSubState_Init);        
+        buildIndex = PickHDProtossLateGame(player);
+        AIHighSetLateGameArmy(player, buildIndex);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDInitMid
+//--------------------------------------------------------------------------------------------------
+void ProtossHDInitMid (int player) {
+    // pick a midGame build using the generic logic
+    int buildIndex = PickHDProtossMidGame(player);
+    
+    AISetFlag(player, e_flagsLateScout, true);
+    
+    AISetUserInt(player, c_currentBuildIndex, buildIndex);
+    AISetMainState(player, e_mainState_Mid, e_mainSubState_Build);
+}
+
+//==================================================================================================
+//  Protoss Shared Late Game
+//==================================================================================================
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDInitLate
+//--------------------------------------------------------------------------------------------------
+void ProtossHDInitLate (int player) {
+    int delay;
+
+    // turn on attacking if it's not already on, but delay the next attack 4-6 minutes
+    if (AIState(player, e_attackState) == e_attackState_Wait) {
+        AIWaveMerge(player, c_waveMain, c_waveAttack);
+        AISetAttackState(player, e_attackState_Idle);
+
+        delay = FixedToInt(AIGetTime()) + RandomInt(240, 360);
+        AISetUserInt(player, c_delayNextAttack, delay);
+    }
+
+    // set initial late game flags
+    AISetFlag(player, e_flagsTimeout, true);
+    AISetFlag(player, e_flagsDetect, true);
+    AISetFlag(player, e_flagsLateScout, true);
+    AISetFlag(player, e_flagsClearObs, true);
+    AISetFlag(player, e_flagsDiversion, true);
+    AISetFlag(player, e_flagsEarlyDefScout, false);
+
+    AIEarlyDefenseEnable(player, false, false);
+    
+    // we'll pick a late game build in the regular late game logic
+    AISetUserInt(player, c_currentBuildIndex, e_hdBuildIndex_Invalid);
+    AISetMainState(player, e_mainState_Late, e_mainSubState_Build);
+}
+
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDRecoveryStart
+//--------------------------------------------------------------------------------------------------
+void ProtossHDRecoveryStart (int player) {
+
+    AISetStock( player, 1, c_PB_Nexus );
+    AISetStock( player, 1, c_PU_Probe );
+    AISetStockFarms( player, c_PB_Pylon, c_stockNeededFarms);
+    AISetStock( player, 12, c_PU_Probe );
+
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDVitalUpgrades
+//--------------------------------------------------------------------------------------------------
+void ProtossHDVitalUpgrades (int player) {
+    if (AITechCount(player, c_PU_Colossus, c_techCountCompleteOnly) >= 2) {
+        AISetStock( player, 1, c_PR_ColossusRange );
+    }
+
+    if (AITechCount(player, c_PU_HighTemplar, c_techCountCompleteOnly) >= 2) {
+        AISetStock( player, 1, c_PR_HighTemplarPsiStorm );
+    }
+    
+    if (AIHighCurrentlyUnderHeavyAttack(player)) {
+        return;
+    }
+
+    AISetStock( player, 1, c_PR_GroundWeapons1 );
+    AISetStock( player, 1, c_PR_GroundArmor1 );
+    AISetStockUnitNext( player, 2, c_PB_Forge, c_stockAlways );
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDGeneralUpgrades
+//--------------------------------------------------------------------------------------------------
+void ProtossHDGeneralUpgrades (int player) {
+    if (AIHighCurrentlyUnderHeavyAttack(player)) {
+        return;
+    }
+
+    AINewTechStock(player);
+    AITechStockAdd(c_PR_GroundWeapons1);
+    AITechStockAdd(c_PR_GroundArmor1);
+    AITechStockAdd(c_PR_GroundWeapons2);
+    AITechStockAdd(c_PR_GroundArmor2);
+    AITechStockAdd(c_PR_GroundWeapons3);
+    AITechStockAdd(c_PR_GroundArmor3);
+    AITechStockAdd(c_PR_Shields1);
+    AITechStockAdd(c_PR_Shields2);
+    AITechStockAdd(c_PR_Shields3);
+    AISetStockTechNextUnCap(player,1000,1000);
+
+    AISetStockUnitNext( player, 2, c_PB_Forge, c_stockAlways );
+
+    if (AITechCount(player, c_PU_Zealot, c_techCountCompleteOnly) >= 8) {
+        AISetStock( player, 1, c_PR_ZealotCharge );
+    }
+
+    if (AITechCount(player, c_PU_Stalker, c_techCountCompleteOnly) >= 8) {
+        AISetStock( player, 1, c_PR_StalkerBlink );
+    }
+    
+    if (AITechCount(player, c_PU_Phoenix, c_techCountCompleteOnly) +
+        AITechCount(player, c_PU_VoidRay, c_techCountCompleteOnly) +
+        AITechCount(player, c_PU_Carrier, c_techCountCompleteOnly) +
+        AITechCount(player, c_PU_Tempest, c_techCountCompleteOnly) >= 8)
+    {
+        AINewTechStock(player);
+        AITechStockAdd(c_PR_AirWeapons1);
+        AITechStockAdd(c_PR_AirArmor1);
+        AITechStockAdd(c_PR_AirWeapons2);
+        AITechStockAdd(c_PR_AirArmor2);
+        AITechStockAdd(c_PR_AirWeapons3);
+        AITechStockAdd(c_PR_AirArmor3);
+        AISetStockTechNextUnCap(player,1000,1000);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDMinorUpgrades
+//--------------------------------------------------------------------------------------------------
+void ProtossHDMinorUpgrades (int player) {
+
+    if (AITechCount(player, c_PU_Adept, c_techCountCompleteOnly) >= 6) {
+        AISetStock( player, 1, c_PR_AdeptDamage );
+    }
+
+    if (AITechCount(player, c_PU_Phoenix, c_techCountCompleteOnly) >= 3) {
+        AISetStock( player, 1, c_PR_PhoenixRange );
+    }
+
+    if (AITechCount(player, c_PU_Carrier, c_techCountCompleteOnly) >= 3) {
+        AISetStock( player, 1, c_PR_CarrierLaunch );
+    }
+
+    if (AITechCount(player, c_PU_Observer, c_techCountCompleteOnly) >= 2) {
+        AISetStock( player, 1, c_PR_ObserverSpeed );
+    }
+
+    if (AITechCount(player, c_PU_WarpPrism, c_techCountCompleteOnly) >= 1) {
+        AISetStock( player, 1, c_PR_WarpPrismSpeed );
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDDefaultExtraMidStock
+//--------------------------------------------------------------------------------------------------
+void ProtossHDDefaultExtraMidStock (int player) {
+    if (AIGetUserInt(player, c_numGroundStartLocs) > 0) {
+        if (AIHasRes(player,700,0)) {
+            AISetStockUnitNext( player, 4, c_PB_Gateway, c_stockIdle );
+            if (AITechCount(player, c_PB_Gateway, c_techCountInProgressOrBetter) >= 4) {
+                if (AIHasRes(player,700,600)) {
+                    if (AITechCount(player, c_PB_RoboticsFacility, c_techCountInProgressOrBetter) > 0) {
+                        AISetStockUnitNext( player, 3, c_PB_RoboticsFacility, c_stockIdle );
+                    }
+                    if (AITechCount(player, c_PB_Stargate, c_techCountInProgressOrBetter) > 0) {
+                        AISetStockUnitNext( player, 3, c_PB_Stargate, c_stockIdle );
+                    }
+                }
+            }
+        }
+    } else {        
+        if (AIHasRes(player,400,200)) {
+            AISetStock( player, 1, c_PU_WarpPrism );
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossHDEmergencyDetectionAntiAir
+//--------------------------------------------------------------------------------------------------
+void ProtossHDEmergencyDetectionAntiAir (int player) {
+    if (AIGetTime() < 240) {
+        return; // don't worry about anti-air or detection prior to 4 minutes (even if the player requests it)
+    }
+
+    if (AISuspectDetectionDanger(player, c_earlyDetectionDangerTime)) {
+        AISetStock( player, 1, c_PU_Observer );
+        AISetStock( player, 2, c_PB_PhotonCannon );
+    }
+    if (AISuspectAirDanger(player, c_earlyAirDangerTime)) {
+        AISetStock( player, 2, c_PB_PhotonCannon );
+    }
+}
+
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDDefenseMainTown
+//--------------------------------------------------------------------------------------------------
+void ProtossHDDefenseMainTown (int player) {
+    int mainTown;
+    int state;
+    int pylonInTown;
+    int cannonInTown;
+    int obeliskInTown;
+    int pylonCount;
+    int cannonCount;
+    int obeliskCount;
+    int amount;
+    int foodUsed = PlayerGetPropertyInt(player, c_playerPropSuppliesUsed);
+
+    mainTown = AIGetMainTown(player);
+
+    state = AIGetTownState(player, mainTown);
+    if (state != c_townStateEstablished) {
+        return;
+    }
+
+    // make 1 pylon so we can make cannons
+    pylonInTown = AIGetBuildingCountInTown(player, mainTown, c_PB_Pylon, c_techCountCompleteOnly);
+    pylonCount = AITechCount(player, c_PB_Pylon, c_techCountCompleteOnly) + 1;
+    if (pylonInTown == 0) {
+        AISetStockEx(player, mainTown, pylonCount, c_PB_Pylon, c_makeExpanPower, 0);
+        return;
+    }
+
+    // make 1 cannon close to the first pylon
+    cannonInTown = AIGetBuildingCountInTown(player, mainTown, c_PB_PhotonCannon, c_techCountInProgressOrBetter);
+    cannonCount = AITechCount(player, c_PB_PhotonCannon, c_techCountCompleteOnly) + 1;
+    if (cannonInTown == 0) {
+        AISetStockEx(player, mainTown, cannonCount, c_PB_PhotonCannon, c_makeDefense, 0);
+        return;
+    }
+
+    // once first cannon is going, make a backup pylon
+    if (pylonInTown == 1) {
+        AISetStockEx(player, mainTown, pylonCount, c_PB_Pylon, c_makeExpanPower, 0);
+        return;
+    }
+    
+    amount = 3;
+    if (foodUsed > 140) {
+        if (AIHasRes(player,1200,0)) {
+            amount = 4;
+        }
+    }
+
+    // once the second pylon is done, make 2 more cannons
+    if (cannonInTown < amount) {
+        AISetStockEx(player, mainTown, cannonCount, c_PB_PhotonCannon, c_makeDefense, 0);
+        return;
+    }
+
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDDefenseOtherTowns
+//--------------------------------------------------------------------------------------------------
+void ProtossHDDefenseOtherTowns (int player) {
+    int i = 0;
+    int town;
+    int mainTown;
+    int state;
+    int power;
+    int defense;
+    int amount;
+    int foodUsed = PlayerGetPropertyInt(player, c_playerPropSuppliesUsed);
+
+    mainTown = AIGetMainTown(player);
+
+    while (i < c_townMax) {
+        town = i;
+        i = i + 1;
+
+        if (town == mainTown) {
+            continue;
+        }
+
+        state = AIGetTownState(player, town);
+        if (state != c_townStateEstablished) {
+            continue;
+        }
+
+        if (AIGetBuildingCountInTown(player, town, c_PB_Nexus, c_techCountInProgressOrBetter) < 1) {
+            continue;
+        }
+
+        // make 1 pylon so we can make cannons
+        power = AIGetBuildingCountInTown(player, town, c_PB_Pylon, c_techCountCompleteOnly);
+        if (power == 0) {
+            AISetStockEx(player, town, 1, c_PB_Pylon, c_makeExpanPower, 0);
+            continue;
+        }
+
+        // make 1 cannon close to the first pylon
+        defense = AIGetBuildingCountInTown(player, town, c_PB_PhotonCannon, c_techCountInProgressOrBetter);
+        if (defense == 0) {
+            AISetStockEx(player, town, 1, c_PB_PhotonCannon, c_makeDefense, 0);
+            continue;
+        }
+
+        // once first cannon is going, make a backup pylon
+        if (power == 1) {
+            AISetStockEx(player, town, 2, c_PB_Pylon, c_makeExpanPower, 0);
+            continue;
+        }
+
+        amount = 3;
+        if (foodUsed > 140) {
+            if (AIHasRes(player,1200,0)) {
+                amount = 4;
+            }
+        }
+
+        // once the second pylon is done, make 2 more cannons
+        if (defense < amount) {
+            AISetStockEx(player, town, amount, c_PB_PhotonCannon, c_makeDefense, 0);
+            continue;
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDMakeCounters
+//--------------------------------------------------------------------------------------------------
+void ProtossHDMakeCounters (int player) {
+    fixed groundMultiplier = 1.0;
+    fixed airMultiplier = 1.0;
+
+    if (AIEnemyBuildingsOnlyOnOtherIslands(player)) {
+        // when sieging an island limit making ground counters
+        groundMultiplier = 0.33;
+        airMultiplier = 1.25;
+    }
+
+    AIMakeCounters(player, c_PU_Zealot,      c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_PU_Adept,       c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_PU_Stalker,     c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_PU_Sentry,      c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_PU_Immortal,    c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_PU_Disruptor,   c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_PU_HighTemplar, c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_PU_DarkTemplar, c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_PU_Archon,      c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_PU_Phoenix,     c_stockAlways, airMultiplier);
+    AIMakeCounters(player, c_PU_VoidRay,     c_stockAlways, airMultiplier);
+    AIMakeCounters(player, c_PU_Carrier,     c_stockAlways, airMultiplier);
+    AIMakeCounters(player, c_PU_Tempest,     c_stockAlways, airMultiplier);
+    AIMakeCounters(player, c_PU_Observer,    c_stockAlways, 1.0);
+    AIMakeCounters(player, c_PU_Oracle,      c_stockAlways, 1.0);
+    AIMakeCounters(player, c_PU_Colossus,    c_stockAlways, groundMultiplier);
+}
+
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDLateGameArmy Helper functions
+//--------------------------------------------------------------------------------------------------
+bool ProtossHDLateCoreZSSImmortal (int player, int state);              // Gateway + Immortal
+bool ProtossHDLateCoreZSSHighTemplar (int player, int state);           // Gateway + HT w/ storm
+bool ProtossHDLateHighTechZSSArchon (int player, int state);            // Gateway + archon late game
+bool ProtossHDLateHighTechZSSColossi (int player, int state);           // Standard Gateway/Colossi late game
+bool ProtossHDLateHighTechZSSImmColossi (int player, int state);        // Very heavy robo build, mostly for PvP
+bool ProtossHDLateAirZSSAir (int player, int state);                    // ZSS with Voidray/Tempest
+bool ProtossHDLateAirVoidray (int player, int state);                   // Voidray focussed
+bool ProtossHDLateAirTempestCarrier (int player, int state);            // Tempest/Carrier focussed
+bool ProtossHDLateSpecialZSSTemplar (int player, int state);            // Gateway with High & Dark Templar
+bool ProtossHDLateSpecialMixed (int player, int state);                 // Variety of support casters with main army
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDCallLateGameArmy
+//--------------------------------------------------------------------------------------------------
+bool ProtossHDCallLateGameArmy (int player, int buildIndex, int state) {
+
+    if (buildIndex == e_hdBuildIndex_PLateCore_ZSSImmortal)             { return ProtossHDLateCoreZSSImmortal (player, state); }
+    else if (buildIndex == e_hdBuildIndex_PLateCore_ZSSHighTemplar)     { return ProtossHDLateCoreZSSHighTemplar (player, state); }
+    else if (buildIndex == e_hdBuildIndex_PLateHighTech_ZSSArchon)      { return ProtossHDLateHighTechZSSArchon (player, state); }
+    else if (buildIndex == e_hdBuildIndex_PLateHighTech_ZSSColossi)     { return ProtossHDLateHighTechZSSColossi (player, state); }
+    else if (buildIndex == e_hdBuildIndex_PLateHighTech_ZSSImmColossi)  { return ProtossHDLateHighTechZSSImmColossi (player, state); }
+    else if (buildIndex == e_hdBuildIndex_PLateAir_ZSSAir)              { return ProtossHDLateAirZSSAir (player, state); }
+    else if (buildIndex == e_hdBuildIndex_PLateAir_Voidray)             { return ProtossHDLateAirVoidray (player, state); }
+    else if (buildIndex == e_hdBuildIndex_PLateAir_TempestCarrier)      { return ProtossHDLateAirTempestCarrier (player, state); }
+    else if (buildIndex == e_hdBuildIndex_PLateSpecial_ZSSTemplar)      { return ProtossHDLateSpecialZSSTemplar (player, state); }
+    else if (buildIndex == e_hdBuildIndex_PLateSpecial_Mixed)           { return ProtossHDLateSpecialMixed (player, state); }
+    else { ErrorMeleeScript(player, "Invalid Late BuildIndex ProtossCallLateGameArmy"); }
+
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDLateGameArmy
+//--------------------------------------------------------------------------------------------------
+void ProtossHDLateGameArmy (int player, int state) {
+    int buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    ProtossHDCallLateGameArmy(player, buildIndex, state);
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDIsSubStateStillValid
+//--------------------------------------------------------------------------------------------------
+bool ProtossHDIsSubStateStillValid (int player, int buildIndex) {
+    return ProtossHDCallLateGameArmy(player, buildIndex, e_armyTypeValidate);
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDLateCoreZSSImmortal
+//--------------------------------------------------------------------------------------------------
+bool ProtossHDLateCoreZSSImmortal (int player, int state) {
+    if (state == e_armyTypeValidate) {
+        // this is our default late game, needs to always return valid
+        return true;
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 1, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PB_Gateway, c_stockIdle );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding
+        AISetStockUnitNext( player, 4, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Adept, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 3, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player, 8, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Adept, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player, 12, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Immortal, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_PU_Sentry, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 4, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player, 4, c_PU_Immortal, c_stockAlways );
+        AISetStockUnitNext( player, 14, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 5, c_PU_Sentry, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 6, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player, 2, c_PB_RoboticsFacility, c_stockIdle );
+        AISetStockUnitNext( player, 6, c_PU_Immortal, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_HighTemplar, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 5, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 5, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_PU_Immortal, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_PU_HighTemplar, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Immortal, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_PU_HighTemplar, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player, 28, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 15, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 15, c_PU_Adept, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDLateCoreZSSHighTemplar
+//--------------------------------------------------------------------------------------------------
+bool ProtossHDLateCoreZSSHighTemplar (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_PB_CyberneticsCore, c_techCountCompleteOnly);
+        techCount += AITechCount(player, c_PB_TwilightCouncil, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 1, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PB_Gateway, c_stockIdle );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding
+        AISetStockUnitNext( player, 4, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Adept, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 3, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player, 8, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Adept, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player,  4, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player,  4, c_PU_HighTemplar, c_stockAlways );
+        AISetStock( player, 1, c_PR_HighTemplarPsiStorm );
+        AISetStockUnitNext( player, 10, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  3, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player,  3, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  3, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_HighTemplar, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player,  5, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player,  8, c_PU_HighTemplar, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_PU_Archon, c_stockAlways );
+        return true;  //  72 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player,  7, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player,  6, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_HighTemplar, c_stockAlways );  
+        AISetStockUnitNext( player,  4, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_PU_HighTemplar, c_stockAlways );  
+        AISetStockUnitNext( player,  6, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_PU_HighTemplar, c_stockAlways );  
+        AISetStockUnitNext( player, 10, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player, 15, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 15, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Sentry, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDLateHighTechZSSArchon
+//--------------------------------------------------------------------------------------------------
+bool ProtossHDLateHighTechZSSArchon (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_PB_CyberneticsCore, c_techCountCompleteOnly);
+        techCount += AITechCount(player, c_PB_TwilightCouncil, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 1, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PB_Gateway, c_stockIdle );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding
+        AISetStockUnitNext( player, 4, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Adept, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 3, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player, 7, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Archon, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player,  4, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player,  2, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_PU_HighTemplar, c_stockAlways );
+        AISetStock( player, 1, c_PR_HighTemplarPsiStorm );
+        AISetStockUnitNext( player,  8, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  3, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Archon, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player,  5, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player, 10, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  3, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  3, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player,  3, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_PU_Stalker, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player,  7, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player, 16, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_HighTemplar, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_HighTemplar, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 30, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Adept, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDLateHighTechZSSColossi
+//--------------------------------------------------------------------------------------------------
+bool ProtossHDLateHighTechZSSColossi (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_PB_CyberneticsCore, c_techCountCompleteOnly);
+        techCount += AITechCount(player, c_PB_RoboticsFacility, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 1, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PB_Gateway, c_stockIdle );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding
+        AISetStockUnitNext( player, 4, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Adept, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 3, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player, 8, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Adept, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player, 2, c_PU_Colossus, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_PU_Adept, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player,  4, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player, 2, c_PB_RoboticsFacility, c_stockIdle );
+        AISetStockUnitNext( player,  3, c_PU_Colossus, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_PU_Disruptor, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  5, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  5, c_PU_Adept, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player,  6, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player,  3, c_PB_RoboticsFacility, c_stockIdle );
+        AISetStockUnitNext( player,  4, c_PU_Colossus, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Disruptor, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player,  5, c_PU_Colossus, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_Disruptor, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Immortal, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  7, c_PU_Colossus, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Immortal, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Colossus, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Disruptor, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDLateHighTechZSSImmColossi
+//--------------------------------------------------------------------------------------------------
+bool ProtossHDLateHighTechZSSImmColossi (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_PB_CyberneticsCore, c_techCountCompleteOnly);
+        techCount += AITechCount(player, c_PB_RoboticsFacility, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 1, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PB_Gateway, c_stockIdle );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding
+        AISetStockUnitNext( player, 4, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Adept, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 3, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player, 6, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Immortal, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player, 3, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Colossus, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Sentry, c_stockAlways );
+        return true;  //  48 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player,  4, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player,  2, c_PB_RoboticsFacility, c_stockIdle );
+        AISetStockUnitNext( player,  3, c_PU_Colossus, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_PU_Disruptor, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Immortal, c_stockAlways );
+        return true;  //  72 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player,  6, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player,  3, c_PB_RoboticsFacility, c_stockIdle );
+        AISetStockUnitNext( player, 10, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Colossus, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Disruptor, c_stockAlways );
+        AISetStockUnitNext( player,  5, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  5, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_Immortal, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  5, c_PU_Colossus, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_Disruptor, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Immortal, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  7, c_PU_Colossus, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_PU_Immortal, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDLateAirZSSAir
+//--------------------------------------------------------------------------------------------------
+bool ProtossHDLateAirZSSAir (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_PB_CyberneticsCore, c_techCountCompleteOnly);
+        techCount += AITechCount(player, c_PB_Stargate, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 1, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PB_Gateway, c_stockIdle );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding
+        AISetStockUnitNext( player, 4, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Adept, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 2, c_PB_Stargate, c_stockIdle );
+        AISetStockUnitNext( player, 4, c_PU_VoidRay, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player, 8, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_PU_VoidRay, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Phoenix, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player,  3, c_PB_Stargate, c_stockIdle );
+        AISetStockUnitNext( player, 10, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  3, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  3, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_VoidRay, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_PU_Oracle, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player,  4, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player,  4, c_PB_Stargate, c_stockIdle );
+        AISetStockUnitNext( player,  4, c_PU_Tempest, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 14, c_PU_VoidRay, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Phoenix, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 18, c_PU_VoidRay, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Oracle, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Tempest, c_stockAlways );
+        return true;  // ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDLateAirVoidray
+//--------------------------------------------------------------------------------------------------
+bool ProtossHDLateAirVoidray (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_PB_CyberneticsCore, c_techCountCompleteOnly);
+        techCount += AITechCount(player, c_PB_Stargate, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 2, c_PU_VoidRay, c_stockAlways );
+        return true;  //  6 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding    
+        AISetStockUnitNext( player, 2, c_PB_Stargate, c_stockIdle );    
+        AISetStockUnitNext( player, 4, c_PU_VoidRay, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Phoenix, c_stockAlways );
+        return true;  //  14 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 8, c_PU_VoidRay, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Phoenix, c_stockAlways );
+        return true;  //  28 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player,  3, c_PB_Stargate, c_stockIdle );
+        AISetStockUnitNext( player,  2, c_PU_Tempest, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_VoidRay, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Phoenix, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player,  4, c_PB_Stargate, c_stockIdle );
+        AISetStockUnitNext( player, 12, c_PU_VoidRay, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_Phoenix, c_stockAlways );
+        AISetStockUnitNext( player,  3, c_PU_Tempest, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_PU_Oracle, c_stockAlways );
+        return true;  //  72 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 5, c_PB_Stargate, c_stockIdle );
+        AISetStockUnitNext( player, 4, c_PU_Tempest, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_PU_VoidRay, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Phoenix, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_PU_Tempest, c_stockAlways );
+        AISetStockUnitNext( player, 26, c_PU_VoidRay, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Oracle, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_PU_Phoenix, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_PU_Tempest, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDLateAirTempestCarrier
+//--------------------------------------------------------------------------------------------------
+bool ProtossHDLateAirTempestCarrier (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_PB_CyberneticsCore, c_techCountCompleteOnly);
+        techCount += AITechCount(player, c_PB_Stargate, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 2, c_PU_VoidRay, c_stockAlways );
+        return true;  //  6 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding     
+        AISetStockUnitNext( player, 2, c_PB_Stargate, c_stockIdle );   
+        AISetStockUnitNext( player, 4, c_PU_VoidRay, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Phoenix, c_stockAlways );
+        return true;  //  14 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 1, c_PU_Tempest, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Carrier, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Phoenix, c_stockAlways );
+        return true;  //  28 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player, 3, c_PB_Stargate, c_stockIdle );
+        AISetStockUnitNext( player, 6, c_PU_VoidRay, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Tempest, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Carrier, c_stockAlways );
+        return true;  //  46 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 4, c_PB_Stargate, c_stockIdle );
+        AISetStockUnitNext( player, 4, c_PU_Tempest, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_PU_Carrier, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 5, c_PB_Stargate, c_stockIdle );
+        AISetStockUnitNext( player, 6, c_PU_Tempest, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_PU_Carrier, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_PU_VoidRay, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_Phoenix, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_PU_Oracle, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_PU_Tempest, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_PU_Carrier, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDLateSpecialZSSTemplar
+//--------------------------------------------------------------------------------------------------
+bool ProtossHDLateSpecialZSSTemplar (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_PB_CyberneticsCore, c_techCountCompleteOnly);
+        techCount += AITechCount(player, c_PB_TwilightCouncil, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 1, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PB_Gateway, c_stockIdle );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding
+        AISetStockUnitNext( player, 4, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Adept, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 3, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player,  4, c_PU_HighTemplar, c_stockAlways );
+        AISetStock( player, 1, c_PR_HighTemplarPsiStorm );
+        AISetStockUnitNext( player, 5, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Sentry, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player,  6, c_PU_HighTemplar, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  3, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player,  3, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  3, c_PU_Adept, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player,  4, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player,  8, c_PU_HighTemplar, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_PU_Oracle, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Sentry, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player,  6, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player,  5, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  5, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_PU_HighTemplar, c_stockAlways );  
+        AISetStockUnitNext( player,  6, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  7, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  7, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_PU_HighTemplar, c_stockAlways );  
+        AISetStockUnitNext( player,  8, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Oracle, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_PU_HighTemplar, c_stockAlways );  
+        AISetStockUnitNext( player, 12, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_PU_Adept, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+// ProtossHDLateSpecialMixed
+//--------------------------------------------------------------------------------------------------
+bool ProtossHDLateSpecialMixed (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_PB_CyberneticsCore, c_techCountCompleteOnly);
+        techCount += AITechCount(player, c_PB_TwilightCouncil, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 1, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PB_Gateway, c_stockIdle );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding
+        AISetStockUnitNext( player, 4, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Adept, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 3, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player,  3, c_PU_HighTemplar, c_stockAlways );
+        AISetStock( player, 1, c_PR_HighTemplarPsiStorm );
+        AISetStockUnitNext( player, 6, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_PU_Sentry, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player,  4, c_PU_HighTemplar, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_DarkTemplar, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  3, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player,  3, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  3, c_PU_Adept, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player,  4, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player,  6, c_PU_HighTemplar, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_PU_Oracle, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Sentry, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player,  6, c_PB_Gateway, c_stockIdle );
+        AISetStockUnitNext( player,  5, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  5, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_PU_HighTemplar, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_DarkTemplar, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_PU_HighTemplar, c_stockAlways );  
+        AISetStockUnitNext( player,  8, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_PU_Oracle, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_PU_Stalker, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Sentry, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_PU_Adept, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_PU_HighTemplar, c_stockAlways );  
+        AISetStockUnitNext( player, 12, c_PU_Archon, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Zealot, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_PU_Adept, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}

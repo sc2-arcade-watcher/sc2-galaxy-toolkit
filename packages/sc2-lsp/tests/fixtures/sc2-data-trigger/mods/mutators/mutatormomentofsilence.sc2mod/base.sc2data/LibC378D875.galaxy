@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibC378D875_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Moment Of Silence
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libC378D875_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libC378D875_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "MomentOfSilence");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libC378D875_gt_Initialization_Init () {
+    libC378D875_gt_Initialization = TriggerCreate("libC378D875_gt_Initialization_Func");
+    TriggerAddEventMapInit(libC378D875_gt_Initialization);
+}
+
+void libC378D875_InitTriggers () {
+    libC378D875_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libC378D875_InitLib_completed = false;
+
+void libC378D875_InitLib () {
+    if (libC378D875_InitLib_completed) {
+        return;
+    }
+
+    libC378D875_InitLib_completed = true;
+
+    libC378D875_InitLibraries();
+    libC378D875_InitTriggers();
+}
+

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CEffect default="1">
+        <Name value="Effect/Name/##id##"/>
+        <EditorCategories value="Race:Neutral"/>
+        <Chance value="1"/>
+        <Marker Link="Effect/##id##"/>
+        <DamageModifierSource Value="Unknown"/>
+    </CEffect>
+    <CEffectApplyBehavior default="1">
+        <Behavior value="##id##"/>
+        <ValidatorArray value="##id##TargetFilters"/>
+        <WhichUnit Value="Target"/>
+        <Count value="1"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyForce default="1">
+        <MassFraction value="1"/>
+        <WhichLocation Value="SourceUnitOrPoint"/>
+        <WhichUnit Value="Target"/>
+    </CEffectApplyForce>
+    <CEffectApplyKinetic default="1">
+        <Kinetic value="##id##"/>
+        <ImpactUnit Value="Target"/>
+    </CEffectApplyKinetic>
+    <CEffectCancelOrder default="1">
+        <WhichUnit Value="Target"/>
+        <Flags index="Active" value="1"/>
+    </CEffectCancelOrder>
+    <CEffectCreateHealer default="1">
+        <ImpactUnit Value="Target"/>
+        <Flags index="Channeled" value="1"/>
+    </CEffectCreateHealer>
+    <CEffectCreatePersistent default="1">
+        <WhichLocation Value="TargetPoint"/>
+        <TimeScaleSource Value="Global"/>
+        <OffsetVectorStartLocation Value="SourceUnit"/>
+        <OffsetVectorEndLocation Value="TargetPoint"/>
+        <OffsetFacingFallback Value="SourceUnit"/>
+    </CEffectCreatePersistent>
+    <CEffectCreateUnit default="1">
+        <SpawnCount value="1"/>
+        <WhichLocation Value="TargetUnit"/>
+        <CreateFlags index="Birth" value="1"/>
+        <CreateFlags index="DropOff" value="1"/>
+        <CreateFlags index="OffsetByRadius" value="1"/>
+        <CreateFlags index="Placement" value="1"/>
+        <CreateFlags index="ProvideFood" value="1"/>
+        <CreateFlags index="TechComplete" value="1"/>
+        <CreateFlags index="UseFood" value="1"/>
+        <CreateFlags index="NormalizeSpawnOffset" value="1"/>
+        <RallyUnit Value="Unknown"/>
+        <SpawnRange value="500"/>
+        <SelectUnit Value="Unknown"/>
+    </CEffectCreateUnit>
+    <CEffectDamage default="1">
+        <Visibility value="Snapshot"/>
+        <MaxCount value="4294967295"/>
+        <MinCountError value="CantFindEnoughTargets"/>
+        <LaunchLocation Value="SourceUnit"/>
+        <ImpactLocation Value="TargetUnitOrPoint"/>
+        <SearchFlags index="SameCliff" value="1"/>
+    </CEffectDamage>
+    <CEffectEnumArea default="1">
+        <MaxCount value="4294967295"/>
+        <MinCountError value="CantFindEnoughTargets"/>
+        <LaunchLocation Value="SourceUnit"/>
+        <ImpactLocation Value="TargetUnitOrPoint"/>
+        <SearchFlags index="OffsetAreaByAngle" value="1"/>
+    </CEffectEnumArea>
+    <CEffectEnumArea default="1" id="EA_WEAP">
+        <SearchFlags index="CallForHelp" value="1"/>
+    </CEffectEnumArea>
+    <CEffectEnumTransport default="1">
+        <WhichUnit Value="Target"/>
+    </CEffectEnumTransport>
+    <CEffectEnumMagazine default="1">
+        <WhichUnit Value="Target"/>
+    </CEffectEnumMagazine>
+    <CEffectIssueOrder default="1">
+        <WhichUnit Value="Target"/>
+        <Player Value="Target"/>
+        <Target Value="Unknown"/>
+    </CEffectIssueOrder>
+    <CEffectLaunchMissile default="1">
+        <DeathType value="Impact"/>
+        <Flags index="PointFallback" value="1"/>
+        <Flags index="ValidateAbil" value="1"/>
+        <Flags index="ValidateBenign" value="1"/>
+        <Flags index="ValidateTeleport" value="1"/>
+        <Flags index="ValidateWeapon" value="1"/>
+        <Visibility value="Snapshot"/>
+        <AmmoOwner Value="Creator"/>
+        <AmmoUnit value="##id##Weapon"/>
+        <ValidatorArray value="##id##TargetFilters"/>
+        <LaunchLocation Value="SourceUnit"/>
+        <ImpactLocation Value="TargetUnit"/>
+        <PlacementAround Value="Unknown"/>
+    </CEffectLaunchMissile>
+    <CEffectModifyPlayer default="1">
+        <WhichPlayer Value="Target"/>
+    </CEffectModifyPlayer>
+    <CEffectModifyUnit default="1">
+        <LaunchUnit Value="Source"/>
+        <ImpactUnit Value="Target"/>
+        <KillCreditUnit Value="Unknown"/>
+        <RallyUnit Value="Unknown"/>
+        <SelectTransferUnit Value="Unknown"/>
+        <FacingLocation Value="Unknown"/>
+    </CEffectModifyUnit>
+    <CEffectDamage default="1" id="DU_WEAP">
+        <ArmorReduction value="1"/>
+        <Kind value="Melee"/>
+        <ResponseFlags index="Acquire" value="1"/>
+        <ResponseFlags index="Flee" value="1"/>
+        <Flags index="Notification" value="1"/>
+        <SearchFlags index="CallForHelp" value="1"/>
+        <SearchFlags index="OffsetByUnitRadius" value="1"/>
+        <SearchFlags index="OffsetAreaByAngle" value="1"/>
+    </CEffectDamage>
+    <CEffectDamage default="1" id="DU_WEAP_MISSILE" parent="DU_WEAP">
+        <Kind value="Ranged"/>
+    </CEffectDamage>
+    <CEffectDamage default="1" id="DU_WEAP_SPLASH" parent="DU_WEAP">
+        <Kind value="Splash"/>
+    </CEffectDamage>
+    <CEffectRedirectMissile default="1">
+        <WhichUnit Value="Target"/>
+        <ImpactLocation Value="CasterUnitOrPoint"/>
+        <ImpactFilters value="Visible;Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectRedirectMissile>
+    <CEffectReleaseMagazine default="1"/>
+    <CEffectRemoveBehavior default="1">
+        <BehaviorClass value="CBehaviorUnknown"/>
+        <BehaviorLink value="##id##"/>
+        <ValidatorArray value="##id##TargetFilters"/>
+        <WhichUnit Value="Target"/>
+        <ExcludeOriginPlayer Value="Unknown"/>
+        <ExcludeCasterUnit Value="Unknown"/>
+        <RequireOriginPlayer Value="Unknown"/>
+        <RequireCasterUnit Value="Unknown"/>
+    </CEffectRemoveBehavior>
+    <CEffectRemoveKinetic default="1">
+        <KineticLink value="##id##"/>
+        <ImpactUnit Value="Target"/>
+    </CEffectRemoveKinetic>
+    <CEffectReturnMagazine default="1"/>
+    <CEffectSet default="1"/>
+    <CEffectSwitch default="1"/>
+    <CEffectTeleport default="1">
+        <ClearQueuedOrders value="1"/>
+        <MinDistance value="1"/>
+        <PlacementArc value="135"/>
+        <PlacementAround Value="TargetPoint"/>
+        <PlacementRange value="500"/>
+        <Range value="500"/>
+        <WhichUnit Value="Target"/>
+        <TeleportFlags index="TestFog" value="1"/>
+    </CEffectTeleport>
+    <CEffectTransferBehavior default="1">
+        <LaunchUnit Value="Target"/>
+    </CEffectTransferBehavior>
+    <CEffectUseCalldown default="1"/>
+    <CEffectUseMagazine default="1">
+        <TargetLocation Value="TargetUnit"/>
+    </CEffectUseMagazine>
+    <CEffectUserData default="1">
+        <Key value="Default"/>
+        <Amount value="1"/>
+        <SourceKey value="Default"/>
+        <ValidateMin value="0"/>
+        <TargetLocationType value="UnitOrPoint"/>
+    </CEffectUserData>
+    <CEffectEnumArea id="taunt">
+        <AreaArray Radius="4" Effect="tauntb"/>
+    </CEffectEnumArea>
+    <CEffectApplyBehavior id="tauntb"/>
+    <CEffectDamage id="SplashDamage"/>
+    <CEffectApplyBehavior id="MakePrecursor">
+        <Behavior value="Precursor"/>
+    </CEffectApplyBehavior>
+    <CEffectRemoveBehavior id="RemovePrecursor">
+        <BehaviorLink value="Precursor"/>
+    </CEffectRemoveBehavior>
+    <CEffectDamage id="TimedLifeFate">
+        <Flags index="Kill" value="1"/>
+        <Flags index="NoKillCredit" value="1"/>
+        <Death value="Timeout"/>
+    </CEffectDamage>
+    <CEffectDamage id="Suicide">
+        <ImpactLocation Value="SourceUnit"/>
+        <Flags index="Kill" value="1"/>
+        <Flags index="NoKillCredit" value="1"/>
+    </CEffectDamage>
+    <!-- this is designed as a dummy effect that can be used by any grab style ability, so we can cut down on actor messages for different grabs -->
+    <CEffectCreatePersistent id="GrabDummyCP">
+        <WhichLocation Value="TargetUnit"/>
+        <ExpireDelay value="0.0625"/>
+    </CEffectCreatePersistent>
+    <!-- dummy effect to get the original grabbed minion and the missile in the same effect scope for actor messages -->
+    <CEffectCreatePersistent id="GrabThrowMissileTag">
+        <ExpireDelay value="0.25"/>
+        <ValidatorArray value="HasGrabbedBehavior"/>
+    </CEffectCreatePersistent>
+    <!-- Debug helper, shows the location of anything with an invisible model -->
+    <CEffectDamage id="InvisibleModelSwapper"/>
+    <CEffectModifyUnit id="CopyCasterFacing">
+        <FacingLocation Value="CasterUnit"/>
+    </CEffectModifyUnit>
+    <CEffectModifyUnit id="CopyTargetFacing">
+        <ImpactUnit Value="Caster"/>
+        <FacingLocation Value="TargetUnit"/>
+    </CEffectModifyUnit>
+    <CEffectModifyUnit id="LookAtCaster">
+        <FacingLocation Value="CasterUnit"/>
+        <FacingType value="LookAt"/>
+    </CEffectModifyUnit>
+    <CEffectModifyUnit id="CopyTargetSelectionAndControlGroups">
+        <ImpactUnit Value="Caster"/>
+        <SelectTransferUnit Value="Target"/>
+        <SelectTransferFlags index="IncludeControlGroups" value="1"/>
+    </CEffectModifyUnit>
+</Catalog>

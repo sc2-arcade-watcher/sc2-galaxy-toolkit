@@ -1,0 +1,2385 @@
+//==================================================================================================
+//  Zerg Melee Hard - Very Hard
+//==================================================================================================
+
+// very similar to Very Hard builds, but with minor deliberate delays/weakness
+
+bool ZergOpenRush6PoolHdVH (int player);                     // 6 pool zergling rush
+bool ZergOpenRush10PoolHdVH (int player);                    // 10 pool zergling rush
+bool ZergOpenTimingLingBaneHdVH (int player);                // zergling + baneling build
+bool ZergOpenTimingRoachHdVH (int player);                   // pure roach build
+bool ZergOpenTimingLingRoachHdVH (int player);               // zergling + roach build
+bool ZergOpenPowerMacroQuickExpGndHdVH (int player);         // 1v1 quick ground expansion
+bool ZergOpenPowerMacroDefenseExpGndHdVH (int player);       // team game defensive ground expansion
+bool ZergOpenAirOneBaseMutaHdVH (int player);                // single base "island" muta build
+bool ZergOpenAirOneBaseDropHdVH (int player);                // single base "island" drop build
+bool ZergOpenAirQuickExpandAirHdVH (int player);             // quick expand air build
+
+bool ZergMidRushTimingLingBaneRoachHdVH (int player);        // continue the early pressure with ling/bane/roach
+bool ZergMidRushTimingDefensiveExpandHdVH (int player);      // transition from early pressure to a macro game
+bool ZergMidPowerPureMutaHdVH (int player);                  // 2 base muta harassment, with ling+static defense
+bool ZergMidPowerLingBaneMutaHdVH (int player);              // attack with ling+bane+muta together
+bool ZergMidPowerFoodCapRoachHdVH (int player);              // quick food cap roach rush
+bool ZergMidPowerRoachInfestorHdVH (int player);             // standard 2-3 base roach + infestor
+bool ZergMidPowerRoachHydraHdVH (int player);                // 2-3 base roach + hydra build
+bool ZergMidPowerRoachRavagerHdVH (int player);              // 2 base roach+ravager build
+bool ZergMidPowerSwarmHostHdVH (int player);                 // 2 base swarm host build
+bool ZergMidPowerHydraLurkerHdVH (int player);               // 2-3 base lurker build
+bool ZergMidMacroRoachHydraHdVH (int player);                // macro toward late game roach + hydra
+bool ZergMidMacroRoachInfestorHdVH (int player);             // macro toward late game roach + infestor
+bool ZergMidMacroHydraLurkerHdVH (int player);               // macro toward late game hyrda + lurker
+bool ZergMidMacroUltraliskHdVH (int player);                 // macro toward late game ultralisk 
+bool ZergMidMacroBroodlordHdVH (int player);                 // macro toward late game broodlord
+bool ZergMidAirOneBaseMutaHdVH (int player);                 // continue single base "island" air build
+bool ZergMidAirOneBaseDropHdVH (int player);                 // continue single base "island" drop build
+bool ZergMidAirExpansionMutaHdVH (int player);               // quick expand air only attack
+bool ZergMidAirExpansionMixedAirHdVH (int player);           // quick expand air only attack
+bool ZergMidAirExpansionDropHdVH (int player);               // quick expand drop + air attack
+bool ZergMidAirMacroHdVH (int player);                       // macro toward a large late game air force
+
+//--------------------------------------------------------------------------------------------------
+//  ZergOpenHdVH
+//--------------------------------------------------------------------------------------------------
+void ZergOpenHdVH (int player) {
+    bool done = false;
+    int buildIndex;
+
+    AIEarlyDefenseScouting(player);
+
+    // see if we need to switch builds
+    UpdateHDZergOpening(player);
+
+    buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (buildIndex == e_hdBuildIndex_ZOpenRush_6Pool)                     { done = ZergOpenRush6PoolHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenRush_10Pool)               { done = ZergOpenRush10PoolHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenTiming_LingBane)           { done = ZergOpenTimingLingBaneHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenTiming_Roach)              { done = ZergOpenTimingRoachHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenTiming_LingRoach)          { done = ZergOpenTimingLingRoachHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenPowerMacro_QuickExpGnd)    { done = ZergOpenPowerMacroQuickExpGndHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenPowerMacro_DefenseExpGnd)  { done = ZergOpenPowerMacroDefenseExpGndHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenAir_OneBaseMuta)           { done = ZergOpenAirOneBaseMutaHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenAir_OneBaseDrop)           { done = ZergOpenAirOneBaseDropHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenAir_QuickExpandAir)        { done = ZergOpenAirQuickExpandAirHdVH(player); }
+    else { ErrorMeleeScript(player, "Invalid Open BuildIndex ZergHdVH"); }
+
+    if (done) {
+        ZergHDInitMid(player); // Transition to MidGame
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidHdVH
+//--------------------------------------------------------------------------------------------------
+void ZergMidHdVH (int player) {
+    bool done = false;
+    int buildIndex;
+    
+    // enable scouting as appropriate
+    if (AIGetUserInt(player, c_numGroundStartLocs) > 0) {
+        AIScoutingEnable(player, 15, c_ZU_Drone);
+        AIEarlyDefenseScouting(player);
+    }
+    else {
+        AIScoutingEnable(player, 1, c_ZU_Zergling);
+    }
+
+    // see if we need to switch builds
+    UpdateHDZergMidGame(player);
+    
+    buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (buildIndex == e_hdBuildIndex_ZMidRushTiming_LingBaneRoach)        { done = ZergMidRushTimingLingBaneRoachHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidRushTiming_DefensiveExpand) { done = ZergMidRushTimingDefensiveExpandHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidPower_PureMuta)             { done = ZergMidPowerPureMutaHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidPower_LingBaneMuta)         { done = ZergMidPowerLingBaneMutaHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidPower_FoodCapRoach)         { done = ZergMidPowerFoodCapRoachHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidPower_RoachInfestor)        { done = ZergMidPowerRoachInfestorHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidPower_RoachHydra)           { done = ZergMidPowerRoachHydraHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidPower_RoachRavager)         { done = ZergMidPowerRoachRavagerHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidPower_SwarmHost)            { done = ZergMidPowerSwarmHostHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidPower_HydraLurker)          { done = ZergMidPowerHydraLurkerHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidMacro_RoachHydra)           { done = ZergMidMacroRoachHydraHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidMacro_RoachInfestor)        { done = ZergMidMacroRoachInfestorHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidMacro_HydraLurker)          { done = ZergMidMacroHydraLurkerHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidMacro_Ultralisk)            { done = ZergMidMacroUltraliskHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidMacro_Broodlord)            { done = ZergMidMacroBroodlordHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidAir_OneBaseMuta)            { done = ZergMidAirOneBaseMutaHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidAir_OneBaseDrop)            { done = ZergMidAirOneBaseDropHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidAir_ExpansionMuta)          { done = ZergMidAirExpansionMutaHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidAir_ExpansionMixedAir)      { done = ZergMidAirExpansionMixedAirHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidAir_ExpansionDrop)          { done = ZergMidAirExpansionDropHdVH(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidAir_Macro)                  { done = ZergMidAirMacroHdVH(player); }
+    else { ErrorMeleeScript(player, "Invalid Mid BuildIndex ZergHdVH"); }
+
+    if (done) {
+        ZergHDInitLate(player); // Transition to LateGame
+    }
+}
+
+//==================================================================================================
+//  OPENINGS
+//==================================================================================================
+
+//--------------------------------------------------------------------------------------------------
+//  ZergOpenRush6PoolHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergOpenRush6PoolHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 12, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 14, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 12, c_ZU_Zergling );
+    AISetStock( player, 3, c_ZU_Overlord );
+    
+    ZergBasicDefenseStock(player);
+
+    if ( (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 14) && AIHasRes(player,350,0) ) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 22, c_ZU_Zergling );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 32, c_ZU_Zergling );
+    AISetStock( player, 18, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 5, c_ZU_Overlord );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    ZergHDDefaultExtraStock(player);
+    
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 12, c_ZU_Drone, 1, c_ZB_SpawningPool, c_techCountInProgressOrBetter);
+    AISetAttackStatus(player, c_ZU_Zergling, 2, 6, c_continuousMerge);
+
+    if (AIGetTime() < 270) {
+        if (AITechCount(player, c_ZU_Zergling, c_techCountCompleteOnly) < 24) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergOpenRush10PoolHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergOpenRush10PoolHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 14, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_Extractor );
+    AISetStock( player, 15, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 10, c_ZU_Zergling );
+    AISetStock( player, 3, c_ZU_Overlord );
+    
+    ZergBasicDefenseStock(player);
+
+    if ( (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 14) && AIHasRes(player,350,0) ) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 24, c_ZU_Zergling );
+    AISetStock( player, 1, c_ZR_ZerglingSpeed );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Queen );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    ZergHDDefaultExtraStock(player);
+    
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 12, c_ZU_Drone, 1, c_ZB_SpawningPool, c_techCountInProgressOrBetter);
+    AISetAttackStatus(player, c_ZU_Zergling, 2, 10, c_continuousMerge);
+
+    if (AIGetTime() < 270) {
+        if (AITechCount(player, c_ZR_ZerglingSpeed, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergOpenTimingLingBaneHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergOpenTimingLingBaneHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 14, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_Extractor );
+    AISetStock( player, 15, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 10, c_ZU_Zergling );
+    AISetStock( player, 1, c_ZB_BanelingNest );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 18, c_ZU_Zergling );
+    AISetStock( player, 8, c_ZU_Baneling );
+    AISetStock( player, 4, c_ZU_Overlord );
+    
+    ZergBasicDefenseStock(player);
+    
+    AISetStock( player, 30, c_ZU_Zergling );
+    AISetStock( player, 12, c_ZU_Baneling );
+    AISetStock( player, 5, c_ZU_Overlord );
+
+    if ( (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 14) && AIHasRes(player,350,0) ) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 22, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 24, c_ZU_Drone );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    ZergHDDefaultExtraStock(player);
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 12, c_ZU_Drone, 1, c_ZU_Zergling, c_techCountCompleteOnly);
+    AISetAttackStatus(player, c_ZU_Zergling, 4, 18, c_continuousMerge);
+    if (AITechCount(player, c_ZU_Zergling, c_techCountCompleteOnly) >= 6) {
+        AISetAttackStatus(player, c_ZU_Baneling, 1, 4, c_continuousMerge);
+    }
+    
+    if (AIGetTime() < 360) {
+        if (AITechCount(player, c_ZU_Drone, c_techCountCompleteOnly) < 20) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergOpenTimingRoachHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergOpenTimingRoachHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 15, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 17, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Extractor );
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 1, c_ZB_RoachWarren );
+    AISetStock( player, 2, c_ZU_Zergling );
+    AISetStock( player, 3, c_ZU_Overlord );
+    
+    ZergBasicDefenseStock(player);
+    
+    AISetStock( player, 1, c_ZU_Roach );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 6, c_ZU_Roach );
+    AISetStock( player, 5, c_ZU_Overlord );
+
+    if ( (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 18) && AIHasRes(player,350,0) ) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 12, c_ZU_Roach );
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 15, c_ZU_Roach );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 24, c_ZU_Drone );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    ZergHDDefaultExtraStock(player);
+    
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 12, c_ZU_Drone, 1, c_ZU_Zergling, c_techCountCompleteOnly);
+    AISetAttackStatus(player, c_ZU_Roach, 1, 7, c_continuousMerge);
+
+    if (AIGetTime() < 330) {
+        if (AITechCount(player, c_ZU_Roach, c_techCountInProgressOrBetter) < 14) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergOpenTimingLingRoachHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergOpenTimingLingRoachHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 15, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 17, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Extractor );
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 1, c_ZB_RoachWarren );
+    AISetStock( player, 2, c_ZU_Zergling );
+    AISetStock( player, 3, c_ZU_Overlord );
+    
+    ZergBasicDefenseStock(player);
+    
+    AISetStock( player, 1, c_ZU_Roach );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 6, c_ZU_Roach );
+    AISetStock( player, 5, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZR_ZerglingSpeed );
+    AISetStock( player, 14, c_ZU_Zergling );
+
+    if ( (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 18) && AIHasRes(player,350,0) ) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 16, c_ZU_Zergling );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 24, c_ZU_Drone );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    ZergHDDefaultExtraStock(player);
+    
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 12, c_ZU_Drone, 1, c_ZU_Zergling, c_techCountCompleteOnly);
+    AISetAttackStatus(player, c_ZU_Roach, 1, 7, c_continuousMerge);
+    
+    if (AIGetTime() < 300) {
+        if (AITechCount(player, c_ZU_Drone, c_techCountInProgressOrBetter) < 20) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergOpenPowerMacroQuickExpGndHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergOpenPowerMacroQuickExpGndHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Extractor );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 22, c_ZU_Drone );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    ZergHDDefaultExtraStock(player);
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 16, c_ZU_Drone, 1, c_ZU_Zergling, c_techCountCompleteOnly);
+    if (AIGetTime() < 150) {
+        if (AITechCount(player, c_ZB_Hatchery_Alias, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergOpenPowerMacroDefenseExpGndHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergOpenPowerMacroDefenseExpGndHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 16, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 4, c_ZU_Zergling );
+    AISetStock( player, 18, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Extractor );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 24, c_ZU_Drone );
+    AISetStock( player, 8, c_ZU_Zergling );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    ZergHDDefaultExtraStock(player);
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 16, c_ZU_Drone, 1, c_ZU_Zergling, c_techCountCompleteOnly);
+    if (AIGetTime() < 150) {
+        if (AITechCount(player, c_ZB_Hatchery_Alias, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergOpenAirOneBaseMutaHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergOpenAirOneBaseMutaHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 16, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Extractor );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    
+    ZergBasicDefenseStock(player);
+    
+    AISetStock( player, 2, c_ZB_Extractor );
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    AISetStock( player, 21, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 24, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 1, c_ZB_Spire_Alias );
+    AISetStock( player, 5, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_EvolutionChamber );
+    AISetStock( player, 6, c_ZU_Mutalisk );
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 8, c_ZU_Mutalisk );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    ZergHDDefaultExtraStock(player);
+    
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_ZU_Mutalisk, 1, 5, c_continuousMerge);
+    
+    if (AIGetTime() < 330) {
+        if (AITechCount(player, c_ZU_Mutalisk, c_techCountCompleteOnly) < 6) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergOpenAirOneBaseDropHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergOpenAirOneBaseDropHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 16, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Extractor );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    
+    ZergBasicDefenseStock(player);
+    
+    AISetStock( player, 17, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 1, c_ZB_EvolutionChamber );
+    AISetStock( player, 1, c_ZR_ZerglingSpeed );
+    AISetStock( player, 10, c_ZU_Zergling );
+    AISetStock( player, 3, c_ZU_OverlordTransport );
+    AISetStock( player, 22, c_ZU_Zergling );
+    AISetStock( player, 2, c_ZB_Extractor );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 23, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Spire_Alias );
+    AISetStock( player, 1, c_ZR_OverseerSpeed );
+    AISetStock( player, 5, c_ZU_Overlord );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    ZergHDDefaultExtraStock(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    if (AITechCount(player, c_ZU_OverlordTransport, c_techCountCompleteOnly) > 1) {
+        AISetAttackStatus(player, c_ZU_Zergling, 4, 8, c_continuousMerge);
+    }
+    
+    if (AIGetTime() < 300) {
+        if (AITechCount(player, c_ZB_Spire_Alias, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+        if (AITechCount(player, c_ZR_OverseerSpeed, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergOpenAirQuickExpandAirHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergOpenAirQuickExpandAirHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 2, c_ZB_Extractor );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 19, c_ZU_Drone );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    ZergHDDefaultExtraStock(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    if (AIGetTime() < 150) {
+        if (AITechCount(player, c_ZB_Hatchery_Alias, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//==================================================================================================
+//  MID GAME
+//==================================================================================================
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidRushTimingLingBaneRoachHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidRushTimingLingBaneRoachHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 14, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_Extractor );
+    AISetStock( player, 15, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 10, c_ZU_Zergling );
+    AISetStock( player, 1, c_ZB_BanelingNest );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 18, c_ZU_Zergling );
+    AISetStock( player, 8, c_ZU_Baneling );
+    AISetStock( player, 4, c_ZU_Overlord );
+    
+    ZergBasicDefenseStock(player);
+    
+    AISetStock( player, 2, c_ZB_Extractor );
+    AISetStock( player, 22, c_ZU_Drone );
+    AISetStock( player, 5, c_ZU_Overlord );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    
+    AISetStock( player, 1, c_ZR_ZerglingSpeed );
+    AISetStock( player, 20, c_ZU_Zergling );
+    AISetStock( player, 1, c_ZB_RoachWarren );
+    AISetStock( player, 24, c_ZU_Zergling );
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 8, c_ZU_Roach );
+
+    if (AITechCount(player, c_ZU_Roach, c_techCountQueuedOrBetter) >= 8) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 26, c_ZU_Drone );
+    AISetStock( player, 8, c_ZU_Overlord );
+    
+    ZergHDDefaultExtraStock(player);
+
+    AISetStock( player, 12, c_ZU_Roach );
+    AISetStock( player, 9, c_ZU_Overlord );
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_ZU_Zergling, 2, 30, c_continuousMerge);
+    if (AITechCount(player, c_ZU_Zergling, c_techCountCompleteOnly) >= 12) {
+        AISetAttackStatus(player, c_ZU_Baneling, 1, 4, c_continuousMerge);
+        AISetAttackStatus(player, c_ZU_Roach, 1, 4, c_continuousMerge);
+    }
+    
+    if (AIGetTime() < 390) {
+        if (AITechCount(player, c_ZU_Roach, c_techCountInProgressOrBetter) < 8 || 
+            AITechCount(player, c_ZU_Baneling, c_techCountInProgressOrBetter) < 8) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidRushTimingDefensiveExpandHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidRushTimingDefensiveExpandHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 16, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 17, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Extractor );
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 2, c_ZU_Zergling );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_RoachWarren );
+    
+    ZergBasicDefenseStock(player);
+    
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 5, c_ZU_Roach );
+
+    ZergHDEmergencyDetectionAntiAir(player);
+
+    if (AITechCount(player, c_ZU_Roach, c_techCountQueuedOrBetter) >= 5) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 2, c_ZB_Extractor );
+    AISetStock( player, 1, c_ZR_ZerglingSpeed );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 5, c_ZU_Overlord );
+    AISetStock( player, 22, c_ZU_Drone );
+    
+    ZergHDDefaultExtraStock(player);
+    
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 10, c_ZU_Roach );
+    AISetStock( player, 26, c_ZU_Drone );
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 12, c_ZU_Roach );
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AISetAttackStatus(player, c_ZU_Zergling, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_ZU_Roach, 1, 999, c_continuousMerge);
+
+    if (AIGetTime() < 300) {
+        if (AITechCount(player, c_ZB_Hatchery_Alias, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+        if (AITechCount(player, c_ZU_Roach, c_techCountInProgressOrBetter) < 8) {
+            return false;
+        }
+    }
+    
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidPowerPureMutaHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidPowerPureMutaHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 2, c_ZB_Extractor );
+
+    ZergHDDefaultExtraStock(player);
+    
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 2, c_ZU_Zergling );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 29, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Spire_Alias );
+    AISetStock( player, 4, c_ZB_Extractor );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 32, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 7, c_ZU_Mutalisk );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 9, c_ZU_Mutalisk );
+    AISetStock( player, 36, c_ZU_Drone );
+    AISetStock( player, 10, c_ZU_Mutalisk );
+    AISetStock( player, 38, c_ZU_Drone );
+    AISetStock( player, 12, c_ZU_Mutalisk );
+    AISetStock( player, 8, c_ZU_Overlord );
+    AISetStock( player, 40, c_ZU_Drone );
+    AISetStock( player, 14, c_ZU_Mutalisk );
+    
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    AISetAttackStatus(player, c_ZU_Zergling, 4, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_ZU_Mutalisk, 1, 7, c_continuousMerge);
+    
+    if (AIGetTime() < 390) {
+        if (AITechCount(player, c_ZU_Mutalisk, c_techCountInProgressOrBetter) < 10) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidPowerLingBaneMutaHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidPowerLingBaneMutaHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 2, c_ZB_Extractor );
+    
+    ZergHDDefaultExtraStock(player);
+    
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 2, c_ZU_Zergling );
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 23, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 26, c_ZU_Drone );
+    AISetStock( player, 12, c_ZU_Zergling );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_BanelingNest );
+    AISetStock( player, 1, c_ZB_Spire_Alias );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 32, c_ZU_Drone );
+    AISetStock( player, 5, c_ZU_Overlord );
+    AISetStock( player, 8, c_ZU_Baneling );
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 4, c_ZB_Extractor );
+    AISetStock( player, 4, c_ZU_Mutalisk );
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 18, c_ZU_Zergling );
+    AISetStock( player, 6, c_ZU_Mutalisk );
+    AISetStock( player, 24, c_ZU_Zergling );
+    AISetStock( player, 8, c_ZU_Overlord );
+    AISetStock( player, 36, c_ZU_Drone );
+    AISetStock( player, 8, c_ZU_Mutalisk );
+    AISetStock( player, 9, c_ZU_Overlord );
+    AISetStock( player, 40, c_ZU_Drone );
+    AISetStock( player, 10, c_ZU_Mutalisk );
+    AISetStock( player, 10, c_ZU_Overlord );
+    
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_ZU_Zergling, 4, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_ZU_Baneling, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_ZU_Mutalisk, 2, 6, c_continuousMerge);
+    
+    if (AIGetTime() < 390) {
+        if (AITechCount(player, c_ZU_Mutalisk, c_techCountCompleteOnly) < 7) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidPowerFoodCapRoachHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidPowerFoodCapRoachHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 1, c_ZB_Extractor );
+    
+    ZergHDDefaultExtraStock(player);
+    
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 2, c_ZU_Zergling );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 22, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_RoachWarren );
+    AISetStock( player, 23, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 27, c_ZU_Drone );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 4, c_ZU_Roach );
+    AISetStock( player, 5, c_ZU_Overlord );
+    AISetStock( player, 29, c_ZU_Drone );
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 12, c_ZU_Roach );
+    AISetStock( player, 33, c_ZU_Drone );
+    AISetStock( player, 4, c_ZB_Extractor );
+    AISetStock( player, 9, c_ZU_Overlord );
+    AISetStock( player, 37, c_ZU_Drone );
+    AISetStock( player, 16, c_ZU_Roach );
+    AISetStock( player, 10, c_ZU_Overlord );
+    AISetStock( player, 41, c_ZU_Drone );
+    AISetStock( player, 11, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    AISetStock( player, 20, c_ZU_Roach );
+    AISetStock( player, 12, c_ZU_Overlord );
+    AISetStock( player, 44, c_ZU_Drone );
+    AISetStock( player, 12, c_ZU_Zergling );
+    AISetStock( player, 13, c_ZU_Overlord );
+    AISetStock( player, 4, c_ZU_Ravager );
+    AISetStock( player, 14, c_ZU_Overlord );
+    AISetStock( player, 8, c_ZU_Ravager );
+    AISetStock( player, 15, c_ZU_Overlord );
+    AISetStock( player, 24, c_ZU_Roach );
+    AISetStock( player, 16, c_ZU_Overlord );
+    AISetStock( player, 28, c_ZU_Roach );
+    AISetStock( player, 17, c_ZU_Overlord );
+    AISetStock( player, 32, c_ZU_Roach );
+    
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AISetAttackStatus(player, c_ZU_Zergling, 4, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_ZU_Roach, 1, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_ZU_Ravager, 1, 4, c_continuousMerge);
+    
+    if (AIGetTime() < 450) {
+        if (AITechCount(player, c_ZU_Roach, c_techCountInProgressOrBetter) < 24) {
+            return false;
+        }
+        if (AITechCount(player, c_ZU_Ravager, c_techCountCompleteOnly) < 8) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidPowerRoachInfestorHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidPowerRoachInfestorHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 2, c_ZB_Extractor );
+    
+    ZergHDDefaultExtraStock(player);
+    
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 2, c_ZU_Zergling );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 24, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_RoachWarren );
+    AISetStock( player, 25, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 27, c_ZU_Drone );
+    AISetStock( player, 4, c_ZU_Roach );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 3, c_ZB_Extractor );
+    AISetStock( player, 12, c_ZU_Zergling );
+    AISetStock( player, 32, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Roach );
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_InfestationPit );
+    AISetStock( player, 4, c_ZB_Extractor );
+    AISetStock( player, 36, c_ZU_Drone );
+    AISetStock( player, 9, c_ZU_Overlord );
+    AISetStock( player, 8, c_ZU_Roach );
+    AISetStock( player, 6, c_ZU_Infestor );
+    AISetStock( player, 11, c_ZU_Overlord );
+    AISetStock( player, 16, c_ZU_Roach );
+    AISetStock( player, 40, c_ZU_Drone );
+    AISetStock( player, 8, c_ZU_Infestor );
+    AISetStock( player, 12, c_ZU_Overlord );
+    
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AISetAttackStatus(player, c_ZU_Roach, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_ZU_Infestor, 2, 6, c_continuousMerge);
+    
+    if (AIGetTime() < 420) {
+        if (AITechCount(player, c_ZU_Overlord, c_techCountInProgressOrBetter) < 11) {
+            return false;
+        }
+        if (AITechCount(player, c_ZU_Infestor, c_techCountCompleteOnly) < 6) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidPowerRoachHydraHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidPowerRoachHydraHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 2, c_ZB_Extractor );
+    
+    ZergHDDefaultExtraStock(player);
+    
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 2, c_ZU_Zergling );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 24, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_RoachWarren );
+    AISetStock( player, 25, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 27, c_ZU_Drone );
+    AISetStock( player, 4, c_ZU_Roach );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 12, c_ZU_Zergling );
+    AISetStock( player, 32, c_ZU_Drone );
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 8, c_ZU_Roach );
+    AISetStock( player, 8, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_HydraliskDen );
+    AISetStock( player, 34, c_ZU_Drone );
+    AISetStock( player, 10, c_ZU_Roach );
+    AISetStock( player, 9, c_ZU_Overlord );
+    AISetStock( player, 8, c_ZU_Hydralisk );
+    AISetStock( player, 10, c_ZU_Overlord );
+    AISetStock( player, 14, c_ZU_Hydralisk );
+    AISetStock( player, 12, c_ZU_Overlord );
+    AISetStock( player, 40, c_ZU_Drone );
+    AISetStock( player, 12, c_ZU_Roach );
+    AISetStock( player, 16, c_ZU_Hydralisk );
+    
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_ZU_Roach, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_ZU_Hydralisk, 2, 14, c_continuousMerge);
+    
+    if (AIGetTime() < 420) {
+        if (AITechCount(player, c_ZU_Overlord, c_techCountInProgressOrBetter) < 12) {
+            return false;
+        }
+        if (AITechCount(player, c_ZU_Hydralisk, c_techCountCompleteOnly) < 14) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidPowerRoachRavagerHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidPowerRoachRavagerHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 2, c_ZB_Extractor );
+    
+    ZergHDDefaultExtraStock(player);
+    
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 2, c_ZU_Zergling );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 24, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_RoachWarren );
+    AISetStock( player, 25, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 27, c_ZU_Drone );
+    AISetStock( player, 5, c_ZU_Overlord );
+    AISetStock( player, 4, c_ZU_Roach );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 8, c_ZU_Roach );
+    AISetStock( player, 31, c_ZU_Drone );
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 35, c_ZU_Drone );
+    AISetStock( player, 8, c_ZU_Overlord );
+    AISetStock( player, 12, c_ZU_Roach );
+    AISetStock( player, 9, c_ZU_Overlord );
+    AISetStock( player, 6, c_ZU_Ravager );
+    AISetStock( player, 11, c_ZU_Overlord );
+    AISetStock( player, 8, c_ZU_Ravager );
+    AISetStock( player, 39, c_ZU_Drone );
+    AISetStock( player, 12, c_ZU_Overlord );
+    AISetStock( player, 16, c_ZU_Roach );
+    
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_ZU_Roach, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_ZU_Ravager, 2, 6, c_continuousMerge);
+    
+    if (AIGetTime() < 390) {
+        if (AITechCount(player, c_ZU_Ravager, c_techCountInProgressOrBetter) < 8) {
+            return false;
+        }
+        if (AITechCount(player, c_ZU_Ravager, c_techCountCompleteOnly) < 6) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidPowerSwarmHostHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidPowerSwarmHostHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 2, c_ZB_Extractor );
+
+    ZergHDDefaultExtraStock(player);
+    
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 2, c_ZU_Zergling );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 29, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_InfestationPit );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 1, c_ZR_Burrow );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 31, c_ZU_Drone );
+    AISetStock( player, 5, c_ZU_Overlord );
+    AISetStock( player, 4, c_ZU_SwarmHost );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 12, c_ZU_Zergling );
+    AISetStock( player, 32, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_SwarmHost );
+    AISetStock( player, 8, c_ZU_Overlord );
+    AISetStock( player, 36, c_ZU_Drone );
+    AISetStock( player, 8, c_ZU_SwarmHost );
+    AISetStock( player, 9, c_ZU_Overlord );
+    AISetStock( player, 40, c_ZU_Drone );
+    
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    AISetAttackStatus(player, c_ZU_Zergling, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_ZU_SwarmHost, 2, 4, c_continuousMerge);
+    
+    if (AIGetTime() < 360) {
+        if (AITechCount(player, c_ZU_SwarmHost, c_techCountInProgressOrBetter) < 6) {
+            return false;
+        }
+        if (AITechCount(player, c_ZU_SwarmHost, c_techCountCompleteOnly) < 4) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidPowerHydraLurkerHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidPowerHydraLurkerHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 2, c_ZB_Extractor );
+    
+    ZergHDDefaultExtraStock(player);
+    
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 2, c_ZU_Zergling );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 24, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_RoachWarren );
+    AISetStock( player, 25, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 27, c_ZU_Drone );
+    AISetStock( player, 4, c_ZU_Roach );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 3, c_ZB_Extractor );
+    AISetStock( player, 33, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Roach );
+    AISetStock( player, 35, c_ZU_Drone );
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_HydraliskDen );
+    AISetStock( player, 8, c_ZU_Overlord );
+    AISetStock( player, 37, c_ZU_Drone );
+    AISetStock( player, 8, c_ZU_Roach );
+    AISetStock( player, 5, c_ZU_Hydralisk );
+    AISetStock( player, 1, c_ZB_LurkerDen );
+    AISetStock( player, 8, c_ZU_Hydralisk );
+    AISetStock( player, 9, c_ZU_Overlord );
+    AISetStock( player, 40, c_ZU_Drone );
+    AISetStock( player, 10, c_ZU_Overlord );
+    AISetStock( player, 12, c_ZU_Zergling );
+    AISetStock( player, 14, c_ZU_Overlord );
+    AISetStock( player, 6, c_ZU_Lurker );
+    AISetStock( player, 16, c_ZU_Roach );
+    AISetStock( player, 12, c_ZU_Hydralisk );
+    AISetStock( player, 16, c_ZU_Overlord );
+    
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_ZU_Roach, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_ZU_Hydralisk, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_ZU_Lurker, 2, 6, c_continuousMerge);
+    
+    if (AIGetTime() < 480) {
+        if (AITechCount(player, c_ZU_Roach, c_techCountInProgressOrBetter) < 12) {
+            return false;
+        }
+        if (AITechCount(player, c_ZU_Lurker, c_techCountCompleteOnly) < 6) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidMacroRoachHydraHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidMacroRoachHydraHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 1, c_ZB_Extractor );
+    
+    ZergHDDefaultExtraStock(player);
+
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 2, c_ZU_Zergling );
+    AISetStock( player, 21, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 22, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_RoachWarren );
+    AISetStock( player, 2, c_ZB_Extractor );
+    AISetStock( player, 4, c_ZU_Overlord );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    
+    AISetStock( player, 27, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 4, c_ZU_Roach );
+    AISetStock( player, 29, c_ZU_Drone );
+    AISetStock( player, 5, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    AISetStock( player, 1, c_ZR_ZerglingSpeed );
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 32, c_ZU_Drone );
+    AISetStock( player, 12, c_ZU_Zergling );
+    AISetStock( player, 3, c_ZB_Extractor );
+    AISetStock( player, 2, c_ZB_EvolutionChamber );
+    AISetStock( player, 36, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_HydraliskDen );
+    AISetStock( player, 1, c_ZR_MissileAttacks1 );
+    AISetStock( player, 1, c_ZR_GroundCarapace1 );
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 6, c_ZU_Roach );
+    AISetStock( player, 4, c_ZU_Hydralisk );
+    AISetStock( player, 9, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZR_HydraliskRange );
+    AISetStock( player, 12, c_ZU_Roach );
+    AISetStock( player, 11, c_ZU_Overlord );
+    AISetStock( player, 8, c_ZU_Hydralisk );
+    AISetStock( player, 40, c_ZU_Drone );
+    AISetStock( player, 13, c_ZU_Overlord );
+    AISetStock( player, 16, c_ZU_Roach );
+    AISetStock( player, 12, c_ZU_Hydralisk );
+    
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+
+    // don't attack alone, but be willing to support an attack
+    AISetAttackStatus(player, c_ZU_Roach, 2, 999, c_continuousMerge); 
+    AISetAttackStatus(player, c_ZU_Hydralisk, 1, 999, c_continuousMerge);
+    
+    if (AIGetTime() < 420) {
+        if (AITechCount(player, c_ZU_Roach, c_techCountInProgressOrBetter) < 12) {
+            return false;
+        }
+        if (AITechCount(player, c_ZU_Hydralisk, c_techCountInProgressOrBetter) < 8) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidMacroRoachInfestorHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidMacroRoachInfestorHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 1, c_ZB_Extractor );
+    
+    ZergHDDefaultExtraStock(player);
+
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 2, c_ZU_Zergling );
+    AISetStock( player, 21, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 22, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_RoachWarren );
+    AISetStock( player, 2, c_ZB_Extractor );
+    AISetStock( player, 4, c_ZU_Overlord );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    
+    AISetStock( player, 27, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 4, c_ZU_Roach );
+    AISetStock( player, 29, c_ZU_Drone );
+    AISetStock( player, 5, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    AISetStock( player, 1, c_ZR_ZerglingSpeed );    
+    AISetStock( player, 4, c_ZB_Extractor );
+    AISetStock( player, 36, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 37, c_ZU_Drone );
+    AISetStock( player, 2, c_ZB_EvolutionChamber );
+    AISetStock( player, 39, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_InfestationPit );
+    AISetStock( player, 43, c_ZU_Drone );
+    AISetStock( player, 1, c_ZR_MissileAttacks1 );
+    AISetStock( player, 1, c_ZR_GroundCarapace1 );
+    AISetStock( player, 8, c_ZU_Overlord );
+    AISetStock( player, 44, c_ZU_Drone );
+    AISetStock( player, 12, c_ZU_Zergling );
+    AISetStock( player, 1, c_ZR_InfestorEnergy );
+    AISetStock( player, 8, c_ZU_Roach );
+    AISetStock( player, 10, c_ZU_Overlord );
+    AISetStock( player, 10, c_ZU_Roach );
+    AISetStock( player, 6, c_ZU_Infestor );
+    AISetStock( player, 12, c_ZU_Overlord );
+    AISetStock( player, 16, c_ZU_Roach );
+    
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    // don't attack alone, but be willing to support an attack
+    AISetAttackStatus(player, c_ZU_Roach, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_ZU_Infestor, 1, 999, c_continuousMerge);
+    
+    if (AIGetTime() < 420) {
+        if (AITechCount(player, c_ZU_Infestor, c_techCountInProgressOrBetter) < 6) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidMacroHydraLurkerHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidMacroHydraLurkerHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 1, c_ZB_Extractor );
+    
+    ZergHDDefaultExtraStock(player);
+
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 2, c_ZU_Zergling );
+    AISetStock( player, 21, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 22, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_RoachWarren );
+    AISetStock( player, 2, c_ZB_Extractor );
+    AISetStock( player, 4, c_ZU_Overlord );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    
+    AISetStock( player, 27, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 4, c_ZU_Roach );
+    AISetStock( player, 29, c_ZU_Drone );
+    AISetStock( player, 5, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    AISetStock( player, 4, c_ZB_Extractor );
+    AISetStock( player, 32, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 38, c_ZU_Drone );
+    AISetStock( player, 12, c_ZU_Zergling );
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_HydraliskDen );
+    AISetStock( player, 6, c_ZU_Roach );
+    AISetStock( player, 8, c_ZU_Overlord );
+    AISetStock( player, 40, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_LurkerDen );
+    AISetStock( player, 4, c_ZU_Hydralisk );
+    AISetStock( player, 9, c_ZU_Overlord );
+    AISetStock( player, 2, c_ZB_EvolutionChamber );
+    AISetStock( player, 42, c_ZU_Drone );
+    AISetStock( player, 8, c_ZU_Roach );
+    AISetStock( player, 10, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZR_MissileAttacks1 );
+    AISetStock( player, 1, c_ZR_GroundCarapace1 );
+    AISetStock( player, 4, c_ZU_Lurker );
+    AISetStock( player, 6, c_ZU_Hydralisk );
+    AISetStock( player, 12, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZR_HydraliskRange );
+    AISetStock( player, 12, c_ZU_Roach );
+    AISetStock( player, 13, c_ZU_Overlord );
+    AISetStock( player, 6, c_ZU_Lurker );
+    AISetStock( player, 8, c_ZU_Hydralisk );
+    
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+
+    // don't attack alone, but be willing to support an attack
+    AISetAttackStatus(player, c_ZU_Roach, 2, 999, c_continuousMerge); 
+    AISetAttackStatus(player, c_ZU_Hydralisk, 1, 999, c_continuousMerge);
+    
+    if (AIGetTime() < 450) {
+        if (AITechCount(player, c_ZU_Hydralisk, c_techCountInProgressOrBetter) < 6) {
+            return false;
+        }
+        if (AITechCount(player, c_ZU_Lurker, c_techCountInProgressOrBetter) < 4) {
+            return false;
+        }
+        if (AITechCount(player, c_ZR_HydraliskRange, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidMacroUltraliskHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidMacroUltraliskHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 1, c_ZB_Extractor );
+    
+    ZergHDDefaultExtraStock(player);
+
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 2, c_ZU_Zergling );
+    AISetStock( player, 21, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 22, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_RoachWarren );
+    AISetStock( player, 2, c_ZB_Extractor );
+    AISetStock( player, 4, c_ZU_Overlord );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    
+    AISetStock( player, 27, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 4, c_ZU_Roach );
+    AISetStock( player, 29, c_ZU_Drone );
+    AISetStock( player, 5, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    AISetStock( player, 4, c_ZB_Extractor );
+    AISetStock( player, 37, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 42, c_ZU_Drone );
+    AISetStock( player, 12, c_ZU_Zergling );
+    AISetStock( player, 1, c_ZB_InfestationPit );
+    AISetStock( player, 8, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_HydraliskDen );
+    AISetStock( player, 8, c_ZU_Roach );
+    AISetStock( player, 9, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_Hive );
+    AISetStock( player, 4, c_ZU_Hydralisk );
+    AISetStock( player, 44, c_ZU_Drone );
+    AISetStock( player, 10, c_ZU_Overlord );
+    AISetStock( player, 4, c_ZU_Infestor );
+    AISetStock( player, 12, c_ZU_Overlord );
+    AISetStock( player, 2, c_ZB_EvolutionChamber );
+    AISetStock( player, 14, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_UltraliskCavern );
+    AISetStock( player, 24, c_ZU_Zergling );
+    AISetStock( player, 16, c_ZU_Overlord );
+    AISetStock( player, 6, c_ZU_Ultralisk );
+    AISetStock( player, 1, c_ZR_UltraliskArmor );
+    
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    // don't attack alone, but be willing to support an attack
+    AISetAttackStatus(player, c_ZU_Roach, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_ZU_Hydralisk, 1, 999, c_continuousMerge);
+    
+    if (AIGetTime() < 540) {
+        if (AITechCount(player, c_ZU_Ultralisk, c_techCountInProgressOrBetter) < 6) {
+            return false;
+        }
+        if (AITechCount(player, c_ZR_UltraliskArmor, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidMacroBroodlordHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidMacroBroodlordHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 1, c_ZB_Extractor );
+    
+    ZergHDDefaultExtraStock(player);
+
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 2, c_ZU_Zergling );
+    AISetStock( player, 21, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 22, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_RoachWarren );
+    AISetStock( player, 2, c_ZB_Extractor );
+    AISetStock( player, 4, c_ZU_Overlord );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    
+    AISetStock( player, 27, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 4, c_ZU_Roach );
+    AISetStock( player, 29, c_ZU_Drone );
+    AISetStock( player, 5, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    AISetStock( player, 4, c_ZB_Extractor );
+    AISetStock( player, 37, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 42, c_ZU_Drone );
+    AISetStock( player, 12, c_ZU_Zergling );
+    AISetStock( player, 1, c_ZB_InfestationPit );
+    AISetStock( player, 8, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_Spire );
+    AISetStock( player, 8, c_ZU_Roach );
+    AISetStock( player, 9, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_Hive );
+    AISetStock( player, 44, c_ZU_Drone );
+    AISetStock( player, 10, c_ZU_Overlord );
+    AISetStock( player, 12, c_ZU_Roach );
+    AISetStock( player, 12, c_ZU_Overlord );
+    AISetStock( player, 6, c_ZU_Corruptor );
+    AISetStock( player, 14, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_GreaterSpire );
+    AISetStock( player, 2, c_ZB_EvolutionChamber );
+    AISetStock( player, 24, c_ZU_Zergling );
+    AISetStock( player, 8, c_ZU_Corruptor );
+    AISetStock( player, 16, c_ZU_Overlord );
+    AISetStock( player, 6, c_ZU_BroodLord );
+
+    AIEnableStock(player);
+    
+    //---------------------------------------------------------
+    
+    // don't attack alone, but be willing to support an attack
+    AISetAttackStatus(player, c_ZU_Roach, 2, 999, c_continuousMerge);
+    
+    if (AIGetTime() < 540) {
+        if (AITechCount(player, c_ZU_BroodLord, c_techCountInProgressOrBetter) < 6) {
+            return false;
+        }
+        if (AITechCount(player, c_ZU_Corruptor, c_techCountInProgressOrBetter) < 6) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidAirOneBaseMutaHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidAirOneBaseMutaHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 16, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Extractor );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    
+    ZergBasicDefenseStock(player);
+    
+    AISetStock( player, 2, c_ZB_Extractor );
+    AISetStock( player, 19, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    AISetStock( player, 21, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 24, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 1, c_ZB_Spire_Alias );
+    AISetStock( player, 5, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_EvolutionChamber );
+    AISetStock( player, 6, c_ZU_Mutalisk );
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 8, c_ZU_Mutalisk );
+    AISetStock( player, 2, c_ZU_OverlordTransport );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    ZergHDDefaultExtraStock(player);
+    
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_ZU_Mutalisk, 1, 5, c_continuousMerge);
+    
+    if (AIGetTime() < 360) {
+        if (AITechCount(player, c_ZU_Mutalisk, c_techCountInProgressOrBetter) < 8) {
+            return false;
+        }
+        if (AITechCount(player, c_ZU_OverlordTransport, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidAirOneBaseDropHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidAirOneBaseDropHdVH (int player) {
+    AIClearStock(player);
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 16, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Extractor );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    
+    ZergBasicDefenseStock(player);
+    
+    AISetStock( player, 17, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 6, c_ZU_Zergling );
+    AISetStock( player, 1, c_ZB_EvolutionChamber );
+    AISetStock( player, 1, c_ZR_ZerglingSpeed );
+    AISetStock( player, 10, c_ZU_Zergling );
+    AISetStock( player, 3, c_ZU_OverlordTransport );
+    AISetStock( player, 22, c_ZU_Zergling );
+    AISetStock( player, 2, c_ZB_Extractor );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 23, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Spire_Alias );
+    AISetStock( player, 1, c_ZR_OverseerSpeed );
+    AISetStock( player, 5, c_ZU_Overlord );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    ZergHDDefaultExtraStock(player);
+    
+    AISetStock( player, 1, c_ZB_RoachWarren );
+    AISetStock( player, 24, c_ZU_Drone );
+    AISetStock( player, 24, c_ZU_Zergling );
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 4, c_ZU_Roach );
+    AISetStock( player, 4, c_ZU_Mutalisk );
+    AISetStock( player, 26, c_ZU_Drone );
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    if (AITechCount(player, c_ZU_OverlordTransport, c_techCountCompleteOnly) > 1) {
+        AISetAttackStatus(player, c_ZU_Zergling, 4, 16, c_continuousMerge);
+        AISetAttackStatus(player, c_ZU_Mutalisk, 1, 4, c_continuousMerge);
+        AISetAttackStatus(player, c_ZU_Mutalisk, 1, 4, c_continuousMerge);
+    }
+    
+    if (AIGetTime() < 390) {
+        if (AITechCount(player, c_ZU_Roach, c_techCountInProgressOrBetter) < 4) {
+            return false;
+        }
+        if (AITechCount(player, c_ZU_Mutalisk, c_techCountInProgressOrBetter) < 4) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidAirExpansionMutaHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidAirExpansionMutaHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 2, c_ZB_Extractor );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 21, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 32, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Spire_Alias );
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 4, c_ZB_Extractor );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 38, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 40, c_ZU_Drone );
+    AISetStock( player, 8, c_ZU_Mutalisk );
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_EvolutionChamber );
+    AISetStock( player, 8, c_ZU_Overlord );
+    AISetStock( player, 12, c_ZU_Mutalisk );
+    AISetStock( player, 2, c_ZU_OverlordTransport );
+    AISetStock( player, 10, c_ZU_Overlord );
+    AISetStock( player, 14, c_ZU_Mutalisk );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    ZergHDDefaultExtraStock(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_ZU_Mutalisk, 2, 8, c_continuousMerge);
+    
+    if (AIGetTime() < 360) {
+        if (AITechCount(player, c_ZU_Mutalisk, c_techCountInProgressOrBetter) < 12) {
+            return false;
+        }
+        if (AITechCount(player, c_ZU_OverlordTransport, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidAirExpansionMixedAirHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidAirExpansionMixedAirHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 2, c_ZB_Extractor );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 21, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 32, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Spire_Alias );
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 4, c_ZB_Extractor );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 38, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 40, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Mutalisk );
+    AISetStock( player, 2, c_ZU_Corruptor );
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_EvolutionChamber );
+    AISetStock( player, 8, c_ZU_Overlord );
+    AISetStock( player, 4, c_ZU_Corruptor );
+    AISetStock( player, 8, c_ZU_Mutalisk );
+    AISetStock( player, 2, c_ZU_OverlordTransport );
+    AISetStock( player, 10, c_ZU_Mutalisk );
+    AISetStock( player, 10, c_ZU_Overlord );   
+    AISetStock( player, 6, c_ZU_Corruptor ); 
+
+    ZergHDEmergencyDetectionAntiAir(player);
+    ZergHDDefaultExtraStock(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_ZU_Mutalisk, 2, 8, c_continuousMerge);
+    AISetAttackStatus(player, c_ZU_Corruptor, 2, 999, c_continuousMerge);
+    
+    if (AIGetTime() < 390) {
+        if (AITechCount(player, c_ZU_Mutalisk, c_techCountCompleteOnly) < 8) {
+            return false;
+        }
+        if (AITechCount(player, c_ZU_Corruptor, c_techCountCompleteOnly) < 4) {
+            return false;
+        }
+        if (AITechCount(player, c_ZU_OverlordTransport, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidAirExpansionDropHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidAirExpansionDropHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 2, c_ZB_Extractor );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 20, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 24, c_ZU_Drone );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_EvolutionChamber );
+    AISetStock( player, 30, c_ZU_Drone );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZR_ZerglingSpeed );
+    AISetStock( player, 1, c_ZR_MeleeAttacks1 );
+    AISetStock( player, 32, c_ZU_Drone );
+    AISetStock( player, 12, c_ZU_Zergling );
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    AISetStock( player, 1, c_ZB_BanelingNest );
+    AISetStock( player, 24, c_ZU_Zergling );
+    AISetStock( player, 6, c_ZU_OverlordTransport );
+    AISetStock( player, 16, c_ZU_Baneling );
+    
+    ZergHDEmergencyDetectionAntiAir(player);
+    ZergHDDefaultExtraStock(player);
+    
+    AISetStock( player, 1, c_ZB_Spire );
+    AISetStock( player, 1, c_ZB_RoachWarren );
+    AISetStock( player, 8, c_ZU_Overlord );
+    AISetStock( player, 4, c_ZB_Extractor );
+    AISetStock( player, 40, c_ZU_Drone );
+    AISetStock( player, 36, c_ZU_Zergling );
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    if (AITechCount(player, c_ZU_OverlordTransport, c_techCountCompleteOnly) > 1) {
+        AISetAttackStatus(player, c_ZU_Zergling, 4, 32, c_continuousMerge);
+        AISetAttackStatus(player, c_ZU_Baneling, 1, 16, c_continuousMerge);
+    }
+    
+    if (AIGetTime() < 390) {
+        if (AITechCount(player, c_ZB_RoachWarren, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+        if (AITechCount(player, c_ZB_Spire, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+        if (AITechCount(player, c_ZB_Extractor, c_techCountInProgressOrBetter) < 4) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidAirMacroHdVH
+//--------------------------------------------------------------------------------------------------
+bool ZergMidAirMacroHdVH (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 6, c_ZU_Drone );
+    AISetStock( player, 1, c_ZU_Overlord );
+    AISetStock( player, 13, c_ZU_Drone );
+    AISetStock( player, 2, c_ZU_Overlord );
+    AISetStock( player, 17, c_ZU_Drone );
+    
+    ZergBasicDefenseStock(player);
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) >= 17) {
+        if (ZergHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 2, c_ZB_Extractor );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 21, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Lair_Alias );
+    AISetStock( player, 3, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZU_Queen );
+    AISetStock( player, 32, c_ZU_Drone );
+    AISetStock( player, 1, c_ZB_Spire_Alias );
+    AISetStock( player, 2, c_ZU_Queen );
+    AISetStock( player, 4, c_ZB_Extractor );
+    AISetStock( player, 4, c_ZU_Overlord );
+    AISetStock( player, 38, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Overlord );
+    AISetStock( player, 40, c_ZU_Drone );
+    AISetStock( player, 6, c_ZU_Mutalisk );
+    AISetStock( player, 2, c_ZU_Corruptor );
+    AISetStock( player, 7, c_ZU_Overlord );
+    AISetStock( player, 1, c_ZB_EvolutionChamber );
+    AISetStock( player, 8, c_ZU_Overlord );
+    AISetStock( player, 4, c_ZU_Corruptor );
+    AISetStock( player, 8, c_ZU_Mutalisk );
+    AISetStock( player, 2, c_ZU_OverlordTransport );
+    AISetStock( player, 9, c_ZU_Overlord );
+
+    ZergHDEmergencyDetectionAntiAir(player);
+    ZergHDDefaultExtraStock(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    // don't attack alone, but be willing to support an attack
+    AISetAttackStatus(player, c_ZU_Mutalisk, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_ZU_Corruptor, 2, 999, c_continuousMerge);
+    
+    if (AIGetTime() < 360) {
+        if (AITechCount(player, c_ZU_Mutalisk, c_techCountInProgressOrBetter) < 8) {
+            return false;
+        }
+        if (AITechCount(player, c_ZU_Corruptor, c_techCountInProgressOrBetter) < 4) {
+            return false;
+        }
+        if (AITechCount(player, c_ZU_OverlordTransport, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//==================================================================================================
+//  LATE GAME
+//==================================================================================================
+
+// Late Game is very similar to VyHd, but with delayed expanding and upgrading to make it weaker
+
+//--------------------------------------------------------------------------------------------------
+//  ZergLateHdVH
+//--------------------------------------------------------------------------------------------------
+void ZergLateHdVH (int player) {
+    int armyCompareEstimate = AIArmyComparisonEstimate(player);
+    int foodUsed = PlayerGetPropertyInt(player, c_playerPropSuppliesUsed);
+
+    // always enable scouting in the late game
+    AISetFlag(player, e_flagsScouting, true);
+    // calculate a limit on how much simultaneous teching can happen
+    AISetTechLimitLevels(player);
+
+
+// ****************** Start Restock ****************** //
+    AIClearStock(player);
+
+// Very basic recovery start
+    ZergHDRecoveryStart(player);
+
+// Very basic farms & peons
+    AISetStockFarms( player, c_ZU_Overlord, c_stockNormalFarms);
+    AISetStockPeons( player, 16, c_ZU_Drone, c_stockMinPeons, c_stockAlways);
+
+// Desperate expand (we're about to run out of minerals/gas)
+    AIDefaultExpansion(player, c_ZB_Hatchery, 3000, 1000, c_expandVitalHard);
+    AISetStockUnitNext( player, 1, c_ZU_Queen, c_stockAlways );
+
+// Choose what type of endgame army we'd like to make
+    UpdateHDZergLateGameArmy(player);
+
+// Bare minimum army
+    if (foodUsed < 180) {
+        ZergHDLateGameArmy(player, e_armyTypeMinimum);
+    }
+
+// Basic peons
+    AISetStockPeons( player, 24, c_ZU_Drone, c_stockMinPeons, c_stockAlways);
+
+// Urgent early detection
+    if (AINeedsDetection(player)) {
+        AISetStock( player, 1, c_ZU_Overseer );
+    }
+
+// Barely adequete army including anti-air
+    if (foodUsed < 180) {
+        ZergHDLateGameArmy(player, e_armyTypeBase);
+    }
+
+// Basic towns, farms, & peons
+    AIDefaultEconomy(player, c_ZB_Hatchery_Alias, c_ZB_Extractor, c_ZU_Overlord, c_ZU_Drone, 75, c_stockAlways);
+
+// Low expand (we're running low on minerals/gas)
+    AIAdjustedDefaultExpansion(player, c_ZB_Hatchery, 6000, 2000, c_expandVitalHard, armyCompareEstimate);
+    
+// Minimum normal detection
+    if (AISuspectDetectionDanger(player, c_lateDetectionDangerTime)) {
+        AISetStock( player, 1, c_ZU_Overseer );
+    }
+
+// On an air map build at least one transport as long as we have some other units/army
+    if (AIGetUserInt(player, c_numGroundStartLocs) == 0) {
+        AISetStock( player, 1, c_ZU_OverlordTransport );
+    }
+
+// Nearly food capped units
+    if (foodUsed > 160) {
+        AISetStock( player, 3, c_ZU_Overseer );
+        AISetStock( player, 2, c_ZU_OverlordTransport );
+        AISetStock( player, 1, c_ZR_OverseerSpeed );
+        if (AIWantsMultipleTransport(player)) {
+            AISetStock( player, 6, c_ZU_OverlordTransport );
+        }
+
+        if (foodUsed >= 180) {
+            ZergHDLateGameArmy(player, e_armyTypeMinimum);
+            ZergHDLateGameArmy(player, e_armyTypeBase);
+        }
+    }
+
+// Basic small army
+    ZergHDLateGameArmy(player, e_armyTypeSmall);
+
+// Basic production buildings
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 1, c_ZB_RoachWarren );
+      
+// Normal expand
+    AIAdjustedDefaultExpansion(player, c_ZB_Hatchery, 10000, 4000, c_expandNormalHard, armyCompareEstimate);
+   
+// Make Counter Units
+    ZergHDMakeCounters(player);
+
+// Medium sized army
+    ZergHDLateGameArmy(player, e_armyTypeMedium);
+
+// Vital upgrades
+    ZergHDVitalUpgrades(player);
+    
+// Overseer to scout/detect
+    AISetStock( player, 1, c_ZU_Overseer );
+
+// Other towns defense
+    ZergHDDefenseOtherTowns(player);
+    
+// Extra Queens/Hatcheries
+    ZergHDDefaultExtraStock(player);
+
+// Large sized army
+    ZergHDLateGameArmy(player, e_armyTypeLarge);
+
+// General upgrades
+    ZergHDGeneralUpgrades(player);
+
+// Main base defense
+    ZergHDDefenseMainTown(player);
+     
+// Multiple detectors & scouts & a transport
+    AISetStockUnitNext( player, 2, c_ZU_Overseer, c_stockAlways );
+    AISetStock( player, 1, c_ZU_OverlordTransport );
+
+// Middle expand
+    AIAdjustedDefaultExpansion(player, c_ZB_Hatchery, 15000, 6000, c_expandNormalHard, armyCompareEstimate);
+
+// Extra detection & scouts & transports
+    AISetStockUnitNext( player, 3, c_ZU_Overseer, c_stockAlways );
+    AISetStockUnitNext( player, 3, c_ZU_OverlordTransport, c_stockAlways );
+
+// Late expand
+    AIAdjustedDefaultExpansion(player, c_ZB_Hatchery, 20000, 8000, c_expandNormalHard, armyCompareEstimate);
+
+// Extra research buildings
+    if (AIHasRes(player,500,400)) {
+        AISetStockUnitNext( player, 3, c_ZB_EvolutionChamber, c_stockAlways );
+    }
+
+// Extra production buildings
+    AISetStockUnitNext( player, 1, c_ZB_HydraliskDen,       c_stockAlways );
+    AISetStockUnitNext( player, 1, c_ZB_Spire_Alias,        c_stockAlways );
+    AISetStockUnitNext( player, 1, c_ZB_InfestationPit,     c_stockAlways );
+    AISetStockUnitNext( player, 1, c_ZB_Hive,               c_stockAlways );
+    AISetStockUnitNext( player, 4, c_ZU_Queen,              c_stockAlways );
+
+// Minor upgrades
+    ZergHDMinorUpgrades(player);
+
+// Idle expand (very low priority, to prevent us from sitting around with idle peons)
+    AIAdjustedDefaultExpansion(player, c_ZB_Hatchery, 30000, 10000, c_expandIdleHard, armyCompareEstimate);
+
+// Entire Army
+    ZergHDLateGameArmy(player, e_armyTypeFull);
+
+    AIEnableStock(player);    
+// ****************** End Restock ****************** //
+
+}

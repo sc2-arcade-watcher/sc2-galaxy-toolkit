@@ -1,0 +1,228 @@
+include "TriggerLibs/NativeLib"
+include "LibComC_h"
+
+include "LibCMMI_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Mission (Common)
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libCMMI_InitLibraries () {
+    libNtve_InitVariables();
+    libComC_InitVariables();
+}
+
+// Variable Initialization
+bool libCMMI_InitVariables_completed = false;
+
+void libCMMI_InitVariables () {
+    if (libCMMI_InitVariables_completed) {
+        return;
+    }
+
+    libCMMI_InitVariables_completed = true;
+
+}
+
+// Functions
+void libCMMI_gf_CM_Initialize () {
+    // Implementation
+    UnitEventSetNullVariableInvalid(true);
+    libCMMI_gv_NM_CombatTimer = TimerCreate();
+    TimerStart(libCMMI_gv_NM_CombatTimer, 86400.0, false, c_timeGame);
+    libCMMI_gf_DifficultySetting(PlayerDifficulty(1));
+}
+
+void libCMMI_gf_CM_AutoHeatMapTestMode () {
+    // Variable Declarations
+    trigger lv_disableTrigger;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((GameTestConfigType() != 1)) {
+        return ;
+    }
+
+    UnitPauseAll(true);
+    while (true) {
+        Wait(10.0, c_timeGame);
+    }
+}
+
+void libCMMI_gf_DifficultySetting (int lp_difficulty) {
+    int auto3A9A3E66_val;
+
+    // Implementation
+    auto3A9A3E66_val = lp_difficulty;
+    if (auto3A9A3E66_val == 1) {
+        GameSetSpeedValueMinimum(c_gameSpeedSlow);
+        PlayerModifyPropertyInt(1, c_playerPropDamageTakenPercent, c_playerPropOperSetTo, FixedToInt((UserDataGetFixed("DifficultySettings", "Casual", "DamageTakenRatio", 1) * 100.0)));
+        TechTreeUpgradeAddLevel(1, "SuperiorWarpGates", 1);
+    }
+    else if (auto3A9A3E66_val == 2) {
+        GameSetSpeedValueMinimum(c_gameSpeedNormal);
+        PlayerModifyPropertyInt(1, c_playerPropDamageTakenPercent, c_playerPropOperSetTo, FixedToInt((UserDataGetFixed("DifficultySettings", "Normal", "DamageTakenRatio", 1) * 100.0)));
+        TechTreeUpgradeAddLevel(1, "SuperiorWarpGates", 1);
+    }
+    else if (auto3A9A3E66_val == 3) {
+        GameSetSpeedValueMinimum(c_gameSpeedFast);
+        PlayerModifyPropertyInt(1, c_playerPropDamageTakenPercent, c_playerPropOperSetTo, FixedToInt((UserDataGetFixed("DifficultySettings", "Hard", "DamageTakenRatio", 1) * 100.0)));
+    }
+    else if (auto3A9A3E66_val == 4) {
+        GameSetSpeedValueMinimum(c_gameSpeedFaster);
+        PlayerModifyPropertyInt(1, c_playerPropDamageTakenPercent, c_playerPropOperSetTo, FixedToInt((UserDataGetFixed("DifficultySettings", "Brutal", "DamageTakenRatio", 1) * 100.0)));
+    }
+    else {
+    }
+}
+
+bool libCMMI_gf_PlayerIsInCombat (int lp_player) {
+    // Variable Declarations
+    fixed lv_combatTime;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((libNtve_gf_PlayerInCinematicMode(lp_player) == true)) {
+        return false;
+    }
+
+    lv_combatTime = MaxF(PlayerGetPropertyFixed(lp_player, c_playerPropDamageDealtTime), PlayerGetPropertyFixed(lp_player, c_playerPropDamageTakenTime));
+    lv_combatTime = (TimerGetElapsed(libCMMI_gv_NM_CombatTimer) - lv_combatTime);
+    return (lv_combatTime < 4.0);
+}
+
+void libCMMI_gf_SetMissionObjectiveProgress (string lp_objective, int lp_current) {
+    // Implementation
+    libComC_gf_CC_MissionObjectiveProgressDataSet(lp_objective, lp_current);
+    if ((libComC_gf_CC_ObjectiveUserDataInstance(lp_objective) == null)) {
+        return ;
+    }
+
+    libCMMI_gf_CM_UpdateObjectiveTextCampaign(lp_objective);
+}
+
+void libCMMI_gf_CreateObjectiveCampaign (string lp_objectiveData) {
+    // Variable Declarations
+    text lv_name;
+    text lv_bonusText;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((libComC_gf_MissionObjectiveItemCount(lp_objectiveData) == 0)) {
+        libCMMI_gf_SetObjectiveRequiredCountCampaign(lp_objectiveData, CatalogFieldValueGetAsInt(c_gameCatalogObjective, (lp_objectiveData), "RequiredCount", c_playerAny));
+    }
+
+    lv_name = libComC_gf_MissionObjectiveName(lp_objectiveData);
+    lv_bonusText = libComC_gf_CC_ObjectiveBonusText(lp_objectiveData);
+    if (((lv_bonusText != null) == true)) {
+        TextExpressionSetToken("Param/Expression/lib_CMMI_04B91BE8", "A", lv_name);
+        TextExpressionSetToken("Param/Expression/lib_CMMI_04B91BE8", "B", lv_bonusText);
+        lv_name = TextExpressionAssemble("Param/Expression/lib_CMMI_04B91BE8");
+    }
+
+    ObjectiveCreate(lv_name, libComC_gf_MissionObjectiveDescription(lp_objectiveData), c_objectiveStateActive, libComC_gf_CC_ObjectiveTypeBoolean(lp_objectiveData));
+    DataTableSetObjective(true, libComC_gf_CC_ObjectiveTableString(lp_objectiveData), ObjectiveLastCreated());
+    if ((libComC_gf_CC_ObjectiveCountsDown(lp_objectiveData) == false)) {
+        libCMMI_gf_SetMissionObjectiveProgress(lp_objectiveData, 0);
+    }
+    else {
+        libCMMI_gf_SetMissionObjectiveProgress(lp_objectiveData, libComC_gf_MissionObjectiveItemCount(lp_objectiveData));
+    }
+}
+
+void libCMMI_gf_ZS_SetMissionObjectiveState (string lp_objective, int lp_state) {
+    int auto1FCE50FB_val;
+
+    // Implementation
+    auto1FCE50FB_val = lp_state;
+    if (auto1FCE50FB_val == libComC_ge_MissionObjectiveState_Available) {
+        UserDataSetInt("MissionObjective", libComC_gf_CC_ObjectiveUserDataInstance(lp_objective), "Available", 1, 1);
+        UserDataSetInt("MissionObjective", libComC_gf_CC_ObjectiveUserDataInstance(lp_objective), "Complete", 1, 0);
+        ObjectiveSetState(DataTableGetObjective(true, libComC_gf_CC_ObjectiveTableString(lp_objective)), c_objectiveStateActive);
+    }
+    else if (auto1FCE50FB_val == libComC_ge_MissionObjectiveState_Completed) {
+        UserDataSetInt("MissionObjective", libComC_gf_CC_ObjectiveUserDataInstance(lp_objective), "Complete", 1, 1);
+        UserDataSetInt("MissionObjective", libComC_gf_CC_ObjectiveUserDataInstance(lp_objective), "Available", 1, 0);
+        ObjectiveSetState(DataTableGetObjective(true, libComC_gf_CC_ObjectiveTableString(lp_objective)), c_objectiveStateCompleted);
+        TextExpressionSetToken("Param/Expression/lib_CMMI_B921F12F", "A", ObjectiveGetName(DataTableGetObjective(true, libComC_gf_CC_ObjectiveTableString(lp_objective))));
+        ObjectiveSetName(DataTableGetObjective(true, libComC_gf_CC_ObjectiveTableString(lp_objective)), TextExpressionAssemble("Param/Expression/lib_CMMI_B921F12F"));
+        libComC_gf_CC_MissionObjectiveProgressDataSet(lp_objective, libComC_gf_MissionObjectiveItemCount(lp_objective));
+    }
+    else if (auto1FCE50FB_val == libComC_ge_MissionObjectiveState_Undiscovered) {
+        UserDataSetInt("MissionObjective", libComC_gf_CC_ObjectiveUserDataInstance(lp_objective), "Complete", 1, 0);
+        UserDataSetInt("MissionObjective", libComC_gf_CC_ObjectiveUserDataInstance(lp_objective), "Available", 1, 0);
+        ObjectiveSetState(DataTableGetObjective(true, libComC_gf_CC_ObjectiveTableString(lp_objective)), c_objectiveStateHidden);
+    }
+    else if (auto1FCE50FB_val == libComC_ge_MissionObjectiveState_Failed) {
+        UserDataSetInt("MissionObjective", libComC_gf_CC_ObjectiveUserDataInstance(lp_objective), "Complete", 1, 0);
+        ObjectiveSetState(DataTableGetObjective(true, libComC_gf_CC_ObjectiveTableString(lp_objective)), c_objectiveStateFailed);
+    }
+    else {
+    }
+}
+
+void libCMMI_gf_SetObjectiveRequiredCountCampaign (string lp_objective, int lp_requiredCount) {
+    // Implementation
+    DataTableSetInt(true, libComC_gf_CC_ObjectiveRequiredCountTableString(lp_objective), lp_requiredCount);
+    libCMMI_gf_CM_UpdateObjectiveTextCampaign(lp_objective);
+}
+
+void libCMMI_gf_CM_UpdateObjectiveTextCampaign (string lp_objective) {
+    // Variable Declarations
+    text lv_name;
+    text lv_bonusText;
+    int lv_progress;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_progress = UserDataGetInt("MissionObjective", libComC_gf_CC_ObjectiveUserDataInstance(lp_objective), "Progress", 1);
+    if ((((libComC_gf_MissionObjectiveItemCount(lp_objective) == 0) && (libComC_gf_MissionObjectiveIsPrimary(lp_objective) == false)) || (libComC_gf_MissionObjectiveItemCount(lp_objective) > 1))) {
+        lv_name = TextReplaceWord(UserDataGetText("MissionObjective", libComC_gf_CC_ObjectiveUserDataInstance(lp_objective), "FormatText", 1), StringExternal("Param/Value/lib_CMMI_CF15D796"), libComC_gf_MissionObjectiveName(lp_objective), c_stringReplaceAll, c_stringCase);
+        lv_name = TextReplaceWord(lv_name, StringExternal("Param/Value/lib_CMMI_A0F30A2D"), IntToText(lv_progress), c_stringReplaceAll, c_stringCase);
+        lv_name = TextReplaceWord(lv_name, StringExternal("Param/Value/lib_CMMI_93EDF725"), IntToText(libComC_gf_MissionObjectiveItemCount(lp_objective)), c_stringReplaceAll, c_stringCase);
+    }
+    else {
+        lv_name = TextReplaceWord(UserDataGetText("MissionObjective", libComC_gf_CC_ObjectiveUserDataInstance(lp_objective), "FormatTextSingle", 1), StringExternal("Param/Value/lib_CMMI_063492BC"), libComC_gf_MissionObjectiveName(lp_objective), c_stringReplaceAll, c_stringCase);
+    }
+    if ((libComC_gf_MissionObjectiveStateCheck(lp_objective, libComC_ge_MissionObjectiveState_Completed) == true)) {
+        TextExpressionSetToken("Param/Expression/lib_CMMI_49E13046", "A", lv_name);
+        lv_name = TextExpressionAssemble("Param/Expression/lib_CMMI_49E13046");
+    }
+
+    lv_bonusText = libComC_gf_CC_ObjectiveBonusText(lp_objective);
+    if (((lv_bonusText != null) == true)) {
+        TextExpressionSetToken("Param/Expression/lib_CMMI_1EDC8663", "A", lv_name);
+        TextExpressionSetToken("Param/Expression/lib_CMMI_1EDC8663", "B", lv_bonusText);
+        lv_name = TextExpressionAssemble("Param/Expression/lib_CMMI_1EDC8663");
+    }
+
+    if ((libComC_gf_MissionObjectiveStateCheck(lp_objective, libComC_ge_MissionObjectiveState_Completed) == true)) {
+        TextExpressionSetToken("Param/Expression/lib_CMMI_70E5EDCE", "A", lv_name);
+        lv_name = TextExpressionAssemble("Param/Expression/lib_CMMI_70E5EDCE");
+    }
+
+    ObjectiveSetName(DataTableGetObjective(true, libComC_gf_CC_ObjectiveTableString(lp_objective)), lv_name);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libCMMI_InitLib_completed = false;
+
+void libCMMI_InitLib () {
+    if (libCMMI_InitLib_completed) {
+        return;
+    }
+
+    libCMMI_InitLib_completed = true;
+
+    libCMMI_InitLibraries();
+    libCMMI_InitVariables();
+}
+
+include "LibComC"
+

@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib944A682C_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Void Reanimators
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib944A682C_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib944A682C_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "Reanimators");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib944A682C_gt_Initialization_Init () {
+    lib944A682C_gt_Initialization = TriggerCreate("lib944A682C_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib944A682C_gt_Initialization);
+}
+
+void lib944A682C_InitTriggers () {
+    lib944A682C_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib944A682C_InitLib_completed = false;
+
+void lib944A682C_InitLib () {
+    if (lib944A682C_InitLib_completed) {
+        return;
+    }
+
+    lib944A682C_InitLib_completed = true;
+
+    lib944A682C_InitLibraries();
+    lib944A682C_InitTriggers();
+}
+

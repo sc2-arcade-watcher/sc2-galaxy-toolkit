@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibC4714476_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Mag-nificent
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libC4714476_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libC4714476_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "Magnificent");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libC4714476_gt_Initialization_Init () {
+    libC4714476_gt_Initialization = TriggerCreate("libC4714476_gt_Initialization_Func");
+    TriggerAddEventMapInit(libC4714476_gt_Initialization);
+}
+
+void libC4714476_InitTriggers () {
+    libC4714476_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libC4714476_InitLib_completed = false;
+
+void libC4714476_InitLib () {
+    if (libC4714476_InitLib_completed) {
+        return;
+    }
+
+    libC4714476_InitLib_completed = true;
+
+    libC4714476_InitLibraries();
+    libC4714476_InitTriggers();
+}
+

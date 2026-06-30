@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib9B7202B2_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Blizzard
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib9B7202B2_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib9B7202B2_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "Blizzard");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib9B7202B2_gt_Initialization_Init () {
+    lib9B7202B2_gt_Initialization = TriggerCreate("lib9B7202B2_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib9B7202B2_gt_Initialization);
+}
+
+void lib9B7202B2_InitTriggers () {
+    lib9B7202B2_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib9B7202B2_InitLib_completed = false;
+
+void lib9B7202B2_InitLib () {
+    if (lib9B7202B2_InitLib_completed) {
+        return;
+    }
+
+    lib9B7202B2_InitLib_completed = true;
+
+    lib9B7202B2_InitLibraries();
+    lib9B7202B2_InitTriggers();
+}
+

@@ -1,0 +1,1060 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CUnit id="CyberneticsCore">
+        <CardLayouts index="0">
+            <LayoutButtons Face="StalkerPassive" Type="Passive" Row="1" Column="0"/>
+            <LayoutButtons Face="SentryPassive" Type="Passive" Row="1" Column="1"/>
+        </CardLayouts>
+        <TechTreeUnlockedUnitArray index="2" removed="1"/>
+    </CUnit>
+    <CUnit id="DarkShrine">
+        <CardLayouts index="0">
+            <LayoutButtons Face="DarkTemplarPassive" Type="Passive" Row="1" Column="0"/>
+        </CardLayouts>
+    </CUnit>
+    <CUnit id="Nexus">
+        <TechTreeProducedUnitArray index="1" removed="1"/>
+    </CUnit>
+    <CUnit id="RoboticsBay">
+        <CardLayouts index="0">
+            <LayoutButtons Face="ColossusPassive" Type="Passive" Row="1" Column="0"/>
+        </CardLayouts>
+    </CUnit>
+    <CUnit id="ShadowMissileWeapon" parent="MISSILE">
+        <Race value="Zerg"/>
+        <EditorCategories value="ObjectType:Projectile,ObjectFamily:Campaign"/>
+    </CUnit>
+    <CUnit id="ResidualVortexSpawnAttackWeapon" parent="MISSILE">
+        <Race value="Zerg"/>
+        <EditorCategories value="ObjectType:Projectile,ObjectFamily:Campaign"/>
+    </CUnit>
+    <CUnit id="HoldingPen">
+        <Footprint value="Footprint8x8Contoured"/>
+        <PlacementFootprint value="Footprint8x8Contoured"/>
+        <DeadFootprint value="Footprint8x8Contoured"/>
+    </CUnit>
+    <CUnit id="PowerGridTransformer">
+        <DeathRevealRadius value="3"/>
+        <Race value="Terr"/>
+        <Mob value="Campaign"/>
+        <FlagArray index="Turnable" value="0"/>
+        <FlagArray index="Untooltipable" value="0"/>
+        <FlagArray index="PreventDefeat" value="1"/>
+        <FlagArray index="PenaltyRevealed" value="1"/>
+        <FlagArray index="UseLineOfSight" value="1"/>
+        <FlagArray index="TownAlert" value="1"/>
+        <FlagArray index="Destructible" value="1"/>
+        <FlagArray index="NoPortraitTalk" value="1"/>
+        <FlagArray index="ArmorDisabledWhileConstructing" value="1"/>
+        <FogVisibility value="Snapshot"/>
+        <PlaneArray index="Ground" value="1"/>
+        <Collide index="Burrow" value="1"/>
+        <Collide index="Ground" value="1"/>
+        <Collide index="Structure" value="1"/>
+        <Attributes index="Armored" value="1"/>
+        <Attributes index="Structure" value="1"/>
+        <LifeStart value="2000"/>
+        <LifeMax value="2000"/>
+        <LifeArmor value="1"/>
+        <Sight value="4"/>
+        <AttackTargetPriority value="11"/>
+        <Radius value="1"/>
+        <SeparationRadius value="1"/>
+        <DeathTime value="-1"/>
+        <DeadFootprint value="Footprint5x5Contour"/>
+        <Footprint value="Footprint5x5Contour"/>
+        <PlacementFootprint value="Footprint5x5Contour"/>
+        <SubgroupPriority value="10"/>
+        <MinimapRadius value="1"/>
+        <EditorCategories value="ObjectType:Destructible,ObjectFamily:Campaign"/>
+        <LifeArmorName value="Unit/LifeArmorName/TerranBuildingPlating"/>
+    </CUnit>
+    <CUnit id="PylonContainmentUnit">
+        <Description value="Button/Tooltip/Biodome"/>
+        <DeathRevealRadius value="3"/>
+        <Facing value="315"/>
+        <Race value="Terr"/>
+        <FlagArray index="PenaltyRevealed" value="1"/>
+        <FlagArray index="UseLineOfSight" value="1"/>
+        <FlagArray index="TownAlert" value="1"/>
+        <FlagArray index="NoPortraitTalk" value="1"/>
+        <FlagArray index="ArmorDisabledWhileConstructing" value="1"/>
+        <FogVisibility value="Snapshot"/>
+        <PlaneArray index="Ground" value="1"/>
+        <Collide index="Burrow" value="1"/>
+        <Collide index="Ground" value="1"/>
+        <Collide index="Structure" value="1"/>
+        <Attributes index="Armored" value="1"/>
+        <Attributes index="Structure" value="1"/>
+        <LifeStart value="1000"/>
+        <LifeMax value="1000"/>
+        <LifeArmor value="1"/>
+        <LifeArmorName value="Unit/LifeArmorName/TerranBuildingPlating"/>
+        <StationaryTurningRate value="719.4726"/>
+        <TurningRate value="719.4726"/>
+        <Sight value="9"/>
+        <RepairTime value="66.667"/>
+        <AttackTargetPriority value="11"/>
+        <BehaviorArray Link="TerranBuildingBurnDown"/>
+        <Radius value="1.5"/>
+        <SeparationRadius value="1.5"/>
+        <Footprint value="Footprint4x4Contour"/>
+        <PlacementFootprint value="Footprint4x4Contour"/>
+        <BuildOnAs value="Pylon"/>
+        <ScoreMake value="125"/>
+        <ScoreKill value="375"/>
+        <SubgroupPriority value="21"/>
+        <MinimapRadius value="1.5"/>
+        <EditorCategories value="ObjectType:Structure,ObjectFamily:Campaign"/>
+        <DeathTime value="-1"/>
+        <DeadFootprint value="Footprint4x4Contour"/>
+    </CUnit>
+    <CUnit id="ResidualVortex">
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="Uncursorable" value="1"/>
+        <FlagArray index="Invulnerable" value="1"/>
+        <PlaneArray index="Air" value="1"/>
+        <Sight value="6"/>
+        <AbilArray Link="ShadowMissile"/>
+        <AbilArray Link="ResidualVortexTrain"/>
+        <AbilArray Link="Rally"/>
+        <CardLayouts>
+            <LayoutButtons Face="ShadowMissile" Type="AbilCmd" AbilCmd="ShadowMissile,Execute" Row="1" Column="0"/>
+            <LayoutButtons Face="Rally" Type="AbilCmd" AbilCmd="ProgressRally,Rally1" Row="1" Column="1"/>
+            <LayoutButtons Face="Zealot" Type="AbilCmd" AbilCmd="ResidualVortexTrain,Train1" Row="2" Column="0"/>
+            <LayoutButtons Face="Stalker" Type="AbilCmd" AbilCmd="ResidualVortexTrain,Train2" Row="2" Column="1"/>
+            <LayoutButtons Face="Archon" Type="AbilCmd" AbilCmd="ResidualVortexTrain,Train3" Row="2" Column="2"/>
+            <LayoutButtons Face="ShadowOfTheVoidHybrid" Type="AbilCmd" AbilCmd="ResidualVortexTrain,Train4" Row="2" Column="3"/>
+            <LayoutButtons Face="ShadowOfTheVoidHybridDominator" Type="AbilCmd" AbilCmd="ResidualVortexTrain,Train5" Row="2" Column="4"/>
+        </CardLayouts>
+        <EditorCategories value=""/>
+        <MinimapRadius value="0"/>
+    </CUnit>
+    <CUnit id="ShadowOfTheVoidHybridDominator">
+        <DeathRevealRadius value="3"/>
+        <Race value="Prot"/>
+        <Mob value="Campaign"/>
+        <FlagArray index="UseLineOfSight" value="1"/>
+        <PlaneArray index="Ground" value="1"/>
+        <PushPriority value="11"/>
+        <Collide index="Ground" value="1"/>
+        <Attributes index="Biological" value="1"/>
+        <Attributes index="Psionic" value="1"/>
+        <Attributes index="Massive" value="1"/>
+        <Attributes index="Heroic" value="1"/>
+        <LifeStart value="100"/>
+        <LifeMax value="100"/>
+        <LifeArmor value="1"/>
+        <LifeRegenRate value="0.25"/>
+        <LifeArmorName value="Unit/LifeArmorName/HybridArmor"/>
+        <ShieldsStart value="100"/>
+        <ShieldsMax value="100"/>
+        <ShieldRegenDelay value="10"/>
+        <ShieldRegenRate value="2"/>
+        <ShieldArmorName value="Unit/ShieldArmorName/HybridShields"/>
+        <Speed value="2.8125"/>
+        <Acceleration value="6.25"/>
+        <LateralAcceleration value="46"/>
+        <Sight value="9"/>
+        <AttackTargetPriority value="20"/>
+        <DamageDealtXP value="1"/>
+        <DamageTakenXP value="1"/>
+        <KillXP value="80"/>
+        <AbilArray Link="stop"/>
+        <AbilArray Link="attack"/>
+        <AbilArray Link="move"/>
+        <AbilArray Link="ZHybridPsionicShockwave"/>
+        <AbilArray Link="ZHybridGravitonPrison"/>
+        <AbilArray Link="ZHybridPlasmaBlast"/>
+        <AbilArray Link="ZHybridPsychicClonesShadowOfTheVoid"/>
+        <AbilArray Link="ZHybridPsiStorm"/>
+        <BehaviorArray Link="Detector10"/>
+        <WeaponArray Link="ZHybridShadowOfTheVoid"/>
+        <CardLayouts>
+            <LayoutButtons Face="Move" Type="AbilCmd" AbilCmd="move,Move" Row="0" Column="0"/>
+            <LayoutButtons Face="Stop" Type="AbilCmd" AbilCmd="stop,Stop" Row="0" Column="1"/>
+            <LayoutButtons Face="MoveHoldPosition" Type="AbilCmd" AbilCmd="move,HoldPos" Row="0" Column="2"/>
+            <LayoutButtons Face="Attack" Type="AbilCmd" AbilCmd="attack,Execute" Row="0" Column="4"/>
+            <LayoutButtons Face="MovePatrol" Type="AbilCmd" AbilCmd="move,Patrol" Row="0" Column="3"/>
+            <LayoutButtons Face="PsionicShockwave" Type="AbilCmd" AbilCmd="ZHybridPsionicShockwave,Execute" Row="2" Column="0"/>
+            <LayoutButtons Face="GravitonPrison" Type="AbilCmd" AbilCmd="ZHybridGravitonPrison,Execute" Row="2" Column="1"/>
+            <LayoutButtons Face="HybridCPlasmaBlast" Type="AbilCmd" AbilCmd="ZHybridPlasmaBlast,Execute" Row="2" Column="2"/>
+            <LayoutButtons Face="ZHybridPsychicClones" Type="AbilCmd" AbilCmd="ZHybridPsychicClonesShadowOfTheVoid,Execute" Row="2" Column="3"/>
+            <LayoutButtons Face="PsiStorm" Type="AbilCmd" AbilCmd="ZHybridPsiStorm,Execute" Row="2" Column="4"/>
+        </CardLayouts>
+        <Radius value="0.9375"/>
+        <InnerRadius value="0.8125"/>
+        <ScoreKill value="1600"/>
+        <SubgroupPriority value="15"/>
+        <EditorCategories value="ObjectType:Unit,ObjectFamily:Campaign"/>
+        <GlossaryCategory value="Unit/Category/HybridUnits"/>
+        <GlossaryPriority value="350"/>
+    </CUnit>
+    <CUnit id="ShadowOfTheVoidArchon">
+        <DeathRevealRadius value="3"/>
+        <Race value="Prot"/>
+        <Mob value="Multiplayer"/>
+        <FlagArray index="PreventDestroy" value="1"/>
+        <FlagArray index="UseLineOfSight" value="1"/>
+        <FlagArray index="ArmySelect" value="1"/>
+        <PlaneArray index="Ground" value="1"/>
+        <Collide index="Ground" value="1"/>
+        <Attributes index="Psionic" value="1"/>
+        <Attributes index="Massive" value="1"/>
+        <LifeArmorName value="Unit/LifeArmorName/ProtossArmor"/>
+        <ShieldsStart value="9"/>
+        <ShieldsMax value="9"/>
+        <ShieldRegenDelay value="10"/>
+        <ShieldRegenRate value="2"/>
+        <ShieldArmorName value="Unit/ShieldArmorName/ProtossPlasmaShields"/>
+        <Speed value="2.8125"/>
+        <Acceleration value="1000"/>
+        <LateralAcceleration value="46"/>
+        <StationaryTurningRate value="999.8437"/>
+        <TurningRate value="999.8437"/>
+        <Sight value="9"/>
+        <Food value="-4"/>
+        <CostCategory value="Army"/>
+        <CostResource index="Minerals" value="175"/>
+        <CostResource index="Vespene" value="275"/>
+        <AttackTargetPriority value="20"/>
+        <DamageDealtXP value="1"/>
+        <DamageTakenXP value="1"/>
+        <KillXP value="80"/>
+        <AbilArray Link="stop"/>
+        <AbilArray Link="attack"/>
+        <AbilArray Link="move"/>
+        <AbilArray Link="Mergeable"/>
+        <AbilArray Link="ProgressRally"/>
+        <AbilArray Link="Warpable"/>
+        <BehaviorArray Link="MassiveVoidRayVulnerability"/>
+        <WeaponArray Link="PsionicShockwaveShadowOfTheVoid"/>
+        <CardLayouts>
+            <LayoutButtons Face="Move" Type="AbilCmd" AbilCmd="move,Move" Row="0" Column="0"/>
+            <LayoutButtons Face="Stop" Type="AbilCmd" AbilCmd="stop,Stop" Row="0" Column="1"/>
+            <LayoutButtons Face="MoveHoldPosition" Type="AbilCmd" AbilCmd="move,HoldPos" Row="0" Column="2"/>
+            <LayoutButtons Face="Attack" Type="AbilCmd" AbilCmd="attack,Execute" Row="0" Column="4"/>
+            <LayoutButtons Face="MovePatrol" Type="AbilCmd" AbilCmd="move,Patrol" Row="0" Column="3"/>
+            <LayoutButtons Face="Rally" Type="AbilCmd" AbilCmd="ProgressRally,Rally1" Row="2" Column="4"/>
+        </CardLayouts>
+        <Radius value="1"/>
+        <SeparationRadius value="0.75"/>
+        <InnerRadius value="0.75"/>
+        <CargoSize value="4"/>
+        <ScoreKill value="450"/>
+        <ScoreResult value="BuildOrder"/>
+        <SubgroupPriority value="8"/>
+        <MinimapRadius value="0.75"/>
+        <EditorCategories value="ObjectType:Unit,ObjectFamily:Melee"/>
+        <HotkeyCategory value="Unit/Category/ProtossUnits"/>
+    </CUnit>
+    <CUnit id="ShadowOfTheVoidHybrid">
+        <DeathRevealRadius value="3"/>
+        <Mob value="Campaign"/>
+        <FlagArray index="UseLineOfSight" value="1"/>
+        <PlaneArray index="Ground" value="1"/>
+        <Collide index="Ground" value="1"/>
+        <LifeStart value="200"/>
+        <LifeMax value="200"/>
+        <LifeRegenRate value="0.25"/>
+        <LifeArmor value="1"/>
+        <LifeArmorName value="Unit/LifeArmorName/HybridArmor"/>
+        <ShieldArmorName value="Unit/ShieldArmorName/HybridShields"/>
+        <Speed value="2.8125"/>
+        <Acceleration value="6.25"/>
+        <LateralAcceleration value="46"/>
+        <Sight value="9"/>
+        <AttackTargetPriority value="20"/>
+        <DamageDealtXP value="1"/>
+        <DamageTakenXP value="1"/>
+        <KillXP value="80"/>
+        <AbilArray Link="stop"/>
+        <AbilArray Link="attack"/>
+        <AbilArray Link="move"/>
+        <AbilArray Link="ConsumeDNAKnockback"/>
+        <AbilArray Link="HybridFAoEStun"/>
+        <AbilArray Link="HybridChannelStart"/>
+        <CardLayouts>
+            <LayoutButtons Face="Move" Type="AbilCmd" AbilCmd="move,Move" Row="0" Column="0"/>
+            <LayoutButtons Face="Stop" Type="AbilCmd" AbilCmd="stop,Stop" Row="0" Column="1"/>
+            <LayoutButtons Face="MoveHoldPosition" Type="AbilCmd" AbilCmd="move,HoldPos" Row="0" Column="2"/>
+            <LayoutButtons Face="Attack" Type="AbilCmd" AbilCmd="attack,Execute" Row="0" Column="4"/>
+            <LayoutButtons Face="MovePatrol" Type="AbilCmd" AbilCmd="move,Patrol" Row="0" Column="3"/>
+            <LayoutButtons Face="ConsumeDNA" Type="AbilCmd" AbilCmd="ConsumeDNAKnockback,Execute" Row="2" Column="0"/>
+            <LayoutButtons Face="HybridFAoEStun" Type="AbilCmd" AbilCmd="HybridFAoEStun,Execute" Row="2" Column="1"/>
+            <LayoutButtons Face="Detector" Type="Passive" Row="2" Column="3"/>
+            <LayoutButtons Face="HybridChannelStart" Type="AbilCmd" AbilCmd="HybridChannelStart,Execute" Row="2" Column="3"/>
+        </CardLayouts>
+        <Radius value="0.9375"/>
+        <InnerRadius value="0.8125"/>
+        <CargoSize value="4"/>
+        <ScoreKill value="1600"/>
+        <SubgroupPriority value="15"/>
+        <EditorCategories value="ObjectType:Unit,ObjectFamily:Campaign"/>
+        <Attributes index="Armored" value="1"/>
+        <Attributes index="Biological" value="1"/>
+        <Attributes index="Massive" value="1"/>
+        <Attributes index="Heroic" value="1"/>
+        <BehaviorArray Link="Detector9"/>
+        <GlossaryCategory value="Unit/Category/HybridUnits"/>
+        <GlossaryPriority value="390"/>
+        <WeaponArray Link="HybridF"/>
+        <WeaponArray Link="HybridAntiAirAttack"/>
+        <TacticalAI value="HybridF"/>
+        <PushPriority value="11"/>
+    </CUnit>
+    <CUnit id="Phoenix">
+        <EnergyStart value="0"/>
+        <EnergyMax value="0"/>
+        <EnergyRegenRate value="0"/>
+    </CUnit>
+    <CUnit id="PrologueFissureBreach">
+        <FlagArray index="CreateVisible" value="1"/>
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="PreventReveal" value="1"/>
+        <FlagArray index="Undetectable" value="1"/>
+        <FlagArray index="Unradarable" value="1"/>
+        <FlagArray index="Invulnerable" value="1"/>
+        <EditorFlags index="NeutralDefault" value="1"/>
+        <FogVisibility value="Snapshot"/>
+        <PlacementFootprint value="FootprintDoodad2x2"/>
+        <EditorCategories value="ObjectType:Prop,ObjectFamily:Campaign"/>
+        <TacticalAI value=""/>
+        <HotkeyAlias value=""/>
+        <AIEvaluateAlias value=""/>
+        <SeparationRadius value="0"/>
+        <MinimapRadius value="0"/>
+        <AbilArray Link="PrologueFissureBreach"/>
+        <CardLayouts>
+            <LayoutButtons Face="PrologueFissureBreach" Type="AbilCmd" AbilCmd="PrologueFissureBreach,Execute" Row="2" Column="0"/>
+        </CardLayouts>
+        <EditorFacingAlignment value="90"/>
+        <Footprint value="PrologueFissureBreach"/>
+        <Attributes index="Structure" value="1"/>
+    </CUnit>
+    <CUnit id="PrologueFissureBreachDead">
+        <FlagArray index="CreateVisible" value="1"/>
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="PreventReveal" value="1"/>
+        <FlagArray index="Undetectable" value="1"/>
+        <FlagArray index="Unradarable" value="1"/>
+        <FlagArray index="Invulnerable" value="1"/>
+        <FogVisibility value="Snapshot"/>
+        <EditorFlags index="NeutralDefault" value="1"/>
+        <AbilArray Link="PrologueFissureUnbreach"/>
+        <CardLayouts>
+            <LayoutButtons Face="PrologueFissureUnbreach" Type="AbilCmd" AbilCmd="PrologueFissureUnbreach,Execute" Row="2" Column="1"/>
+        </CardLayouts>
+        <SeparationRadius value="0"/>
+        <Footprint value="FootprintDoodad2x2"/>
+        <PlacementFootprint value="FootprintDoodad2x2"/>
+        <MinimapRadius value="0"/>
+        <EditorCategories value="ObjectType:Prop,ObjectFamily:Campaign"/>
+        <TacticalAI value=""/>
+        <HotkeyAlias value=""/>
+        <AIEvaluateAlias value=""/>
+        <EditorFacingAlignment value="90"/>
+        <Attributes index="Structure" value="1"/>
+    </CUnit>
+    <CUnit id="PrologueInvisibleGasHarvester">
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="Invulnerable" value="1"/>
+        <Mover value="Fly"/>
+        <BehaviorArray Link="PrologueInvisibleGasHarvester"/>
+        <EditorCategories value="ObjectFamily:Campaign,ObjectType:Prop"/>
+        <MinimapRadius value="0"/>
+    </CUnit>
+    <CUnit id="ShadowOfTheVoidStalker">
+        <DeathRevealRadius value="3"/>
+        <Race value="Prot"/>
+        <Mob value="Multiplayer"/>
+        <FlagArray index="PreventDestroy" value="1"/>
+        <FlagArray index="UseLineOfSight" value="1"/>
+        <FlagArray index="ArmySelect" value="1"/>
+        <PlaneArray index="Ground" value="1"/>
+        <Collide index="Ground" value="1"/>
+        <Collide index="ForceField" value="1"/>
+        <Attributes index="Armored" value="1"/>
+        <Attributes index="Mechanical" value="1"/>
+        <LifeStart value="5"/>
+        <LifeMax value="5"/>
+        <LifeArmor value="1"/>
+        <LifeArmorName value="Unit/LifeArmorName/ProtossArmor"/>
+        <ShieldsStart value="5"/>
+        <ShieldsMax value="5"/>
+        <ShieldRegenDelay value="10"/>
+        <ShieldRegenRate value="2"/>
+        <ShieldArmorName value="Unit/ShieldArmorName/ProtossPlasmaShields"/>
+        <Speed value="2.9531"/>
+        <Acceleration value="1000"/>
+        <LateralAcceleration value="46"/>
+        <StationaryTurningRate value="999.8437"/>
+        <TurningRate value="999.8437"/>
+        <Sight value="10"/>
+        <Food value="-2"/>
+        <CostCategory value="Army"/>
+        <CostResource index="Minerals" value="125"/>
+        <CostResource index="Vespene" value="50"/>
+        <RepairTime value="42"/>
+        <AttackTargetPriority value="20"/>
+        <DamageDealtXP value="1"/>
+        <DamageTakenXP value="1"/>
+        <KillXP value="35"/>
+        <AbilArray Link="stop"/>
+        <AbilArray Link="move"/>
+        <AbilArray Link="attack"/>
+        <AbilArray Link="Warpable"/>
+        <AbilArray Link="ProgressRally"/>
+        <AbilArray Link="BlinkShadowOfTheVoid"/>
+        <WeaponArray Link="ParticleDisruptorsShadowOfTheVoid"/>
+        <CardLayouts>
+            <LayoutButtons Face="Move" Type="AbilCmd" AbilCmd="move,Move" Row="0" Column="0"/>
+            <LayoutButtons Face="Stop" Type="AbilCmd" AbilCmd="stop,Stop" Row="0" Column="1"/>
+            <LayoutButtons Face="MoveHoldPosition" Type="AbilCmd" AbilCmd="move,HoldPos" Row="0" Column="2"/>
+            <LayoutButtons Face="Attack" Type="AbilCmd" AbilCmd="attack,Execute" Row="0" Column="4"/>
+            <LayoutButtons Face="MovePatrol" Type="AbilCmd" AbilCmd="move,Patrol" Row="0" Column="3"/>
+            <LayoutButtons Face="Rally" Type="AbilCmd" AbilCmd="ProgressRally,Rally1" Row="2" Column="4"/>
+            <LayoutButtons Face="Blink" Type="AbilCmd" AbilCmd="BlinkShadowOfTheVoid,Execute" Row="2" Column="0"/>
+        </CardLayouts>
+        <Radius value="0.625"/>
+        <SeparationRadius value="0.625"/>
+        <InnerRadius value="0.5"/>
+        <CargoSize value="2"/>
+        <ScoreMake value="175"/>
+        <ScoreKill value="175"/>
+        <ScoreResult value="BuildOrder"/>
+        <SubgroupPriority value="11"/>
+        <MinimapRadius value="0.625"/>
+        <EditorCategories value="ObjectType:Unit,ObjectFamily:Melee"/>
+        <HotkeyCategory value="Unit/Category/ProtossUnits"/>
+        <Fidget>
+            <ChanceArray index="Anim" value="5"/>
+            <ChanceArray index="Idle" value="90"/>
+            <ChanceArray index="Turn" value="5"/>
+        </Fidget>
+        <TauntDuration index="Dance" value="5"/>
+    </CUnit>
+    <CUnit id="StalkerWeaponShadowOfTheVoid" parent="MISSILE">
+        <Race value="Prot"/>
+        <Mover value="StalkerWeapon"/>
+        <EditorCategories value="ObjectType:Projectile,ObjectFamily:Melee"/>
+    </CUnit>
+    <CUnit id="StoneZealot">
+        <FlagArray index="ArmySelect" value="1"/>
+    </CUnit>
+    <CUnit id="TemplarArchive">
+        <CardLayouts index="0">
+            <LayoutButtons>
+                <Face value="HighTemplarPassive"/>
+                <Type value="Passive"/>
+                <AbilCmd value=""/>
+                <Behavior value=""/>
+                <Requirements value=""/>
+                <SubmenuAbilState value=""/>
+                <SubmenuCardId value=""/>
+                <SubmenuFullSubCmdValidation value="0"/>
+                <SubmenuIsSticky value="0"/>
+                <ShowInGlossary value="1"/>
+                <Row value="1"/>
+                <Column value="0"/>
+            </LayoutButtons>
+        </CardLayouts>
+    </CUnit>
+    <!--CUnit id="VoidRay">
+        <WeaponArray index="0" Link="VoidRaySwarm"/>
+        <GlossaryStrongArray index="2" value="Tempest"/>
+        <AbilArray Link="VoidRaySwarmDamageBoost"/>
+        <CardLayouts index="0">
+            <LayoutButtons index="5" Face="VoidRaySwarmDamageBoost" Type="AbilCmd" AbilCmd="VoidRaySwarmDamageBoost,Execute"/>
+        </CardLayouts>
+        <SubgroupPriority value="14"/>
+        <Food value="-4"/>
+    </CUnit-->
+    <!--CUnit id="Pylon">
+        <AbilArray Link="ProloguePylonOverchargeAttack"/>
+        <AbilArray Link="ProloguePylonOverchargeStop"/>
+        <CardLayouts index="0">
+            <LayoutButtons Face="Stop" Type="AbilCmd" AbilCmd="ProloguePylonOverchargeStop,Stop" Row="0" Column="3"/>
+            <LayoutButtons Face="Attack" Type="AbilCmd" AbilCmd="ProloguePylonOverchargeAttack,Execute" Row="0" Column="4"/>
+        </CardLayouts>
+    </CUnit-->
+    <CUnit id="LightningShooter">
+        <Race value="Prot"/>
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="Invulnerable" value="1"/>
+        <FlagArray index="NoPortraitTalk" value="1"/>
+        <FlagArray index="Unstoppable" value="1"/>
+        <PlaneArray index="Air" value="1"/>
+        <Mover value="Fly"/>
+        <Height value="8"/>
+        <AbilArray Link="LightningShooterDummy"/>
+        <AbilArray Link="LightningShooter"/>
+        <CardLayouts>
+            <LayoutButtons Face="LightningShooterDummy" Type="AbilCmd" AbilCmd="LightningShooterDummy,Execute" Row="0" Column="0"/>
+            <LayoutButtons Face="LightningShooter" Type="AbilCmd" AbilCmd="LightningShooter,Execute" Row="0" Column="1"/>
+        </CardLayouts>
+        <MinimapRadius value="0"/>
+    </CUnit>
+    <CUnit id="PrologueZeratul">
+        <DeathRevealRadius value="3"/>
+        <Race value="Prot"/>
+        <Mob value="Campaign"/>
+        <FlagArray index="UseLineOfSight" value="1"/>
+        <FlagArray index="Cloaked" value="1"/>
+        <FlagArray index="ArmySelect" value="1"/>
+        <PlaneArray index="Ground" value="1"/>
+        <Collide index="Ground" value="1"/>
+        <Collide index="ForceField" value="1"/>
+        <Attributes index="Light" value="1"/>
+        <Attributes index="Biological" value="1"/>
+        <Attributes index="Psionic" value="1"/>
+        <LifeStart value="300"/>
+        <LifeMax value="300"/>
+        <LifeArmor value="2"/>
+        <LifeArmorName value="Unit/LifeArmorName/ProtossArmor"/>
+        <ShieldsStart value="100"/>
+        <ShieldsMax value="100"/>
+        <ShieldRegenDelay value="10"/>
+        <ShieldRegenRate value="2"/>
+        <ShieldArmorName value="Unit/ShieldArmorName/ProtossPlasmaShields"/>
+        <Speed value="3"/>
+        <Acceleration value="1000"/>
+        <LateralAcceleration value="46.0625"/>
+        <Sight value="12"/>
+        <CostCategory value="Army"/>
+        <AttackTargetPriority value="20"/>
+        <DamageDealtXP value="1"/>
+        <DamageTakenXP value="1"/>
+        <KillXP value="100"/>
+        <AbilArray Link="stop"/>
+        <AbilArray Link="attack"/>
+        <AbilArray Link="move"/>
+        <AbilArray Link="ZeratulBlink"/>
+        <AbilArray Link="ShadowBlade"/>
+        <AbilArray Link="PrologueVoidArmor"/>
+        <AbilArray Link="Warpable"/>
+        <AbilArray Link="ProgressRally"/>
+        <BehaviorArray Link="Detector12"/>
+        <BehaviorArray Link="HeroDetectorRadar"/>
+        <WeaponArray Link="PrologueZeratul"/>
+        <CardLayouts>
+            <LayoutButtons Face="Move" Type="AbilCmd" AbilCmd="move,Move" Row="0" Column="0"/>
+            <LayoutButtons Face="Stop" Type="AbilCmd" AbilCmd="stop,Stop" Row="0" Column="1"/>
+            <LayoutButtons Face="MoveHoldPosition" Type="AbilCmd" AbilCmd="move,HoldPos" Row="0" Column="2"/>
+            <LayoutButtons Face="Attack" Type="AbilCmd" AbilCmd="attack,Execute" Row="0" Column="4"/>
+            <LayoutButtons Face="MovePatrol" Type="AbilCmd" AbilCmd="move,Patrol" Row="0" Column="3"/>
+            <LayoutButtons Face="ZeratulBlink" Type="AbilCmd" AbilCmd="ZeratulBlink,Execute" Row="2" Column="0"/>
+            <LayoutButtons Face="PrologueVoidArmor" Type="AbilCmd" AbilCmd="PrologueVoidArmor,Execute" Row="2" Column="1"/>
+            <LayoutButtons Face="ShadowBlade" Type="AbilCmd" AbilCmd="ShadowBlade,Execute" Row="2" Column="2"/>
+            <LayoutButtons Face="PermanentlyCloakedZeratul" Type="Passive" Row="2" Column="3"/>
+            <LayoutButtons Face="Detector" Type="Passive" Behavior="Detector12" Row="2" Column="4"/>
+            <LayoutButtons Face="Rally" Type="AbilCmd" AbilCmd="ProgressRally,Rally1" Row="2" Column="4"/>
+        </CardLayouts>
+        <CargoSize value="2"/>
+        <ScoreMake value="1000"/>
+        <ScoreKill value="5000"/>
+        <SubgroupPriority value="90"/>
+        <EditorCategories value="ObjectType:Hero,ObjectFamily:Campaign"/>
+        <GlossaryCategory value="Unit/Category/ProtossUnits"/>
+        <GlossaryPriority value="300"/>
+        <GlossaryStrongArray value="Zergling"/>
+        <GlossaryStrongArray value="Roach"/>
+        <GlossaryStrongArray value="Hydralisk"/>
+        <GlossaryWeakArray value="Overseer"/>
+        <GlossaryWeakArray value="SporeCrawler"/>
+        <HotkeyCategory value="Unit/Category/ProtossStory"/>
+        <AlliedPushPriority value="11"/>
+    </CUnit>
+    <CUnit id="Probe">
+        <AbilArray Link="GasCanisterGather"/>
+        <CardLayouts>
+            <LayoutButtons Face="GasCanisterGather" Type="AbilCmd" AbilCmd="GasCanisterGather,Execute" Row="1" Column="4"/>
+        </CardLayouts>
+    </CUnit>
+    <CUnit id="PrologueMalash">
+        <DeathRevealRadius value="3"/>
+        <Race value="Prot"/>
+        <Mob value="Campaign"/>
+        <FlagArray index="PreventDestroy" value="1"/>
+        <FlagArray index="UseLineOfSight" value="1"/>
+        <FlagArray index="ArmySelect" value="1"/>
+        <PlaneArray index="Ground" value="1"/>
+        <Attributes index="Psionic" value="1"/>
+        <Attributes index="Heroic" value="1"/>
+        <LifeStart value="100"/>
+        <LifeMax value="100"/>
+        <LifeArmor value="1"/>
+        <LifeArmorName value="Unit/LifeArmorName/ProtossArmor"/>
+        <ShieldsStart value="300"/>
+        <ShieldsMax value="300"/>
+        <ShieldRegenDelay value="10"/>
+        <ShieldRegenRate value="2"/>
+        <ShieldArmorName value="Unit/ShieldArmorName/ProtossPlasmaShields"/>
+        <Speed value="2.25"/>
+        <Acceleration value="1000"/>
+        <LateralAcceleration value="46"/>
+        <StationaryTurningRate value="999.8437"/>
+        <TurningRate value="999.8437"/>
+        <Sight value="10"/>
+        <CostCategory value="Army"/>
+        <AttackTargetPriority value="255"/>
+        <DamageDealtXP value="1"/>
+        <DamageTakenXP value="1"/>
+        <KillXP value="80"/>
+        <AbilArray Link="stop"/>
+        <AbilArray Link="attack"/>
+        <AbilArray Link="move"/>
+        <AbilArray Link="MalashChannel"/>
+        <WeaponArray Link="PrologueMalash"/>
+        <CardLayouts>
+            <LayoutButtons Face="Stop" Type="AbilCmd" AbilCmd="stop,Stop" Row="0" Column="1"/>
+            <LayoutButtons Face="MoveHoldPosition" Type="AbilCmd" AbilCmd="move,HoldPos" Row="0" Column="2"/>
+            <LayoutButtons Face="MovePatrol" Type="AbilCmd" AbilCmd="move,Patrol" Row="0" Column="3"/>
+            <LayoutButtons Face="Move" Type="AbilCmd" AbilCmd="move,Move" Row="0" Column="0"/>
+            <LayoutButtons Face="MothershipCoreAttack" Type="AbilCmd" AbilCmd="attack,Execute" Row="0" Column="4"/>
+            <LayoutButtons Face="MalashChannel" Type="AbilCmd" AbilCmd="MalashChannel,Execute" Row="2" Column="0"/>
+            <LayoutButtons Face="Cancel" Type="AbilCmd" AbilCmd="MalashChannel,Cancel" Row="2" Column="4"/>
+        </CardLayouts>
+        <Radius value="1"/>
+        <SeparationRadius value="0.75"/>
+        <InnerRadius value="0.75"/>
+        <CargoSize value="4"/>
+        <ScoreKill value="450"/>
+        <ScoreResult value="BuildOrder"/>
+        <SubgroupPriority value="20"/>
+        <MinimapRadius value="0.75"/>
+        <EditorCategories value="ObjectType:Hero,ObjectFamily:Campaign"/>
+        <GlossaryCategory value="Unit/Category/ProtossStory"/>
+        <GlossaryPriority value="90"/>
+        <AlliedPushPriority value="11"/>
+    </CUnit>
+    <CUnit id="VoidCatalyst">
+        <DeathTime value="-1"/>
+        <Race value="Prot"/>
+        <PlaneArray index="Ground" value="1"/>
+        <PlaneArray index="Air" value="1"/>
+        <Collide index="Burrow" value="1"/>
+        <Collide index="Ground" value="1"/>
+        <Collide index="Structure" value="1"/>
+        <Collide index="RoachBurrow" value="1"/>
+        <Collide index="ForceField" value="1"/>
+        <Attributes index="Armored" value="1"/>
+        <Attributes index="Structure" value="1"/>
+        <LifeStart value="1000"/>
+        <LifeMax value="1000"/>
+        <LifeArmor value="2"/>
+        <LifeArmorName value="Unit/LifeArmorName/ProtossBuildingPlating"/>
+        <EditorCategories value="ObjectType:Structure,ObjectFamily:Campaign"/>
+        <Radius value="5"/>
+        <SeparationRadius value="0.75"/>
+        <InnerRadius value="0.75"/>
+        <Footprint value="VoidCatalyst"/>
+        <DeadFootprint value="VoidCatalyst"/>
+        <PlacementFootprint value="Footprint2x2PlacementOnly"/>
+        <AbilArray Link="VoidCatalystStage2"/>
+        <CardLayouts>
+            <LayoutButtons Face="VoidCatalystStage2" Type="AbilCmd" AbilCmd="VoidCatalystStage2,Execute" Row="0" Column="4"/>
+        </CardLayouts>
+        <FogVisibility value="Snapshot"/>
+    </CUnit>
+    <CUnit id="VoidCatalystStage2">
+        <Name value="Unit/Name/VoidCatalyst"/>
+        <DeathTime value="-1"/>
+        <Race value="Prot"/>
+        <PlaneArray index="Ground" value="1"/>
+        <PlaneArray index="Air" value="1"/>
+        <Collide index="Burrow" value="1"/>
+        <Collide index="Ground" value="1"/>
+        <Collide index="Structure" value="1"/>
+        <Collide index="RoachBurrow" value="1"/>
+        <Collide index="ForceField" value="1"/>
+        <Attributes index="Armored" value="1"/>
+        <Attributes index="Structure" value="1"/>
+        <LifeStart value="1000"/>
+        <LifeMax value="1000"/>
+        <LifeArmor value="2"/>
+        <LifeArmorName value="Unit/LifeArmorName/ProtossBuildingPlating"/>
+        <AbilArray Link="VoidCatalystStage3"/>
+        <CardLayouts>
+            <LayoutButtons Face="VoidCatalystStage3" Type="AbilCmd" AbilCmd="VoidCatalystStage3,Execute" Row="0" Column="4"/>
+        </CardLayouts>
+        <Radius value="5"/>
+        <SeparationRadius value="0.75"/>
+        <InnerRadius value="0.75"/>
+        <Footprint value="VoidCatalystStage2"/>
+        <DeadFootprint value="VoidCatalystStage2"/>
+        <PlacementFootprint value="Footprint2x2PlacementOnly"/>
+        <EditorCategories value="ObjectType:Structure,ObjectFamily:Campaign"/>
+    </CUnit>
+    <CUnit id="VoidCatalystStage3">
+        <Name value="Unit/Name/VoidCatalyst"/>
+        <DeathTime value="-1"/>
+        <Race value="Prot"/>
+        <PlaneArray index="Ground" value="1"/>
+        <PlaneArray index="Air" value="1"/>
+        <Collide index="Burrow" value="1"/>
+        <Collide index="Ground" value="1"/>
+        <Collide index="Structure" value="1"/>
+        <Collide index="RoachBurrow" value="1"/>
+        <Collide index="ForceField" value="1"/>
+        <Attributes index="Armored" value="1"/>
+        <Attributes index="Structure" value="1"/>
+        <LifeStart value="1000"/>
+        <LifeMax value="1000"/>
+        <LifeArmor value="2"/>
+        <LifeArmorName value="Unit/LifeArmorName/ProtossBuildingPlating"/>
+        <Radius value="5"/>
+        <SeparationRadius value="0.75"/>
+        <InnerRadius value="0.75"/>
+        <Footprint value="VoidCatalystStage3"/>
+        <DeadFootprint value="VoidCatalystStage3"/>
+        <PlacementFootprint value="Footprint2x2PlacementOnly"/>
+        <EditorCategories value="ObjectType:Structure,ObjectFamily:Campaign"/>
+    </CUnit>
+    <CUnit id="ShadowOfTheVoidZealot">
+        <DeathRevealRadius value="3"/>
+        <Race value="Prot"/>
+        <Mob value="Multiplayer"/>
+        <FlagArray index="PreventDestroy" value="1"/>
+        <FlagArray index="UseLineOfSight" value="1"/>
+        <FlagArray index="ArmySelect" value="1"/>
+        <PlaneArray index="Ground" value="1"/>
+        <Collide index="Ground" value="1"/>
+        <Collide index="ForceField" value="1"/>
+        <Attributes index="Light" value="1"/>
+        <Attributes index="Biological" value="1"/>
+        <LifeStart value="5"/>
+        <LifeMax value="5"/>
+        <LifeArmor value="1"/>
+        <LifeArmorName value="Unit/LifeArmorName/ProtossArmor"/>
+        <ShieldsStart value="5"/>
+        <ShieldsMax value="5"/>
+        <ShieldRegenDelay value="10"/>
+        <ShieldRegenRate value="2"/>
+        <ShieldArmorName value="Unit/ShieldArmorName/ProtossPlasmaShields"/>
+        <Speed value="2.25"/>
+        <Acceleration value="1000"/>
+        <LateralAcceleration value="46.0625"/>
+        <StationaryTurningRate value="999.8437"/>
+        <TurningRate value="999.8437"/>
+        <Sight value="9"/>
+        <Food value="-2"/>
+        <CostCategory value="Army"/>
+        <CostResource index="Minerals" value="100"/>
+        <AttackTargetPriority value="20"/>
+        <DamageDealtXP value="1"/>
+        <DamageTakenXP value="1"/>
+        <KillXP value="20"/>
+        <AbilArray Link="stop"/>
+        <AbilArray Link="attack"/>
+        <AbilArray Link="move"/>
+        <AbilArray Link="Warpable"/>
+        <AbilArray Link="ProgressRally"/>
+        <AbilArray Link="ChargeShadowOfTheVoid"/>
+        <WeaponArray Link="PsiBladesShadowOfTheVoid"/>
+        <CardLayouts>
+            <LayoutButtons Face="Move" Type="AbilCmd" AbilCmd="move,Move" Row="0" Column="0"/>
+            <LayoutButtons Face="Stop" Type="AbilCmd" AbilCmd="stop,Stop" Row="0" Column="1"/>
+            <LayoutButtons Face="MoveHoldPosition" Type="AbilCmd" AbilCmd="move,HoldPos" Row="0" Column="2"/>
+            <LayoutButtons Face="Attack" Type="AbilCmd" AbilCmd="attack,Execute" Row="0" Column="4"/>
+            <LayoutButtons Face="MovePatrol" Type="AbilCmd" AbilCmd="move,Patrol" Row="0" Column="3"/>
+            <LayoutButtons Face="Rally" Type="AbilCmd" AbilCmd="ProgressRally,Rally1" Row="2" Column="4"/>
+            <LayoutButtons Face="Charge" Type="AbilCmd" AbilCmd="ChargeShadowOfTheVoid,Execute" Row="2" Column="0"/>
+        </CardLayouts>
+        <SeparationRadius value="0.375"/>
+        <InnerRadius value="0.375"/>
+        <CargoSize value="2"/>
+        <ScoreMake value="100"/>
+        <ScoreKill value="100"/>
+        <ScoreResult value="BuildOrder"/>
+        <SubgroupPriority value="5"/>
+        <MinimapRadius value="0.375"/>
+        <EditorCategories value="ObjectType:Unit,ObjectFamily:Melee"/>
+        <HotkeyCategory value="Unit/Category/ProtossUnits"/>
+        <Fidget>
+            <ChanceArray index="Anim" value="20"/>
+            <ChanceArray index="Idle" value="70"/>
+            <ChanceArray index="Turn" value="10"/>
+        </Fidget>
+        <TauntDuration index="Cheer" value="5"/>
+        <TauntDuration index="Dance" value="5"/>
+    </CUnit>
+    <CUnit id="XelNagaTempleDoorURDLPrologue">
+        <Facing value="45"/>
+        <FlagArray index="Turnable" value="0"/>
+        <FlagArray index="Unclickable" value="0"/>
+        <FlagArray index="Uncommandable" value="1"/>
+        <FlagArray index="Unhighlightable" value="0"/>
+        <FlagArray index="Untooltipable" value="0"/>
+        <FlagArray index="Uncloakable" value="1"/>
+        <FlagArray index="KillCredit" value="0"/>
+        <FlagArray index="NoScore" value="1"/>
+        <FlagArray index="ShowResources" value="0"/>
+        <FogVisibility value="Dimmed"/>
+        <EditorFlags index="NoAutoRotate" value="1"/>
+        <EditorFlags index="NeutralDefault" value="1"/>
+        <LifeStart value="2000"/>
+        <LifeMax value="2000"/>
+        <LifeArmorName value="Unit/LifeArmorName/XelNagaPlating"/>
+        <ShieldArmorName value="Unit/ShieldArmorName/XelNagaShields"/>
+        <Footprint value="XelNagaTempleDoorURDL"/>
+        <MinimapRadius value="0"/>
+        <EditorCategories value="ObjectType:Destructible,ObjectFamily:Campaign"/>
+        <PlaneArray index="Ground" value="1"/>
+        <PlaneArray index="Air" value="1"/>
+        <Attributes index="Structure" value="1"/>
+    </CUnit>
+    <CUnit id="MoebiusLabArmoredGenerator">
+        <DeathRevealRadius value="3"/>
+        <Race value="Terr"/>
+        <FlagArray index="PreventDefeat" value="1"/>
+        <FlagArray index="PreventDestroy" value="1"/>
+        <FlagArray index="PenaltyRevealed" value="1"/>
+        <FlagArray index="UseLineOfSight" value="1"/>
+        <FlagArray index="TownAlert" value="1"/>
+        <FlagArray index="NoPortraitTalk" value="1"/>
+        <FlagArray index="ArmorDisabledWhileConstructing" value="1"/>
+        <FogVisibility value="Snapshot"/>
+        <PlaneArray index="Ground" value="1"/>
+        <Collide index="Burrow" value="1"/>
+        <Collide index="Ground" value="1"/>
+        <Collide index="Structure" value="1"/>
+        <Attributes index="Armored" value="1"/>
+        <Attributes index="Mechanical" value="1"/>
+        <Attributes index="Structure" value="1"/>
+        <LifeStart value="500"/>
+        <LifeMax value="500"/>
+        <LifeArmor value="1"/>
+        <LifeArmorName value="Unit/LifeArmorName/TerranBuildingPlating"/>
+        <StationaryTurningRate value="719.4726"/>
+        <TurningRate value="719.4726"/>
+        <Sight value="9"/>
+        <CostResource index="Minerals" value="100"/>
+        <RepairTime value="60"/>
+        <AttackTargetPriority value="11"/>
+        <Radius value="2"/>
+        <SeparationRadius value="2"/>
+        <Footprint value="Footprint4x4Contour"/>
+        <PlacementFootprint value="Footprint4x4"/>
+        <ScoreMake value="100"/>
+        <ScoreKill value="300"/>
+        <ScoreResult value="BuildOrder"/>
+        <SubgroupPriority value="3"/>
+        <MinimapRadius value="1.5"/>
+        <EditorCategories value="ObjectType:Structure,ObjectFamily:Melee"/>
+        <TechTreeUnlockedUnitArray value=""/>
+    </CUnit>
+    <CUnit id="NaturalGasEX2" parent="ITEM">
+        <FlagArray index="Turnable" value="1"/>
+        <FlagArray index="Untooltipable" value="0"/>
+        <FogVisibility value="Snapshot"/>
+        <Collide index="Burrow" value="1"/>
+        <AbilArray Link="PickupGas100"/>
+        <MinimapRadius value="0.375"/>
+        <EditorCategories value="ObjectType:Item,ObjectFamily:Campaign"/>
+    </CUnit>
+    <CUnit id="ErrisTempleDoorURDL">
+        <Facing value="45"/>
+        <FlagArray index="Turnable" value="0"/>
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="Uncloakable" value="1"/>
+        <FlagArray index="KillCredit" value="0"/>
+        <FlagArray index="Invulnerable" value="1"/>
+        <FlagArray index="NoScore" value="1"/>
+        <FlagArray index="ShowResources" value="0"/>
+        <FogVisibility value="Dimmed"/>
+        <EditorFlags index="NoAutoRotate" value="1"/>
+        <EditorFlags index="NeutralDefault" value="1"/>
+        <LifeArmorName value="Unit/LifeArmorName/XelNagaPlating"/>
+        <ShieldArmorName value="Unit/ShieldArmorName/XelNagaShields"/>
+        <AbilArray Link="ErrisTempleDoorURDLOpened"/>
+        <CardLayouts>
+            <LayoutButtons Face="GateOpen" Type="AbilCmd" AbilCmd="ErrisTempleDoorURDLOpened,Execute" Row="2" Column="3"/>
+        </CardLayouts>
+        <Footprint value="ErrisTempleDoorClosedURDL"/>
+        <MinimapRadius value="0"/>
+        <EditorCategories value="ObjectType:Destructible,ObjectFamily:Campaign"/>
+    </CUnit>
+    <CUnit id="ErrisTempleDoorURDLOpened">
+        <Facing value="45"/>
+        <FlagArray index="Turnable" value="0"/>
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="Uncloakable" value="1"/>
+        <FlagArray index="KillCredit" value="0"/>
+        <FlagArray index="Invulnerable" value="1"/>
+        <FlagArray index="NoScore" value="1"/>
+        <FlagArray index="ShowResources" value="0"/>
+        <FogVisibility value="Dimmed"/>
+        <EditorFlags index="NoAutoRotate" value="1"/>
+        <EditorFlags index="NeutralDefault" value="1"/>
+        <LifeArmorName value="Unit/LifeArmorName/XelNagaPlating"/>
+        <ShieldArmorName value="Unit/ShieldArmorName/XelNagaShields"/>
+        <AbilArray Link="ErrisTempleDoorURDL"/>
+        <CardLayouts>
+            <LayoutButtons Face="GateClose" Type="AbilCmd" AbilCmd="ErrisTempleDoorURDL,Execute" Row="2" Column="3"/>
+        </CardLayouts>
+        <Footprint value="ErrisTempleDoorOpenedURDL"/>
+        <MinimapRadius value="0"/>
+        <EditorCategories value="ObjectType:Destructible,ObjectFamily:Campaign"/>
+    </CUnit>
+    <CUnit id="ErrisTempleDoorULDR">
+        <Facing value="315"/>
+        <FlagArray index="Turnable" value="0"/>
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="Uncloakable" value="1"/>
+        <FlagArray index="KillCredit" value="0"/>
+        <FlagArray index="Invulnerable" value="1"/>
+        <FlagArray index="NoScore" value="1"/>
+        <FlagArray index="ShowResources" value="0"/>
+        <FogVisibility value="Dimmed"/>
+        <EditorFlags index="NoAutoRotate" value="1"/>
+        <EditorFlags index="NeutralDefault" value="1"/>
+        <LifeArmorName value="Unit/LifeArmorName/XelNagaPlating"/>
+        <ShieldArmorName value="Unit/ShieldArmorName/XelNagaShields"/>
+        <AbilArray Link="ErrisTempleDoorULDROpened"/>
+        <CardLayouts>
+            <LayoutButtons Face="GateOpen" Type="AbilCmd" AbilCmd="ErrisTempleDoorULDROpened,Execute" Row="2" Column="3"/>
+        </CardLayouts>
+        <Footprint value="ErrisTempleDoorClosedULDR"/>
+        <MinimapRadius value="0"/>
+        <EditorCategories value="ObjectType:Destructible,ObjectFamily:Campaign"/>
+    </CUnit>
+    <CUnit id="ErrisTempleDoorULDROpened">
+        <Facing value="315"/>
+        <FlagArray index="Turnable" value="0"/>
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="Uncloakable" value="1"/>
+        <FlagArray index="KillCredit" value="0"/>
+        <FlagArray index="Invulnerable" value="1"/>
+        <FlagArray index="NoScore" value="1"/>
+        <FlagArray index="ShowResources" value="0"/>
+        <FogVisibility value="Dimmed"/>
+        <EditorFlags index="NoAutoRotate" value="1"/>
+        <EditorFlags index="NeutralDefault" value="1"/>
+        <LifeArmorName value="Unit/LifeArmorName/XelNagaPlating"/>
+        <ShieldArmorName value="Unit/ShieldArmorName/XelNagaShields"/>
+        <AbilArray Link="ErrisTempleDoorULDR"/>
+        <CardLayouts>
+            <LayoutButtons Face="GateClose" Type="AbilCmd" AbilCmd="ErrisTempleDoorULDR,Execute" Row="2" Column="3"/>
+        </CardLayouts>
+        <Footprint value="ErrisTempleDoorOpenedULDR"/>
+        <MinimapRadius value="0"/>
+        <EditorCategories value="ObjectType:Destructible,ObjectFamily:Campaign"/>
+    </CUnit>
+    <CUnit id="XelNagaPyramidTempleDoor">
+        <DeathTime value="-1"/>
+        <Facing value="45"/>
+        <FlagArray index="Turnable" value="0"/>
+        <FlagArray index="Unclickable" value="0"/>
+        <FlagArray index="Uncommandable" value="1"/>
+        <FlagArray index="Unhighlightable" value="0"/>
+        <FlagArray index="Uncloakable" value="1"/>
+        <FlagArray index="KillCredit" value="0"/>
+        <FlagArray index="NoScore" value="1"/>
+        <FlagArray index="ShowResources" value="0"/>
+        <FogVisibility value="Snapshot"/>
+        <EditorFlags index="NoAutoRotate" value="1"/>
+        <EditorFlags index="NeutralDefault" value="1"/>
+        <PlaneArray index="Ground" value="1"/>
+        <PlaneArray index="Air" value="1"/>
+        <Attributes index="Structure" value="1"/>
+        <LifeStart value="2500"/>
+        <LifeMax value="2500"/>
+        <LifeArmorName value="Unit/LifeArmorName/XelNagaPlating"/>
+        <ShieldArmorName value="Unit/ShieldArmorName/XelNagaShields"/>
+        <Footprint value="XelNagaPyramidTempleDoor"/>
+        <DeadFootprint value="XelNagaPyramidTempleDoorDead"/>
+        <PlacementFootprint value="XelNagaPyramidTempleDoor"/>
+        <MinimapRadius value="0"/>
+        <EditorCategories value="ObjectType:Destructible,ObjectFamily:Campaign"/>
+    </CUnit>
+    <CUnit id="Sentry">
+        <SubgroupPriority value="21"/>
+        <AbilArray Link="VoidSentryShieldRepair"/>
+        <CardLayouts index="0">
+            <LayoutButtons index="6" Face="ForceField" Type="AbilCmd" AbilCmd="ForceField,Execute" Row="2" Column="2"/>
+            <LayoutButtons index="8">
+                <Face value="VoidSentryShieldRepair"/>
+                <Type value="AbilCmd"/>
+                <AbilCmd value="VoidSentryShieldRepair,Execute"/>
+                <Requirements value=""/>
+                <SubmenuCardId value=""/>
+                <SubmenuFullSubCmdValidation value="0"/>
+                <Row value="2"/>
+                <Column value="0"/>
+            </LayoutButtons>
+        </CardLayouts>
+    </CUnit>
+    <CUnit id="HighTemplar">
+        <AbilArray Link="attack"/>
+        <Speed value="2.25"/>
+        <SubgroupPriority value="24"/>
+        <WeaponArray Link="HighTemplarWeapon"/>
+    </CUnit>
+    <CUnit id="HighTemplarWeapon" parent="MISSILE_INVULNERABLE">
+        <Race value="Prot"/>
+        <EditorCategories value="ObjectType:Projectile,ObjectFamily:Melee"/>
+    </CUnit>
+    <CUnit id="DarkTemplar">
+        <AbilArray index="5" Link="BuildInProgress"/>
+        <AbilArray Link="ProgressRally"/>
+    </CUnit>
+    <CUnit id="Immortal">
+        <BehaviorArray index="0" removed="1"/>
+        <AbilArray Link="ImmortalBarrierBase"/>
+        <CardLayouts index="0">
+            <LayoutButtons index="5" Face="ImmortalBarrierBase" Type="AbilCmd" AbilCmd="ImmortalBarrierBase,Execute"/>
+        </CardLayouts>
+        <SubgroupPriority value="8"/>
+    </CUnit>
+    <CUnit id="VoidRay">
+        <SubgroupPriority value="10"/>
+        <WeaponArray index="0" Link="VoidRayChargeBeamBase"/>
+        <CardLayouts index="0">
+            <LayoutButtons index="5" Face="VoidRayPrismaticAlignmentBase" AbilCmd="VoidRaySwarmDamageBoost,Execute"/>
+        </CardLayouts>
+    </CUnit>
+    <CUnit id="Interceptor">
+        <CostResource index="Minerals" value="0"/>
+    </CUnit>
+    <CUnit id="Stargate">
+        <CardLayouts index="0">
+            <LayoutButtons index="6" Face="Tempest" Type="AbilCmd" AbilCmd="StargateTrain,Train10" Row="0" Column="3"/>
+            <LayoutButtons index="7" removed="1"/>
+            <LayoutButtons index="8" removed="1"/>
+        </CardLayouts>
+        <CardLayouts CardId="0002">
+            <LayoutButtons Face="WarpInScout" Type="AbilCmd" AbilCmd="StargateTrain,Train6" Row="0" Column="0"/>
+        </CardLayouts>
+    </CUnit>
+    <CUnit id="FleetBeacon">
+        <CardLayouts index="0">
+            <LayoutButtons index="3" Face="CarrierPassive" Type="Passive" AbilCmd="FleetBeaconResearch,Research3" Row="1" Column="0"/>
+            <LayoutButtons index="4" Face="TempestPassive" Type="Passive" AbilCmd="FleetBeaconResearch,Research6" Row="1" Column="1"/>
+            <LayoutButtons index="5" removed="1"/>
+        </CardLayouts>
+        <TechTreeUnlockedUnitArray index="1" value="Tempest"/>
+    </CUnit>
+    <CUnit id="RoboticsFacility">
+        <CardLayouts index="0">
+            <LayoutButtons index="2" Face="Colossus" Type="AbilCmd" AbilCmd="RoboticsFacilityTrain,Train3" Row="0" Column="1"/>
+            <LayoutButtons index="3" Face="Rally" Type="AbilCmd" AbilCmd="Rally,Rally1" Row="1" Column="4"/>
+            <LayoutButtons index="4" Face="Immortal" Type="AbilCmd" AbilCmd="RoboticsFacilityTrain,Train4" Row="0" Column="0"/>
+            <LayoutButtons index="5" removed="1"/>
+            <LayoutButtons index="6" removed="1"/>
+        </CardLayouts>
+        <TechTreeProducedUnitArray index="0" value="Immortal"/>
+        <TechTreeProducedUnitArray index="1" value="Colossus"/>
+        <TechTreeProducedUnitArray index="2" removed="1"/>
+        <TechTreeProducedUnitArray index="3" removed="1"/>
+    </CUnit>
+</Catalog>

@@ -1,0 +1,332 @@
+//==================================================================================================
+//  Swarm Terran Melee AI
+//==================================================================================================
+
+include "TriggerLibs/Terran/TerranVyEy"
+include "TriggerLibs/Terran/TerranEasy"
+include "TriggerLibs/Terran/TerranMedi"
+include "TriggerLibs/Terran/TerranMdHd"
+include "TriggerLibs/Terran/TerranHard"
+include "TriggerLibs/Terran/TerranHdVH"
+include "TriggerLibs/Terran/TerranVyHd"
+include "TriggerLibs/Terran/TerranChVi"
+include "TriggerLibs/Terran/TerranChRe"
+include "TriggerLibs/Terran/TerranChIn"
+
+//--------------------------------------------------------------------------------------------------
+//  Counter-Attack Units
+//--------------------------------------------------------------------------------------------------
+static void InitCounters (int player) {
+    // versus Protoss
+    AICounterUnitSetup(player, c_PU_Zealot,             1.00, c_TU_Marauder,    1.00, c_TU_Marauder);
+    AICounterUnitSetup(player, c_PU_Stalker,            1.00, c_TU_Marauder,    1.00, c_TU_Marauder);
+    AICounterUnitSetup(player, c_PU_Sentry,             1.00, c_TU_Marauder,    1.00, c_TU_Marauder);
+    AICounterUnitSetup(player, c_PU_HighTemplar,        1.00, c_TU_Marauder,    1.00, c_TU_Ghost);
+    AICounterUnitSetup(player, c_PU_DarkTemplar,        1.50, c_TU_Marauder,    1.50, c_TU_Marauder);
+    AICounterUnitSetup(player, c_PU_Archon,             1.00, c_TU_Ghost,       1.00, c_TU_Ghost);
+    AICounterUnitSetup(player, c_PU_Immortal,           4.00, c_TU_Marine,      1.00, c_TU_Ghost);
+    AICounterUnitSetup(player, c_PU_Colossus,           2.00, c_TU_SiegeTank,   4.00, c_TU_Viking);
+    AICounterUnitSetup(player, c_PU_Phoenix,            2.00, c_TU_Marine,      2.00, c_TU_Marine);
+    AICounterUnitSetup(player, c_PU_VoidRay,            1.50, c_TU_Viking,      1.50, c_TU_Viking);
+    AICounterUnitSetup(player, c_PU_Carrier,            3.00, c_TU_Viking,      3.00, c_TU_Viking);
+    AICounterUnitSetup(player, c_PB_PhotonCannon,       3.00, c_TU_Marauder,    1.00, c_TU_Battlecruiser);
+    AICounterUnitSetup(player, c_PU_Mothership,         5.00, c_TU_Viking,      5.00, c_TU_Viking);
+    AICounterUnitSetup(player, c_PU_MothershipCore,     1.00, c_TU_Viking,      1.00, c_TU_Viking);
+    AICounterUnitSetup(player, c_PU_Oracle,             1.00, c_TU_Viking,      1.00, c_TU_Viking);
+    AICounterUnitSetup(player, c_PU_Tempest,            3.00, c_TU_Viking,      3.00, c_TU_Viking);
+    AICounterUnitSetup(player, c_PU_Adept,              1.00, c_TU_Marauder,    1.00, c_TU_Marauder);
+    AICounterUnitSetup(player, c_PU_Disruptor,          2.00, c_TU_Marauder,    0.75, c_TU_Thor);
+
+    // versus Terran
+    AICounterUnitSetup(player, c_TU_Marine,             1.00, c_TU_Marine,      0.20, c_TU_SiegeTank);
+    AICounterUnitSetup(player, c_TU_Marauder,           1.00, c_TU_Marauder,    1.00, c_TU_Marauder);
+    AICounterUnitSetup(player, c_TU_Reaper,             0.60, c_TU_Marauder,    0.60, c_TU_Marauder);
+    AICounterUnitSetup(player, c_TU_Ghost,              0.60, c_TU_Marauder,    0.60, c_TU_Marauder);
+    AICounterUnitSetup(player, c_TU_Hellion,            0.60, c_TU_Marauder,    0.60, c_TU_Marauder);
+    AICounterUnitSetup(player, c_TU_SiegeTank_Alias,    1.00, c_TU_SiegeTank,   1.00, c_TU_Liberator);
+    AICounterUnitSetup(player, c_TU_Thor,               4.00, c_TU_Marauder,    0.40, c_TU_Battlecruiser);
+    AICounterUnitSetup(player, c_TU_Viking_Alias,       2.00, c_TU_Marine,      1.00, c_TU_Viking);
+    AICounterUnitSetup(player, c_TU_Medivac,            0.60, c_TU_Viking,      0.60, c_TU_Viking);
+    AICounterUnitSetup(player, c_TU_Raven,              0.60, c_TU_Viking,      0.60, c_TU_Viking);
+    AICounterUnitSetup(player, c_TU_Banshee,            0.60, c_TU_Viking,      0.60, c_TU_Viking);
+    AICounterUnitSetup(player, c_TU_Battlecruiser,      2.50, c_TU_Viking,      2.50, c_TU_Viking);
+    AICounterUnitSetup(player, c_TB_Bunker,             3.00, c_TU_Marauder,    1.00, c_TU_Battlecruiser);
+    AICounterUnitSetup(player, c_TU_WidowMine,          0.10, c_TU_Marine,      0.30, c_TU_Raven);
+    AICounterUnitSetup(player, c_TU_Cyclone,            2.00, c_TU_Marine,      2.00, c_TU_Marine);
+    AICounterUnitSetup(player, c_TU_Liberator_Alias,    1.00, c_TU_Liberator,   0.50, c_TU_Battlecruiser);
+
+    // versus Zerg
+    AICounterUnitSetup(player, c_ZU_Zergling,           0.60, c_TU_Marine,      0.30, c_TU_Hellion);
+    AICounterUnitSetup(player, c_ZU_Baneling,           0.50, c_TU_Marauder,    0.50, c_TU_Marauder);
+    AICounterUnitSetup(player, c_ZU_Roach,              0.80, c_TU_Marauder,    0.80, c_TU_Marauder);
+    AICounterUnitSetup(player, c_ZU_Hydralisk,          2.00, c_TU_Marine,      0.40, c_TU_SiegeTank);
+    AICounterUnitSetup(player, c_ZU_Infestor,           1.50, c_TU_Marauder,    1.50, c_TU_Marauder);
+    AICounterUnitSetup(player, c_ZU_Mutalisk,           1.50, c_TU_Marine,      0.60, c_TU_Liberator);
+    AICounterUnitSetup(player, c_ZU_Corruptor,          1.00, c_TU_Marine,      1.00, c_TU_Marine);
+    AICounterUnitSetup(player, c_ZU_Ultralisk,          1.20, c_TU_Thor,        1.00, c_TU_Battlecruiser);
+    AICounterUnitSetup(player, c_ZU_BroodLord,          2.00, c_TU_Viking,      2.00, c_TU_Viking);
+    AICounterUnitSetup(player, c_ZB_SpineCrawler,       2.50, c_TU_Marauder,    0.50, c_TU_Battlecruiser);
+    AICounterUnitSetup(player, c_ZU_SwarmHost,          3.00, c_TU_Marine,      3.00, c_TU_Marine);
+    AICounterUnitSetup(player, c_ZU_Viper,              1.00, c_TU_Viking,      1.00, c_TU_Viking);
+    AICounterUnitSetup(player, c_ZU_Ravager,            1.00, c_TU_Marauder,    1.00, c_TU_Marauder);
+    AICounterUnitSetup(player, c_ZU_Lurker,             2.50, c_TU_Marauder,    0.75, c_TU_SiegeTank);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranSubStateName
+//--------------------------------------------------------------------------------------------------
+string TerranSubStateName (int state) {
+    // TODO Call the individual difficulties to return a real substate name
+    return "-" + IntToString(state) + "-";
+}
+
+//--------------------------------------------------------------------------------------------------
+//  DebugCallbackTerr
+//--------------------------------------------------------------------------------------------------
+void DebugCallbackTerr (int player) {
+    DebugAI("=====TERRAN=====\n");
+    DebugMelee(player);
+    DebugAI("e_mainState = "        + MainStateName(AIState(player, e_mainState))           +
+            ", e_mainSubState = "   + TerranSubStateName(AIState(player, e_mainSubState))   +
+            ", e_attackState = "    + AttackStateName(AIState(player, e_attackState))
+    );
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AINewUnitTerr
+//--------------------------------------------------------------------------------------------------
+void AINewUnitTerr (int player, unit u) {
+    wave w;
+    string type = UnitGetType(u);
+
+    // ignored units
+    //
+    if (UnitTypeTestAttribute(type, c_unitAttributeStructure)) {
+        return;
+    }
+    if (UnitTypeTestFlag(type, c_unitFlagWorker)) {
+        return;
+    }
+    
+    // detector
+    //
+    if (type == c_TU_Raven) {
+        AINewDetector(player, u, false);
+        return;
+    }
+
+    // clear obstacle units
+    //
+    if (AIWaveNeedClearObsUnits(player)) {
+        if (type == c_TU_Marine || type == c_TU_Reaper || type == c_TU_Marauder) {
+            AIMergeUnit(player, u, AIWaveGet(player, c_waveClearObs));
+            return;
+        }
+    }
+
+    // diversion units
+    if (AIGetFlag(player, e_flagsDiversion)) {
+        if (type == c_TU_Reaper) {
+            AIMergeUnit(player, u, AIWaveGet(player, c_waveDivert1));
+            return;
+        }
+        if (type == c_TU_Banshee) {
+            AIMergeUnit(player, u, AIWaveGet(player, c_waveDivert2));
+            return;
+        }
+    }
+
+    // medivac
+    //
+    if (type == c_TU_Medivac) {
+        if (AINumEnemyBuildings(player) == 0) {
+            if (AIOfferNewScout(player, u)) {
+                return;
+            }
+        }
+
+        AIWaveAddUnitPriority(AIWaveGet(player, c_waveMain), u, c_prioWavePeon);
+        return;
+    }
+
+    // main wave units
+    //
+    AINewUnitDefault(player, u);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIGetScoutTerr
+//--------------------------------------------------------------------------------------------------
+unit AIGetScoutTerr (int player, int index, unit prev, bool allowWorkers) {
+    unit medivac;
+    string prevType = UnitGetType(prev);
+    
+    if (!PlayerBeaconIsSet(player, c_beaconScout) &&
+        !AIGetFlag(player, e_flagsScouting)) {
+        // if no scouting beacons are set and we're not ready to scout, don't return a unit
+        return c_nullUnit;
+    }
+
+    if (index == 1 && PlayerBeaconIsSet(player, c_beaconScout)) {
+        AISetFlag(player, e_flagsScouting, true);
+        if (allowWorkers) {
+            // only return a worker, we want to claim a tower
+            if (prevType == c_TU_SCV) {
+                return prev;
+            } 
+            return AIGrabUnit(player, c_TU_SCV, c_prioScout, null);
+        }
+    }
+
+    if (AINumEnemyBuildings(player) == 0) {
+        // only use medivac scouts if we don't know of any enemy buildings
+        //   (ie we need a flying scout to check other islands etc).
+        if (prevType == c_TU_Medivac) {
+            return prev;
+        }
+        medivac = AIGrabUnit(player, c_TU_Medivac, c_prioScout, null);
+        if (medivac) {
+            return medivac;
+        }
+    }
+
+    if (prev) {
+        return prev;
+    }
+
+    // back to allowing workers as late scouts
+    //if (AIGetFlag(player, e_flagsLateScout)) {
+    //    return c_nullUnit;
+    //}
+    if (!allowWorkers) {
+        return c_nullUnit;
+    }
+    return AIGrabUnit(player, c_TU_SCV, c_prioScout, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIEarlyDefScoutTerr
+//--------------------------------------------------------------------------------------------------
+unit AIEarlyDefScoutTerr (int player, unit prev, bool allowWorkers) {
+    unit obs;
+    string prevType;
+    
+    if (!AIGetFlag(player, e_flagsEarlyDefScout)) {
+        return c_nullUnit;
+    }
+    prevType = UnitGetType(prev);
+    if (prevType == c_TU_Medivac) {
+        return prev;
+    }
+    obs = AIGrabUnit(player, c_TU_Medivac, c_prioScout, null);
+    if (obs) {
+        return obs;
+    }
+    if (prevType == c_TU_Marine) {
+        return prev;
+    }
+    obs = AIGrabUnit(player, c_TU_Marine, c_prioScout, null);
+    if (obs) {
+        return obs;
+    }
+    if (prev) {
+        return prev;
+    }
+    if (!allowWorkers) {
+        return c_nullUnit;
+    }
+    return AIGrabUnit(player, c_TU_SCV, c_prioScout, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIWaveThinkTerr
+//--------------------------------------------------------------------------------------------------
+void AIWaveThinkTerr (int player, wave w, int type) {
+    AIWaveThinkDefault(player, w, type);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  Terran Init
+//--------------------------------------------------------------------------------------------------
+static void TerranInit (int player) {
+
+    InitCounters(player);
+    AIMeleeSharedInit(player);
+    AISetFlag(player, e_flagsScouting, false);
+    AISetFlag(player, e_flagsEarlyDefScout, false);
+    //AITechCountFixupEither(player, c_TB_CommandCenter, c_TB_OrbitalCommand, c_TB_PlanetaryFortress);  // done in BaseAI now
+    AISetDefaultArmyUnit(player, c_TU_Marine);
+    AISetDefaultTownHall(player, c_TB_CommandCenter);
+    AISetNukeConstants(player);
+    AIReqAddSpecialMaker(c_TU_Nuke, c_TB_GhostAcademy, "ArmSiloWithNuke", 0);
+
+    AISetMainState(player, e_mainState_Open, e_mainSubState_Init);
+}
+
+//--------------------------------------------------------------------------------------------------
+void TerranOpen (int player);
+void TerranMid (int player);
+void TerranLate (int player);
+
+//--------------------------------------------------------------------------------------------------
+//  AIMeleeTerr
+//--------------------------------------------------------------------------------------------------
+void AIMeleeTerr (int player) {
+    int mainState = AIState(player, e_mainState);
+
+    if (AIPlayerDifficulty(player) >= c_skirChMoney) {
+        AIMeleeCheatResources(player);
+    }
+
+    if (mainState == e_mainState_Init)              { TerranInit(player);     }
+    else if (mainState == e_mainState_Open)         { TerranOpen(player);     }
+    else if (mainState == e_mainState_Mid)          { TerranMid(player);      }
+    else if (mainState == e_mainState_Late)         { TerranLate(player);     }
+    else { ErrorMeleeScript(player, "Invalid mainState"); }
+}
+
+
+void TerranOpen (int player) {
+    int diff = AIPlayerDifficulty(player);
+
+    if (diff == c_skirVeryEasy)       { TerranOpenVyEy(player); }
+    else if (diff == c_skirEasy)      { TerranOpenEasy(player); }
+    else if (diff == c_skirMedium)    { TerranOpenMedi(player); }
+    else if (diff == c_skirMed_Hard)  { TerranOpenMdHd(player); }
+    else if (diff == c_skirHard)      { TerranOpenHard(player); }
+    else if (diff == c_skirHard_VH)   { TerranOpenHdVH(player); }
+    else if (diff == c_skirVeryHard)  { TerranOpenVyHd(player); }
+    else if (diff == c_skirChVision)  { TerranOpenChVi(player); }
+    else if (diff == c_skirChMoney)   { TerranOpenChRe(player); }
+    else                              { TerranOpenChIn(player); }
+}
+
+void TerranMid (int player) {
+    int diff = AIPlayerDifficulty(player);
+
+    if (diff == c_skirVeryEasy)       { TerranMidVyEy(player); }
+    else if (diff == c_skirEasy)      { TerranMidEasy(player); }
+    else if (diff == c_skirMedium)    { TerranMidMedi(player); }
+    else if (diff == c_skirMed_Hard)  { TerranMidMdHd(player); }
+    else if (diff == c_skirHard)      { TerranMidHard(player); }
+    else if (diff == c_skirHard_VH)   { TerranMidHdVH(player); }
+    else if (diff == c_skirVeryHard)  { TerranMidVyHd(player); }
+    else if (diff == c_skirChVision)  { TerranMidChVi(player); }
+    else if (diff == c_skirChMoney)   { TerranMidChRe(player); }
+    else                              { TerranMidChIn(player); }
+}
+
+void TerranLate (int player) {
+    int diff = AIPlayerDifficulty(player);
+
+    if (diff == c_skirVeryEasy)       { TerranLateVyEy(player); }
+    else if (diff == c_skirEasy)      { TerranLateEasy(player); }
+    else if (diff == c_skirMedium)    { TerranLateMedi(player); }
+    else if (diff == c_skirMed_Hard)  { TerranLateMdHd(player); }
+    else if (diff == c_skirHard)      { TerranLateHard(player); }
+    else if (diff == c_skirHard_VH)   { TerranLateHdVH(player); }
+    else if (diff == c_skirVeryHard)  { TerranLateVyHd(player); }
+    else if (diff == c_skirChVision)  { TerranLateChVi(player); }
+    else if (diff == c_skirChMoney)   { TerranLateChRe(player); }
+    else                              { TerranLateChIn(player); }
+}

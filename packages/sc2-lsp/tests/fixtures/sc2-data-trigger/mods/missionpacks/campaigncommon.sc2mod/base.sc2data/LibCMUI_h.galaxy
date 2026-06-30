@@ -1,0 +1,47 @@
+include "TriggerLibs/natives"
+
+//--------------------------------------------------------------------------------------------------
+// Library: UI (Common)
+//--------------------------------------------------------------------------------------------------
+// Preset Declarations
+const int libCMUI_ge_CU_UnitProgressBarDataName_MinValue = 0;
+const int libCMUI_ge_CU_UnitProgressBarDataName_CurValue = 1;
+const int libCMUI_ge_CU_UnitProgressBarDataName_MaxValue = 2;
+const int libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Label = 0;
+const int libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Value = 1;
+const int libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Bar = 2;
+const int libCMUI_ge_CU_UnitProgressBar_DialogTypes_ProgressBar_Broder = 3;
+
+// Variable Declarations
+int libCMUI_gv_cU_ProgressBarPanel;
+int libCMUI_gv_cU_ProgressBarLabelTitle;
+int libCMUI_gv_cU_ProgressBarLabelBarLeft;
+int libCMUI_gv_cU_ProgressBarImageBar;
+int libCMUI_gv_cU_ProgressBarMax;
+int libCMUI_gv_cU_ProgressBarMin;
+int libCMUI_gv_cU_ProgressBarProgress;
+bool libCMUI_gv_cU_ProgressBarShowing;
+int libCMUI_gv_cUC_ProgressBarWidth;
+int libCMUI_gv_cUC_ProgressBarHeight;
+
+// Function Declarations
+void libCMUI_gf_DisplayProgressBar (text lp_title, int lp_min, int lp_max);
+void libCMUI_gf_SetProgressBarTitle (text lp_title);
+void libCMUI_gf_SetProgressBarValueRange (int lp_min, int lp_max);
+void libCMUI_gf_SetProgressBarLabel (text lp_label);
+void libCMUI_gf_SetProgressBarProgress (int lp_progress);
+void libCMUI_gf_SetProgressBarColor (color lp_color);
+void libCMUI_gf_ShowHideProgressBar (bool lp_showHide);
+void libCMUI_gf_CU_UpdateProgressBar ();
+void libCMUI_gf_DisplayUnitProgressBar (unit lp_unit, text lp_title, int lp_minValue, int lp_maxValue);
+void libCMUI_gf_SetUnitProgressBarProgress (unit lp_unit, int lp_value);
+void libCMUI_gf_SetUnitProgresBarTitle (unit lp_unit, text lp_titleText);
+void libCMUI_gf_SetUnitProgressBarValueRange (unit lp_unit, int lp_minValue, int lp_maxValue);
+void libCMUI_gf_ShowHideUnitProgressBar (unit lp_unit, bool lp_showHide);
+void libCMUI_gf_CU_UpdateUnitProgressBar (unit lp_unit);
+string libCMUI_gf_CU_UnitProgressBar_Data (unit lp_unit, int lp_type);
+string libCMUI_gf_CU_UnitProgressBar_Dialog (unit lp_unit, int lp_type);
+
+// Library Initialization
+void libCMUI_InitVariables ();
+

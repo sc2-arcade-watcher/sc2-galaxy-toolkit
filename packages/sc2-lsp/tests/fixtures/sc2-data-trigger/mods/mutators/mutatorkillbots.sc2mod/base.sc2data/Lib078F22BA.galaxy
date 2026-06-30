@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib078F22BA_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Kill Bots
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib078F22BA_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib078F22BA_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "KillBots");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib078F22BA_gt_Initialization_Init () {
+    lib078F22BA_gt_Initialization = TriggerCreate("lib078F22BA_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib078F22BA_gt_Initialization);
+}
+
+void lib078F22BA_InitTriggers () {
+    lib078F22BA_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib078F22BA_InitLib_completed = false;
+
+void lib078F22BA_InitLib () {
+    if (lib078F22BA_InitLib_completed) {
+        return;
+    }
+
+    lib078F22BA_InitLib_completed = true;
+
+    lib078F22BA_InitLibraries();
+    lib078F22BA_InitTriggers();
+}
+

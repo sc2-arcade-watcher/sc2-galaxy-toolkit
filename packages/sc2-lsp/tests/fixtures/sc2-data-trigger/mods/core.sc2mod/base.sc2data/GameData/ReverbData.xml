@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <!--
+/*                                    Inst Env  Size    Diffus  Room   RoomHF  RmLF DecTm   DecHF  DecLF   Refl  RefDel  RefPan               Revb  RevDel  ReverbPan           EchoTm  EchDp  ModTm  ModDp  AirAbs  HFRef    LFRef  RRlOff Diffus  Densty  FLAGS */
+#define FMOD_PRESET_OFF              {  0, -1,  7.5f,   1.00f, -10000, -10000, 0,   1.00f,  1.00f, 1.0f,  -2602, 0.007f, { 0.0f,0.0f,0.0f },   200, 0.011f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f,   0.0f,   0.0f, 0x33f }
+#define FMOD_PRESET_GENERIC          {  0,  0,  7.5f,   1.00f, -1000,  -100,   0,   1.49f,  0.83f, 1.0f,  -2602, 0.007f, { 0.0f,0.0f,0.0f },   200, 0.011f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_PADDEDCELL       {  0,  1,  1.4f,   1.00f, -1000,  -6000,  0,   0.17f,  0.10f, 1.0f,  -1204, 0.001f, { 0.0f,0.0f,0.0f },   207, 0.002f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_ROOM             {  0,  2,  1.9f,   1.00f, -1000,  -454,   0,   0.40f,  0.83f, 1.0f,  -1646, 0.002f, { 0.0f,0.0f,0.0f },    53, 0.003f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_BATHROOM         {  0,  3,  1.4f,   1.00f, -1000,  -1200,  0,   1.49f,  0.54f, 1.0f,   -370, 0.007f, { 0.0f,0.0f,0.0f },  1030, 0.011f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f,  60.0f, 0x3f }
+#define FMOD_PRESET_LIVINGROOM       {  0,  4,  2.5f,   1.00f, -1000,  -6000,  0,   0.50f,  0.10f, 1.0f,  -1376, 0.003f, { 0.0f,0.0f,0.0f }, -1104, 0.004f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_STONEROOM        {  0,  5,  11.6f,  1.00f, -1000,  -300,   0,   2.31f,  0.64f, 1.0f,   -711, 0.012f, { 0.0f,0.0f,0.0f },    83, 0.017f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_AUDITORIUM       {  0,  6,  21.6f,  1.00f, -1000,  -476,   0,   4.32f,  0.59f, 1.0f,   -789, 0.020f, { 0.0f,0.0f,0.0f },  -289, 0.030f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_CONCERTHALL      {  0,  7,  19.6f,  1.00f, -1000,  -500,   0,   3.92f,  0.70f, 1.0f,  -1230, 0.020f, { 0.0f,0.0f,0.0f },    -2, 0.029f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_CAVE             {  0,  8,  14.6f,  1.00f, -1000,  0,      0,   2.91f,  1.30f, 1.0f,   -602, 0.015f, { 0.0f,0.0f,0.0f },  -302, 0.022f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x1f }
+#define FMOD_PRESET_ARENA            {  0,  9,  36.2f,  1.00f, -1000,  -698,   0,   7.24f,  0.33f, 1.0f,  -1166, 0.020f, { 0.0f,0.0f,0.0f },    16, 0.030f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_HANGAR           {  0,  10, 50.3f,  1.00f, -1000,  -1000,  0,   10.05f, 0.23f, 1.0f,   -602, 0.020f, { 0.0f,0.0f,0.0f },   198, 0.030f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_CARPETTEDHALLWAY {  0,  11, 1.9f,   1.00f, -1000,  -4000,  0,   0.30f,  0.10f, 1.0f,  -1831, 0.002f, { 0.0f,0.0f,0.0f }, -1630, 0.030f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_HALLWAY          {  0,  12, 1.8f,   1.00f, -1000,  -300,   0,   1.49f,  0.59f, 1.0f,  -1219, 0.007f, { 0.0f,0.0f,0.0f },   441, 0.011f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_STONECORRIDOR    {  0,  13, 13.5f,  1.00f, -1000,  -237,   0,   2.70f,  0.79f, 1.0f,  -1214, 0.013f, { 0.0f,0.0f,0.0f },   395, 0.020f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_ALLEY            {  0,  14, 7.5f,   0.30f, -1000,  -270,   0,   1.49f,  0.86f, 1.0f,  -1204, 0.007f, { 0.0f,0.0f,0.0f },    -4, 0.011f, { 0.0f,0.0f,0.0f }, 0.125f, 0.95f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_FOREST           {  0,  15, 38.0f,  0.30f, -1000,  -3300,  0,   1.49f,  0.54f, 1.0f,  -2560, 0.162f, { 0.0f,0.0f,0.0f },  -229, 0.088f, { 0.0f,0.0f,0.0f }, 0.125f, 1.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f,  79.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_CITY             {  0,  16, 7.5f,   0.50f, -1000,  -800,   0,   1.49f,  0.67f, 1.0f,  -2273, 0.007f, { 0.0f,0.0f,0.0f }, -1691, 0.011f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f,  50.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_MOUNTAINS        {  0,  17, 100.0f, 0.27f, -1000,  -2500,  0,   1.49f,  0.21f, 1.0f,  -2780, 0.300f, { 0.0f,0.0f,0.0f }, -1434, 0.100f, { 0.0f,0.0f,0.0f }, 0.250f, 1.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f,  27.0f, 100.0f, 0x1f }
+#define FMOD_PRESET_QUARRY           {  0,  18, 17.5f,  1.00f, -1000,  -1000,  0,   1.49f,  0.83f, 1.0f, -10000, 0.061f, { 0.0f,0.0f,0.0f },   500, 0.025f, { 0.0f,0.0f,0.0f }, 0.125f, 0.70f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_PLAIN            {  0,  19, 42.5f,  0.21f, -1000,  -2000,  0,   1.49f,  0.50f, 1.0f,  -2466, 0.179f, { 0.0f,0.0f,0.0f }, -1926, 0.100f, { 0.0f,0.0f,0.0f }, 0.250f, 1.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f,  21.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_PARKINGLOT       {  0,  20, 8.3f,   1.00f, -1000,  0,      0,   1.65f,  1.50f, 1.0f,  -1363, 0.008f, { 0.0f,0.0f,0.0f }, -1153, 0.012f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x1f }
+#define FMOD_PRESET_SEWERPIPE        {  0,  21, 1.7f,   0.80f, -1000,  -1000,  0,   2.81f,  0.14f, 1.0f,    429, 0.014f, { 0.0f,0.0f,0.0f },  1023, 0.021f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f,  80.0f,  60.0f, 0x3f }
+#define FMOD_PRESET_UNDERWATER       {  0,  22, 1.8f,   1.00f, -1000,  -4000,  0,   1.49f,  0.10f, 1.0f,   -449, 0.007f, { 0.0f,0.0f,0.0f },  1700, 0.011f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 1.18f, 0.348f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f }
+#define FMOD_PRESET_DRUGGED          {  0,  23, 1.9f,   0.50f, -1000,  0,      0,   8.39f,  1.39f, 1.0f,  -115,  0.002f, { 0.0f,0.0f,0.0f },   985, 0.030f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 0.25f, 1.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x1f }
+#define FMOD_PRESET_DIZZY            {  0,  24, 1.8f,   0.60f, -1000,  -400,   0,   17.23f, 0.56f, 1.0f,  -1713, 0.020f, { 0.0f,0.0f,0.0f },  -613, 0.030f, { 0.0f,0.0f,0.0f }, 0.250f, 1.00f, 0.81f, 0.310f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x1f }
+#define FMOD_PRESET_PSYCHOTIC        {  0,  25, 1.0f,   0.50f, -1000,  -151,   0,   7.56f,  0.91f, 1.0f,  -626,  0.020f, { 0.0f,0.0f,0.0f },   774, 0.030f, { 0.0f,0.0f,0.0f }, 0.250f, 0.00f, 4.00f, 1.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x1f }
+    -->
+    <CReverb default="1">
+        <Room value="-1000"/>
+        <DecayTime value="1.490000"/>
+        <DecayHFRatio value="0.830000"/>
+        <Reflections value="-2602"/>
+        <ReflectionsDelay value="0.007000"/>
+        <Reverb value="200"/>
+        <ReverbDelay value="0.011000"/>
+        <HFReference value="5000.000000"/>
+        <LFReference value="250.000000"/>
+        <Diffusion value="100.000000"/>
+        <Density value="100.000000"/>
+    </CReverb>
+    <CReverb id="Off">
+        <Room value="-10000"/>
+        <RoomHF value="-10000"/>
+        <DecayTime value="1.000000"/>
+        <DecayHFRatio value="1.000000"/>
+        <Diffusion value="0.000000"/>
+        <Density value="0.000000"/>
+    </CReverb>
+    <CReverb id="Generic">
+        <RoomHF value="-100"/>
+    </CReverb>
+    <CReverb id="PaddedCell">
+        <RoomHF value="-6000"/>
+        <DecayTime value="0.170000"/>
+        <DecayHFRatio value="0.100000"/>
+        <Reflections value="-1204"/>
+        <ReflectionsDelay value="0.001000"/>
+        <Reverb value="207"/>
+        <ReverbDelay value="0.002000"/>
+    </CReverb>
+    <CReverb id="Room">
+        <RoomHF value="-454"/>
+        <DecayTime value="0.400000"/>
+        <Reflections value="-1646"/>
+        <ReflectionsDelay value="0.002000"/>
+        <Reverb value="53"/>
+        <ReverbDelay value="0.003000"/>
+    </CReverb>
+    <CReverb id="Bathroom">
+        <RoomHF value="-1200"/>
+        <DecayHFRatio value="0.540000"/>
+        <Reflections value="-370"/>
+        <Reverb value="1030"/>
+        <Density value="60.000000"/>
+    </CReverb>
+    <CReverb id="LivingRoom">
+        <RoomHF value="-6000"/>
+        <DecayTime value="0.500000"/>
+        <DecayHFRatio value="0.100000"/>
+        <Reflections value="-1376"/>
+        <ReflectionsDelay value="0.003000"/>
+        <Reverb value="-1104"/>
+        <ReverbDelay value="0.004000"/>
+    </CReverb>
+    <CReverb id="StoneRoom">
+        <RoomHF value="-300"/>
+        <DecayTime value="2.310000"/>
+        <DecayHFRatio value="0.640000"/>
+        <Reflections value="-711"/>
+        <ReflectionsDelay value="0.012000"/>
+        <Reverb value="83"/>
+        <ReverbDelay value="0.017000"/>
+    </CReverb>
+    <CReverb id="Auditorium">
+        <RoomHF value="-476"/>
+        <DecayTime value="4.320000"/>
+        <DecayHFRatio value="0.590000"/>
+        <Reflections value="-789"/>
+        <ReflectionsDelay value="0.020000"/>
+        <Reverb value="-289"/>
+        <ReverbDelay value="0.030000"/>
+    </CReverb>
+    <CReverb id="ConcertHall">
+        <RoomHF value="-500"/>
+        <DecayTime value="3.920000"/>
+        <DecayHFRatio value="0.700000"/>
+        <Reflections value="-1230"/>
+        <ReflectionsDelay value="0.020000"/>
+        <Reverb value="-2"/>
+        <ReverbDelay value="0.029000"/>
+    </CReverb>
+    <CReverb id="Cave">
+        <DecayTime value="2.910000"/>
+        <DecayHFRatio value="1.300000"/>
+        <Reflections value="-602"/>
+        <ReflectionsDelay value="0.015000"/>
+        <Reverb value="-302"/>
+        <ReverbDelay value="0.022000"/>
+    </CReverb>
+    <CReverb id="Arena">
+        <RoomHF value="-698"/>
+        <DecayTime value="7.240000"/>
+        <DecayHFRatio value="0.330000"/>
+        <Reflections value="-1166"/>
+        <ReflectionsDelay value="0.020000"/>
+        <Reverb value="16"/>
+        <ReverbDelay value="0.030000"/>
+    </CReverb>
+    <CReverb id="Hangar">
+        <RoomHF value="-1000"/>
+        <DecayTime value="10.050000"/>
+        <DecayHFRatio value="0.230000"/>
+        <Reflections value="-602"/>
+        <ReflectionsDelay value="0.020000"/>
+        <Reverb value="198"/>
+        <ReverbDelay value="0.030000"/>
+    </CReverb>
+    <CReverb id="CarpetedHallway">
+        <RoomHF value="-4000"/>
+        <DecayTime value="0.300000"/>
+        <DecayHFRatio value="0.100000"/>
+        <Reflections value="-1831"/>
+        <ReflectionsDelay value="0.002000"/>
+        <Reverb value="-1630"/>
+        <ReverbDelay value="0.030000"/>
+    </CReverb>
+    <CReverb id="Hallway">
+        <RoomHF value="-300"/>
+        <DecayHFRatio value="0.590000"/>
+        <Reflections value="-1219"/>
+        <Reverb value="411"/>
+    </CReverb>
+    <CReverb id="StoneCorridor">
+        <RoomHF value="-237"/>
+        <DecayTime value="2.700000"/>
+        <DecayHFRatio value="0.790000"/>
+        <Reflections value="-1214"/>
+        <ReflectionsDelay value="0.013000"/>
+        <Reverb value="395"/>
+        <ReverbDelay value="0.020000"/>
+    </CReverb>
+    <CReverb id="Alley">
+        <RoomHF value="-270"/>
+        <DecayHFRatio value="0.860000"/>
+        <Reflections value="-1204"/>
+        <Reverb value="-4"/>
+    </CReverb>
+    <CReverb id="Forest">
+        <RoomHF value="-3300"/>
+        <DecayHFRatio value="0.540000"/>
+        <Reflections value="-2560"/>
+        <ReflectionsDelay value="0.162000"/>
+        <Reverb value="-229"/>
+        <ReverbDelay value="0.100000"/>
+        <Diffusion value="79.000000"/>
+    </CReverb>
+    <CReverb id="City">
+        <RoomHF value="-800"/>
+        <DecayHFRatio value="0.670000"/>
+        <Reflections value="-2273"/>
+        <Reverb value="-1691"/>
+        <Diffusion value="50.000000"/>
+    </CReverb>
+    <CReverb id="Mountains">
+        <RoomHF value="-2500"/>
+        <DecayHFRatio value="0.210000"/>
+        <Reflections value="-2780"/>
+        <ReflectionsDelay value="0.300000"/>
+        <Reverb value="-1434"/>
+        <ReverbDelay value="0.100000"/>
+        <Diffusion value="27.000000"/>
+    </CReverb>
+    <CReverb id="Quarry">
+        <RoomHF value="-1000"/>
+        <Reflections value="-10000"/>
+        <ReflectionsDelay value="0.061000"/>
+        <Reverb value="500"/>
+        <ReverbDelay value="0.025000"/>
+    </CReverb>
+    <CReverb id="Plain">
+        <RoomHF value="-2000"/>
+        <DecayHFRatio value="0.500000"/>
+        <Reflections value="-2466"/>
+        <ReflectionsDelay value="0.179000"/>
+        <Reverb value="-1926"/>
+        <ReverbDelay value="0.100000"/>
+        <Diffusion value="21.000000"/>
+    </CReverb>
+    <CReverb id="ParkingLot">
+        <DecayTime value="1.650000"/>
+        <DecayHFRatio value="1.500000"/>
+        <Reflections value="-1363"/>
+        <ReflectionsDelay value="0.008000"/>
+        <Reverb value="-1153"/>
+        <ReverbDelay value="0.012000"/>
+    </CReverb>
+    <CReverb id="SewerPipe">
+        <RoomHF value="-1000"/>
+        <DecayTime value="2.810000"/>
+        <DecayHFRatio value="0.140000"/>
+        <Reflections value="429"/>
+        <ReflectionsDelay value="0.014000"/>
+        <Reverb value="1023"/>
+        <ReverbDelay value="0.021000"/>
+        <Diffusion value="80.000000"/>
+        <Density value="60.000000"/>
+    </CReverb>
+    <CReverb id="Underwater">
+        <RoomHF value="-4000"/>
+        <DecayHFRatio value="0.100000"/>
+        <Reflections value="-449"/>
+        <Reverb value="1700"/>
+    </CReverb>
+    <CReverb id="Drugged">
+        <DecayTime value="8.390000"/>
+        <DecayHFRatio value="1.390000"/>
+        <Reflections value="-115"/>
+        <ReflectionsDelay value="0.002000"/>
+        <Reverb value="985"/>
+        <ReverbDelay value="0.030000"/>
+    </CReverb>
+    <CReverb id="Dizzy">
+        <RoomHF value="-400"/>
+        <DecayTime value="17.230000"/>
+        <DecayHFRatio value="0.560000"/>
+        <Reflections value="-1713"/>
+        <ReflectionsDelay value="0.020000"/>
+        <Reverb value="-613"/>
+        <ReverbDelay value="0.030000"/>
+    </CReverb>
+    <CReverb id="Psychotic">
+        <RoomHF value="-151"/>
+        <DecayTime value="7.560000"/>
+        <DecayHFRatio value="0.910000"/>
+        <Reflections value="-626"/>
+        <Reverb value="774"/>
+        <ReverbDelay value="0.030000"/>
+    </CReverb>
+</Catalog>

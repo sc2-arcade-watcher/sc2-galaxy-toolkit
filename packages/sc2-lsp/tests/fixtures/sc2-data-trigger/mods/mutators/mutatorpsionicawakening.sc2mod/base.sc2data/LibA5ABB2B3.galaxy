@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibA5ABB2B3_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Psionic Awakening
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libA5ABB2B3_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libA5ABB2B3_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "OopsAllCasters");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libA5ABB2B3_gt_Initialization_Init () {
+    libA5ABB2B3_gt_Initialization = TriggerCreate("libA5ABB2B3_gt_Initialization_Func");
+    TriggerAddEventMapInit(libA5ABB2B3_gt_Initialization);
+}
+
+void libA5ABB2B3_InitTriggers () {
+    libA5ABB2B3_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libA5ABB2B3_InitLib_completed = false;
+
+void libA5ABB2B3_InitLib () {
+    if (libA5ABB2B3_InitLib_completed) {
+        return;
+    }
+
+    libA5ABB2B3_InitLib_completed = true;
+
+    libA5ABB2B3_InitLibraries();
+    libA5ABB2B3_InitTriggers();
+}
+

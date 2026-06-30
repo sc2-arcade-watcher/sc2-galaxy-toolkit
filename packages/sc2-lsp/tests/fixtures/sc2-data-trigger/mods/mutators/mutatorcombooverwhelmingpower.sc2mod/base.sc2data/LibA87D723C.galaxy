@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibA87D723C_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libA87D723C_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libA87D723C_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(28);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libA87D723C_gt_Initialization_Init () {
+    libA87D723C_gt_Initialization = TriggerCreate("libA87D723C_gt_Initialization_Func");
+    TriggerAddEventMapInit(libA87D723C_gt_Initialization);
+}
+
+void libA87D723C_InitTriggers () {
+    libA87D723C_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libA87D723C_InitLib_completed = false;
+
+void libA87D723C_InitLib () {
+    if (libA87D723C_InitLib_completed) {
+        return;
+    }
+
+    libA87D723C_InitLib_completed = true;
+
+    libA87D723C_InitLibraries();
+    libA87D723C_InitTriggers();
+}
+

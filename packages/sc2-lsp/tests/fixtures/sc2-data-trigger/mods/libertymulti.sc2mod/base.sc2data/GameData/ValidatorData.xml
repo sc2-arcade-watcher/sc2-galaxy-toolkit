@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CValidatorUnitCompareBehaviorCount id="CasterNotFungalGrowthed">
+        <ResultFailed value="Error,CantBlinkWhileRooted"/>
+        <WhichUnit Value="Caster"/>
+        <Behavior value="FungalGrowth"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorCombine id="GravitonBeamValidators">
+        <CombineArray index="0" value="NotDead"/>
+        <CombineArray index="1" value="CasterNotDead"/>
+        <CombineArray index="2" value="NotVortexd"/>
+        <CombineArray value="NotFrenzied"/>
+        <CombineArray value="TargetIsVisible"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="NeuralParasitePeriodicValidator">
+        <CombineArray index="0" value="NotDead"/>
+        <CombineArray index="1" value="NotHidden"/>
+        <CombineArray value="CasterNotDead"/>
+        <CombineArray value="TargetIsNeuralParasited"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="NoGravitonBeamInProgress">
+        <ResultFailed value="CantTargetAirUnits"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="NotNexus">
+        <ResultFailed value="CantTargetThatUnit,CantTargetNexus"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="NotOrbitalCommand">
+        <ResultFailed value="CantTargetThatUnit,CantTargetOrbital"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="NotOrbitalCommandFlying">
+        <ResultFailed value="CantTargetThatUnit,CantTargetOrbital"/>
+        <Value value="OrbitalCommandFlying"/>
+        <Find value="0"/>
+    </CValidatorUnitType>
+</Catalog>

@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib2B1086CD_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Sidestep
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib2B1086CD_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib2B1086CD_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "SideStep");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib2B1086CD_gt_Initialization_Init () {
+    lib2B1086CD_gt_Initialization = TriggerCreate("lib2B1086CD_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib2B1086CD_gt_Initialization);
+}
+
+void lib2B1086CD_InitTriggers () {
+    lib2B1086CD_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib2B1086CD_InitLib_completed = false;
+
+void lib2B1086CD_InitLib () {
+    if (lib2B1086CD_InitLib_completed) {
+        return;
+    }
+
+    lib2B1086CD_InitLib_completed = true;
+
+    lib2B1086CD_InitLibraries();
+    lib2B1086CD_InitTriggers();
+}
+

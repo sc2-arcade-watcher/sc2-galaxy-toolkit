@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibC766407A_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Food Hunt
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libC766407A_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libC766407A_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "FoodHunt");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libC766407A_gt_Initialization_Init () {
+    libC766407A_gt_Initialization = TriggerCreate("libC766407A_gt_Initialization_Func");
+    TriggerAddEventMapInit(libC766407A_gt_Initialization);
+}
+
+void libC766407A_InitTriggers () {
+    libC766407A_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libC766407A_InitLib_completed = false;
+
+void libC766407A_InitLib () {
+    if (libC766407A_InitLib_completed) {
+        return;
+    }
+
+    libC766407A_InitLib_completed = true;
+
+    libC766407A_InitLibraries();
+    libC766407A_InitTriggers();
+}
+

@@ -1,0 +1,3170 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CUser id="AmbientEvents">
+        <Fields Id="Bookmark" Type="String" EditorColumn="1"/>
+        <Fields Id="CutsceneFile" Type="String"/>
+        <Fields>
+            <Id value="CategoryRequiredForEvent"/>
+            <Type value="GameLink"/>
+            <GameLinkType value="ArmyCategory"/>
+            <EditorColumn value="2"/>
+        </Fields>
+        <Instances Id="[Default]"/>
+    </CUser>
+    <CUser id="AmbientScenes">
+        <Fields Id="ActiveInConvo" Type="Int" EditorColumn="4"/>
+        <Fields>
+            <Id value="AmbientEvents"/>
+            <Type value="User"/>
+            <UserType value="AmbientEvents"/>
+            <Count value="4"/>
+        </Fields>
+        <Fields Id="WaitUntilEventsFinish" Type="Int" EditorColumn="5"/>
+        <Fields Id="NextSceneDelay" Type="Fixed" EditorColumn="3"/>
+        <Fields Id="IsContinuousScene" Type="Int" EditorColumn="1"/>
+        <Fields>
+            <Id value="NextScene"/>
+            <Type value="User"/>
+            <UserType value="AmbientScenes"/>
+            <EditorColumn value="2"/>
+        </Fields>
+        <Fields Id="ContinuousSceneIsPlaying" Type="Int">
+            <Flags index="Modifiable" value="1"/>
+        </Fields>
+        <Instances Id="[Default]"/>
+    </CUser>
+    <CUser id="Backgrounds">
+        <Fields Id="Cutscene" Type="String" EditorColumn="5"/>
+        <Fields>
+            <Id value="Location"/>
+            <Type value="GameLink"/>
+            <GameLinkType value="Location"/>
+            <EditorColumn value="1"/>
+        </Fields>
+        <Fields Id="Room" Type="String" EditorColumn="4"/>
+        <Fields>
+            <Id value="Mission"/>
+            <Type value="GameLink"/>
+            <GameLinkType value="Map"/>
+            <EditorColumn value="3"/>
+        </Fields>
+        <Fields Id="Occurance" Type="String" EditorColumn="2"/>
+        <Instances Id="[Default]"/>
+    </CUser>
+    <CUser id="CalloutAttachment">
+        <Fields Id="Attach Unit" Type="Unit" EditorColumn="1"/>
+        <Fields Id="Attachment" Type="Image"/>
+        <Instances Id="[Default]">
+            <Image Edge="Right" Attach="Ref_StatusBar">
+                <Field Id="Attachment"/>
+            </Image>
+            <Unit Unit="SMX1LeviathanSetCalloutPositions">
+                <Field Id="Attach Unit"/>
+            </Unit>
+        </Instances>
+    </CUser>
+    <CUser id="CampaignPerk">
+        <Fields index="9">
+            <Id value="RequiredMission"/>
+            <Type value="GameLink"/>
+            <GameLinkType value="Map"/>
+            <EditorColumn value="6"/>
+        </Fields>
+        <Fields index="16">
+            <Id value="RequiredObjective"/>
+            <Type value="GameLink"/>
+            <GameLinkType value="Objective"/>
+            <EditorColumn value="7"/>
+        </Fields>
+        <Fields Id="DescriptionExtra" Type="Text"/>
+        <Fields Id="TooltipReward" Type="Text"/>
+        <Fields Id="UISound" Type="Sound"/>
+        <Fields Id="IsNew" Type="Int" EditorColumn="5">
+            <Flags index="Modifiable" value="1"/>
+        </Fields>
+        <Fields Id="IsSecret" Type="Int"/>
+        <Instances index="0" Id="[Default]">
+            <Int Int="1">
+                <Field Id="IsNew"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="Cost"/>
+            </Int>
+        </Instances>
+        <Instances Id="EQPWeaponItem1">
+            <Image Image="Assets\Textures\btn-upgrade-nova-equipment-ui-canisterrifle.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="1">
+                <Field Id="UISlot"/>
+            </Int>
+            <Int>
+                <Field Id="Cost"/>
+            </Int>
+            <Sound Sound="UI_NovaEquipment_SniperRifle">
+                <Field Id="UISound"/>
+            </Sound>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem1_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem1_Tooltip">
+                <Field Id="Tooltip"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem1_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem1_DescriptionExtra">
+                <Field Id="DescriptionExtra"/>
+            </Text>
+            <Upgrade Upgrade="NovaWeaponCanisterRifle">
+                <Field Id="Upgrade"/>
+            </Upgrade>
+            <User Type="CampaignPerkGroup" Instance="EQPSlotWeapon">
+                <Field Id="Group"/>
+            </User>
+        </Instances>
+        <Instances Id="EQPWeaponItem2">
+            <GameLink GameLink="Nova01">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-nova-equipment-ui-shotgun.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="2">
+                <Field Id="UISlot"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="Cost"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsNew"/>
+            </Int>
+            <Sound Sound="UI_NovaEquipment_Shotgun">
+                <Field Id="UISound"/>
+            </Sound>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem2_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem2_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem2_Tooltip">
+                <Field Id="Tooltip"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem2_DescriptionExtra">
+                <Field Id="DescriptionExtra"/>
+            </Text>
+            <Upgrade Upgrade="NovaWeaponHellfireShotgun">
+                <Field Id="Upgrade"/>
+            </Upgrade>
+            <User Type="CampaignPerkGroup" Instance="EQPSlotWeapon">
+                <Field Id="Group"/>
+            </User>
+        </Instances>
+        <Instances Id="EQPWeaponItem3">
+            <GameLink GameLink="Nova03">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-nova-equipment-ui-monomolecularblade.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="3">
+                <Field Id="UISlot"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="Cost"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsNew"/>
+            </Int>
+            <Sound Sound="UI_NovaEquipment_Sword">
+                <Field Id="UISound"/>
+            </Sound>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem3_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem3_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem3_DescriptionExtra">
+                <Field Id="DescriptionExtra"/>
+            </Text>
+            <Upgrade Upgrade="NovaWeaponPsiBlade">
+                <Field Id="Upgrade"/>
+            </Upgrade>
+            <User Type="CampaignPerkGroup" Instance="EQPSlotWeapon">
+                <Field Id="Group"/>
+            </User>
+        </Instances>
+        <Instances Id="EQPWeaponItem4">
+            <GameLink GameLink="Nova06Bonus01">
+                <Field Id="RequiredObjective"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-nova-equipment-plasmagun.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="4">
+                <Field Id="UISlot"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="Cost"/>
+            </Int>
+            <Sound Sound="UI_NovaEquipment_PlasmaRifle">
+                <Field Id="UISound"/>
+            </Sound>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem4_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem4_TooltipReward">
+                <Field Id="TooltipReward"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem4_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem4_DescriptionExtra">
+                <Field Id="DescriptionExtra"/>
+            </Text>
+            <Upgrade Upgrade="NovaWeaponPlasmaRifle">
+                <Field Id="Upgrade"/>
+            </Upgrade>
+            <User Type="CampaignPerkGroup" Instance="EQPSlotWeapon">
+                <Field Id="Group"/>
+            </User>
+        </Instances>
+        <Instances Id="EQPWeaponItem5">
+            <GameLink GameLink="Nova07Bonus03">
+                <Field Id="RequiredObjective"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-nova-equipment-gunblade_sword.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="5">
+                <Field Id="UISlot"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsSecret"/>
+            </Int>
+            <Sound Sound="UI_NovaEquipment_BlazeFireBlade">
+                <Field Id="UISound"/>
+            </Sound>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem5_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem5_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPWeaponItem5_DescriptionExtra">
+                <Field Id="DescriptionExtra"/>
+            </Text>
+            <Upgrade Upgrade="NovaWeaponBlazefireBlade">
+                <Field Id="Upgrade"/>
+            </Upgrade>
+            <User Type="CampaignPerkGroup" Instance="EQPSlotWeapon">
+                <Field Id="Group"/>
+            </User>
+        </Instances>
+        <Instances Id="EQPSuitItem1">
+            <Image Image="Assets\Textures\btn-upgrade-nova-equipment-ui-stealthsuit.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="1">
+                <Field Id="UISlot"/>
+            </Int>
+            <Int>
+                <Field Id="Cost"/>
+            </Int>
+            <Sound Sound="UI_NovaEquipment_StealthSuit">
+                <Field Id="UISound"/>
+            </Sound>
+            <Text Text="UserData/CampaignPerk/EQPSuitItem1_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPSuitItem1_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPSuitItem1_Tooltip">
+                <Field Id="Tooltip"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPSuitItem1_DescriptionExtra">
+                <Field Id="DescriptionExtra"/>
+            </Text>
+            <Upgrade Upgrade="NovaArmorStealthSuit">
+                <Field Id="Upgrade"/>
+            </Upgrade>
+            <User Type="CampaignPerkGroup" Instance="EQPSlotSuit">
+                <Field Id="Group"/>
+            </User>
+        </Instances>
+        <Instances Id="EQPSuitItem2">
+            <GameLink GameLink="Nova02">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-nova-equipment-ui-jetpack.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="2">
+                <Field Id="UISlot"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="Cost"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsNew"/>
+            </Int>
+            <Sound Sound="UI_NovaEquipment_Jumpsuit">
+                <Field Id="UISound"/>
+            </Sound>
+            <Text Text="UserData/CampaignPerk/EQPSuitItem2_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPSuitItem2_Tooltip">
+                <Field Id="Tooltip"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPSuitItem2_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPSuitItem2_DescriptionExtra">
+                <Field Id="DescriptionExtra"/>
+            </Text>
+            <Upgrade Upgrade="NovaArmorJumpSuit">
+                <Field Id="Upgrade"/>
+            </Upgrade>
+            <User Type="CampaignPerkGroup" Instance="EQPSlotSuit">
+                <Field Id="Group"/>
+            </User>
+        </Instances>
+        <Instances Id="EQPSuitItem4">
+            <GameLink GameLink="Nova04Bonus02">
+                <Field Id="RequiredObjective"/>
+            </GameLink>
+            <Image Image="Assets\Textures\BTN-Upgrade-Nova-Equipment-ApolloInfantrySuit.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="1">
+                <Field Id="Cost"/>
+            </Int>
+            <Int Int="3">
+                <Field Id="UISlot"/>
+            </Int>
+            <Sound Sound="UI_NovaEquipment_ApolloSuit">
+                <Field Id="UISound"/>
+            </Sound>
+            <Text Text="UserData/CampaignPerk/EQPSuitItem4_DescriptionExtra">
+                <Field Id="DescriptionExtra"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPSuitItem4_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPSuitItem4_TooltipReward">
+                <Field Id="TooltipReward"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPSuitItem4_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Upgrade Upgrade="NovaArmorApolloInfantrySuit">
+                <Field Id="Upgrade"/>
+            </Upgrade>
+            <User Type="CampaignPerkGroup" Instance="EQPSlotSuit">
+                <Field Id="Group"/>
+            </User>
+        </Instances>
+        <Instances Id="EQPSuitItem5">
+            <GameLink GameLink="Nova07Bonus01">
+                <Field Id="RequiredObjective"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-nova-equipment-blinksuit.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="4">
+                <Field Id="UISlot"/>
+            </Int>
+            <Sound Sound="UI_NovaEquipment_BlinkSuit">
+                <Field Id="UISound"/>
+            </Sound>
+            <Text Text="UserData/CampaignPerk/EQPSuitItem5_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPSuitItem5_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPSuitItem5_DescriptionExtra">
+                <Field Id="DescriptionExtra"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPSuitItem5_TooltipReward">
+                <Field Id="TooltipReward"/>
+            </Text>
+            <Upgrade Upgrade="NovaArmorBlinkSuit">
+                <Field Id="Upgrade"/>
+            </Upgrade>
+            <User Type="CampaignPerkGroup" Instance="EQPSlotSuit">
+                <Field Id="Group"/>
+            </User>
+        </Instances>
+        <Instances Id="EQPHelmetItem1">
+            <Image Image="Assets\Textures\btn-upgrade-nova-equipment-ui-ghostvisor.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="1">
+                <Field Id="UISlot"/>
+            </Int>
+            <Int>
+                <Field Id="Cost"/>
+            </Int>
+            <Sound Sound="UI_NovaEquipment_GhostVisor">
+                <Field Id="UISound"/>
+            </Sound>
+            <Text Text="UserData/CampaignPerk/EQPHelmetItem1_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPHelmetItem1_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPHelmetItem1_Tooltip">
+                <Field Id="Tooltip"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPHelmetItem1_DescriptionExtra">
+                <Field Id="DescriptionExtra"/>
+            </Text>
+            <Upgrade Upgrade="NovaHelmetGhostVisor">
+                <Field Id="Upgrade"/>
+            </Upgrade>
+            <User Type="CampaignPerkGroup" Instance="EQPSlotHelmet">
+                <Field Id="Group"/>
+            </User>
+        </Instances>
+        <Instances Id="EQPHelmetItem4">
+            <GameLink GameLink="Nova02Bonus02">
+                <Field Id="RequiredObjective"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-nova-equipment-ui-rangefinderoculus.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="2">
+                <Field Id="UISlot"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="Cost"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsNew"/>
+            </Int>
+            <Sound Sound="UI_NovaEquipment_OcculusHelmet">
+                <Field Id="UISound"/>
+            </Sound>
+            <Text Text="UserData/CampaignPerk/EQPHelmetItem4_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPHelmetItem4_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPHelmetItem4_DescriptionExtra">
+                <Field Id="DescriptionExtra"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPHelmetItem4_TooltipReward">
+                <Field Id="TooltipReward"/>
+            </Text>
+            <Upgrade Upgrade="NovaHelmetRangefinderOculus">
+                <Field Id="Upgrade"/>
+            </Upgrade>
+            <User Type="CampaignPerkGroup" Instance="EQPSlotHelmet">
+                <Field Id="Group"/>
+            </User>
+        </Instances>
+        <Instances Id="EQPHelmetItem5">
+            <AbilCmd Abil="NovaHelmetDomination">
+                <Field Id="AbilityCommand"/>
+            </AbilCmd>
+            <AbilCmd Abil="NovaReleaseMinion">
+                <Field Id="AbilityCommand" Index="1"/>
+            </AbilCmd>
+            <GameLink GameLink="Nova07">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-terran-nova-dominationvisor.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="3">
+                <Field Id="UISlot"/>
+            </Int>
+            <Sound Sound="UI_NovaEquipment_DominationVisor">
+                <Field Id="UISound"/>
+            </Sound>
+            <Text Text="UserData/CampaignPerk/EQPHelmetItem5_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPHelmetItem5_DescriptionExtra">
+                <Field Id="DescriptionExtra"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPHelmetItem5_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Upgrade Upgrade="NovaHelmetDominationVisor">
+                <Field Id="Upgrade"/>
+            </Upgrade>
+            <User Type="CampaignPerkGroup" Instance="EQPSlotHelmet">
+                <Field Id="Group"/>
+            </User>
+        </Instances>
+        <Instances Id="EQPGadgetItem1">
+            <Image Image="Assets\Textures\btn-upgrade-nova-equipment-ui-pulsegrenade.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="1">
+                <Field Id="UISlot"/>
+            </Int>
+            <Int>
+                <Field Id="Cost"/>
+            </Int>
+            <Sound Sound="UI_NovaEquipment_PulseGrenade">
+                <Field Id="UISound"/>
+            </Sound>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem1_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem1_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem1_Tooltip">
+                <Field Id="Tooltip"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem1_DescriptionExtra">
+                <Field Id="DescriptionExtra"/>
+            </Text>
+            <Upgrade Upgrade="NovaGadgetPulseGrenades">
+                <Field Id="Upgrade"/>
+            </Upgrade>
+            <User Type="CampaignPerkGroup" Instance="EQPSlotGadget">
+                <Field Id="Group"/>
+            </User>
+        </Instances>
+        <Instances Id="EQPGadgetItem4">
+            <GameLink GameLink="Nova01">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-nova-equipment-ui-flashgrenade.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="2">
+                <Field Id="UISlot"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="Cost"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsNew"/>
+            </Int>
+            <Sound Sound="UI_NovaEquipment_FragGrenade">
+                <Field Id="UISound"/>
+            </Sound>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem4_Tooltip">
+                <Field Id="Tooltip"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem4_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem4_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem4_DescriptionExtra">
+                <Field Id="DescriptionExtra"/>
+            </Text>
+            <Upgrade Upgrade="NovaGadgetFlashBangGrenades">
+                <Field Id="Upgrade"/>
+            </Upgrade>
+            <User Type="CampaignPerkGroup" Instance="EQPSlotGadget">
+                <Field Id="Group"/>
+            </User>
+        </Instances>
+        <Instances Id="EQPGadgetItem5">
+            <GameLink GameLink="Nova03Bonus01">
+                <Field Id="RequiredObjective"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-nova-equipment-ui-superstimpack.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="1">
+                <Field Id="Cost"/>
+            </Int>
+            <Int Int="3">
+                <Field Id="UISlot"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsNew"/>
+            </Int>
+            <Sound Sound="UI_NovaEquipment_SuperStim">
+                <Field Id="UISound"/>
+            </Sound>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem5_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem5_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem5_DescriptionExtra">
+                <Field Id="DescriptionExtra"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem5_TooltipReward">
+                <Field Id="TooltipReward"/>
+            </Text>
+            <Upgrade Upgrade="SuperStimpackNova">
+                <Field Id="Upgrade"/>
+            </Upgrade>
+            <User Type="CampaignPerkGroup" Instance="EQPSlotGadget">
+                <Field Id="Group"/>
+            </User>
+        </Instances>
+        <Instances Id="EQPGadgetItem6">
+            <GameLink GameLink="Nova05Bonus01">
+                <Field Id="RequiredObjective"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-nova-holographicdecoy.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="1">
+                <Field Id="IsNew"/>
+            </Int>
+            <Int Int="4">
+                <Field Id="UISlot"/>
+            </Int>
+            <Sound Sound="UI_NovaEquipment_HoloDecoy">
+                <Field Id="UISound"/>
+            </Sound>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem6_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem6_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem6_TooltipReward">
+                <Field Id="TooltipReward"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem6_DescriptionExtra">
+                <Field Id="DescriptionExtra"/>
+            </Text>
+            <Upgrade Upgrade="NovaGadgetHolographicDecoy">
+                <Field Id="Upgrade"/>
+            </Upgrade>
+            <User Type="CampaignPerkGroup" Instance="EQPSlotGadget">
+                <Field Id="Group"/>
+            </User>
+        </Instances>
+        <Instances Id="EQPGadgetItem7">
+            <GameLink GameLink="Nova08Bonus01">
+                <Field Id="RequiredObjective"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-terran-nova-personaldefensivematrix.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="5">
+                <Field Id="UISlot"/>
+            </Int>
+            <Sound Sound="UI_NovaEquipment_PersonalDefensiveMatrix">
+                <Field Id="UISound"/>
+            </Sound>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem7_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem7_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem7_DescriptionExtra">
+                <Field Id="DescriptionExtra"/>
+            </Text>
+            <Text Text="UserData/CampaignPerk/EQPGadgetItem7_TooltipReward">
+                <Field Id="TooltipReward"/>
+            </Text>
+            <Upgrade Upgrade="NovaGadgetPersonalDefensiveMatrix">
+                <Field Id="Upgrade"/>
+            </Upgrade>
+            <User Type="CampaignPerkGroup" Instance="EQPSlotGadget">
+                <Field Id="Group"/>
+            </User>
+        </Instances>
+    </CUser>
+    <CUser id="CampaignPerkGroup">
+        <Instances Id="EQPSlotHelmet">
+            <Image>
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="1">
+                <Field Id="MissionUIOrder"/>
+            </Int>
+            <Text Text="UserData/CampaignPerkGroup/EQPSlotHelmet_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="EQPSlotSuit">
+            <Image>
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="2">
+                <Field Id="MissionUIOrder"/>
+            </Int>
+            <Text Text="UserData/CampaignPerkGroup/EQPSlotSuit_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="EQPSlotGadget">
+            <Image>
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="3">
+                <Field Id="MissionUIOrder"/>
+            </Int>
+            <Text Text="UserData/CampaignPerkGroup/EQPSlotGadget_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="EQPSlotWeapon">
+            <Image>
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="4">
+                <Field Id="MissionUIOrder"/>
+            </Int>
+            <Text Text="UserData/CampaignPerkGroup/EQPSlotWeapon_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+    </CUser>
+    <CUser id="CampaignTips">
+        <Instances Id="Nova Respawn">
+            <Image Image="Assets\Textures\btn-upgrade-nova-novarespawn.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Nova Respawn_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Nova Respawn_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Nova Respawn_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Cloak">
+            <Image Image="Assets\Textures\btn-ability-terran-cloak-color.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Cloak_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Cloak_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Cloak_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="EMP Decloak">
+            <Image Image="Assets\Textures\btn-ability-terran-emp-color.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/EMP Decloak_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/EMP Decloak_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/EMP Decloak_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Break Neck">
+            <Image Image="Assets\Textures\btn-ability-nova-neckbreaker.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Break Neck_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Break Neck_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Break Neck_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+        </Instances>
+        <Instances Id="Nova Snipe">
+            <Image Image="Assets\Textures\btn-ability-terran-snipe-color.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Nova Snipe_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Nova Snipe_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Nova Snipe_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Pulse Grenade">
+            <Image Image="Assets\Textures\btn-upgrade-nova-equipment-pulsegrenade.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Pulse Grenade_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Pulse Grenade_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Pulse Grenade_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+        </Instances>
+        <Instances Id="High Ground">
+            <Image Image="Assets\Textures\btn-upgrade-terran-highground.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/High Ground_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/High Ground_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/High Ground_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+        </Instances>
+        <Instances Id="Reaper">
+            <Image Image="Assets\Textures\btn-unit-terran-reaperblackops.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Reaper_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Reaper_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Reaper_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Spider Mine">
+            <Image Image="Assets\Textures\btn-ability-terran-spidermine.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Spider Mine_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Spider Mine_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Spider Mine_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Garrison Buildings">
+            <Image Image="Assets\Textures\btn-upgrade-terran-garrisonbuildings.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Garrison Buildings_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Garrison Buildings_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Garrison Buildings_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Feral Zerg">
+            <Image Image="Assets\Textures\btn-upgrade-zerg-adrenaloverload.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Feral Zerg_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Feral Zerg_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Feral Zerg_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Monomolecular Blade">
+            <Image Image="Assets\Textures\btn-upgrade-nova-equipment-monomolecularblade.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Monomolecular Blade_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Monomolecular Blade_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Monomolecular Blade_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Siege Tank">
+            <Image Image="Assets\Textures\btn-unit-terran-siegetankblackops-tank.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Siege Tank_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Siege Tank_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Siege Tank_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Hellbat">
+            <Image Image="Assets\Textures\btn-unit-terran-hellbatblackops.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Hellbat_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Hellbat_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Hellbat_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Banshee">
+            <Image Image="Assets\Textures\btn-unit-terran-bansheeblackops.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Banshee_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Banshee_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Banshee_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Goliath">
+            <Image Image="Assets\Textures\btn-unit-terran-goliathblackops.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Goliath_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Goliath_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Goliath_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Liberator">
+            <Image Image="Assets\Textures\btn-unit-terran-liberatorblackops.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Liberator_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Liberator_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Liberator_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Raven">
+            <Image Image="Assets\Textures\btn-unit-terran-ravenblackops.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Raven_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Raven_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Raven_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Zerg Presence">
+            <Image Image="Assets\Textures\btn-upgrade-zerg-adrenaloverload.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Zerg Presence_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Zerg Presence_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Zerg Presence_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Death Fleet">
+            <Image Image="Assets\Textures\btn-unit-protoss-mothership-taldarim.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Death Fleet_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Death Fleet_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Death Fleet_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Shield Projectors">
+            <Image Image="Assets\Textures\btn-unit-protoss-shieldgenerator-taldarim.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Shield Projectors_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Shield Projectors_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Shield Projectors_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+        </Instances>
+        <Instances Id="Terrazine Harvester">
+            <Image Image="Assets\Textures\btn-building-terran-terrazineextractor.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Terrazine Harvester_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Terrazine Harvester_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Terrazine Harvester_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Tal&apos;darim Challenge">
+            <Image Image="Assets\Textures\btn-ability-protoss-deadlycharge.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Tal&apos;darim Challenge_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Tal&apos;darim Challenge_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Tal&apos;darim Challenge_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+        </Instances>
+        <Instances Id="Solo Operative">
+            <Image Image="Assets\Textures\btn-unit-terran-nova.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Solo Operative_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Solo Operative_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Solo Operative_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+        </Instances>
+        <Instances Id="Subway">
+            <Image Image="Assets\Textures\btn-tips-challengecounter.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Subway_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Subway_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Subway_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Flashback Decisions">
+            <Image Image="Assets\Textures\btn-ability-protoss-mindblast.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Flashback Decisions_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Flashback Decisions_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Flashback Decisions_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Blink Suit">
+            <Image Image="Assets\Textures\btn-upgrade-nova-blink.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Blink Suit_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Blink Suit_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Blink Suit_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Blazefire Gunblade">
+            <Image Image="Assets\Textures\btn-upgrade-nova-equipment-gunblade_sword.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Blazefire Gunblade_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Blazefire Gunblade_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Blazefire Gunblade_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="Domination Visor">
+            <Image Image="Assets\Textures\btn-upgrade-terran-nova-dominationvisor.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/Domination Visor_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Domination Visor_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/Domination Visor_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="(PH) Equipment Lockers">
+            <Image Image="Assets\Textures\btn-tips-missioncase.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/(PH) Equipment Lockers_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Equipment Lockers_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Equipment Lockers_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="(PH) Laser Detector">
+            <Image Image="Assets\Textures\btn-ability-terran-activatemine.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/(PH) Laser Detector_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Laser Detector_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Laser Detector_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+        </Instances>
+        <Instances Id="(PH) Sensor Drones">
+            <Image Image="Assets\Textures\ui_tipicon_evolution_hydralisk-detection.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/(PH) Sensor Drones_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Sensor Drones_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Sensor Drones_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id=" Dominion Fleet">
+            <Image Image="Assets\Textures\btn-unit-terran-gorgonbattlecruiser.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/ Dominion Fleet_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/ Dominion Fleet_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/ Dominion Fleet_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+        </Instances>
+        <Instances Id="(PH) Battlecruiser Tactical Jump">
+            <Image Image="Assets\Textures\btn-ability-terran-warpjump.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/(PH) Battlecruiser Tactical Jump_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Battlecruiser Tactical Jump_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Battlecruiser Tactical Jump_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="(PH) Gorgon Repair Bay">
+            <Image Image="Assets\Textures\btn-upgrade-terran-weaponrefit.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/(PH) Gorgon Repair Bay_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Gorgon Repair Bay_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Gorgon Repair Bay_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="(PH) Xanthos">
+            <Image Image="Assets\Textures\btn-upgrade-terran-behemothreactor.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/(PH) Xanthos_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Xanthos_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Xanthos_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+        </Instances>
+        <Instances Id="(PH) Flame Turret">
+            <Image Image="Assets\Textures\btn-upgrade-terran-infernalpreigniter.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/(PH) Flame Turret_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Flame Turret_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Flame Turret_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="(PH) Rail Gun">
+            <Image Image="Assets\Textures\btn-upgrade-terran-advanceballistics.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/(PH) Rail Gun_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Rail Gun_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Rail Gun_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+        </Instances>
+        <Instances Id="(PH) Fighter Bay">
+            <Image Image="Assets\Textures\btn-unit-terran-tacfighter.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/(PH) Fighter Bay_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Fighter Bay_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Fighter Bay_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="(PH) Nuke Launcher">
+            <Image Image="Assets\Textures\btn-upgrade-terran-nova-bansheemissilestrik.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/(PH) Nuke Launcher_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Nuke Launcher_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Nuke Launcher_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+        <Instances Id="(PH) Hold Fire">
+            <Image Image="Assets\Textures\btn-ability-terran-holdfire.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Text Text="UserData/CampaignTips/(PH) Hold Fire_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Hold Fire_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTips/(PH) Hold Fire_Prefix">
+                <Field Id="Prefix"/>
+            </Text>
+        </Instances>
+    </CUser>
+    <CUser id="CampaignTechItem">
+        <Fields Id="Name" Type="Text" EditorColumn="1"/>
+        <Fields Id="Description" Type="Text" Count="5"/>
+        <Fields Id="Icon" Type="Image"/>
+        <Fields>
+            <Id value="UnitList"/>
+            <Type value="GameLink"/>
+            <GameLinkType value="ArmyUnit"/>
+            <Count value="5"/>
+            <EditorColumn value="5"/>
+        </Fields>
+        <Fields Id="UpgradeList" Type="Upgrade" Count="5"/>
+        <Fields>
+            <Id value="RequiredMission"/>
+            <Type value="GameLink"/>
+            <GameLinkType value="Map"/>
+            <EditorColumn value="3"/>
+        </Fields>
+        <Fields>
+            <Id value="RequiredObjective"/>
+            <Type value="GameLink"/>
+            <GameLinkType value="Objective"/>
+            <EditorColumn value="4"/>
+        </Fields>
+        <Fields Id="AssignedUnit" Type="GameLink" GameLinkType="ArmyUnit">
+            <Flags index="Modifiable" value="1"/>
+        </Fields>
+        <Fields Id="MovieList" Type="Movie" Count="5"/>
+        <Fields Id="State" Type="Int">
+            <Flags index="Modifiable" value="1"/>
+        </Fields>
+        <Fields Id="TooltipReward" Type="Text"/>
+        <Fields Id="IsNewList" Type="Int" Count="5">
+            <Flags index="Modifiable" value="1"/>
+        </Fields>
+        <Instances Id="[Default]">
+            <Image>
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="1">
+                <Field Id="IsNewList"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsNewList" Index="1"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsNewList" Index="2"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsNewList" Index="3"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsNewList" Index="4"/>
+            </Int>
+        </Instances>
+        <Instances Id="SpiderMines">
+            <GameLink GameLink="Nova02">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <GameLink GameLink="Reaper">
+                <Field Id="UnitList"/>
+            </GameLink>
+            <GameLink GameLink="SiegeTank">
+                <Field Id="UnitList" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Raven">
+                <Field Id="UnitList" Index="2"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-terran-ui-spidermineex3.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="1">
+                <Field Id="IsNewList"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsNewList" Index="1"/>
+            </Int>
+            <Movie Movie="Assets\Textures\covertops_reaper_spidermines.ogv">
+                <Field Id="MovieList"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_siegetank_spidermines.ogv">
+                <Field Id="MovieList" Index="1"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_raven_spidermines.ogv">
+                <Field Id="MovieList" Index="2"/>
+            </Movie>
+            <Text Text="UserData/CampaignTechItem/SpiderMines_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/SpiderMines_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/SpiderMines_Description_001">
+                <Field Id="Description" Index="1"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/SpiderMines_Description_002">
+                <Field Id="Description" Index="2"/>
+            </Text>
+            <Upgrade Upgrade="ReaperSpiderMines">
+                <Field Id="UpgradeList"/>
+            </Upgrade>
+            <Upgrade Upgrade="SiegeSpiderMines">
+                <Field Id="UpgradeList" Index="1"/>
+            </Upgrade>
+            <Upgrade Upgrade="RavenSpiderMines">
+                <Field Id="UpgradeList" Index="2"/>
+            </Upgrade>
+        </Instances>
+        <Instances Id="JumpJets">
+            <GameLink GameLink="Nova02">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <GameLink GameLink="Hellbat">
+                <Field Id="UnitList"/>
+            </GameLink>
+            <GameLink GameLink="SiegeTank">
+                <Field Id="UnitList" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Goliath">
+                <Field Id="UnitList" Index="2"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-terran-ui-jumpjets.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="1">
+                <Field Id="IsNewList"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsNewList" Index="1"/>
+            </Int>
+            <Movie Movie="Assets\Textures\covertops_hellbat_jumpjets.ogv">
+                <Field Id="MovieList"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_siegetank_jumpjets.ogv">
+                <Field Id="MovieList" Index="1"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_goliath_jumpjets.ogv">
+                <Field Id="MovieList" Index="2"/>
+            </Movie>
+            <Text Text="UserData/CampaignTechItem/JumpJets_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/JumpJets_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/JumpJets_Description_001">
+                <Field Id="Description" Index="1"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/JumpJets_Description_002">
+                <Field Id="Description" Index="2"/>
+            </Text>
+            <Upgrade Upgrade="HoverHellbat">
+                <Field Id="UpgradeList"/>
+            </Upgrade>
+            <Upgrade Upgrade="HoverSiegeTank">
+                <Field Id="UpgradeList" Index="1"/>
+            </Upgrade>
+            <Upgrade Upgrade="GoliathJumpJet">
+                <Field Id="UpgradeList" Index="2"/>
+            </Upgrade>
+        </Instances>
+        <Instances Id="LaserTargetingSystem">
+            <GameLink GameLink="Reaper">
+                <Field Id="UnitList"/>
+            </GameLink>
+            <GameLink GameLink="Marine">
+                <Field Id="UnitList" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Nova02">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <GameLink GameLink="Goliath">
+                <Field Id="UnitList" Index="2"/>
+            </GameLink>
+            <GameLink GameLink="Marauder">
+                <Field Id="UnitList" Index="3"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-terran-ui-lazertargetingsystem.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="1">
+                <Field Id="IsNewList"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsNewList" Index="1"/>
+            </Int>
+            <Movie Movie="Assets\Textures\covertops_reaper_lasertargetingsystem.ogv">
+                <Field Id="MovieList"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_marine_lasertargeting.ogv">
+                <Field Id="MovieList" Index="1"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_goliath_lasertargetingsystem.ogv">
+                <Field Id="MovieList" Index="2"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_marauder_lasertargeting.ogv">
+                <Field Id="MovieList" Index="3"/>
+            </Movie>
+            <Text Text="UserData/CampaignTechItem/LaserTargetingSystem_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/LaserTargetingSystem_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/LaserTargetingSystem_Description_001">
+                <Field Id="Description" Index="1"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/LaserTargetingSystem_Description_002">
+                <Field Id="Description" Index="2"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/LaserTargetingSystem_Description_003">
+                <Field Id="Description" Index="3"/>
+            </Text>
+            <Upgrade Upgrade="LaserTargetingSystemReaper">
+                <Field Id="UpgradeList"/>
+            </Upgrade>
+            <Upgrade Upgrade="LaserTargetingSystemMarine">
+                <Field Id="UpgradeList" Index="1"/>
+            </Upgrade>
+            <Upgrade Upgrade="AresClassWeaponsSystem">
+                <Field Id="UpgradeList" Index="2"/>
+            </Upgrade>
+            <Upgrade Upgrade="LaserTargetingSystemMarauder">
+                <Field Id="UpgradeList" Index="3"/>
+            </Upgrade>
+        </Instances>
+        <Instances Id="InternalizedTechModule">
+            <GameLink GameLink="Marauder">
+                <Field Id="UnitList"/>
+            </GameLink>
+            <GameLink GameLink="SiegeTank">
+                <Field Id="UnitList" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Nova02">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <GameLink GameLink="Banshee">
+                <Field Id="UnitList" Index="2"/>
+            </GameLink>
+            <GameLink GameLink="Raven">
+                <Field Id="UnitList" Index="3"/>
+            </GameLink>
+            <GameLink GameLink="Battlecruiser">
+                <Field Id="UnitList" Index="4"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-terran-ui-internalizedtechmodule.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="1">
+                <Field Id="IsNewList"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsNewList" Index="1"/>
+            </Int>
+            <Movie Movie="Assets\Textures\covertops_marauder_internalizedtech.ogv">
+                <Field Id="MovieList"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_siegetank_internalizedtech.ogv">
+                <Field Id="MovieList" Index="1"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_banshee_internalizedtech.ogv">
+                <Field Id="MovieList" Index="2"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_raven_internalizedtech.ogv">
+                <Field Id="MovieList" Index="3"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_battlecruiser_internalizedtech.ogv">
+                <Field Id="MovieList" Index="4"/>
+            </Movie>
+            <Text Text="UserData/CampaignTechItem/InternalizedTechModule_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/InternalizedTechModule_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/InternalizedTechModule_Description_001">
+                <Field Id="Description" Index="1"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/InternalizedTechModule_Description_002">
+                <Field Id="Description" Index="2"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/InternalizedTechModule_Description_003">
+                <Field Id="Description" Index="3"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/InternalizedTechModule_Description_004">
+                <Field Id="Description" Index="4"/>
+            </Text>
+            <Upgrade Upgrade="InternalizedTechModuleMarauder">
+                <Field Id="UpgradeList"/>
+            </Upgrade>
+            <Upgrade Upgrade="InternalizedTechModuleSiegeTank">
+                <Field Id="UpgradeList" Index="1"/>
+            </Upgrade>
+            <Upgrade Upgrade="InternalizedTechModuleBanshee">
+                <Field Id="UpgradeList" Index="2"/>
+            </Upgrade>
+            <Upgrade Upgrade="InternalizedTechModuleRaven">
+                <Field Id="UpgradeList" Index="3"/>
+            </Upgrade>
+            <Upgrade Upgrade="InternalizedTechModuleBattlecruiser">
+                <Field Id="UpgradeList" Index="4"/>
+            </Upgrade>
+        </Instances>
+        <Instances Id="SuperStim">
+            <GameLink GameLink="Marine">
+                <Field Id="UnitList"/>
+            </GameLink>
+            <GameLink GameLink="Marauder">
+                <Field Id="UnitList" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Hellbat">
+                <Field Id="UnitList" Index="2"/>
+            </GameLink>
+            <GameLink GameLink="Reaper">
+                <Field Id="UnitList" Index="3"/>
+            </GameLink>
+            <GameLink GameLink="Nova02Bonus01">
+                <Field Id="RequiredObjective"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-nova-equipment-ui-superstimpackeffect.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Int Int="1">
+                <Field Id="IsNewList"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsNewList" Index="1"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsNewList" Index="2"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="IsNewList" Index="3"/>
+            </Int>
+            <Movie Movie="Assets\Textures\covertops_marine_superstim.ogv">
+                <Field Id="MovieList"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_marauder_superstim.ogv">
+                <Field Id="MovieList" Index="1"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_hellbat_superstim.ogv">
+                <Field Id="MovieList" Index="2"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_reaper_superstim.ogv">
+                <Field Id="MovieList" Index="3"/>
+            </Movie>
+            <Text Text="UserData/CampaignTechItem/SuperStim_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/SuperStim_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/SuperStim_Description_001">
+                <Field Id="Description" Index="1"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/SuperStim_Description_002">
+                <Field Id="Description" Index="2"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/SuperStim_Description_003">
+                <Field Id="Description" Index="3"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/SuperStim_TooltipReward">
+                <Field Id="TooltipReward"/>
+            </Text>
+            <Upgrade Upgrade="SuperStimpackMarine">
+                <Field Id="UpgradeList"/>
+            </Upgrade>
+            <Upgrade Upgrade="SuperStimpackMarauder">
+                <Field Id="UpgradeList" Index="1"/>
+            </Upgrade>
+            <Upgrade Upgrade="SuperStimpackHellbat">
+                <Field Id="UpgradeList" Index="2"/>
+            </Upgrade>
+            <Upgrade Upgrade="SuperStimpackReaper">
+                <Field Id="UpgradeList" Index="3"/>
+            </Upgrade>
+        </Instances>
+        <Instances Id="XN51 Cloak Technology">
+            <GameLink GameLink="Liberator">
+                <Field Id="UnitList"/>
+            </GameLink>
+            <GameLink GameLink="Banshee">
+                <Field Id="UnitList" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Nova03">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <GameLink GameLink="Reaper">
+                <Field Id="UnitList" Index="2"/>
+            </GameLink>
+            <GameLink GameLink="Battlecruiser">
+                <Field Id="UnitList" Index="3"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-ability-terran-cloak-color.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Movie Movie="Assets\Textures\covertops_liberator_cloak.ogv">
+                <Field Id="MovieList"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_banshee_cloak.ogv">
+                <Field Id="MovieList" Index="1"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_reaper_advancedcloakingfield.ogv">
+                <Field Id="MovieList" Index="2"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_battlecruiser_advancedcloakingfield.ogv">
+                <Field Id="MovieList" Index="3"/>
+            </Movie>
+            <Text Text="UserData/CampaignTechItem/XN51 Cloak Technology_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/XN51 Cloak Technology_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/XN51 Cloak Technology_Description_001">
+                <Field Id="Description" Index="1"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/XN51 Cloak Technology_TooltipReward">
+                <Field Id="TooltipReward"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/XN51 Cloak Technology_Description_002">
+                <Field Id="Description" Index="2"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/XN51 Cloak Technology_Description_003">
+                <Field Id="Description" Index="3"/>
+            </Text>
+            <Upgrade Upgrade="CloakingTechnologyLiberator">
+                <Field Id="UpgradeList"/>
+            </Upgrade>
+            <Upgrade Upgrade="CloakingTechnologyBanshee">
+                <Field Id="UpgradeList" Index="1"/>
+            </Upgrade>
+            <Upgrade Upgrade="CloakingTechnologyReaper">
+                <Field Id="UpgradeList" Index="2"/>
+            </Upgrade>
+            <Upgrade Upgrade="CloakingTechnologyBattlecruiser">
+                <Field Id="UpgradeList" Index="3"/>
+            </Upgrade>
+        </Instances>
+        <Instances Id="RegenerativeBio-Steel">
+            <GameLink GameLink="SiegeTank">
+                <Field Id="UnitList"/>
+            </GameLink>
+            <GameLink GameLink="Banshee">
+                <Field Id="UnitList" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Liberator">
+                <Field Id="UnitList" Index="2"/>
+            </GameLink>
+            <GameLink GameLink="Goliath">
+                <Field Id="UnitList" Index="3"/>
+            </GameLink>
+            <GameLink GameLink="Nova04Bonus01">
+                <Field Id="RequiredObjective"/>
+            </GameLink>
+            <GameLink GameLink="Battlecruiser">
+                <Field Id="UnitList" Index="4"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-swann-regenerativebiosteel.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Movie Movie="Assets\Textures\covertops_siegetank_biosteel.ogv">
+                <Field Id="MovieList"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_banshee_biosteel.ogv">
+                <Field Id="MovieList" Index="1"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_liberator_biosteel.ogv">
+                <Field Id="MovieList" Index="2"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_goliath_biosteel.ogv">
+                <Field Id="MovieList" Index="3"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_battlecruiser_biosteel.ogv">
+                <Field Id="MovieList" Index="4"/>
+            </Movie>
+            <Text Text="UserData/CampaignTechItem/RegenerativeBio-Steel_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/RegenerativeBio-Steel_Description_001">
+                <Field Id="Description" Index="1"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/RegenerativeBio-Steel_Description_002">
+                <Field Id="Description" Index="2"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/RegenerativeBio-Steel_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/RegenerativeBio-Steel_Description_003">
+                <Field Id="Description" Index="3"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/RegenerativeBio-Steel_TooltipReward">
+                <Field Id="TooltipReward"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/RegenerativeBio-Steel_Description_004">
+                <Field Id="Description" Index="4"/>
+            </Text>
+            <Upgrade Upgrade="RegenerativeBioSteelSiegeTank">
+                <Field Id="UpgradeList"/>
+            </Upgrade>
+            <Upgrade Upgrade="RegenerativeBioSteelBanshee">
+                <Field Id="UpgradeList" Index="1"/>
+            </Upgrade>
+            <Upgrade Upgrade="RegenerativeBioSteelLiberator">
+                <Field Id="UpgradeList" Index="2"/>
+            </Upgrade>
+            <Upgrade Upgrade="RegenerativeBioSteelGoliath">
+                <Field Id="UpgradeList" Index="3"/>
+            </Upgrade>
+            <Upgrade Upgrade="RegenerativeBioSteelBattlecruiser">
+                <Field Id="UpgradeList" Index="4"/>
+            </Upgrade>
+        </Instances>
+        <Instances Id="MagrailMunitions">
+            <GameLink GameLink="Marine">
+                <Field Id="UnitList"/>
+            </GameLink>
+            <GameLink GameLink="Marauder">
+                <Field Id="UnitList" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Nova05Bonus02">
+                <Field Id="RequiredObjective"/>
+            </GameLink>
+            <GameLink GameLink="Raven">
+                <Field Id="UnitList" Index="2"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-terran-magrailmunitions.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Movie Movie="Assets\Textures\covertops_marine_magrail.ogv">
+                <Field Id="MovieList"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_marauder_magrail.ogv">
+                <Field Id="MovieList" Index="1"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_raven_magrail.ogv">
+                <Field Id="MovieList" Index="2"/>
+            </Movie>
+            <Text Text="UserData/CampaignTechItem/MagrailMunitions_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/MagrailMunitions_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/MagrailMunitions_Description_001">
+                <Field Id="Description" Index="1"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/MagrailMunitions_TooltipReward">
+                <Field Id="TooltipReward"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/MagrailMunitions_Description_002">
+                <Field Id="Description" Index="2"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/MagrailMunitions_Description_003">
+                <Field Id="Description" Index="3"/>
+            </Text>
+            <Upgrade Upgrade="MagrailMunitionsMarine">
+                <Field Id="UpgradeList"/>
+            </Upgrade>
+            <Upgrade Upgrade="MagrailMunitionsMarauder">
+                <Field Id="UpgradeList" Index="1"/>
+            </Upgrade>
+            <Upgrade Upgrade="MagrailMunitionsRaven">
+                <Field Id="UpgradeList" Index="2"/>
+            </Upgrade>
+        </Instances>
+        <Instances Id="Multi-task &quot;MAF&quot; Servos">
+            <GameLink GameLink="Hellbat">
+                <Field Id="UnitList"/>
+            </GameLink>
+            <GameLink GameLink="Liberator">
+                <Field Id="UnitList" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Nova04">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <GameLink GameLink="SiegeTank">
+                <Field Id="UnitList" Index="2"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-terran-transformationservos.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Movie Movie="Assets\Textures\covertops_hellbat_servo.ogv">
+                <Field Id="MovieList"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_liberator_servos.ogv">
+                <Field Id="MovieList" Index="1"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_siegetank_servos.ogv">
+                <Field Id="MovieList" Index="2"/>
+            </Movie>
+            <Text Text="UserData/CampaignTechItem/Multi-task &quot;MAF&quot; Servos_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/Multi-task &quot;MAF&quot; Servos_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/Multi-task &quot;MAF&quot; Servos_TooltipReward">
+                <Field Id="TooltipReward"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/Multi-task &quot;MAF&quot; Servos_Description_001">
+                <Field Id="Description" Index="1"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/Multi-task &quot;MAF&quot; Servos_Description_002">
+                <Field Id="Description" Index="2"/>
+            </Text>
+            <Upgrade Upgrade="MultiTaskMAFServosHellion">
+                <Field Id="UpgradeList"/>
+            </Upgrade>
+            <Upgrade Upgrade="MultiTaskMAFServosLiberator">
+                <Field Id="UpgradeList" Index="1"/>
+            </Upgrade>
+            <Upgrade Upgrade="MultiTaskMAFServosSiegeTank">
+                <Field Id="UpgradeList" Index="2"/>
+            </Upgrade>
+        </Instances>
+        <Instances Id="Fast Build Tech">
+            <GameLink GameLink="Marine">
+                <Field Id="UnitList"/>
+            </GameLink>
+            <GameLink GameLink="Liberator">
+                <Field Id="UnitList" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Nova07">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <GameLink GameLink="Hellbat">
+                <Field Id="UnitList" Index="2"/>
+            </GameLink>
+            <GameLink GameLink="Goliath">
+                <Field Id="UnitList" Index="3"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-terran-optimizedlogistics.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Movie Movie="Assets\Textures\covertops_marine_optimizedlogistics.ogv">
+                <Field Id="MovieList"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_liberator_optimizedlogistics.ogv">
+                <Field Id="MovieList" Index="1"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_hellbat_optimizedlogistics.ogv">
+                <Field Id="MovieList" Index="2"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_goliath_optimizedlogistics.ogv">
+                <Field Id="MovieList" Index="3"/>
+            </Movie>
+            <Text Text="UserData/CampaignTechItem/Fast Build Tech_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/Fast Build Tech_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/Fast Build Tech_Description_001">
+                <Field Id="Description" Index="1"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/Fast Build Tech_Description_002">
+                <Field Id="Description" Index="2"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/Fast Build Tech_Description_003">
+                <Field Id="Description" Index="3"/>
+            </Text>
+            <Upgrade Upgrade="FastBuildMarine">
+                <Field Id="UpgradeList"/>
+            </Upgrade>
+            <Upgrade Upgrade="FastBuildLiberator">
+                <Field Id="UpgradeList" Index="1"/>
+            </Upgrade>
+            <Upgrade Upgrade="FastBuildHellbat">
+                <Field Id="UpgradeList" Index="2"/>
+            </Upgrade>
+            <Upgrade Upgrade="FastBuildGoliath">
+                <Field Id="UpgradeList" Index="3"/>
+            </Upgrade>
+        </Instances>
+        <Instances Id="Advanced Weaponry">
+            <GameLink GameLink="Reaper">
+                <Field Id="UnitList"/>
+            </GameLink>
+            <GameLink GameLink="Hellbat">
+                <Field Id="UnitList" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Banshee">
+                <Field Id="UnitList" Index="2"/>
+            </GameLink>
+            <GameLink GameLink="Battlecruiser">
+                <Field Id="UnitList" Index="3"/>
+            </GameLink>
+            <GameLink GameLink="Nova07Bonus02">
+                <Field Id="RequiredObjective"/>
+            </GameLink>
+            <GameLink GameLink="Raven">
+                <Field Id="UnitList" Index="4"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-upgrade-terran-nova-specialordance.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Movie Movie="Assets\Textures\covertops_reaper_specialordnance.ogv">
+                <Field Id="MovieList"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_hellbat_specialordnance.ogv">
+                <Field Id="MovieList" Index="1"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_banshee_specialordnance.ogv">
+                <Field Id="MovieList" Index="2"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_battlecruiser_specialordnance.ogv">
+                <Field Id="MovieList" Index="3"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\covertops_raven_specialordnance.ogv">
+                <Field Id="MovieList" Index="4"/>
+            </Movie>
+            <Text Text="UserData/CampaignTechItem/Advanced Weaponry_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/Advanced Weaponry_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/Advanced Weaponry_Description_001">
+                <Field Id="Description" Index="1"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/Advanced Weaponry_Description_003">
+                <Field Id="Description" Index="3"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/Advanced Weaponry_TooltipReward">
+                <Field Id="TooltipReward"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/Advanced Weaponry_Description_004">
+                <Field Id="Description" Index="4"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/Advanced Weaponry_Description_002">
+                <Field Id="Description" Index="2"/>
+            </Text>
+            <Upgrade Upgrade="ReaperD8Charge">
+                <Field Id="UpgradeList"/>
+            </Upgrade>
+            <Upgrade Upgrade="HighCapacityBarrels">
+                <Field Id="UpgradeList" Index="1"/>
+            </Upgrade>
+            <Upgrade Upgrade="ClusterWarheads">
+                <Field Id="UpgradeList" Index="2"/>
+            </Upgrade>
+            <Upgrade Upgrade="AdvancedWeaponryBattlecruiser">
+                <Field Id="UpgradeList" Index="3"/>
+            </Upgrade>
+            <Upgrade Upgrade="AdvancedWeaponryRaven">
+                <Field Id="UpgradeList" Index="4"/>
+            </Upgrade>
+        </Instances>
+        <!--Instances Id="[PH] Efficiency Module">
+            <GameLink GameLink="Raven">
+                <Field Id="UnitList"/>
+            </GameLink>
+            <GameLink GameLink="Battlecruiser">
+                <Field Id="UnitList" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Nova07">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <Image Image="Assets\Textures\btn-techupgrade-terran-immortalityprotocol.dds">
+                <Field Id="Icon"/>
+            </Image>
+            <Movie Movie="Assets\Textures\defaultmovie.ogv">
+                <Field Id="MovieList"/>
+            </Movie>
+            <Movie Movie="Assets\Textures\defaultmovie.ogv">
+                <Field Id="MovieList" Index="1"/>
+            </Movie>
+            <Text Text="UserData/CampaignTechItem/[PH] Efficiency Module_Name">
+                <Field Id="Name"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/[PH] Efficiency Module_Description">
+                <Field Id="Description"/>
+            </Text>
+            <Text Text="UserData/CampaignTechItem/[PH] Efficiency Module_Description_001">
+                <Field Id="Description" Index="1"/>
+            </Text>
+            <Upgrade Upgrade="EfficiencyModuleRaven">
+                <Field Id="UpgradeList"/>
+            </Upgrade>
+            <Upgrade Upgrade="EfficiencyModuleBattlecuiser">
+                <Field Id="UpgradeList" Index="1"/>
+            </Upgrade>
+        </Instances-->
+    </CUser>
+    <CUser id="Clickable">
+        <Fields Id="Name" Type="Text" EditorColumn="4"/>
+        <Fields Id="Enabled" Type="Int" GameLinkType="Abil">
+            <Flags index="Modifiable" value="1"/>
+            <Flags index="ConvState" value="1"/>
+        </Fields>
+        <Fields Id="Type" Type="Int">
+            <Flags index="Modifiable" value="1"/>
+            <Flags index="ConvState" value="1"/>
+        </Fields>
+        <Fields Id="Background" Type="Int"/>
+        <Fields Id="Callout Subtitle" Type="Text"/>
+        <Fields Id="Game Link" Type="GameLink" GameLinkType="Character"/>
+        <Fields Id="Index" Type="Int" GameLinkType="Abil">
+            <Flags index="Modifiable" value="1"/>
+        </Fields>
+        <Fields Id="Alias" Type="String" EditorColumn="1"/>
+        <Fields Id="SceneToken" Type="String" EditorColumn="2"/>
+        <Fields Id="SceneFinderTag" Type="String" EditorColumn="3"/>
+        <Fields Id="New" Type="Int">
+            <Flags index="Modifiable" value="1"/>
+        </Fields>
+        <Fields Id="Conversation" Type="GameLink" GameLinkType="Conversation"/>
+        <Fields Id="Ambient Conversation" Type="GameLink" GameLinkType="Conversation"/>
+        <Fields Id="CalloutAttach" Type="String" EditorColumn="5"/>
+        <Fields Id="Response" Type="GameLink" GameLinkType="Conversation"/>
+        <Fields Id="IsVisibleOnSet" Type="Int">
+            <Flags index="Modifiable" value="1"/>
+        </Fields>
+        <Fields Id="AlternateAnimationsEnabled" Type="Int"/>
+        <Fields Id="GreetingConversation" Type="GameLink" GameLinkType="Conversation"/>
+        <Instances Id="[Default]">
+            <Int Int="1">
+                <Field Id="Enabled"/>
+            </Int>
+            <Text Text="UserData/Clickable/[Default]_Callout Subtitle">
+                <Field Id="Callout Subtitle"/>
+            </Text>
+        </Instances>
+        <Instances Id="Nova">
+            <GameLink GameLink="Nova">
+                <Field Id="Game Link"/>
+            </GameLink>
+            <Text Text="UserData/Clickable/Nova_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+    </CUser>
+    <CUser id="Conversations">
+        <Fields Id="ConvoGameLink" Type="GameLink" GameLinkType="Conversation"/>
+        <Fields>
+            <Id value="PrimaryCharacter"/>
+            <Type value="User"/>
+            <UserType value="Clickable"/>
+            <EditorColumn value="3"/>
+        </Fields>
+        <Fields Id="RequiredConversation" Type="User" UserType="Conversations"/>
+        <Fields>
+            <Id value="Name"/>
+            <Type value="String"/>
+            <EditorColumn value="2"/>
+            <EditorText value="Name"/>
+        </Fields>
+        <Fields Id="Group" Type="String" EditorColumn="6"/>
+        <Fields Id="Room" Type="String" EditorColumn="4"/>
+        <Fields>
+            <Id value="RequiredMission"/>
+            <Type value="GameLink"/>
+            <GameLinkType value="Map"/>
+            <Count value="3"/>
+        </Fields>
+        <Instances Id="[Default]"/>
+    </CUser>
+    <CUser id="Locations">
+        <Instances Id="DOM Secret Base">
+            <Image>
+                <Field Id="LoadingImage"/>
+            </Image>
+            <Int Int="1">
+                <Field Id="Default"/>
+            </Int>
+            <Text Text="UserData/Locations/DOM Secret Base_StoryUI Name">
+                <Field Id="StoryUI Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Borea">
+            <Image Image="Assets\Textures\ui_nova_loading_nova02.dds">
+                <Field Id="LoadingImage"/>
+            </Image>
+            <Text Text="UserData/Locations/Borea_StoryUI Name">
+                <Field Id="StoryUI Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Tarsonis City">
+            <Image Image="Assets\Textures\ui_nova_loading_novashiptravel01.dds">
+                <Field Id="LoadingImage"/>
+            </Image>
+            <Text Text="UserData/Locations/Tarsonis City_StoryUI Name">
+                <Field Id="StoryUI Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Nova04PH">
+            <Image Image="Assets\Textures\ui_nova_loading_novashiptravel01.dds">
+                <Field Id="LoadingImage"/>
+            </Image>
+            <Text Text="UserData/Locations/Nova04PH_StoryUI Name">
+                <Field Id="StoryUI Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Nova05PH">
+            <Image Image="Assets\Textures\ui_nova_loading_novashiptravel01.dds">
+                <Field Id="LoadingImage"/>
+            </Image>
+            <Text Text="UserData/Locations/Nova05PH_StoryUI Name">
+                <Field Id="StoryUI Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Nova06PH">
+            <Image Image="Assets\Textures\ui_nova_loading_novashiptravel01.dds">
+                <Field Id="LoadingImage"/>
+            </Image>
+            <Text Text="UserData/Locations/Nova06PH_StoryUI Name">
+                <Field Id="StoryUI Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Nova07PH">
+            <Image>
+                <Field Id="LoadingImage"/>
+            </Image>
+            <Text Text="UserData/Locations/Nova07PH_StoryUI Name">
+                <Field Id="StoryUI Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Nova08PH">
+            <Text Text="UserData/Locations/Nova08PH_StoryUI Name">
+                <Field Id="StoryUI Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Nova09PH">
+            <Text Text="UserData/Locations/Nova09PH_StoryUI Name">
+                <Field Id="StoryUI Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="NovaStoryPH">
+            <Text Text="UserData/Locations/NovaStoryPH_StoryUI Name">
+                <Field Id="StoryUI Name"/>
+            </Text>
+        </Instances>
+    </CUser>
+    <CUser id="Maps">
+        <Fields Id="CampaignScreenImage" Type="Image"/>
+        <Fields Id="NewsReport" Type="Movie"/>
+        <Instances Id="Nova01">
+            <Fixed Fixed="0.5998">
+                <Field Id="ArchivesImageSettings" Index="1"/>
+            </Fixed>
+            <GameLink GameLink="Marine">
+                <Field Id="ExtraArmyCategoryUnlock"/>
+            </GameLink>
+            <GameLink GameLink="Reaper">
+                <Field Id="ExtraArmyCategoryUnlock" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Marauder">
+                <Field Id="ExtraArmyCategoryUnlock" Index="2"/>
+            </GameLink>
+            <GameLink GameLink="Nova01_1">
+                <Field Id="Achievements"/>
+            </GameLink>
+            <GameLink GameLink="Nova01_2">
+                <Field Id="Achievements" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Nova01_3">
+                <Field Id="Achievements" Index="2"/>
+            </GameLink>
+            <GameLink GameLink="Pitch_Nova01">
+                <Field Id="Pitch"/>
+            </GameLink>
+            <GameLink GameLink="Story_Meta_Nova01_Bonus">
+                <Field Id="BonusAchievementTerm"/>
+            </GameLink>
+            <Image Image="Assets\Textures\ui_nova_loading_nova01.dds">
+                <Field Id="CampaignScreenImage"/>
+            </Image>
+            <Image>
+                <Field Id="UI_VictoryScreen_Background"/>
+            </Image>
+            <User Type="Locations" Instance="DOM Secret Base">
+                <Field Id="Location"/>
+            </User>
+        </Instances>
+        <Instances Id="Nova02">
+            <Fixed Fixed="0.5998">
+                <Field Id="ArchivesImageSettings" Index="1"/>
+            </Fixed>
+            <GameLink GameLink="Hellbat">
+                <Field Id="ExtraArmyCategoryUnlock"/>
+            </GameLink>
+            <GameLink GameLink="Hellion">
+                <Field Id="ExtraArmyCategoryUnlock" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="SiegeTank">
+                <Field Id="ExtraArmyCategoryUnlock" Index="2"/>
+            </GameLink>
+            <GameLink GameLink="Nova02_1">
+                <Field Id="Achievements"/>
+            </GameLink>
+            <GameLink GameLink="Nova02_2">
+                <Field Id="Achievements" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Nova02_3">
+                <Field Id="Achievements" Index="2"/>
+            </GameLink>
+            <GameLink GameLink="Briefing_Nova02">
+                <Field Id="Pitch"/>
+            </GameLink>
+            <GameLink GameLink="Story_Meta_Nova02_Bonus">
+                <Field Id="BonusAchievementTerm"/>
+            </GameLink>
+            <Image Image="Assets\Textures\ui_nova_loading_nova02.dds">
+                <Field Id="CampaignScreenImage"/>
+            </Image>
+            <Image Image="Assets\Textures\ui_nova_loading_novaspace01.dds">
+                <Field Id="LoadingScreenVictoryImage"/>
+            </Image>
+            <User Type="Locations" Instance="Borea">
+                <Field Id="Location"/>
+            </User>
+        </Instances>
+        <Instances Id="Nova03">
+            <Fixed Fixed="1.0998">
+                <Field Id="ArchivesImageSettings" Index="2"/>
+            </Fixed>
+            <GameLink GameLink="Nova03_1">
+                <Field Id="Achievements"/>
+            </GameLink>
+            <GameLink GameLink="Nova03_2">
+                <Field Id="Achievements" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Nova03_3">
+                <Field Id="Achievements" Index="2"/>
+            </GameLink>
+            <GameLink GameLink="Briefing_Nova03">
+                <Field Id="Pitch"/>
+            </GameLink>
+            <GameLink GameLink="Story_Meta_Nova03_Bonus">
+                <Field Id="BonusAchievementTerm"/>
+            </GameLink>
+            <GameLink GameLink="Banshee">
+                <Field Id="ExtraArmyCategoryUnlock"/>
+            </GameLink>
+            <GameLink GameLink="Goliath">
+                <Field Id="ExtraArmyCategoryUnlock" Index="1"/>
+            </GameLink>
+            <Image Image="Assets\Textures\ui_nova_loading_nova03.dds">
+                <Field Id="CampaignScreenImage"/>
+            </Image>
+            <Image Image="Assets\Textures\ui_nova_loading_novashiptravel01.dds">
+                <Field Id="LoadingScreenVictoryImage"/>
+            </Image>
+            <Image>
+                <Field Id="UI_VictoryScreen_Background"/>
+            </Image>
+            <User Type="Locations" Instance="Tarsonis City">
+                <Field Id="Location"/>
+            </User>
+        </Instances>
+        <Instances Id="Nova04">
+            <Fixed Fixed="1.2">
+                <Field Id="ArchivesImageSettings" Index="2"/>
+            </Fixed>
+            <Fixed Fixed="0.45">
+                <Field Id="ArchivesImageSettings"/>
+            </Fixed>
+            <GameLink GameLink="Liberator">
+                <Field Id="ExtraArmyCategoryUnlock"/>
+            </GameLink>
+            <GameLink GameLink="Raven">
+                <Field Id="ExtraArmyCategoryUnlock" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Nova04_1">
+                <Field Id="Achievements"/>
+            </GameLink>
+            <GameLink GameLink="Nova04_2">
+                <Field Id="Achievements" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Nova04_3">
+                <Field Id="Achievements" Index="2"/>
+            </GameLink>
+            <GameLink GameLink="Story_Meta_Nova04_Bonus">
+                <Field Id="BonusAchievementTerm"/>
+            </GameLink>
+            <Movie Movie="Assets\Textures\video_newsreport_nova02_04intro.ogv">
+                <Field Id="NewsReport"/>
+            </Movie>
+            <User Type="Locations" Instance="Nova04PH">
+                <Field Id="Location"/>
+            </User>
+        </Instances>
+        <Instances Id="Nova05">
+            <GameLink GameLink="Nova05_1">
+                <Field Id="Achievements"/>
+            </GameLink>
+            <GameLink GameLink="Nova05_2">
+                <Field Id="Achievements" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Nova05_3">
+                <Field Id="Achievements" Index="2"/>
+            </GameLink>
+            <GameLink GameLink="Story_Meta_Nova05_Bonus">
+                <Field Id="BonusAchievementTerm"/>
+            </GameLink>
+            <Movie Movie="Assets\Textures\video_newsreport_nova02_05intro.ogv">
+                <Field Id="NewsReport"/>
+            </Movie>
+            <User Type="Locations" Instance="Nova05PH">
+                <Field Id="Location"/>
+            </User>
+        </Instances>
+        <Instances Id="Nova06">
+            <Fixed Fixed="0.4">
+                <Field Id="ArchivesImageSettings"/>
+            </Fixed>
+            <Fixed Fixed="0.45">
+                <Field Id="ArchivesImageSettings" Index="1"/>
+            </Fixed>
+            <Fixed Fixed="1.0998">
+                <Field Id="ArchivesImageSettings" Index="2"/>
+            </Fixed>
+            <GameLink GameLink="Nova06_1">
+                <Field Id="Achievements"/>
+            </GameLink>
+            <GameLink GameLink="Nova06_2">
+                <Field Id="Achievements" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Nova06_3">
+                <Field Id="Achievements" Index="2"/>
+            </GameLink>
+            <GameLink GameLink="Story_Meta_Nova06_Bonus">
+                <Field Id="BonusAchievementTerm"/>
+            </GameLink>
+            <Image>
+                <Field Id="UI_VictoryScreen_Background"/>
+            </Image>
+            <Image Image="Assets\Textures\ui_nova_loading_novashiptravel01.dds">
+                <Field Id="LoadingScreenVictoryImage"/>
+            </Image>
+            <Movie Movie="Assets\Textures\video_newsreport_nova02_06intro.ogv">
+                <Field Id="NewsReport"/>
+            </Movie>
+            <User Type="Locations" Instance="Nova06PH">
+                <Field Id="Location"/>
+            </User>
+        </Instances>
+        <Instances Id="Nova07">
+            <Fixed Fixed="0.4">
+                <Field Id="ArchivesImageSettings"/>
+            </Fixed>
+            <GameLink GameLink="Battlecruiser">
+                <Field Id="ExtraArmyCategoryUnlock"/>
+            </GameLink>
+            <GameLink GameLink="Nova07_1">
+                <Field Id="Achievements"/>
+            </GameLink>
+            <GameLink GameLink="Nova07_2">
+                <Field Id="Achievements" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Nova07_3">
+                <Field Id="Achievements" Index="2"/>
+            </GameLink>
+            <GameLink GameLink="Story_Meta_Nova07_Bonus">
+                <Field Id="BonusAchievementTerm"/>
+            </GameLink>
+            <Image>
+                <Field Id="CampaignScreenImage"/>
+            </Image>
+            <Movie Movie="Assets\Textures\video_newsreport_nova03_07intro.ogv">
+                <Field Id="NewsReport"/>
+            </Movie>
+            <User Type="Locations" Instance="Nova07PH">
+                <Field Id="Location"/>
+            </User>
+        </Instances>
+        <Instances Id="Nova08">
+            <Fixed Fixed="1.2">
+                <Field Id="ArchivesImageSettings" Index="2"/>
+            </Fixed>
+            <GameLink GameLink="Nova08_1">
+                <Field Id="Achievements"/>
+            </GameLink>
+            <GameLink GameLink="Nova08_2">
+                <Field Id="Achievements" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Nova08_3">
+                <Field Id="Achievements" Index="2"/>
+            </GameLink>
+            <GameLink GameLink="Story_Meta_Nova08_Bonus">
+                <Field Id="BonusAchievementTerm"/>
+            </GameLink>
+            <Movie Movie="Assets\Textures\video_newsreport_nova03_08intro.ogv">
+                <Field Id="NewsReport"/>
+            </Movie>
+            <User Type="Locations" Instance="Nova08PH">
+                <Field Id="Location"/>
+            </User>
+        </Instances>
+        <Instances Id="Nova09">
+            <Fixed Fixed="0.5197">
+                <Field Id="ArchivesImageSettings"/>
+            </Fixed>
+            <Fixed Fixed="0.5598">
+                <Field Id="ArchivesImageSettings" Index="1"/>
+            </Fixed>
+            <Fixed Fixed="1.1098">
+                <Field Id="ArchivesImageSettings" Index="2"/>
+            </Fixed>
+            <GameLink GameLink="Nova09_1">
+                <Field Id="Achievements"/>
+            </GameLink>
+            <GameLink GameLink="Nova09_2">
+                <Field Id="Achievements" Index="1"/>
+            </GameLink>
+            <GameLink GameLink="Nova09_3">
+                <Field Id="Achievements" Index="2"/>
+            </GameLink>
+            <Movie Movie="Assets\Textures\video_newsreport_nova03_09intro.ogv">
+                <Field Id="NewsReport"/>
+            </Movie>
+            <User Type="Locations" Instance="Nova09PH">
+                <Field Id="Location"/>
+            </User>
+        </Instances>
+        <Instances Id="NStory01">
+            <Image Image="Assets\Textures\loading-hyperion4.dds">
+                <Field Id="LoadingScreenVictoryImage"/>
+            </Image>
+            <User Type="Locations" Instance="NovaStoryPH">
+                <Field Id="Location"/>
+            </User>
+        </Instances>
+    </CUser>
+    <CUser id="MissionObjective">
+        <Instances Id="Nova01Primary01"/>
+        <Instances Id="Nova01Primary02"/>
+        <Instances Id="Nova01Primary03"/>
+        <Instances Id="Nova01Primary04"/>
+        <Instances Id="Nova01Primary05"/>
+        <Instances Id="Nova01Bonus01"/>
+        <Instances Id="Nova02Primary01"/>
+        <Instances Id="Nova02Bonus01"/>
+        <Instances Id="Nova02Bonus02"/>
+        <Instances Id="Nova03Primary01"/>
+        <Instances Id="Nova03Primary02"/>
+        <Instances Id="Nova03Primary03"/>
+        <Instances Id="Nova03Bonus01"/>
+        <Instances Id="Nova03Bonus02"/>
+        <Instances Id="Nova04Primary01"/>
+        <Instances Id="Nova04Primary02"/>
+        <Instances Id="Nova04Primary03"/>
+        <Instances Id="Nova04Primary04"/>
+        <Instances Id="Nova04Bonus01"/>
+        <Instances Id="Nova04Bonus02"/>
+        <Instances Id="Nova04Bonus03"/>
+        <Instances Id="Nova05Primary01"/>
+        <Instances Id="Nova05Primary02"/>
+        <Instances Id="Nova05Bonus01"/>
+        <Instances Id="Nova05Bonus02"/>
+        <Instances Id="Nova06Primary01"/>
+        <Instances Id="Nova06Bonus01"/>
+        <Instances Id="Nova07Primary01"/>
+        <Instances Id="Nova07Primary02"/>
+        <Instances Id="Nova07Primary03"/>
+        <Instances Id="Nova07Primary04"/>
+        <Instances Id="Nova07Primary05"/>
+        <Instances Id="Nova07Bonus01"/>
+        <Instances Id="Nova07Bonus02"/>
+        <Instances Id="Nova07Bonus03">
+            <Int Int="1">
+                <Field Id="IsSecret"/>
+            </Int>
+        </Instances>
+        <Instances Id="Nova08Primary01"/>
+        <Instances Id="Nova08Bonus01"/>
+        <Instances Id="Nova09Primary01">
+            <Text Text="UserData/MissionObjective/Nova09Primary01_FormatText">
+                <Field Id="FormatText"/>
+            </Text>
+        </Instances>
+        <Instances Id="Nova09Primary02"/>
+        <Instances Id="Nova09Primary03"/>
+        <Instances Id="Nova09Primary04"/>
+    </CUser>
+    <CUser id="Scenes">
+        <Instances Id="MP01_010">
+            <GameLink GameLink="SMX3_Cutscene_MP01_010">
+                <Field Id="Conversation"/>
+            </GameLink>
+            <Image Image="Assets\Textures\smx3_archive_mission01.dds">
+                <Field Id="Image"/>
+            </Image>
+            <String String="SMX3_Cutscene_MP01_010">
+                <Field Id="Cutscene"/>
+            </String>
+            <String String="Before Nova01">
+                <Field Id="Notes"/>
+            </String>
+            <Text Text="UserData/Scenes/MP01_010_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="CutScene">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+        <Instances Id="MP01_020">
+            <GameLink GameLink="SMX3_Cutscene_MP01_020">
+                <Field Id="Conversation"/>
+            </GameLink>
+            <Image Image="Assets\Textures\smx3_archive_mission02.dds">
+                <Field Id="Image"/>
+            </Image>
+            <String String="SMX3_Cutscene_MP01_020">
+                <Field Id="Cutscene"/>
+            </String>
+            <String String="Before Nova02">
+                <Field Id="Notes"/>
+            </String>
+            <Text Text="UserData/Scenes/MP01_020_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="CutScene">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+        <Instances Id="MP01_030">
+            <GameLink GameLink="SMX3_Cutscene_MP01_030">
+                <Field Id="Conversation"/>
+            </GameLink>
+            <Image Image="Assets\Textures\smx3_archive_mission03.dds">
+                <Field Id="Image"/>
+            </Image>
+            <String String="SMX3_Cutscene_MP01_030">
+                <Field Id="Cutscene"/>
+            </String>
+            <String String="Before Nova03">
+                <Field Id="Notes"/>
+            </String>
+            <Text Text="UserData/Scenes/MP01_030_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="CutScene">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+        <Instances Id="MP01_035">
+            <Image>
+                <Field Id="Image"/>
+            </Image>
+            <String String="Intro to Nova03">
+                <Field Id="Notes"/>
+            </String>
+            <String String="SMX3_Cutscene_MP01_035">
+                <Field Id="Cutscene"/>
+            </String>
+            <Text Text="UserData/Scenes/MP01_035_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="Ingame">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+        <Instances Id="MP01_040">
+            <GameLink GameLink="SMX3_Cutscene_MP01_040">
+                <Field Id="Conversation"/>
+            </GameLink>
+            <Image Image="Assets\Textures\smx3_archive_mission04.dds">
+                <Field Id="Image"/>
+            </Image>
+            <String String="SMX3_Cutscene_MP01_040">
+                <Field Id="Cutscene"/>
+            </String>
+            <String String="After Nova03">
+                <Field Id="Notes"/>
+            </String>
+            <Text Text="UserData/Scenes/MP01_040_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="CutScene">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+        <Instances Id="MP02_005">
+            <GameLink GameLink="SMX3_Cutscene_MP02_005">
+                <Field Id="Conversation"/>
+            </GameLink>
+            <Image Image="Assets\Textures\smx3_archive_mission05.dds">
+                <Field Id="Image"/>
+            </Image>
+            <String String="Before Nova04 1/2">
+                <Field Id="Notes"/>
+            </String>
+            <String String="SMX3_Cutscene_MP02_005">
+                <Field Id="Cutscene"/>
+            </String>
+            <Text Text="UserData/Scenes/MP02_005_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="CutScene">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+        <Instances Id="MP02_010">
+            <GameLink GameLink="SMX3_Cutscene_MP02_010">
+                <Field Id="Conversation"/>
+            </GameLink>
+            <Image>
+                <Field Id="Image"/>
+            </Image>
+            <String String="Before Nova04 2/2">
+                <Field Id="Notes"/>
+            </String>
+            <String String="SMX3_Cutscene_MP02_010">
+                <Field Id="Cutscene"/>
+            </String>
+            <Text Text="UserData/Scenes/MP02_010_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="CutScene">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+        <Instances Id="Nova04VoidRay">
+            <String String="SMX3_Cutscene_Nova04VoidRay">
+                <Field Id="Cutscene"/>
+            </String>
+            <String String="During Nova04">
+                <Field Id="Notes"/>
+            </String>
+            <Text Text="UserData/Scenes/Nova04VoidRay_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="CutScene">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+        <Instances Id="MP02_020">
+            <GameLink GameLink="SMX3_Cutscene_MP02_020">
+                <Field Id="Conversation"/>
+            </GameLink>
+            <Image Image="Assets\Textures\smx3_archive_mission06.dds">
+                <Field Id="Image"/>
+            </Image>
+            <String String="SMX3_Cutscene_MP02_020">
+                <Field Id="Cutscene"/>
+            </String>
+            <String String="Before Nova05">
+                <Field Id="Notes"/>
+            </String>
+            <Text Text="UserData/Scenes/MP02_020_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="CutScene">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+        <Instances Id="MP02_025">
+            <GameLink GameLink="SMX3_Cutscene_MP02_025">
+                <Field Id="Conversation"/>
+            </GameLink>
+            <Image>
+                <Field Id="Image"/>
+            </Image>
+            <String String="SMX3_Cutscene_MP02_025">
+                <Field Id="Cutscene"/>
+            </String>
+            <String String="Before Nova05">
+                <Field Id="Notes"/>
+            </String>
+            <Text Text="UserData/Scenes/MP02_025_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="Ingame">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+        <Instances Id="MP02_030">
+            <GameLink GameLink="SMX3_Cutscene_MP02_030">
+                <Field Id="Conversation"/>
+            </GameLink>
+            <Image Image="Assets\Textures\smx3_archive_mission07.dds">
+                <Field Id="Image"/>
+            </Image>
+            <String String="SMX3_Cutscene_MP02_030">
+                <Field Id="Cutscene"/>
+            </String>
+            <String String="Before Nova06">
+                <Field Id="Notes"/>
+            </String>
+            <Text Text="UserData/Scenes/MP02_030_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="CutScene">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+        <Instances Id="MP02_035">
+            <GameLink GameLink="SMX3_Cutscene_MP02_035">
+                <Field Id="Conversation"/>
+            </GameLink>
+            <Image>
+                <Field Id="Image"/>
+            </Image>
+            <String String="SMX3_Cutscene_MP02_035">
+                <Field Id="Cutscene"/>
+            </String>
+            <String String="Before Nova06">
+                <Field Id="Notes"/>
+            </String>
+            <Text Text="UserData/Scenes/MP02_035_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="Ingame">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+        <Instances Id="MP02_040">
+            <GameLink GameLink="SMX3_Cutscene_MP02_040">
+                <Field Id="Conversation"/>
+            </GameLink>
+            <Image Image="Assets\Textures\smx3_archive_mission08.dds">
+                <Field Id="Image"/>
+            </Image>
+            <String String="SMX3_Cutscene_MP02_040">
+                <Field Id="Cutscene"/>
+            </String>
+            <String String="After Nova06">
+                <Field Id="Notes"/>
+            </String>
+            <Text Text="UserData/Scenes/MP02_040_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="CutScene">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+        <Instances Id="MP03_010">
+            <GameLink GameLink="SMX3_Cutscene_MP03_010">
+                <Field Id="Conversation"/>
+            </GameLink>
+            <Image Image="Assets\Textures\smx3_archive_mission09.dds">
+                <Field Id="Image"/>
+            </Image>
+            <String String="Pre Nova07">
+                <Field Id="Notes"/>
+            </String>
+            <String String="SMX3_Cutscene_MP03_010">
+                <Field Id="Cutscene"/>
+            </String>
+            <Text Text="UserData/Scenes/MP03_010_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="CutScene">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+        <Instances Id="MP03_020">
+            <Image Image="Assets\Textures\smx3_archive_mission10.dds">
+                <Field Id="Image"/>
+            </Image>
+            <String String="Pre Nova08">
+                <Field Id="Notes"/>
+            </String>
+            <String String="SMX3_Cutscene_MP03_020">
+                <Field Id="Cutscene"/>
+            </String>
+            <Text Text="UserData/Scenes/MP03_020_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="CutScene">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+        <Instances Id="MP03_030">
+            <Image Image="Assets\Textures\smx3_archive_mission11.dds">
+                <Field Id="Image"/>
+            </Image>
+            <String String="Pre Nova09">
+                <Field Id="Notes"/>
+            </String>
+            <String String="SMX3_Cutscene_MP03_030">
+                <Field Id="Cutscene"/>
+            </String>
+            <Text Text="UserData/Scenes/MP03_030_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="CutScene">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+        <Instances Id="MP03_035">
+            <String String="Post Nova09 Intro">
+                <Field Id="Notes"/>
+            </String>
+            <String String="SMX3_Cutscene_MP03_035">
+                <Field Id="Cutscene"/>
+            </String>
+            <Text Text="UserData/Scenes/MP03_035_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="CutScene">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+        <Instances Id="MP03_040">
+            <Image Image="Assets\Textures\smx3_archive_mission12.dds">
+                <Field Id="Image"/>
+            </Image>
+            <String String="Post Nova09">
+                <Field Id="Notes"/>
+            </String>
+            <String String="SMX3_Cutscene_MP03_040">
+                <Field Id="Cutscene"/>
+            </String>
+            <Text Text="UserData/Scenes/MP03_040_Name">
+                <Field Id="Name"/>
+            </Text>
+            <User Type="SceneTypes" Instance="CutScene">
+                <Field Id="Type"/>
+            </User>
+        </Instances>
+    </CUser>
+    <CUser id="StoryStates">
+        <Instances Id="NovaHasRevivedBefore"/>
+    </CUser>
+    <CUser id="TechUnit">
+        <Instances Id="Banshee">
+            <GameLink GameLink="Nova03">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <GameLink GameLink="Terr">
+                <Field Id="RequiredRace"/>
+            </GameLink>
+            <Int Int="9">
+                <Field Id="UIOrder"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="StartsLocked"/>
+            </Int>
+            <Text Text="UserData/TechUnit/Banshee_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Battlecruiser">
+            <GameLink GameLink="Nova07">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <Int Int="1">
+                <Field Id="StartsLocked"/>
+            </Int>
+            <Int Int="4">
+                <Field Id="UIOrder"/>
+            </Int>
+            <Text Text="UserData/TechUnit/Battlecruiser_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Bunker">
+            <Text Text="UserData/TechUnit/Bunker_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="CommandCenter">
+            <Text Text="UserData/TechUnit/CommandCenter_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Hellbat">
+            <GameLink GameLink="Nova02">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <Int Int="5">
+                <Field Id="UIOrder"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="StartsLocked"/>
+            </Int>
+            <Text Text="UserData/TechUnit/Hellbat_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Hellion">
+            <GameLink GameLink="Nova02">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <Int Int="1">
+                <Field Id="StartsLocked"/>
+            </Int>
+            <Text Text="UserData/TechUnit/Hellion_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Liberator">
+            <GameLink GameLink="Nova03">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <GameLink GameLink="Terr">
+                <Field Id="RequiredRace"/>
+            </GameLink>
+            <Int Int="10">
+                <Field Id="UIOrder"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="StartsLocked"/>
+            </Int>
+            <Text Text="UserData/TechUnit/Liberator_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Marauder">
+            <Int Int="3">
+                <Field Id="UIOrder"/>
+            </Int>
+            <Text Text="UserData/TechUnit/Marauder_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Marine">
+            <Int Int="1">
+                <Field Id="UIOrder"/>
+            </Int>
+            <Text Text="UserData/TechUnit/Marine_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="MissileTurret">
+            <Text Text="UserData/TechUnit/MissileTurret_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Raven">
+            <GameLink GameLink="Nova04">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <Int Int="1">
+                <Field Id="StartsLocked"/>
+            </Int>
+            <Int Int="11">
+                <Field Id="UIOrder"/>
+            </Int>
+            <Text Text="UserData/TechUnit/Raven_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Reaper">
+            <Int Int="2">
+                <Field Id="UIOrder"/>
+            </Int>
+            <Text Text="UserData/TechUnit/Reaper_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="SCV">
+            <Text Text="UserData/TechUnit/SCV_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Siege Tank">
+            <GameLink GameLink="Nova02">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <Int Int="6">
+                <Field Id="UIOrder"/>
+            </Int>
+            <Int Int="1">
+                <Field Id="StartsLocked"/>
+            </Int>
+            <Text Text="UserData/TechUnit/Siege Tank_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+        <Instances Id="Goliath">
+            <GameLink GameLink="Nova03">
+                <Field Id="RequiredMission"/>
+            </GameLink>
+            <Int Int="1">
+                <Field Id="StartsLocked"/>
+            </Int>
+            <Int Int="7">
+                <Field Id="UIOrder"/>
+            </Int>
+            <Text Text="UserData/TechUnit/Goliath_Name">
+                <Field Id="Name"/>
+            </Text>
+        </Instances>
+    </CUser>
+    <CUser id="Timestamps">
+        <Instances Id="Cutscene020">
+            <Fixed>
+                <Field Id="StartDelay"/>
+            </Fixed>
+            <Int Int="1">
+                <Field Id="FromBookmark"/>
+            </Int>
+            <Text Text="UserData/Timestamps/Cutscene020_Title">
+                <Field Id="Title"/>
+            </Text>
+            <Text Text="UserData/Timestamps/Cutscene020_Description">
+                <Field Id="Description"/>
+            </Text>
+            <User Type="Scenes" Instance="MP01_020">
+                <Field Id="Scene"/>
+            </User>
+        </Instances>
+        <Instances Id="CutsceneMP02_030">
+            <Int Int="1">
+                <Field Id="FromBookmark"/>
+            </Int>
+            <Text Text="UserData/Timestamps/CutsceneMP02_030_Title">
+                <Field Id="Title"/>
+            </Text>
+            <Text Text="UserData/Timestamps/CutsceneMP02_030_Description">
+                <Field Id="Description"/>
+            </Text>
+            <User Type="Scenes" Instance="MP02_030">
+                <Field Id="Scene"/>
+            </User>
+        </Instances>
+        <Instances Id="CutsceneMP02_040">
+            <Int Int="1">
+                <Field Id="FromBookmark"/>
+            </Int>
+            <Text Text="UserData/Timestamps/CutsceneMP02_040_Title">
+                <Field Id="Title"/>
+            </Text>
+            <Text Text="UserData/Timestamps/CutsceneMP02_040_Description">
+                <Field Id="Description"/>
+            </Text>
+            <User Type="Scenes" Instance="MP02_040">
+                <Field Id="Scene"/>
+            </User>
+        </Instances>
+        <Instances Id="CutsceneMP03_010">
+            <Fixed>
+                <Field Id="StartDelay"/>
+            </Fixed>
+            <Int Int="1">
+                <Field Id="FromBookmark"/>
+            </Int>
+            <Text Text="UserData/Timestamps/CutsceneMP03_010_Title">
+                <Field Id="Title"/>
+            </Text>
+            <Text Text="UserData/Timestamps/CutsceneMP03_010_Description">
+                <Field Id="Description"/>
+            </Text>
+            <User Type="Scenes" Instance="MP03_010">
+                <Field Id="Scene"/>
+            </User>
+        </Instances>
+        <Instances Id="CutsceneMP03_035">
+            <Int Int="1">
+                <Field Id="FromBookmark"/>
+            </Int>
+            <Text Text="UserData/Timestamps/CutsceneMP03_035_Title">
+                <Field Id="Title"/>
+            </Text>
+            <Text Text="UserData/Timestamps/CutsceneMP03_035_Description">
+                <Field Id="Description"/>
+            </Text>
+            <User Type="Scenes" Instance="MP03_035">
+                <Field Id="Scene"/>
+            </User>
+        </Instances>
+        <Instances Id="[Override]DefaultPlaceholder">
+            <Text Text="UserData/Timestamps/[Override]DefaultPlaceholder_Title">
+                <Field Id="Title"/>
+            </Text>
+            <Text Text="UserData/Timestamps/[Override]DefaultPlaceholder_Description">
+                <Field Id="Description"/>
+            </Text>
+        </Instances>
+    </CUser>
+</Catalog>

@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib012B0FDE_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Time Warp
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib012B0FDE_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib012B0FDE_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "TimeWarp");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib012B0FDE_gt_Initialization_Init () {
+    lib012B0FDE_gt_Initialization = TriggerCreate("lib012B0FDE_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib012B0FDE_gt_Initialization);
+}
+
+void lib012B0FDE_InitTriggers () {
+    lib012B0FDE_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib012B0FDE_InitLib_completed = false;
+
+void lib012B0FDE_InitLib () {
+    if (lib012B0FDE_InitLib_completed) {
+        return;
+    }
+
+    lib012B0FDE_InitLib_completed = true;
+
+    lib012B0FDE_InitLibraries();
+    lib012B0FDE_InitTriggers();
+}
+

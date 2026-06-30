@@ -1,0 +1,944 @@
+//==================================================================================================
+//  AI Native Function Prototypes & Constants
+//==================================================================================================
+
+//--------------------------------------------------------------------------------------------------
+//  Misc Constants
+//--------------------------------------------------------------------------------------------------
+const int c_ScoutStartLocations = 0;
+const int c_ScoutBlockedPath    = 1;
+const int c_ScoutMinerals       = 2;
+const int c_ScoutDefault        = 3;
+const int c_ScoutPlayers        = 4;
+
+const int c_noFlags             = 0;
+const point c_nullPoint         = null;
+const marker c_noMarker         = null;
+const string c_noTech           = null;
+const abilcmd c_nullCmd         = null;
+const wave c_nullWave           = null;
+const unit c_nullUnit           = null;
+const string c_emptyString      = null;
+const string c_nullString       = null;
+
+const bool c_stockIdle          = true;
+const bool c_stockAlways        = false;
+
+const bool c_stockMinPeons      = true;
+const bool c_stockMaxPeons      = false;
+
+const bool c_stockNeededFarms   = true;
+const bool c_stockNormalFarms   = false;
+
+const int c_allEnemies          = -1;
+
+const int c_defaultGasPeonCount = -1;
+
+const int c_expandDefault       = 1;
+const int c_expandVitalHard     = 4;
+const int c_expandNormalHard    = 6;
+const int c_expandIdleHard      = 7;
+
+//--------------------------------------------------------------------------------------------------
+//  Unit Order Priorities
+//--------------------------------------------------------------------------------------------------
+// needs to match the order in Brain.h
+const int c_prioNone              = 0;
+const int c_prioExtraScout        = 1;
+const int c_prioWorkerJob         = 2;
+const int c_prioUseableBully      = 3;
+const int c_prioStaticBully       = 4;
+const int c_prioGather            = 5;
+const int c_prioExpand            = 6;
+const int c_prioCombat            = 7;
+const int c_prioWaveIdle          = 8;
+const int c_prioScout             = 9;
+const int c_prioEarlyDefense      = 10;
+const int c_prioWavePeon          = 11;
+const int c_prioWave              = 12;
+const int c_prioTransport         = 13;
+const int c_prioDetect            = 14;
+const int c_prioNuke              = 15;
+const int c_prioScriptControlled  = 16;
+
+//--------------------------------------------------------------------------------------------------
+//  Races
+//--------------------------------------------------------------------------------------------------
+// needs to match Galaxy.cpp
+const int c_raceMulti   = -1;
+const int c_raceUnknown = 0;
+const int c_raceProtoss = 1;
+const int c_raceTerran  = 2;
+const int c_raceZerg    = 3;
+
+//--------------------------------------------------------------------------------------------------
+//  Build and Train Priorities
+//--------------------------------------------------------------------------------------------------
+// needs to match the values in Captain.h
+const int c_makePriorityLowest     = 0;
+const int c_makePriorityBully      = 1;
+const int c_makePriorityTown       = 2;
+const int c_makePriorityResearch   = 3;
+const int c_makePriorityAttack     = 4;
+const int c_makePriorityDefense    = 5;
+const int c_makePriorityExpand     = 6;
+const int c_makePriorityContinue   = 7;
+const int c_makePriorityDetection  = 8;
+const int c_makePriorityFood       = 9;
+const int c_makePriorityPowerCreep = 10;
+const int c_makePriorityDropoff    = 11;
+const int c_makePriorityHighest    = 12;
+
+//--------------------------------------------------------------------------------------------------
+//  Town Locations
+//--------------------------------------------------------------------------------------------------
+const int c_townInvalid = -2;
+const int c_townMain    = -1;
+const int c_townOne     = 0;
+const int c_townTwo     = 1;
+const int c_townThree   = 2;
+const int c_townFour    = 3;
+const int c_townFive    = 4;
+const int c_townSix     = 5;
+const int c_townSeven   = 6;
+const int c_townEight   = 7;
+const int c_townMax     = 32;
+
+//--------------------------------------------------------------------------------------------------
+//  Town States
+//--------------------------------------------------------------------------------------------------
+const int c_townStateInvalid      = -1;
+const int c_townStateUnused       = 0;
+const int c_townStateClaimed      = 1;
+const int c_townStateBuilding     = 2;
+const int c_townStateEstablished  = 3;
+
+//--------------------------------------------------------------------------------------------------
+//  Wave States
+//--------------------------------------------------------------------------------------------------
+// needs to match CWave::EWaveType
+const int c_waveStateUnknown      = 0;
+const int c_waveStateIdle         = 1;
+const int c_waveStateSuicide      = 2;
+const int c_waveStateMerge        = 3;
+const int c_waveStateAttack       = 4;
+const int c_waveStateDropAttack   = 5;
+const int c_waveStateDefend       = 6;
+const int c_waveStateScout        = 7;
+const int c_waveStateRetreat      = 8;
+const int c_waveStateDropRetreat  = 9;
+const int c_waveStateClearObs     = 10;
+const int c_waveStateGuardHome    = 11;
+const int c_waveStateBeacon       = 12;
+
+//--------------------------------------------------------------------------------------------------
+//  Wave Default Names
+//--------------------------------------------------------------------------------------------------
+const int c_waveMain        = 0;
+const int c_waveDefend      = 1;
+const int c_waveAttack      = 2;
+const int c_waveDivert1     = 3;
+const int c_waveDivert2     = 4;
+const int c_waveClearObs    = 5;
+const int c_waveHome        = 6;
+
+//--------------------------------------------------------------------------------------------------
+//  Defense Threat Query Flags
+//--------------------------------------------------------------------------------------------------
+// Needs to match the flags in CCaptain
+// base flags
+const int c_dtIncludeSelfThreat     = 1;
+const int c_dtIncludeAllyThreat     = 2;
+const int c_dtIncludeMinorThreat    = 4;
+const int c_dtIncludeCantAttack     = 8;
+// shortcut combinations
+const int c_dtRealSelfThreat        = 1;
+const int c_dtRealThreat            = 3;
+const int c_dtAnySelfThreat         = 13;
+const int c_dtAnyThreat             = 15;
+
+//--------------------------------------------------------------------------------------------------
+//  Best Target Flags
+//--------------------------------------------------------------------------------------------------
+// Needs to match the flags in CCaptain
+const int c_btNeedsPath                 = 1;        // only pick targets that can be pathed to
+const int c_btBuildingOrNeedsPath       = 2;        // pick buildings (path then no path), then pick other pathable targets
+const int c_btPrefersPath               = 4;        // prefer any target that can be pathed to, but allow any target
+const int c_btAllowJumping              = 8;        // allow cliff jumping during pathing
+const int c_btSortByDistance            = 16;       // use distance in the target sorting
+const int c_btSortByFullType            = 32;       // use full type versus only using structure vs unit
+const int c_btSortByLeastRecent         = 64;       // choose targets we haven't picked before
+const int c_btSortByMeleeRules          = 128;      // chooses a target of the highest type based on special melee rules
+const int c_btSortMeleeAllyAttackOnly   = 256;      // chooses the best target only considering already attacking computer allies
+const int c_btSortMeleeAllyDefendOnly   = 512;      // chooses the best target only considering computer allies that want help defending
+const int c_btMeleePreferSplitAttacking = 1024;     // melee AI will each try to hit different opponents rather than attacking the same target (weaker AI, but more fun to play against) (ignored for more than 2 teams)
+
+const int c_btDefaultNeedsPath          = 1 + 16 + 32;
+const int c_btDefaultPrefersPath        = 4 + 16 + 32;
+const int c_btDefaultAllyAttackOnly     = 1 + 16 + 32 + 128 + 256;
+const int c_btDefaultAllyDefendOnly     = 1 + 16 + 32 + 128 + 512;
+
+//--------------------------------------------------------------------------------------------------
+//  Difficulty
+//--------------------------------------------------------------------------------------------------
+// Needs to match the flags in CCaptain
+const int c_diffPressForward            = 0;  // When units are bumped from behind take a step forward to make room for others to get in range (think 30 marines fighting in a choke, without this only the front 5 will get into firing range).
+const int c_diffRepairDamage            = 1;  // Whether to repair at all on this difficulty setting.
+const int c_diffFleeDamage              = 2;  // Individual units back away for a sec or burrow when damaged.
+const int c_diffOptimizeGas             = 3;  // Controls how peons are distributed between minerals and gas (paying attention to excess reserves), only used in melee. (lower melee difficulties are dumber).
+const int c_diffDefendWithPeons         = 4;  // Use workers to help defend
+const int c_diffNormalVision            = 5;  // Use normal vision rules (campaign & cheating melee AIs turn this off).
+const int c_diffLimitAPM                = 6;  // Enforce the regular APM limits for all actions at this difficulty
+const int c_diffLimitAPMCombat          = 7;  // If we're not limiting all APM, do we still limit combat APM  (has no effect if c_diffLimitAPM is Enabled since combat is limited by that).
+const int c_diffAutoLoadBunkers         = 8;  // Automatically load & unload units into bunkers (melee only setting,  basically setting this on does melee bunker logic, off does campaign bunker logic).
+const int c_diffEarlyGameRepair         = 9;  // If this is on, we use special melee rules for repairing very early in the game (ie only repair if truly needed, don't repair every time the probe attacks the command center).
+const int c_diffEnableDangerMap         = 10;  // Enables the danger map so units can avoid danger while pathing, always used for non-wave units if enabled (off for all campaign currently). Enabled for some Allied Commanders difficulties.
+const int c_diffWaveAvoidDanger         = 11; // When waves are pathing around the map avoid danger, requires danger map to actually do anything (off for all campaign currently). Enabled for some Allied Commanders difficulties.
+const int c_diffNormalTargetPrio        = 12; // Lower difficulty campaign levels use different targeting that forces them to never attack peons even if they are repairing.
+const int c_diffEarlyDefenseScout       = 13; // Do we scout for proxy building (ie photon cannon rushes) early in melee games.
+const int c_diffSpotChangelings         = 14; // Do we spot changelings and kill them or ignore them and act like we didn't notice
+const int c_diffUseExtraScouts          = 15; // Make overlords wander around our bases (wastes a ton of APM moving them so we only use this on high APM melee difficulties atm).
+const int c_diffFleeWorkers             = 16; // Make workers run away from enemies (campaign has this off and just keeps harvesting).
+const int c_diffFleeDanger              = 17; // Do units flee danger areas/explosions such as nuke dots and the old reaper mines.
+const int c_diffHoldAtIdleChokes        = 18; // Controls the behavior of idle wave units at chokes in melee, if this is on they sort of hold position (requires high APM to not be exploitable, but produces better behavior at high APM).
+const int c_diffAllowResourceReq        = 19; // Controls whether the computer will trade resources when requested.
+const int c_diffAdvancedRetreatLogic    = 20; // Controls whether the AI uses advanced logic when retreating (does a calculation to see if the enemy has faster unit that will continue to attack us while we retreat).
+const int c_diffSupportsBeacons         = 21; // Controls whether the AI supports and uses AI Communication Features & Beacons (melee AI only).
+const int c_diffAutoBuildPrereqs        = 22; // Is the AI allowed to automatically place buildings and make other prerequistes for higher tech units.
+const int c_diffAllowBuildInDanger      = 23; // Should the AI never build if an area is in danger, or should it avoid it as best as it can and build anyway.
+const int c_diffTimeoutMakeRequests     = 24; // Should build/train/research requests timeout after a while, or should they persist indefinitely until fulfilled
+const int c_diffSetRallyPoints          = 25; // Should AI buildings set rally points for new units.
+const int c_diffAllowLongDistanceMining = 26; // Allow the AI to long distance mine if it runs out of nearby minerals.
+const int c_diffBalancePeonsAcrossBases = 27; // Try to balance peon counts across bases to match resource counts.
+const int c_diffWaveLeashing            = 28; // Should idle waves (and a few other wave situations) leash back home if being kited far away.
+const int c_diffTargetSpawners          = 29; // Should try to attack unit spawners (Carrier, BroodLord, SwarmHost, etc) over the units they spawn (Interceptor, Broodling, Locusts, etc).
+const int c_diffDelayAdvTargetting      = 30; // Delays using advanced combat targetting logic until high priority units get a kill or two.
+const int c_diffAutoTransport           = 31; // Should transports automatically look for units unable to move to their goal and pick them up? (worker trying to expand to an island, etc).
+const int c_diffSplitAttacking          = 32; // Should allied melee AI work together to attack a single enemy or split their attacks for a more fun experience (desirable of lower levels).
+const int c_diffAllowTransportGather    = 33; // Allow the transport synapse to load/unload gathering units. (disabling this may be useful to prevent unloading of preloaded transports).
+const int c_diffAvoidMindControlled     = 34; // The AI will try to avoid killing its own mind controlled units and instead try to kill the enemy infestor (or other controlling unit) first.
+const int c_diffAllowKiting             = 35; // Allow units to kite while attacking. (eg. Cyclone).
+
+native void AISetDifficulty (int player, int index, bool state);
+native bool AIGetDifficulty (int player, int index);
+
+//--------------------------------------------------------------------------------------------------
+ // melee difficulty settings
+const int c_skirAuto        =  0;  // Auto (unused)
+const int c_skirVeryEasy    =  1;  // Very Easy
+const int c_skirEasy        =  2;  // Easy
+const int c_skirMedium      =  3;  // Medium
+const int c_skirMed_Hard    =  4;  // Hard
+const int c_skirHard        =  5;  // Harder
+const int c_skirHard_VH     =  6;  // Very Hard
+const int c_skirVeryHard    =  7;  // Elite
+const int c_skirChVision    =  8;  // Cheater Vision
+const int c_skirChMoney     =  9;  // Cheater Resources
+const int c_skirChInsane    = 10;  // Cheater Insane
+// Coop Campaign difficulty settings
+const int c_campBeginner    = 1; // Casual
+const int c_campNormal      = 2; // Normal
+const int c_campAdvanced    = 3; // Hard  
+const int c_campExpert      = 4; // Brutal
+const int c_campVirtuoso    = 5; // 
+const int c_campMaster      = 6; // 
+
+int AIPlayerDifficulty(int player) {
+  
+	int diff = PlayerDifficulty(player);
+
+    return diff;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  Breakpoint Routines
+//--------------------------------------------------------------------------------------------------
+native void DebugString (string value);
+native void DebugUnit (unit value);
+native void DebugInt (int value);
+native void DebugFixed (fixed value);
+native void DebugPoint (point value);
+
+//--------------------------------------------------------------------------------------------------
+// Utility
+//--------------------------------------------------------------------------------------------------
+native void AIStart (int player, bool isCampaign, int apm);
+
+native void AIForceActive ();
+
+native void AIDisableAllScouting ();
+
+native bool AIGivingUp (int player);
+native void AIGoodGame (int player);
+
+native bool AIIsCampaign (int player);
+native bool AIHasHumanAlly (int player);
+native void AISetAPM (int player, int apm);
+
+native unit AIGrabUnit (int player, string aliasUnitType, int prio, point location);
+
+// state index range 1 to 16
+native int  AIState (int player, int index);
+native void AISetSpecificState (int player, int index, int state);
+native void AISetAllStates (int player, int state);
+
+// flag index range 1 to 128
+native void AISetFlag (int player, int index, bool state);
+native bool AIGetFlag (int player, int index);
+native void AITechFlag (int player, int index, int count, string what, int countMask);
+
+// user data index range 1 to 256
+native void AIResetUserData (int player);
+native void AISetUserString (int player, int index, string data);
+native string AIGetUserString (int player, int index);
+native void AISetUserInt (int player, int index, int data);
+native int AIGetUserInt (int player, int index);
+native void AIAddStringInt (int player, string data, int change);
+
+native void AISetStockArmyDefaultScale (int player, fixed scale); // Sets the gloabl scale (doesn't change current army)
+native void AISetStockArmyOverride (int player, string data, int replaceCount, string replaceUnit);
+native void AIAddToStockArmy (int player, string data, int change); // AIAddStringInt with Scale & Override logic 
+native void AIScaleCurrentStockArmy (int player, fixed scale, int start, int end); // Scales the current army
+
+native fixed AIGetTime ();
+
+const bool c_ignoreEnemyBuildings = true;
+const bool c_includeAllBuildings = false;
+native int AIPathingCostMap (point from, point to);
+native int AIPathingCostUnit (unit u, point to, bool ignoreEnemyBuildings); 
+
+// these calls can be expensive, they also ignore units/buildings when pathing. returns -1 if no path/known building
+native int AIPathDistToNearestKnownEnemyStructure (int player, point loc, bool onlyDropoffs);
+native int AIPathDistToNearestFriendlyStructure (int player, point loc, bool onlyDropoffs);
+native bool AICanPathToAnyKnownEnemyStructure (int player, point loc, bool onlyDropoffs);
+
+native void AIAddTeamRepresentative (int inPlayer);
+native void AITrackUnitDanger (unit inUnit);
+native point AIPositionAlongPath (int inPlayer, point startLoc, point destLoc, fixed distance, bool useDangerMap, bool ignoreEnemyBuildings);
+
+native int AIGetTotalStartLocs ();
+native int AIGetGroundStartLocs (point loc);
+native int AIGetAirStartLocs (point loc);
+native int AIGetTotalTownLocs ();
+native int AIGetGroundTownLocs (point loc);
+native int AIGetAirTownLocs (point loc);
+
+native int AIRandomVal (int player, int which);
+native void AINewChooseSubState (int player, int which, int min, int max, int defaultSubState);
+native void AISetSubStateChance (int subState, int chance);
+native void AISetSubStateChanceRace (int subState, int randChance, int protChance, int terrChance, int zergChance);
+native int AIChooseSubState ();
+
+native bool AIWantsMultipleTransport (int player);
+native void AISetWantsMultipleTransport (int player, bool enable);
+native int AIGetNumMobileTransports (int player);
+
+// all of these are known buildings only (enemies may have unknown buildings)
+native int AINumEnemyBuildings (int player);
+native int AINumEnemyBuildingsOnSharedIslands (int player);
+native int AINumEnemyBuildingsOnOtherIslands (int player);
+native bool AIEnemyBuildingsOnlyOnOtherIslands (int player);
+
+native point AIGetBestCreepSpot (int player, unit creator, fixed createRadius);
+
+native void AIAddDetectionDanger (int player, string unitType);
+native bool AIDefaultSuspectDetectionDanger (int player);
+
+native void AIAddAirDanger (int player, string unitType);
+native bool AIDefaultSuspectAirDanger (int player);
+
+native bool AIAnyWorkersFleeingNearby (int player, point loc, fixed radius);
+
+native int AIGetNumEnemies (int player);
+native int AIGetNumAllies (int player);
+native int AIGetNumTeams (); // may not be accurate outside of regular melee games
+
+native int AIGetEnemyRaceVal (int player); // returns multi for more than one opponent (even if same race)
+native int AIGetSelfRaceVal (int player);
+
+native point AIPlacementNearbyFindTest (int player, point loc, fixed range, string unitType);
+
+native void AIAddToExtraScoutGroup (int player, unit u);
+native bool AIOfferNewScout (int player, unit u);
+
+native int AIGetNumWorkers (int player);
+native int AIGetNumDropoffs (int player);
+native int AIGetNumEstablishedTowns (int player);
+
+native void AIAddHealer (int player, string healer, string healAbil, int healAbilIdx);
+
+native unit AIGetDropoffWithFewestGuards (int player, string guardType);
+
+native bool AIHasNearbyAttackers (int player, point loc, fixed range);
+native bool AIHasNearbyAlliedAttackers (int player, point loc, fixed range); // self or ally
+
+native bool AIHasNearbyAlliedDetector (int player, point loc, fixed staticRange, fixed mobileRange); // self or ally
+
+native point AIGetDirection (point from, point to);
+
+//--------------------------------------------------------------------------------------------------
+// Coop Helper Functions
+//--------------------------------------------------------------------------------------------------
+
+// Must match Captain.h
+const int c_coopTraining         = 0;
+const int c_coopWaveDefender     = 1;
+const int c_coopWaveAttacker     = 2;
+const int c_coopTurtle           = 3;
+const int c_coopCasterOnly       = 4;
+const int c_coopAirOnly          = 5;
+const int c_coopMultiRacial      = 6;
+native void AISetCoopFlag (int player, int index, bool state);
+native bool AIGetCoopFlag (int player, int index);
+
+native point AIGetBuildingPlacement (int player, point center, string aliasUnitType, int buildFlags);
+
+//--------------------------------------------------------------------------------------------------
+// Misc Melee
+//--------------------------------------------------------------------------------------------------
+
+native bool AIAnyAllyAttacking (int player);
+native point AIBestAllyAttackPoint (int player, wave w);
+native bool AIAnyAllyNeedsDefending (int player, wave w);
+native point AIBestAllyDefendPoint (int player, wave w);
+
+//--------------------------------------------------------------------------------------------------
+// Misc Campaign
+//--------------------------------------------------------------------------------------------------
+
+native void AIGlobalSuicide (int player);
+
+native wave AIUnitGetWave (unit u);
+native unitgroup AIWaveGetUnits (wave w);
+
+native unitgroup AIGetAllEscorts (unit u);
+native unitgroup AIGetAllEscortsGroup (unitgroup ug);
+
+native void AIRemoveUnitFromAnyWaves (unit u);
+native void AIRemoveGroupFromAnyWaves (unitgroup ug);
+
+native void AIRemoveUnitFromAnyWavesAndSetHome (unit u, point home);
+native void AIRemoveGroupFromAnyWavesAndSetHome (unitgroup ug, point home);
+
+native unitgroup AIGetUnitsInWavesWithTarget (int player, wavetarget target);
+
+native bool AIIsScriptControlled (unit u);
+native void AISetUnitScriptControlled (unit u, bool enable);
+native void AISetGroupScriptControlled (unitgroup ug, bool enable);
+
+native bool AIIsSuicideUnit (unit u);
+native void AISetUnitSuicide (unit u, bool enable);
+native void AISetGroupSuicide (unitgroup ug, bool enable);
+
+native bool AIIsTacticalDisabled (unit u);
+native void AISetUnitTacticalDisabled (unit u, bool tacticalDisabled);
+native void AISetGroupTacticalDisabled (unitgroup ug, bool tacticalDisabled);
+
+native bool AIIsObjectGroupUnit (unit u);
+
+native bool AIIsNotUsableInWaves (unit u);
+native void AISetUnitNotUsableInWaves (unit u, bool enable);
+native void AISetGroupNotUsableInWaves (unitgroup ug, bool enable);
+
+native void AISetWantsToUpgrade (unit u);
+
+native void AISetUnitAvoidEnemyGates (unit u, bool enable);
+
+native void AISetUnitForceMover (unit u, bool enable);
+native void AISetGroupForceMover (unitgroup ug, bool enable);
+
+native void AIInitCampaignTowns (int player);
+native void AIInitCampaignHarvest (int player);
+
+
+//--------------------------------------------------------------------------------------------------
+//  Towns
+//--------------------------------------------------------------------------------------------------
+native void AIDeclareTown (int player, int town, point center);
+native int AIGetMainTown (int player);
+native void AISetMainTown (int player, int maintown);
+native void AIUpdateMainTown (int player);
+
+native bool AIIsTownFull (int player, int town);
+native int AIGetTownState (int player, int town);
+native fixed AIGetTownEstablishedTime (int player, int town);
+native point AIGetTownLocation (int player, int town);
+native int AIGetClosestTown (int player, point location);
+native int AIGetNextUnusedTownSlot (int player);
+native int AIGetBuildingCountInTown (int player, int town, string aliasUnitType, int countMask);
+
+native bool AIIsTownHarvestRunning (int player, int town);
+native void AIHarvest (int player, int town);
+native void AIHarvestRate (int player, int rate);
+native void AIHarvestBonus (int player, fixed bonus);
+native void AISetGasPeonCountOverride (int player, int town, int desiredGasCount);
+
+native int AIGetCurPeonCount (int player, int town);
+native int AIGetMinPeonCount (int player, int town);
+native int AIGetMaxPeonCount (int player, int town);
+native int AIGetMineralAmountLeft (int player, int town);
+native int AIGetGasAmountLeft (int player, int town);
+native int AIGetMineralNumSpots (int player, int town);
+native int AIGetHarvestableGasNumSpots (int player, int town);
+native int AIGetRawGasNumSpots (int player, int town);
+
+native point AIGetGatherLocation (int player, int town);//xxx remove old functions
+native point AIGetGatherDefLocation (int player, int town);
+
+native int AIExpand (int player, point searchStart, string firstBuilding);
+native unitgroup AIGetTownThreats (int player, int town);
+native unit AIGetObstruction (int player);
+native bool AIHasNearbyOpenExpansion (int player);
+
+//-------------------------------------------------------------------------------------------------
+//  Scouting
+//--------------------------------------------------------------------------------------------------
+native void AIScout (int player);
+native void AISetNumScouts (int player, int num);
+native void AISetScoutTimes (int player, int starts, int obstructed, int resources, int other);
+
+native point AIGetNextScoutLoc (int player);
+native void AIClearCampaignScout (int player);
+
+native void AIEarlyDefenseEnable (int player, bool enableScouting, bool enableDefending);
+native void AIEarlyDefenseProps (int player, fixed scoutRange, fixed peonRange, fixed threatRange);
+
+//--------------------------------------------------------------------------------------------------
+//  Construction
+//--------------------------------------------------------------------------------------------------
+native void AIBuild (int player, int priority, int town, string aliasUnitType, int count, int flags);
+native void AITrain (int player, int priority, int town, string aliasUnitType, int count);
+native void AIResearch (int player, int priority, int town, string aliasUpgradeType);
+native void AIMakeAlways (int player, int priority, int town, string aliasType, int count);
+native void AIMakeOnce (int player, int priority, int town, string aliasType, int count);
+
+native void AIClearBuildQueue (int player);
+native void AIClearTrainQueue (int player);
+native void AIClearResearchQueue (int player);
+
+native int AIGetInternalTrainQueueCount (int player);
+native int AIGetInternalBuildQueueCount (int player);
+native int AIGetInternalResearchQueueCount (int player);
+
+native bool AIHasRes (int player, int minerals, int gas);
+native int  AITechCount (int player, string aliasType, int countMask);
+native void AITechCountFixupSingle (int player, string baseUnit, string upgradeOne);
+native void AITechCountFixupEither (int player, string baseUnit, string upgradeOne, string upgradeTwo);
+native void AITechCountFixupInOrder (int player, string baseUnit, string upgradeOne, string upgradeTwo);
+native int  AIKnownUnitCount (int player, int testPlayerId, string aliasUnitType);
+
+native void AIResetCounterUnits (int player);
+native void AICounterUnitSetup (int player, string seeWhat, fixed factorSameTech, string makeWhatSameTech, fixed factorAnyTech, string makeWhatAnyTech);
+native int AICounterUnitsSameTech (int player, int testPlayerId, string makeWhat);
+native int AICounterUnitsSameTechAdjusted (int player, int testPlayerId, string makeWhat);
+native int AICounterUnitsAnyTech (int player, int testPlayerId, string makeWhat);
+
+native fixed AIFoodCost (int player, string aliasUnitType);
+
+native point AIGetRallyPoint (unit u);
+
+native void AISetDefaultArmyUnit (int player, string unitType);
+native void AISetDefaultTownHall (int player, string building);
+native void AISetPowerBuilding (int player, string building);
+native void AISetCreepBuilding (int player, string building, string noCreepBehavior);
+
+native void AIForceTrainingDelay (int player, int workerDelay, int armyDelay, int defenseDelay); // forced gaps in unit production for low difficulty
+
+//--------------------------------------------------------------------------------------------------
+//  Stock
+//--------------------------------------------------------------------------------------------------
+native void AIClearStock (int player);
+native void AIEnableStock (int player);
+
+const int c_stockNormal = 0;
+const int c_stockOptional = 1;
+const int c_stockExpansion = 2;
+const int c_stockDefense = 4;
+const int c_stockForced = 8;
+native void AISetStockEx (int player, int town, int count, string aliasType, int buildFlags, int stockFlags);
+native void AISetStock (int player, int count, string aliasType);
+native void AISetStockOpt (int player, int count, string aliasType);
+native void AISetStockUnitNext (int player, int count, string aliasUnitType, bool when);
+native bool AISetStockTown (int player, string aliasUnitTypeTH, string aliasUnitTypeGas);
+native bool AISetStockExpand (int player, string aliasUnitTypeTH, int count);
+native void AISetStockExtra (int player, int count, string aliasUnitType, int minerals);
+native void AISetStockFarms (int player, string aliasUnitType, bool onlyNeeded);
+native void AISetStockPeons (int player, int max, string aliasUnitType, bool onlyMinPeons, bool peonMode);
+
+native void AINewTechStock (int player);
+native void AITechStockAdd (string upgradeType);
+native void AISetStockTechNext (int player);
+native void AISetStockTechNextUnCap (int player, int unCapMinerals, int unCapGas);
+
+void AISetStockAlias (int player, int count, string makeType, string aliasType) {
+    count = count - AITechCount(player, aliasType, c_techCountQueuedOrBetter);
+    if (count > 0) {
+        AISetStock(player, count + AITechCount(player, makeType, c_techCountQueuedOrBetter), makeType);
+    }
+}
+
+void AISetStockFree (int player, int count, string makeType, string prereq) {
+    if (AITechCount(player, prereq, c_techCountCompleteOnly) > 0) {
+        AISetStock( player, count, makeType );
+    }        
+}
+
+native void AIDefaultEconomy (int player, string hall, string gas, string food, string peon, int cap, bool peonMode);
+native void AIDefaultExpansion (int player, string hall, int minerals, int gas, int expandFlags);
+
+native void AIClearLimitTech (int player);
+native void AILimitTech (int player, int totalMin, int totalGas, int buildingMin, int buildingGas, int upgradeMin, int upgradeGas);
+native void AIImportantTech (int player, string aliasType);
+
+native void AILimitStockLarva (int player, string aliasType);
+
+native bool AIHasStock (int player);
+native bool AIHasStockFromTown (int player, int town);
+native void AIRemoveStockFromTown (int player, int town);
+
+//--------------------------------------------------------------------------------------------------
+//  AI Requirements
+//--------------------------------------------------------------------------------------------------
+native int AIDefaultGetObjectType (int player, string aliasType);
+native string AIDefaultGetMaker (int player, string aliasType);
+native string AIDefaultGetFirstMissingReq (int player, string aliasType);
+native string AIDefaultGetFirstUnfinishedReq (int player, string aliasType);
+native int AIDefaultGetFullMakeTime (int player, string aliasType);
+
+native string AIGetBaseName (string aliasType);
+native string AIGetBuildAtName (string aliasType);
+
+native void AIReqCountAsBuiltObject (int player, string aliasType);
+native void AIReqAddSpecialMaker (string objType, string makerType, string abilName, int abilIndex);
+
+//--------------------------------------------------------------------------------------------------
+//  Tactical
+//--------------------------------------------------------------------------------------------------
+native void AIBaseThink (unit who, unitgroup candidates);
+native bool AIEvalTacticalData (unit who, string data);
+
+const bool c_castRetreat = true;
+const bool c_castHold    = false;
+native int AICast (unit u, order o, marker m, bool retreat);
+native int AICastFlee (unit who, unit from, int distance, marker mark);
+
+const int c_tactTimerFirst  = 0;
+const int c_tactTimerSecond = 1;
+const int c_tactTimerThird  = 2;
+const int c_tactTimerFourth = 3;
+native int AICastCooldown (unit u, order o, marker m, bool retreat, int timerIdx, fixed cooldown);
+native int AISetCooldown (unit u, int timerIdx, fixed cooldown);
+native bool AITactCooldownAllow (unit u, int timerIdx);
+
+native void AICooldownSetupAbil (string unitType, string abilName, int difficulty, bool enabled, fixed cooldown);
+native int AICastCooldownAbil (unit u, order o, marker m, bool retreat, string abilName);
+native int AISetCooldownAbil (unit u, string abilName);
+native bool AITactCooldownAllowAbil (unit u, string abilName);
+
+native bool AINearbyUnits (int player, string unitType, point p, fixed range, int requiredCount);
+native unitgroup AIFindUnits (int player, string unitType, point p, fixed range, int inMaxCount);
+native bool AISameCommand (unit u1, unit u2);
+
+native unit AILastAttacker (unit u);
+native int AILastAttack (unit u);
+
+native bool AIControlWantsToMove (unit u);
+native bool AIControlForceToMove (unit u);
+native bool AIControlWantsToUnburrow (unit u);
+native bool AIControlWantsToBurrow (unit u);
+native bool AIControlForceUnburrow (unit u);
+
+native bool AIUnitIsInCombat (unit u);
+
+native bool AIIsIgnoredByWave (unit u);
+native void AISetIgnoredByWave (unit u, bool enable);
+
+native point AIGetHomePosition (unit u);
+
+native point AIGetCloakedAttacker (int p); // includes unscanned detect beacon
+native void AIClearCloakedAttacker (int p, point pt);
+native bool AISawCloakedUnit (int p);
+
+native point AISelfReinforceDropPoint (
+    int player
+);
+native point AIRandomSpawnPoint (
+    int player,
+    region r,
+    fixed minDistFromEnemy,
+    fixed maxDistFromEnemy,
+    fixed maxDistFromBuilding
+);
+native point AIBestTargetPoint (
+    unitgroup group,
+    int minHits,
+    int damageBase,
+    fixed minScore,
+    fixed radius,
+    point from,
+    fixed range,
+    int bonusAttri
+);
+
+native unit AIDefaultCombatPriority (unitgroup attackers, unitgroup enemies, int maxAttackerLimit);
+
+const int c_cloakMaxRange = 10;
+native bool AICloakEvaluate (unit u, fixed minEnergy, fixed maxLife, fixed range);
+
+native void AIForceTacticalDelay (int player, int delay); // forced delay between all tactical spells for low difficulty
+
+//--------------------------------------------------------------------------------------------------
+//  Combat
+//--------------------------------------------------------------------------------------------------
+const int c_combatFlagDisable    = 0;
+const int c_combatFlagEnable     = 1;
+const int c_combatFlagRead       = 2;
+
+void AISetDefaultCombatFlags (int player, bool isMelee);
+native void AISetMaxBestAttackersLimit (int player, int limit);
+
+native bool AICombatDiffFlagCatSpecialHighPrio    (int player, int action);
+native bool AICombatDiffFlagCatSplashHighPrio     (int player, int action);
+native bool AICombatDiffFlagCatTimedLowPrio       (int player, int action);
+native bool AICombatDiffFlagCatWorkersNormalPrio  (int player, int action);
+native bool AICombatDiffFlagCatSortBuildingsPrio  (int player, int action);
+native bool AICombatDiffFlagTieBreakHealers       (int player, int action);
+native bool AICombatDiffFlagTieBreakBonusDamage   (int player, int action);
+native bool AICombatDiffFlagTieBreakLowHP         (int player, int action);
+native bool AICombatDiffFlagTieBreakInjured       (int player, int action);
+native bool AICombatDiffFlagTieBreakDetector      (int player, int action);
+native bool AICombatDiffFlagTieBreakRange         (int player, int action);
+
+native void AISetSpawnerTargettingDelay (int player, string behaviorName, int count);
+
+//--------------------------------------------------------------------------------------------------
+//  Transports
+//--------------------------------------------------------------------------------------------------
+native void AITransportIgnore (int player, string unitType);
+native void AITransportSetPanic (int player, fixed value);
+native void AITransportSetReturn (int player, point center);
+native void AITransportDisableAutoPickup (int player);
+
+//--------------------------------------------------------------------------------------------------
+//  Defense
+//--------------------------------------------------------------------------------------------------
+native void AISetDefenseRadii (int player, fixed maxThreatRange, fixed buildingCallRange, fixed threatCallRange);
+
+//--------------------------------------------------------------------------------------------------
+//  Waves
+//--------------------------------------------------------------------------------------------------
+native waveinfo AIWaveInfoCreate ();
+native waveinfo AIWaveInfo (wave w);
+
+native void AIWaveInfoAdd (waveinfo info, string unitType, int count);
+native int AIWaveInfoAttack (waveinfo info, int player, point from, wavetarget target, int time);
+native int AIWaveInfoSuicide (waveinfo info, int player, point from, wavetarget target, int time);
+native int AIWaveInfoScout (waveinfo info, int player, point from, int time);
+
+native string AIWaveToString (wave w);
+native text AIWaveToText (wave w);
+
+native wave AIWaveCreate (waveinfo info, int player, point from);
+native void AIWaveAddUnit (wave w, unit u);
+native void AIWaveAddUnitPriority (wave w, unit u, int prio);
+native void AIWaveRemoveUnit (wave w, unit u);
+native int  AIWaveUnitCount (wave w);
+native int  AIWaveDetectorCount (wave w);
+
+native void AIWaveSetType (wave w, int type, wavetarget target);
+
+native int AIWaveState (wave w);
+native point AIWaveGoal (wave w);
+native unit AIWaveCurrentLeader (wave w);
+
+native void AIWaveDelete (wave w);
+
+native wavetarget AIWaveTargetUnit (unit u);
+native wavetarget AIWaveTargetUnitGroup (unitgroup g);
+native wavetarget AIWaveTargetUnitPoint (unit u);
+native wavetarget AIWaveTargetPoint (point p);
+native wavetarget AIWaveTargetPlayer (playergroup players);
+native wavetarget AIWaveTargetMelee (int player);
+native wavetarget AIWaveTargetMeleeBeacon (int player);
+native wavetarget AIWaveTargetMeleeHarass (int player);
+native wavetarget AIWaveTargetMeleeDrop (int player, point dropLoc, point goalLoc);
+native wavetarget AIWaveTargetMeleeDefend (int player);
+native wavetarget AIWaveTargetMerge (wave w);
+native wavetarget AIWaveTargetPatrol (int replaceType);
+native wavetarget AIWaveTargetEscort (unitgroup g, int replaceType);
+native wavetarget AIWaveTargetEscortNL (unitgroup g, int replaceType);
+native wavetarget AIWaveTargetGatherO (int player, int town);
+native wavetarget AIWaveTargetGatherD (int player, int town);
+native wavetarget AIWaveTargetRegion (region r, int replaceType);
+native wavetarget AIWaveTargetGuardHomeUnit (unit u);
+native wavetarget AIWaveTargetGatherMelee (int player);
+
+native point AIWaveTargetGatherOPoint (int player, int town);
+native point AIWaveTargetGatherDPoint (int player, int town);
+
+native unit         AIWaveTargetGetUnit (wavetarget wt);
+native unitgroup    AIWaveTargetGetUnitGroup (wavetarget wt);
+
+native wavetarget AIWaveHarassRetreat (int player, wave w, fixed range);
+
+native wavetarget AIWaveGetTarget (wave w);
+
+native bool AIWaveIsInCombat (wave w);
+native int AIWaveGetTimeInCombat (wave w);
+native int AIWaveGetTimeSinceCombat (wave w);
+native int AIWaveGetTimeSinceOrdered (wave w);
+
+native int AIWaveGetTimeSinceRetreat (wave w);
+
+native bool AIShouldHelpUserAlly (int player, wave w);
+native point AIGetBestUserAllyHelpLocation (int player, wave w);
+native bool AIDefenseThreat (int type, int player, wave w);
+native int AISelfDefenseThreatEval (int type, int player);
+
+native int AIWaveEval (wave w);
+native int AIWaveEvalRatio (wave w, fixed range);
+native int AIUnitAreaEvalRatio (unit u, fixed range);
+native int AIEvalRatio (int player);
+native void AIEvalSetCustomIndex (int index);
+native int AIEvalAllSelf (int player);
+native int AIEvalAllAllied (int player);
+native int AIEvalLargestEnemy (int player);
+native int AILastWaveEvalStaticRatio ();
+
+native void AIWaveTargetAddWaypoint (wavetarget wt, point waypoint, bool useTransport, int index);
+native void AIWaveTargetClearWaypoints (wavetarget wt);
+
+//--- melee games ---
+native wave AIWaveGet (int player, int waveName);
+native void AIWaveSet (int player, int waveName, wave waveRef);
+native int  AIWaveType (wave waveRef);
+native void AIWaveSetUserData (wave waveRef, int index, int data);
+native int  AIWaveGetUserData (wave waveRef, int index);
+
+// by default campaign wave and melee suicide/merge waves are deleted when empty, 
+// this allows other melee waves to also be deleted when empty.
+native void AIWaveSetDeleteWhenEmpty (wave waveRef, bool turnOnDeleteWhenEmpty);
+
+native void AIWaveMerge (int player, int waveFrom, int waveInto);
+native void AIWaveMergeMelee (int player);
+
+native wave WaveLastCreated ();
+
+native point AIGetBestTarget (int player, playergroup enemies, point gatherPoint, int flags);
+
+native bool AIFindDropAttackTarget (int player, point gatherPoint);
+native point AILastDropLocation ();
+native point AILastDropGoal ();
+native fixed AIGetNextDropTimeCheck(int player);
+native void AISetNextDropTimeCheck(int player, fixed time);
+
+native int AILastAttackRatio (wave w);
+native int AILastAttackStartEval (wave w);
+
+native void AIDefaultMeleeSplitArmyToDefend (int player, wave attack, int indexDefense);
+
+//--------------------------------------------------------------------------------------------------
+//  Attack Wave
+//--------------------------------------------------------------------------------------------------
+
+// Note: The difficulty parameter is a one-based index into
+//       the externalized difficulty levels defined in GameData.xml
+//
+const int c_difficultyAll = -1; // Add the same count to all difficulty levels
+
+native void AIAttackWaveAddUnits (int difficulty, int count, string unitType);
+
+// External utility function to add four counts to the standard four difficulties
+void AIAttackWaveAddUnits4 (int n1, int n2, int n3, int n4, string unitType) {
+    AIAttackWaveAddUnits(2, n1+FixedToInt(n1*0.25), unitType); // Casual
+    AIAttackWaveAddUnits(3, n2+FixedToInt(n2*0.50), unitType); // Normal
+    AIAttackWaveAddUnits(4, n3+FixedToInt(n3*0.75), unitType); // Hard
+    AIAttackWaveAddUnits(5, n4+FixedToInt(n4*1.00), unitType); // Brutal
+	
+	AIAttackWaveAddUnits(6, n4+FixedToInt(n4*1.50), unitType); // Extreme
+	AIAttackWaveAddUnits(7, n4+FixedToInt(n4*2.00), unitType); // Unlikely
+}
+
+// Old external utility function to add three counts to the standard three difficulties
+void AIAttackWaveAddUnits3 (int n1, int n2, int n3, string unitType) {
+    AIAttackWaveAddUnits4(n1,n2,n3,n3,unitType);
+}
+
+native int AIAttackWaveSend (int player, int time, bool wait);
+
+native void AIAttackWaveCancel (wave waveRef);
+
+native void AIAttackWaveSetGatherPoint (int player, point gather);
+
+native void AIAttackWaveUseUnit (int player, unit u);
+native void AIAttackWaveUseGroup (int player, unitgroup ug);
+
+native void AIAttackWaveAddEscortUnit (int player, unit u, unit escort, fixed offset, fixed angle);
+native void AIAttackWaveAddEscortType (int player, string unitType, unit escort, fixed offset, fixed angle);
+
+native void AIAttackWaveSetTargetUnit (int player, unit u);
+native void AIAttackWaveSetTargetUnitGroup (int player, unitgroup ug);
+native void AIAttackWaveSetTargetUnitPoint (int player, unit u);
+native void AIAttackWaveSetTargetPoint (int player, point p);
+native void AIAttackWaveSetTargetPlayer (int player, playergroup players);
+native void AIAttackWaveSetTargetMelee (int player);
+native void AIAttackWaveSetTargetMeleeHarass (int player);
+native void AIAttackWaveSetTargetMeleeDrop (int player, point dropLoc, point goalLoc);
+native void AIAttackWaveSetTargetMeleeDefend (int player);
+native void AIAttackWaveSetTargetMerge (int player, wave w);
+native void AIAttackWaveSetTargetPatrol (int player, int replaceType);
+native void AIAttackWaveSetTargetEscort (int player, unitgroup g, int replaceType);
+native void AIAttackWaveSetTargetEscortNL (int player, unitgroup g, int replaceType);
+native void AIAttackWaveSetTargetGatherO (int player, int town);
+native void AIAttackWaveSetTargetGatherD (int player, int town);
+native void AIAttackWaveSetTargetRegion (int player, region r, int replaceType);
+
+native void AIAttackWaveSetGatherEarlyNoReplace (int player);
+native void AIAttackWaveSetKeepAlive (int player);
+
+native void AIAttackWaveAddWaypoint (int player, point waypoint, bool useTransport);
+native void AIAttackWaveClearWaypoints (int player);
+
+//--------------------------------------------------------------------------------------------------
+//  Bully Functions
+//--------------------------------------------------------------------------------------------------
+
+native void AISetMinimumBullyCount (int count, string unitType, int player);
+
+native void AISetGeneralRebuildCount (int count, bool building, int player);
+native void AISetSpecificRebuildCount (int count, string unitType, int player);
+
+native void AISetBullyAttackWavePercent (int percent, int player);
+native void AINearestTownLimitWaveGather (int player, bool enable);
+
+native void AINearestTownBullyRebuild (int player, bool enable);
+
+native void AIToggleBulliesInRegion (int player, region reg, bool activate);
+native void AIResetBullyRebuildCountsInRegion (int player, region reg);
+
+native void AIClearAllBullies (int player);
+native void AIAddBully (int player, string unitType, point loc, int rebuildCount);
+
+native string AIGetBullyType (unit u);
+
+//--------------------------------------------------------------------------------------------------
+// Lane Waypoint Functions (Storm)
+//--------------------------------------------------------------------------------------------------
+
+native void AILaneWaypointClearAll ();
+native void AILaneWaypointAdd (int lane, point waypoint);
+
+native int AILaneWaypointGetClosestLane (point testPoint);
+
+native point AILaneWaypointGetWaypointPosWithOffset (int lane, int waypoint, fixed offset);
+native fixed AILaneWaypointConvertPointToWaydist (int lane, int closestWaypoint, int secondWaypoint, point closestPoint);
+native point AILaneWaypointConvertWaydistOffsetToPoint (int lane, fixed waydist, fixed offset);
+
+native void AILaneWaypointCalcClosestDataForLane (int testLane, point testPoint);
+native int AILaneWaypointGetCalcDataClosestWaypointIndex ();
+native int AILaneWaypointGetCalcDataSecondWaypointIndex ();
+native point AILaneWaypointGetCalcDataClosestPoint ();
+native fixed AILaneWaypointGetCalcDataClosestDist ();
+
+
+include "TriggerLibs/BaseAI"

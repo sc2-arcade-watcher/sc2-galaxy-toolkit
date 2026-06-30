@@ -1,0 +1,346 @@
+//==================================================================================================
+//  Swarm Zerg Melee AI
+//==================================================================================================
+
+include "TriggerLibs/Zerg/ZergVyEy"
+include "TriggerLibs/Zerg/ZergEasy"
+include "TriggerLibs/Zerg/ZergMedi"
+include "TriggerLibs/Zerg/ZergMdHd"
+include "TriggerLibs/Zerg/ZergHard"
+include "TriggerLibs/Zerg/ZergHdVH"
+include "TriggerLibs/Zerg/ZergVyHd"
+include "TriggerLibs/Zerg/ZergChVi"
+include "TriggerLibs/Zerg/ZergChRe"
+include "TriggerLibs/Zerg/ZergChIn"
+
+//--------------------------------------------------------------------------------------------------
+//  Counter-Attack Units
+//--------------------------------------------------------------------------------------------------
+static void InitCounters (int player) {
+    // versus Protoss
+    AICounterUnitSetup(player, c_PU_Zealot,             1.10, c_ZU_Roach,       1.10, c_ZU_Roach);
+    AICounterUnitSetup(player, c_PU_Stalker,            3.00, c_ZU_Zergling,    0.25, c_ZU_Ultralisk);
+    AICounterUnitSetup(player, c_PU_Sentry,             1.00, c_ZU_Roach,       1.00, c_ZU_Hydralisk);
+    AICounterUnitSetup(player, c_PU_HighTemplar,        1.00, c_ZU_Roach,       1.00, c_ZU_Roach);
+    AICounterUnitSetup(player, c_PU_DarkTemplar,        1.30, c_ZU_Roach,       1.30, c_ZU_Roach);
+    AICounterUnitSetup(player, c_PU_Archon,             2.00, c_ZU_Hydralisk,   0.90, c_ZU_Ultralisk);
+    AICounterUnitSetup(player, c_PU_Immortal,           6.00, c_ZU_Zergling,    2.20, c_ZU_Hydralisk);
+    AICounterUnitSetup(player, c_PU_Colossus,           4.00, c_ZU_Roach,       3.00, c_ZU_Corruptor);
+    AICounterUnitSetup(player, c_PU_Phoenix,            1.00, c_ZU_Hydralisk,   0.80, c_ZU_Corruptor);
+    AICounterUnitSetup(player, c_PU_VoidRay,            2.00, c_ZU_Mutalisk,    2.00, c_ZU_Mutalisk);
+    AICounterUnitSetup(player, c_PU_Carrier,            2.00, c_ZU_Corruptor,   2.00, c_ZU_Corruptor);
+    AICounterUnitSetup(player, c_PB_PhotonCannon,       3.00, c_ZU_Roach,       1.00, c_ZU_BroodLord);
+    AICounterUnitSetup(player, c_PU_Mothership,         5.00, c_ZU_Corruptor,   5.00, c_ZU_Corruptor);
+    AICounterUnitSetup(player, c_PU_MothershipCore,     1.00, c_ZU_Corruptor,   1.00, c_ZU_Corruptor);
+    AICounterUnitSetup(player, c_PU_Oracle,             1.00, c_ZU_Corruptor,   1.00, c_ZU_Corruptor);
+    AICounterUnitSetup(player, c_PU_Tempest,            3.00, c_ZU_Corruptor,   3.00, c_ZU_Corruptor);
+    AICounterUnitSetup(player, c_PU_Adept,              1.00, c_ZU_Roach,       1.00, c_ZU_Roach);
+    AICounterUnitSetup(player, c_PU_Disruptor,          4.00, c_ZU_Roach,       0.80, c_ZU_Ultralisk);
+
+    // versus Terran
+    AICounterUnitSetup(player, c_TU_Marine,             0.70, c_ZU_Baneling,    0.70, c_ZU_Baneling);
+    AICounterUnitSetup(player, c_TU_Marauder,           3.00, c_ZU_Zergling,    3.00, c_ZU_Zergling);
+    AICounterUnitSetup(player, c_TU_Reaper,             0.50, c_ZU_Roach,       0.50, c_ZU_Roach);
+    AICounterUnitSetup(player, c_TU_Ghost,              3.00, c_ZU_Zergling,    1.50, c_ZU_Roach);
+    AICounterUnitSetup(player, c_TU_Hellion,            0.50, c_ZU_Roach,       0.50, c_ZU_Roach);
+    AICounterUnitSetup(player, c_TU_SiegeTank_Alias,    6.00, c_ZU_Zergling,    0.50, c_ZU_Ultralisk);
+    AICounterUnitSetup(player, c_TU_Thor,               6.00, c_ZU_Zergling,    1.00, c_ZU_Ultralisk);
+    AICounterUnitSetup(player, c_TU_Viking_Alias,       1.10, c_ZU_Mutalisk,    1.10, c_ZU_Mutalisk);
+    AICounterUnitSetup(player, c_TU_Medivac,            0.60, c_ZU_Mutalisk,    0.60, c_ZU_Mutalisk);
+    AICounterUnitSetup(player, c_TU_Raven,              0.60, c_ZU_Mutalisk,    0.60, c_ZU_Mutalisk);
+    AICounterUnitSetup(player, c_TU_Banshee,            0.60, c_ZU_Mutalisk,    0.60, c_ZU_Mutalisk);
+    AICounterUnitSetup(player, c_TU_Battlecruiser,      2.00, c_ZU_Corruptor,   2.00, c_ZU_Corruptor);
+    AICounterUnitSetup(player, c_TB_Bunker,             3.00, c_ZU_Baneling,    1.00, c_ZU_BroodLord);
+    AICounterUnitSetup(player, c_TU_WidowMine,          0.50, c_ZU_Roach,       0.50, c_ZU_Roach);
+    AICounterUnitSetup(player, c_TU_Cyclone,            4.00, c_ZU_Zergling,    4.00, c_ZU_Zergling);
+    AICounterUnitSetup(player, c_TU_Liberator_Alias,    1.00, c_ZU_Corruptor,   1.00, c_ZU_Corruptor);
+
+    // versus Zerg
+    AICounterUnitSetup(player, c_ZU_Zergling,           0.25, c_ZU_Baneling,    0.25, c_ZU_Baneling);
+    AICounterUnitSetup(player, c_ZU_Baneling,           0.50, c_ZU_Roach,       0.50, c_ZU_Roach);
+    AICounterUnitSetup(player, c_ZU_Roach,              1.00, c_ZU_Roach,       1.00, c_ZU_Roach);
+    AICounterUnitSetup(player, c_ZU_Hydralisk,          1.00, c_ZU_Hydralisk,   1.00, c_ZU_Hydralisk);
+    AICounterUnitSetup(player, c_ZU_Infestor,           1.00, c_ZU_Roach,       1.00, c_ZU_Roach);
+    AICounterUnitSetup(player, c_ZU_Mutalisk,           1.00, c_ZU_Mutalisk,    0.80, c_ZU_Corruptor);
+    AICounterUnitSetup(player, c_ZU_Corruptor,          0.80, c_ZU_Hydralisk,   0.80, c_ZU_Hydralisk);
+    AICounterUnitSetup(player, c_ZU_Ultralisk,          3.00, c_ZU_Mutalisk,    3.00, c_ZU_Mutalisk);
+    AICounterUnitSetup(player, c_ZU_BroodLord,          1.50, c_ZU_Corruptor,   1.50, c_ZU_Corruptor);
+    AICounterUnitSetup(player, c_ZB_SpineCrawler,       2.50, c_ZU_Roach,       1.00, c_ZU_Mutalisk);
+    AICounterUnitSetup(player, c_ZU_SwarmHost,          3.00, c_ZU_Roach,       3.00, c_ZU_Roach);
+    AICounterUnitSetup(player, c_ZU_Viper,              1.00, c_ZU_Corruptor,   1.00, c_ZU_Corruptor);
+    AICounterUnitSetup(player, c_ZU_Ravager,            1.10, c_ZU_Roach,       1.10, c_ZU_Roach);
+    AICounterUnitSetup(player, c_ZU_Lurker,             2.50, c_ZU_Roach,       0.50, c_ZU_Ultralisk);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergSubStateName
+//--------------------------------------------------------------------------------------------------
+string ZergSubStateName (int state) {
+    // TODO Call the individual difficulties to return a real substate name
+    return "-" + IntToString(state) + "-";
+}
+
+//--------------------------------------------------------------------------------------------------
+//  DebugCallbackZerg
+//--------------------------------------------------------------------------------------------------
+void DebugCallbackZerg (int player) {
+    DebugAI("=====ZERG=====\n");
+    DebugMelee(player);
+    DebugAI("e_mainState = "        + MainStateName(AIState(player, e_mainState))           +
+            ", e_mainSubState = "   + ZergSubStateName(AIState(player, e_mainSubState))     +
+            ", e_attackState = "    + AttackStateName(AIState(player, e_attackState))
+    );
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AINewUnitZerg
+//--------------------------------------------------------------------------------------------------
+void AINewUnitZerg (int player, unit u) {
+    wave w;
+    unit drop;
+    string type = UnitGetType(u);
+
+    // ignored units
+    //
+    if (type == c_ZU_Larva || 
+        type == c_ZU_Broodling ||
+        type == c_ZU_Mantaling ||
+        type == c_ZU_Locust) {
+        return;
+    }
+    if (UnitTypeTestAttribute(type, c_unitAttributeStructure)) {
+        return;
+    }
+    if (UnitTypeTestFlag(type, c_unitFlagWorker)) {
+        return;
+    }
+
+    // units that stay near home
+    //
+    if (type == c_ZB_SpineCrawler || type == c_ZB_SporeCrawler) {
+        AIWaveAddUnitPriority(AIWaveGet(player, c_waveHome), u, c_prioWavePeon);
+        return;
+    }
+    if (type == c_ZU_Queen) {
+        drop = AIGetDropoffWithFewestGuards(player, c_ZU_Queen);
+        if (drop == c_nullUnit) {
+            AIWaveAddUnitPriority(AIWaveGet(player, c_waveHome), u, c_prioWavePeon);
+        }
+        else {
+            w = AIWaveCreate(AIWaveInfoCreate(), player, AIWaveTargetGatherDPoint(player, c_townMain));
+            AIWaveSetType(w, c_waveStateGuardHome, AIWaveTargetGuardHomeUnit(drop));
+            AIWaveAddUnitPriority(w, u, c_prioWavePeon);
+            AIWaveSetDeleteWhenEmpty(w, true);
+        }
+        return;
+    }
+    
+    // detector
+    //
+    if (type == c_ZU_Overseer) {
+        AINewDetector(player, u, true);
+        return;
+    }
+
+    // extra scout units
+    //
+    if (type == c_ZU_Overlord || type == c_ZU_OverlordCocoon ) {
+        AIAddToExtraScoutGroup(player, u);
+        return;
+    }
+
+    // clear obstacle units
+    //
+    if (AIWaveNeedClearObsUnits(player)) {
+        if (type == c_ZU_Zergling || type == c_ZU_Roach || type == c_ZU_Hydralisk) {
+            AIMergeUnit(player, u, AIWaveGet(player, c_waveClearObs));
+            return;
+        }
+    }
+
+    // main wave units
+    //
+    AINewUnitDefault(player, u);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIGetScoutZerg
+//--------------------------------------------------------------------------------------------------
+unit AIGetScoutZerg (int player, int index, unit prev, bool allowWorkers) {  
+    unit scout;
+    string prevType = UnitGetType(prev);
+
+    if (!PlayerBeaconIsSet(player, c_beaconScout) &&
+        !AIGetFlag(player, e_flagsScouting)) {
+        // if no scouting beacons are set and we're not ready to scout, don't return a unit
+        return c_nullUnit;
+    }
+
+    if (index == 1 && PlayerBeaconIsSet(player, c_beaconScout)) {
+        AISetFlag(player, e_flagsScouting, true);
+        if (allowWorkers) {
+            // only return a worker, we want to claim a tower
+            if (prevType == c_ZU_Zergling) {
+                return prev;
+            }  
+            scout = AIGrabUnit(player, c_ZU_Zergling, c_prioScout, null);
+            if (scout) {
+                return scout;
+            }
+            if (prevType == c_ZU_Drone) {
+                return prev;
+            }
+            return AIGrabUnit(player, c_ZU_Drone, c_prioScout, null);
+        }
+    }
+
+    if (prevType == c_ZU_Overseer) {
+        return prev;
+    }   
+    scout = AIGrabUnit(player, c_ZU_Overseer, c_prioScout, null);
+    if (scout) {
+        return scout;
+    }
+    if (prevType == c_ZU_Zergling) {
+        return prev;
+    }  
+    scout = AIGrabUnit(player, c_ZU_Zergling, c_prioScout, null);
+    if (scout) {
+        return scout;
+    }
+    if (!allowWorkers) {
+        return c_nullUnit;
+    }
+    return AIGrabUnit(player, c_ZU_Drone, c_prioScout, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIEarlyDefScoutZerg
+//--------------------------------------------------------------------------------------------------
+unit AIEarlyDefScoutZerg (int player, unit prev, bool allowWorkers) {
+    unit obs;
+    string prevType;
+    
+    if (!AIGetFlag(player, e_flagsEarlyDefScout)) {
+        return c_nullUnit;
+    }
+    prevType = UnitGetType(prev);
+    if (prevType == c_ZU_Overseer) {
+        return prev;
+    }
+    obs = AIGrabUnit(player, c_ZU_Overseer, c_prioScout, null);
+    if (obs) {
+        return obs;
+    }
+    if (prevType == c_ZU_Zergling) {
+        return prev;
+    }
+    obs = AIGrabUnit(player, c_ZU_Zergling, c_prioScout, null);
+    if (obs) {
+        return obs;
+    }
+    if (prev) {
+        return prev;
+    }
+    if (!allowWorkers) {
+        return c_nullUnit;
+    }
+    return AIGrabUnit(player, c_ZU_Drone, c_prioScout, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIWaveThinkZerg
+//--------------------------------------------------------------------------------------------------
+void AIWaveThinkZerg (int player, wave w, int type) {
+    AIWaveThinkDefault(player, w, type);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  Zerg Init
+//--------------------------------------------------------------------------------------------------
+static void ZergInit (int player) {
+
+    InitCounters(player);
+    AIMeleeSharedInit(player);
+    AISetFlag(player, e_flagsScouting, false);
+    AISetFlag(player, e_flagsEarlyDefScout, false);
+    AILimitStockLarva(player, c_ZU_Larva);
+    AIReqCountAsBuiltObject(player, c_ZU_Larva);
+    //AITechCountFixupSingle(player, c_ZB_HydraliskDen, c_ZB_LurkerDen);       // done in BaseAI now
+    //AITechCountFixupSingle(player, c_ZB_Spire, c_ZB_GreaterSpire);           // done in BaseAI now
+    //AITechCountFixupInOrder(player, c_ZB_Hatchery, c_ZB_Lair, c_ZB_Hive);    // done in BaseAI now
+    AISetCreepBuilding(player, c_ZB_CreepTumor, "ZergBuildingNotOnCreep");
+    AISetDefaultArmyUnit(player, c_ZU_Zergling);
+    AISetDefaultTownHall(player, c_ZB_Hatchery);
+    AIReqAddSpecialMaker( c_ZB_CreepTumorBurrowed, c_ZB_CreepTumor, "BurrowCreepTumorDown", 0);
+    AIReqAddSpecialMaker( c_ZB_CreepTumorBurrowed, c_ZU_Queen, c_AB_QueenBuild, 0);
+
+    AISetMainState(player, e_mainState_Open, e_mainSubState_Init);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ZergOpen (int player);
+void ZergMid (int player);
+void ZergLate (int player);
+
+//--------------------------------------------------------------------------------------------------
+//  AIMeleeZerg
+//--------------------------------------------------------------------------------------------------
+void AIMeleeZerg (int player) {
+    int mainState = AIState(player, e_mainState);
+
+    if (AIPlayerDifficulty(player) >= c_skirChMoney) {
+        AIMeleeCheatResources(player);
+    }
+
+    if (mainState == e_mainState_Init)              { ZergInit(player);       }
+    else if (mainState == e_mainState_Open)         { ZergOpen(player);       }
+    else if (mainState == e_mainState_Mid)          { ZergMid(player);        }
+    else if (mainState == e_mainState_Late)         { ZergLate(player);       }
+    else { ErrorMeleeScript(player, "Invalid mainState"); }
+}
+
+void ZergOpen (int player) {
+    int diff = AIPlayerDifficulty(player);
+
+    if (diff == c_skirVeryEasy)       { ZergOpenVyEy(player); }
+    else if (diff == c_skirEasy)      { ZergOpenEasy(player); }
+    else if (diff == c_skirMedium)    { ZergOpenMedi(player); }
+    else if (diff == c_skirMed_Hard)  { ZergOpenMdHd(player); }
+    else if (diff == c_skirHard)      { ZergOpenHard(player); }
+    else if (diff == c_skirHard_VH)   { ZergOpenHdVH(player); }
+    else if (diff == c_skirVeryHard)  { ZergOpenVyHd(player); }
+    else if (diff == c_skirChVision)  { ZergOpenChVi(player); }
+    else if (diff == c_skirChMoney)   { ZergOpenChRe(player); }
+    else                              { ZergOpenChIn(player); }
+}
+
+void ZergMid (int player) {
+    int diff = AIPlayerDifficulty(player);
+
+    if (diff == c_skirVeryEasy)       { ZergMidVyEy(player); }
+    else if (diff == c_skirEasy)      { ZergMidEasy(player); }
+    else if (diff == c_skirMedium)    { ZergMidMedi(player); }
+    else if (diff == c_skirMed_Hard)  { ZergMidMdHd(player); }
+    else if (diff == c_skirHard)      { ZergMidHard(player); }
+    else if (diff == c_skirHard_VH)   { ZergMidHdVH(player); }
+    else if (diff == c_skirVeryHard)  { ZergMidVyHd(player); }
+    else if (diff == c_skirChVision)  { ZergMidChVi(player); }
+    else if (diff == c_skirChMoney)   { ZergMidChRe(player); }
+    else                              { ZergMidChIn(player); }
+}
+
+void ZergLate (int player) {
+    int diff = AIPlayerDifficulty(player);
+
+    if (diff == c_skirVeryEasy)       { ZergLateVyEy(player); }
+    else if (diff == c_skirEasy)      { ZergLateEasy(player); }
+    else if (diff == c_skirMedium)    { ZergLateMedi(player); }
+    else if (diff == c_skirMed_Hard)  { ZergLateMdHd(player); }
+    else if (diff == c_skirHard)      { ZergLateHard(player); }
+    else if (diff == c_skirHard_VH)   { ZergLateHdVH(player); }
+    else if (diff == c_skirVeryHard)  { ZergLateVyHd(player); }
+    else if (diff == c_skirChVision)  { ZergLateChVi(player); }
+    else if (diff == c_skirChMoney)   { ZergLateChRe(player); }
+    else                              { ZergLateChIn(player); }
+}

@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib7181C7CC_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Missile Madness
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib7181C7CC_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib7181C7CC_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "MissileBarrage");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib7181C7CC_gt_Initialization_Init () {
+    lib7181C7CC_gt_Initialization = TriggerCreate("lib7181C7CC_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib7181C7CC_gt_Initialization);
+}
+
+void lib7181C7CC_InitTriggers () {
+    lib7181C7CC_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib7181C7CC_InitLib_completed = false;
+
+void lib7181C7CC_InitLib () {
+    if (lib7181C7CC_InitLib_completed) {
+        return;
+    }
+
+    lib7181C7CC_InitLib_completed = true;
+
+    lib7181C7CC_InitLibraries();
+    lib7181C7CC_InitTriggers();
+}
+

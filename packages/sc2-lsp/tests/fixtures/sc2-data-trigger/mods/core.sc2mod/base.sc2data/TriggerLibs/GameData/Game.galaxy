@@ -1,0 +1,505 @@
+//GENERATED CODE====================================================================================
+//  
+//  Copyright Blizzard Entertainment 2003+
+//  
+//  Game.galaxy generated from Game.xml using GalaxyHeader.xtc
+//  
+//  !!! WARNING !!! This is generated code. Changes made here will be overwritten.
+//  
+//GENERATED CODE====================================================================================
+
+//  EClassIdCGame
+const int c_classIdCGame = 0;
+const string c_classIdCGameName = "CGame";
+
+//  EAllianceId
+const int c_allianceIdPassive = 0;
+const int c_allianceIdVision = 1;
+const int c_allianceIdControl = 2;
+const int c_allianceIdSpend = 3;
+const int c_allianceIdTrade = 4;
+const int c_allianceIdSeekHelp = 5;
+const int c_allianceIdGiveHelp = 6;
+const int c_allianceIdChat = 7;
+const int c_allianceIdDefeat = 8;
+const int c_allianceIdPushable = 9;
+const int c_allianceIdPower = 10;
+const string c_allianceIdPassiveName = "Passive";
+const string c_allianceIdVisionName = "Vision";
+const string c_allianceIdControlName = "Control";
+const string c_allianceIdSpendName = "Spend";
+const string c_allianceIdTradeName = "Trade";
+const string c_allianceIdSeekHelpName = "SeekHelp";
+const string c_allianceIdGiveHelpName = "GiveHelp";
+const string c_allianceIdChatName = "Chat";
+const string c_allianceIdDefeatName = "Defeat";
+const string c_allianceIdPushableName = "Pushable";
+const string c_allianceIdPowerName = "Power";
+
+//  EPlayerType
+const int c_playerTypeNone = 0;
+const int c_playerTypeUser = 1;
+const int c_playerTypeComputer = 2;
+const int c_playerTypeNeutral = 3;
+const int c_playerTypeHostile = 4;
+const string c_playerTypeNoneName = "None";
+const string c_playerTypeUserName = "User";
+const string c_playerTypeComputerName = "Computer";
+const string c_playerTypeNeutralName = "Neutral";
+const string c_playerTypeHostileName = "Hostile";
+
+//  ETargetFilter
+const int c_targetFilterSelf = 0;
+const int c_targetFilterPlayer = 1;
+const int c_targetFilterAlly = 2;
+const int c_targetFilterNeutral = 3;
+const int c_targetFilterEnemy = 4;
+const int c_targetFilterAir = 5;
+const int c_targetFilterGround = 6;
+const int c_targetFilterLight = 7;
+const int c_targetFilterArmored = 8;
+const int c_targetFilterBiological = 9;
+const int c_targetFilterRobotic = 10;
+const int c_targetFilterMechanical = 11;
+const int c_targetFilterPsionic = 12;
+const int c_targetFilterMassive = 13;
+const int c_targetFilterStructure = 14;
+const int c_targetFilterHover = 15;
+const int c_targetFilterHeroic = 16;
+const int c_targetFilterUser1 = 17;
+const int c_targetFilterWorker = 18;
+const int c_targetFilterRawResource = 19;
+const int c_targetFilterHarvestableResource = 20;
+const int c_targetFilterMissile = 21;
+const int c_targetFilterDestructible = 22;
+const int c_targetFilterItem = 23;
+const int c_targetFilterUncommandable = 24;
+const int c_targetFilterCanHaveEnergy = 25;
+const int c_targetFilterCanHaveShields = 26;
+const int c_targetFilterPreventDefeat = 27;
+const int c_targetFilterPreventReveal = 28;
+const int c_targetFilterBuried = 29;
+const int c_targetFilterCloaked = 30;
+const int c_targetFilterVisible = 31;
+const int c_targetFilterStasis = 32;
+const int c_targetFilterUnderConstruction = 33;
+const int c_targetFilterDead = 34;
+const int c_targetFilterRevivable = 35;
+const int c_targetFilterHidden = 36;
+const int c_targetFilterHallucination = 37;
+const int c_targetFilterInvulnerable = 38;
+const int c_targetFilterHasEnergy = 39;
+const int c_targetFilterHasShields = 40;
+const int c_targetFilterBenign = 41;
+const int c_targetFilterPassive = 42;
+const int c_targetFilterDetector = 43;
+const int c_targetFilterRadar = 44;
+const int c_targetFilterStunned = 45;
+const int c_targetFilterSummoned = 46;
+const int c_targetFilterUnstoppable = 47;
+const int c_targetFilterOuter = 48;
+const int c_targetFilterResistant = 49;
+const int c_targetFilterSilenced = 50;
+const int c_targetFilterDazed = 51;
+const int c_targetFilterMapBoss = 52;
+const string c_targetFilterSelfName = "Self";
+const string c_targetFilterPlayerName = "Player";
+const string c_targetFilterAllyName = "Ally";
+const string c_targetFilterNeutralName = "Neutral";
+const string c_targetFilterEnemyName = "Enemy";
+const string c_targetFilterAirName = "Air";
+const string c_targetFilterGroundName = "Ground";
+const string c_targetFilterLightName = "Light";
+const string c_targetFilterArmoredName = "Armored";
+const string c_targetFilterBiologicalName = "Biological";
+const string c_targetFilterRoboticName = "Robotic";
+const string c_targetFilterMechanicalName = "Mechanical";
+const string c_targetFilterPsionicName = "Psionic";
+const string c_targetFilterMassiveName = "Massive";
+const string c_targetFilterStructureName = "Structure";
+const string c_targetFilterHoverName = "Hover";
+const string c_targetFilterHeroicName = "Heroic";
+const string c_targetFilterUser1Name = "User1";
+const string c_targetFilterWorkerName = "Worker";
+const string c_targetFilterRawResourceName = "RawResource";
+const string c_targetFilterHarvestableResourceName = "HarvestableResource";
+const string c_targetFilterMissileName = "Missile";
+const string c_targetFilterDestructibleName = "Destructible";
+const string c_targetFilterItemName = "Item";
+const string c_targetFilterUncommandableName = "Uncommandable";
+const string c_targetFilterCanHaveEnergyName = "CanHaveEnergy";
+const string c_targetFilterCanHaveShieldsName = "CanHaveShields";
+const string c_targetFilterPreventDefeatName = "PreventDefeat";
+const string c_targetFilterPreventRevealName = "PreventReveal";
+const string c_targetFilterBuriedName = "Buried";
+const string c_targetFilterCloakedName = "Cloaked";
+const string c_targetFilterVisibleName = "Visible";
+const string c_targetFilterStasisName = "Stasis";
+const string c_targetFilterUnderConstructionName = "UnderConstruction";
+const string c_targetFilterDeadName = "Dead";
+const string c_targetFilterRevivableName = "Revivable";
+const string c_targetFilterHiddenName = "Hidden";
+const string c_targetFilterHallucinationName = "Hallucination";
+const string c_targetFilterInvulnerableName = "Invulnerable";
+const string c_targetFilterHasEnergyName = "HasEnergy";
+const string c_targetFilterHasShieldsName = "HasShields";
+const string c_targetFilterBenignName = "Benign";
+const string c_targetFilterPassiveName = "Passive";
+const string c_targetFilterDetectorName = "Detector";
+const string c_targetFilterRadarName = "Radar";
+const string c_targetFilterStunnedName = "Stunned";
+const string c_targetFilterSummonedName = "Summoned";
+const string c_targetFilterUnstoppableName = "Unstoppable";
+const string c_targetFilterOuterName = "Outer";
+const string c_targetFilterResistantName = "Resistant";
+const string c_targetFilterSilencedName = "Silenced";
+const string c_targetFilterDazedName = "Dazed";
+const string c_targetFilterMapBossName = "MapBoss";
+
+//  EMarkerMatch
+const int c_markerMatchId = 0;
+const int c_markerMatchLink = 1;
+const int c_markerMatchCasterPlayer = 2;
+const int c_markerMatchCasterUnit = 3;
+const string c_markerMatchIdName = "Id";
+const string c_markerMatchLinkName = "Link";
+const string c_markerMatchCasterPlayerName = "CasterPlayer";
+const string c_markerMatchCasterUnitName = "CasterUnit";
+
+//  EHeightMap
+const int c_heightMapAir = 0;
+const int c_heightMapGlide = 1;
+const int c_heightMapGround = 2;
+const string c_heightMapAirName = "Air";
+const string c_heightMapGlideName = "Glide";
+const string c_heightMapGroundName = "Ground";
+
+//  EPlane
+const int c_planeGround = 0;
+const int c_planeAir = 1;
+const string c_planeGroundName = "Ground";
+const string c_planeAirName = "Air";
+
+//  EPlacementTest
+const int c_placementTestCreep = 0;
+const int c_placementTestPower = 1;
+const int c_placementTestFog = 2;
+const int c_placementTestIgnoreBlockers = 3;
+const int c_placementTestIgnoreInvisible = 4;
+const int c_placementTestZone = 5;
+const int c_placementTestCliff = 6;
+const int c_placementTestDensity = 7;
+const int c_placementTestOriginSideOfFootprints = 8;
+const string c_placementTestCreepName = "Creep";
+const string c_placementTestPowerName = "Power";
+const string c_placementTestFogName = "Fog";
+const string c_placementTestIgnoreBlockersName = "IgnoreBlockers";
+const string c_placementTestIgnoreInvisibleName = "IgnoreInvisible";
+const string c_placementTestZoneName = "Zone";
+const string c_placementTestCliffName = "Cliff";
+const string c_placementTestDensityName = "Density";
+const string c_placementTestOriginSideOfFootprintsName = "OriginSideOfFootprints";
+
+//  EUnitVital
+const int c_unitVitalLife = 0;
+const int c_unitVitalShields = 1;
+const int c_unitVitalEnergy = 2;
+const string c_unitVitalLifeName = "Life";
+const string c_unitVitalShieldsName = "Shields";
+const string c_unitVitalEnergyName = "Energy";
+
+//  EDamageKind
+const int c_damageKindSpell = 0;
+const int c_damageKindMelee = 1;
+const int c_damageKindRanged = 2;
+const int c_damageKindSplash = 3;
+const int c_damageKindNoProc = 4;
+const string c_damageKindSpellName = "Spell";
+const string c_damageKindMeleeName = "Melee";
+const string c_damageKindRangedName = "Ranged";
+const string c_damageKindSplashName = "Splash";
+const string c_damageKindNoProcName = "NoProc";
+
+//  EDeathType
+const int c_deathTypeNormal = 0;
+const int c_deathTypeRemove = 1;
+const int c_deathTypeBlast = 2;
+const int c_deathTypeDisintegrate = 3;
+const int c_deathTypeEat = 4;
+const int c_deathTypeElectrocute = 5;
+const int c_deathTypeEviscerate = 6;
+const int c_deathTypeFire = 7;
+const int c_deathTypeFreeze = 8;
+const int c_deathTypeImpact = 9;
+const int c_deathTypeMorph = 10;
+const int c_deathTypeSilentkill = 11;
+const int c_deathTypeSquish = 12;
+const int c_deathTypeTimeout = 13;
+const int c_deathTypeUnlink = 14;
+const int c_deathTypeUnderConstruction = 15;
+const int c_deathTypeSalvage = 16;
+const int c_deathTypeCancel = 17;
+const int c_deathTypeTrainingComplete = 18;
+const int c_deathTypeTrainingCancel = 19;
+const string c_deathTypeNormalName = "Normal";
+const string c_deathTypeRemoveName = "Remove";
+const string c_deathTypeBlastName = "Blast";
+const string c_deathTypeDisintegrateName = "Disintegrate";
+const string c_deathTypeEatName = "Eat";
+const string c_deathTypeElectrocuteName = "Electrocute";
+const string c_deathTypeEviscerateName = "Eviscerate";
+const string c_deathTypeFireName = "Fire";
+const string c_deathTypeFreezeName = "Freeze";
+const string c_deathTypeImpactName = "Impact";
+const string c_deathTypeMorphName = "Morph";
+const string c_deathTypeSilentkillName = "Silentkill";
+const string c_deathTypeSquishName = "Squish";
+const string c_deathTypeTimeoutName = "Timeout";
+const string c_deathTypeUnlinkName = "Unlink";
+const string c_deathTypeUnderConstructionName = "UnderConstruction";
+const string c_deathTypeSalvageName = "Salvage";
+const string c_deathTypeCancelName = "Cancel";
+const string c_deathTypeTrainingCompleteName = "TrainingComplete";
+const string c_deathTypeTrainingCancelName = "TrainingCancel";
+
+//  ECooldownOperation
+const int c_cooldownOperationDefault = 0;
+const int c_cooldownOperationAdd = 1;
+const int c_cooldownOperationMultiply = 2;
+const int c_cooldownOperationMin = 3;
+const int c_cooldownOperationMax = 4;
+const int c_cooldownOperationSet = 5;
+const string c_cooldownOperationDefaultName = "Default";
+const string c_cooldownOperationAddName = "Add";
+const string c_cooldownOperationMultiplyName = "Multiply";
+const string c_cooldownOperationMinName = "Min";
+const string c_cooldownOperationMaxName = "Max";
+const string c_cooldownOperationSetName = "Set";
+
+//  EResourceType
+const int c_resourceTypeMinerals = 0;
+const int c_resourceTypeVespene = 1;
+const int c_resourceTypeTerrazine = 2;
+const int c_resourceTypeCustom = 3;
+const string c_resourceTypeMineralsName = "Minerals";
+const string c_resourceTypeVespeneName = "Vespene";
+const string c_resourceTypeTerrazineName = "Terrazine";
+const string c_resourceTypeCustomName = "Custom";
+
+//  EEffectLocation
+const int c_effectLocationCasterUnit = 0;
+const int c_effectLocationCasterPoint = 1;
+const int c_effectLocationCasterUnitOrPoint = 2;
+const int c_effectLocationCasterOuterUnit = 3;
+const int c_effectLocationCasterOuterPoint = 4;
+const int c_effectLocationCasterOuterUnitOrPoint = 5;
+const int c_effectLocationSourceUnit = 6;
+const int c_effectLocationSourcePoint = 7;
+const int c_effectLocationSourceUnitOrPoint = 8;
+const int c_effectLocationOuterUnit = 9;
+const int c_effectLocationOuterPoint = 10;
+const int c_effectLocationOuterUnitOrPoint = 11;
+const int c_effectLocationTargetUnit = 12;
+const int c_effectLocationTargetPoint = 13;
+const int c_effectLocationTargetUnitOrPoint = 14;
+const int c_effectLocationTargetOuterUnit = 15;
+const int c_effectLocationTargetOuterPoint = 16;
+const int c_effectLocationTargetOuterUnitOrPoint = 17;
+const int c_effectLocationOriginUnit = 18;
+const int c_effectLocationOriginPoint = 19;
+const int c_effectLocationOriginUnitOrPoint = 20;
+const string c_effectLocationCasterUnitName = "CasterUnit";
+const string c_effectLocationCasterPointName = "CasterPoint";
+const string c_effectLocationCasterUnitOrPointName = "CasterUnitOrPoint";
+const string c_effectLocationCasterOuterUnitName = "CasterOuterUnit";
+const string c_effectLocationCasterOuterPointName = "CasterOuterPoint";
+const string c_effectLocationCasterOuterUnitOrPointName = "CasterOuterUnitOrPoint";
+const string c_effectLocationSourceUnitName = "SourceUnit";
+const string c_effectLocationSourcePointName = "SourcePoint";
+const string c_effectLocationSourceUnitOrPointName = "SourceUnitOrPoint";
+const string c_effectLocationOuterUnitName = "OuterUnit";
+const string c_effectLocationOuterPointName = "OuterPoint";
+const string c_effectLocationOuterUnitOrPointName = "OuterUnitOrPoint";
+const string c_effectLocationTargetUnitName = "TargetUnit";
+const string c_effectLocationTargetPointName = "TargetPoint";
+const string c_effectLocationTargetUnitOrPointName = "TargetUnitOrPoint";
+const string c_effectLocationTargetOuterUnitName = "TargetOuterUnit";
+const string c_effectLocationTargetOuterPointName = "TargetOuterPoint";
+const string c_effectLocationTargetOuterUnitOrPointName = "TargetOuterUnitOrPoint";
+const string c_effectLocationOriginUnitName = "OriginUnit";
+const string c_effectLocationOriginPointName = "OriginPoint";
+const string c_effectLocationOriginUnitOrPointName = "OriginUnitOrPoint";
+
+//  EEffectPlayer
+const int c_effectPlayerOrigin = 0;
+const int c_effectPlayerCreator = 1;
+const int c_effectPlayerCaster = 2;
+const int c_effectPlayerCasterOuter = 3;
+const int c_effectPlayerOuter = 4;
+const int c_effectPlayerSource = 5;
+const int c_effectPlayerTarget = 6;
+const int c_effectPlayerTargetOuter = 7;
+const int c_effectPlayerNeutral = 8;
+const int c_effectPlayerHostile = 9;
+const string c_effectPlayerOriginName = "Origin";
+const string c_effectPlayerCreatorName = "Creator";
+const string c_effectPlayerCasterName = "Caster";
+const string c_effectPlayerCasterOuterName = "CasterOuter";
+const string c_effectPlayerOuterName = "Outer";
+const string c_effectPlayerSourceName = "Source";
+const string c_effectPlayerTargetName = "Target";
+const string c_effectPlayerTargetOuterName = "TargetOuter";
+const string c_effectPlayerNeutralName = "Neutral";
+const string c_effectPlayerHostileName = "Hostile";
+
+//  EEffectUnit
+const int c_effectUnitCaster = 0;
+const int c_effectUnitCasterOuter = 1;
+const int c_effectUnitOuter = 2;
+const int c_effectUnitSource = 3;
+const int c_effectUnitTarget = 4;
+const int c_effectUnitTargetOuter = 5;
+const int c_effectUnitOrigin = 6;
+const string c_effectUnitCasterName = "Caster";
+const string c_effectUnitCasterOuterName = "CasterOuter";
+const string c_effectUnitOuterName = "Outer";
+const string c_effectUnitSourceName = "Source";
+const string c_effectUnitTargetName = "Target";
+const string c_effectUnitTargetOuterName = "TargetOuter";
+const string c_effectUnitOriginName = "Origin";
+
+//  ETeamColor
+const int c_teamColorDiffuse = 0;
+const int c_teamColorEmissive = 1;
+const int c_teamColorSelected = 2;
+const int c_teamColorAttacked = 3;
+const string c_teamColorDiffuseName = "Diffuse";
+const string c_teamColorEmissiveName = "Emissive";
+const string c_teamColorSelectedName = "Selected";
+const string c_teamColorAttackedName = "Attacked";
+
+//  EValueCompare
+const int c_valueCompareEq = 0;
+const int c_valueCompareNE = 1;
+const int c_valueCompareLT = 2;
+const int c_valueCompareGT = 3;
+const int c_valueCompareLE = 4;
+const int c_valueCompareGE = 5;
+const string c_valueCompareEqName = "Eq";
+const string c_valueCompareNEName = "NE";
+const string c_valueCompareLTName = "LT";
+const string c_valueCompareGTName = "GT";
+const string c_valueCompareLEName = "LE";
+const string c_valueCompareGEName = "GE";
+
+//  EBeacon
+const int c_beaconArmy = 0;
+const int c_beaconDefend = 1;
+const int c_beaconAttack = 2;
+const int c_beaconHarass = 3;
+const int c_beaconIdle = 4;
+const int c_beaconAuto = 5;
+const int c_beaconDetect = 6;
+const int c_beaconScout = 7;
+const int c_beaconClaim = 8;
+const int c_beaconExpand = 9;
+const int c_beaconRally = 10;
+const int c_beaconCustom1 = 11;
+const int c_beaconCustom2 = 12;
+const int c_beaconCustom3 = 13;
+const int c_beaconCustom4 = 14;
+const string c_beaconArmyName = "Army";
+const string c_beaconDefendName = "Defend";
+const string c_beaconAttackName = "Attack";
+const string c_beaconHarassName = "Harass";
+const string c_beaconIdleName = "Idle";
+const string c_beaconAutoName = "Auto";
+const string c_beaconDetectName = "Detect";
+const string c_beaconScoutName = "Scout";
+const string c_beaconClaimName = "Claim";
+const string c_beaconExpandName = "Expand";
+const string c_beaconRallyName = "Rally";
+const string c_beaconCustom1Name = "Custom1";
+const string c_beaconCustom2Name = "Custom2";
+const string c_beaconCustom3Name = "Custom3";
+const string c_beaconCustom4Name = "Custom4";
+
+//  ECustomBuildOpening
+const int c_customBuildOpeningInvalid = 0;
+const int c_customBuildOpeningOne = 1;
+const int c_customBuildOpeningTwo = 2;
+const int c_customBuildOpeningThree = 3;
+const int c_customBuildOpeningFour = 4;
+const int c_customBuildOpeningFive = 5;
+const string c_customBuildOpeningInvalidName = "Invalid";
+const string c_customBuildOpeningOneName = "One";
+const string c_customBuildOpeningTwoName = "Two";
+const string c_customBuildOpeningThreeName = "Three";
+const string c_customBuildOpeningFourName = "Four";
+const string c_customBuildOpeningFiveName = "Five";
+
+//  ECustomBuildLateGame
+const int c_customBuildLateGameInvalid = 0;
+const int c_customBuildLateGameOne = 1;
+const int c_customBuildLateGameTwo = 2;
+const int c_customBuildLateGameThree = 3;
+const int c_customBuildLateGameFour = 4;
+const int c_customBuildLateGameFive = 5;
+const string c_customBuildLateGameInvalidName = "Invalid";
+const string c_customBuildLateGameOneName = "One";
+const string c_customBuildLateGameTwoName = "Two";
+const string c_customBuildLateGameThreeName = "Three";
+const string c_customBuildLateGameFourName = "Four";
+const string c_customBuildLateGameFiveName = "Five";
+
+//  EUnitTaunt
+const int c_unitTauntCheer = 0;
+const int c_unitTauntDance = 1;
+const int c_unitTauntTease = 2;
+const string c_unitTauntCheerName = "Cheer";
+const string c_unitTauntDanceName = "Dance";
+const string c_unitTauntTeaseName = "Tease";
+
+//  EEffectAmount
+const int c_effectAmountAbsorbed = 0;
+const int c_effectAmountDamaged = 1;
+const int c_effectAmountDodged = 2;
+const int c_effectAmountFound = 3;
+const int c_effectAmountHealed = 4;
+const int c_effectAmountKilled = 5;
+const int c_effectAmountSplashed = 6;
+const int c_effectAmountLifeChanged = 7;
+const int c_effectAmountShieldsChanged = 8;
+const int c_effectAmountEnergyChanged = 9;
+const int c_effectAmountLifeLeeched = 10;
+const int c_effectAmountShieldsLeeched = 11;
+const int c_effectAmountEnergyLeeched = 12;
+const int c_effectAmountLifeGained = 13;
+const int c_effectAmountShieldsGained = 14;
+const int c_effectAmountEnergyGained = 15;
+const string c_effectAmountAbsorbedName = "Absorbed";
+const string c_effectAmountDamagedName = "Damaged";
+const string c_effectAmountDodgedName = "Dodged";
+const string c_effectAmountFoundName = "Found";
+const string c_effectAmountHealedName = "Healed";
+const string c_effectAmountKilledName = "Killed";
+const string c_effectAmountSplashedName = "Splashed";
+const string c_effectAmountLifeChangedName = "LifeChanged";
+const string c_effectAmountShieldsChangedName = "ShieldsChanged";
+const string c_effectAmountEnergyChangedName = "EnergyChanged";
+const string c_effectAmountLifeLeechedName = "LifeLeeched";
+const string c_effectAmountShieldsLeechedName = "ShieldsLeeched";
+const string c_effectAmountEnergyLeechedName = "EnergyLeeched";
+const string c_effectAmountLifeGainedName = "LifeGained";
+const string c_effectAmountShieldsGainedName = "ShieldsGained";
+const string c_effectAmountEnergyGainedName = "EnergyGained";
+
+//  EEffectHistory
+const int c_effectHistoryDamage = 0;
+const int c_effectHistoryDeath = 1;
+const int c_effectHistoryHealing = 2;
+const int c_effectHistoryModifier = 3;
+const string c_effectHistoryDamageName = "Damage";
+const string c_effectHistoryDeathName = "Death";
+const string c_effectHistoryHealingName = "Healing";
+const string c_effectHistoryModifierName = "Modifier";

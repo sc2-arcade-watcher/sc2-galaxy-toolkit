@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CActorUnit id="TempEvoMaster" parent="GenericUnitBase" unitName="TempEvoMaster">
+        <Macros value="ZergBurrowMobileAnimMacro"/>
+        <Macros value="ZergMediumBurrowEffects"/>
+        <Macros value="UnloadDropAnim"/>
+        <On Terms="AbilMorph.*.Start; AbilKey BurrowDown" Send="Create BurrowDownMedium"/>
+        <On Terms="AbilMorph.*.Cancel; MorphFrom Infestor; MorphTo InfestorBurrowed" Send="AnimClear Burrow"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo Infestor; MorphFrom InfestorBurrowed" Send="AnimBracketStop Burrow"/>
+        <On Terms="UnitMovementUpdate.*.Walk" Send="AnimClear Spell"/>
+        <DeathArray index="Normal">
+            <AnimProps value="Death"/>
+            <ModelLink value="InfestorDeath"/>
+            <SoundLink value=""/>
+            <VoiceLink value="TempEvoMasterDeathVoice"/>
+        </DeathArray>
+        <DeathArray index="Disintegrate" ModelLink="InfestorDeathAcid" SoundLink="Uni_DeathFXAcid"/>
+        <DeathArray index="Fire" AnimProps="Death,Fire" ModelLink="InfestorDeathFire" SoundLink="Uni_DeathFXFire"/>
+        <PortraitModel value="InfestorPortrait"/>
+        <WalkAnimMoveSpeed value="1.875"/>
+        <BarOffset value="70"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Zerg-Infestor.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\btn-unit-zerg-infestor.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-groundcarapace-level0.dds"/>
+        <SelectAbilCmd value="FungalGrowth,Execute"/>
+        <SoundArray index="Ready" value="Infestor_Ready"/>
+        <SoundArray index="What" value="Infestor_What"/>
+        <SoundArray index="Yes" value="Infestor_Yes"/>
+        <SoundArray index="Pissed" value="Infestor_Pissed"/>
+        <UnitIcon value="Assets\Textures\btn-unit-zerg-infestor.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Zerg-Infestor.dds"/>
+        </Wireframe>
+    </CActorUnit>
+    <CActorUnit id="SMChangeling" parent="GenericUnitBase" unitName="SMChangeling">
+        <Macros value="ZergBurrowMobileAnimMacro"/>
+        <Macros value="ZergMediumBurrowEffects"/>
+        <Macros value="UnloadDropAnim"/>
+        <On Terms="AbilMorph.*.Start; AbilKey BurrowDown" Send="Create BurrowDownMedium"/>
+        <On Terms="AbilMorph.*.Cancel; MorphFrom Infestor; MorphTo InfestorBurrowed" Send="AnimClear Burrow"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo Infestor; MorphFrom InfestorBurrowed" Send="AnimBracketStop Burrow"/>
+        <On Terms="UnitMovementUpdate.*.Walk" Send="AnimClear Spell"/>
+        <DeathArray index="Normal">
+            <AnimProps value="Death"/>
+            <ModelLink value="InfestorDeath"/>
+            <SoundLink value=""/>
+            <VoiceLink value="SMChangelingDeathVoice"/>
+        </DeathArray>
+        <DeathArray index="Disintegrate" ModelLink="InfestorDeathAcid" SoundLink="Uni_DeathFXAcid"/>
+        <DeathArray index="Fire" AnimProps="Death,Fire" ModelLink="InfestorDeathFire" SoundLink="Uni_DeathFXFire"/>
+        <PortraitModel value="InfestorPortrait"/>
+        <WalkAnimMoveSpeed value="1.875"/>
+        <BarOffset value="70"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Zerg-Infestor.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\btn-unit-zerg-infestor.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-groundcarapace-level0.dds"/>
+        <SelectAbilCmd value="FungalGrowth,Execute"/>
+        <SoundArray index="Ready" value="Infestor_Ready"/>
+        <SoundArray index="What" value="Infestor_What"/>
+        <SoundArray index="Yes" value="Infestor_Yes"/>
+        <SoundArray index="Pissed" value="Infestor_Pissed"/>
+        <UnitIcon value="Assets\Textures\btn-unit-zerg-infestor.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Zerg-Infestor.dds"/>
+        </Wireframe>
+    </CActorUnit>
+</Catalog>

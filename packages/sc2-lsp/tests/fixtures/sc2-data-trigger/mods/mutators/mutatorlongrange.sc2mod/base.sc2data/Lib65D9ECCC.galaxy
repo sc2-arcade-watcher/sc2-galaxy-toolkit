@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib65D9ECCC_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Long Range
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib65D9ECCC_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib65D9ECCC_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "LongRange");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib65D9ECCC_gt_Initialization_Init () {
+    lib65D9ECCC_gt_Initialization = TriggerCreate("lib65D9ECCC_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib65D9ECCC_gt_Initialization);
+}
+
+void lib65D9ECCC_InitTriggers () {
+    lib65D9ECCC_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib65D9ECCC_InitLib_completed = false;
+
+void lib65D9ECCC_InitLib () {
+    if (lib65D9ECCC_InitLib_completed) {
+        return;
+    }
+
+    lib65D9ECCC_InitLib_completed = true;
+
+    lib65D9ECCC_InitLibraries();
+    lib65D9ECCC_InitTriggers();
+}
+

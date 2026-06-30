@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibFD465887_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: RedEnvelopes
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libFD465887_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libFD465887_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "RedEnvelopes");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libFD465887_gt_Initialization_Init () {
+    libFD465887_gt_Initialization = TriggerCreate("libFD465887_gt_Initialization_Func");
+    TriggerAddEventMapInit(libFD465887_gt_Initialization);
+}
+
+void libFD465887_InitTriggers () {
+    libFD465887_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libFD465887_InitLib_completed = false;
+
+void libFD465887_InitLib () {
+    if (libFD465887_InitLib_completed) {
+        return;
+    }
+
+    libFD465887_InitLib_completed = true;
+
+    libFD465887_InitLibraries();
+    libFD465887_InitTriggers();
+}
+

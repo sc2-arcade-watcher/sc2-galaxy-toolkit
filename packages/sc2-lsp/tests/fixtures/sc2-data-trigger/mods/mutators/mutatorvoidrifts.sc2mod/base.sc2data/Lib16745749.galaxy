@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib16745749_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Void Rifts
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib16745749_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib16745749_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "VoidRifts");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib16745749_gt_Initialization_Init () {
+    lib16745749_gt_Initialization = TriggerCreate("lib16745749_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib16745749_gt_Initialization);
+}
+
+void lib16745749_InitTriggers () {
+    lib16745749_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib16745749_InitLib_completed = false;
+
+void lib16745749_InitLib () {
+    if (lib16745749_InitLib_completed) {
+        return;
+    }
+
+    lib16745749_InitLib_completed = true;
+
+    lib16745749_InitLibraries();
+    lib16745749_InitTriggers();
+}
+

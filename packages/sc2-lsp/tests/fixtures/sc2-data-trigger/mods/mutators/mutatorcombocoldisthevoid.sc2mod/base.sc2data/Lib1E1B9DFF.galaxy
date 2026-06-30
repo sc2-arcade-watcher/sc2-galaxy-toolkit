@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib1E1B9DFF_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib1E1B9DFF_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib1E1B9DFF_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(3131);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib1E1B9DFF_gt_Initialization_Init () {
+    lib1E1B9DFF_gt_Initialization = TriggerCreate("lib1E1B9DFF_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib1E1B9DFF_gt_Initialization);
+}
+
+void lib1E1B9DFF_InitTriggers () {
+    lib1E1B9DFF_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib1E1B9DFF_InitLib_completed = false;
+
+void lib1E1B9DFF_InitLib () {
+    if (lib1E1B9DFF_InitLib_completed) {
+        return;
+    }
+
+    lib1E1B9DFF_InitLib_completed = true;
+
+    lib1E1B9DFF_InitLibraries();
+    lib1E1B9DFF_InitTriggers();
+}
+

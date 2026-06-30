@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibD91C5BFC_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Just Die
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libD91C5BFC_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libD91C5BFC_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "JustDie");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libD91C5BFC_gt_Initialization_Init () {
+    libD91C5BFC_gt_Initialization = TriggerCreate("libD91C5BFC_gt_Initialization_Func");
+    TriggerAddEventMapInit(libD91C5BFC_gt_Initialization);
+}
+
+void libD91C5BFC_InitTriggers () {
+    libD91C5BFC_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libD91C5BFC_InitLib_completed = false;
+
+void libD91C5BFC_InitLib () {
+    if (libD91C5BFC_InitLib_completed) {
+        return;
+    }
+
+    libD91C5BFC_InitLib_completed = true;
+
+    libD91C5BFC_InitLibraries();
+    libD91C5BFC_InitTriggers();
+}
+

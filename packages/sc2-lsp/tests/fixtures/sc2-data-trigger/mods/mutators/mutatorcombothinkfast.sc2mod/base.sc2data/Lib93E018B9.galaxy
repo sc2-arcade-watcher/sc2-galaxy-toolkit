@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib93E018B9_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib93E018B9_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Set Mutator Weekly Challenge On
+//--------------------------------------------------------------------------------------------------
+bool lib93E018B9_gt_SetMutatorWeeklyChallengeOn_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(3165);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib93E018B9_gt_SetMutatorWeeklyChallengeOn_Init () {
+    lib93E018B9_gt_SetMutatorWeeklyChallengeOn = TriggerCreate("lib93E018B9_gt_SetMutatorWeeklyChallengeOn_Func");
+    TriggerAddEventMapInit(lib93E018B9_gt_SetMutatorWeeklyChallengeOn);
+}
+
+void lib93E018B9_InitTriggers () {
+    lib93E018B9_gt_SetMutatorWeeklyChallengeOn_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib93E018B9_InitLib_completed = false;
+
+void lib93E018B9_InitLib () {
+    if (lib93E018B9_InitLib_completed) {
+        return;
+    }
+
+    lib93E018B9_InitLib_completed = true;
+
+    lib93E018B9_InitLibraries();
+    lib93E018B9_InitTriggers();
+}
+

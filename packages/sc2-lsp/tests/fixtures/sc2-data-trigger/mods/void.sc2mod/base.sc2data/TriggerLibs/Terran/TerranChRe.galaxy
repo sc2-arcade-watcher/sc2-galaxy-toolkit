@@ -1,0 +1,89 @@
+//==================================================================================================
+//  Terran Melee Cheater-LateGameResource
+//==================================================================================================
+
+// uses the very hard builds, but cheats visions and gets extra resources later in the game
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenChRe
+//--------------------------------------------------------------------------------------------------
+void TerranOpenChRe (int player) {
+    bool done = false;
+    int buildIndex;
+
+    AIEarlyDefenseScouting(player);
+
+    // see if we need to switch builds
+    UpdateHDTerranOpening(player);
+    
+    buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (buildIndex == e_hdBuildIndex_TOpenRush_Marine)                      { done = TerranOpenRushMarineVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenRush_MarineReaper)           { done = TerranOpenRushMarineReaperVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenRush_ProxyBarracks)          { done = TerranOpenRushProxyBarracksVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenTiming_MMStim)               { done = TerranOpenTimingMMStimVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenTiming_HellionMarauder)      { done = TerranOpenTimingHellionMarauderVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenTiming_MariSiege)            { done = TerranOpenTimingMariSiegeVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenTiming_CloakBanshee)         { done = TerranOpenTimingCloakBansheeVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenPowerMacro_QuickExpGnd)      { done = TerranOpenPowerMacroQuickExpGndVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenPowerMacro_MarineExpGnd)     { done = TerranOpenPowerMacroMarineExpGndVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenPowerMacro_DefenseExpGnd)    { done = TerranOpenPowerMacroDefenseExpGndVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenAir_OneBaseAir)              { done = TerranOpenAirOneBaseAirVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenAir_OneBaseDrop)             { done = TerranOpenAirOneBaseDropVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenAir_CloakBanshee)            { done = TerranOpenAirCloakBansheeVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenAir_QuickExpandAir)          { done = TerranOpenAirQuickExpandAirVyHd (player); }
+    else { ErrorMeleeScript(player, "Invalid Open BuildIndex TerranChRe"); }
+
+    if (done) {
+        TerranHDInitMid(player); // Transition to MidGame
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidChRe
+//--------------------------------------------------------------------------------------------------
+void TerranMidChRe (int player) {
+    bool done = false;
+    int buildIndex;
+    
+    // enable scouting as appropriate
+    if (AIGetUserInt(player, c_numGroundStartLocs) > 0) {
+        AIScoutingEnable(player, 15, c_TU_SCV);
+        AIEarlyDefenseScouting(player);
+    }
+    else {
+        AIScoutingEnable(player, 1, c_TU_Medivac);
+    }
+
+    // see if we need to switch builds
+    UpdateHDTerranMidGame(player);
+    
+    buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (buildIndex == e_hdBuildIndex_TMidRushTiming_MMMedivac)              { done = TerranMidRushTimingMMMedivacVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidRushTiming_DefensiveExpand)   { done = TerranMidRushTimingDefensiveExpandVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidPower_MMMedivac)              { done = TerranMidPowerMMMedivacVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidPower_MMSiege)                { done = TerranMidPowerMMSiegeVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidPower_SiegeBanshee)           { done = TerranMidPowerSiegeBansheeVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidPower_HellionSiege)           { done = TerranMidPowerHellionSiegeVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidPower_SiegeThor)              { done = TerranMidPowerSiegeThorVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidMacro_Bio)                    { done = TerranMidMacroBioVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidMacro_Mech)                   { done = TerranMidMacroMechVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidMacro_ThorBC)                 { done = TerranMidMacroThorBCVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidAir_OneBaseAir)               { done = TerranMidAirOneBaseAirVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidAir_OneBaseDrop)              { done = TerranMidAirOneBaseDropVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidAir_ExpansionVikingBanshee)   { done = TerranMidAirExpansionVikingBansheeVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidAir_ExpansionBC)              { done = TerranMidAirExpansionBCVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidAir_ExpansionDropAir)         { done = TerranMidAirExpansionDropAirVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidAir_Macro)                    { done = TerranMidAirMacroVyHd (player); }
+    else { ErrorMeleeScript(player, "Invalid Mid BuildIndex TerranChRe"); }
+
+    if (done) {
+        TerranHDInitLate(player); // Transition to LateGame
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranLateChRe
+//--------------------------------------------------------------------------------------------------
+void TerranLateChRe (int player) {
+    TerranLateVyHd(player);
+}

@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib13751C85_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Economic Crisis
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib13751C85_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib13751C85_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "NoResources");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib13751C85_gt_Initialization_Init () {
+    lib13751C85_gt_Initialization = TriggerCreate("lib13751C85_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib13751C85_gt_Initialization);
+}
+
+void lib13751C85_InitTriggers () {
+    lib13751C85_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib13751C85_InitLib_completed = false;
+
+void lib13751C85_InitLib () {
+    if (lib13751C85_InitLib_completed) {
+        return;
+    }
+
+    lib13751C85_InitLib_completed = true;
+
+    lib13751C85_InitLibraries();
+    lib13751C85_InitTriggers();
+}
+

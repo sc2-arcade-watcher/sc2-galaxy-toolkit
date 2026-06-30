@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib8BAF42DD_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Outbreak
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib8BAF42DD_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib8BAF42DD_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "InfestedTerranSpawner");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib8BAF42DD_gt_Initialization_Init () {
+    lib8BAF42DD_gt_Initialization = TriggerCreate("lib8BAF42DD_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib8BAF42DD_gt_Initialization);
+}
+
+void lib8BAF42DD_InitTriggers () {
+    lib8BAF42DD_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib8BAF42DD_InitLib_completed = false;
+
+void lib8BAF42DD_InitLib () {
+    if (lib8BAF42DD_InitLib_completed) {
+        return;
+    }
+
+    lib8BAF42DD_InitLib_completed = true;
+
+    lib8BAF42DD_InitLibraries();
+    lib8BAF42DD_InitTriggers();
+}
+

@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib3CF71ABA_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib3CF71ABA_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib3CF71ABA_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(36);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib3CF71ABA_gt_Initialization_Init () {
+    lib3CF71ABA_gt_Initialization = TriggerCreate("lib3CF71ABA_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib3CF71ABA_gt_Initialization);
+}
+
+void lib3CF71ABA_InitTriggers () {
+    lib3CF71ABA_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib3CF71ABA_InitLib_completed = false;
+
+void lib3CF71ABA_InitLib () {
+    if (lib3CF71ABA_InitLib_completed) {
+        return;
+    }
+
+    lib3CF71ABA_InitLib_completed = true;
+
+    lib3CF71ABA_InitLibraries();
+    lib3CF71ABA_InitTriggers();
+}
+

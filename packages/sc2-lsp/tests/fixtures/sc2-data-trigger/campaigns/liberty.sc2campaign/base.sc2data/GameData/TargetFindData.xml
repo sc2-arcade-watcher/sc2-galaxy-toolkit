@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CTargetFindSet id="HybridBlink">
+        <Type value="Successful"/>
+        <Array value="HybridBlinkAttack"/>
+        <Array value="HybridBlinkChase"/>
+        <Array value="HybridBlinkRandom"/>
+    </CTargetFindSet>
+    <!-- If we have an attack target and it is outside of attack range, blink to within attack range. -->
+    <CTargetFindSet id="HybridBlinkAttack">
+        <Type value="Sequential"/>
+        <Array value="HybridBlinkAttackTarget"/>
+        <Array value="HybridBlinkAttackOffset"/>
+    </CTargetFindSet>
+    <CTargetFindOrder id="HybridBlinkAttackTarget" parent="AttackOrderTarget">
+        <TargetValidator value="HybridBlinkAttackRange"/>
+    </CTargetFindOrder>
+    <CTargetFindOffset id="HybridBlinkAttackOffset">
+        <Flags index="EvaluateCmd" value="1"/>
+        <Distance value="-2.5,-2.5"/>
+    </CTargetFindOffset>
+    <!-- If the target is retreating, blink a random distance in its direction. -->
+    <CTargetFindSet id="HybridBlinkChase">
+        <Type value="Sequential"/>
+        <Array value="HybridBlinkChaseTarget"/>
+        <Array value="HybridBlinkChaseOffset"/>
+    </CTargetFindSet>
+    <CTargetFindOrder id="HybridBlinkChaseTarget" parent="AttackOrderTarget">
+        <TargetValidator value="HybridBlinkChaseTest"/>
+    </CTargetFindOrder>
+    <CTargetFindOffset id="HybridBlinkChaseOffset">
+        <Flags index="EvaluateCmd" value="1"/>
+        <Distance value="4,6"/>
+    </CTargetFindOffset>
+    <!-- If the Hybrid is up against 4 or more enemey units, it will blink past it's attack target for effect and mobility. -->
+    <CTargetFindSet id="HybridBlinkRandom">
+        <Type value="Sequential"/>
+        <CasterValidator value="HybridBlinkHostileSearch"/>
+        <Array value="HybridBlinkRandomTarget"/>
+        <Array value="HybridBlinkRandomOffset"/>
+    </CTargetFindSet>
+    <CTargetFindOrder id="HybridBlinkRandomTarget" parent="AttackOrderTarget">
+        <TargetValidator value="HybridBlinkTargetClose"/>
+    </CTargetFindOrder>
+    <CTargetFindOffset id="HybridBlinkRandomOffset">
+        <Flags index="EvaluateCmd" value="1"/>
+        <Distance value="5,7.5"/>
+    </CTargetFindOffset>
+</Catalog>

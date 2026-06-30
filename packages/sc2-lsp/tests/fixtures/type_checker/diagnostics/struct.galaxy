@@ -1,0 +1,31 @@
+struct struct1_t {
+    int a;
+    int b;
+};
+
+struct struct2_t {
+    int a;
+    int b;
+};
+
+void pass_struct1(struct1_t sref)
+{
+}
+
+void pass_struct2(structref<struct1_t> sref)
+{
+}
+
+void test_struct()
+{
+    struct1_t st1;
+    struct2_t st2;
+
+    st1 = st1;
+    st1 = st2;
+    st1.a = st2.b;
+
+    pass_struct1(st1);
+    pass_struct2(st1);
+    pass_struct2(st2);
+}

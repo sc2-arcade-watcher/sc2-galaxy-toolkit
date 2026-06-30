@@ -1,0 +1,364 @@
+//==================================================================================================
+//  Minimal AI Functions, only those needed to link start calls
+//--------------------------------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------------------------------
+//  Melee Flags
+//--------------------------------------------------------------------------------------------------
+
+const int e_flagsScouting           = 1;
+const int e_flagsDiversion          = 2;
+const int e_flagsTimeout            = 3;
+const int e_flagsRunScared          = 4;
+const int e_flagsDetect             = 5;
+const int e_flagsZergStock          = 6;
+const int e_flagsExpanded           = 7;
+const int e_flagsLateScout          = 8;
+const int e_flagsClearObs           = 9;
+const int e_flagsEarlyDefScout      = 10;
+const int e_flagsAllowRetreat       = 11;
+const int e_flagsAllowDropAttack    = 12;
+
+// melee AI reserved user index values
+// on low difficulty values 1-32 are used for army stock
+const int c_numGroundStartLocs      = 128;
+const int c_numAirStartLocs         = 129;
+const int c_specificLobbyBuild      = 130;
+const int c_openingBuildType        = 131;
+const int c_lateGameBuildType       = 132;
+const int c_currentBuildIndex       = 133;
+const int c_nextArmyTime            = 134;
+const int c_ldNextArmyPhase         = 135;
+const int c_ldNextArmyRoll          = 136;
+const int c_ldNextArmyDuration      = 137;
+const int c_ldNumLateLoops          = 138;
+const int c_delayNextAttack         = 139;
+
+const int c_lateGameStateIndex = 140;
+const int c_lateGameTimeIndex = 141;
+
+//--------------------------------------------------------------------------------------------------
+//  AIAlliedCommandWeakerHumanDifficulty
+//--------------------------------------------------------------------------------------------------
+int AIAlliedCommandWeakerHumanDifficulty () {
+    // assume the human players are in slots 1 & 2
+    int playerOneDiff = PlayerDifficulty(1);
+    int playerTwoDiff = PlayerDifficulty(2);
+    if (playerOneDiff < playerTwoDiff) {
+        return playerOneDiff;
+    }
+    return playerTwoDiff;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIAlliedCommandDiffSelectInt
+//--------------------------------------------------------------------------------------------------
+int AIAlliedCommandDiffSelectInt (int diff, int d0, int d1, int d2, int d3) {
+    if (diff == 1) {
+        return d0;
+    }
+    if (diff == 2) {
+        return d1;
+    }
+    if (diff == 3) {
+        return d2;
+    }
+    if (diff == 4) {
+        return d3;
+    }
+    return d3;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIAlliedCommandDiffSelectFixed
+//--------------------------------------------------------------------------------------------------
+fixed AIAlliedCommandDiffSelectFixed (int diff, fixed d0, fixed d1, fixed d2, fixed d3) {
+    if (diff == 1) {
+        return d0;
+    }
+    if (diff == 2) {
+        return d1;
+    }
+    if (diff == 3) {
+        return d2;
+    }
+    if (diff == 4) {
+        return d3;
+    }
+    return d3;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIDiffThreshold
+//--------------------------------------------------------------------------------------------------
+int AIDiffThreshold (int player, int defaultValue, int threshold, int alternateValue) {
+    int diff = AIPlayerDifficulty(player);
+    if (diff < threshold) {
+        return defaultValue;
+    }
+    return alternateValue;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AISetDefaultCombatFlags
+//--------------------------------------------------------------------------------------------------
+void AISetDefaultCombatFlags (int player, bool isMelee) {
+
+    // I could condense these flags but speed doesn't matter and this way makes it easier to see & to change the settings
+	AICombatDiffFlagCatSpecialHighPrio     (player, AIDiffThreshold(player, c_combatFlagDisable, c_campExpert,   c_combatFlagEnable));
+	AICombatDiffFlagCatSplashHighPrio      (player, AIDiffThreshold(player, c_combatFlagDisable, c_campExpert,   c_combatFlagEnable));
+	AICombatDiffFlagCatTimedLowPrio        (player, AIDiffThreshold(player, c_combatFlagDisable, c_campVirtuoso,   c_combatFlagEnable));
+	AICombatDiffFlagCatWorkersNormalPrio   (player, AIDiffThreshold(player, c_combatFlagDisable, c_campAdvanced, c_combatFlagEnable));
+	AICombatDiffFlagCatSortBuildingsPrio   (player, AIDiffThreshold(player, c_combatFlagDisable, c_campAdvanced, c_combatFlagEnable));
+	AICombatDiffFlagTieBreakHealers        (player, AIDiffThreshold(player, c_combatFlagDisable, c_campVirtuoso,   c_combatFlagEnable));
+	AICombatDiffFlagTieBreakLowHP          (player, AIDiffThreshold(player, c_combatFlagDisable, c_campExpert,   c_combatFlagEnable));
+	AICombatDiffFlagTieBreakBonusDamage    (player, AIDiffThreshold(player, c_combatFlagDisable, c_campExpert,   c_combatFlagEnable));
+	AICombatDiffFlagTieBreakInjured        (player, AIDiffThreshold(player, c_combatFlagDisable, c_campExpert,   c_combatFlagEnable));
+	AICombatDiffFlagTieBreakDetector       (player, AIDiffThreshold(player, c_combatFlagDisable, c_campExpert,   c_combatFlagEnable));
+	AICombatDiffFlagTieBreakRange          (player, AIDiffThreshold(player, c_combatFlagDisable, c_campExpert,   c_combatFlagEnable));
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AISpecifiedHealers
+//--------------------------------------------------------------------------------------------------
+void AISpecifiedHealers (int player) {
+    AIAddHealer(player, "SCV", "Repair", 0);
+    AIAddHealer(player, "MULE", "MULERepair", 0);
+    AIAddHealer(player, "Medivac", "MedivacHeal", 0);
+    AIAddHealer(player, "Medic", "heal", 0);
+    AIAddHealer(player, "ScienceVessel", "NanoRepair", 0);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  Melee default startup routine
+//--------------------------------------------------------------------------------------------------
+void AIMeleeStart (int player) {
+    int diff = AIPlayerDifficulty(player);
+    point targDPoint;
+    point targOPoint;
+    wavetarget targD;
+    wavetarget targO;
+    int attackersLimit;
+
+	AIStart(player, false, DifficultyAPM(diff));
+
+    if (diff == c_skirChInsane) {
+        // insane starts at 1.2 and ramps to 2.0
+        AIHarvestBonus(player, 1.2);
+    }
+    
+    AISetDifficulty(player, c_diffRepairDamage, true);
+    AISetDifficulty(player, c_diffOptimizeGas, true);
+    AISetDifficulty(player, c_diffDefendWithPeons, true);
+    AISetDifficulty(player, c_diffEnableDangerMap, false);
+    AISetDifficulty(player, c_diffNormalTargetPrio, true);
+    AISetDifficulty(player, c_diffAllowResourceReq, true);
+    AISetDifficulty(player, c_diffAdvancedRetreatLogic, true);
+    AISetDifficulty(player, c_diffSupportsBeacons, true);
+    AISetDifficulty(player, c_diffAutoBuildPrereqs, true);
+    AISetDifficulty(player, c_diffAllowBuildInDanger, true);
+    AISetDifficulty(player, c_diffTimeoutMakeRequests, true);
+    AISetDifficulty(player, c_diffSetRallyPoints, true);
+    AISetDifficulty(player, c_diffAllowLongDistanceMining, false);
+    AISetDifficulty(player, c_diffBalancePeonsAcrossBases, true);
+    AISetDifficulty(player, c_diffWaveLeashing, true);
+    AISetDifficulty(player, c_diffAutoTransport, true);
+    AISetDifficulty(player, c_diffAllowTransportGather, true);
+
+    AISetDifficulty(player, c_diffNormalVision,     (diff < c_skirChVision));       // normal vision, unless cheating
+    AISetDifficulty(player, c_diffLimitAPM,         (diff < c_skirHard_VH));        // limit all apm on lower difficulties
+    AISetDifficulty(player, c_diffLimitAPMCombat,   (diff < c_skirVeryHard));       // limit combat apm below elite
+    AISetDifficulty(player, c_diffSplitAttacking,   (diff < c_skirVeryHard));       // split attacks below elite
+
+    AISetDifficulty(player, c_diffSpotChangelings,   (diff >= c_skirVeryHard));
+    AISetDifficulty(player, c_diffWaveAvoidDanger,   false);
+    AISetDifficulty(player, c_diffFleeDamage,        (diff >= c_skirHard));
+    AISetDifficulty(player, c_diffEarlyDefenseScout, (diff >= c_skirHard));
+    AISetDifficulty(player, c_diffUseExtraScouts,    (diff >= c_skirHard));
+    AISetDifficulty(player, c_diffHoldAtIdleChokes,  (diff >= c_skirHard));
+    AISetDifficulty(player, c_diffPressForward,      (diff >= c_skirMedium));
+    AISetDifficulty(player, c_diffFleeWorkers,       (diff >= c_skirMedium));
+    AISetDifficulty(player, c_diffFleeDanger,        (diff >= c_skirMedium));
+    AISetDifficulty(player, c_diffTargetSpawners,    (diff >= c_skirMedium));
+    AISetDifficulty(player, c_diffAllowKiting,       (diff >= c_skirHard_VH));
+
+    AISetDifficulty(player, c_diffDelayAdvTargetting,(diff <= c_skirMedium));       // deliberately target interceptors/locusts on medium and below
+
+    AISetDifficulty(player, c_diffAutoLoadBunkers, false);
+    AISetDifficulty(player, c_diffEarlyGameRepair, false);
+
+    AISetFlag(player, e_flagsAllowRetreat, (diff >= c_skirMed_Hard));
+    AISetFlag(player, e_flagsAllowDropAttack, (diff >= c_skirChMoney));     // only going to allow resource cheating AIs to drop, it's rarely successful and often costs resources
+    AISetFlag(player, e_flagsRunScared, false);
+    AISetFlag(player, e_flagsLateScout, false);
+    AISetFlag(player, e_flagsClearObs, false);
+
+    AIDeclareTown(player, c_townOne, PlayerStartLocation(player));
+    AISetMainTown(player, c_townOne);
+    AIHarvest(player, c_townOne);
+    AISetAllStates(player, 1);
+    
+    targDPoint = AIWaveTargetGatherDPoint(player, c_townMain);
+    targOPoint = AIWaveTargetGatherOPoint(player, c_townMain);
+    targD = AIWaveTargetGatherD(player, c_townMain);
+    targO = AIWaveTargetGatherMelee(player);
+
+    AIWaveSet(player, c_waveMain,       AIWaveCreate(AIWaveInfoCreate(), player, targOPoint));
+    AIWaveSet(player, c_waveAttack,     AIWaveCreate(AIWaveInfoCreate(), player, targOPoint));
+    AIWaveSet(player, c_waveDivert1,    AIWaveCreate(AIWaveInfoCreate(), player, targOPoint));
+    AIWaveSet(player, c_waveDivert2,    AIWaveCreate(AIWaveInfoCreate(), player, targOPoint));
+    AIWaveSet(player, c_waveClearObs,   AIWaveCreate(AIWaveInfoCreate(), player, targOPoint));
+    AIWaveSet(player, c_waveHome,       AIWaveCreate(AIWaveInfoCreate(), player, targDPoint));
+    AIWaveSet(player, c_waveDefend,     AIWaveCreate(AIWaveInfoCreate(), player, targDPoint));
+
+    AIWaveSetType(AIWaveGet(player, c_waveMain),     c_waveStateIdle, targO);
+    AIWaveSetType(AIWaveGet(player, c_waveAttack),   c_waveStateIdle, targO);
+    AIWaveSetType(AIWaveGet(player, c_waveDivert1),  c_waveStateIdle, targO);
+    AIWaveSetType(AIWaveGet(player, c_waveDivert2),  c_waveStateIdle, targO);
+    AIWaveSetType(AIWaveGet(player, c_waveClearObs), c_waveStateIdle, targO);
+    AIWaveSetType(AIWaveGet(player, c_waveHome),     c_waveStateIdle, targD);
+    AIWaveSetType(AIWaveGet(player, c_waveDefend),   c_waveStateIdle, targD);
+
+    attackersLimit = 1 << diff;
+    AISetMaxBestAttackersLimit(player, attackersLimit);
+
+    AITransportIgnore(player, "VikingAssault");
+    AITransportSetPanic(player, 0.6);
+    AITransportSetReturn(player, targDPoint);
+
+    AISetDefenseRadii(player, 15.0, 10.0, 12.0);
+
+    AISetNumScouts(player, 0);
+    AIEarlyDefenseEnable(player, false, false);
+    if (diff < c_skirChVision) {
+        // need early defense scouting if not cheating vision
+        AIEarlyDefenseProps(player, 30, 20, 30);
+    } else {
+        // let cheating AIs defend against further threats
+        AIEarlyDefenseProps(player, 35, 35, 45);
+        if (!AIHasHumanAlly(player)) {
+            AISetNumScouts(player, 0);
+        }
+    }
+    AIScout(player);
+
+    AISetUserInt(player, c_numGroundStartLocs, AIGetGroundStartLocs(PlayerStartLocation(player)));
+    AISetUserInt(player, c_numAirStartLocs, AIGetAirStartLocs(PlayerStartLocation(player)));
+    AISetUserInt(player, c_delayNextAttack, 0);
+
+    AISpecifiedHealers(player);
+    AISetDefaultCombatFlags(player, true);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AICampaignDiffSelect
+//--------------------------------------------------------------------------------------------------
+int AICampaignDiffSelect (int player, int d0, int d1, int d2, int d3, int d4, int d5) {
+    int diff = AIPlayerDifficulty(player);
+    if (diff >= c_campMaster) { 
+		return d5; 
+	} 
+	if (diff >= c_campVirtuoso) { 
+		return d4; 
+	} 
+	if (diff >= c_campExpert) { 
+		return d3; 
+	} 
+	else if (diff >= c_campAdvanced) { 
+		return d2; 
+	}
+    else if (diff >= c_campNormal) {
+		return d1; 
+	}
+    else if (diff >= c_campBeginner) { 
+		return d0; 
+	}
+	breakpoint;
+    return -1;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  Campaign default startup routines
+//--------------------------------------------------------------------------------------------------
+void AICampaignStart (int player) {
+    int diff = AIPlayerDifficulty(player);
+    int attackersLimit;
+    
+    AIStart(player, true, DifficultyAPM(diff));
+	AIDeclareTown(player, c_townOne, PlayerStartLocation(player));
+    AISetMainTown(player, c_townOne);
+    AIInitCampaignTowns(player);
+    
+    AIInitCampaignHarvest(player);
+    AIHarvestRate(player, 1);
+    AISetNumScouts(player, 0);
+    //AISetBullyAttackWavePercent(AICampaignDiffSelect(player, 100, 100, 50, 0, 0, 0), player);
+	AISetBullyAttackWavePercent(0, player);
+
+    AIAttackWaveSetGatherPoint(player, AIGetGatherLocation(player, c_townMain));
+    
+														//Unifying all AI Difficulty flags to remove variance
+    AISetDifficulty(player, c_diffPressForward,         (diff >= c_campAdvanced));
+    AISetDifficulty(player, c_diffLimitAPMCombat,       true);//true);
+    AISetDifficulty(player, c_diffAutoLoadBunkers,      true);//true);
+    AISetDifficulty(player, c_diffAdvancedRetreatLogic, (diff >= c_campAdvanced));
+    AISetDifficulty(player, c_diffDelayAdvTargetting,   (diff < c_campAdvanced));
+    AISetDifficulty(player, c_diffAllowTransportGather, true);//true);
+
+    AISetDifficulty(player, c_diffFleeDamage,           (diff >= c_campAdvanced));
+    AISetDifficulty(player, c_diffSpotChangelings,      true);//(diff >= c_campExpert));
+    AISetDifficulty(player, c_diffRepairDamage,         true);//(diff >= c_campAdvanced));
+    AISetDifficulty(player, c_diffDefendWithPeons,      true);//(diff >= c_campAdvanced));
+    AISetDifficulty(player, c_diffNormalTargetPrio,     (diff >= c_campAdvanced));
+    AISetDifficulty(player, c_diffFleeDanger,           false);//(diff >= c_campAdvanced));
+    AISetDifficulty(player, c_diffAllowKiting,          (diff >= c_campAdvanced));
+    AISetDifficulty(player, c_diffTargetSpawners,       false);
+	
+    AISetDifficulty(player, c_diffOptimizeGas,          true);//false);
+    AISetDifficulty(player, c_diffNormalVision,         true);//(diff < c_campVirtuoso)); // AI should cheat vision on the higher difficulties, beyond expert for the moment
+    AISetDifficulty(player, c_diffLimitAPM,             (diff <= c_campNormal));
+    AISetDifficulty(player, c_diffEarlyGameRepair,      true);//(diff >= c_campAdvanced));
+    AISetDifficulty(player, c_diffEnableDangerMap,      false);//(diff >= c_campAdvanced)
+    AISetDifficulty(player, c_diffWaveAvoidDanger,      false);//(diff >= c_campExpert)
+    AISetDifficulty(player, c_diffEarlyDefenseScout,    false);//false);
+    AISetDifficulty(player, c_diffUseExtraScouts,       false);//false);
+    AISetDifficulty(player, c_diffFleeWorkers,          true);//(diff >= c_campAdvanced));
+    AISetDifficulty(player, c_diffHoldAtIdleChokes,     (diff >= c_campAdvanced));
+    AISetDifficulty(player, c_diffAllowResourceReq,     false);//false);
+    AISetDifficulty(player, c_diffSupportsBeacons,      false);//false);
+    AISetDifficulty(player, c_diffAutoBuildPrereqs,     true);//true);
+    AISetDifficulty(player, c_diffAllowBuildInDanger,   true);//true);
+    AISetDifficulty(player, c_diffTimeoutMakeRequests,  false);//false);
+    AISetDifficulty(player, c_diffSetRallyPoints,       true);//true);
+    AISetDifficulty(player, c_diffAllowLongDistanceMining, false);//false);
+    AISetDifficulty(player, c_diffBalancePeonsAcrossBases, false);//false);
+    AISetDifficulty(player, c_diffWaveLeashing,         true);//true);
+    AISetDifficulty(player, c_diffAutoTransport,        true);//(diff >= c_campExpert));
+    AISetDifficulty(player, c_diffSplitAttacking,       true);//(diff >= c_campVirtuoso));
+	
+    //AISetMaxBestAttackersLimit(player, AICampaignDiffSelect(player, 1, 2, 4, 6));
+    //Using the Melee version for more granularity
+	attackersLimit = 1 << diff;
+    AISetMaxBestAttackersLimit(player, attackersLimit);
+
+    AITransportIgnore(player, "InfestedCivilian");
+    AITransportIgnore(player, "InfestedTerranCampaign");
+    AITransportIgnore(player, "VikingAssault");
+    AITransportSetPanic(player, 0.6);
+    AITransportSetReturn(player, PlayerStartLocation(player));
+
+    AISetDefenseRadii(player, 6.0, 7.0, 9.0);
+
+    AIReqCountAsBuiltObject(player, "Larva");
+    AITechCountFixupSingle(player, "Spire", "GreaterSpire");
+    AITechCountFixupInOrder(player, "Hatchery", "Lair", "Hive");
+    AITechCountFixupEither(player, "CommandCenter", "OrbitalCommand", "PlanetaryFortress");
+    AIReqAddSpecialMaker("Nuke", "GhostAcademy", "ArmSiloWithNuke", 0);
+    AIReqAddSpecialMaker("CreepTumorBurrowed", "CreepTumor", "BurrowCreepTumorDown", 0);
+    AIReqAddSpecialMaker("CreepTumorBurrowed", "Queen", "QueenBuild", 0);
+
+    AISetSpawnerTargettingDelay(player, "SpawnerActive", AICampaignDiffSelect(player, 8, 6, 4, 2, 1, 0));
+
+    AISpecifiedHealers(player);
+    AISetDefaultCombatFlags(player, false);
+}

@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib497315EF_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Fear
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib497315EF_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib497315EF_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "Fear");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib497315EF_gt_Initialization_Init () {
+    lib497315EF_gt_Initialization = TriggerCreate("lib497315EF_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib497315EF_gt_Initialization);
+}
+
+void lib497315EF_InitTriggers () {
+    lib497315EF_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib497315EF_InitLib_completed = false;
+
+void lib497315EF_InitLib () {
+    if (lib497315EF_InitLib_completed) {
+        return;
+    }
+
+    lib497315EF_InitLib_completed = true;
+
+    lib497315EF_InitLibraries();
+    lib497315EF_InitTriggers();
+}
+

@@ -1,0 +1,739 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CActorUnit default="1" id="VoidSMClickable" parent="SMClickable">
+        <On Terms="Create" Send="HaloSetColor 73,183,201"/>
+        <SoundArray index="Highlight" value="UI_Void_SMClickable_Hover"/>
+    </CActorUnit>
+    <CActorUnit default="1" id="VoidSMCharacter" parent="SMCharacter">
+        <On Terms="Create" Send="HaloSetColor 73,183,201"/>
+        <SoundArray index="Highlight" value="UI_Void_SMCharacter_Hover"/>
+    </CActorUnit>
+    <CActorSound id="CelestialArray_OpenSound" parent="SoundOneShot">
+        <EditorCategories value=""/>
+        <Sound value="SMX2_Bridge01_Start"/>
+        <Layers>
+            <Sound value="CelestialArray_Open1"/>
+            <PitchSource value="Sound"/>
+            <PlayDelaySource value="Sound"/>
+            <VolumeSource value="Sound"/>
+            <Chance value="100"/>
+            <Pitch value="0.000000,0.000000"/>
+            <PlayDelay value="0,0"/>
+            <Volume value="0.000000,0.000000"/>
+        </Layers>
+        <Layers>
+            <Sound value="CelestialArray_Open2"/>
+            <PitchSource value="Sound"/>
+            <PlayDelaySource value="Sound"/>
+            <VolumeSource value="Sound"/>
+            <Chance value="100"/>
+            <Pitch value="0.000000,0.000000"/>
+            <PlayDelay value="0,0"/>
+            <Volume value="0.000000,0.000000"/>
+        </Layers>
+        <Layers>
+            <Sound value="CelestialArray_Open3"/>
+            <PitchSource value="Sound"/>
+            <PlayDelaySource value="Sound"/>
+            <VolumeSource value="Sound"/>
+            <Chance value="100"/>
+            <Pitch value="0.000000,0.000000"/>
+            <PlayDelay value="0,0"/>
+            <Volume value="0.000000,0.000000"/>
+        </Layers>
+    </CActorSound>
+    <CActorSound id="CelestialArray_CloseSound" parent="SoundOneShot">
+        <EditorCategories value=""/>
+        <Sound value="SMX2_Bridge01_End"/>
+        <Layers>
+            <Sound value="CelestialArray_Close1"/>
+            <PitchSource value="Sound"/>
+            <PlayDelaySource value="Sound"/>
+            <VolumeSource value="Sound"/>
+            <Chance value="100"/>
+            <Pitch value="0.000000,0.000000"/>
+            <PlayDelay value="0,0"/>
+            <Volume value="0.000000,0.000000"/>
+        </Layers>
+        <Layers>
+            <Sound value="CelestialArray_Close3"/>
+            <PitchSource value="Sound"/>
+            <PlayDelaySource value="Sound"/>
+            <VolumeSource value="Sound"/>
+            <Chance value="100"/>
+            <Pitch value="0.000000,0.000000"/>
+            <PlayDelay value="0,0"/>
+            <Volume value="0.000000,0.000000"/>
+        </Layers>
+    </CActorSound>
+    <CActorEventMacro id="StoryFidgetMacro">
+        <On Terms="ActorCreation" Send="StatusSet Fidget 0"/>
+        <On Terms="ActorCreation" Send="StatusSet Alternate 0"/>
+        <On Terms="ActorCreation" Send="StatusSet AlternateState 0"/>
+        <On Terms="ActorCreation" Send="StatusSet Animating 0"/>
+        <On Terms="ModelEvent; ModelEventName StandStart; IsStatus Animating 0" Send="Signal Countdown"/>
+        <On Terms="Signal.*.Countdown" Send="StatusSet CountDownChance 0"/>
+        <On Terms="Signal.*.Countdown; PassChance 75.000000; IsStatus Fidget 1" Send="StatusSet CountDownChance 1"/>
+        <On Terms="Signal.*.Countdown; PassChance 33.000000; IsStatus Alternate 1" Send="StatusSet CountDownChance 2"/>
+        <!--On Terms="Signal.*.Countdown; IsStatus CountDownChance 0" Send="Print CountDownChance0"/>
+        <On Terms="Signal.*.Countdown; IsStatus CountDownChance 1" Send="Print CountDownChance1"/>
+        <On Terms="Signal.*.Countdown; IsStatus CountDownChance 2" Send="Print CountDownChance2"/-->
+        <On Terms="Signal.*.Countdown; IsStatus CountDownChance 1" Send="Signal FidgetDecrement"/>
+        <On Terms="Signal.*.Countdown; IsStatus CountDownChance 2" Send="Signal AlternateDecrement"/>
+        <On Terms="Signal.*.FidgetDecrement; IsStatus FidgetCounter 0" Send="Signal StartFidget"/>
+        <On Terms="Signal.*.FidgetDecrement; !IsStatus FidgetCounter 0" Send="StatusDecrement FidgetCounter"/>
+        <On Terms="Signal.*.StartFidget" Send="StatusSet Animating 1"/>
+        <On Terms="Signal.*.StartFidget" Send="AnimPlay Fidget Fidget"/>
+        <On Terms="Signal.*.StartFidget" Send="StatusSet FidgetCounter 4"/>
+        <On Terms="AnimDone; AnimName Fidget" Send="StatusSet Animating 0"/>
+        <On Terms="AnimDone; AnimName Fidget" Send="AnimBaselineStart"/>
+        <On Terms="Signal.*.AlternateDecrement; IsStatus AlternateCounter 0" Send="Signal StartAlternate"/>
+        <On Terms="Signal.*.AlternateDecrement; !IsStatus AlternateCounter 0" Send="StatusDecrement AlternateCounter"/>
+        <!--On Terms="Signal.*.AlternateDecrement; IsStatus AlternateCounter 0" Send="Print {Signal StartAlternate}"/>
+        <On Terms="Signal.*.AlternateDecrement; !IsStatus AlternateCounter 0" Send="Print {StatusDecrement AlternateCounter}"/-->
+        <On Terms="Signal.*.StartAlternate" Send="StatusSet Animating 1"/>
+        <On Terms="Signal.*.StartAlternate" Send="StatusSet AlternateCounter 4"/>
+        <On Terms="Signal.*.StartAlternate; IsStatus AlternateState 0" Send="AnimPlay StandAlternateStart Stand,Alternate,Start PlayForever,NonLooping"/>
+        <!-- Need this 0.1875 delay so that applying Alternate doesnt make him skip to his new position before the stand alternate start animation blend has happened -->
+        <On Terms="Signal.*.StartAlternate; IsStatus AlternateState 0" Send="TimerSet 0.187500 AlternateState1"/>
+        <On Terms="Signal.*.StartAlternate; IsStatus AlternateState 1" Send="AnimPlay StandAlternateEnd Stand,Alternate,End PlayForever,NonLooping"/>
+        <On Terms="Signal.*.StartAlternate; IsStatus AlternateState 1" Send="TimerSet 0.062500 AlternateState0"/>
+        <On Terms="TimerExpired; TimerName AlternateState1" Send="StatusSet AlternateState 1"/>
+        <!-- Need to apply this as early as possible, but not so early that it makes the position pop -->
+        <On Terms="TimerExpired; TimerName AlternateState1" Send="AnimGroupApply Alternate"/>
+        <On Terms="TimerExpired; TimerName AlternateState0" Send="StatusSet AlternateState 0"/>
+        <On Terms="AnimDone; AnimName StandAlternateStart; IsStatus Animating 1" Send="Signal ApplyAlternateOn"/>
+        <On Terms="Signal.*.ApplyAlternateOn" Send="StatusSet Animating 0"/>
+        <On Terms="Signal.*.ApplyAlternateOn" Send="AnimClear StandAlternateStart"/>
+        <On Terms="AnimDone; AnimName StandAlternateEnd; IsStatus Animating 1" Send="Signal ApplyAlternateOff"/>
+        <On Terms="Signal.*.ApplyAlternateOff" Send="StatusSet Animating 0"/>
+        <On Terms="Signal.*.ApplyAlternateOff" Send="AnimGroupRemove Alternate"/>
+        <On Terms="Signal.*.ApplyAlternateOff" Send="AnimClear StandAlternateEnd"/>
+        <On Terms="Signal.*.ApplyAlternateOff" Send="AnimCancelActiveBlends"/>
+        <On Terms="Signal.*.FidgetOn" Send="StatusSet Fidget 1"/>
+        <On Terms="Signal.*.FidgetOn" Send="StatusSet FidgetCounter 4"/>
+        <On Terms="Signal.*.FidgetStatusOn" Send="StatusSet Fidget 1"/>
+        <On Terms="Signal.*.AlternateStatusOn" Send="StatusSet Alternate 1"/>
+        <On Terms="Signal.*.FidgetStatusOff" Send="StatusSet Fidget 0"/>
+        <On Terms="Signal.*.AlternateStatusOff" Send="StatusSet Alternate 0"/>
+        <On Terms="Signal.*.FidgetOff" Send="StatusSet Fidget 0"/>
+        <On Terms="Signal.*.FidgetOff" Send="AnimClear Fidget 0.000000"/>
+        <!--On Terms="Signal.*.FidgetOn" Send="Print Signal.*.FidgetOn"/>
+        <On Terms="Signal.*.FidgetOff" Send="Print Signal.*.FidgetOff"/>
+        <On Terms="Signal.*.AlternateOn" Send="Print Signal.*.AlternateOn"/>
+        <On Terms="Signal.*.AlternateOff" Send="Print Signal.*.AlternateOff"/> -->
+        <On Terms="Signal.*.AlternateOn" Send="StatusSet Alternate 1"/>
+        <On Terms="Signal.*.AlternateOn" Send="StatusSet AlternateCounter 4"/>
+        <On Terms="Signal.*.AlternateOn" Send="StatusSet AlternateState 0"/>
+        <On Terms="Signal.*.AlternateOff" Send="StatusSet Alternate 0"/>
+        <On Terms="Signal.*.AlternateOff" Send="StatusSet AlternateState 0"/>
+        <On Terms="Signal.*.AlternateOff" Send="AnimClear StandAlternateStart 0.000000"/>
+        <On Terms="Signal.*.AlternateOff" Send="AnimClear StandAlternateEnd 0.000000"/>
+        <On Terms="Signal.*.AlternateOff" Send="AnimClear Fidget 0.000000"/>
+        <On Terms="Signal.*.AlternateOff" Send="AnimGroupRemove Alternate"/>
+        <On Terms="Signal.*.AlternateOff" Send="StatusSet Animating 0"/>
+        <On Terms="Signal.*.AlternateOff" Send="AnimCancelActiveBlends ::Baseline"/>
+    </CActorEventMacro>
+    <CActorEventMacro id="StoryFidgetMacroNoAlternate">
+        <On Terms="ActorCreation" Send="StatusSet Fidget 0"/>
+        <On Terms="ActorCreation" Send="StatusSet Animating 0"/>
+        <On Terms="ModelEvent; ModelEventName StandStart; IsStatus Animating 0" Send="Signal Countdown"/>
+        <On Terms="Signal.*.Countdown" Send="StatusSet CountDownChance 0"/>
+        <On Terms="Signal.*.Countdown; PassChance 75.000000; IsStatus Fidget 1" Send="StatusSet CountDownChance 1"/>
+        <!--On Terms="Signal.*.Countdown; IsStatus CountDownChance 0" Send="Print CountDownChance0"/>
+        <On Terms="Signal.*.Countdown; IsStatus CountDownChance 1" Send="Print CountDownChance1"/>
+        <On Terms="Signal.*.Countdown; IsStatus CountDownChance 2" Send="Print CountDownChance2"/-->
+        <On Terms="Signal.*.Countdown; IsStatus CountDownChance 1" Send="Signal FidgetDecrement"/>
+        <On Terms="Signal.*.FidgetDecrement; IsStatus FidgetCounter 0" Send="Signal StartFidget"/>
+        <On Terms="Signal.*.FidgetDecrement; !IsStatus FidgetCounter 0" Send="StatusDecrement FidgetCounter"/>
+        <On Terms="Signal.*.StartFidget" Send="StatusSet Animating 1"/>
+        <On Terms="Signal.*.StartFidget" Send="AnimPlay Fidget Fidget"/>
+        <On Terms="Signal.*.StartFidget" Send="StatusSet FidgetCounter 4"/>
+        <On Terms="AnimDone; AnimName Fidget" Send="StatusSet Animating 0"/>
+        <On Terms="AnimDone; AnimName Fidget" Send="AnimBaselineStart"/>
+        <On Terms="Signal.*.FidgetOn" Send="StatusSet Fidget 1"/>
+        <On Terms="Signal.*.FidgetOn" Send="StatusSet FidgetCounter 4"/>
+        <On Terms="Signal.*.FidgetStatusOn" Send="StatusSet Fidget 1"/>
+        <On Terms="Signal.*.FidgetStatusOff" Send="StatusSet Fidget 0"/>
+        <On Terms="Signal.*.FidgetOff" Send="StatusSet Fidget 0"/>
+        <On Terms="Signal.*.FidgetOff" Send="AnimClear Fidget 0.000000"/>
+        <!--On Terms="Signal.*.FidgetOn" Send="Print Signal.*.FidgetOn"/>
+        <On Terms="Signal.*.FidgetOff" Send="Print Signal.*.FidgetOff"/ -->
+    </CActorEventMacro>
+    <!-- Epilogue03 cliffs/rocks -->
+    <CActorDoodad id="Slayn_RockCliffTall">
+        <Flags index="SuppressSaveLoad" value="0"/>
+    </CActorDoodad>
+    <CActorDoodad id="Slayn_RockCliffShort">
+        <Flags index="SuppressSaveLoad" value="0"/>
+    </CActorDoodad>
+    <CActorDoodad id="Void_CliffRocks_Edge">
+        <Flags index="SuppressSaveLoad" value="0"/>
+    </CActorDoodad>
+    <CActorDoodad id="Void_CliffRocks_Mass_A">
+        <Flags index="SuppressSaveLoad" value="0"/>
+    </CActorDoodad>
+    <CActorDoodad id="Void_Cliff_Rocks">
+        <Flags index="SuppressSaveLoad" value="0"/>
+    </CActorDoodad>
+    <CActorDoodad id="Void_CrackSplat">
+        <Flags index="SuppressSaveLoad" value="0"/>
+    </CActorDoodad>
+    <!--                                                                                         -->
+    <!-- SMCharBattlezoneArtifactHS ............................................................ -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMCharBattlezoneArtifactHS">
+        <SoundArray index="Highlight" value="UI_Void_SMKeystone_Hover"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossZeratul" parent="VoidSMCharacter" unitName="SMX2ProtossZeratul">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossMohandar" parent="VoidSMCharacter" unitName="SMX2ProtossMohandar">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossVorazun" parent="VoidSMCharacter" unitName="SMX2ProtossVorazun">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <Macros value="StoryFidgetMacro"/>
+        <Model value="SMX2ProtossVorazunConvo"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossTassadar" parent="VoidSMCharacter" unitName="SMX2ProtossTassadar">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossAlarak" parent="VoidSMCharacter" unitName="SMX2ProtossAlarak">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <Macros value="StoryFidgetMacro"/>
+        <Model value="SMX2ProtossAlarakConvo"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossSelendis" parent="VoidSMCharacter" unitName="SMX2ProtossSelendis">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossArtanis" parent="VoidSMCharacter" unitName="SMX2ProtossArtanis">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <Macros value="StoryFidgetMacro"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ZergKerrigan" parent="VoidSMCharacter" unitName="SMX2ZergKerrigan">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossCarrier" parent="VoidSMCharacter" unitName="SMX2ProtossCarrier">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossColossus" parent="VoidSMCharacter" unitName="SMX2ProtossColossus">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossVoidRay" parent="VoidSMCharacter" unitName="SMX2ProtossVoidRay">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossZealot" parent="VoidSMCharacter" unitName="SMX2ProtossZealot">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossZealotUpgraded" parent="VoidSMCharacter" unitName="SMX2ProtossZealotUpgraded">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossTemplar" parent="VoidSMCharacter" unitName="SMX2ProtossTemplar">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossSmith" parent="VoidSMCharacter" unitName="SMX2ProtossSmith">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <Macros value="StoryFidgetMacroNoAlternate"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossSmithNoMechBraids" parent="VoidSMCharacter" unitName="SMX2ProtossSmithNoMechBraids">
+        <Macros value="StoryFidgetMacro"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossFenixCore" parent="VoidSMCharacter" unitName="SMX2ProtossFenixCore">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossFenixMech" parent="VoidSMCharacter" unitName="SMX2ProtossFenixMech">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossRohana" parent="VoidSMCharacter" unitName="SMX2ProtossRohana">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <Macros value="StoryFidgetMacro"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossRohanaNoBraids" parent="VoidSMCharacter" unitName="SMX2ProtossRohanaNoBraids">
+        <Macros value="StoryFidgetMacro"/>
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossRohannaPossessed" parent="VoidSMCharacter" unitName="SMX2ProtossRohannaPossessed">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <Macros value="StoryFidgetMacro"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossRohannaPossessedBlend" parent="VoidSMCharacter" unitName="SMX2ProtossRohannaPossessedBlend">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+        <Macros value="StoryFidgetMacro"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2RobotProbe" parent="VoidSMCharacter" unitName="SMX2RobotProbe">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2ProtossStalker" parent="VoidSMCharacter" unitName="SMX2ProtossStalker">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_Lore_Console" parent="VoidSMClickable" unitName="SMX2_Lore_Console">
+        <Scale value="0.700000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_PossessedStasisChamber" parent="VoidSMClickable" unitName="SMX2_PossessedStasisChamber">
+        <Model value="SMX2_Possessed_StasisChamber"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_XelNaga_Artifact_Possessed" parent="VoidSMClickable" unitName="SMX2_XelNaga_Artifact_Possessed"/>
+    <CActorUnit id="SMX2_XelNaga_Artifact_Possessed_Closed" parent="VoidSMClickable" unitName="SMX2_XelNaga_Artifact_Possessed_Closed">
+        <Model value="SMX2_XelNaga_Artifact_Possessed_Close"/>
+    </CActorUnit>
+    <CActorSound id="XelNaga_KeystoneSetPiece_LoopSound" parent="SoundContinuous">
+        <Sound value="XelNaga_KeystoneSetPiece_Loop"/>
+    </CActorSound>
+    <CActorUnit id="SMX2_XelNaga_Artifact_Powerup" parent="VoidSMClickable" unitName="SMX2_XelNaga_Artifact_Powerup">
+        <On Terms="Signal.*.StartLoopSound" Send="Create XelNaga_KeystoneSetPiece_LoopSound"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_XelNaga_Artifact_Powerup_Closed" parent="VoidSMClickable" unitName="SMX2_XelNaga_Artifact_Powerup_Closed">
+        <Model value="SMX2_XelNaga_Artifact_Powerup_Close"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyRoomSet00" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet00"/>
+    <CActorUnit id="SMX2_ArmyRoomSet01" parent="VoidSMClickable" unitName="SMX2_ArmyRoomSet01"/>
+    <CActorUnit id="SMX2_ArmyRoomSet02" parent="VoidSMClickable" unitName="SMX2_ArmyRoomSet02"/>
+    <CActorUnit id="SMX2_ArmyRoomSet03" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet03"/>
+    <CActorUnit id="SMX2_ArmyRoomSet04" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet04"/>
+    <CActorUnit id="SMX2_ArmyRoomSet05" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet05"/>
+    <CActorUnit id="SMX2_ArmyRoomSet06" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet06"/>
+    <CActorUnit id="SMX2_ArmyRoomSet07" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet07"/>
+    <CActorUnit id="SMX2_ArmyRoomSet08" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet08"/>
+    <CActorUnit id="SMX2_ArmyRoomSet09" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet09"/>
+    <CActorUnit id="SMX2_ArmyRoomSet10" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet10"/>
+    <CActorUnit id="SMX2_ArmyRoomSet11" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet11"/>
+    <CActorUnit id="SMX2_ArmyRoomSet12" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet12"/>
+    <CActorUnit id="SMX2_ArmyRoomSet13" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet13"/>
+    <CActorUnit id="SMX2_ArmyRoomSet14" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet14"/>
+    <CActorUnit id="SMX2_ArmyRoomSet15" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet15"/>
+    <CActorUnit id="SMX2_ArmyRoomSet16" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet16"/>
+    <CActorUnit id="SMX2_ArmyRoomSet17" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet17"/>
+    <CActorUnit id="SMX2_ArmyRoomSet18" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet18"/>
+    <CActorUnit id="SMX2_ArmyRoomSet19" parent="GenericUnitSM" unitName="SMX2_ArmyRoomSet19"/>
+    <CActorUnit id="SMX2_ShipRoomSet00" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet00"/>
+    <CActorUnit id="SMX2_ShipRoomSet01" parent="VoidSMClickable" unitName="SMX2_ShipRoomSet01">
+        <On Terms="Signal.*.CoreFullyOpen" Send="Create SMX2_ShipRoomSet01_SolarCore_FullyOpen_LoopSound"/>
+        <On Terms="Signal.*.CoreFullyOpen" Send="AnimGroupApply Work {} {} Instant"/>
+        <On Terms="Signal.*.CoreHalfOpen" Send="AnimGroupRemove C"/>
+        <On Terms="Signal.*.CoreHalfOpen" Send="Create SMX2_ShipRoomSet01_SolarCore_HalfOpen_LoopSound"/>
+        <On Terms="Signal.*.CoreHalfOpen" Send="AnimGroupApply Work,C {} {} Instant"/>
+        <On Terms="Signal.*.CoreClosed" Send="AnimGroupRemove Work"/>
+        <On Terms="Signal.*.CoreClosed" Send="AnimGroupRemove C"/>
+    </CActorUnit>
+    <CActorSound id="SMX2_ShipRoomSet01_SolarCore_HalfOpen_LoopSound" parent="SoundContinuous">
+        <Terms value="Cap 1"/>
+        <Sound value="SMX2_ShipRoomSet01_SolarCore_HalfOpen_Loop"/>
+    </CActorSound>
+    <CActorSound id="SMX2_ShipRoomSet01_SolarCore_FullyOpen_LoopSound" parent="SoundContinuous">
+        <Terms value="Cap 1"/>
+        <Sound value="SMX2_ShipRoomSet01_SolarCore_FullyOpen_Loop"/>
+    </CActorSound>
+    <CActorUnit id="SMX2_ShipRoomSet02" parent="VoidSMClickable" unitName="SMX2_ShipRoomSet02"/>
+    <CActorUnit id="SMX2_ShipRoomSet03" parent="VoidSMClickable" unitName="SMX2_ShipRoomSet03"/>
+    <CActorUnit id="SMX2_ShipRoomSet04" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet04"/>
+    <CActorUnit id="SMX2_ShipRoomSet05" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet05"/>
+    <CActorUnit id="SMX2_ShipRoomSet06" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet06"/>
+    <CActorUnit id="SMX2_ShipRoomSet07" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet07"/>
+    <CActorUnit id="SMX2_ShipRoomSet08" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet08"/>
+    <CActorUnit id="SMX2_ShipRoomSet09" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet09"/>
+    <CActorUnit id="SMX2_ShipRoomSet10" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet10"/>
+    <CActorUnit id="SMX2_ShipRoomSet11" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet11"/>
+    <CActorUnit id="SMX2_ShipRoomSet12" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet12"/>
+    <CActorUnit id="SMX2_ShipRoomSet13" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet13"/>
+    <CActorUnit id="SMX2_ShipRoomSet14" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet14"/>
+    <CActorUnit id="SMX2_ShipRoomSet15" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet15"/>
+    <CActorUnit id="SMX2_ShipRoomSet16" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet16"/>
+    <CActorUnit id="SMX2_ShipRoomSet17" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet17"/>
+    <CActorUnit id="SMX2_ShipRoomSet18" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet18"/>
+    <CActorUnit id="SMX2_ShipRoomSet19" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet19"/>
+    <CActorUnit id="SMX2_ShipRoomSet_Wings" parent="GenericUnitSM" unitName="SMX2_ShipRoomSet_Wings">
+        <Model value="SMX2_ShipRoom_SpearWings"/>
+        <Scale value="163.000000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ShipRoom_Hologram00" parent="GenericUnitSM" unitName="SMX2_ShipRoom_Hologram00"/>
+    <CActorUnit id="SMX2_ShipRoom_Hologram01" parent="GenericUnitSM" unitName="SMX2_ShipRoom_Hologram01"/>
+    <CActorUnit id="SMX2_ShipRoom_Hologram02" parent="GenericUnitSM" unitName="SMX2_ShipRoom_Hologram02"/>
+    <CActorUnit id="SMX2_ShipRoom_Hologram03" parent="GenericUnitSM" unitName="SMX2_ShipRoom_Hologram03"/>
+    <CActorUnit id="SMX2_ShipRoom_Hologram04" parent="GenericUnitSM" unitName="SMX2_ShipRoom_Hologram04"/>
+    <CActorUnit id="SMX2_OpeningCrawl" parent="GenericUnitSM" unitName="SMX2_OpeningCrawl"/>
+    <CActorUnit id="SMX2_Background_Aiur_ArmadaAdrift" parent="GenericUnitSM" unitName="SMX2_Background_Aiur_ArmadaAdrift"/>
+    <CActorUnit id="SMX2_Background_Korhal_AlphaBattle" parent="GenericUnitSM" unitName="SMX2_Background_Korhal_AlphaBattle"/>
+    <CActorUnit id="SMX2_Background_Korhal_AlphaDefending" parent="GenericUnitSM" unitName="SMX2_Background_Korhal_AlphaDefending"/>
+    <CActorUnit id="SMX2_Background_Nebula_AiurComplete" parent="GenericUnitSM" unitName="SMX2_Background_Nebula_AiurComplete"/>
+    <CActorUnit id="SMX2_Background_Shakuras_Destroyed" parent="GenericUnitSM" unitName="SMX2_Background_Shakuras_Destroyed"/>
+    <CActorUnit id="SMX2_Background_Shakuras_Nebula_Cloud" parent="GenericUnitSM" unitName="SMX2_Background_Shakuras_Nebula_Cloud"/>
+    <CActorUnit id="SMX2_Background_Shakuras_SurfaceWar" parent="GenericUnitSM" unitName="SMX2_Background_Shakuras_SurfaceWar"/>
+    <CActorUnit id="SMX2_Background_Purifier_CybrosMoon" parent="GenericUnitSM" unitName="SMX2_Background_Purifier_CybrosMoon"/>
+    <CActorUnit id="SMX2_Background_Purifier_Moon" parent="GenericUnitSM" unitName="SMX2_Background_Purifier_Moon"/>
+    <CActorUnit id="SMX2_Background_Ulnar_Planet" parent="GenericUnitSM" unitName="SMX2_Background_Ulnar_Planet"/>
+    <CActorUnit id="SMX2_Background_TalDarim_Planet" parent="GenericUnitSM" unitName="SMX2_Background_TalDarim_Planet"/>
+    <CActorUnit id="SMX2_Background_Purifier_Cybros" parent="GenericUnitSM" unitName="SMX2_Background_Purifier_Cybros"/>
+    <CActorUnit id="SMX2_Background_Alpha_BarrenPlanet" parent="GenericUnitSM" unitName="SMX2_Background_Alpha_BarrenPlanet"/>
+    <CActorUnit id="SMX2_Background_Alpha_Revanscar" parent="GenericUnitSM" unitName="SMX2_Background_Alpha_Revanscar"/>
+    <CActorUnit id="SMX2_Background_Alpha_RevanscarDestroyed" parent="GenericUnitSM" unitName="SMX2_Background_Alpha_RevanscarDestroyed"/>
+    <CActorUnit id="SMX2_Background_Aiur_MaxCreep" parent="GenericUnitSM" unitName="SMX2_Background_Aiur_MaxCreep"/>
+    <CActorUnit id="SMX2_Background_Aiur_Reborn" parent="GenericUnitSM" unitName="SMX2_Background_Aiur_Reborn"/>
+    <CActorUnit id="SMX2_ArmyUIUnitZealot01" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitZealot01">
+        <Model value="Zealot"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitZealot02" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitZealot02">
+        <Model value="DarkZealot"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitZealot03" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitZealot03">
+        <Model value="PrisonZealot"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitStalker01" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitStalker01">
+        <Model value="Dragoon"/>
+        <Scale value="0.220000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitStalker02" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitStalker02">
+        <Model value="Stalker"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitStalker03" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitStalker03">
+        <Model value="DarkStalker"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitImmortal01" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitImmortal01">
+        <Model value="Immortal"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitImmortal02" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitImmortal02">
+        <Model value="DarkImmortal"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitImmortal03" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitImmortal03">
+        <Model value="DisruptionWard"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitDarkTemplar01" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitDarkTemplar01">
+        <Model value="DarkTemplar"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitDarkTemplar02" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitDarkTemplar02">
+        <Model value="DarkTemplar"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitDarkTemplar03" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitDarkTemplar03">
+        <Model value="DarkTemplar"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitSentry01" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitSentry01">
+        <Model value="Sentry"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitSentry02" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitSentry02">
+        <Model value="DarkSentry"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitSentry03" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitSentry03">
+        <Model value="Sentry"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitPhoenix01" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitPhoenix01">
+        <Model value="Phoenix"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitPhoenix02" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitPhoenix02">
+        <Model value="Phoenix"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitPhoenix03" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitPhoenix03">
+        <Model value="PhoenixBomber"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitHighTemplar01" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitHighTemplar01">
+        <Model value="HighTemplar"/>
+        <Scale value="0.180000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitHighTemplar02" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitHighTemplar02">
+        <Model value="HighTemplar"/>
+        <Scale value="0.180000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitHighTemplar03" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitHighTemplar03">
+        <Model value="DarkHighTemplar"/>
+        <Scale value="0.180000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitColossus01" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitColossus01">
+        <Model value="Colossus"/>
+        <Scale value="0.080000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitColossus02" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitColossus02">
+        <Model value="DarkColossus"/>
+        <Scale value="0.080000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitColossus03" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitColossus03">
+        <Model value="Reaver"/>
+        <Scale value="0.150000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitVoidRay01" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitVoidRay01">
+        <Model value="VoidRay"/>
+        <Scale value="0.150000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitVoidRay02" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitVoidRay02">
+        <Model value="DarkVoidRay"/>
+        <Scale value="0.150000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitVoidRay03" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitVoidRay03">
+        <Model value="Oracle"/>
+        <Scale value="0.180000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitCarrier01" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitCarrier01">
+        <Model value="Carrier"/>
+        <Scale value="0.150000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitCarrier02" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitCarrier02">
+        <Model value="DarkCarrier"/>
+        <Scale value="0.150000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitCarrier03" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitCarrier03">
+        <Model value="ArbiterMP"/>
+        <Scale value="0.150000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_ArmyUIUnitLocked" parent="VoidSMClickable" unitName="SMX2_ArmyUIUnitLocked">
+        <On index="33" Terms="UnitHighlightLocal.*.Start" Send="HaloStart"/>
+        <On index="34" Terms="UnitHighlightLocal.*.Stop" Send="HaloStop"/>
+        <Model value="VoidHighTemplarPsiOrbMissile"/>
+        <Scale value="0.200000"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_StarmapUIPlanetAiur" parent="VoidSMClickable" unitName="SMX2_StarmapUIPlanetAiur">
+        <Model value="PlanetIconAiur"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_StarmapUIPlanetKorhal" parent="VoidSMClickable" unitName="SMX2_StarmapUIPlanetKorhal">
+        <On Terms="Signal.*.StarmapAttachA" Send="RefClear ::Host"/>
+        <On Terms="Signal.*.StarmapAttachA" Send="RefSet ::Host ::external.UILocationA"/>
+        <On Terms="Signal.*.StarmapAttachA" Send="HostSiteOpsSet ::Host SOpAttachOrigin"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="RefClear ::Host"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="RefSet ::Host ::external.UILocationB"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="HostSiteOpsSet ::Host SOpAttachOrigin"/>
+        <Model value="PlanetIconKorhal"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_StarmapUIPlanetShakuras" parent="VoidSMClickable" unitName="SMX2_StarmapUIPlanetShakuras">
+        <On Terms="Signal.*.StarmapAttachA" Send="RefClear ::Host"/>
+        <On Terms="Signal.*.StarmapAttachA" Send="RefSet ::Host ::external.UILocationA"/>
+        <On Terms="Signal.*.StarmapAttachA" Send="HostSiteOpsSet ::Host SOpAttachOrigin"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="RefClear ::Host"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="RefSet ::Host ::external.UILocationB"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="HostSiteOpsSet ::Host SOpAttachOrigin"/>
+        <Model value="PlanetIconBelShir"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_StarmapUIPlanetPurifierA" parent="VoidSMClickable" unitName="SMX2_StarmapUIPlanetPurifierA">
+        <On Terms="Signal.*.StarmapAttachA" Send="RefClear ::Host"/>
+        <On Terms="Signal.*.StarmapAttachA" Send="RefSet ::Host ::external.UILocationA"/>
+        <On Terms="Signal.*.StarmapAttachA" Send="HostSiteOpsSet ::Host SOpAttachOrigin"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="RefClear ::Host"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="RefSet ::Host ::external.UILocationB"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="HostSiteOpsSet ::Host SOpAttachOrigin"/>
+        <Model value="PlanetIconIceWorld"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_StarmapUIPlanetPurifierB" parent="VoidSMClickable" unitName="SMX2_StarmapUIPlanetPurifierB">
+        <On Terms="Signal.*.StarmapAttachA" Send="RefClear ::Host"/>
+        <On Terms="Signal.*.StarmapAttachA" Send="RefSet ::Host ::external.UILocationA"/>
+        <On Terms="Signal.*.StarmapAttachA" Send="HostSiteOpsSet ::Host SOpAttachOrigin"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="RefClear ::Host"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="RefSet ::Host ::external.UILocationB"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="HostSiteOpsSet ::Host SOpAttachOrigin"/>
+        <Model value="PlanetIconValhalla"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_StarmapUIPlanetUlnar" parent="VoidSMClickable" unitName="SMX2_StarmapUIPlanetUlnar">
+        <On Terms="Signal.*.StarmapAttachA" Send="RefClear ::Host"/>
+        <On Terms="Signal.*.StarmapAttachA" Send="RefSet ::Host ::external.UILocationA"/>
+        <On Terms="Signal.*.StarmapAttachA" Send="HostSiteOpsSet ::Host SOpAttachOrigin"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="RefClear ::Host"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="RefSet ::Host ::external.UILocationB"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="HostSiteOpsSet ::Host SOpAttachOrigin"/>
+        <Model value="PlanetIconUlnar"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_StarmapUIPlanetShadow" parent="VoidSMClickable" unitName="SMX2_StarmapUIPlanetShadow">
+        <On Terms="Signal.*.StarmapAttachA" Send="RefClear ::Host"/>
+        <On Terms="Signal.*.StarmapAttachA" Send="RefSet ::Host ::external.UILocationA"/>
+        <On Terms="Signal.*.StarmapAttachA" Send="HostSiteOpsSet ::Host SOpAttachOrigin"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="RefClear ::Host"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="RefSet ::Host ::external.UILocationB"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="HostSiteOpsSet ::Host SOpAttachOrigin"/>
+        <Model value="PlanetIconAvernus"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_StarmapUIPlanetTaldarim" parent="VoidSMClickable" unitName="SMX2_StarmapUIPlanetTaldarim">
+        <On Terms="Signal.*.StarmapAttachA" Send="RefClear ::Host"/>
+        <On Terms="Signal.*.StarmapAttachA" Send="RefSet ::Host ::external.UILocationA"/>
+        <On Terms="Signal.*.StarmapAttachA" Send="HostSiteOpsSet ::Host SOpAttachOrigin"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="RefClear ::Host"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="RefSet ::Host ::external.UILocationB"/>
+        <On Terms="Signal.*.StarmapAttachB" Send="HostSiteOpsSet ::Host SOpAttachOrigin"/>
+        <Model value="PlanetIconTyphon"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_Bridge00" parent="GenericUnitSM" unitName="SMX2_Bridge00"/>
+    <CActorUnit id="SMX2_Bridge01" parent="VoidSMClickable" unitName="SMX2_Bridge01">
+        <On Terms="ModelEvent; ModelEventName PowerOn" Send="Create ActorSound_SMX2_Bridge01_Loop"/>
+        <On Terms="ModelEvent; ModelEventName PowerOff" Target="ActorSound_SMX2_Bridge01_Loop" Send="Destroy"/>
+    </CActorUnit>
+    <CActorSound id="ActorSound_SMX2_Bridge01_Loop" parent="SoundContinuous">
+        <Sound value="SMX2_Bridge01_Loop"/>
+    </CActorSound>
+    <CActorUnit id="SMX2_Bridge02" parent="VoidSMClickable" unitName="SMX2_Bridge02"/>
+    <CActorUnit id="SMX2_Bridge03" parent="GenericUnitSM" unitName="SMX2_Bridge03"/>
+    <CActorUnit id="SMX2_Bridge04" parent="GenericUnitSM" unitName="SMX2_Bridge04"/>
+    <CActorUnit id="SMX2_Bridge05" parent="GenericUnitSM" unitName="SMX2_Bridge05"/>
+    <CActorUnit id="SMX2_Bridge06" parent="GenericUnitSM" unitName="SMX2_Bridge06"/>
+    <CActorUnit id="SMX2_Bridge07" parent="GenericUnitSM" unitName="SMX2_Bridge07"/>
+    <CActorUnit id="SMX2_Bridge08" parent="GenericUnitSM" unitName="SMX2_Bridge08"/>
+    <CActorUnit id="SMX2_Bridge09" parent="GenericUnitSM" unitName="SMX2_Bridge09"/>
+    <CActorUnit id="SMX2_Bridge10" parent="GenericUnitSM" unitName="SMX2_Bridge10"/>
+    <CActorUnit id="SMX2_Bridge11" parent="GenericUnitSM" unitName="SMX2_Bridge11"/>
+    <CActorUnit id="SMX2_Bridge12" parent="GenericUnitSM" unitName="SMX2_Bridge12"/>
+    <CActorUnit id="SMX2_Bridge13" parent="GenericUnitSM" unitName="SMX2_Bridge13"/>
+    <CActorUnit id="SMX2_Bridge14" parent="GenericUnitSM" unitName="SMX2_Bridge14"/>
+    <CActorUnit id="SMX2_Bridge15" parent="GenericUnitSM" unitName="SMX2_Bridge15"/>
+    <CActorUnit id="SMX2_Bridge16" parent="GenericUnitSM" unitName="SMX2_Bridge16"/>
+    <CActorUnit id="SMX2_Bridge17" parent="GenericUnitSM" unitName="SMX2_Bridge17"/>
+    <CActorUnit id="SMX2_Bridge18" parent="GenericUnitSM" unitName="SMX2_Bridge18"/>
+    <CActorUnit id="SMX2_Bridge19" parent="GenericUnitSM" unitName="SMX2_Bridge19"/>
+    <CActorUnit id="SMX2_Hallway00" parent="GenericUnitSM" unitName="SMX2_Hallway00"/>
+    <CActorUnit id="SMX2_Hallway01" parent="GenericUnitSM" unitName="SMX2_Hallway01"/>
+    <CActorUnit id="SMX2_Hallway02" parent="GenericUnitSM" unitName="SMX2_Hallway02"/>
+    <CActorUnit id="SMX2_Hallway03" parent="GenericUnitSM" unitName="SMX2_Hallway03"/>
+    <CActorUnit id="SMX2_Hallway04" parent="GenericUnitSM" unitName="SMX2_Hallway04"/>
+    <CActorUnit id="SMX2_Hallway05" parent="GenericUnitSM" unitName="SMX2_Hallway05"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike00" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike00"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike01" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike01"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike02" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike02"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike03" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike03"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike04" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike04"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike05" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike05"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike06" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike06"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike07" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike07"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike08" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike08"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike09" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike09"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike10" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike10"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike11" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike11"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike12" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike12"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike13" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike13"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike14" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike14"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike15" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike15"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike16" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike16"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike17" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike17"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike18" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike18"/>
+    <CActorUnit id="SMX2_Spear_OrbitalStrike19" parent="GenericUnitSM" unitName="SMX2_Spear_OrbitalStrike19"/>
+    <!--                                                                                         -->
+    <!-- SMZeratul ............................................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="SMZeratul">
+        <On Terms="UnitHighlightLocal.*.Start" Send="HaloStart"/>
+        <On Terms="UnitHighlightLocal.*.Stop" Send="HaloStop"/>
+    </CActorUnit>
+    <CActorUnit id="SMX1HydraliskT1" parent="VoidSMCharacter" unitName="SMX1HydraliskT1">
+        <On Terms="Signal.*.StopSMEventSounds" Target="_SMEventSound" Send="Destroy"/>
+        <HostSiteOps Ops="SOpBasicScopeFollow SOpRotationSmooth"/>
+        <EventDataSound Name="SMModelEventSound" Actor="UnitSoundHiddenCheck"/>
+        <WalkAnimMoveSpeed value="0.4296"/>
+    </CActorUnit>
+    <CActorUnit id="SMX2_StarMap_UI_Travel" parent="VoidSMClickable" unitName="SMX2_StarMap_UI_Travel"/>
+    <CActorUnit id="SMX2_StasisCore00" parent="GenericUnitSM" unitName="SMX2_StasisCore00"/>
+    <CActorUnit id="SMX2_StasisCore01" parent="GenericUnitSM" unitName="SMX2_StasisCore01"/>
+    <CActorUnit id="SMX2_StasisCore02" parent="GenericUnitSM" unitName="SMX2_StasisCore02"/>
+    <CActorUnit id="SMX2_StasisCore03" parent="GenericUnitSM" unitName="SMX2_StasisCore03"/>
+    <CActorUnit id="SMX2_StasisCore04" parent="GenericUnitSM" unitName="SMX2_StasisCore04"/>
+    <CActorUnit id="SMX2_StasisCore05" parent="GenericUnitSM" unitName="SMX2_StasisCore05"/>
+    <CActorUnit id="SMX2_StasisCore06" parent="GenericUnitSM" unitName="SMX2_StasisCore06"/>
+    <CActorUnit id="SMX2_StasisCore07" parent="GenericUnitSM" unitName="SMX2_StasisCore07"/>
+    <CActorUnit id="SMX2_StasisCore08" parent="GenericUnitSM" unitName="SMX2_StasisCore08"/>
+    <CActorUnit id="SMX2_StasisCore09" parent="GenericUnitSM" unitName="SMX2_StasisCore09"/>
+    <CActorUnit id="SMX2_StasisCore10" parent="GenericUnitSM" unitName="SMX2_StasisCore10"/>
+    <CActorUnit id="SMX2_StasisCore11" parent="GenericUnitSM" unitName="SMX2_StasisCore11"/>
+    <CActorUnit id="SMX2_StasisCore12" parent="GenericUnitSM" unitName="SMX2_StasisCore12"/>
+    <CActorUnit id="SMX2_StasisCore13" parent="GenericUnitSM" unitName="SMX2_StasisCore13"/>
+    <CActorUnit id="SMX2_StasisCore14" parent="GenericUnitSM" unitName="SMX2_StasisCore14"/>
+    <CActorUnit id="SMX2_StasisCore15" parent="GenericUnitSM" unitName="SMX2_StasisCore15"/>
+    <CActorUnit id="SMX2_StasisCore16" parent="GenericUnitSM" unitName="SMX2_StasisCore16"/>
+    <CActorUnit id="SMX2_StasisCore17" parent="GenericUnitSM" unitName="SMX2_StasisCore17"/>
+    <CActorUnit id="SMX2_StasisCore18" parent="GenericUnitSM" unitName="SMX2_StasisCore18"/>
+    <CActorUnit id="SMX2_StasisCore19" parent="GenericUnitSM" unitName="SMX2_StasisCore19"/>
+    <CActorUnit id="SMX2_Forge00" parent="GenericUnitSM" unitName="SMX2_Forge00"/>
+    <CActorUnit id="SMX2_Forge01" parent="GenericUnitSM" unitName="SMX2_Forge01"/>
+    <CActorUnit id="SMX2_Forge02" parent="GenericUnitSM" unitName="SMX2_Forge02"/>
+    <CActorUnit id="SMX2_Forge03" parent="GenericUnitSM" unitName="SMX2_Forge03"/>
+    <CActorUnit id="SMX2_Forge04" parent="GenericUnitSM" unitName="SMX2_Forge04"/>
+    <CActorUnit id="SMX2_Forge05" parent="GenericUnitSM" unitName="SMX2_Forge05"/>
+    <CActorUnit id="SMX2_Forge06" parent="GenericUnitSM" unitName="SMX2_Forge06"/>
+    <CActorUnit id="SMX2_Forge07" parent="GenericUnitSM" unitName="SMX2_Forge07"/>
+    <CActorUnit id="SMX2_Forge08" parent="GenericUnitSM" unitName="SMX2_Forge08"/>
+    <CActorUnit id="SMX2_Forge09" parent="GenericUnitSM" unitName="SMX2_Forge09"/>
+    <CActorUnit id="SMX2_FloatingPlatformA" parent="GenericUnitSM" unitName="SMX2_FloatingPlatformA"/>
+    <CActorUnit id="SMX2_Aiur03_StarforgeSmoke" parent="GenericUnitSM" unitName="SMX2_Aiur03_StarforgeSmoke"/>
+    <CActorUnit id="SMX2_StarMap_UI_Mission" parent="GenericUnitSM" unitName="SMX2_StarMap_UI_Mission"/>
+    <CActorUnit id="SMX2_Bridge_Communicator" parent="VoidSMClickable" unitName="SMX2_Bridge_Communicator"/>
+</Catalog>

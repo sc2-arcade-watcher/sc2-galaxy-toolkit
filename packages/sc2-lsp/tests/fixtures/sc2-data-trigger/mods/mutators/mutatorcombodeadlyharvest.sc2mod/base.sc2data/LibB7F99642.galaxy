@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibB7F99642_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libB7F99642_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libB7F99642_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(21);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libB7F99642_gt_Initialization_Init () {
+    libB7F99642_gt_Initialization = TriggerCreate("libB7F99642_gt_Initialization_Func");
+    TriggerAddEventMapInit(libB7F99642_gt_Initialization);
+}
+
+void libB7F99642_InitTriggers () {
+    libB7F99642_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libB7F99642_InitLib_completed = false;
+
+void libB7F99642_InitLib () {
+    if (libB7F99642_InitLib_completed) {
+        return;
+    }
+
+    libB7F99642_InitLib_completed = true;
+
+    libB7F99642_InitLibraries();
+    libB7F99642_InitTriggers();
+}
+

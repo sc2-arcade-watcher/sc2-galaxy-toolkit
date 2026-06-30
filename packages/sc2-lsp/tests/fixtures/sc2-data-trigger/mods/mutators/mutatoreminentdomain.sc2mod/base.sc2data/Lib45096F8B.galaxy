@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib45096F8B_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Eminent Domain
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib45096F8B_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib45096F8B_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "StructureSteal");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib45096F8B_gt_Initialization_Init () {
+    lib45096F8B_gt_Initialization = TriggerCreate("lib45096F8B_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib45096F8B_gt_Initialization);
+}
+
+void lib45096F8B_InitTriggers () {
+    lib45096F8B_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib45096F8B_InitLib_completed = false;
+
+void lib45096F8B_InitLib () {
+    if (lib45096F8B_InitLib_completed) {
+        return;
+    }
+
+    lib45096F8B_InitLib_completed = true;
+
+    lib45096F8B_InitLibraries();
+    lib45096F8B_InitTriggers();
+}
+

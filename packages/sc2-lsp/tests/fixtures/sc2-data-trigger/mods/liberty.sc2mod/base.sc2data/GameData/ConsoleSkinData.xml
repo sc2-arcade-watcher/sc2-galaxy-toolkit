@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <!-- Base templates -->
+    <CConsoleSkin default="1" id="ConsoleBase">
+        <?token id="race" value="Generic"?>
+        <?token id="assetname" value="Bogus"?>
+        <?token id="preview" value="Bogus"?>
+        <MinimapPanelModel Model="Assets/UI/Console/##race##/##assetname##/##assetname##_00.m3" Position="-1.000000,-1.000000,0.000000" Scale="1.000000,1.000000,1.000000"/>
+        <InfoPanelModel Model="Assets/UI/Console/##race##/##assetname##/##assetname##_01.m3" Position="0.000000,-1.000000,0.000000" Scale="1.000000,1.000000,1.000000"/>
+        <CommandPanelModel Model="Assets/UI/Console/##race##/##assetname##/##assetname##_02.m3" Position="1.000000,-1.000000,0.000000" Scale="1.000000,1.000000,1.000000"/>
+        <Light value="Console"/>
+        <Description value="ConsoleSkin/Description/##assetname##"/>
+        <ThumbnailImage value="Assets/Textures/SC2_UI_Collection_HUDs_Thumb_##preview##.dds"/>
+        <FeaturedImage value="Assets/Textures/SC2_UI_Collection_HUDs_Large_##preview##.dds"/>
+    </CConsoleSkin>
+    <CConsoleSkin default="1" id="ConsoleBase_Default" parent="ConsoleBase">
+        <Default value="1"/>
+        <Name value="ConsoleSkin/Name/Default"/>
+        <ReleaseDate value="7/27/2010"/>
+        <MinimapPanelModel Model="@@UI/ConsoleModelMinimapPanel"/>
+        <InfoPanelModel Model="@@UI/ConsoleModelInfopanel"/>
+        <CommandPanelModel Model="@@UI/ConsoleModelCommandPanel"/>
+    </CConsoleSkin>
+    <!-- Templates for new console skins whose assets ARE standardized -->
+    <CConsoleSkin default="1" id="ConsoleBase_Standard" parent="ConsoleBase">
+        <MinimapPanelModel Model="Assets/UI/Console/##race##/##id##/##id##_00.m3"/>
+        <InfoPanelModel Model="Assets/UI/Console/##race##/##id##/##id##_01.m3"/>
+        <CommandPanelModel Model="Assets/UI/Console/##race##/##id##/##id##_02.m3"/>
+        <Description value="ConsoleSkin/Description/##id##"/>
+        <ThumbnailImage value="Assets/Textures/SC2_UI_Collection_HUDs_Thumb_##id##.dds"/>
+        <FeaturedImage value="Assets/Textures/SC2_UI_Collection_HUDs_Large_##id##.dds"/>
+    </CConsoleSkin>
+    <CConsoleSkin default="1" id="ConsoleBase_Reward" parent="ConsoleBase_Standard">
+        <RequiredReward value="##id##"/>
+    </CConsoleSkin>
+    <!-- Default consoles -->
+    <CConsoleSkin id="Dflt" parent="ConsoleBase_Default"/>
+    <CConsoleSkin id="ConsoleProtoss_Default" parent="ConsoleBase_Default" assetname="ProtossDefault" preview="ConsoleSkinProtossDefault">
+        <RequiredReward value="ConsoleSkinProtossDefault"/>
+    </CConsoleSkin>
+    <CConsoleSkin id="ConsoleTerran_Default" parent="ConsoleBase_Default" assetname="TerranDefault" preview="ConsoleSkinTerranDefault">
+        <RequiredReward value="ConsoleSkinTerranDefault"/>
+    </CConsoleSkin>
+    <CConsoleSkin id="ConsoleZerg_Default" parent="ConsoleBase_Default" assetname="ZergDefault" preview="ConsoleSkinZergDefault">
+        <RequiredReward value="ConsoleSkinZergDefault"/>
+    </CConsoleSkin>
+    <CConsoleSkin id="ConsoleZerg_Dehaka" parent="ConsoleBase" assetname="Dehaka_ConsoleZerg" preview="Dehaka_ConsoleZerg" race="Zerg">
+        <Name value="ConsoleSkin/Name/Dehaka_ConsoleZerg"/>
+        <ReleaseDate value="12/5/2017"/>
+        <RequiredReward value="ConsoleSkinZergDehaka"/>
+    </CConsoleSkin>
+    <CConsoleSkin id="ConsoleZerg_Abathur" parent="ConsoleBase" assetname="Abathur_ConsoleZerg" race="Zerg">
+        <ReleaseDate value="7/27/2010"/>
+    </CConsoleSkin>
+    <CConsoleSkin id="ConsoleProtoss_Fenix" parent="ConsoleBase" assetname="ConsoleProtoss_Purifier" preview="Fenix_ConsoleProtoss" race="Protoss">
+        <Name value="ConsoleSkin/Name/Fenix_ConsoleProtoss"/>
+        <Description value="ConsoleSkin/Description/Fenix_ConsoleProtoss"/>
+        <ReleaseDate value="12/5/2017"/>
+        <RequiredReward value="ConsoleSkinProtossFenix"/>
+    </CConsoleSkin>
+    <CConsoleSkin id="ConsoleTerran_Swann" parent="ConsoleBase" assetname="ConsoleTerran_Construction" race="Terran">
+        <ReleaseDate value="1/1/2020"/>
+        <Light value="ConsoleTerran_Construction"/>
+    </CConsoleSkin>
+    <CConsoleSkin id="ConsoleZerg_Zagara" parent="ConsoleBase" assetname="Zagara_ConsoleZerg" race="Zerg">
+        <ReleaseDate value="1/1/2020"/>
+    </CConsoleSkin>
+    <CConsoleSkin id="ConsoleTerran_Horner" parent="ConsoleBase" assetname="ConsoleTerran_Junker" preview="ConsoleTerran_Junker" race="Terran">
+        <Name value="ConsoleSkin/Name/ConsoleTerran_Junker"/>
+        <ReleaseDate value="12/5/2017"/>
+        <RequiredReward value="ConsoleSkinTerranHorner"/>
+    </CConsoleSkin>
+    <CConsoleSkin id="ConsoleTerran_Nova" parent="ConsoleBase_Standard" race="Terran">
+        <ReleaseDate value="1/1/2020"/>
+    </CConsoleSkin>
+</Catalog>

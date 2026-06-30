@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CAlert default="1">
+        <Display index="Self" value="1"/>
+        <Display index="Other" value="1"/>
+        <PrimaryActions index="Flash" value="1"/>
+        <PrimaryActions index="Select" value="1"/>
+        <PrimaryActions index="View" value="1"/>
+        <SecondaryActions index="Flash" value="1"/>
+        <SecondaryActions index="Select" value="1"/>
+        <SecondaryActions index="View" value="1"/>
+        <Flags index="Combine" value="1"/>
+        <Fade value="0.500000"/>
+        <Life value="8.000000"/>
+        <PingColor value="255,255,255,0"/>
+        <PingTime value="6.000000"/>
+        <Sound value="##id##"/>
+        <Text value="Alert/Text/##id##"/>
+        <Tooltip value="Alert/Tooltip/##id##"/>
+        <Voice value="Unknown"/>
+        <SupersededVolume value="0.250000"/>
+    </CAlert>
+    <CAlert default="1" id="Attack">
+        <SecondaryActions index="Select" value="0"/>
+        <SecondaryActions index="Target" value="1"/>
+        <Flags index="Ping" value="1"/>
+        <Life value="15.000000"/>
+        <OverlapDuration value="15.000000"/>
+        <OverlapGlobalCount value="2"/>
+        <OverlapLocalCount value="1"/>
+        <OverlapLocalRadius value="15"/>
+        <PingColor value="255,255,0,0"/>
+        <QueueTime value="10.000000"/>
+        <SupersededVolume value="0.750000"/>
+    </CAlert>
+    <CAlert default="1" id="Global">
+        <Display index="Self" value="0"/>
+        <Display index="Other" value="0"/>
+        <Display index="Enemy" value="1"/>
+        <PrimaryActions index="Flash" value="0"/>
+        <PrimaryActions index="Select" value="0"/>
+        <PrimaryActions index="View" value="0"/>
+        <SecondaryActions index="Flash" value="0"/>
+        <SecondaryActions index="Select" value="0"/>
+        <SecondaryActions index="View" value="0"/>
+        <SupersededVolume value="0.750000"/>
+    </CAlert>
+    <CAlert default="1" id="AIComm">
+        <Flags index="Ping" value="1"/>
+        <Display index="Ally" value="1"/>
+        <Life value="12.000000"/>
+        <OverlapDuration value="12.000000"/>
+        <OverlapGlobalCount value="2"/>
+        <OverlapLocalCount value="1"/>
+        <OverlapLocalRadius value="15"/>
+        <QueueTime value="12.000000"/>
+        <SupersededVolume value="0.750000"/>
+    </CAlert>
+    <CAlert default="1" id="Observer">
+        <Display index="Self" value="0"/>
+        <Display index="Other" value="0"/>
+        <Display index="Observer" value="1"/>
+        <Flags index="Ping" value="1"/>
+    </CAlert>
+    <CAlert id="StartLocation">
+        <Flags index="Hide" value="1"/>
+    </CAlert>
+    <!-- This alert is used by generic unit & location error alerts -->
+    <CAlert id="Error">
+        <Display index="Self" value="0"/>
+        <Icon value="Assets\Textures\btn-command-stop.dds"/>
+    </CAlert>
+    <CAlert id="Trigger">
+        <Flags index="Combine" value="0"/>
+        <Flags index="Hide" value="1"/>
+        <Icon value="Assets\Textures\btn-command-attack.dds"/>
+    </CAlert>
+    <CAlert id="Transmission">
+        <Flags index="Combine" value="0"/>
+        <Flags index="Hide" value="1"/>
+        <Icon value="Assets\Textures\btn-command-attack.dds"/>
+    </CAlert>
+    <CAlert id="TrainComplete">
+        <Peripheral value="TrainComplete"/>
+        <Voice value="Ready"/>
+    </CAlert>
+    <CAlert id="MothershipComplete">
+        <Peripheral value="MothershipComplete"/>
+        <Voice value="Ready"/>
+    </CAlert>
+    <CAlert id="ReviveComplete">
+        <Voice value="Ready"/>
+    </CAlert>
+    <CAlert id="AttackTown" parent="Attack">
+        <Peripheral value="SelfBaseUnderAttack"/>
+        <Icon value="Assets\Textures\btn-command-attack.dds"/>
+        <Voice value="Help"/>
+        <Sound value="Alert_LegacyBaseUnderAttack"/>
+        <PingModel value="PingBaseAttack"/>
+    </CAlert>
+    <CAlert id="AttackUnit" parent="Attack">
+        <Peripheral value="SelfUnitUnderAttack"/>
+        <Icon value="Assets\Textures\btn-command-attack.dds"/>
+        <Voice value="Help"/>
+        <Sound value="Alert_LegacyForcesUnderAttack"/>
+    </CAlert>
+    <CAlert id="AttackTownAlly" parent="Attack">
+        <Peripheral value="AllyBaseUnderAttack"/>
+        <Icon value="Assets\Textures\btn-command-attack.dds"/>
+        <Sound value="Alert_LegacyAllyUnderAttack"/>
+    </CAlert>
+    <CAlert id="AttackUnitAlly" parent="Attack">
+        <Peripheral value="AllyUnitUnderAttack"/>
+        <Icon value="Assets\Textures\btn-command-attack.dds"/>
+        <Sound value="Alert_LegacyAllyUnderAttack"/>
+    </CAlert>
+    <CAlert id="BuildComplete">
+        <Peripheral value="BuildingComplete"/>
+        <Voice value="Ready"/>
+    </CAlert>
+    <CAlert id="AddOnComplete">
+        <Sound value="Alert_TerranAddOnComplete"/>
+    </CAlert>
+    <CAlert id="UpgradeComplete">
+        <Peripheral value="UpgradeComplete"/>
+        <Sound value="Alert_LegacyUpgradeComplete"/>
+    </CAlert>
+    <CAlert id="TrainWorkerComplete">
+        <Flags index="Hide" value="1"/>
+        <Voice value="Ready"/>
+    </CAlert>
+    <CAlert id="TrainError">
+        <Display index="Self" value="0"/>
+        <QueueTime value="4.000000"/>
+        <Icon value="Assets\Textures\icon-supply.dds"/>
+    </CAlert>
+    <CAlert id="ReviveError">
+        <QueueTime value="4.000000"/>
+        <Icon value="Assets\Textures\icon-supply.dds"/>
+    </CAlert>
+    <CAlert id="WarpTrainComplete">
+        <Peripheral value="WarpInComplete"/>
+        <Sound value=""/>
+        <Voice value="Ready"/>
+    </CAlert>
+    <CAlert id="AmmoComplete">
+        <Voice value="Ready"/>
+    </CAlert>
+    <CAlert id="CalldownLaunch" parent="Global">
+        <Peripheral value="CalldownLaunch"/>
+        <QueueTime value="6.000000"/>
+        <Icon value="Assets\Textures\btn-ability-terran-nuclearstrike.dds"/>
+        <Sound value="Alert_LegacyCalldownLaunch"/>
+        <Flags index="SoundFromLocalPlayer" value="1"/>
+    </CAlert>
+    <CAlert id="CalldownLaunchObserver" parent="Observer">
+        <Icon value="Assets\Textures\btn-ability-terran-nuclearstrike.dds"/>
+        <Sound value="Alert_LegacyCalldownLaunch"/>
+        <PingModel value="PingNuke"/>
+    </CAlert>
+    <CAlert id="MergeComplete">
+        <Voice value="Ready"/>
+    </CAlert>
+    <CAlert id="MorphComplete">
+        <Peripheral value="MorphComplete"/>
+        <Voice value="Ready"/>
+    </CAlert>
+    <CAlert id="SpecializeComplete">
+        <Peripheral value="SpecializationComplete"/>
+    </CAlert>
+    <CAlert id="ResourceDowntime_Vespene">
+        <Icon value="Assets\Textures\icon-gas.dds"/>
+        <Sound value="UI_TerranHint"/>
+    </CAlert>
+    <CAlert id="ResourceDepleted_Mineral">
+        <Peripheral value="ResourceDepleted"/>
+        <Icon value="Assets\Textures\icon-mineral.dds"/>
+    </CAlert>
+    <CAlert id="ResourceDepleted_Vespene">
+        <Peripheral value="ResourceDepleted"/>
+        <Icon value="Assets\Textures\icon-gas.dds"/>
+        <Sound value="TUIWarning"/>
+    </CAlert>
+    <CAlert id="ResourceExhausted_Mineral">
+        <Peripheral value="ResourceExhausted"/>
+        <Icon value="Assets\Textures\icon-mineral.dds"/>
+    </CAlert>
+    <CAlert id="ResourcesSent">
+        <Flags index="Combine" value="0"/>
+        <Display index="Other" value="0"/>
+        <Icon value="Assets\Textures\icon-mineral.dds"/>
+        <PrimaryActions index="Flash" value="0"/>
+        <PrimaryActions index="Select" value="0"/>
+        <PrimaryActions index="View" value="0"/>
+        <SecondaryActions index="Flash" value="0"/>
+        <SecondaryActions index="Select" value="0"/>
+        <SecondaryActions index="View" value="0"/>
+    </CAlert>
+    <CAlert id="ResourcesReceived">
+        <Flags index="Combine" value="0"/>
+        <Display index="Other" value="0"/>
+        <Icon value="Assets\Textures\icon-mineral.dds"/>
+        <PrimaryActions index="Flash" value="0"/>
+        <PrimaryActions index="Select" value="0"/>
+        <PrimaryActions index="View" value="0"/>
+        <SecondaryActions index="Flash" value="0"/>
+        <SecondaryActions index="Select" value="0"/>
+        <SecondaryActions index="View" value="0"/>
+    </CAlert>
+    <CAlert id="NoAlert">
+        <Display index="Self" value="0"/>
+        <Display index="Other" value="0"/>
+        <Life value="0.000000"/>
+    </CAlert>
+    <CAlert id="AddOnComplete_Zerg">
+        <Sound value="Alert_TerranAddOnComplete_Zerg"/>
+    </CAlert>
+    <CAlert id="AddOnComplete_Terr">
+        <Sound value="Alert_TerranAddOnComplete_Terr"/>
+    </CAlert>
+    <CAlert id="AddOnComplete_Prot">
+        <Sound value="Alert_TerranAddOnComplete_Prot"/>
+    </CAlert>
+    <CAlert id="GameStart">
+        <Flags index="Combine" value="0"/>
+        <Flags index="Hide" value="1"/>
+        <Flags index="SoundFromLocalPlayer" value="1"/>
+        <PrimaryActions index="Flash" value="0"/>
+        <PrimaryActions index="Select" value="0"/>
+        <PrimaryActions index="View" value="0"/>
+        <Display index="Other" value="0"/>
+        <Sound value="Alert_GameStart"/>
+    </CAlert>
+    <CAlert id="VictoryAlert">
+        <Flags index="Combine" value="0"/>
+        <Flags index="Hide" value="1"/>
+        <Flags index="SoundFromLocalPlayer" value="1"/>
+        <PrimaryActions index="Flash" value="0"/>
+        <PrimaryActions index="Select" value="0"/>
+        <PrimaryActions index="View" value="0"/>
+        <Display index="Other" value="0"/>
+        <Sound value="Alert_Victory"/>
+    </CAlert>
+    <CAlert id="DefeatAlert">
+        <Flags index="Combine" value="0"/>
+        <Flags index="Hide" value="1"/>
+        <Flags index="SoundFromLocalPlayer" value="1"/>
+        <PrimaryActions index="Flash" value="0"/>
+        <PrimaryActions index="Select" value="0"/>
+        <PrimaryActions index="View" value="0"/>
+        <Display index="Other" value="0"/>
+        <Sound value="Alert_Defeat"/>
+    </CAlert>
+    <CAlert id="DrawAlert">
+        <Flags index="Combine" value="0"/>
+        <Flags index="Hide" value="1"/>
+        <Flags index="SoundFromLocalPlayer" value="1"/>
+        <PrimaryActions index="Flash" value="0"/>
+        <PrimaryActions index="Select" value="0"/>
+        <PrimaryActions index="View" value="0"/>
+        <Display index="Other" value="0"/>
+        <Sound value="Alert_Draw"/>
+    </CAlert>
+</Catalog>

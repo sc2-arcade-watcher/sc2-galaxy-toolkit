@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CModel default="1">
+        <Flags index="Download" value="1"/>
+        <Flags index="FOW" value="1"/>
+        <Flags index="VariationFallback" value="1"/>
+        <Flags index="VariationPreload" value="1"/>
+        <Flags index="Wait" value="1"/>
+        <Lighting value="##id##"/>
+        <Quality value="1"/>
+        <ScaleMax value="1.000000,1.000000,1.000000"/>
+        <ScaleMin value="1.000000,1.000000,1.000000"/>
+        <Radius value="0.500000"/>
+        <Priority value="32"/>
+        <SelectionRadius value="0.500000"/>
+        <ShadowRadius value="0.500000"/>
+        <AnimSpeed value="1.000000"/>
+        <AnimBlendTime value="-1.000000"/>
+        <TechPurchaseCamera value="Star2Camera01"/>
+        <UnitGlossaryCamera value="Star2Camera01"/>
+        <PlanetPanelCamera value="Star2Camera01"/>
+        <TechPurchaseSpeed value="0.100000"/>
+        <OccludingOpacity value="0.350000"/>
+    </CModel>
+    <CModelFoliage default="1">
+        <Flags index="Download" value="0"/>
+    </CModelFoliage>
+    <CModel default="1" id="IGNORE"/>
+    <CModel default="1" id="FXAPortrait">
+        <Flags index="Download" value="0"/>
+        <Flags index="Facial" value="1"/>
+        <Flags index="FOW" value="0"/>
+        <Flags index="IgnoreAspectRatioScale" value="1"/>
+        <EditorCategories value="Race:Terran"/>
+        <Image value="Assets\Textures\##id##_Static.dds"/>
+        <Model value="Assets\Portraits\Terran\##id##\##id##.m3"/>
+        <FacialController value="LocalizedData\Facial\##id##.fxa"/>
+        <Quality value="0"/>
+        <Priority value="8"/>
+        <AnimBlendTime value="0.500000"/>
+    </CModel>
+    <CModel default="1" id="Portrait">
+        <?token id="Race" value="Neutral"?>
+        <Flags index="Download" value="0"/>
+        <Flags index="FOW" value="0"/>
+        <Flags index="IgnoreAspectRatioScale" value="1"/>
+        <EditorCategories value="Race:##Race##"/>
+        <Image value="Assets\Textures\##id##_Static.dds"/>
+        <Model value="Assets\Portraits\##Race##\##id##\##id##.m3"/>
+        <Quality value="0"/>
+        <AnimBlendTime value="0.500000"/>
+        <Priority value="8"/>
+        <PausedParticleSystemBehavior value="FreezeAll"/>
+    </CModel>
+    <CModel default="1" id="Doodad">
+        <EditorCategories value="Race:Neutral"/>
+        <Model value="Assets\Doodads\##id##\##id##.m3"/>
+        <Flags index="VariationPreload" value="0"/>
+    </CModel>
+    <CModel default="1" id="Curtain">
+        <EditorCategories value="Race:Neutral"/>
+        <Model value="Assets\Doodads\##id##\##id##.m3"/>
+        <Flags index="VariationPreload" value="0"/>
+    </CModel>
+    <CModel default="1" id="Building">
+        <?token id="Race" value="Neutral"?>
+        <EditorCategories value="Race:##Race##"/>
+        <Model value="Assets\Buildings\##Race##\##id##\##id##.m3"/>
+    </CModel>
+    <CModel default="1" id="BuildingDeath">
+        <?token id="Race" value="Neutral"?>
+        <EditorCategories value="Race:##Race##"/>
+        <Model value="Assets\Buildings\##Race##\##id##\##id##.m3"/>
+    </CModel>
+    <CModel default="1" id="Unit">
+        <?token id="Race" value="Neutral"?>
+        <EditorCategories value="Race:##Race##"/>
+        <Model value="Assets\Units\##Race##\##id##\##id##.m3"/>
+    </CModel>
+    <CModel default="1" id="PlanetViews">
+        <EditorCategories value="Race:Neutral"/>
+        <Model value="Assets\UI\Starmap\PlanetViews\##id##\##id##.m3"/>
+        <AnimSpeed value="0.100000"/>
+        <Flags index="ForcePortraitModel" value="1"/>
+    </CModel>
+    <CModel default="1" id="PlanetIcons">
+        <EditorCategories value="Race:Neutral"/>
+        <Model value="Assets\UI\Starmap\PlanetIcons\##id##\##id##.m3"/>
+        <Flags index="ForcePortraitModel" value="1"/>
+    </CModel>
+    <CModel default="1" id="UnitDeath">
+        <?token id="Race" value="Neutral"?>
+        <EditorCategories value="Race:##Race##"/>
+        <Model value="Assets\Units\##Race##\##id##\##id##.m3"/>
+    </CModel>
+    <CModel default="1" id="UnitDeathRagdoll" parent="UnitDeath">
+        <Occlusion value="Show"/>
+        <Flags index="Download" value="0"/>
+        <Flags index="PreventedWhenPhysicsPerformanceConstrained" value="1"/>
+        <Flags index="RequiresPhysicsToOperate" value="1"/>
+        <Flags index="TeenSafe" value="1"/>
+    </CModel>
+    <CModel default="1" id="Placement">
+        <?token id="Race" value="Neutral"?>
+        <Flags index="FOW" value="0"/>
+        <EditorCategories value="Race:##Race##"/>
+        <Model value="Assets\Buildings\##Race##\##id##\##id##.m3"/>
+    </CModel>
+    <CModel default="1" id="Skybox"/>
+    <CModel default="1" id="FX">
+        <Flags index="Wait" value="0"/>
+    </CModel>
+    <CModel default="1" id="LaunchFX" parent="FX">
+        <Priority value="8"/>
+        <Flags index="Ignorable" value="1"/>
+    </CModel>
+    <CModel default="1" id="OneShotSpellFX" parent="FX">
+        <Priority value="16"/>
+    </CModel>
+    <CModel default="1" id="MissileFX" parent="FX">
+        <Priority value="16"/>
+    </CModel>
+    <CModel default="1" id="ImpactFX" parent="FX">
+        <Priority value="24"/>
+    </CModel>
+    <CModel default="1" id="BuffFX" parent="FX">
+        <Priority value="24"/>
+    </CModel>
+    <CModel default="1" id="PersistentSpellFX" parent="FX">
+        <Priority value="24"/>
+    </CModel>
+    <CModel default="1" id="Splat"/>
+    <CModel default="1" id="SM">
+        <AnimBlendTime value="0.000000"/>
+        <Flags index="FOW" value="0"/>
+    </CModel>
+    <CModel default="1" id="SMCAMERA" parent="SM"/>
+    <CModel default="1" id="SMCHARACTER" parent="SM">
+        <AnimBlendTime value="0.250000"/>
+    </CModel>
+    <CModel default="1" id="SMSET" parent="SM">
+        <AnimBlendTime value="0.250000"/>
+    </CModel>
+    <CModel default="1" id="UI">
+        <Flags index="FOW" value="0"/>
+    </CModel>
+    <!--                                                                                         -->
+    <!--                                                                                         -->
+    <!-- Added For Wizards ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!--                                                                                         -->
+    <!--                                                                                         -->
+    <CModel default="1" id="WizLaunchFX" parent="LaunchFX"/>
+    <CModel default="1" id="WizImpactFX" parent="ImpactFX"/>
+    <CModel default="1" id="WizSimpleBeam" parent="PersistentSpellFX">
+        <RadiusLoose value="1.000000"/>
+    </CModel>
+    <CModel default="1" id="WizSimpleMissile" parent="MissileFX"/>
+    <CModel default="1" id="RaceLaunchFX" parent="LaunchFX">
+        <?token id="Race" value="Neutral"?>
+        <EditorCategories value="Race:##Race##"/>
+        <Model value="Assets\Effects\##Race##\##id##\##id##.m3"/>
+    </CModel>
+    <CModel default="1" id="RaceImpactFX" parent="ImpactFX">
+        <?token id="Race" value="Neutral"?>
+        <EditorCategories value="Race:##Race##"/>
+        <Model value="Assets\Effects\##Race##\##id##\##id##.m3"/>
+    </CModel>
+    <CModel default="1" id="RaceMissileFX" parent="MissileFX">
+        <?token id="Race" value="Neutral"?>
+        <EditorCategories value="Race:##Race##"/>
+        <Model value="Assets\Effects\##Race##\##id##\##id##.m3"/>
+    </CModel>
+    <CModel default="1" id="RacePersistentSpellFX" parent="PersistentSpellFX">
+        <?token id="Race" value="Neutral"?>
+        <EditorCategories value="Race:##Race##"/>
+        <Model value="Assets\Effects\##Race##\##id##\##id##.m3"/>
+    </CModel>
+    <CModel default="1" id="RaceOneShotSpellFX" parent="OneShotSpellFX">
+        <?token id="Race" value="Neutral"?>
+        <EditorCategories value="Race:##Race##"/>
+        <Model value="Assets\Effects\##Race##\##id##\##id##.m3"/>
+    </CModel>
+    <CModel default="1" id="Glaze" parent="OneShotSpellFX">
+        <EditorCategories value="Race:Neutral"/>
+        <Model value="Assets\Effects\Glaze\##id##\##id##.m3"/>
+    </CModel>
+    <CModel default="1" id="UIFeedback" parent="UI">
+        <Model value="Assets\UI\Feedback\##id##\##id##.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel default="1" id="UIGlue" parent="UI">
+        <Model value="Assets\UI\Glues\##id##\##id##.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="ActorForceField">
+        <Model value="Assets\Doodads\ActorForceField\ActorForceField.m3"/>
+    </CModel>
+    <CModel id="PowerVisual" parent="UI">
+        <Model value="Assets/UI/Feedback/PylonRadius/PylonRadius.m3"/>
+    </CModel>
+    <CModel id="UnpoweredVisual" parent="UI">
+        <Model value="Assets/UI/Feedback/PylonRadiusUnpowered/PylonRadiusUnpowered.m3"/>
+    </CModel>
+    <CModel id="StereoscopicOptionsUnit">
+        <Model value="Assets/Units/Test/StereoscopicOptionsUnit/StereoscopicOptionsUnit.m3"/>
+    </CModel>
+    <CModel id="SYSTEM_Fallback" parent="IGNORE"/>
+    <CModel id="Sphere">
+        <Model value="Assets\Units\Test\Sphere\Sphere.m3"/>
+    </CModel>
+    <CModel id="RadarBlip">
+        <Model value="Assets\Units\Terran\RadarBlip\RadarBlip.m3"/>
+    </CModel>
+    <CModel id="MinimapPing">
+        <Model value="Assets/UI/Feedback/Ping/Ping.m3"/>
+    </CModel>
+    <CModel id="PingAlert">
+        <Model value="Assets/UI/Feedback/PingAlert/PingAlert.m3"/>
+    </CModel>
+    <CModel id="PingArrow">
+        <Model value="Assets/UI/Feedback/PingArrow/PingArrow.m3"/>
+    </CModel>
+    <CModel id="PingBaseAttack">
+        <Model value="Assets/UI/Feedback/PingBaseAttack/PingBaseAttack.m3"/>
+    </CModel>
+    <CModel id="PingBoss">
+        <Model value="Assets/UI/Feedback/PingBoss/PingBoss.m3"/>
+    </CModel>
+    <CModel id="PingNumeric0">
+        <Model value="Assets/UI/Feedback/PingNumeric/PingNumeric_00.m3"/>
+    </CModel>
+    <CModel id="PingNumeric1">
+        <Model value="Assets/UI/Feedback/PingNumeric/PingNumeric_01.m3"/>
+    </CModel>
+    <CModel id="PingNumeric2">
+        <Model value="Assets/UI/Feedback/PingNumeric/PingNumeric_02.m3"/>
+    </CModel>
+    <CModel id="PingNumeric3">
+        <Model value="Assets/UI/Feedback/PingNumeric/PingNumeric_03.m3"/>
+    </CModel>
+    <CModel id="PingNumeric4">
+        <Model value="Assets/UI/Feedback/PingNumeric/PingNumeric_04.m3"/>
+    </CModel>
+    <CModel id="PingNumeric5">
+        <Model value="Assets/UI/Feedback/PingNumeric/PingNumeric_05.m3"/>
+    </CModel>
+    <CModel id="PingNumeric6">
+        <Model value="Assets/UI/Feedback/PingNumeric/PingNumeric_06.m3"/>
+    </CModel>
+    <CModel id="PingNumeric7">
+        <Model value="Assets/UI/Feedback/PingNumeric/PingNumeric_07.m3"/>
+    </CModel>
+    <CModel id="PingNumeric8">
+        <Model value="Assets/UI/Feedback/PingNumeric/PingNumeric_08.m3"/>
+    </CModel>
+    <CModel id="PingNumeric9">
+        <Model value="Assets/UI/Feedback/PingNumeric/PingNumeric_09.m3"/>
+    </CModel>
+    <CModel id="PingObjective">
+        <Model value="Assets/UI/Feedback/PingObjective/PingObjective.m3"/>
+    </CModel>
+    <CModel id="PingSimple">
+        <Model value="Assets/UI/Feedback/PingSimple/PingSimple.m3"/>
+    </CModel>
+    <CModel id="PingWarning">
+        <Model value="Assets/UI/Feedback/PingWarning/PingWarning.m3"/>
+    </CModel>
+    <CModel id="EditorHelper">
+        <Model value="Assets/UI/Helpers/PointHelper/PointHelper.m3"/>
+        <ScaleMax value="0.800000,0.800000,0.500000"/>
+        <ScaleMin value="0.800000,0.800000,0.500000"/>
+    </CModel>
+    <CModel id="EditorCamera">
+        <Model value="Assets/UI/Helpers/CameraHelper/CameraHelper.m3"/>
+    </CModel>
+    <CModel id="e_pointNormal">
+        <Model value="Assets/UI/Helpers/PointHelper/PointHelper.m3"/>
+    </CModel>
+    <CModel id="e_pointStartLoc">
+        <Model value="Assets/UI/Helpers/StartLocationHelper/StartLocationHelper.m3"/>
+        <SelectionRadius value="2.500000"/>
+    </CModel>
+    <CModel id="e_pointBlockPathing">
+        <Model value="Assets/UI/Helpers/DynamicPathingBlockerHelper/DynamicPathingBlockerHelper.m3"/>
+    </CModel>
+    <CModel id="e_pointSoundEmitter">
+        <Model value="Assets/UI/Helpers/SoundEmitterHelper/SoundEmitterHelper.m3"/>
+    </CModel>
+    <CModel id="e_pointThreeD">
+        <Model value="Assets/UI/Helpers/3DPointHelper/3DPointHelper.m3"/>
+    </CModel>
+    <CModel id="e_pointNoFlyZone">
+        <Model value="Assets/UI/Helpers/NoFlyHelper/NoFlyHelper.m3"/>
+    </CModel>
+    <CModel id="CloakModel">
+        <Model value="Assets\Effects\Protoss\ProtossCloakingEffect\ProtossCloakingEffect.m3"/>
+    </CModel>
+    <CModel id="CloakModelLow">
+        <Model value="Assets\Effects\Protoss\ProtossCloakingEffect\ProtossCloakingEffect_Low.m3"/>
+    </CModel>
+    <CModel id="ActorLightOmni" parent="Doodad"/>
+    <CModel id="ActorLightSpot" parent="Doodad">
+        <Flags index="VariationFallback" value="0"/>
+    </CModel>
+    <CModel id="ActorShapeSphere" parent="Doodad"/>
+    <CModel id="ActorShapeCone" parent="Doodad"/>
+    <CModel id="MapTemplate" parent="Doodad"/>
+    <CModel id="MainMenuDefault">
+        <EditorCategories value="Race:Neutral"/>
+        <Model value="Assets/UI/Glues/MainMenuSwarm/MainMenuSwarm.m3"/>
+        <LowQualityModel value="MainMenuDefaultLow"/>
+    </CModel>
+    <CModel id="MainMenuDefaultLow">
+        <EditorCategories value="Race:Neutral"/>
+        <Model value="Assets/UI/Glues/MainMenuSwarm/MainMenuSwarm_Low.m3"/>
+    </CModel>
+    <CModel id="MainMenuSwarm">
+        <EditorCategories value="Race:Neutral"/>
+        <Model value="Assets/UI/Glues/MainMenuSwarmLab/MainMenuSwarmLab.m3"/>
+    </CModel>
+    <CModel id="MainMenuSwarmLow">
+        <EditorCategories value="Race:Neutral"/>
+        <Model value="Assets/UI/Glues/MainMenuSwarmLab/MainMenuSwarmLab_Low.m3"/>
+    </CModel>
+    <CModel id="CreepEngulf">
+        <Model value="Assets/Effects/Zerg/CreepMaterial/CreepMaterial.m3"/>
+    </CModel>
+    <CModel id="MainMenuSpace">
+        <EditorCategories value="Race:Neutral"/>
+        <Model value="Assets/UI/Glues/MainMenuSpace/MainMenuSpace.m3"/>
+    </CModel>
+    <CModel id="MainMenuSpaceLow">
+        <EditorCategories value="Race:Neutral"/>
+        <Model value="Assets/UI/Glues/MainMenuSpace/MainMenuSpace_Low.m3"/>
+    </CModel>
+    <CModel id="BasicPortraitCamera" parent="Portrait">
+        <Model value="Assets\StoryModeCameras\BasicPortraitCamera\BasicPortraitCamera.m3"/>
+        <EditorCategories value="Race:Terran"/>
+        <Flags index="Facial" value="1"/>
+        <Image value="Assets\Textures\zergblankportrait_static.dds"/>
+        <PausedParticleSystemBehavior value="Automatic"/>
+    </CModel>
+    <CModel id="AOEPreTargetGroundUnitProtoss" parent="PersistentSpellFX">
+        <Model value="Assets\UI\Feedback\AOEPreTargetUnitProtoss\AOEPreTargetUnitProtoss.m3"/>
+        <EditorCategories value="Race:Protoss"/>
+    </CModel>
+    <CModel id="BeaconPing">
+        <ScaleMin value="0.750000,0.750000,0.750000"/>
+        <ScaleMax value="0.750000,0.750000,0.750000"/>
+    </CModel>
+    <CModel id="BeaconSpottedPing" parent="BeaconPing">
+        <Model value="Assets/UI/Feedback/Ping/Ping.m3"/>
+    </CModel>
+    <CModel id="BeaconNeedHelpPing" parent="BeaconPing">
+        <Model value="Assets/UI/Feedback/PingBaseAttack/PingBaseAttack.m3"/>
+    </CModel>
+    <CModel id="BeaconArmyPing" parent="BeaconPing">
+        <Model value="Assets\UI\Feedback\AIBeaconAssaultPing\AIBeaconAssaultPing.m3"/>
+    </CModel>
+    <CModel id="BeaconDefendPing" parent="BeaconPing">
+        <Model value="Assets\UI\Feedback\AIBeaconDefendPing\AIBeaconDefendPing.m3"/>
+    </CModel>
+    <CModel id="BeaconAssaultPing" parent="BeaconPing">
+        <Model value="Assets\UI\Feedback\AIBeaconAssaultPing\AIBeaconAssaultPing.m3"/>
+    </CModel>
+    <CModel id="BeaconHarassPing" parent="BeaconPing">
+        <Model value="Assets\UI\Feedback\AIBeaconHarassPing\AIBeaconHarassPing.m3"/>
+    </CModel>
+    <CModel id="BeaconIdlePing" parent="BeaconPing">
+        <Model value="Assets\UI\Feedback\AIBeaconIdlePing\AIBeaconIdlePing.m3"/>
+    </CModel>
+    <CModel id="BeaconAutoAIPing" parent="BeaconPing">
+        <Model value="Assets\UI\Feedback\AIBeaconAutoAIPing\AIBeaconAutoAIPing.m3"/>
+    </CModel>
+    <CModel id="BeaconDetectPing" parent="BeaconPing">
+        <Model value="Assets\UI\Feedback\AIBeaconDetectPing\AIBeaconDetectPing.m3"/>
+    </CModel>
+    <CModel id="BeaconScoutPing" parent="BeaconPing">
+        <Model value="Assets\UI\Feedback\AIBeaconScoutPing\AIBeaconScoutPing.m3"/>
+    </CModel>
+    <CModel id="BeaconClaimPing" parent="BeaconPing">
+        <Model value="Assets\UI\Feedback\AIBeaconClaimPing\AIBeaconClaimPing.m3"/>
+    </CModel>
+    <CModel id="BeaconExpandPing" parent="BeaconPing">
+        <Model value="Assets\UI\Feedback\AIBeaconExpandPing\AIBeaconExpandPing.m3"/>
+    </CModel>
+    <CModel id="BeaconRallyPing" parent="BeaconPing">
+        <Model value="Assets\UI\Feedback\AIBeaconRallyPing\AIBeaconRallyPing.m3"/>
+    </CModel>
+    <CModel id="BeaconCustomPing" parent="BeaconPing">
+        <Model value="Assets\UI\Feedback\AIBeaconCustomPing\AIBeaconCustomPing.m3"/>
+    </CModel>
+    <CModel id="BeaconArmy">
+        <Model value="Assets\UI\Feedback\AIBeaconAssault\AIBeaconAssault.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+        <SelectionRadius value="0.555400"/>
+        <ShadowRadius value="0.555400"/>
+    </CModel>
+    <CModel id="BeaconDefend">
+        <Model value="Assets\UI\Feedback\AIBeaconDefend\AIBeaconDefend.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+        <SelectionRadius value="0.555400"/>
+        <ShadowRadius value="0.555400"/>
+    </CModel>
+    <CModel id="BeaconAttack">
+        <Model value="Assets\UI\Feedback\AIBeaconAssault\AIBeaconAssault.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+        <SelectionRadius value="0.555400"/>
+        <ShadowRadius value="0.555400"/>
+    </CModel>
+    <CModel id="BeaconHarass">
+        <Model value="Assets\UI\Feedback\AIBeaconHarass\AIBeaconHarass.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+        <SelectionRadius value="0.555400"/>
+        <ShadowRadius value="0.555400"/>
+    </CModel>
+    <CModel id="BeaconIdle">
+        <Model value="Assets\UI\Feedback\AIBeaconIdle\AIBeaconIdle.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+        <SelectionRadius value="0.555400"/>
+        <ShadowRadius value="0.555400"/>
+    </CModel>
+    <CModel id="BeaconAuto">
+        <Model value="Assets\UI\Feedback\AIBeaconAutoAI\AIBeaconAutoAI.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+        <SelectionRadius value="0.555400"/>
+        <ShadowRadius value="0.555400"/>
+    </CModel>
+    <CModel id="BeaconDetect">
+        <Model value="Assets\UI\Feedback\AIBeaconDetect\AIBeaconDetect.m3"/>
+        <ScaleMin value="0.900000,0.900000,0.900000"/>
+        <ScaleMax value="0.900000,0.900000,0.900000"/>
+        <EditorCategories value="Race:Neutral"/>
+        <SelectionRadius value="0.555400"/>
+        <ShadowRadius value="0.555400"/>
+    </CModel>
+    <CModel id="BeaconScout">
+        <Model value="Assets\UI\Feedback\AIBeaconScout\AIBeaconScout.m3"/>
+        <ScaleMin value="0.900000,0.900000,0.900000"/>
+        <ScaleMax value="0.900000,0.900000,0.900000"/>
+        <EditorCategories value="Race:Neutral"/>
+        <SelectionRadius value="0.555400"/>
+        <ShadowRadius value="0.555400"/>
+    </CModel>
+    <CModel id="BeaconClaim">
+        <Model value="Assets\UI\Feedback\AIBeaconClaim\AIBeaconClaim.m3"/>
+        <ScaleMin value="0.900000,0.900000,0.900000"/>
+        <ScaleMax value="0.900000,0.900000,0.900000"/>
+        <EditorCategories value="Race:Neutral"/>
+        <SelectionRadius value="0.555400"/>
+        <ShadowRadius value="0.555400"/>
+    </CModel>
+    <CModel id="BeaconExpand">
+        <Model value="Assets\UI\Feedback\AIBeaconExpand\AIBeaconExpand.m3"/>
+        <ScaleMin value="0.900000,0.900000,0.900000"/>
+        <ScaleMax value="0.900000,0.900000,0.900000"/>
+        <EditorCategories value="Race:Neutral"/>
+        <SelectionRadius value="0.555400"/>
+        <ShadowRadius value="0.555400"/>
+    </CModel>
+    <CModel id="BeaconRally">
+        <Model value="Assets\UI\Feedback\AIBeaconRally\AIBeaconRally.m3"/>
+        <ScaleMin value="0.900000,0.900000,0.900000"/>
+        <ScaleMax value="0.900000,0.900000,0.900000"/>
+        <EditorCategories value="Race:Neutral"/>
+        <SelectionRadius value="0.555400"/>
+        <ShadowRadius value="0.555400"/>
+    </CModel>
+    <CModel id="BeaconCustom1">
+        <Model value="Assets\UI\Feedback\AIBeaconCustom\AIBeaconCustom.m3"/>
+        <ScaleMin value="0.900000,0.900000,0.900000"/>
+        <ScaleMax value="0.900000,0.900000,0.900000"/>
+        <EditorCategories value="Race:Neutral"/>
+        <SelectionRadius value="0.555400"/>
+        <ShadowRadius value="0.555400"/>
+    </CModel>
+    <CModel id="BeaconCustom2">
+        <Model value="Assets\UI\Feedback\AIBeaconCustom\AIBeaconCustom.m3"/>
+        <ScaleMin value="0.900000,0.900000,0.900000"/>
+        <ScaleMax value="0.900000,0.900000,0.900000"/>
+        <EditorCategories value="Race:Neutral"/>
+        <SelectionRadius value="0.555400"/>
+        <ShadowRadius value="0.555400"/>
+    </CModel>
+    <CModel id="BeaconCustom3">
+        <Model value="Assets\UI\Feedback\AIBeaconCustom\AIBeaconCustom.m3"/>
+        <ScaleMin value="0.900000,0.900000,0.900000"/>
+        <ScaleMax value="0.900000,0.900000,0.900000"/>
+        <EditorCategories value="Race:Neutral"/>
+        <SelectionRadius value="0.555400"/>
+        <ShadowRadius value="0.555400"/>
+    </CModel>
+    <CModel id="BeaconCustom4">
+        <Model value="Assets\UI\Feedback\AIBeaconCustom\AIBeaconCustom.m3"/>
+        <ScaleMin value="0.900000,0.900000,0.900000"/>
+        <ScaleMax value="0.900000,0.900000,0.900000"/>
+        <EditorCategories value="Race:Neutral"/>
+        <SelectionRadius value="0.555400"/>
+        <ShadowRadius value="0.555400"/>
+    </CModel>
+    <CModel id="LightOmniBlue">
+        <Model value="Assets\Doodads\LightOmniBlue\LightOmniBlue.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="LightOmniCyan">
+        <Model value="Assets\Doodads\LightOmniCyan\LightOmniCyan.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="LightOmniBlueLarge">
+        <Model value="Assets\Doodads\LightOmniBlueLarge\LightOmniBlueLarge.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="LightOmniGreen">
+        <Model value="Assets\Doodads\LightOmniGreen\LightOmniGreen.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="LightOmniCyanLarge">
+        <Model value="Assets\Doodads\LightOmniCyanLarge\LightOmniCyanLarge.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="LightOmniGreenLarge">
+        <Model value="Assets\Doodads\LightOmniGreenLarge\LightOmniGreenLarge.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="LightOmniPurpleLarge">
+        <Model value="Assets\Doodads\LightOmniPurpleLarge\LightOmniPurpleLarge.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="LightOmniRed">
+        <Model value="Assets\Doodads\LightOmniRed\LightOmniRed.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="LightOmniOrangeLarge">
+        <Model value="Assets\Doodads\LightOmniOrangeLarge\LightOmniOrangeLarge.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="LightOmniPurple">
+        <Model value="Assets\Doodads\LightOmniPurple\LightOmniPurple.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="LightOmniRedLarge">
+        <Model value="Assets\Doodads\LightOmniRedLarge\LightOmniRedLarge.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="LightOmniWhite">
+        <Model value="Assets\Doodads\LightOmniWhite\LightOmniWhite.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="LightOmniYellow">
+        <Model value="Assets\Doodads\LightOmniYellow\LightOmniYellow.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="LightOmniWhiteLarge">
+        <Model value="Assets\Doodads\LightOmniWhiteLarge\LightOmniWhiteLarge.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="LightOmniOrange">
+        <Model value="Assets\Doodads\LightOmniOrange\LightOmniOrange.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="LightOmniYellowLarge">
+        <Model value="Assets\Doodads\LightOmniYellowLarge\LightOmniYellowLarge.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="BlobShadow" parent="Splat">
+        <Model value="Assets/Splats/Splat_BlobShadow/Splat_BlobShadow.m3"/>
+        <EditorCategories value="Race:Neutral"/>
+    </CModel>
+    <CModel id="LensFlareSunDefault">
+        <Model value="Assets\Effects\LensFlares\LensFlare_MaterialSet\LensFlare_MaterialSet_00.m3"/>
+    </CModel>
+    <CModel id="LensFlareSimpleGlowDefault">
+        <Model value="Assets\Effects\LensFlares\LensFlare_MaterialSet\LensFlare_MaterialSet_01.m3"/>
+    </CModel>
+    <CModel id="LensFlareSimpleStreaksDefault">
+        <Model value="Assets\Effects\LensFlares\LensFlare_MaterialSet\LensFlare_MaterialSet_02.m3"/>
+    </CModel>
+    <CModel id="LensFlareMedGlowDefault">
+        <Model value="Assets\Effects\LensFlares\LensFlare_MaterialSet\LensFlare_MaterialSet_03.m3"/>
+    </CModel>
+    <CModel id="LensFlareMedStreaksDefault">
+        <Model value="Assets\Effects\LensFlares\LensFlare_MaterialSet\LensFlare_MaterialSet_04.m3"/>
+    </CModel>
+    <CModel id="LensFlareLargeGlowDefault">
+        <Model value="Assets\Effects\LensFlares\LensFlare_MaterialSet\LensFlare_MaterialSet_05.m3"/>
+    </CModel>
+    <CModel id="LensFlareLargeStreaksDefault">
+        <Model value="Assets\Effects\LensFlares\LensFlare_MaterialSet\LensFlare_MaterialSet_06.m3"/>
+    </CModel>
+    <CModel id="LensFlareChromaticAbberationDefault">
+        <Model value="Assets\Effects\LensFlares\LensFlare_MaterialSet\LensFlare_MaterialSet_07.m3"/>
+    </CModel>
+    <CModel id="LensFlareEyesDefault">
+        <Model value="Assets\Effects\LensFlares\LensFlare_MaterialSet\LensFlare_MaterialSet_08.m3"/>
+    </CModel>
+    <CModel id="LensFlareHorizontalFlareDefault">
+        <Model value="Assets\Effects\LensFlares\LensFlare_MaterialSet\LensFlare_MaterialSet_09.m3"/>
+    </CModel>
+    <CModel id="LensFlareEnginesDefault">
+        <Model value="Assets\Effects\LensFlares\LensFlare_MaterialSet\LensFlare_MaterialSet_00.m3"/>
+    </CModel>
+    <CModel id="CommandUIHarnessMoveZerg" parent="PersistentSpellFX">
+        <Model value="Assets\UI\Cursors\WayPointMove_Zerg\WayPointMove_Zerg.m3"/>
+    </CModel>
+    <CModel id="CommandUIHarnessMoveTerran" parent="PersistentSpellFX">
+        <Model value="Assets\UI\Cursors\WayPointMove_Terran\WayPointMove_Terran.m3"/>
+    </CModel>
+    <CModel id="CommandUIHarnessMoveProtoss" parent="PersistentSpellFX">
+        <Model value="Assets\UI\Cursors\WayPointMove_Void\WayPointMove_Void.m3"/>
+    </CModel>
+    <CModel id="CommandUIHarnessConfirmZerg" parent="PersistentSpellFX">
+        <Model value="Assets\UI\Cursors\WayPointMove_Zerg\WayPointMove_Zerg.m3"/>
+    </CModel>
+    <CModel id="CommandUIHarnessConfirmTerran" parent="PersistentSpellFX">
+        <Model value="Assets\UI\Cursors\Confirmation_Ground_Terran\Confirmation_Ground_Terran.m3"/>
+    </CModel>
+    <CModel id="CommandUIHarnessConfirmProtoss" parent="PersistentSpellFX">
+        <Model value="Assets\UI\Cursors\WayPointConfirm_Void\WayPointConfirm_Void.m3"/>
+    </CModel>
+    <CModel id="CommandUIHarnessAttackZerg" parent="PersistentSpellFX">
+        <Model value="Assets\UI\Cursors\WayPointAttack_Zerg\WayPointAttack_Zerg.m3"/>
+    </CModel>
+    <CModel id="CommandUIHarnessAttackTerran" parent="PersistentSpellFX">
+        <Model value="Assets\UI\Cursors\WayPointAttack_Terran\WayPointAttack_Terran.m3"/>
+    </CModel>
+    <CModel id="CommandUIHarnessAttackProtoss" parent="PersistentSpellFX">
+        <Model value="Assets\UI\Cursors\WayPointAttack_Void\WayPointAttack_Void.m3"/>
+    </CModel>
+    <CModel id="CommandUIHarnessRallyZerg" parent="PersistentSpellFX">
+        <Model value="Assets\UI\Cursors\WayPointRally_Zerg\WayPointRally_Zerg.m3"/>
+    </CModel>
+    <CModel id="CommandUIHarnessRallyTerran" parent="PersistentSpellFX">
+        <Model value="Assets\UI\Cursors\WayPointRally_Terran\WayPointRally_Terran.m3"/>
+    </CModel>
+    <CModel id="CommandUIHarnessRallyProtoss" parent="PersistentSpellFX">
+        <Model value="Assets\UI\Cursors\WayPointRally_Protoss\WayPointRally_Protoss.m3"/>
+    </CModel>
+</Catalog>

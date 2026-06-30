@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib43A75579_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib43A75579_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib43A75579_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(32);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib43A75579_gt_Initialization_Init () {
+    lib43A75579_gt_Initialization = TriggerCreate("lib43A75579_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib43A75579_gt_Initialization);
+}
+
+void lib43A75579_InitTriggers () {
+    lib43A75579_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib43A75579_InitLib_completed = false;
+
+void lib43A75579_InitLib () {
+    if (lib43A75579_InitLib_completed) {
+        return;
+    }
+
+    lib43A75579_InitLib_completed = true;
+
+    lib43A75579_InitLibraries();
+    lib43A75579_InitTriggers();
+}
+

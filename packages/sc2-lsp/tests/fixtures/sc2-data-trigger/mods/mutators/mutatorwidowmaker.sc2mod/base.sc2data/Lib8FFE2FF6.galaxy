@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib8FFE2FF6_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Widow Maker
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib8FFE2FF6_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib8FFE2FF6_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "SpiderMines");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib8FFE2FF6_gt_Initialization_Init () {
+    lib8FFE2FF6_gt_Initialization = TriggerCreate("lib8FFE2FF6_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib8FFE2FF6_gt_Initialization);
+}
+
+void lib8FFE2FF6_InitTriggers () {
+    lib8FFE2FF6_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib8FFE2FF6_InitLib_completed = false;
+
+void lib8FFE2FF6_InitLib () {
+    if (lib8FFE2FF6_InitLib_completed) {
+        return;
+    }
+
+    lib8FFE2FF6_InitLib_completed = true;
+
+    lib8FFE2FF6_InitLibraries();
+    lib8FFE2FF6_InitTriggers();
+}
+

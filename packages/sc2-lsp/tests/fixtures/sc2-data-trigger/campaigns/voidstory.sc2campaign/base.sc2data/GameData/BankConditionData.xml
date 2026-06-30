@@ -1,0 +1,1669 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CBankConditionCompareValueInteger default="1" id="PCampaignCompareValueInteger">
+        <Bank value="PCampaign"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueCount default="1" id="PCampaignCompareValueCount">
+        <Bank value="PCampaign"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCompareValueInteger id="HasTimeFreezeSelected" parent="PCampaignCompareValueInteger">
+        <Key value="CampaignPerk.GPTier6Power2"/>
+        <ValueName value="State.0.Int"/>
+        <Value value="2"/>
+        <Section value="PCampaign|Perks"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="HasSolarLanceSelected" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|Perks"/>
+        <Key value="CampaignPerk.GPTier2Power3"/>
+        <ValueName value="State.0.Int"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="HasSolarBombardmentSelected" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|Perks"/>
+        <Key value="CampaignPerk.GPTier6Power3"/>
+        <ValueName value="State.0.Int"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="HasTimeFreezeUnlocked" parent="PCampaignCompareValueInteger">
+        <Key value="CampaignPerk.GPTier2Power3"/>
+        <ValueName value="State.0.Int"/>
+        <Value value="1"/>
+        <Section value="PCampaign|Perks"/>
+        <Compare value="GE"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="HasSolarLanceUnlocked" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|Perks"/>
+        <Key value="CampaignPerk.GPTier2Power3"/>
+        <ValueName value="State.0.Int"/>
+        <Compare value="GE"/>
+        <Value value="1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="HasSolarBombardmentUnlocked" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|Perks"/>
+        <Key value="CampaignPerk.GPTier6Power3"/>
+        <ValueName value="State.0.Int"/>
+        <Compare value="GE"/>
+        <Value value="1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="InMission">
+        <CombineArray value="InStorymode"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InMissionLeadingToPurifier01">
+        <Type value="Or"/>
+        <CombineArray value="InPShakuras02"/>
+        <CombineArray value="InPKorhal02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InMissionLeadingToPurifier02">
+        <Type value="Or"/>
+        <CombineArray value="InPUlnar03"/>
+        <CombineArray value="InPTaldarim02"/>
+        <CombineArray value="InPMoebius01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InMissionLeadingToPAiur04">
+        <Type value="Or"/>
+        <CombineArray value="InPPurifier03"/>
+        <CombineArray value="InPMoebius01"/>
+        <CombineArray value="InPTaldarim02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InMissionLeadingToTaldarim01">
+        <Type value="Or"/>
+        <CombineArray value="InPMoebius02"/>
+        <CombineArray value="InPUlnar03"/>
+        <CombineArray value="InPPurifier03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InMissionLeadingToUlnar01">
+        <Type value="Or"/>
+        <CombineArray value="InPKorhal02"/>
+        <CombineArray value="InPShakuras02"/>
+        <CombineArray value="InPPurifier01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InMissionLeadingToMoebius01">
+        <Type value="Or"/>
+        <CombineArray value="InPTaldarim02"/>
+        <CombineArray value="InPPurifier03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InPAiur02orLastMissionisPAiur02">
+        <Type value="Or"/>
+        <CombineArray value="InPAiur02"/>
+        <CombineArray value="LastSuccessfulMissionPAiur02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InPAiur01orLastMissionisPAiur01">
+        <Type value="Or"/>
+        <CombineArray value="InPAiur01"/>
+        <CombineArray value="LastMissionPAiur01"/>
+    </CBankConditionCombine>
+    <CBankConditionCurrentMap id="InPAiur02">
+        <Map value="PAiur02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="InPAiur03">
+        <Map value="PAiur03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="InMissionLeadingToShakuras01">
+        <Type value="Or"/>
+        <CombineArray value="InPAiur03"/>
+        <CombineArray value="InPPurifier01"/>
+        <CombineArray value="InPKorhal02"/>
+    </CBankConditionCombine>
+    <CBankConditionCurrentMap id="InPAiur06">
+        <Map value="PAiur06"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="InPKorhal01OrPKorhal01CompletedOrInShakuras01OrShakuras01Completed">
+        <Type value="Or"/>
+        <CombineArray value="InPKorhal01"/>
+        <CombineArray value="PKorhal01Completed"/>
+        <CombineArray value="InPShakuras01"/>
+        <CombineArray value="PShakuras01Completed"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InPKorhal02OrInPPurifier01OrInPShakuras02">
+        <Type value="Or"/>
+        <CombineArray value="InPKorhal02"/>
+        <CombineArray value="InPPurifier01"/>
+        <CombineArray value="InPShakuras02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InPUlnar03OrInPMoebius01OrInPTaldarim02">
+        <Type value="Or"/>
+        <CombineArray value="InPUlnar03"/>
+        <CombineArray value="InPMoebius01"/>
+        <CombineArray value="InPTaldarim02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InPKorhal02OrPShakuras02">
+        <Type value="Or"/>
+        <CombineArray value="InPKorhal02"/>
+        <CombineArray value="InPShakuras02"/>
+    </CBankConditionCombine>
+    <CBankConditionCurrentMap id="InPPurifier02">
+        <Map value="PPurifier02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="InPMoebius01">
+        <Map value="PMoebius01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="InPTaldarim01">
+        <Map value="PTaldarim01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="InPPurifier03orInPTaldarim02">
+        <Type value="Or"/>
+        <CombineArray value="InPPurifier03"/>
+        <CombineArray value="InPTaldarim02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PAiur01CompleteOrPAiur02Available">
+        <Type value="Or"/>
+        <CombineArray value="PAiur01Completed"/>
+        <CombineArray value="PAiur02Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PAiur02CompleteOrPAiur03Available">
+        <Type value="Or"/>
+        <CombineArray value="PAiur02Completed"/>
+        <CombineArray value="PAiur03Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InPPurifier03OrInPMoebius01OrInPTaldarim02">
+        <Type value="Or"/>
+        <CombineArray value="InPPurifier03"/>
+        <CombineArray value="InPMoebius01"/>
+        <CombineArray value="InPTaldarim02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InMissionLeadingToKorhal01">
+        <Type value="Or"/>
+        <CombineArray value="InPAiur03"/>
+        <CombineArray value="InPShakuras02"/>
+        <CombineArray value="InPPurifier01"/>
+    </CBankConditionCombine>
+    <CBankConditionCurrentMap id="InPPurifier03">
+        <Map value="PPurifier03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="InPTaldarim02">
+        <Map value="PTaldarim02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="InPAiur04">
+        <Map value="PAiur04"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="InPMoebius02">
+        <Map value="PMoebius02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="InPAiur05">
+        <Map value="PAiur05"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="InPPurifier01">
+        <Map value="PPurifier01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="InPUlnar01">
+        <Map value="PUlnar01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="InPUlnar03">
+        <Map value="PUlnar03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="InPKorhal01">
+        <Map value="PKorhal01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="InPAiur01">
+        <Map value="PAiur01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="InPKorhal01OrPShakuras01">
+        <Type value="Or"/>
+        <CombineArray value="InPKorhal01"/>
+        <CombineArray value="InPShakuras01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InPKorhal02OrPShakuras02OrPPurifier01">
+        <Type value="Or"/>
+        <CombineArray value="InPKorhal02"/>
+        <CombineArray value="InPShakuras02"/>
+        <CombineArray value="InPPurifier01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InPShakuras01OrPShakuras02">
+        <Type value="Or"/>
+        <CombineArray value="InPShakuras01"/>
+        <CombineArray value="InPShakuras02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InPKorhal01OrPKorhal01Completed">
+        <Type value="Or"/>
+        <CombineArray value="InPKorhal01"/>
+        <CombineArray value="PKorhal01Completed"/>
+    </CBankConditionCombine>
+    <CBankConditionCurrentMap id="InPUlnar02">
+        <Map value="PUlnar02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="InPurifier02OrInShakuras02">
+        <Type value="Or"/>
+        <CombineArray value="InPShakuras02"/>
+        <CombineArray value="InPPurifier02"/>
+    </CBankConditionCombine>
+    <CBankConditionCurrentMap id="InSC2Epilogue01">
+        <Map value="SC2Epilogue01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="InSC2Epilogue02">
+        <Map value="SC2Epilogue02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="InSC2Epilogue03">
+        <Map value="SC2Epilogue03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCompareValueString id="LastSuccessfulMissionPMoebius01">
+        <Bank value="PCampaign"/>
+        <Section value="PCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="PMoebius01"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCombine id="Locations_Korhal_Active_NotEqual_0_Immediate">
+        <CombineArray value="KorhalAvailableOrOnKorhal"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Locations_AiurB_Active_NotEqual_0_Immediate">
+        <CombineArray value="AiurBAvailableOrOnAiurB"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Locations_PurifierB_Active_NotEqual_0_Immediate">
+        <CombineArray value="PurifierBAvailableOrOnPurifierB"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Locations_Shakuras_Active_NotEqual_0_Immediate">
+        <CombineArray value="ShakurasAvailableOrOnShakuras"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Locations_Taldarim_Active_NotEqual_0_Immediate">
+        <CombineArray value="TaldarimAvailableOrOnTaldarim"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Locations_Moebius_Active_NotEqual_0_Immediate">
+        <CombineArray value="MoebiusAvailableOrOnMoebius"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Locations_Ulnar_Active_NotEqual_0_Immediate">
+        <CombineArray value="UlnarAvailableOrOnUlnar"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Locations_PurifierA_Active_NotEqual_0_Immediate">
+        <CombineArray value="PurifierAAvailableOrOnPurifierA"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PAiur01_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur01"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PAiur02_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur02"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PAiur03_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur03"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PKorhal01_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PKorhal01"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PKorhal02_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PKorhal02"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PShakuras01_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PShakuras01"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PShakuras02_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PShakuras02"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PPurifier01_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PPurifier01"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PUlnar01_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PUlnar01"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PUlnar02_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PUlnar02"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PUlnar03_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PUlnar03"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PPurifier02_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PPurifier02"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PPurifier03_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PPurifier03"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PTaldarim01_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PTaldarim01"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PTaldarim02_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PTaldarim02"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PMoebius01_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PMoebius01"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PAiur04_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur04"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PAiur05_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur05"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="Maps_PAiur06_CompletedAge_Immediate" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur06"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedEQ04" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="4"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedEQ05" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="5"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="FALSE">
+        <Map value="false"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCompareValueInteger id="MissionsCompletedEQ07" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="7"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedEQ10" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="10"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedEQ01" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedEQ02" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedEQ03" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedEQ06" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="6"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedEQ08" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="8"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedEQ09" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="9"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedEQ12" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="12"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedEQ14" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="14"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedEQ13" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="13"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedGTE12" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Compare value="GE"/>
+        <Value value="12"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedGTE16" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Compare value="GE"/>
+        <Value value="16"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedEQ17" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="17"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueString id="LastSuccessfulMissionPMoebius02">
+        <Bank value="PCampaign"/>
+        <Section value="PCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="PMoebius02"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="LastSuccessfulMissionPTaldarim02">
+        <Bank value="PCampaign"/>
+        <Section value="PCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="PTaldarim02"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="LastSuccessfulMissionPUlnar03">
+        <Bank value="PCampaign"/>
+        <Section value="PCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="PUlnar03"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueInteger id="MissionsCompletedGE04" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Compare value="GE"/>
+        <Value value="4"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedGE03" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Compare value="GE"/>
+        <Value value="3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedGTE07" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Compare value="GE"/>
+        <Value value="7"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueString id="OnKorhal">
+        <Bank value="PCampaign"/>
+        <Section value="PCampaign|CampaignLastInfo"/>
+        <Key value="Location"/>
+        <Value value="Korhal"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="OnPurifierA">
+        <Bank value="PCampaign"/>
+        <Section value="PCampaign|CampaignLastInfo"/>
+        <Key value="Location"/>
+        <Value value="PurifierA"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="OnShakuras">
+        <Bank value="PCampaign"/>
+        <Section value="PCampaign|CampaignLastInfo"/>
+        <Key value="Location"/>
+        <Value value="Shakuras"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="OnUlnar">
+        <Bank value="PCampaign"/>
+        <Section value="PCampaign|CampaignLastInfo"/>
+        <Key value="Location"/>
+        <Value value="Ulnar"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="OnTaldarim">
+        <Bank value="PCampaign"/>
+        <Section value="PCampaign|CampaignLastInfo"/>
+        <Key value="Location"/>
+        <Value value="Taldarim"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="OnPurifierB">
+        <Bank value="PCampaign"/>
+        <Section value="PCampaign|CampaignLastInfo"/>
+        <Key value="Location"/>
+        <Value value="PurifierB"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="OnMoebius">
+        <Bank value="PCampaign"/>
+        <Section value="PCampaign|CampaignLastInfo"/>
+        <Key value="Location"/>
+        <Value value="Moebius"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="OnAiurB">
+        <Bank value="PCampaign"/>
+        <Section value="PCampaign|CampaignLastInfo"/>
+        <Key value="Location"/>
+        <Value value="AiurB"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueInteger id="PAiur02Completed" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="PMoebius01NotCompleted">
+        <CombineArray value="PMoebius01Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PMoebius01Completed" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PMoebius01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="PPurifier01CompleteOrInProgress">
+        <Type value="Or"/>
+        <CombineArray value="InPPurifier01"/>
+        <CombineArray value="PPurifier01Completed"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PAiur03Completed" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur03"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PAiur04Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur04"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="PAiur03CompleteOrInProgress">
+        <Type value="Or"/>
+        <CombineArray value="PAiur03Completed"/>
+        <CombineArray value="InPAiur03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PAiur02CompleteOrInProgress">
+        <Type value="Or"/>
+        <CombineArray value="PAiur02Completed"/>
+        <CombineArray value="InPAiur02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PUlnar02CompleteOrInProgress">
+        <Type value="Or"/>
+        <CombineArray value="InPUlnar02"/>
+        <CombineArray value="PUlnar02Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PUlnar02Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PUlnar02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PAiur02Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PAiur02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PAiur03Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PAiur03"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Purifier02AvailibleorShakuras02Availible">
+        <Type value="Or"/>
+        <CombineArray value="PPurifier02Available"/>
+        <CombineArray value="PShakuras02Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="SC2Epilogue03Available" parent="PCampaignCompareValueInteger">
+        <Bank value="SC2Epilogue"/>
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="SC2Epilogue03"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="SC2Epilogue02Available" parent="PCampaignCompareValueInteger">
+        <Bank value="SC2Epilogue"/>
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="SC2Epilogue02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="PKorhal01AndPShakuras01NotComplete">
+        <CombineArray value="PKorhal01Completed"/>
+        <CombineArray value="PShakuras01Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PShakuras02Completed" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PShakuras02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PMoebius02Completed" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PMoebius02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="PShakuras01NotCompleted">
+        <CombineArray value="PShakuras01Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PMoebius01Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PMoebius01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="PShakuras02NotCompleted">
+        <CombineArray value="PShakuras02Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="SC2Epilogue01Available" parent="PCampaignCompareValueInteger">
+        <Bank value="SC2Epilogue"/>
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="SC2Epilogue01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="PKorhal01NotCompleted">
+        <CombineArray value="PKorhal01Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PTaldarim02Completed" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PTaldarim02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PTaldarim01Completed" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PTaldarim01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PUlnar01Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PUlnar01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PUlnar03Completed" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PUlnar03"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PAiur06Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur06"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="PUlnar03NotCompleted">
+        <CombineArray value="PUlnar03Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PTaldarim02NotCompleted">
+        <CombineArray value="PTaldarim02Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PTaldarim01NotCompleted">
+        <CombineArray value="PTaldarim01Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PShakuras01CompleteOrInProgress">
+        <Type value="Or"/>
+        <CombineArray value="PShakuras01Completed"/>
+        <CombineArray value="InPShakuras01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ShakurasInProgress">
+        <CombineArray value="OnShakuras"/>
+        <CombineArray value="PShakuras02NotCompleted"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="UlnarAvailableOrOnUlnar">
+        <Type value="Or"/>
+        <CombineArray value="PUlnar01Available"/>
+        <CombineArray value="OnUlnar"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="UlnarArcNotComplete">
+        <CombineArray value="PUlnar03Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="AiurBArcNotComplete">
+        <CombineArray value="PAiur06Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TaldarimAvailableOrOnTaldarim">
+        <Type value="Or"/>
+        <CombineArray value="PTaldarim01Available"/>
+        <CombineArray value="OnTaldarim"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="AiurBAvailableOrOnAiurB">
+        <Type value="Or"/>
+        <CombineArray value="PAiur04Available"/>
+        <CombineArray value="OnAiurB"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MoebiusAvailableOrOnMoebius">
+        <Type value="Or"/>
+        <CombineArray value="PMoebius01Available"/>
+        <CombineArray value="OnMoebius"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ShakurasAvailableOrOnShakuras">
+        <Type value="Or"/>
+        <CombineArray value="PShakuras01Available"/>
+        <CombineArray value="OnShakuras"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="KorhalAvailableOrOnKorhal">
+        <Type value="Or"/>
+        <CombineArray value="PKorhal01Available"/>
+        <CombineArray value="OnKorhal"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PurifierAAvailableOrOnPurifierA">
+        <Type value="Or"/>
+        <CombineArray value="PPurifier01Available"/>
+        <CombineArray value="OnPurifierA"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PurifierBAvailableOrOnPurifierB">
+        <Type value="Or"/>
+        <CombineArray value="PPurifier02Available"/>
+        <CombineArray value="OnPurifierB"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TaldarimArcNotComplete">
+        <CombineArray value="PTaldarim02Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="ShakurasArcNotComplete">
+        <CombineArray value="PShakuras02Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PurifierAArcNotComplete">
+        <CombineArray value="PPurifier01Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PurifierBArcNotComplete">
+        <CombineArray value="PPurifier03Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="MissionsCompletedEQ16" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="16"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedEQ15" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="15"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionsCompletedEQ11" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|CampaignStats"/>
+        <Key value="MissionCompletedCount"/>
+        <Value value="11"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PTaldarim02Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PTaldarim02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PPurifier01Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PPurifier01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PKorhal01Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PKorhal01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PKorhal02Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PKorhal02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PPurifier02Completed" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PPurifier02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PPurifier03Completed" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PPurifier03"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="PPurifier02NotCompleted">
+        <CombineArray value="PPurifier02Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PPurifier03NotCompleted">
+        <CombineArray value="PPurifier03Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PPurifier02Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PPurifier02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="PPurifier01NotCompleted">
+        <CombineArray value="PPurifier01Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PAiur03NotComplete">
+        <CombineArray value="PAiur03Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PAiur02NotComplete">
+        <CombineArray value="PAiur02Completed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PAiur04NotComplete">
+        <CombineArray value="PAiur04Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PUlnar02NotComplete">
+        <CombineArray value="PUlnar02Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PPurifier03Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PPurifier03"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PShakuras01Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PShakuras01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="PKorhal01OrPShakuras01Available">
+        <Type value="Or"/>
+        <CombineArray value="PKorhal01Available"/>
+        <CombineArray value="PShakuras01Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PUlnar01AvailableOrPUlnar02AvailableOrPUlnar03Available">
+        <Type value="Or"/>
+        <CombineArray value="PUlnar01Available"/>
+        <CombineArray value="PUlnar02Available"/>
+        <CombineArray value="PUlnar03Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InPAiur02OrPAiur02Available">
+        <Type value="Or"/>
+        <CombineArray value="InPAiur02"/>
+        <CombineArray value="PAiur02Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PAiur04AvailableOrPAiur05AvailableOrPAiur06Available">
+        <Type value="Or"/>
+        <CombineArray value="PAiur04Available"/>
+        <CombineArray value="PAiur05Available"/>
+        <CombineArray value="PAiur06Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCurrentMap id="InPKorhal02">
+        <Map value="PKorhal02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="InPShakuras01">
+        <Map value="PShakuras01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="InPShakuras02">
+        <Map value="PShakuras02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="InPStory01">
+        <Map value="PStory01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="InStorymode">
+        <CombineArray value="InPStory01"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueString id="LastMissionPAiur01">
+        <Section value="PCampaign|CampaignLastInfo"/>
+        <Key value="LastMission"/>
+        <Value value="PAiur01"/>
+        <Bank value="PCampaign"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="LastSuccessfulMissionPAiur02">
+        <Bank value="PCampaign"/>
+        <Section value="PCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="PAiur02"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueString id="LastSuccessfulMissionPAiur03">
+        <Bank value="PCampaign"/>
+        <Section value="PCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="PAiur03"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueInteger id="PAiur04Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PAiur04"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PMoebius02Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PMoebius02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PAiur05Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PAiur05"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PAiur06Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PAiur06"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PKorhal01Completed" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PKorhal01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PKorhal02Completed" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PKorhal02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PPurifier01Completed" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PPurifier01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="PKorhal01OrShakuras01Completed">
+        <Type value="Or"/>
+        <CombineArray value="PKorhal01Completed"/>
+        <CombineArray value="PShakuras01Completed"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PShakuras01OrPShakuras02Completed">
+        <Type value="Or"/>
+        <CombineArray value="PShakuras01Completed"/>
+        <CombineArray value="PShakuras02Completed"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PKorhal02OrShakuras02Completed">
+        <Type value="Or"/>
+        <CombineArray value="PKorhal02Completed"/>
+        <CombineArray value="PShakuras02Completed"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PAiur01Completed" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PUlnar01Completed" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PUlnar01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PShakuras02Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PShakuras02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PTaldarim01Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PTaldarim01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PUlnar03Available" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionAvailableAge"/>
+        <Key value="PUlnar03"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PUlnar02Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PUlnar02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="PShakuras01Completed" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PShakuras01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="SolarCoreRoomAvailable" parent="PCampaignCompareValueInteger"/>
+    <CBankConditionCombine id="ShakurasAvailableOrInProgress">
+        <Type value="Or"/>
+        <CombineArray value="PShakuras01Available"/>
+        <CombineArray value="ShakurasInProgress"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PAiur01_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPAiur01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PAiur01_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PAiur01InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PAiur01_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PAiur01InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PAiur01_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur01"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPAiur01">
+        <Map value="PAiur01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PAiur01InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PAiur01Complete"/>
+        <CombineArray value="PC_InPAiur01"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PAiur01Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PAiur02_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPAiur02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PAiur02_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PAiur02InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PAiur02_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PAiur02InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PAiur02_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur02"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPAiur02">
+        <Map value="PAiur02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PAiur02InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PAiur02Complete"/>
+        <CombineArray value="PC_InPAiur02"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PAiur02Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PAiur03_CompletedAge_Equal_1_QueuedUnnamed">
+        <CombineArray value="PC_InPAiur03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PAiur03_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PAiur03InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PAiur03_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PAiur03InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PAiur03_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur03"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPAiur03">
+        <Map value="PAiur03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PAiur03InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PAiur03Complete"/>
+        <CombineArray value="PC_InPAiur03"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PAiur03Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur03"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PAiur04_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPAiur04"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PAiur04_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PAiur04InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PAiur04_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PAiur04InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PAiur04_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur04"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPAiur04">
+        <Map value="PAiur04"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PAiur04InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PAiur04Complete"/>
+        <CombineArray value="PC_InPAiur04"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PAiur04Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur04"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PAiur05_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPAiur05"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PAiur05_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PAiur05InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PAiur05_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PAiur05InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PAiur05_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur05"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPAiur05">
+        <Map value="PAiur05"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PAiur05InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PAiur05Complete"/>
+        <CombineArray value="PC_InPAiur05"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PAiur05Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur05"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PAiur06_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPAiur06"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PAiur06_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PAiur06InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PAiur06_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PAiur06InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PAiur06_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur06"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPAiur06">
+        <Map value="PAiur06"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PAiur06InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PAiur06Complete"/>
+        <CombineArray value="PC_InPAiur06"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PAiur06Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur06"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PKorhal01_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPKorhal01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PKorhal01_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PKorhal01InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PKorhal01_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PKorhal01InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PKorhal01_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PKorhal01"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPKorhal01">
+        <Map value="PKorhal01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PKorhal01InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PKorhal01Complete"/>
+        <CombineArray value="PC_InPKorhal01"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PKorhal01Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PKorhal01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PKorhal02_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPKorhal02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PKorhal02_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PKorhal02InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PKorhal02_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PKorhal02InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PKorhal02_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PKorhal02"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPKorhal02">
+        <Map value="PKorhal02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PKorhal02InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PKorhal02Complete"/>
+        <CombineArray value="PC_InPKorhal02"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PKorhal02Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PKorhal02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PShakuras01_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPShakuras01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PShakuras01_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PShakuras01InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PShakuras01_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PShakuras01InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PShakuras01_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PShakuras01"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPShakuras01">
+        <Map value="PShakuras01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PShakuras01InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PShakuras01Complete"/>
+        <CombineArray value="PC_InPShakuras01"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PShakuras01Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PShakuras01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PShakuras02_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPShakuras02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PShakuras02_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PShakuras02InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PShakuras02_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PShakuras02InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PShakuras02_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PShakuras02"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPShakuras02">
+        <Map value="PShakuras02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PShakuras02InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PShakuras02Complete"/>
+        <CombineArray value="PC_InPShakuras02"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PShakuras02Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PShakuras02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PPurifier01_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPPurifier01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PPurifier01_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PPurifier01InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PPurifier01_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PPurifier01InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PPurifier01_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PPurifier01"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPPurifier01">
+        <Map value="PPurifier01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PPurifier01InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PPurifier01Complete"/>
+        <CombineArray value="PC_InPPurifier01"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PPurifier01Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PPurifier01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PPurifier02_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPPurifier02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PPurifier02_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PPurifier02InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PPurifier02_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PPurifier02InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PPurifier02_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PPurifier02"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPPurifier02">
+        <Map value="PPurifier02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PPurifier02InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PPurifier02Complete"/>
+        <CombineArray value="PC_InPPurifier02"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PPurifier02Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PPurifier02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PPurifier03_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPPurifier03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PPurifier03_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PPurifier03InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PPurifier03_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PPurifier03InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PPurifier03_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PPurifier03"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPPurifier03">
+        <Map value="PPurifier03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PPurifier03InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PPurifier03Complete"/>
+        <CombineArray value="PC_InPPurifier03"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PPurifier03Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PPurifier03"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PUlnar01_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPUlnar01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PUlnar01_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PUlnar01InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PUlnar01_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PUlnar01InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PUlnar01_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PUlnar01"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPUlnar01">
+        <Map value="PUlnar01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PUlnar01InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PUlnar01Complete"/>
+        <CombineArray value="PC_InPUlnar01"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PUlnar01Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PUlnar01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PUlnar02_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPUlnar02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PUlnar02_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PUlnar02InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PUlnar02_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PUlnar02InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PUlnar02_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PUlnar02"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPUlnar02">
+        <Map value="PUlnar02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PUlnar02InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PUlnar02Complete"/>
+        <CombineArray value="PC_InPUlnar02"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PUlnar02Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PUlnar02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PUlnar03_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPUlnar03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PUlnar03_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PUlnar03InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PUlnar03_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PUlnar03InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PUlnar03_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PUlnar03"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPUlnar03">
+        <Map value="PUlnar03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PUlnar03InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PUlnar03Complete"/>
+        <CombineArray value="PC_InPUlnar03"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PUlnar03Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PUlnar03"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PTaldarim01_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPTaldarim01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PTaldarim01_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PTaldarim01InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PTaldarim01_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PTaldarim01InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PTaldarim01_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PTaldarim01"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPTaldarim01">
+        <Map value="PTaldarim01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PTaldarim01InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PTaldarim01Complete"/>
+        <CombineArray value="PC_InPTaldarim01"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PTaldarim01Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PTaldarim01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PTaldarim02_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPTaldarim02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PTaldarim02_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PTaldarim02InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PTaldarim02_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PTaldarim02InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PTaldarim02_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PTaldarim02"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPTaldarim02">
+        <Map value="PTaldarim02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PTaldarim02InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PTaldarim02Complete"/>
+        <CombineArray value="PC_InPTaldarim02"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PTaldarim02Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PTaldarim02"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="Maps_PMoebius01_CompletedAge_Equal_1_Queued">
+        <CombineArray value="PC_InPMoebius01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PMoebius01_CompletedAge_GreaterEqual_1_Queued">
+        <CombineArray value="PMoebius01InOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Maps_PMoebius01_CompletedAge_LessEqual_0_Queued">
+        <CombineArray value="PMoebius01InOrComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="Maps_PMoebius01_CompletedAge_Queued" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PMoebius01"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCurrentMap id="PC_InPMoebius01">
+        <Map value="PMoebius01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="PMoebius01InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="PC_PMoebius01Complete"/>
+        <CombineArray value="PC_InPMoebius01"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PC_PMoebius01Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PMoebius01"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="PShakuras01AvailableOrPShakuras01Complete">
+        <Type value="Or"/>
+        <CombineArray value="PShakuras01Available"/>
+        <CombineArray value="PShakuras01Completed"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PTaldarim01AvailableOrPTaldarim02Available">
+        <Type value="Or"/>
+        <CombineArray value="PTaldarim01Available"/>
+        <CombineArray value="PTaldarim02Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PPurifier01AvailableOrPShakuras01Available">
+        <Type value="Or"/>
+        <CombineArray value="PPurifier01Available"/>
+        <CombineArray value="PShakuras01Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PPurifier02AvailableOrPPurifier02Completed">
+        <Type value="Or"/>
+        <CombineArray value="PPurifier02Available"/>
+        <CombineArray value="PPurifier02Completed"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PAiur05NotComplete">
+        <CombineArray value="PAiur05Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PAiur06NotComplete">
+        <CombineArray value="PAiur06Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="PAiur05Complete" parent="PCampaignCompareValueInteger">
+        <Section value="PCampaign|MissionCompletedAge"/>
+        <Key value="PAiur05"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="InPKorhal02OrInPMoebius01">
+        <Type value="Or"/>
+        <CombineArray value="InPKorhal02"/>
+        <CombineArray value="InPMoebius01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PKorhal02AvailableOrPMoebius01Available">
+        <Type value="Or"/>
+        <CombineArray value="PKorhal02Available"/>
+        <CombineArray value="PMoebius01Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_AiurA_Active_NotEqual_0_Immediate">
+        <CombineArray value="PAiur03NotComplete"/>
+        <CombineArray value="InPStory01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_AiurA_Active_NotEqual_0_Queued">
+        <CombineArray value="PAiur03NotComplete"/>
+        <CombineArray value="InMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_AiurB_Active_NotEqual_0_Immediate">
+        <CombineArray value="OnAiurB"/>
+        <CombineArray value="InPStory01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_AiurB_Active_NotEqual_0_Queued">
+        <CombineArray value="InMissionLeadingToPAiur04"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Korhal_Active_NotEqual_0_Immediate">
+        <CombineArray value="OnKorhal"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Korhal_Active_NotEqual_0_Queued">
+        <CombineArray value="InMissionLeadingToKorhal01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_PurifierA_Active_NotEqual_0_Immediate">
+        <CombineArray value="PurifierAAvailableOrOnPurifierA"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_PurifierA_Active_NotEqual_0_Queued">
+        <CombineArray value="InMissionLeadingToPurifier01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Shakuras_Active_NotEqual_0_Immediate">
+        <CombineArray value="ShakurasAvailableOrOnShakuras"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Shakuras_Active_NotEqual_0_Queued">
+        <CombineArray value="InMissionLeadingToShakuras01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Ulnar_Active_NotEqual_0_Immediate">
+        <CombineArray value="UlnarAvailableOrOnUlnar"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Ulnar_Active_NotEqual_0_Queued">
+        <CombineArray value="InMissionLeadingToUlnar01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_PurifierB_Active_NotEqual_0_Immediate">
+        <CombineArray value="PurifierBAvailableOrOnPurifierB"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_PurifierB_Active_NotEqual_0_Queued">
+        <CombineArray value="InMissionLeadingToPurifier02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Moebius_Active_NotEqual_0_Immediate">
+        <CombineArray value="MoebiusAvailableOrOnMoebius"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Moebius_Active_NotEqual_0_Queued">
+        <CombineArray value="InMissionLeadingToMoebius01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Taldarim_Active_NotEqual_0_Immediate">
+        <CombineArray value="TaldarimAvailableOrOnTaldarim"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Planets_Taldarim_Active_NotEqual_0_Queued">
+        <CombineArray value="InMissionLeadingToTaldarim01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InMissionAndPAiur04NotComplete">
+        <CombineArray value="InMission"/>
+        <CombineArray value="PAiur04NotComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InPKorhal02OrInMissionAndPAiur04NotComplete">
+        <CombineArray value="InMission"/>
+        <CombineArray value="PAiur04NotComplete"/>
+        <Negate value="1"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InPUlnar03OrInMissionAndPAiur04NotComplete">
+        <Type value="Or"/>
+        <CombineArray value="InPUlnar03"/>
+        <CombineArray value="InMissionAndPAiur04NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PKorhal02AvailableOrPKorhal02Completed">
+        <Type value="Or"/>
+        <CombineArray value="PKorhal02Available"/>
+        <CombineArray value="PKorhal02Completed"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InPMoebius01OrPMoebius01Completed">
+        <Type value="Or"/>
+        <CombineArray value="InPMoebius01"/>
+        <CombineArray value="PMoebius01Completed"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PAiur01InOrCompleteOrOnEpilogue">
+        <Type value="Or"/>
+        <CombineArray value="PAiur01InOrComplete"/>
+        <CombineArray value="OnEpilogue"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PAiur03CompletedOrOnEpilogue">
+        <Type value="Or"/>
+        <CombineArray value="PAiur03Completed"/>
+        <CombineArray value="OnEpilogue"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="OnEpilogue">
+        <Type value="Or"/>
+        <CombineArray value="InSC2Epilogue01"/>
+        <CombineArray value="InSC2Epilogue02"/>
+        <CombineArray value="InSC2Epilogue03"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueString id="LastSuccessfulMissionPShakuras01">
+        <Bank value="PCampaign"/>
+        <Section value="PCampaign|CampaignLastInfo"/>
+        <Key value="LastSuccessfulMission"/>
+        <Value value="PShakuras01"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCombine id="InPTaldarim02OrOnEpilogue">
+        <Type value="Or"/>
+        <CombineArray value="InPTaldarim02"/>
+        <CombineArray value="OnEpilogue"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="PTaldarim02AvailableOrOnEpilogue">
+        <Type value="Or"/>
+        <CombineArray value="PTaldarim02Available"/>
+        <CombineArray value="OnEpilogue"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InMissionLeadingToPKorhal01OrInPKorhal02">
+        <Type value="Or"/>
+        <CombineArray value="InMissionLeadingToKorhal01"/>
+        <CombineArray value="InPKorhal02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InMissionLeadingToPShakuras01OrInPShakuras02">
+        <Type value="Or"/>
+        <CombineArray value="InMissionLeadingToShakuras01"/>
+        <CombineArray value="InPShakuras02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InPKorhal02OrPKorhal02Available">
+        <Type value="Or"/>
+        <CombineArray value="InPKorhal02"/>
+        <CombineArray value="PKorhal02Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="InPAiur03OrInPKorhal01OrInPShakuras01">
+        <Type value="Or"/>
+        <CombineArray value="InPAiur03"/>
+        <CombineArray value="InPKorhal01"/>
+        <CombineArray value="InPShakuras01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="LastSuccessfulMissionPAiur03OrMissionsCompletedEQ04">
+        <Type value="Or"/>
+        <CombineArray value="LastSuccessfulMissionPAiur03"/>
+        <CombineArray value="MissionsCompletedEQ04"/>
+    </CBankConditionCombine>
+</Catalog>

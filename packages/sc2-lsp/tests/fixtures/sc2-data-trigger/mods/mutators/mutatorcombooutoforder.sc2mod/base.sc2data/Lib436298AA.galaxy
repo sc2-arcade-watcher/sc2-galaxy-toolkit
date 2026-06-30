@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib436298AA_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib436298AA_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib436298AA_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(15);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib436298AA_gt_Initialization_Init () {
+    lib436298AA_gt_Initialization = TriggerCreate("lib436298AA_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib436298AA_gt_Initialization);
+}
+
+void lib436298AA_InitTriggers () {
+    lib436298AA_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib436298AA_InitLib_completed = false;
+
+void lib436298AA_InitLib () {
+    if (lib436298AA_InitLib_completed) {
+        return;
+    }
+
+    lib436298AA_InitLib_completed = true;
+
+    lib436298AA_InitLibraries();
+    lib436298AA_InitTriggers();
+}
+

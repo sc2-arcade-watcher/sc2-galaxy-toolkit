@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibBC1F07C7_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Self Destruction
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libBC1F07C7_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libBC1F07C7_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "DeathAOE");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libBC1F07C7_gt_Initialization_Init () {
+    libBC1F07C7_gt_Initialization = TriggerCreate("libBC1F07C7_gt_Initialization_Func");
+    TriggerAddEventMapInit(libBC1F07C7_gt_Initialization);
+}
+
+void libBC1F07C7_InitTriggers () {
+    libBC1F07C7_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libBC1F07C7_InitLib_completed = false;
+
+void libBC1F07C7_InitLib () {
+    if (libBC1F07C7_InitLib_completed) {
+        return;
+    }
+
+    libBC1F07C7_InitLib_completed = true;
+
+    libBC1F07C7_InitLibraries();
+    libBC1F07C7_InitTriggers();
+}
+

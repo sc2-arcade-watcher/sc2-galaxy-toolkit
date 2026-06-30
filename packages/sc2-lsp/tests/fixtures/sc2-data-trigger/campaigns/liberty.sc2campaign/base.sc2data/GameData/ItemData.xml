@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CItem default="1" id="POTION">
+        <Class value="Potion"/>
+    </CItem>
+    <CItem default="1" id="CONTAINER">
+        <Class value="Bag"/>
+        <Container value="##id##"/>
+    </CItem>
+    <CItemEffect default="1" id="HealingPotionTEST" parent="POTION">
+        <Face value="Heal"/>
+        <Flags index="KillWhenDepleted" value="1"/>
+        <EffectCost>
+            <Charge CountMax="5" CountStart="5" CountUse="1"/>
+            <Cooldown Location="Unit" TimeUse="1"/>
+        </EffectCost>
+        <Effect value="HealingPotionTEST"/>
+        <Range value="1"/>
+    </CItemEffect>
+    <CItemEffectInstant id="HealingPotionTESTInstant" parent="HealingPotionTEST"/>
+    <CItemEffectTarget id="HealingPotionTESTTarget" parent="HealingPotionTEST"/>
+    <CItem id="4SlotBag" parent="CONTAINER"/>
+    <CItem id="6SlotBag" parent="CONTAINER"/>
+    <CItem id="8SlotBag" parent="CONTAINER"/>
+    <CItem id="10SlotBag" parent="CONTAINER"/>
+    <CItem id="12SlotBag" parent="CONTAINER"/>
+    <CItem id="14SlotBag" parent="CONTAINER"/>
+    <CItem id="16SlotBag" parent="CONTAINER"/>
+    <CItem id="18SlotBag" parent="CONTAINER"/>
+    <CItem id="20SlotBag" parent="CONTAINER"/>
+    <CItem id="22SlotBag" parent="CONTAINER"/>
+    <CItem id="24SlotBag" parent="CONTAINER"/>
+    <CItemAbil id="PsiStorm"/>
+    <CItemEffectTarget id="ItemGravityBombs">
+        <Flags index="KillWhenDepleted" value="1"/>
+        <EffectCost>
+            <Charge CountMax="5" CountStart="5" CountUse="1"/>
+            <Cooldown Location="Unit" TimeUse="1"/>
+        </EffectCost>
+        <Effect value="ItemGravityBombsLaunchMissile"/>
+        <Range value="10"/>
+    </CItemEffectTarget>
+    <CItemEffectTarget id="ItemGrenades">
+        <Flags index="KillWhenDepleted" value="1"/>
+        <EffectCost>
+            <Charge CountMax="5" CountStart="5" CountUse="1"/>
+            <Cooldown Location="Unit" TimeUse="1"/>
+        </EffectCost>
+        <Effect value="ItemGrenadesLaunchMissile"/>
+        <Range value="10"/>
+    </CItemEffectTarget>
+    <CItemEffectTarget id="ItemMines">
+        <Flags index="KillWhenDepleted" value="1"/>
+        <EffectCost>
+            <Charge CountMax="5" CountStart="5" CountUse="1"/>
+            <Cooldown Location="Unit" TimeUse="1"/>
+        </EffectCost>
+        <Effect value="SpawnSpiderMineSet"/>
+        <Range value="2"/>
+    </CItemEffectTarget>
+    <CItemEffectInstant id="ItemMedkit">
+        <Flags index="KillWhenDepleted" value="1"/>
+        <EffectCost>
+            <Cooldown Location="Unit" TimeUse="60"/>
+        </EffectCost>
+    </CItemEffectInstant>
+</Catalog>

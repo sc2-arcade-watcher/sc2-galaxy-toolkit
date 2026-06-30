@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibDFA99A72_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Evolution
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libDFA99A72_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libDFA99A72_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "Evolve");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libDFA99A72_gt_Initialization_Init () {
+    libDFA99A72_gt_Initialization = TriggerCreate("libDFA99A72_gt_Initialization_Func");
+    TriggerAddEventMapInit(libDFA99A72_gt_Initialization);
+}
+
+void libDFA99A72_InitTriggers () {
+    libDFA99A72_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libDFA99A72_InitLib_completed = false;
+
+void libDFA99A72_InitLib () {
+    if (libDFA99A72_InitLib_completed) {
+        return;
+    }
+
+    libDFA99A72_InitLib_completed = true;
+
+    libDFA99A72_InitLibraries();
+    libDFA99A72_InitTriggers();
+}
+

@@ -1,0 +1,171 @@
+include "TriggerLibs/NativeLib"
+
+include "TriggerLibs/SwarmCampaignDataHelperLib_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Campaign (Swarm) Data Helper
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libSCDH_InitLibraries () {
+    libNtve_InitVariables();
+}
+
+// Variable Initialization
+bool libSCDH_InitVariables_completed = false;
+
+void libSCDH_InitVariables () {
+    if (libSCDH_InitVariables_completed) {
+        return;
+    }
+
+    libSCDH_InitVariables_completed = true;
+
+    libSCDH_gv_kerriganPsiStrikeEnergyCost = libNtve_gf_CostOfAbility("PsiStrikeBlink", "Energy");
+}
+
+// Presets
+// Functions
+void libSCDH_gf_CreateHeroPing (unit lp_unit, int lp_heroPingType) {
+    // Variable Declarations
+    int lv_ping;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_ping = c_invalidPingId;
+
+    // Implementation
+    libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingCircle", UnitGetPosition(lp_unit), ColorWithAlpha(0.00, 0.00, 0.00, 0.00), 0.0, 270.0);
+    lv_ping = PingLastCreated();
+    PingSetScale(lv_ping, 0.4);
+    PingSetUnit(lv_ping, lp_unit);
+    PingSetUseUnitTeamColor(lv_ping, true);
+    PingSetUseUnitVisibility(lv_ping, true);
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Creep Tumor Build
+//--------------------------------------------------------------------------------------------------
+bool libSCDH_gt_CreepTumorBuild_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitBehaviorAdd(EventUnit(), "CreepTumorExhausted", EventUnit(), 1);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSCDH_gt_CreepTumorBuild_Init () {
+    libSCDH_gt_CreepTumorBuild = TriggerCreate("libSCDH_gt_CreepTumorBuild_Func");
+    TriggerAddEventUnitAbility(libSCDH_gt_CreepTumorBuild, null, AbilityCommand("CreepTumorBuild", 0), c_abilBuildStageFinish, false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Kerrigan Psi Strike
+//--------------------------------------------------------------------------------------------------
+bool libSCDH_gt_KerriganPsiStrike_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    point lv_k;
+    point lv_t;
+    point lv_finalT;
+    fixed lv_facing;
+    fixed lv_distance;
+    bool lv_goodPositionFound;
+    int lv_i;
+
+    // Automatic Variable Declarations
+    const int autoA6426318_ae = 14;
+    const int autoA6426318_ai = 1;
+
+    // Variable Initialization
+    lv_k = UnitGetPosition(EventUnit());
+    lv_t = EventUnitTargetPoint();
+    lv_facing = AngleBetweenPoints(UnitGetPosition(EventUnit()), EventUnitTargetPoint());
+    lv_distance = 8.0;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_t = libNtve_gf_PointOffsetTowardsPoint(lv_k, 8.0, lv_t);
+    lv_finalT = lv_t;
+    while ((lv_distance >= 0.6) && (lv_goodPositionFound == false)) {
+        lv_t = libNtve_gf_PointOffsetTowardsPoint(lv_k, lv_distance, lv_t);
+        if ((PointPathingCost(lv_k, lv_t) <= FixedToInt((lv_distance * 1.5))) && (WorldHeight(c_heightMapGround, lv_k) < (WorldHeight(c_heightMapGround, lv_t) + 1.0)) && (WorldHeight(c_heightMapGround, lv_k) > (WorldHeight(c_heightMapGround, lv_t) - 1.0))) {
+            lv_goodPositionFound = true;
+        }
+
+        lv_distance -= 0.5;
+    }
+    Wait(0.0625, c_timeGame);
+    if ((lv_goodPositionFound == true)) {
+        UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("move", 0), lv_t), c_orderQueueReplace);
+        UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("move", 0), lv_finalT), c_orderQueueAddToEnd);
+    }
+    else {
+        UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("move", 0), lv_finalT), c_orderQueueReplace);
+    }
+    Wait(0.1875, c_timeGame);
+    lv_i = 1;
+    for ( ; ( (autoA6426318_ai >= 0 && lv_i <= autoA6426318_ae) || (autoA6426318_ai < 0 && lv_i >= autoA6426318_ae) ) ; lv_i += autoA6426318_ai ) {
+        libSCDH_gv_kerriganPsiStrikeFacing = UnitGetFacing(EventUnit());
+        if ((lv_facing > 90.0)) {
+            if (((libSCDH_gv_kerriganPsiStrikeFacing < (lv_facing - 90.0)) && (libSCDH_gv_kerriganPsiStrikeFacing > (lv_facing - 270.0)))) {
+                UnitBehaviorRemove(EventUnit(), "PsiStrikeWalkSpeed", 1);
+                break;
+            }
+
+        }
+        else {
+            if ((lv_facing < -90.0)) {
+                if (((libSCDH_gv_kerriganPsiStrikeFacing > (lv_facing + 90.0)) && (libSCDH_gv_kerriganPsiStrikeFacing < (lv_facing + 270.0)))) {
+                    UnitBehaviorRemove(EventUnit(), "PsiStrikeWalkSpeed", 1);
+                    break;
+                }
+
+            }
+            else {
+                if (((libSCDH_gv_kerriganPsiStrikeFacing > (lv_facing + 90.0)) || (libSCDH_gv_kerriganPsiStrikeFacing < (lv_facing - 90.0)))) {
+                    UnitBehaviorRemove(EventUnit(), "PsiStrikeWalkSpeed", 1);
+                    break;
+                }
+
+            }
+        }
+        Wait(0.0625, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSCDH_gt_KerriganPsiStrike_Init () {
+    libSCDH_gt_KerriganPsiStrike = TriggerCreate("libSCDH_gt_KerriganPsiStrike_Func");
+    TriggerAddEventUnitAbility(libSCDH_gt_KerriganPsiStrike, null, AbilityCommand("PsiStrikeWalk", 0), c_abilEffectStageCast, false);
+}
+
+void libSCDH_InitTriggers () {
+    libSCDH_gt_CreepTumorBuild_Init();
+    libSCDH_gt_KerriganPsiStrike_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libSCDH_InitLib_completed = false;
+
+void libSCDH_InitLib () {
+    if (libSCDH_InitLib_completed) {
+        return;
+    }
+
+    libSCDH_InitLib_completed = true;
+
+    libSCDH_InitLibraries();
+    libSCDH_InitVariables();
+    libSCDH_InitTriggers();
+}
+

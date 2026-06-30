@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "TriggerLibs/LibertyLib"
+
+include "TriggerLibs/VoidMultiLib_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Void Multi
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libVdMp_InitLibraries () {
+    libNtve_InitVariables();
+    libLbty_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: PingPanelInitialize
+//--------------------------------------------------------------------------------------------------
+bool libVdMp_gt_PingPanelInitialize_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libLbty_gf_EnableDisablePingPanel(true, PlayerGroupAll());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libVdMp_gt_PingPanelInitialize_Init () {
+    libVdMp_gt_PingPanelInitialize = TriggerCreate("libVdMp_gt_PingPanelInitialize_Func");
+    TriggerAddEventMapInit(libVdMp_gt_PingPanelInitialize);
+}
+
+void libVdMp_InitTriggers () {
+    libVdMp_gt_PingPanelInitialize_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libVdMp_InitLib_completed = false;
+
+void libVdMp_InitLib () {
+    if (libVdMp_InitLib_completed) {
+        return;
+    }
+
+    libVdMp_InitLib_completed = true;
+
+    libVdMp_InitLibraries();
+    libVdMp_InitTriggers();
+}
+

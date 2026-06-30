@@ -1,0 +1,835 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <!--                                                                                         -->
+    <!--                                                                                         -->
+    <!-- Added For Wizards ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!--                                                                                         -->
+    <!--                                                                                         -->
+    <CMoverMissile default="1" id="WizSimpleMissile">
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Speed value="20"/>
+            <RotationLaunchActorType value="LaunchToTarget"/>
+            <YawPitchRoll value="MAX"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile default="1" id="WizSimpleBallistic">
+        <MotionPhases Driver="Ballistic" Speed="10" Gravity="9.8"/>
+    </CMoverMissile>
+    <!--                                                                                         -->
+    <!--                                                                                         -->
+    <!-- Defaults ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!--                                                                                         -->
+    <!--                                                                                         -->
+    <CMoverMissile id="FungalGrowthWeapon">
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="1000"/>
+            <Speed value="100"/>
+            <MaxSpeed value="20"/>
+            <IgnoresTerrain value="1"/>
+            <ActorTracking value="Actual"/>
+            <YawPitchRoll value="119.8828"/>
+            <YawPitchRollAccel value="180"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="BroodLordBWeapon">
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="40"/>
+            <MaxSpeed value="40"/>
+            <YawPitchRoll value="MAX"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="BroodLordWeaponRight">
+        <Flags index="IgnoreNoFlyZones" value="1"/>
+        <MotionPhases>
+            <Driver value="Throw"/>
+            <Acceleration value="3"/>
+            <Speed value="5"/>
+            <MaxSpeed value="8"/>
+            <Gravity value="5"/>
+            <Outro value="1.5,4.5"/>
+            <ThrowRotationType value="LookAtTarget2D"/>
+            <ThrowVector value="0.8,-1,0.75"/>
+        </MotionPhases>
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="20"/>
+            <MaxSpeed value="40"/>
+            <YawPitchRoll value="MAX"/>
+            <Overlays Scale="0.75"/>
+        </MotionPhases>
+        <MotionOverlays>
+            <Type value="Wave"/>
+            <Polarity value="Random"/>
+            <Axis value="1,0,0"/>
+            <Wavelength value="6"/>
+        </MotionOverlays>
+    </CMoverMissile>
+    <CMoverMissile id="SiphonTentacle">
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="20"/>
+            <MaxSpeed value="10"/>
+            <IgnoresTerrain value="1"/>
+            <TurnType value="RevertToUp"/>
+            <YawPitchRoll value="180"/>
+            <YawPitchRollAccel value="1440"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="D8Charge">
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Speed value="20"/>
+            <MaxSpeed value="20"/>
+            <YawPitchRoll value="MAX"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="Corruption" parent="MissileDefault"/>
+    <CMoverMissile id="InfestedTerransWeapon">
+        <MotionPhases>
+            <Driver value="AdaptableParabola"/>
+            <MinSpeed value="10"/>
+            <MaxSpeed value="10"/>
+            <ActorTracking value="Actual"/>
+            <Outro value="-0.5,-0.2"/>
+            <AdaptableParabolaIsUpright value="1"/>
+            <AdaptableParabolaClearance value="4,0.1"/>
+            <AdaptableParabolaDistances index="Launch" value="1"/>
+            <AdaptableParabolaDistances index="PreApex" value="0.3"/>
+            <AdaptableParabolaDistances index="PostApex" value="0.3"/>
+            <AdaptableParabolaDistances index="Land" value="1"/>
+            <AdaptableParabolaAccels index="Launch" value="0"/>
+            <AdaptableParabolaAccels index="Ascent" value="0"/>
+            <AdaptableParabolaAccels index="Apex" value="0"/>
+            <AdaptableParabolaAccels index="Descent" value="0"/>
+            <AdaptableParabolaAccels index="Land" value="0"/>
+        </MotionPhases>
+        <MotionPhases Driver="Guidance" MaxSpeed="40" YawPitchRoll="MAX"/>
+    </CMoverMissile>
+    <CMoverMissile id="InfestorNeuralParasite">
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="20"/>
+            <MaxSpeed value="12"/>
+            <Outro value="4,5"/>
+            <YawPitchRoll value="MAX"/>
+        </MotionPhases>
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="20"/>
+            <MaxSpeed value="40"/>
+            <YawPitchRoll value="MAX"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="GlaiveWurmMissile" parent="MissileDefault">
+        <MotionPhases index="0">
+            <Driver value="Guidance"/>
+            <Acceleration value="3200"/>
+            <MaxSpeed value="18.75"/>
+            <ClearanceAcceleration value="75"/>
+            <ActorTracking value="Actual"/>
+            <Outro value="-1"/>
+            <YawPitchRoll value="719.2968"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="GlaiveWurmBounceMissile" parent="GlaiveWurmMissile">
+        <MotionPhases index="0">
+            <Driver value="Guidance"/>
+            <Acceleration value="3200"/>
+            <MaxSpeed value="18.75"/>
+            <ClearanceAcceleration value="75"/>
+            <ActorTracking value="Actual"/>
+            <Outro value="-1"/>
+            <RotationLaunchActorType value="LaunchToTarget"/>
+            <YawPitchRoll value="719.2968"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverAvoid id="Construction" parent="Ground">
+        <PathMode value="Builder"/>
+    </CMoverAvoid>
+    <CMoverMissile id="HunterSeekerMissile">
+        <MotionPhases>
+            <Driver value="Throw"/>
+            <Acceleration value="3200"/>
+            <MaxSpeed value="1"/>
+            <Clearance value="0.5"/>
+            <ClearanceLookahead value="3"/>
+            <ClearanceAcceleration value="75"/>
+            <Outro value="1,1.25"/>
+            <ThrowVector value="0,-1,0"/>
+        </MotionPhases>
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="3200"/>
+            <MaxSpeed value="2.5"/>
+            <Clearance value="0.5"/>
+            <ClearanceLookahead value="3"/>
+            <Outro value="-4.5,-4.25"/>
+            <YawPitchRoll value="MAX"/>
+        </MotionPhases>
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="4"/>
+            <MaxSpeed value="2.5"/>
+            <Clearance value="0.5"/>
+            <ClearanceLookahead value="3"/>
+            <Outro value="-2.25,-2"/>
+            <YawPitchRoll value="MAX"/>
+        </MotionPhases>
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="16"/>
+            <MaxSpeed value="20"/>
+            <Clearance value="0.25"/>
+            <ClearanceLookahead value="3"/>
+            <YawPitchRoll value="MAX"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="NoxiousTurret">
+        <MotionPhases>
+            <Driver value="Throw"/>
+            <Acceleration value="3200"/>
+            <MaxSpeed value="8.5"/>
+            <Outro value="1.5,4"/>
+            <ThrowVector value="-0.5,-0.5,0"/>
+        </MotionPhases>
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="3200"/>
+            <MaxSpeed value="12"/>
+            <Timeout value="7"/>
+            <YawPitchRoll value="MAX"/>
+            <Overlays Scale="0.85"/>
+        </MotionPhases>
+        <MotionOverlays>
+            <Type value="Wave"/>
+            <Polarity value="Random"/>
+            <PolarityDriver value="::RollingIndex"/>
+            <Axis value="1,0,0"/>
+            <Wavelength value="4"/>
+            <WavelengthChangeProbability value="0"/>
+        </MotionOverlays>
+    </CMoverMissile>
+    <CMoverMissile id="ThorAA">
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="3200"/>
+            <MaxSpeed value="20"/>
+            <Outro value="-1"/>
+            <YawPitchRoll value="719.2968"/>
+        </MotionPhases>
+        <MotionPhases YawPitchRoll="MAX"/>
+    </CMoverMissile>
+    <CMoverAvoid id="Burrowed" parent="Ground"/>
+    <CMoverAvoid id="Colossus" parent="Ground">
+        <HeightMap value="Glide"/>
+        <PathMode value="Scaler"/>
+    </CMoverAvoid>
+    <CMoverAvoid id="CliffJumper" parent="Ground">
+        <PathMode value="Jumper"/>
+    </CMoverAvoid>
+    <CMoverAvoid id="Creep" parent="Ground">
+        <PlacementArray index="Require">
+            <Bits index="Creep" value="1"/>
+        </PlacementArray>
+    </CMoverAvoid>
+    <CMoverFlock id="Fly">
+        <HeightMap value="Air"/>
+        <PathMode value="Flying"/>
+    </CMoverFlock>
+    <!-- Tentacle Sunken. -->
+    <CMoverMissile id="SpineCrawlerTentacleExtendShort">
+        <MotionPhases>
+            <Driver value="Throw"/>
+            <Acceleration value="10"/>
+            <Speed value="1"/>
+            <MaxSpeed value="20"/>
+            <IgnoresTerrain value="1"/>
+            <Outro value="0.2,0.4"/>
+            <RotationLaunchActorType value="Supplied"/>
+            <ThrowRotationType value="LookAtTarget"/>
+            <ThrowVector value="0,-1,0.6"/>
+        </MotionPhases>
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="140"/>
+            <MaxSpeed value="200"/>
+            <IgnoresTerrain value="1"/>
+            <TurnType value="RevertToUp"/>
+            <ActorTracking value="Actual"/>
+            <YawPitchRoll value="180"/>
+            <YawPitchRollAccel value="1440"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="SpineCrawlerTentacleExtendLong">
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="140"/>
+            <Speed value="12"/>
+            <MaxSpeed value="200"/>
+            <IgnoresTerrain value="1"/>
+            <TurnType value="RevertToUp"/>
+            <ActorTracking value="Actual"/>
+            <RotationLaunchActorType value="Supplied"/>
+            <YawPitchRoll value="MAX"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="SpineCrawlerTentacleRetractShort">
+        <MotionPhases>
+            <Driver value="Throw"/>
+            <Speed value="8.5"/>
+            <MaxSpeed value="8.5"/>
+            <IgnoresTerrain value="1"/>
+            <Outro value="0.5,0.75"/>
+            <ThrowVector value="0,-1,6"/>
+        </MotionPhases>
+        <MotionPhases>
+            <Driver value="Throw"/>
+            <Speed value="8.5"/>
+            <MaxSpeed value="8.5"/>
+            <IgnoresTerrain value="1"/>
+            <Outro value="0.9,1.5"/>
+            <ThrowRotationType value="LookAtTarget2D"/>
+            <ThrowVector value="0,-1,0"/>
+        </MotionPhases>
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="40"/>
+            <Speed value="8.5"/>
+            <MaxSpeed value="49"/>
+            <IgnoresTerrain value="1"/>
+            <TurnType value="RevertToUp"/>
+            <ActorTracking value="Actual"/>
+            <RotationActorType value="Docking"/>
+            <YawPitchRoll value="MAX"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="SpineCrawlerTentacleRetractLong">
+        <MotionPhases>
+            <Driver value="Throw"/>
+            <Speed value="10"/>
+            <MaxSpeed value="10"/>
+            <IgnoresTerrain value="1"/>
+            <TurnType value="RevertToUp"/>
+            <Outro value="1,3.8,0.1,0.1"/>
+            <ThrowVector value="0,-1,1"/>
+            <ThrowBandYaw value="14.9963,-14.9963"/>
+            <ThrowBandPitch value="4.9987,-1.9995"/>
+        </MotionPhases>
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="20"/>
+            <MaxSpeed value="45"/>
+            <IgnoresTerrain value="1"/>
+            <ActorTracking value="Actual"/>
+            <RotationActorType value="Docking"/>
+            <YawPitchRoll value="119.8828"/>
+            <YawPitchRollAccel value="180"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="EMP2Weapon" parent="MissileDefault">
+        <MotionPhases index="0">
+            <Driver value="Guidance"/>
+            <Acceleration value="3200"/>
+            <MaxSpeed value="30"/>
+            <ClearanceAcceleration value="75"/>
+            <Outro value="-1"/>
+            <YawPitchRoll value="719.2968"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="AcidSporesWeapon">
+        <MotionPhases>
+            <Driver value="Throw"/>
+            <Speed value="10"/>
+            <MaxSpeed value="10"/>
+            <IgnoresTerrain value="1"/>
+            <TurnType value="RevertToUp"/>
+            <Outro value="1,3.8,0.1,0.1"/>
+            <ThrowVector value="0,-1,1"/>
+            <ThrowBandYaw value="14.9963,-14.9963"/>
+            <ThrowBandPitch value="4.9987,-1.9995"/>
+        </MotionPhases>
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="20"/>
+            <MaxSpeed value="45"/>
+            <IgnoresTerrain value="1"/>
+            <ActorTracking value="Actual"/>
+            <YawPitchRoll value="119.8828"/>
+            <YawPitchRollAccel value="180"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="ReaperJumpUp">
+        <PathMode value="Jumper"/>
+        <MotionPhases>
+            <Driver value="AdaptableParabola"/>
+            <MinSpeed value="2"/>
+            <MaxSpeed value="7"/>
+            <ActorTracking value="Actual"/>
+            <AdaptableParabolaIsUpright value="1"/>
+            <AdaptableParabolaClearance value="1.75,0.5"/>
+            <AdaptableParabolaDistances index="Launch" value="2"/>
+            <AdaptableParabolaDistances index="PreApex" value="1.2"/>
+            <AdaptableParabolaDistances index="PostApex" value="0"/>
+            <AdaptableParabolaDistances index="Land" value="1.2"/>
+            <AdaptableParabolaAccels index="Launch" value="10"/>
+            <AdaptableParabolaAccels index="Ascent" value="1"/>
+            <AdaptableParabolaAccels index="Apex" value="-14"/>
+            <AdaptableParabolaAccels index="Descent" value="10"/>
+            <AdaptableParabolaAccels index="Land" value="-15"/>
+        </MotionPhases>
+        <RespectUnitHeightAtDestination value="1"/>
+    </CMoverMissile>
+    <CMoverMissile id="ReaperJumpDown">
+        <PathMode value="Jumper"/>
+        <MotionPhases>
+            <Driver value="AdaptableParabola"/>
+            <Speed value="7"/>
+            <MinSpeed value="7"/>
+            <MaxSpeed value="7"/>
+            <ActorTracking value="Actual"/>
+            <AdaptableParabolaIsUpright value="1"/>
+            <AdaptableParabolaClearance value="1.25,0.5"/>
+            <AdaptableParabolaDistances index="Launch" value="1"/>
+            <AdaptableParabolaDistances index="PreApex" value="0.9"/>
+            <AdaptableParabolaDistances index="PostApex" value="0.1"/>
+            <AdaptableParabolaDistances index="Land" value="3"/>
+            <AdaptableParabolaAccels index="Launch" value="15"/>
+            <AdaptableParabolaAccels index="Ascent" value="1"/>
+            <AdaptableParabolaAccels index="Apex" value="-13"/>
+            <AdaptableParabolaAccels index="Descent" value="12"/>
+            <AdaptableParabolaAccels index="Land" value="-6"/>
+        </MotionPhases>
+        <RespectUnitHeightAtDestination value="1"/>
+    </CMoverMissile>
+    <CMoverMissile id="PhotonCannonWeapon" parent="MissileDefault">
+        <MotionPhases index="0">
+            <Driver value="Guidance"/>
+            <Acceleration value="3200"/>
+            <MaxSpeed value="18"/>
+            <ClearanceAcceleration value="75"/>
+            <Outro value="-1"/>
+            <YawPitchRoll value="719.2968"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="MothershipBeamWeapon">
+        <MotionPhases>
+            <Driver value="Throw"/>
+            <Acceleration value="10"/>
+            <Speed value="0"/>
+            <MaxSpeed value="10"/>
+            <Outro value="2,6"/>
+            <ThrowRotationType value="ThrowForward"/>
+            <ThrowVector value="0,-1,0"/>
+        </MotionPhases>
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="10"/>
+            <MaxSpeed value="20"/>
+            <Outro value="-2,-1"/>
+            <YawPitchRollAccel value="29.5312"/>
+        </MotionPhases>
+        <MotionPhases YawPitchRoll="MAX"/>
+    </CMoverMissile>
+    <CMoverMissile id="InterceptorWeapon" parent="MissileDefault">
+        <MotionPhases index="0">
+            <Driver value="Guidance"/>
+            <Acceleration value="3200"/>
+            <MaxSpeed value="36"/>
+            <ClearanceAcceleration value="75"/>
+            <Outro value="-1"/>
+            <YawPitchRoll value="719.2968"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="IonCannonsWeapon">
+        <MotionPhases>
+            <Driver value="Throw"/>
+            <Speed value="6"/>
+            <MaxSpeed value="6"/>
+            <Outro value="0.4,0.85"/>
+            <ThrowRotationType value="ThrowForward"/>
+            <ThrowVector value="0,-1,0"/>
+        </MotionPhases>
+        <MotionPhases Outro="1,1.5" ThrowVector="0,-1,0"/>
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="60"/>
+            <MaxSpeed value="40"/>
+            <YawPitchRoll value="MAX"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="IonCannonsWeaponLeft" parent="IonCannonsWeapon">
+        <MotionPhases index="0">
+            <Driver value="Throw"/>
+            <Speed value="6"/>
+            <MaxSpeed value="6"/>
+            <Outro value="0.4,0.85"/>
+            <ThrowRotationType value="ThrowForward"/>
+            <ThrowVector value="1.75,-1.25,-0.7"/>
+        </MotionPhases>
+        <MotionPhases index="1" Outro="1,1.5" ThrowVector="-0.75,-1.25,0.2"/>
+    </CMoverMissile>
+    <CMoverMissile id="IonCannonsWeaponRight" parent="IonCannonsWeapon">
+        <MotionPhases index="0">
+            <Driver value="Throw"/>
+            <Speed value="6"/>
+            <MaxSpeed value="6"/>
+            <Outro value="0.4,0.85"/>
+            <ThrowRotationType value="ThrowForward"/>
+            <ThrowVector value="-1.75,-1.25,-0.7"/>
+        </MotionPhases>
+        <MotionPhases index="1" Outro="1,1.5" ThrowVector="0.75,-1.25,0.2"/>
+    </CMoverMissile>
+    <CMoverMissile id="BacklashRocketsLMWeapon">
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="20"/>
+            <Speed value="10"/>
+            <MaxSpeed value="50"/>
+            <Outro value="2.5"/>
+            <YawPitchRoll value="719.2968"/>
+            <Overlays Scale="0"/>
+        </MotionPhases>
+        <MotionPhases Outro="-1">
+            <Overlays Scale="0.2,0.2"/>
+        </MotionPhases>
+        <MotionPhases YawPitchRoll="MAX">
+            <Overlays Scale="0"/>
+        </MotionPhases>
+        <MotionOverlays>
+            <Type value="Revolver"/>
+            <RevolverSpeed value="179.2968"/>
+            <RevolverSpeedRange value="179.2968"/>
+            <RevolverMaxSpeed value="719.2968"/>
+            <RevolverMaxSpeedRange value="0"/>
+            <RevolverAccel value="337.5"/>
+            <RevolverAccelRange value="337.5"/>
+        </MotionOverlays>
+    </CMoverMissile>
+    <CMoverMissile id="ATALaserBatteryLMWeapon" parent="MissileDefault">
+        <MotionPhases index="0">
+            <Driver value="Guidance"/>
+            <Acceleration value="150"/>
+            <MaxSpeed value="18.75"/>
+            <ClearanceAcceleration value="75"/>
+            <Outro value="-1"/>
+            <YawPitchRoll value="719.2968"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="ATSLaserBatteryLMWeapon" parent="MissileDefault">
+        <MotionPhases index="0">
+            <Driver value="Guidance"/>
+            <Acceleration value="150"/>
+            <MaxSpeed value="18.75"/>
+            <ClearanceAcceleration value="75"/>
+            <Outro value="-1"/>
+            <YawPitchRoll value="719.2968"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="VikingFighterMissile">
+        <PathMode value="Flying"/>
+        <MotionPhases>
+            <Driver value="Throw"/>
+            <Speed value="2"/>
+            <MaxSpeed value="2"/>
+            <Outro value="0.125,0.25"/>
+            <Timeout value="10"/>
+            <ThrowVector value="0,-1,0"/>
+            <YawPitchRoll value="506.25"/>
+        </MotionPhases>
+        <MotionPhases>
+            <Driver value="Throw"/>
+            <Speed value="2"/>
+            <MaxSpeed value="2"/>
+            <Gravity value="30"/>
+            <Outro value="0.625,0.75"/>
+            <Timeout value="10"/>
+            <ThrowVector value="0,-1,0"/>
+            <YawPitchRoll value="506.25"/>
+        </MotionPhases>
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="56"/>
+            <Speed value="2"/>
+            <MaxSpeed value="28"/>
+            <Outro value="2,2.5"/>
+            <Timeout value="10"/>
+            <YawPitchRoll value="MAX"/>
+        </MotionPhases>
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <MaxSpeed value="28"/>
+            <Timeout value="10"/>
+            <YawPitchRoll value="5568.75"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="YamatoWeapon" parent="MissileDefault">
+        <MotionPhases index="0">
+            <Driver value="Guidance"/>
+            <Acceleration value="3200"/>
+            <MaxSpeed value="20"/>
+            <ClearanceAcceleration value="75"/>
+            <Outro value="-1"/>
+            <YawPitchRoll value="719.2968"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="AutoTurretReleaseWeapon" parent="MissileDefault">
+        <MotionPhases index="0">
+            <Driver value="Guidance"/>
+            <Acceleration value="3200"/>
+            <Speed value="12"/>
+            <MaxSpeed value="12"/>
+            <ClearanceAcceleration value="75"/>
+            <Outro value="-1"/>
+            <YawPitchRoll value="719.2968"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="LongboltMissileWeapon">
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Speed value="10"/>
+            <MaxSpeed value="10"/>
+            <ActorTracking value="Actual"/>
+            <Outro value="-4"/>
+            <YawPitchRoll value="MAX"/>
+        </MotionPhases>
+        <!-- Accelerating 'kill phase'. -->
+        <MotionPhases Acceleration="200" MaxSpeed="20"/>
+    </CMoverMissile>
+    <CMoverMissile id="StalkerWeapon" parent="MissileDefault"/>
+    <CMoverMissile id="NeedleSpinesWeapon">
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Speed value="40"/>
+            <MaxSpeed value="40"/>
+            <YawPitchRoll value="MAX"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="AcidSpinesWeapon">
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Speed value="40"/>
+            <MaxSpeed value="40"/>
+            <ActorTracking value="Actual"/>
+            <RotationLaunchActorType value="LaunchToTarget"/>
+            <YawPitchRoll value="MAX"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="BroodLordWeaponLeft">
+        <MotionPhases>
+            <Driver value="Throw"/>
+            <Acceleration value="3"/>
+            <Speed value="5"/>
+            <MaxSpeed value="8"/>
+            <Gravity value="5"/>
+            <Outro value="1.5,4.5"/>
+            <ThrowRotationType value="LookAtTarget2D"/>
+            <ThrowVector value="-0.8,-1,0.75"/>
+        </MotionPhases>
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="20"/>
+            <MaxSpeed value="40"/>
+            <YawPitchRoll value="MAX"/>
+            <Overlays Scale="0.75"/>
+        </MotionPhases>
+        <MotionOverlays>
+            <Type value="Wave"/>
+            <Polarity value="Random"/>
+            <Axis value="1,0,0"/>
+            <Wavelength value="6"/>
+        </MotionOverlays>
+    </CMoverMissile>
+    <CMoverMissile id="LarvaReleaseMissile">
+        <MotionPhases>
+            <Driver value="Throw"/>
+            <Acceleration value="3"/>
+            <Speed value="6"/>
+            <MaxSpeed value="6"/>
+            <Gravity value="5"/>
+            <Outro value="1.5,4.5"/>
+            <ThrowVector value="0,0,5"/>
+        </MotionPhases>
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="2"/>
+            <MaxSpeed value="10"/>
+            <YawPitchRoll value="MAX"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="PunisherGrenadesWeapon">
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="3200"/>
+            <MaxSpeed value="20"/>
+            <YawPitchRoll value="MAX"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="AcidSalivaWeapon">
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="3200"/>
+            <MaxSpeed value="18.75"/>
+            <Outro value="-1"/>
+            <YawPitchRoll value="719.2968"/>
+        </MotionPhases>
+        <MotionPhases YawPitchRoll="MAX"/>
+    </CMoverMissile>
+    <CMoverMissile id="Frenzy" parent="MissileDefault"/>
+    <CMoverMissile id="Contaminate" parent="MissileDefault"/>
+    <CMoverMissile id="InfestedTerransLayEggWeapon" parent="MissileDefault">
+        <MotionPhases index="0">
+            <Driver value="Guidance"/>
+            <Acceleration value="3200"/>
+            <MaxSpeed value="10"/>
+            <ClearanceAcceleration value="75"/>
+            <Outro value="-1"/>
+            <YawPitchRoll value="719.2968"/>
+        </MotionPhases>
+    </CMoverMissile>
+    <CMoverMissile id="UnitKnockbackMover2">
+        <Flags index="IgnoreMovementSuppression" value="1"/>
+        <MotionPhases>
+            <Driver value="Ballistic"/>
+            <Acceleration value="-1"/>
+            <Gravity value="20"/>
+            <RotationActorType value="Upright"/>
+            <YawPitchRoll value="MAX"/>
+            <FlightTime value="0.8"/>
+        </MotionPhases>
+        <RotationIgnoredByUnit value="1"/>
+        <PathMode value="Flying"/>
+    </CMoverMissile>
+    <CMoverMissile id="UnitKnockbackMover3">
+        <Flags index="IgnoreMovementSuppression" value="1"/>
+        <MotionPhases>
+            <Driver value="Ballistic"/>
+            <Acceleration value="-1"/>
+            <Gravity value="20"/>
+            <RotationActorType value="Upright"/>
+            <YawPitchRoll value="MAX"/>
+            <FlightTime value="0.9"/>
+        </MotionPhases>
+        <RotationIgnoredByUnit value="1"/>
+        <PathMode value="Flying"/>
+    </CMoverMissile>
+    <CMoverMissile id="UnitKnockbackMover4">
+        <Flags index="IgnoreMovementSuppression" value="1"/>
+        <MotionPhases>
+            <Driver value="Ballistic"/>
+            <Acceleration value="-1"/>
+            <Gravity value="20"/>
+            <RotationActorType value="Upright"/>
+            <YawPitchRoll value="MAX"/>
+            <FlightTime value="1"/>
+        </MotionPhases>
+        <RotationIgnoredByUnit value="1"/>
+        <PathMode value="Flying"/>
+    </CMoverMissile>
+    <CMoverMissile id="UnitKnockbackMover5">
+        <Flags index="IgnoreMovementSuppression" value="1"/>
+        <MotionPhases>
+            <Driver value="Ballistic"/>
+            <Acceleration value="-1"/>
+            <Gravity value="20"/>
+            <RotationActorType value="Upright"/>
+            <YawPitchRoll value="MAX"/>
+            <FlightTime value="1.1"/>
+        </MotionPhases>
+        <RotationIgnoredByUnit value="1"/>
+        <PathMode value="Flying"/>
+    </CMoverMissile>
+    <CMoverMissile id="UnitKnockbackMover6">
+        <Flags index="IgnoreMovementSuppression" value="1"/>
+        <MotionPhases>
+            <Driver value="Ballistic"/>
+            <Acceleration value="-1"/>
+            <Gravity value="20"/>
+            <RotationActorType value="Upright"/>
+            <YawPitchRoll value="MAX"/>
+            <FlightTime value="1.2"/>
+        </MotionPhases>
+        <RotationIgnoredByUnit value="1"/>
+        <PathMode value="Flying"/>
+    </CMoverMissile>
+    <CMoverMissile id="UnitKnockbackMover7">
+        <Flags index="IgnoreMovementSuppression" value="1"/>
+        <MotionPhases>
+            <Driver value="Ballistic"/>
+            <Acceleration value="-1"/>
+            <Gravity value="20"/>
+            <RotationActorType value="Upright"/>
+            <YawPitchRoll value="MAX"/>
+            <FlightTime value="1.3"/>
+        </MotionPhases>
+        <RotationIgnoredByUnit value="1"/>
+        <PathMode value="Flying"/>
+    </CMoverMissile>
+    <CMoverMissile id="UnitKnockbackMover8">
+        <Flags index="IgnoreMovementSuppression" value="1"/>
+        <MotionPhases>
+            <Driver value="Ballistic"/>
+            <Acceleration value="-1"/>
+            <Gravity value="20"/>
+            <RotationActorType value="Upright"/>
+            <YawPitchRoll value="MAX"/>
+            <FlightTime value="1.4"/>
+        </MotionPhases>
+        <RotationIgnoredByUnit value="1"/>
+        <PathMode value="Flying"/>
+    </CMoverMissile>
+    <CMoverMissile id="UnitKnockbackMover9">
+        <Flags index="IgnoreMovementSuppression" value="1"/>
+        <MotionPhases>
+            <Driver value="Ballistic"/>
+            <Acceleration value="-1"/>
+            <Gravity value="20"/>
+            <RotationActorType value="Upright"/>
+            <YawPitchRoll value="MAX"/>
+            <FlightTime value="1.5"/>
+        </MotionPhases>
+        <RotationIgnoredByUnit value="1"/>
+        <PathMode value="Flying"/>
+    </CMoverMissile>
+    <CMoverMissile id="UnitKnockbackMover10">
+        <Flags index="IgnoreMovementSuppression" value="1"/>
+        <MotionPhases>
+            <Driver value="Ballistic"/>
+            <Acceleration value="-1"/>
+            <Gravity value="20"/>
+            <RotationActorType value="Upright"/>
+            <YawPitchRoll value="MAX"/>
+            <FlightTime value="1.6"/>
+        </MotionPhases>
+        <RotationIgnoredByUnit value="1"/>
+        <PathMode value="Flying"/>
+    </CMoverMissile>
+    <CMoverMissile id="UnitKnockbackMover11">
+        <Flags index="IgnoreMovementSuppression" value="1"/>
+        <MotionPhases>
+            <Driver value="Ballistic"/>
+            <Acceleration value="-1"/>
+            <Gravity value="20"/>
+            <RotationActorType value="Upright"/>
+            <YawPitchRoll value="MAX"/>
+            <FlightTime value="1.7"/>
+        </MotionPhases>
+        <RotationIgnoredByUnit value="1"/>
+        <PathMode value="Flying"/>
+    </CMoverMissile>
+    <CMoverMissile id="UnitKnockbackMover12">
+        <Flags index="IgnoreMovementSuppression" value="1"/>
+        <MotionPhases>
+            <Driver value="Ballistic"/>
+            <Acceleration value="-1"/>
+            <Gravity value="20"/>
+            <RotationActorType value="Upright"/>
+            <YawPitchRoll value="MAX"/>
+            <FlightTime value="1.8"/>
+        </MotionPhases>
+        <RotationIgnoredByUnit value="1"/>
+        <PathMode value="Flying"/>
+    </CMoverMissile>
+</Catalog>

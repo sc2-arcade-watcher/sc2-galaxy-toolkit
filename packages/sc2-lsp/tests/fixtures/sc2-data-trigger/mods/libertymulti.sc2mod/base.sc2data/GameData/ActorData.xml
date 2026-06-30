@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CActorSiteMover id="ColossusAttackImpactSite">
+        <Speed value="4.000000"/>
+        <SpeedMax value="8.100000"/>
+    </CActorSiteMover>
+    <CActorSiteMover id="ColossusAttackImpactSiteReverse">
+        <Speed value="4.000000"/>
+        <SpeedMax value="8.100000"/>
+    </CActorSiteMover>
+    <CActorUnit id="UnbuildableBricksDestructible">
+        <HighlightTooltip value="Unit/Name/UnbuildableBricksDestructibleHighlightTooltip"/>
+    </CActorUnit>
+    <CActorUnit id="UnbuildablePlatesDestructible">
+        <HighlightTooltip value="Unit/Name/UnbuildablePlatesDestructibleHighlightTooltip"/>
+    </CActorUnit>
+    <CActorUnit id="UnbuildableRocksDestructible">
+        <HighlightTooltip value="Unit/Name/UnbuildableRocksDestructibleHighlightTooltip"/>
+    </CActorUnit>
+    <CActorSimple id="VortexExitOpacity">
+        <On Terms="Behavior.VortexExit.On" Send="Create"/>
+        <On Terms="ActorCreation; !Option Shader Low" Target="_Unit" Send="SetOpacity 0.400000 0.000000 VortexExitOpacity"/>
+        <On Terms="ActorCreation" Target="_Unit" Send="SetTintColor 100,100,255 0.000000 OneShot VortexExitTint"/>
+        <On Terms="Behavior.VortexExit.Off; !Option Shader Low" Target="_Unit" Send="ClearOpacity 0.250000 VortexExitOpacity"/>
+        <On Terms="Behavior.VortexExit.Off" Target="_Unit" Send="ClearTintColor 0.250000 VortexExitTint"/>
+        <On Terms="Behavior.VortexExit.Off" Send="Destroy"/>
+    </CActorSimple>
+    <!-- VoidRay Attack Beam - Increases in intensity with each Charge -->
+    <CActorBeamSimple id="VoidRayAttackBeam">
+        <On Terms="ActorCreation; !ValidateUnit NotQuadAndNotDoubleDamage" Send="AnimPlay Attack Attack,02 PlayForever"/>
+        <On Terms="ActorCreation; ValidateUnit DoubleDamage" Send="AnimPlay Attack Attack,02 PlayForever"/>
+        <On Terms="ActorCreation; ValidateUnit QuadDamage" Send="AnimPlay Attack Attack,06 PlayForever"/>
+        <!-- Beam will persist through death anim if we don't have this. -->
+        <On Terms="ActorOrphan" Send="Destroy"/>
+        <On Terms="Effect.VoidRayChargeEffect01.Start; FromEffectTreeDescendant" Send="AnimPlay Attack Attack,02 PlayForever"/>
+        <On Terms="Effect.VoidRayChargeEffect02.Start; FromEffectTreeDescendant" Send="TimerSet 0.600000 DelayAnim2"/>
+        <On Terms="TimerExpired; TimerName DelayAnim2" Send="AnimPlay Attack Attack,02 PlayForever"/>
+        <On Terms="Effect.VoidRayChargeEffect03.Start; FromEffectTreeDescendant" Send="TimerSet 0.600000 DelayAnim3"/>
+        <On Terms="TimerExpired; TimerName DelayAnim3" Send="AnimPlay Attack Attack,06 PlayForever"/>
+        <On Terms="Effect.VoidRayChargeChain.Stop; FromEffectTreeDescendant" Send="Destroy"/>
+    </CActorBeamSimple>
+    <CActorUnit id="VoidRay">
+        <On Terms="Behavior.WarpInEffect.On" Send="ModelSwap VoidRayWarpInStargate"/>
+        <On Terms="Behavior.WarpInEffect.On" Send="$Spell"/>
+        <On Terms="Behavior.WarpInEffect.On" Send="AnimBaselineStop"/>
+        <On Terms="Behavior.WarpInEffect.Off" Send="ModelSwap VoidRay"/>
+        <On Terms="Behavior.WarpInEffect.Off" Send="AnimBaselineStart"/>
+    </CActorUnit>
+    <CActorUnit id="WarpPrism">
+        <On Terms="Behavior.WarpInEffect15.On" Send="ModelSwap WarpPrismWarpIn"/>
+        <On Terms="Behavior.WarpInEffect15.On" Send="$Birth"/>
+        <On Terms="Behavior.WarpInEffect15.On" Send="AnimBaselineStop"/>
+        <On Terms="Behavior.WarpInEffect15.Off" Send="ModelSwap WarpPrism"/>
+        <On Terms="Behavior.WarpInEffect15.Off" Send="AnimBaselineStart"/>
+    </CActorUnit>
+    <CActorUnit id="Carrier">
+        <On Terms="Behavior.WarpInEffect.On" Send="ModelSwap CarrierWarpInStargate"/>
+        <On Terms="Behavior.WarpInEffect.On" Send="$Spell"/>
+        <On Terms="Behavior.WarpInEffect.On" Send="AnimBaselineStop"/>
+        <On Terms="Behavior.WarpInEffect.Off" Send="ModelSwap Carrier"/>
+        <On Terms="Behavior.WarpInEffect.Off" Send="AnimBracketStart GL_BSD GLbirth GLstand GLdeath"/>
+        <On Terms="Behavior.WarpInEffect.Off" Send="AnimBaselineStart"/>
+    </CActorUnit>
+    <CActorUnit id="Phoenix">
+        <DeathActorModel value="PhoenixDeathModel"/>
+        <On Terms="Behavior.WarpInEffect15.On" Send="ModelSwap PhoenixWarpInStargate"/>
+        <On Terms="Behavior.WarpInEffect15.On" Send="$Spell"/>
+        <On Terms="Behavior.WarpInEffect15.On" Send="AnimBaselineStop"/>
+        <On Terms="Behavior.WarpInEffect15.Off" Send="AnimClear Spell"/>
+        <On Terms="Behavior.WarpInEffect15.Off" Send="TimerSet 0.062500 Clear"/>
+        <On Terms="TimerExpired; TimerName Clear" Send="ModelSwap Phoenix"/>
+        <On Terms="TimerExpired; TimerName Clear" Send="AnimBaselineStart"/>
+    </CActorUnit>
+    <CActorSiteOpForward id="SOpPhoenixDeath">
+        <HostForward Subject="PhoenixTurret" Actor="Find"/>
+    </CActorSiteOpForward>
+    <CActorModel id="PhoenixDeathModel" parent="UnitDeathModel">
+        <HostSiteOps Ops="SOpAttachOrigin SOpPhoenixDeath"/>
+    </CActorModel>
+    <CActorTurret id="PhoenixTurret">
+        <On Terms="TurretEnable.Phoenix" Send="Create"/>
+    </CActorTurret>
+    <CActorUnit id="SpineCrawler">
+        <Remove Terms="AbilMorph.*.Start; MorphTo SpineCrawler" Send="AnimBracketStart Morph IGNORE Burrow Stand,Burrow ContentPlayOnce"/>
+        <On Terms="AbilMorph.*.Start; MorphTo SpineCrawler" Send="AnimBracketStart Morph IGNORE Burrow,Superior Stand,Burrow ContentPlayOnce"/>
+    </CActorUnit>
+    <CActorAction id="AcidSpinesAttack">
+        <ImpactMap index="None" Model="QueenMissileImpact"/>
+    </CActorAction>
+    <CActorMissile id="TalonsLMAttackMissile" parent="GenericAttackMissile" unitName="TalonsMissileWeapon">
+        <On Terms="ActorCreation" Send="SetScale 2.000000 0.500000"/>
+    </CActorMissile>
+    <CActorAction id="TalonsLMAttack" parent="GenericAttack" effectImpact="TalonsMissileDamage" effectLaunch="TalonsLM">
+        <LaunchAttachQuery Methods="Weapon"/>
+        <LaunchAssets Sound="AcidSpines_AttackLaunch"/>
+        <ImpactMap index="None" Model="QueenMissileImpact" Sound="AcidSpines_AttackImpact"/>
+        <ImpactMap index="Flesh" ModelReaction="BloodTargetImpact"/>
+        <ShieldFlashType value="Header"/>
+    </CActorAction>
+    <CActorUnit id="Queen">
+        <Remove Terms="WeaponStart.Talons.AttackStart; WeaponTargetDistance LE 1.000000" Send="AnimBracketStart Attack Attack,Cover"/>
+        <Remove Terms="WeaponStart.Talons.AttackStart" Send="AnimBracketStart Attack Attack"/>
+        <On Terms="WeaponStart.Talons.AttackStart" Send="AnimBracketStart Attack Spell,C"/>
+    </CActorUnit>
+    <CActorAction id="HydraliskAttack">
+        <ImpactMap index="None" Model="HydraliskAttackImpact"/>
+    </CActorAction>
+    <CActorUnit id="Bunker">
+        <On Terms="UnitBirth.Bunker; ValidateUnit NeosteelFramePurchased" Send="ModelSwap JumboBunker"/>
+        <On Terms="Upgrade.NeosteelFrame.Add; ValidateUnit NotDeadOrConstruction" Send="ModelSwap JumboBunker"/>
+        <On Terms="Effect.SalvageShared.Stop" Send="Create ConstructionSalvageTerranBunker"/>
+    </CActorUnit>
+    <CActorUnit id="CommandCenter">
+        <On Terms="Behavior.250mmStrikeCannons.On" Send="AnimSetPaused Morph"/>
+        <On Terms="Behavior.250mmStrikeCannons.Off" Send="AnimSetPaused Morph 0"/>
+        <!-- Clan decal -->
+        <On Terms="AbilMorph.*.Start; MorphFrom CommandCenter; MorphTo CommandCenterFlying" Target="TerranClanFlag" Send="Signal DestroyFlag"/>
+        <On Terms="AbilMorph.*.Finish; MorphFrom CommandCenterFlying; MorphTo CommandCenter; PlayerHasClanDecal" Send="Create TerranClanFlag"/>
+        <On Terms="UnitBirth.CommandCenter; PlayerHasClanDecal" Send="Create TerranClanFlag"/>
+        <!-- Player trophy -->
+        <On Terms="AbilMorph.*.Start; MorphFrom CommandCenter; MorphTo CommandCenterFlying" Target="PlayerTrophy" Send="Signal DestroyFlag"/>
+        <On Terms="AbilMorph.*.Finish; MorphFrom CommandCenterFlying; MorphTo CommandCenter; PlayerHasTrophy" Send="Create PlayerTrophy"/>
+        <On Terms="UnitBirth.CommandCenter; PlayerHasTrophy" Send="Create PlayerTrophy"/>
+        <Macros value="TerranCommandCenterPlayerDecalMacro"/>
+        <Macros value="SprayHelperMacro"/>
+    </CActorUnit>
+    <CActorUnit id="OrbitalCommand">
+        <Macros value="TerranOrbitalCommandPlayerDecalMacro"/>
+        <!-- Clan decal -->
+        <On Terms="AbilMorph.*.Start; MorphFrom OrbitalCommand; MorphTo OrbitalCommandFlying" Target="TerranClanFlag" Send="Signal DestroyFlag"/>
+        <On Terms="AbilMorph.*.Finish; MorphFrom OrbitalCommandFlying; MorphTo OrbitalCommand; PlayerHasClanDecal" Send="Create TerranClanFlag"/>
+        <On Terms="UnitBirth.OrbitalCommand; PlayerHasClanDecal" Send="Create TerranClanFlag"/>
+        <!-- Player trophy -->
+        <On Terms="AbilMorph.*.Start; MorphFrom OrbitalCommand; MorphTo OrbitalCommandFlying" Target="PlayerTrophy" Send="Signal DestroyFlag"/>
+        <On Terms="AbilMorph.*.Finish; MorphFrom OrbitalCommandFlying; MorphTo OrbitalCommand; PlayerHasTrophy" Send="Create PlayerTrophy"/>
+        <On Terms="UnitBirth.OrbitalCommand; PlayerHasTrophy" Send="Create PlayerTrophy"/>
+    </CActorUnit>
+    <CActorUnit id="PlanetaryFortress">
+        <Macros value="TerranPlanetaryFortressPlayerDecalMacro"/>
+        <!-- Clan decal -->
+        <On Terms="UnitBirth.PlanetaryFortress; PlayerHasClanDecal" Send="Create TerranClanFlag"/>
+        <!-- Player trophy -->
+        <On Terms="UnitBirth.PlanetaryFortress; PlayerHasTrophy" Send="Create PlayerTrophy"/>
+    </CActorUnit>
+    <CActorUnit id="Nexus">
+        <Macros value="ProtossPlayerDecalMacro"/>
+        <Macros value="SprayHelperMacro"/>
+        <!-- Clan decals -->
+        <On Terms="UnitBirth.Nexus; PlayerHasClanDecal" Send="Create ProtossClanFlag"/>
+        <!-- Player trophy -->
+        <On Terms="UnitBirth.Nexus; PlayerHasTrophy" Send="Create PlayerTrophy"/>
+    </CActorUnit>
+    <CActorUnit id="Hatchery">
+        <Macros value="ZergHatcheryPlayerDecalMacro"/>
+        <Macros value="SprayHelperMacro"/>
+        <!-- Clan Decals -->
+        <On Terms="UnitBirth.Hatchery; PlayerHasClanDecal" Send="Create ZergClanFlag"/>
+        <!-- Player trophy -->
+        <On Terms="UnitBirth.Hatchery; PlayerHasTrophy" Send="Create PlayerTrophy"/>
+    </CActorUnit>
+    <CActorUnit id="Lair">
+        <Macros value="ZergLairPlayerDecalMacro"/>
+        <!-- Clan decals -->
+        <On Terms="UnitBirth.Lair; PlayerHasClanDecal" Send="Create ZergClanFlag"/>
+        <!-- Player trophy -->
+        <On Terms="UnitBirth.Lair; PlayerHasTrophy" Send="Create PlayerTrophy"/>
+    </CActorUnit>
+    <CActorUnit id="Hive">
+        <Macros value="ZergHivePlayerDecalMacro"/>
+        <!-- Clan Decals -->
+        <On Terms="UnitBirth.Hive; PlayerHasClanDecal" Send="Create ZergClanFlag"/>
+        <!-- Player trophy -->
+        <On Terms="UnitBirth.Hive; PlayerHasTrophy" Send="Create PlayerTrophy"/>
+    </CActorUnit>
+    <!-- forcing a timeout on this one -->
+    <CActorAction id="BroodLordAttackA">
+        <On Terms="ActorCreation" Send="TimerSet 2.000000 DelayDestroy"/>
+        <On Terms="TimerExpired; TimerName DelayDestroy" Send="Destroy"/>
+    </CActorAction>
+    <CActorUnit id="SupplyDepot">
+        <On Terms="ActorCreation; PlayerHasReward SupplyDepotSkin" Send="StatusSet CE 1"/>
+        <On Terms="ActorCreation; PlayerHasReward SupplyDepotSkin" Send="AnimBracketStop ::GL_BSD Instant"/>
+    </CActorUnit>
+    <CActorUnit id="SupplyDepotLowered">
+        <On Terms="ActorCreation; PlayerHasReward SupplyDepotSkin" Send="StatusSet CE 1"/>
+        <On Terms="ActorCreation; PlayerHasReward SupplyDepotSkin" Send="AnimBracketStop ::GL_BSD Instant"/>
+    </CActorUnit>
+</Catalog>

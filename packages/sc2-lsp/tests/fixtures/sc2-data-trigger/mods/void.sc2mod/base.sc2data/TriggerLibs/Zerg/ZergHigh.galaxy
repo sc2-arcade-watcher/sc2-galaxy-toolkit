@@ -1,0 +1,2195 @@
+//==================================================================================================
+//  Zerg higher difficulty shared logic
+//==================================================================================================
+
+//==================================================================================================
+//  Zerg Openings
+//==================================================================================================
+// rush builds
+const int e_hdBuildIndex_ZOpenRush_6Pool                 = 10;   // 6 pool zergling rush
+const int e_hdBuildIndex_ZOpenRush_10Pool                = 11;   // 10 pool zergling rush
+// 1 base timing builds
+const int e_hdBuildIndex_ZOpenTiming_LingBane            = 12;   // zergling + baneling build
+const int e_hdBuildIndex_ZOpenTiming_Roach               = 13;   // pure roach build
+const int e_hdBuildIndex_ZOpenTiming_LingRoach           = 14;   // zergling + roach build
+// power & macro builds always start with an expansion for zerg
+const int e_hdBuildIndex_ZOpenPowerMacro_QuickExpGnd     = 15;   // 1v1 quick ground expansion
+const int e_hdBuildIndex_ZOpenPowerMacro_DefenseExpGnd   = 16;   // team game defensive ground expansion
+// air openings
+const int e_hdBuildIndex_ZOpenAir_OneBaseMuta            = 17;   // single base "island" muta build
+const int e_hdBuildIndex_ZOpenAir_OneBaseDrop            = 18;   // single base "island" drop build
+const int e_hdBuildIndex_ZOpenAir_QuickExpandAir         = 19;   // quick expand air build
+
+//==================================================================================================
+//  Zerg MidGame
+//==================================================================================================
+// rush/timing continuation builds
+const int e_hdBuildIndex_ZMidRushTiming_LingBaneRoach    = 30;   // continue the early pressure with ling/bane/roach
+const int e_hdBuildIndex_ZMidRushTiming_DefensiveExpand  = 31;   // transition from early pressure to a macro game
+// 2-3 base power attack builds
+const int e_hdBuildIndex_ZMidPower_PureMuta              = 32;   // 2 base muta harassment, with ling+static defense
+const int e_hdBuildIndex_ZMidPower_LingBaneMuta          = 33;   // attack with ling+bane+muta together
+const int e_hdBuildIndex_ZMidPower_FoodCapRoach          = 34;   // quick food cap roach rush
+const int e_hdBuildIndex_ZMidPower_RoachInfestor         = 35;   // standard 2-3 base roach + infestor
+const int e_hdBuildIndex_ZMidPower_RoachHydra            = 36;   // 2-3 base roach + hydra build
+const int e_hdBuildIndex_ZMidPower_RoachRavager          = 37;   // 2 base roach+ravager build
+const int e_hdBuildIndex_ZMidPower_SwarmHost             = 38;   // 2 base swarm host build
+const int e_hdBuildIndex_ZMidPower_HydraLurker           = 39;   // 2-3 base lurker build
+// 3 base macro oriented builds
+const int e_hdBuildIndex_ZMidMacro_RoachHydra            = 40;   // macro toward late game roach + hydra
+const int e_hdBuildIndex_ZMidMacro_RoachInfestor         = 41;   // macro toward late game roach + infestor
+const int e_hdBuildIndex_ZMidMacro_HydraLurker           = 42;   // macro toward late game hyrda + lurker
+const int e_hdBuildIndex_ZMidMacro_Ultralisk             = 43;   // macro toward late game ultralisk 
+const int e_hdBuildIndex_ZMidMacro_Broodlord             = 44;   // macro toward late game broodlord
+// air/island builds
+const int e_hdBuildIndex_ZMidAir_OneBaseMuta             = 45;   // continue single base "island" air build
+const int e_hdBuildIndex_ZMidAir_OneBaseDrop             = 46;   // continue single base "island" drop build
+const int e_hdBuildIndex_ZMidAir_ExpansionMuta           = 47;   // quick expand air only attack
+const int e_hdBuildIndex_ZMidAir_ExpansionMixedAir       = 48;   // quick expand air only attack
+const int e_hdBuildIndex_ZMidAir_ExpansionDrop           = 49;   // quick expand drop + air attack
+const int e_hdBuildIndex_ZMidAir_Macro                   = 50;   // macro toward a large late game air force
+
+//==================================================================================================
+//  Zerg LateGame
+//==================================================================================================
+// core builds
+const int e_hdBuildIndex_ZLateCore_RoachInfest           = 60;   // standard roach infestor mid-late game play
+const int e_hdBuildIndex_ZLateCore_RoachHydraInfest      = 61;   // standard roach+hydra+infestor late game
+const int e_hdBuildIndex_ZLateCore_RoachHydra            = 62;   // roach + hydra mid-late game
+const int e_hdBuildIndex_ZLateCore_RoachHydraMuta        = 63;   // roach+hydra with muta harass
+const int e_hdBuildIndex_ZLateCore_RoachHydraLurker      = 64;   // roach+hydra+lurker
+const int e_hdBuildIndex_ZLateCore_RoachInfestorMuta     = 65;   // roach+infestor with muta harass
+// high tech builds
+const int e_hdBuildIndex_ZLateHighTech_UltraHydra        = 66;   // ultralisk + ling/bane/hydra support
+const int e_hdBuildIndex_ZLateHighTech_UltraInfestor     = 67;   // ultralisk + ling/bane/infestor support
+// air builds
+const int e_hdBuildIndex_ZLateAir_BroodRoachHydra        = 68;   // broodlord + roach/hydra support
+const int e_hdBuildIndex_ZLateAir_BroodRoachInfest       = 69;   // broodlord + roach/infestor support
+const int e_hdBuildIndex_ZLateAir_PureAir                = 70;   // muta/corruptor/broodlord
+// special/caster builds
+const int e_hdBuildIndex_ZLateSpecial_InfestorFocus      = 71;   // mainly infestor, roach/viper support, muta harass
+const int e_hdBuildIndex_ZLateSpecial_SwarmHostInfestor  = 72;   // swarmhost + infestor mix
+const int e_hdBuildIndex_ZLateSpecial_ViperLurker        = 73;   // viper+lurker with ling/hydra support  
+
+
+//==================================================================================================
+//  ChooseHDZergBuildFromSpecificBuild
+//==================================================================================================
+int ChooseHDZergBuildFromSpecificBuild (int player, int specific, int mainState) {
+    int randomRoll = RandomInt(1, 100);
+
+    if (mainState == e_mainState_Open) {
+        if (specific == e_buildType_z1b_LingBane) {
+            return e_hdBuildIndex_ZOpenTiming_LingBane;
+        } else if (specific == e_buildType_z1b_Roach) {
+            return e_hdBuildIndex_ZOpenTiming_Roach;
+        } else if (specific == e_buildType_z1b_LingRoach) {
+            return e_hdBuildIndex_ZOpenTiming_LingRoach;
+        } else if (specific == e_buildType_z2b_PureMuta) {
+            return e_hdBuildIndex_ZOpenPowerMacro_QuickExpGnd; // need to get to muta asap
+        } else if (specific == e_buildType_z2b_LingBaneMuta) {
+            if (randomRoll < 15)      { return e_hdBuildIndex_ZOpenPowerMacro_DefenseExpGnd; }      // 15%
+            else                      { return e_hdBuildIndex_ZOpenPowerMacro_QuickExpGnd; }        // 85%
+        } else if (specific == e_buildType_z2b_CapPureRoach) {
+            return e_hdBuildIndex_ZOpenPowerMacro_QuickExpGnd; // need to get to food cap asap
+        } else if (specific == e_buildType_z2b_RoachInfest) {
+            if (randomRoll < 15)      { return e_hdBuildIndex_ZOpenPowerMacro_DefenseExpGnd; }      // 15%
+            else                      { return e_hdBuildIndex_ZOpenPowerMacro_QuickExpGnd; }        // 85%
+        } else if (specific == e_buildType_z2b_RoachHydra) {
+            if (randomRoll < 15)      { return e_hdBuildIndex_ZOpenPowerMacro_DefenseExpGnd; }      // 15%
+            else                      { return e_hdBuildIndex_ZOpenPowerMacro_QuickExpGnd; }        // 85%
+        } else if (specific == e_buildType_z2b_SwarmHost) {
+            return e_hdBuildIndex_ZOpenPowerMacro_QuickExpGnd; // need to get to swarmhost asap
+        } else if (specific == e_buildType_z2b_RoachRavager) {
+            return e_hdBuildIndex_ZOpenPowerMacro_QuickExpGnd; // need to get to ravager asap
+        } else if (specific == e_buildType_zm_MacroInfest) {
+            if (randomRoll < 25)      { return e_hdBuildIndex_ZOpenPowerMacro_DefenseExpGnd; }      // 25%
+            else                      { return e_hdBuildIndex_ZOpenPowerMacro_QuickExpGnd; }        // 75%
+        } else if (specific == e_buildType_zm_MacroHydraLurker) {
+            if (randomRoll < 25)      { return e_hdBuildIndex_ZOpenPowerMacro_DefenseExpGnd; }      // 25%
+            else                      { return e_hdBuildIndex_ZOpenPowerMacro_QuickExpGnd; }        // 75%
+        } else if (specific == e_buildType_zm_MacroUltra) {
+            if (randomRoll < 25)      { return e_hdBuildIndex_ZOpenPowerMacro_DefenseExpGnd; }      // 25%
+            else                      { return e_hdBuildIndex_ZOpenPowerMacro_QuickExpGnd; }        // 75%
+        } else if (specific == e_buildType_zm_MacroBrood) {
+            if (randomRoll < 25)      { return e_hdBuildIndex_ZOpenPowerMacro_DefenseExpGnd; }      // 25%
+            else                      { return e_hdBuildIndex_ZOpenPowerMacro_QuickExpGnd; }        // 75%
+        }
+    }
+    else if (mainState == e_mainState_Mid) {
+        if (specific == e_buildType_z1b_LingBane) {
+            if (randomRoll < 25)      { return e_hdBuildIndex_ZMidRushTiming_LingBaneRoach; }       // 25%
+            else                      { return e_hdBuildIndex_ZMidRushTiming_DefensiveExpand; }     // 75%
+        } else if (specific == e_buildType_z1b_Roach) {
+            return e_hdBuildIndex_ZMidRushTiming_DefensiveExpand;
+        } else if (specific == e_buildType_z1b_LingRoach) {
+            if (randomRoll < 25)      { return e_hdBuildIndex_ZMidRushTiming_LingBaneRoach; }       // 25%
+            else                      { return e_hdBuildIndex_ZMidRushTiming_DefensiveExpand; }     // 75%
+        } else if (specific == e_buildType_z2b_PureMuta) {
+            return e_hdBuildIndex_ZMidPower_PureMuta;
+        } else if (specific == e_buildType_z2b_LingBaneMuta) {
+            return e_hdBuildIndex_ZMidPower_LingBaneMuta;
+        } else if (specific == e_buildType_z2b_CapPureRoach) {
+            return e_hdBuildIndex_ZMidPower_FoodCapRoach;
+        } else if (specific == e_buildType_z2b_RoachInfest) {
+            return e_hdBuildIndex_ZMidPower_RoachInfestor;
+        } else if (specific == e_buildType_z2b_RoachHydra) {
+            return e_hdBuildIndex_ZMidPower_RoachHydra;
+        } else if (specific == e_buildType_z2b_SwarmHost) {
+            return e_hdBuildIndex_ZMidPower_SwarmHost;
+        } else if (specific == e_buildType_z2b_RoachRavager) {
+            return e_hdBuildIndex_ZMidPower_RoachRavager;
+        } else if (specific == e_buildType_zm_MacroInfest) {
+            return e_hdBuildIndex_ZMidMacro_RoachInfestor;
+        } else if (specific == e_buildType_zm_MacroHydraLurker) {
+            return e_hdBuildIndex_ZMidMacro_HydraLurker;
+        } else if (specific == e_buildType_zm_MacroUltra) {
+            return e_hdBuildIndex_ZMidMacro_Ultralisk;
+        } else if (specific == e_buildType_zm_MacroBrood) {
+            return e_hdBuildIndex_ZMidMacro_Broodlord;
+        }
+    }
+    else if (mainState == e_mainState_Late) {
+        // only the macro builds are still applicable late game
+        if (specific == e_buildType_zm_MacroInfest) {
+            if (randomRoll < 35)      { return e_hdBuildIndex_ZLateCore_RoachHydraInfest; }         // 35%
+            else if (randomRoll < 40) { return e_hdBuildIndex_ZLateSpecial_InfestorFocus; }         //  5%
+            else                      { return e_hdBuildIndex_ZLateCore_RoachInfest; }              // 60%
+        } else if (specific == e_buildType_zm_MacroHydraLurker) {
+            if (randomRoll < 5)      { return e_hdBuildIndex_ZLateSpecial_ViperLurker; }            //  5%
+            else                      { return e_hdBuildIndex_ZLateCore_RoachHydraLurker; }         // 95%
+        } else if (specific == e_buildType_zm_MacroUltra) {
+            if (randomRoll < 15)      { return e_hdBuildIndex_ZLateHighTech_UltraHydra; }           // 15%
+            else                      { return e_hdBuildIndex_ZLateHighTech_UltraInfestor; }        // 85%
+        } else if (specific == e_buildType_zm_MacroBrood) {
+            if (randomRoll < 40)      { return e_hdBuildIndex_ZLateAir_BroodRoachHydra; }           // 40%
+            else                      { return e_hdBuildIndex_ZLateAir_BroodRoachInfest; }          // 60%
+        }
+    }
+
+    // not forced into a specific build at this stage
+    return e_buildType_Invalid;
+}
+
+//==================================================================================================
+//  OpenChooseHDZergBuildFromType
+//==================================================================================================
+int OpenChooseHDZergBuildFromType (int player, int openingType) {
+
+    AINewChooseSubState(player, e_openRollState, 1, 1000, e_hdBuildIndex_ZOpenPowerMacro_DefenseExpGnd);
+
+    if (openingType == e_buildType_Rush) {
+        AISetSubStateChance( e_hdBuildIndex_ZOpenRush_6Pool,   50 ); //   50
+        AISetSubStateChance( e_hdBuildIndex_ZOpenRush_10Pool,  50 ); //  100
+    } else if (openingType == e_buildType_Timing) {
+        //                                                         random protoss terran  zerg
+        AISetSubStateChanceRace( e_hdBuildIndex_ZOpenTiming_LingBane,  30,    10,    50,    40 ); //  30,  10,  50,  40
+        AISetSubStateChanceRace( e_hdBuildIndex_ZOpenTiming_Roach,     40,    50,    40,    30 ); //  70,  60,  90,  70
+        AISetSubStateChanceRace( e_hdBuildIndex_ZOpenTiming_LingRoach, 30,    40,    10,    30 ); // 100, 100, 100, 100
+    } else if (openingType == e_buildType_Macro) {
+        // on average play a bit safer and head toward late game
+        AISetSubStateChance( e_hdBuildIndex_ZOpenPowerMacro_QuickExpGnd,    40 ); //   40
+        AISetSubStateChance( e_hdBuildIndex_ZOpenPowerMacro_DefenseExpGnd,  60 ); //  100
+    } else if (openingType == e_buildType_Air) {
+        if (!AIHasNearbyOpenExpansion(player) && !AIIsExpandingOrHasExpanded(player)) {
+            // can't easily expand, go for a one base attack
+            AISetSubStateChance( e_hdBuildIndex_ZOpenAir_OneBaseMuta,       70 ); //   70
+            AISetSubStateChance( e_hdBuildIndex_ZOpenAir_OneBaseDrop,       30 ); //  100
+        } else {
+            AISetSubStateChance( e_hdBuildIndex_ZOpenAir_OneBaseMuta,       10 ); //   10
+            AISetSubStateChance( e_hdBuildIndex_ZOpenAir_OneBaseDrop,        5 ); //   15
+            AISetSubStateChance( e_hdBuildIndex_ZOpenAir_QuickExpandAir,    85 ); //  100
+        }
+    } else {  ///if (openingType == e_buildType_Power)
+        // be a bit more aggresive to hit a power timing
+        AISetSubStateChance( e_hdBuildIndex_ZOpenPowerMacro_QuickExpGnd,    70 ); //   70
+        AISetSubStateChance( e_hdBuildIndex_ZOpenPowerMacro_DefenseExpGnd,  30 ); //  100
+    }
+
+    return  AIChooseSubState();
+}
+
+//==================================================================================================
+//  MidChooseHDZergBuildFromType
+//==================================================================================================
+int MidChooseHDZergBuildFromType (int player, int openingType, int prevBuildIdx) {
+
+    AINewChooseSubState(player, e_middleRollState, 1, 1000, e_hdBuildIndex_ZMidPower_RoachInfestor);
+
+    if (openingType == e_buildType_Rush) {
+        AISetSubStateChance( e_hdBuildIndex_ZMidRushTiming_LingBaneRoach,    40 ); //   40
+        AISetSubStateChance( e_hdBuildIndex_ZMidRushTiming_DefensiveExpand,  60 ); //  100
+    } else if (openingType == e_buildType_Timing) {
+        AISetSubStateChance( e_hdBuildIndex_ZMidRushTiming_LingBaneRoach,    35 ); //   35
+        AISetSubStateChance( e_hdBuildIndex_ZMidRushTiming_DefensiveExpand,  65 ); //  100
+    } else if (openingType == e_buildType_Macro) {
+        //                                                              random protoss terran  zerg
+        AISetSubStateChanceRace( e_hdBuildIndex_ZMidMacro_RoachHydra,       40,    60,    20,    40 ); //  40,  60,  20,  40
+        AISetSubStateChanceRace( e_hdBuildIndex_ZMidMacro_RoachInfestor,    40,    20,    60,    35 ); //  80,  80,  80,  75
+        AISetSubStateChanceRace( e_hdBuildIndex_ZMidMacro_HydraLurker,      10,    10,    10,    10 ); //  90,  90,  90,  85
+        AISetSubStateChanceRace( e_hdBuildIndex_ZMidMacro_Ultralisk,         5,     5,     5,     5 ); //  95,  95,  95,  90
+        AISetSubStateChanceRace( e_hdBuildIndex_ZMidMacro_Broodlord,         5,     5,     5,    10 ); // 100, 100, 100, 100
+    } else if (openingType == e_buildType_Air) {
+        if (prevBuildIdx == e_hdBuildIndex_ZOpenAir_OneBaseMuta ||
+            prevBuildIdx == e_hdBuildIndex_ZMidAir_OneBaseMuta) {
+            AISetSubStateChance( e_hdBuildIndex_ZMidAir_OneBaseMuta,        15 ); //   15
+            AISetSubStateChance( e_hdBuildIndex_ZMidAir_ExpansionMuta,      20 ); //   35
+            AISetSubStateChance( e_hdBuildIndex_ZMidAir_ExpansionMixedAir,  25 ); //   60
+            AISetSubStateChance( e_hdBuildIndex_ZMidAir_Macro,              40 ); //  100
+        }
+        else if (prevBuildIdx == e_hdBuildIndex_ZOpenAir_OneBaseDrop ||
+                 prevBuildIdx == e_hdBuildIndex_ZMidAir_OneBaseDrop) {
+            AISetSubStateChance( e_hdBuildIndex_ZMidAir_OneBaseDrop,        25 ); //   25
+            AISetSubStateChance( e_hdBuildIndex_ZMidAir_ExpansionDrop,      35 ); //   60
+            AISetSubStateChance( e_hdBuildIndex_ZMidAir_Macro,              40 ); //  100
+        }
+        else if (!AIHasNearbyOpenExpansion(player) && !AIIsExpandingOrHasExpanded(player)) {
+            // can't easily expand, continue to be a bit more aggressive
+            AISetSubStateChance( e_hdBuildIndex_ZMidAir_ExpansionMuta,      30 ); //   30
+            AISetSubStateChance( e_hdBuildIndex_ZMidAir_ExpansionMixedAir,  30 ); //   60
+            AISetSubStateChance( e_hdBuildIndex_ZMidAir_ExpansionDrop,      20 ); //   80
+            AISetSubStateChance( e_hdBuildIndex_ZMidAir_Macro,              20 ); //  100
+        } else {
+            AISetSubStateChance( e_hdBuildIndex_ZMidAir_ExpansionMuta,      25 ); //   25
+            AISetSubStateChance( e_hdBuildIndex_ZMidAir_ExpansionMixedAir,  25 ); //   50
+            AISetSubStateChance( e_hdBuildIndex_ZMidAir_ExpansionDrop,      10 ); //   60
+            AISetSubStateChance( e_hdBuildIndex_ZMidAir_Macro,              40 ); //  100
+        }
+    } else {  ///if (openingType == e_buildType_Power)
+        //                                                              random protoss terran  zerg
+        AISetSubStateChanceRace( e_hdBuildIndex_ZMidPower_PureMuta,          5,    10,     5,     5 ); //   5,  10,   5,   5
+        AISetSubStateChanceRace( e_hdBuildIndex_ZMidPower_LingBaneMuta,     10,     5,    15,    10 ); //  15,  15,  20,  15
+        AISetSubStateChanceRace( e_hdBuildIndex_ZMidPower_FoodCapRoach,     15,    15,    15,    15 ); //  30,  30,  35,  30
+        AISetSubStateChanceRace( e_hdBuildIndex_ZMidPower_RoachInfestor,    25,    15,    35,    20 ); //  55,  45,  70,  50
+        AISetSubStateChanceRace( e_hdBuildIndex_ZMidPower_RoachHydra,       20,    30,    10,    25 ); //  75,  75,  80,  75
+        AISetSubStateChanceRace( e_hdBuildIndex_ZMidPower_RoachRavager,     15,    15,    10,    15 ); //  90,  90,  90,  90
+        AISetSubStateChanceRace( e_hdBuildIndex_ZMidPower_SwarmHost,         5,     5,     5,     5 ); //  95,  95,  95,  95
+        AISetSubStateChanceRace( e_hdBuildIndex_ZMidPower_HydraLurker,       5,     5,     5,     5 ); // 100, 100, 100, 100
+    }
+
+    return  AIChooseSubState();
+}
+
+//==================================================================================================
+//  LateChooseHDZergBuildFromType
+//==================================================================================================
+int LateChooseHDZergBuildFromType (int player, int lateGameType, int prevBuildIdx) {
+
+    AINewChooseSubState(player, e_lateRollState, 1, 1000, e_hdBuildIndex_ZLateCore_RoachInfest);
+
+    if (lateGameType == e_buildType_HighTech) {
+        AISetSubStateChance( e_hdBuildIndex_ZLateHighTech_UltraHydra,           20 ); //   20
+        AISetSubStateChance( e_hdBuildIndex_ZLateHighTech_UltraInfestor,        80 ); //  100
+    } else if (lateGameType == e_buildType_Special) {
+        AISetSubStateChance( e_hdBuildIndex_ZLateSpecial_InfestorFocus,         30 ); //   30
+        AISetSubStateChance( e_hdBuildIndex_ZLateSpecial_SwarmHostInfestor,     35 ); //   65
+        AISetSubStateChance( e_hdBuildIndex_ZLateSpecial_ViperLurker,           35 ); //  100
+    } else if (lateGameType == e_buildType_Air) {
+        if (AIEnemyBuildingsOnlyOnOtherIslands(player)) {
+            AISetSubStateChance( e_hdBuildIndex_ZLateAir_BroodRoachHydra,           10 ); //   10
+            AISetSubStateChance( e_hdBuildIndex_ZLateAir_BroodRoachInfest,           5 ); //   15
+            AISetSubStateChance( e_hdBuildIndex_ZLateAir_PureAir,                   85 ); //  100
+        } else {
+            AISetSubStateChance( e_hdBuildIndex_ZLateAir_BroodRoachHydra,           25 ); //   25
+            AISetSubStateChance( e_hdBuildIndex_ZLateAir_BroodRoachInfest,          65 ); //   90
+            AISetSubStateChance( e_hdBuildIndex_ZLateAir_PureAir,                   10 ); //  100
+        }
+    } else {  //if (lateGameType == e_buildType_Core)
+        //                                                                  random protoss terran  zerg
+        AISetSubStateChanceRace( e_hdBuildIndex_ZLateCore_RoachInfest,          35,    15,    60,    20 ); //  35,  15,  60,  20
+        AISetSubStateChanceRace( e_hdBuildIndex_ZLateCore_RoachHydraInfest,     25,    35,    10,    30 ); //  60,  50,  70,  50
+        AISetSubStateChanceRace( e_hdBuildIndex_ZLateCore_RoachHydra,           15,    25,     5,    25 ); //  75,  75,  75,  75
+        AISetSubStateChanceRace( e_hdBuildIndex_ZLateCore_RoachHydraMuta,        5,     5,     5,     5 ); //  80,  80,  80,  80
+        AISetSubStateChanceRace( e_hdBuildIndex_ZLateCore_RoachHydraLurker,     10,    10,    10,    10 ); //  90,  90,  90,  90
+        AISetSubStateChanceRace( e_hdBuildIndex_ZLateCore_RoachInfestorMuta,    10,    10,    10,    10 ); // 100, 100, 100, 100
+    }
+    // e_buildType_Mixed should be unused, but will map to a Core build if used
+
+    return  AIChooseSubState();
+}
+
+//==================================================================================================
+//  OpenChooseHDZergCounterBuild
+//==================================================================================================
+int OpenChooseHDZergCounterBuild (int player, bool onlyMustSwitch) {
+    // counter logic is primarily aimed at 1v1 games and does not consider allies under attack etc
+    int currentOpening = AIGetUserInt(player, c_openingBuildType);
+    int lobbyBuild = PlayerAIBuildNumber(player);
+
+    // don't use counter logic if we were told to do a specific opening
+    if (PlayerBeaconBuildMenuWasFromPlayer(player, c_buildMenuOpening)) {
+        return e_buildType_Invalid;
+    }
+    if (AIGetUserInt(player, c_specificLobbyBuild) != e_buildType_Invalid) {
+        return e_buildType_Invalid;
+    }
+    if (lobbyBuild >= e_buildType_Rush && lobbyBuild <= e_buildType_Air) {
+        return e_buildType_Invalid;
+    }
+
+    if (currentOpening == e_buildType_Rush) {
+        if (AIHighDontRush(player))  {
+            // we were planning to rush, but enemy is well prepared, switch to a timing attack
+            AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+            AISetOpeningBuildMenuFromScriptType(player);
+
+            // choose either ling-roach or ling-bane to defend
+            if (AITechCount(player, c_ZB_RoachWarren, c_techCountInProgressOrBetter) > 0) {
+                return e_hdBuildIndex_ZOpenTiming_LingRoach;
+            }
+            if (AITechCount(player, c_ZB_BanelingNest, c_techCountInProgressOrBetter) > 0) {
+                return e_hdBuildIndex_ZOpenTiming_LingBane;
+            }
+            return e_hdBuildIndex_ZOpenTiming_LingRoach;
+        }
+    }
+    else if (currentOpening == e_buildType_Power) {
+        if (AIIsExpandingOrHasExpanded(player)) {
+            // if we've already expanded, just stick with a power build, but use the defensive one
+            if (AIGetUserInt(player, c_currentBuildIndex) != e_hdBuildIndex_ZOpenPowerMacro_DefenseExpGnd) {
+                return e_hdBuildIndex_ZOpenPowerMacro_DefenseExpGnd;
+            }
+            // already using e_hdBuildIndex_ZOpenPowerMacro_DefenseExpGnd
+            return e_buildType_Invalid;
+        }
+        
+        if (AIHighOpponentLikelyRushing(player) || AIHighCurrentlyUnderHeavyAttack(player))  {
+            // switch to a timing build (since that is more oriented toward immediate army)
+            AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+            AISetOpeningBuildMenuFromScriptType(player);
+
+            // choose either ling-roach or ling-bane to defend
+            if (AITechCount(player, c_ZB_RoachWarren, c_techCountInProgressOrBetter) > 0) {
+                return e_hdBuildIndex_ZOpenTiming_LingRoach;
+            }
+            if (AITechCount(player, c_ZB_BanelingNest, c_techCountInProgressOrBetter) > 0) {
+                return e_hdBuildIndex_ZOpenTiming_LingBane;
+            }
+            return e_hdBuildIndex_ZOpenTiming_LingRoach;
+        }
+    }
+    else if (currentOpening == e_buildType_Macro) {
+        if (!AIHighOpponentLikelyRushing(player) && 
+            !AIHighCurrentlyUnderHeavyAttack(player) && 
+            !AIHighEnemyArmyLarger(player))  {
+            // not aware that we should switch, so stay with the macro build
+            return e_buildType_Invalid;
+        }
+
+        if (AIIsExpandingOrHasExpanded(player)) {
+            // if we've already expanded, switch to defensive power build instead of macro
+            AISetUserInt(player, c_openingBuildType, e_buildType_Power);
+            AISetOpeningBuildMenuFromScriptType(player);
+            return e_hdBuildIndex_ZOpenPowerMacro_DefenseExpGnd;
+        }
+        else {
+            // haven't already expanded, switch to a timing build 
+            // (since that is more oriented toward immediate army)
+            AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+            AISetOpeningBuildMenuFromScriptType(player);
+
+            // choose either ling-roach or ling-bane to defend
+            if (AITechCount(player, c_ZB_RoachWarren, c_techCountInProgressOrBetter) > 0) {
+                return e_hdBuildIndex_ZOpenTiming_LingRoach;
+            }
+            if (AITechCount(player, c_ZB_BanelingNest, c_techCountInProgressOrBetter) > 0) {
+                return e_hdBuildIndex_ZOpenTiming_LingBane;
+            }
+            return e_hdBuildIndex_ZOpenTiming_LingRoach;
+        }
+    }
+
+    return e_buildType_Invalid;
+}
+
+//==================================================================================================
+//  MidHDZergCounterPowerBuild
+//==================================================================================================
+int MidHDZergCounterPowerBuild (int player, int currentExactBuild) {
+    int random;
+    
+    if (currentExactBuild == e_hdBuildIndex_ZMidPower_SwarmHost) {
+        if (AITechCount(player, c_ZB_InfestationPit, c_techCountInProgressOrBetter) > 0) {
+            // allowed to keep this build
+            return e_buildType_Invalid;
+        }
+    }
+    else if (currentExactBuild == e_hdBuildIndex_ZMidPower_PureMuta) {
+        if (AITechCount(player, c_ZB_Spire_Alias, c_techCountInProgressOrBetter) > 0) {
+            // allowed to keep this build
+            return e_buildType_Invalid;
+        }
+    }
+    else if (currentExactBuild == e_hdBuildIndex_ZMidPower_LingBaneMuta) {
+        if (AITechCount(player, c_ZB_Spire_Alias, c_techCountInProgressOrBetter) > 0) {
+            // allowed to keep this build
+            return e_buildType_Invalid;
+        }
+    }
+    else if (currentExactBuild == e_hdBuildIndex_ZMidPower_HydraLurker) {
+        if (AITechCount(player, c_ZB_LurkerDen, c_techCountInProgressOrBetter) > 0) {
+            // allowed to keep this build
+            return e_buildType_Invalid;
+        }
+    }
+    else if (currentExactBuild == e_hdBuildIndex_ZMidPower_FoodCapRoach || 
+             currentExactBuild == e_hdBuildIndex_ZMidPower_RoachInfestor || 
+             currentExactBuild == e_hdBuildIndex_ZMidPower_RoachHydra ||
+             currentExactBuild == e_hdBuildIndex_ZMidPower_RoachRavager ) {
+        // allowed to keep this build
+        return e_buildType_Invalid;
+    }
+
+    // choose a roach based build
+    random = RandomInt(1, 100);
+    if (random > 90) {
+        return e_hdBuildIndex_ZMidPower_FoodCapRoach; // 10%
+    }
+    if (random > 30) {
+        // roach hydra more likely, since infestor energy might be too low in time
+        return e_hdBuildIndex_ZMidPower_RoachHydra; // 60%
+    }
+    return e_hdBuildIndex_ZMidPower_RoachInfestor; // 30%
+}
+
+//==================================================================================================
+//  MidChooseHDZergCounterBuild
+//==================================================================================================
+int MidChooseHDZergCounterBuild (int player, bool onlyMustSwitch) {
+    // counter logic is primarily aimed at 1v1 games and does not consider allies under attack etc
+    int currentOpening = AIGetUserInt(player, c_openingBuildType);
+    int currentExactBuild = AIGetUserInt(player, c_currentBuildIndex);
+    int lobbyBuild = PlayerAIBuildNumber(player);
+
+    // don't use counter logic if we were told to do a specific opening
+    if (PlayerBeaconBuildMenuWasFromPlayer(player, c_buildMenuOpening)) {
+        return e_buildType_Invalid;
+    }
+    if (AIGetUserInt(player, c_specificLobbyBuild) != e_buildType_Invalid) {
+        return e_buildType_Invalid;
+    }
+    if (lobbyBuild >= e_buildType_Rush && lobbyBuild <= e_buildType_Air) {
+        return e_buildType_Invalid;
+    }
+
+    if (currentOpening == e_buildType_Rush || currentOpening == e_buildType_Timing) {
+        if (!AIIsExpandingOrHasExpanded(player)) {
+            if (AIHighCurrentlyUnderHeavyAttack(player) || AIHighEnemyArmyLarger(player))  {
+                if (currentExactBuild == e_hdBuildIndex_ZMidRushTiming_LingBaneRoach) {
+                    // don't expand if we're under attack or behind on army
+                    return e_hdBuildIndex_ZMidRushTiming_LingBaneRoach;
+                }
+            }
+        }
+    }
+    else if (currentOpening == e_buildType_Power) {          
+        if (!AIIsExpandingOrHasExpanded(player)) {
+            if (AIHighOpponentLikelyRushing(player) || AIHighCurrentlyUnderHeavyAttack(player))  {
+                // don't expand if we're under attack or behind on army, instead switch to an army heavy timing build
+                AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+                AISetOpeningBuildMenuFromScriptType(player);
+
+                return e_hdBuildIndex_ZMidRushTiming_LingBaneRoach;
+            }
+        }
+        else {
+            // we've already expanded, just stick with a power build, but use the one that best fits our tech
+            return MidHDZergCounterPowerBuild(player, currentExactBuild);
+        }
+    }
+    else if (currentOpening == e_buildType_Macro) {
+        if (!AIHighOpponentLikelyRushing(player) && 
+            !AIHighCurrentlyUnderHeavyAttack(player) && 
+            !AIHighEnemyArmyLarger(player))  {
+            // not aware that we should switch, so stay with the macro build
+            return e_buildType_Invalid;
+        }
+
+        if (AIIsExpandingOrHasExpanded(player)) {
+            // if we've already expanded, switch to defensive power build instead of macro
+            AISetUserInt(player, c_openingBuildType, e_buildType_Power);
+            AISetOpeningBuildMenuFromScriptType(player);
+            return MidHDZergCounterPowerBuild(player, currentExactBuild);
+        }
+        else {
+            // haven't already expanded, switch to an army heavy timing build 
+            AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+            AISetOpeningBuildMenuFromScriptType(player);
+
+            return e_hdBuildIndex_ZMidRushTiming_LingBaneRoach;
+        }
+    }
+
+    return e_buildType_Invalid;
+}
+
+//==================================================================================================
+//  LateChooseHDZergCounterBuild
+//==================================================================================================
+int LateChooseHDZergCounterBuild (int player, bool onlyMustSwitch) {
+    // counter logic is primarily aimed at 1v1 games and does not consider allies under attack etc
+    int currentLateGame = AIGetUserInt(player, c_lateGameBuildType);
+    int currentBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int newLateGame = e_buildType_Core;
+    bool needsNewBuild = false;
+
+    // don't use counter logic if we were told to do a specific opening
+    if (PlayerBeaconBuildMenuWasFromPlayer(player, c_buildMenuLateGame)) {
+        return e_buildType_Invalid;
+    }
+
+    // for variety not much counter logic, only need to worry about using an advanced build when under attack
+    if (!AIHighLateGameUnderHeavyAttack(player)) {
+        return e_buildType_Invalid;
+    }
+
+    // we're under heavy attack, don't use caster builds or builds we don't have tech for
+    // note this logic can't conflict with UpdateHDZergLateGameArmy or it will switch back and forth
+    if (currentLateGame == e_buildType_Special || currentLateGame == e_buildType_Mixed) {
+        needsNewBuild = true;
+    }
+    else if (currentLateGame == e_buildType_Air) {
+        if (!AIEnemyBuildingsOnlyOnOtherIslands(player)) {
+            if (AITechCount(player, c_ZB_Spire_Alias, c_techCountCompleteOnly) <= 0) {
+                needsNewBuild = true;
+            }
+            else if (AITechCount(player, c_ZB_Hive, c_techCountCompleteOnly) <= 0) {
+                needsNewBuild = true;
+            }
+        }
+    }
+    else if (currentLateGame == e_buildType_HighTech) {
+        if (AITechCount(player, c_ZB_Hive, c_techCountCompleteOnly) <= 0) {
+            needsNewBuild = true;
+        }
+    }
+
+    if (!needsNewBuild) {
+        return e_buildType_Invalid;
+    }
+
+    // pick a new build
+    newLateGame = AIRandomlyChooseLateGameBuild(player);
+    if (newLateGame == currentLateGame) {
+        // this shouldn't happen, but just in case
+        return e_buildType_Invalid;
+    }
+
+    AISetUserInt(player, c_lateGameBuildType, newLateGame);
+    AISetLateGameBuildMenuFromScriptType(player);
+    return LateChooseHDZergBuildFromType(player, newLateGame, currentBuildIndex);
+}
+
+//==================================================================================================
+//  PickHDZergOpening
+//==================================================================================================
+int PickHDZergOpening (int player) {
+    int race = AIGetEnemyRaceVal(player);
+    int currentBuildIndex;
+    int openingType;
+    int specificBuild;
+
+    if (AIState(player, e_mainState) != e_mainState_Open) {
+        AISetUserInt(player, c_currentBuildIndex, e_buildType_Invalid);
+    }
+    
+    // read opening data from lobby / build options menu
+    AIChooseNextOpeningBuild(player);
+
+    // if a specific build was choosen use that
+    specificBuild = AIGetUserInt(player, c_specificLobbyBuild);
+    if (specificBuild != e_buildType_Invalid) {
+        currentBuildIndex = ChooseHDZergBuildFromSpecificBuild(player, specificBuild, e_mainState_Open);
+        if (currentBuildIndex != e_buildType_Invalid) {
+            return currentBuildIndex;
+        }
+    }
+
+    // should we do a specific counter build?
+    currentBuildIndex = OpenChooseHDZergCounterBuild(player, false);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // if our previous current build is still valid then keep that
+    currentBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // otherwise pick an opening within the openingBuildType constraint
+    openingType = AIGetUserInt(player, c_openingBuildType);
+    currentBuildIndex = OpenChooseHDZergBuildFromType(player, openingType);
+    return currentBuildIndex;
+}
+
+//==================================================================================================
+//  UpdateHDZergOpening
+//==================================================================================================
+void UpdateHDZergOpening (int player) {
+    int mainSubState = AIState(player, e_mainSubState);
+    int buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int counterBuild;
+    
+    if  ( mainSubState != e_mainSubState_Build || 
+          buildIndex == e_hdBuildIndex_Invalid || 
+          AIHasPlayerChangedCurrentOpening(player) ) {
+        // we should pick a new opening build
+        AISetMainState(player, e_mainState_Open, e_mainSubState_Init);        
+        buildIndex = PickHDZergOpening(player);
+        AISetUserInt(player, c_currentBuildIndex, buildIndex);
+        AISetMainState(player, e_mainState_Open, e_mainSubState_Build);
+    } else {
+        counterBuild = OpenChooseHDZergCounterBuild(player, true);
+        if (counterBuild != e_buildType_Invalid) {
+            AISetUserInt(player, c_currentBuildIndex, counterBuild);
+        }
+    }
+}
+
+//==================================================================================================
+//  PickHDZergMidGame
+//==================================================================================================
+int PickHDZergMidGame(int player) {
+    int prevBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int race = AIGetEnemyRaceVal(player);
+    int currentBuildIndex;
+    int openingType;
+    int specificBuild;
+
+    if (AIState(player, e_mainState) != e_mainState_Mid) {
+        AISetUserInt(player, c_currentBuildIndex, e_buildType_Invalid);
+    }
+    
+    // read opening data from lobby / build options menu
+    AIChooseNextOpeningBuild(player);
+
+    // if a specific build was choosen use that
+    specificBuild = AIGetUserInt(player, c_specificLobbyBuild);
+    if (specificBuild != e_buildType_Invalid) {
+        currentBuildIndex = ChooseHDZergBuildFromSpecificBuild(player, specificBuild, e_mainState_Mid);
+        if (currentBuildIndex != e_buildType_Invalid) {
+            return currentBuildIndex;
+        }
+    }
+
+    // should we do a specific counter build?
+    currentBuildIndex = MidChooseHDZergCounterBuild(player, false);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // if our previous current build is still valid then keep that
+    currentBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // otherwise pick an midgame within the openingBuildType constraint
+    openingType = AIGetUserInt(player, c_openingBuildType);
+    currentBuildIndex = MidChooseHDZergBuildFromType(player, openingType, prevBuildIndex);
+    return currentBuildIndex;
+}
+
+//==================================================================================================
+//  UpdateHDZergMidGame
+//==================================================================================================
+void UpdateHDZergMidGame (int player) {
+    int mainSubState = AIState(player, e_mainSubState);
+    int buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int counterBuild;
+    
+    if  ( mainSubState != e_mainSubState_Build || 
+          buildIndex == e_hdBuildIndex_Invalid || 
+          AIHasPlayerChangedCurrentOpening(player) ) {
+        // we should pick a new midGame build
+        AISetMainState(player, e_mainState_Mid, e_mainSubState_Init);        
+        buildIndex = PickHDZergMidGame(player);
+        AISetUserInt(player, c_currentBuildIndex, buildIndex);
+        AISetMainState(player, e_mainState_Mid, e_mainSubState_Build);
+    } else {
+        counterBuild = MidChooseHDZergCounterBuild(player, true);
+        if (counterBuild != e_buildType_Invalid) {
+            AISetUserInt(player, c_currentBuildIndex, counterBuild);
+        }
+    }
+}
+
+//==================================================================================================
+//  PickHDZergLateGame
+//==================================================================================================
+int PickHDZergLateGame(int player) {
+    int prevBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int race = AIGetEnemyRaceVal(player);
+    int currentBuildIndex;
+    int lateGameType;
+    int specificBuild;
+
+    if (AIState(player, e_mainState) != e_mainState_Late) {
+        AISetUserInt(player, c_currentBuildIndex, e_buildType_Invalid);
+    }
+    
+    // read late game data from lobby / build options menu
+    AIChooseNextLateGameBuild(player);
+
+    // if a specific build was choosen use that
+    specificBuild = AIGetUserInt(player, c_specificLobbyBuild);
+    if (specificBuild != e_buildType_Invalid) {
+        currentBuildIndex = ChooseHDZergBuildFromSpecificBuild(player, specificBuild, e_mainState_Late);
+        if (currentBuildIndex != e_buildType_Invalid) {
+            return currentBuildIndex;
+        }
+    }
+
+    // should we do a specific counter build?
+    currentBuildIndex = LateChooseHDZergCounterBuild(player, false);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // if our previous current build is still valid then keep that
+    currentBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // otherwise pick an opening within the lateGameBuildType constraint
+    lateGameType = AIGetUserInt(player, c_lateGameBuildType);
+    currentBuildIndex = LateChooseHDZergBuildFromType(player, lateGameType, prevBuildIndex);
+    return currentBuildIndex;
+}
+
+//==================================================================================================
+//  UpdateHDZergLateGameArmy
+//==================================================================================================
+void UpdateHDZergLateGameArmy (int player) {
+    int mainSubState = AIState(player, e_mainSubState);
+    int buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int lateGameType = AIGetUserInt(player, c_lateGameBuildType);
+    int newArmyTime = AIGetUserInt(player, c_nextArmyTime);
+    bool pickNewArmy = false;
+    int counterBuild;
+    
+    // should we choose a very specific counter build given the current game situation
+    counterBuild = LateChooseHDZergCounterBuild(player, true);
+    if (counterBuild != e_buildType_Invalid) {
+        AIHighSetLateGameArmy(player, counterBuild);
+        return;
+    }
+
+    if  (mainSubState != e_mainSubState_Build || buildIndex == e_hdBuildIndex_Invalid) {
+        // if we haven't picked a lategame build, we should do so now
+        pickNewArmy = true;
+    }
+    else if (AIHasPlayerChangedCurrentLateGame(player)) {
+        // or the player has ordered us to change, pick a new build now
+        pickNewArmy = true;
+    }
+    else if (newArmyTime < FixedToInt(AIGetTime()) && !AIHighCurrentlyUnderHeavyAttack(player)) {
+        // been using the previous army a while and not currently under attack, switch to a new one
+        pickNewArmy = true;
+    }
+    else if (AIEnemyBuildingsOnlyOnOtherIslands(player) && (lateGameType != e_buildType_Air)) {
+        // if the enemy is hiding on an island and we're not using an air build, switch to air
+        pickNewArmy = true;
+    }
+
+    if (pickNewArmy) {
+        AISetMainState(player, e_mainState_Late, e_mainSubState_Init);        
+        buildIndex = PickHDZergLateGame(player);
+        AIHighSetLateGameArmy(player, buildIndex);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDInitMid
+//--------------------------------------------------------------------------------------------------
+void ZergHDInitMid (int player) {
+    // pick a midGame build using the generic logic
+    int buildIndex = PickHDZergMidGame(player);
+    
+    AISetFlag(player, e_flagsLateScout, true);
+    
+    AISetUserInt(player, c_currentBuildIndex, buildIndex);
+    AISetMainState(player, e_mainState_Mid, e_mainSubState_Build);
+}
+
+//==================================================================================================
+//  Zerg Shared Late Game
+//==================================================================================================
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDInitLate
+//--------------------------------------------------------------------------------------------------
+void ZergHDInitLate (int player) {
+    int delay;
+
+    // turn on attacking if it's not already on, but delay the next attack 4-6 minutes
+    if (AIState(player, e_attackState) == e_attackState_Wait) {
+        AIWaveMerge(player, c_waveMain, c_waveAttack);
+        AISetAttackState(player, e_attackState_Idle);
+
+        delay = FixedToInt(AIGetTime()) + RandomInt(240, 360);
+        AISetUserInt(player, c_delayNextAttack, delay);
+    }
+
+    // set initial late game flags
+    AISetFlag(player, e_flagsTimeout, true);
+    AISetFlag(player, e_flagsDetect, true);
+    AISetFlag(player, e_flagsLateScout, true);
+    AISetFlag(player, e_flagsClearObs, true);
+    AISetFlag(player, e_flagsDiversion, true);
+    AISetFlag(player, e_flagsEarlyDefScout, false);
+
+    AIEarlyDefenseEnable(player, false, false);
+    
+    // we'll pick a late game build in the regular late game logic
+    AISetUserInt(player, c_currentBuildIndex, e_hdBuildIndex_Invalid);
+    AISetMainState(player, e_mainState_Late, e_mainSubState_Build);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDRecoveryStart
+//--------------------------------------------------------------------------------------------------
+void ZergHDRecoveryStart (int player) {
+
+    AISetStock( player, 1, c_ZB_Hatchery_Alias );
+    AISetStock( player, 1, c_ZU_Drone );
+    AISetStockFarms( player, c_ZU_Overlord, c_stockNeededFarms);
+    AISetStock( player, 12, c_ZU_Drone );
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDVitalUpgrades
+//--------------------------------------------------------------------------------------------------
+void ZergHDVitalUpgrades (int player) {
+    int evoCount = 1;
+    
+    if (AITechCount(player, c_ZU_Baneling, c_techCountInProgressOrBetter) >= 8) {
+        AISetStock( player, 1, c_ZR_BanelingSpeed );
+    }
+
+    if (AITechCount(player, c_ZU_Zergling, c_techCountInProgressOrBetter) >= 12) {
+        AISetStock( player, 1, c_ZR_ZerglingSpeed );
+    }
+    
+    if (AIHighCurrentlyUnderHeavyAttack(player)) {
+        return;
+    }
+    
+    if (AITechCount(player, c_ZU_Hydralisk, c_techCountInProgressOrBetter) >= 8) {
+        AISetStock( player, 1, c_ZR_HydraliskRange );
+    }
+    
+    if ( AITechCount(player, c_ZU_Zergling, c_techCountInProgressOrBetter) >= 12 || 
+         AITechCount(player, c_ZU_Ultralisk, c_techCountInProgressOrBetter) >= 3)
+    {
+        AISetStock( player, 1, c_ZR_MeleeAttacks1 );
+        evoCount += 1;
+    }
+
+    if ( AITechCount(player, c_ZU_Roach, c_techCountInProgressOrBetter) +
+         AITechCount(player, c_ZU_Hydralisk, c_techCountInProgressOrBetter) >= 10)
+    {
+        AISetStock( player, 1, c_ZR_MissileAttacks1 );
+        evoCount += 1;
+    }
+    
+    AISetStock( player, 1, c_ZR_GroundCarapace1 );
+    AISetStockUnitNext( player, evoCount, c_ZB_EvolutionChamber, c_stockAlways );
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDGeneralUpgrades
+//--------------------------------------------------------------------------------------------------
+void ZergHDGeneralUpgrades (int player) {
+    int evoCount = 1;
+
+    if (AIHighCurrentlyUnderHeavyAttack(player)) {
+        return;
+    }
+    
+    if ( AITechCount(player, c_ZU_Zergling, c_techCountInProgressOrBetter) >= 12 || 
+         AITechCount(player, c_ZU_Ultralisk, c_techCountInProgressOrBetter) >= 3)
+    {
+        AINewTechStock(player);
+        AITechStockAdd(c_ZR_MeleeAttacks1);
+        AITechStockAdd(c_ZR_MeleeAttacks2);
+        AITechStockAdd(c_ZR_MeleeAttacks3);
+        AISetStockTechNextUnCap(player,1000,1000);
+
+        evoCount += 1;
+    }
+
+    if ( AITechCount(player, c_ZU_Roach, c_techCountInProgressOrBetter) +
+         AITechCount(player, c_ZU_Hydralisk, c_techCountInProgressOrBetter) >= 10)
+    {
+        AINewTechStock(player);
+        AITechStockAdd(c_ZR_MissileAttacks1);
+        AITechStockAdd(c_ZR_MissileAttacks2);
+        AITechStockAdd(c_ZR_MissileAttacks3);
+        AISetStockTechNextUnCap(player,1000,1000);
+
+        evoCount += 1;
+    }
+    
+    AINewTechStock(player);
+    AITechStockAdd(c_ZR_GroundCarapace1);
+    AITechStockAdd(c_ZR_GroundCarapace2);
+    AITechStockAdd(c_ZR_GroundCarapace3);
+    AISetStockTechNextUnCap(player,1000,1000);
+
+    AISetStockUnitNext( player, evoCount, c_ZB_EvolutionChamber, c_stockAlways );
+    
+    if (AITechCount(player, c_ZU_Infestor, c_techCountInProgressOrBetter) >= 3) {
+        AISetStock( player, 1, c_ZR_InfestorEnergy );
+        AISetStock( player, 1, c_ZR_InfestorParasite );
+    }
+
+    if (AITechCount(player, c_ZU_Roach, c_techCountInProgressOrBetter) >= 8) {
+        AISetStock( player, 1, c_ZR_RoachSpeed );
+    }
+
+    if (AITechCount(player, c_ZB_Hive, c_techCountInProgressOrBetter) >= 1) {
+        if (AITechCount(player, c_ZU_Zergling, c_techCountInProgressOrBetter) >= 12) {
+            AISetStock( player, 1, c_ZR_ZerglingHaste );
+        }
+    }
+
+    AISetStock( player, 1, c_ZR_OverseerSpeed );
+
+    if (AITechCount(player, c_ZU_Ultralisk, c_techCountInProgressOrBetter) >= 4) {
+        AISetStock( player, 1, c_ZR_UltraliskArmor );
+    }
+    
+    if (AITechCount(player, c_ZU_Mutalisk, c_techCountCompleteOnly) +
+        AITechCount(player, c_ZU_Corruptor, c_techCountCompleteOnly) >= 6)
+    {
+        AINewTechStock(player);
+        AITechStockAdd(c_ZR_FlyerAttacks1);
+        AITechStockAdd(c_ZR_FlyerAttacks2);
+        AITechStockAdd(c_ZR_FlyerAttacks3);
+        AITechStockAdd(c_ZR_FlyerCarapace1);
+        AITechStockAdd(c_ZR_FlyerCarapace2);
+        AITechStockAdd(c_ZR_FlyerCarapace3);
+        AISetStockTechNextUnCap(player,1000,1000);
+    }
+    
+    AISetStock( player, 1, c_ZR_Burrow );
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDMinorUpgrades
+//--------------------------------------------------------------------------------------------------
+void ZergHDMinorUpgrades (int player) {
+
+    if (AITechCount(player, c_ZU_Roach, c_techCountInProgressOrBetter) >= 6) {
+        AISetStock( player, 1, c_ZR_RoachUnderground );
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDDefaultExtraStock
+//--------------------------------------------------------------------------------------------------
+void ZergHDDefaultExtraStock (int player) {
+    int numHatch = 0;
+    int numQueen = 0;
+    if (AIGetUserInt(player, c_numGroundStartLocs) > 0) {
+        if (AIHasRes(player,400,0)) {
+            numHatch = AITechCount(player, c_ZB_Hatchery_Alias, c_techCountCompleteOnly);
+            numQueen = AITechCount(player, c_ZU_Queen, c_techCountInProgressOrBetter);
+            if (numQueen < numHatch) {
+                AISetStockUnitNext( player, numHatch, c_ZU_Queen, c_stockAlways );
+            }
+            else if (AIHasRes(player,1600,0)) {           
+                numHatch = AITechCount(player, c_ZB_Hatchery_Alias, c_techCountIncompleteOnly);
+                if (numHatch == 0) {
+                    AISetStockUnitNext( player, 4, c_ZB_Hatchery_Alias, c_stockIdle );
+                }
+            }
+        }
+    } else {        
+        if (AIHasRes(player,400,200)) {
+            AISetStock( player, 1, c_ZU_OverlordTransport );
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDEmergencyDetectionAntiAir
+//--------------------------------------------------------------------------------------------------
+void ZergHDEmergencyDetectionAntiAir (int player) {
+    if (AIGetTime() < 240) {
+        return; // don't worry about anti-air or detection prior to 4 minutes (even if the player requests it)
+    }
+
+    if (AISuspectDetectionDanger(player, c_earlyDetectionDangerTime)) {
+        AISetStock( player, 1, c_ZU_Overseer );
+        AISetStock( player, 2, c_ZB_SporeCrawler );
+    }
+    if (AISuspectAirDanger(player, c_earlyAirDangerTime)) {
+        AISetStock( player, 3, c_ZU_Queen );
+        AISetStock( player, 2, c_ZB_SporeCrawler );
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDDefenseMainTown
+//--------------------------------------------------------------------------------------------------
+void ZergHDDefenseMainTown (int player) {   
+    int mainTown;
+    int state; 
+    int spineCrawlerInTown;
+    int sporeCrawlerInTown;
+    int spineCrawlerCount;
+    int sporeCrawlerCount;
+    int amount;
+    int foodUsed = PlayerGetPropertyInt(player, c_playerPropSuppliesUsed);
+
+    mainTown = AIGetMainTown(player);
+
+    state = AIGetTownState(player, mainTown);
+    if (state != c_townStateEstablished) {
+        return;
+    }
+    if (AIGetBuildingCountInTown(player, mainTown, c_ZB_Hatchery_Alias, c_techCountCompleteOnly) < 1) {
+        return;
+    }
+    if (AIGetTownEstablishedTime(player, mainTown) + 180.0 > AIGetTime()) {
+        return;
+    }
+
+    amount = 3;
+    if (foodUsed > 140) {
+        if (AIHasRes(player,1200,0)) {
+            amount = 4;
+        }
+    }
+
+    spineCrawlerInTown = AIGetBuildingCountInTown(player, mainTown, c_ZB_SpineCrawler, c_techCountCompleteOnly);
+    if (spineCrawlerInTown < amount) {
+        spineCrawlerCount = AITechCount(player, c_ZB_SpineCrawler, c_techCountCompleteOnly) + 1;
+        AISetStockEx(player, mainTown, spineCrawlerCount, c_ZB_SpineCrawler, c_makeDefense, 0);
+        return;
+    }
+
+    sporeCrawlerInTown = AIGetBuildingCountInTown(player, mainTown, c_ZB_SporeCrawler, c_techCountCompleteOnly);
+    if (sporeCrawlerInTown < amount + 1) {
+        sporeCrawlerCount = AITechCount(player, c_ZB_SporeCrawler, c_techCountCompleteOnly) + 1;
+        AISetStockEx(player, mainTown, sporeCrawlerCount, c_ZB_SporeCrawler, c_makeResourceDefense, 0);
+        return;
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDDefenseOtherTowns
+//--------------------------------------------------------------------------------------------------
+void ZergHDDefenseOtherTowns (int player) {    
+    int i = 0;
+    int town;
+    int mainTown;
+    int state;
+    int minLeftInTown;
+    int amount;
+    int foodUsed = PlayerGetPropertyInt(player, c_playerPropSuppliesUsed);
+    //bool makeNydusNetwork = false;
+
+    mainTown = AIGetMainTown(player);
+    while (i < c_townMax) {
+        town = i;
+        i = i + 1;
+
+        if (town == mainTown) {
+            continue;
+        }
+
+        state = AIGetTownState(player, town);
+        if (state != c_townStateEstablished) {
+            continue;
+        }
+        if (AIGetBuildingCountInTown(player, town, c_ZB_Hatchery_Alias, c_techCountCompleteOnly) < 1) {
+            continue;
+        }
+        if (AIGetTownEstablishedTime(player, town) + 180.0 > AIGetTime()) {
+            continue;
+        }
+        if (AIGetMineralAmountLeft(player, town) < 1000) {
+            continue;
+        }
+
+        amount = 2;
+        if (foodUsed > 140) {
+            if (AIHasRes(player,2000,0)) {
+                amount = 4;
+            } 
+            else if (AIHasRes(player,1200,0)) {
+                amount = 3;
+            }
+        }
+        
+        AISetStockEx(player, town, amount, c_ZB_SpineCrawler, c_makeDefense, 0);
+
+        // After making 2 spine crawler, create 2 spore crawlers in each non-main town
+        if (AIGetBuildingCountInTown(player, town, c_ZB_SpineCrawler, c_techCountCompleteOnly) >= 2) {
+            AISetStockEx(player, town, amount, c_ZB_SporeCrawler, c_makeResourceDefense, 0);
+        }
+
+        //// Request 1 nydus worm be made in each non-main town
+        //if (AITechCount(player, c_ZB_NydusNetwork, c_techCountCompleteOnly)) {
+        //    AISetStockEx(player, town, 1, c_ZB_NydusWorm, c_makeDefense, 0);
+        //}
+        //else {
+        //    makeNydusNetwork = true;
+        //}
+    }
+
+    //if (makeNydusNetwork) {
+    //    AISetStockEx(player, c_townMain, 1, c_ZB_NydusNetwork, c_makeDefense, 0);
+    //}
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDMakeCounters
+//--------------------------------------------------------------------------------------------------
+void ZergHDMakeCounters (int player) {
+    fixed groundMultiplier = 1.0;
+    fixed airMultiplier = 1.0;
+
+    if (AIEnemyBuildingsOnlyOnOtherIslands(player)) {
+        // when sieging an island limit making ground counters
+        groundMultiplier = 0.33;
+        airMultiplier = 1.25;
+    }
+
+    AIMakeCounters(player, c_ZU_Zergling,       c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_ZU_Baneling,       c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_ZU_Queen,          c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_ZU_Roach,          c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_ZU_Hydralisk,      c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_ZU_Infestor,       c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_ZU_Ultralisk,      c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_ZU_Mutalisk,       c_stockAlways, airMultiplier);
+    AIMakeCounters(player, c_ZU_Corruptor,      c_stockAlways, airMultiplier);
+    AIMakeCounters(player, c_ZU_BroodLord,      c_stockAlways, airMultiplier);
+    AIMakeCounters(player, c_ZU_Viper,          c_stockAlways, 1.0);
+    AIMakeCounters(player, c_ZU_SwarmHost,      c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_ZU_Ravager,        c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_ZU_Lurker,         c_stockAlways, groundMultiplier);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDLateGameArmy Helper functions
+//--------------------------------------------------------------------------------------------------
+bool ZergHDLateCoreRoachInfest (int player, int state);               // standard roach infestor mid-late game play
+bool ZergHDLateCoreRoachHydraInfest (int player, int state);          // standard roach+hydra+infestor late game
+bool ZergHDLateCoreRoachHydra (int player, int state);                // roach + hydra mid-late game
+bool ZergHDLateCoreRoachHydraMuta (int player, int state);            // roach+hydra with muta harass
+bool ZergHDLateCoreRoachHydraLurker (int player, int state);          // roach+hydra+lurker
+bool ZergHDLateCoreRoachInfestorMuta (int player, int state);         // roach+infestor with muta harass
+bool ZergHDLateHighTechUltraHydra (int player, int state);            // ultralisk + ling/bane/hydra support
+bool ZergHDLateHighTechUltraInfestor (int player, int state);         // ultralisk + ling/bane/infestor support
+bool ZergHDLateAirBroodRoachHydra (int player, int state);            // broodlord + roach/hydra support
+bool ZergHDLateAirBroodRoachInfest (int player, int state);           // broodlord + roach/infestor support
+bool ZergHDLateAirPureAir (int player, int state);                    // muta/corruptor/broodlord
+bool ZergHDLateSpecialInfestorFocus (int player, int state);          // mainly infestor, roach/viper support, muta harass
+bool ZergHDLateSpecialSwarmHostInfestor (int player, int state);      // swarmhost + infestor mix
+bool ZergHDLateSpecialViperLurker (int player, int state);            // viper+lurker with ling/hydra support  
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDCallLateGameArmy
+//--------------------------------------------------------------------------------------------------
+bool ZergHDCallLateGameArmy (int player, int buildIndex, int state) {
+
+    if (buildIndex == e_hdBuildIndex_ZLateCore_RoachInfest)                   { return ZergHDLateCoreRoachInfest(player, state); }
+    else if (buildIndex == e_hdBuildIndex_ZLateCore_RoachHydraInfest)         { return ZergHDLateCoreRoachHydraInfest(player, state); }
+    else if (buildIndex == e_hdBuildIndex_ZLateCore_RoachHydra)               { return ZergHDLateCoreRoachHydra(player, state); }
+    else if (buildIndex == e_hdBuildIndex_ZLateCore_RoachHydraMuta)           { return ZergHDLateCoreRoachHydraMuta(player, state); }
+    else if (buildIndex == e_hdBuildIndex_ZLateCore_RoachHydraLurker)         { return ZergHDLateCoreRoachHydraLurker(player, state); }
+    else if (buildIndex == e_hdBuildIndex_ZLateCore_RoachInfestorMuta)        { return ZergHDLateCoreRoachInfestorMuta(player, state); }
+    else if (buildIndex == e_hdBuildIndex_ZLateHighTech_UltraHydra)           { return ZergHDLateHighTechUltraHydra(player, state); }
+    else if (buildIndex == e_hdBuildIndex_ZLateHighTech_UltraInfestor)        { return ZergHDLateHighTechUltraInfestor(player, state); }
+    else if (buildIndex == e_hdBuildIndex_ZLateAir_BroodRoachHydra)           { return ZergHDLateAirBroodRoachHydra(player, state); }
+    else if (buildIndex == e_hdBuildIndex_ZLateAir_BroodRoachInfest)          { return ZergHDLateAirBroodRoachInfest(player, state); }
+    else if (buildIndex == e_hdBuildIndex_ZLateAir_PureAir)                   { return ZergHDLateAirPureAir(player, state); }
+    else if (buildIndex == e_hdBuildIndex_ZLateSpecial_InfestorFocus)         { return ZergHDLateSpecialInfestorFocus(player, state); }
+    else if (buildIndex == e_hdBuildIndex_ZLateSpecial_SwarmHostInfestor)     { return ZergHDLateSpecialSwarmHostInfestor(player, state); }
+    else if (buildIndex == e_hdBuildIndex_ZLateSpecial_ViperLurker)           { return ZergHDLateSpecialViperLurker(player, state); }
+    else { ErrorMeleeScript(player, "Invalid Late BuildIndex ZergHDCallLateGameArmy"); }
+
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDLateGameArmy
+//--------------------------------------------------------------------------------------------------
+void ZergHDLateGameArmy (int player, int state) {
+    int buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    ZergHDCallLateGameArmy(player, buildIndex, state);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDIsSubStateStillValid
+//--------------------------------------------------------------------------------------------------
+bool ZergHDIsSubStateStillValid (int player, int buildIndex) {
+    return ZergHDCallLateGameArmy(player, buildIndex, e_armyTypeValidate);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDLateCoreRoachInfest
+//--------------------------------------------------------------------------------------------------
+bool ZergHDLateCoreRoachInfest (int player, int state) {
+    if (state == e_armyTypeValidate) {
+        // this is our default late game, needs to always return valid
+        return true;
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 4, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_ZU_Roach, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding        
+        AISetStockUnitNext( player, 6, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters      
+        AISetStockUnitNext( player,  1, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Infestor, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player,  2, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 13, c_ZU_Roach, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player,  6, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player, 15, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Viper, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player,  8, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Baneling, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player, 18, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Viper, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Baneling, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Roach, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDLateCoreRoachHydraInfest
+//--------------------------------------------------------------------------------------------------
+bool ZergHDLateCoreRoachHydraInfest (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_ZB_Lair_Alias, c_techCountCompleteOnly);
+        return (techCount >= 1);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 4, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_ZU_Roach, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding        
+        AISetStockUnitNext( player, 4, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters      
+        AISetStockUnitNext( player,  1, c_ZU_Infestor, c_stockAlways );     
+        AISetStockUnitNext( player,  8, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Infestor, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player,  2, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  9, c_ZU_Roach, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 12, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Viper, c_stockAlways );
+        return true;  //  72 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player,  4, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player, 18, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Baneling, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player, 21, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Viper, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Baneling, c_stockAlways );
+        AISetStockUnitNext( player, 22, c_ZU_Roach, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDLateCoreRoachHydra
+//--------------------------------------------------------------------------------------------------
+bool ZergHDLateCoreRoachHydra (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_ZB_Lair_Alias, c_techCountCompleteOnly);
+        return (techCount >= 1);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 4, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_ZU_Roach, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding        
+        AISetStockUnitNext( player, 4, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters  
+        AISetStockUnitNext( player,  8, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player,  2, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player,  9, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 11, c_ZU_Roach, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 12, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Viper, c_stockAlways );
+        return true;  //  72 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player,  4, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player, 18, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Baneling, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Viper, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Baneling, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDLateCoreRoachHydraMuta
+//--------------------------------------------------------------------------------------------------
+bool ZergHDLateCoreRoachHydraMuta (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_ZB_Lair_Alias, c_techCountCompleteOnly);
+        techCount += AITechCount(player, c_ZB_Spire_Alias, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 4, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_ZU_Roach, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding        
+        AISetStockUnitNext( player, 4, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters  
+        AISetStockUnitNext( player,  8, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player,  2, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player,  9, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Mutalisk, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 10, c_ZU_Mutalisk, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Viper, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 13, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Mutalisk, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Baneling, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player, 18, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Viper, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Mutalisk, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_ZU_Baneling, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDLateCoreRoachHydraLurker
+//--------------------------------------------------------------------------------------------------
+bool ZergHDLateCoreRoachHydraLurker (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_ZB_Lair_Alias, c_techCountCompleteOnly);
+        techCount += AITechCount(player, c_ZB_Spire_Alias, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 4, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_ZU_Roach, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding        
+        AISetStockUnitNext( player, 4, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters  
+        AISetStockUnitNext( player,  8, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player,  2, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player,  6, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Viper, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 14, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Baneling, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player, 18, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Viper, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Baneling, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDLateCoreRoachInfestorMuta
+//--------------------------------------------------------------------------------------------------
+bool ZergHDLateCoreRoachInfestorMuta (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_ZB_Lair_Alias, c_techCountCompleteOnly);
+        techCount += AITechCount(player, c_ZB_Spire_Alias, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 4, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_ZU_Roach, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding        
+        AISetStockUnitNext( player, 5, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters  
+        AISetStockUnitNext( player,  7, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  9, c_ZU_Roach, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player,  7, c_ZU_Mutalisk, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Ravager, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 10, c_ZU_Mutalisk, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Viper, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player,  4, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player, 14, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Mutalisk, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Baneling, c_stockAlways );
+        AISetStockUnitNext( player, 18, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Viper, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Mutalisk, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player, 22, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player, 22, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 22, c_ZU_Baneling, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDLateHighTechUltraHydra
+//--------------------------------------------------------------------------------------------------
+bool ZergHDLateHighTechUltraHydra (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_ZB_Hive, c_techCountCompleteOnly);
+        techCount = AITechCount(player, c_ZB_UltraliskCavern, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 4, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_ZU_Roach, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding        
+        AISetStockUnitNext( player, 4, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters           
+        AISetStockUnitNext( player, 2, c_ZU_Ultralisk, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player,  4, c_ZU_Ultralisk, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player,  6, c_ZU_Ultralisk, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Viper, c_stockAlways );
+        return true;  //  72 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player,  8, c_ZU_Ultralisk, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player,  5, c_ZU_Roach, c_stockAlways );   
+        AISetStockUnitNext( player, 12, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Ultralisk, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Viper, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Ultralisk, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player, 14, c_ZU_Ultralisk, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDLateHighTechUltraInfestor
+//--------------------------------------------------------------------------------------------------
+bool ZergHDLateHighTechUltraInfestor (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_ZB_Hive, c_techCountCompleteOnly);
+        techCount = AITechCount(player, c_ZB_UltraliskCavern, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 4, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_ZU_Roach, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding        
+        AISetStockUnitNext( player, 4, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters           
+        AISetStockUnitNext( player, 2, c_ZU_Ultralisk, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player,  4, c_ZU_Ultralisk, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Infestor, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player,  6, c_ZU_Ultralisk, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Viper, c_stockAlways );
+        return true;  //  72 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player,  8, c_ZU_Ultralisk, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player,  5, c_ZU_Roach, c_stockAlways );   
+        AISetStockUnitNext( player, 10, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Ultralisk, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Viper, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Ultralisk, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 18, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDLateAirBroodRoachHydra
+//--------------------------------------------------------------------------------------------------
+bool ZergHDLateAirBroodRoachHydra (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_ZB_Hive, c_techCountCompleteOnly);
+        techCount = AITechCount(player, c_ZB_GreaterSpire, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 4, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_ZU_Roach, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding
+        AISetStockUnitNext( player, 4, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 2, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_ZU_BroodLord, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player, 4, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_ZU_BroodLord, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player,  2, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_BroodLord, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Viper, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 10, c_ZU_BroodLord, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player,  9, c_ZU_Roach, c_stockAlways );   
+        AISetStockUnitNext( player, 12, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Baneling, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player, 14, c_ZU_BroodLord, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Baneling, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player, 14, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_BroodLord, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDLateAirBroodRoachInfest
+//--------------------------------------------------------------------------------------------------
+bool ZergHDLateAirBroodRoachInfest (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_ZB_Hive, c_techCountCompleteOnly);
+        techCount = AITechCount(player, c_ZB_GreaterSpire, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 4, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_ZU_Roach, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding
+        AISetStockUnitNext( player, 5, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 2, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_ZU_BroodLord, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player, 2, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_ZU_BroodLord, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player,  6, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  7, c_ZU_BroodLord, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Viper, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 10, c_ZU_BroodLord, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player,  9, c_ZU_Roach, c_stockAlways );   
+        AISetStockUnitNext( player, 12, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Baneling, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Viper, c_stockAlways );
+        AISetStockUnitNext( player, 14, c_ZU_BroodLord, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Baneling, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 14, c_ZU_BroodLord, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDLateAirPureAir
+//--------------------------------------------------------------------------------------------------
+bool ZergHDLateAirPureAir (int player, int state) {
+    int techCount;
+
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_ZB_Lair_Alias, c_techCountCompleteOnly);
+        techCount += AITechCount(player, c_ZB_Spire_Alias, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 3, c_ZU_Mutalisk, c_stockAlways );
+        return true;  //  6 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding
+        AISetStockUnitNext( player, 6, c_ZU_Mutalisk, c_stockAlways );
+        return true;  //  12 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 8, c_ZU_Mutalisk, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_ZU_Corruptor, c_stockAlways );
+        return true;  //  24 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player, 12, c_ZU_Mutalisk, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_ZU_BroodLord, c_stockAlways );
+        return true;  //  40 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 4, c_ZU_BroodLord, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Mutalisk, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Viper, c_stockAlways );
+        return true;  //  64 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 6, c_ZU_BroodLord, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_ZU_Mutalisk, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_BroodLord, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Viper, c_stockAlways );
+        AISetStockUnitNext( player, 30, c_ZU_Mutalisk, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_ZU_BroodLord, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDLateSpecialInfestorFocus
+//--------------------------------------------------------------------------------------------------
+bool ZergHDLateSpecialInfestorFocus (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_ZB_Lair_Alias, c_techCountCompleteOnly);
+        return (techCount >= 1);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 4, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_ZU_Roach, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding        
+        AISetStockUnitNext( player, 6, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_ZU_Infestor, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 10, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Infestor, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player,  6, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player,  5, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player,  8, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 14, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Viper, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 10, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player, 14, c_ZU_Roach, c_stockAlways );   
+        AISetStockUnitNext( player,  8, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Baneling, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Viper, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player, 32, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 32, c_ZU_Baneling, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDLateSpecialSwarmHostInfestor
+//--------------------------------------------------------------------------------------------------
+bool ZergHDLateSpecialSwarmHostInfestor (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_ZB_Lair_Alias, c_techCountCompleteOnly);
+        return (techCount >= 1);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 4, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_ZU_Roach, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding        
+        AISetStockUnitNext( player, 5, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_ZU_SwarmHost, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player,  6, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_SwarmHost, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player,  2, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_SwarmHost, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  48 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player,  8, c_ZU_SwarmHost, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Viper, c_stockAlways );
+        return true;  //  72 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 12, c_ZU_SwarmHost, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_ZU_Baneling, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Viper, c_stockAlways );
+        AISetStockUnitNext( player, 14, c_ZU_SwarmHost, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player, 18, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player, 30, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 30, c_ZU_Baneling, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+
+//--------------------------------------------------------------------------------------------------
+//  ZergHDLateSpecialViperLurker
+//--------------------------------------------------------------------------------------------------
+bool ZergHDLateSpecialViperLurker (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_ZB_Lair_Alias, c_techCountCompleteOnly);
+        techCount += AITechCount(player, c_ZB_Spire_Alias, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 4, c_ZU_Zergling, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_ZU_Roach, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding        
+        AISetStockUnitNext( player, 4, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters  
+        AISetStockUnitNext( player,  8, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  30 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player,  2, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player,  6, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Viper, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 14, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Viper, c_stockAlways );
+        AISetStockUnitNext( player,  2, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player, 18, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_ZU_Hydralisk, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Viper, c_stockAlways );
+        AISetStockUnitNext( player,  4, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Corruptor, c_stockAlways );
+        AISetStockUnitNext( player,  8, c_ZU_Ravager, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_ZU_Lurker, c_stockAlways );
+        AISetStockUnitNext( player,  6, c_ZU_Infestor, c_stockAlways );
+        AISetStockUnitNext( player, 22, c_ZU_Roach, c_stockAlways );
+        AISetStockUnitNext( player, 22, c_ZU_Hydralisk, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}

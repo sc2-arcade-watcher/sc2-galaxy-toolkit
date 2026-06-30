@@ -1,0 +1,31 @@
+typedef unit unit_t;
+
+struct obj_t {
+    int asd;
+};
+
+typedef obj_t obj_t_t;
+typedef obj_t_t obj_t_deep_t;
+
+void test_typedef()
+{
+    unit_t un;
+    obj_t_t obj;
+    obj_t_deep_t obj_deep;
+
+    obj_deep.asd = 0;
+}
+
+//
+//
+//
+
+void fprototype(int a);
+typedef funcref<fprototype> fprototype_t;
+
+fprototype_t func;
+
+void test_typedef_funcref()
+{
+    func(1);
+}

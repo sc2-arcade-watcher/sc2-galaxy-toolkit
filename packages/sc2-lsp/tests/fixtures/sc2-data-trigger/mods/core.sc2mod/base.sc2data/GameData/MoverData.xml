@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CMover default="1">
+        <HeightMap value="Ground"/>
+        <RestoreHeightDuration value="0.25"/>
+    </CMover>
+    <CMoverMissile default="1"/>
+    <CMoverAvoid id="Ground">
+        <PlacementArray index="Prevent">
+            <Bits index="GroundNoSpawn" value="1"/>
+        </PlacementArray>
+    </CMoverAvoid>
+    <CMoverMissile id="MissileDefault">
+        <MotionPhases>
+            <Driver value="Guidance"/>
+            <Acceleration value="3200"/>
+            <MaxSpeed value="18.75"/>
+            <ClearanceAcceleration value="75"/>
+            <Outro value="-1"/>
+            <YawPitchRoll value="719.2968"/>
+        </MotionPhases>
+        <!-- Phase 1 is the kill zone, where we want to stop being crazy with our motion and hone
+             in the target ASAP. -->
+        <MotionPhases YawPitchRoll="MAX"/>
+    </CMoverMissile>
+</Catalog>

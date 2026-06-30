@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib78339EF7_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Short Sighted
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib78339EF7_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib78339EF7_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "ReducedVision");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib78339EF7_gt_Initialization_Init () {
+    lib78339EF7_gt_Initialization = TriggerCreate("lib78339EF7_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib78339EF7_gt_Initialization);
+}
+
+void lib78339EF7_InitTriggers () {
+    lib78339EF7_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib78339EF7_InitLib_completed = false;
+
+void lib78339EF7_InitLib () {
+    if (lib78339EF7_InitLib_completed) {
+        return;
+    }
+
+    lib78339EF7_InitLib_completed = true;
+
+    lib78339EF7_InitLibraries();
+    lib78339EF7_InitTriggers();
+}
+

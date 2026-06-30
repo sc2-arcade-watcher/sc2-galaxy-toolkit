@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibE5C0381C_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libE5C0381C_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libE5C0381C_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(10);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libE5C0381C_gt_Initialization_Init () {
+    libE5C0381C_gt_Initialization = TriggerCreate("libE5C0381C_gt_Initialization_Func");
+    TriggerAddEventMapInit(libE5C0381C_gt_Initialization);
+}
+
+void libE5C0381C_InitTriggers () {
+    libE5C0381C_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libE5C0381C_InitLib_completed = false;
+
+void libE5C0381C_InitLib () {
+    if (libE5C0381C_InitLib_completed) {
+        return;
+    }
+
+    libE5C0381C_InitLib_completed = true;
+
+    libE5C0381C_InitLibraries();
+    libE5C0381C_InitTriggers();
+}
+

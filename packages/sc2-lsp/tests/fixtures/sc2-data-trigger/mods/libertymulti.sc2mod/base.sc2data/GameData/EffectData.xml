@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CEffectSet id="CCCreateSet">
+        <EffectArray value="SprayTerranInitialUpgrade"/>
+    </CEffectSet>
+    <CEffectSet id="CCBirthSet">
+        <EffectArray value="SprayTerranInitialUpgrade"/>
+    </CEffectSet>
+    <CEffectSet id="HatcheryCreateSet">
+        <EffectArray value="SprayZergInitialUpgrade"/>
+    </CEffectSet>
+    <CEffectSet id="HatcheryBirthSet">
+        <EffectArray value="SprayZergInitialUpgrade"/>
+    </CEffectSet>
+    <CEffectSet id="NexusCreateSet">
+        <EffectArray value="SprayProtossInitialUpgrade"/>
+    </CEffectSet>
+    <CEffectSet id="NexusBirthSet">
+        <EffectArray value="SprayProtossInitialUpgrade"/>
+    </CEffectSet>
+    <CEffectDamage id="SnipeDamage">
+        <Amount value="25"/>
+        <AttributeBonus index="Psionic" value="25"/>
+    </CEffectDamage>
+    <CEffectSet id="CloakingFieldSearchSet">
+        <EditorCategories value="Race:Protoss"/>
+        <EffectArray value="CloakingFieldSearch"/>
+        <EffectArray value="CloakingFieldSearchNew"/>
+    </CEffectSet>
+    <CEffectEnumArea id="CloakingFieldSearchNew">
+        <EditorCategories value="Race:Protoss"/>
+        <SearchFilters value="-;Self,Neutral,Enemy,Missile,Dead,Hidden"/>
+        <ImpactLocation Value="CasterUnit"/>
+        <AreaArray Radius="5" Effect="CloakingFieldNew"/>
+        <MaxCount value="5"/>
+        <SearchFlags index="ExtendByUnitRadius" value="1"/>
+    </CEffectEnumArea>
+    <CEffectApplyBehavior id="CloakingFieldNew">
+        <EditorCategories value="Race:Protoss"/>
+        <Behavior value="CloakFieldEffect"/>
+        <ValidatorArray index="0" value="NotMothership"/>
+        <ValidatorArray value="NotCloaked"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="CloakingField">
+        <ValidatorArray value="CloakedAndNotBuried"/>
+    </CEffectApplyBehavior>
+    <CEffectModifyUnit id="EMPModifyUnit">
+        <VitalArray index="Energy" Change="-100" ChangeFraction="0"/>
+    </CEffectModifyUnit>
+    <CEffectEnumArea id="EMPSearch">
+        <AreaArray index="0" Radius="1.5" Effect="EMPSet"/>
+    </CEffectEnumArea>
+    <CEffectApplyBehavior id="VortexExit">
+        <EditorCategories value="Race:Protoss"/>
+    </CEffectApplyBehavior>
+    <CEffectTeleport id="Blink">
+        <ValidatorArray value="CasterNotFungalGrowthed"/>
+    </CEffectTeleport>
+    <CEffectSwitch id="CrucioShockCannonSwitch">
+        <EditorCategories value="Race:Terran"/>
+        <CaseArray Validator="TargetRadiusSmall" Effect="CrucioShockCannonBlast"/>
+        <CaseArray Validator="IsSupplyDepotLowered" Effect="CrucioShockCannonBlast"/>
+        <CaseArray Validator="TargetRadiusLarge" Effect="CrucioShockCannonDirected"/>
+    </CEffectSwitch>
+    <CEffectDamage id="ATSLaserBatteryU">
+        <Amount value="8"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="NydusDetect">
+        <EditorCategories value="Race:Zerg"/>
+        <Alert value="NydusDetect"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="Corruption">
+        <ValidatorArray index="0" value=""/>
+    </CEffectCreatePersistent>
+    <CEffectApplyBehavior id="CorruptionApplyBehavior">
+        <ValidatorArray index="0" value=""/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="CrucioShockCannonBlast">
+        <Amount value="35"/>
+        <AttributeBonus index="Armored" value="15"/>
+        <ValidatorArray index="0" value=""/>
+    </CEffectDamage>
+    <CEffectSet id="FeedbackSet">
+        <ValidatorArray index="0" value="NotOrbitalCommand"/>
+        <ValidatorArray value="NotOrbitalCommandFlying"/>
+        <ValidatorArray value="NotNexus"/>
+    </CEffectSet>
+    <CEffectSet id="FungalGrowthInitialSet">
+        <TargetLocationType value="Point"/>
+    </CEffectSet>
+    <CEffectDamage id="FungalGrowthDamage">
+        <Amount value="1.875"/>
+        <AttributeBonus index="Armored" value="0.625"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="GravitonBeam">
+        <ValidatorArray index="0" value="NoGravitonBeamInProgress"/>
+        <ValidatorArray index="1" removed="1"/>
+    </CEffectCreatePersistent>
+    <CEffectDamage id="CrucioShockCannonDirected">
+        <Amount value="35"/>
+        <AttributeBonus index="Armored" value="15"/>
+        <ValidatorArray index="0" value=""/>
+        <KindSplash value="Ranged"/>
+    </CEffectDamage>
+    <CEffectDamage id="CrucioShockCannonDummy">
+        <Amount value="35"/>
+        <AttributeBonus index="Armored" value="15"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="InfernalFlameThrowerCP">
+        <PeriodCount value="25"/>
+        <PeriodicOffsetArray value="0,-6.5,0"/>
+    </CEffectCreatePersistent>
+    <CEffectDamage id="InfernalFlameThrower"/>
+    <CEffectDamage id="InfestedGuassRifle">
+        <Amount value="8"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="IonCannons">
+        <PeriodicEffectArray index="0" value="IonCannonsLMRight"/>
+        <PeriodicEffectArray index="1" value="IonCannonsLMLeft"/>
+    </CEffectCreatePersistent>
+    <CEffectDamage id="IonCannonsDummy">
+        <EditorCategories value="Race:Protoss"/>
+    </CEffectDamage>
+    <CEffectDamage id="IonCannonsULeft">
+        <Death value="Blast"/>
+        <SearchFilters value="Air;Self,Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <ExcludeArray Value="Target"/>
+    </CEffectDamage>
+    <CEffectDamage id="IonCannonsURight">
+        <Death value="Blast"/>
+        <SearchFilters value="Air;Self,Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <ExcludeArray Value="Target"/>
+    </CEffectDamage>
+    <CEffectDamage id="JavelinMissileLaunchersDamage">
+        <AttributeBonus index="Light" value="6"/>
+        <Amount value="6"/>
+    </CEffectDamage>
+    <CEffectDamage id="KaiserBladesDamage">
+        <Kind value="Splash"/>
+        <KindSplash value="Splash"/>
+        <Amount value="15"/>
+        <AreaArray Arc="45" Radius="2" Fraction="0.33"/>
+        <AreaArray Arc="180" Radius="2" Fraction="0.33"/>
+        <ExcludeArray Value="Target"/>
+        <SearchFilters value="Ground;Player,Ally,Neutral,Stasis,Dead,Hidden,Invulnerable"/>
+        <SearchFlags index="OffsetAreaByAngle" value="0"/>
+        <AttributeBonus index="Armored" value="20"/>
+    </CEffectDamage>
+    <CEffectApplyBehavior id="MassRecallApplyBehavior">
+        <ValidatorArray index="0" value="NotLarvaEgg"/>
+        <ValidatorArray value="NotLarva"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="MassRecallSet">
+        <ValidatorArray value="NotLarvaEgg"/>
+        <ValidatorArray value="NotLarva"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="NeuralParasitePersistent">
+        <PeriodCount value="30"/>
+        <Flags index="PersistUntilDestroyed" value="0"/>
+        <PeriodicEffectArray index="0" value="NeuralParasitePersistentDestroy"/>
+    </CEffectCreatePersistent>
+    <CEffectDamage id="ParasiteSporeDamage">
+        <AttributeBonus index="Massive" value="6"/>
+        <Amount value="14"/>
+    </CEffectDamage>
+    <CEffectDamage id="Ram">
+        <Amount value="75"/>
+    </CEffectDamage>
+    <CEffectDamage id="SeekerMissileDamage">
+        <SearchFlags index="SameCliff" value="0"/>
+    </CEffectDamage>
+    <CEffectDamage id="PrismaticBeamMUx1">
+        <Amount value="6"/>
+    </CEffectDamage>
+    <CEffectDamage id="PrismaticBeamMUx2">
+        <AttributeBonus index="Armored" value="4"/>
+        <Amount value="6"/>
+    </CEffectDamage>
+    <CEffectDamage id="PrismaticBeamMUx3">
+        <AttributeBonus index="Armored" value="8"/>
+    </CEffectDamage>
+    <CEffectApplyBehavior id="SurfaceForSpellcast">
+        <ValidatorArray index="0" value="IsInfestorBurrowed"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="SurfaceForSpellcastChanneled">
+        <ValidatorArray index="0" value="IsInfestorBurrowed"/>
+    </CEffectApplyBehavior>
+    <CEffectCreatePersistent id="ThermalLancesForward">
+        <WhichLocation Value="TargetPoint"/>
+        <PeriodicPeriodArray index="0" value="0.025"/>
+        <ExpireDelay value="0.73"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="ThermalLancesReverse">
+        <WhichLocation Value="TargetPoint"/>
+        <PeriodicPeriodArray index="0" value="0.025"/>
+        <ExpireDelay value="0.73"/>
+    </CEffectCreatePersistent>
+    <CEffectDamage id="ThermalLancesMU">
+        <Amount value="15"/>
+        <Kind value="Ranged"/>
+    </CEffectDamage>
+    <CEffectSet id="ThermalLances">
+        <EffectArray value="ThermalLancesFriendlyCP"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="ThermalLancesFriendlyCP">
+        <EditorCategories value="Race:Protoss"/>
+        <ExpireDelay value="0.2"/>
+        <PeriodCount value="2"/>
+        <WhichLocation Value="TargetUnit"/>
+        <TimeScaleSource Value="Caster"/>
+        <Flags index="Channeled" value="1"/>
+        <PeriodicEffectArray value="ThermalLancesFriendlyDamage"/>
+        <PeriodicEffectArray value="ThermalLancesFriendlyDamage"/>
+        <PeriodicPeriodArray value="0.09"/>
+        <PeriodicPeriodArray value="0.09"/>
+    </CEffectCreatePersistent>
+    <CEffectDamage id="ThermalLancesFriendlyDamage" parent="ThermalLancesMU">
+        <ValidatorArray value="FriendlyTarget"/>
+    </CEffectDamage>
+    <CEffectDamage id="PsionicShockwaveDamage">
+        <Amount value="25"/>
+        <AreaArray index="0" Radius="0.25" Fraction="1"/>
+        <AreaArray index="1" Radius="0.5" Fraction="0.5"/>
+        <AreaArray index="2" Radius="1" Fraction="0.25"/>
+        <SearchFlags index="SameCliff" value="0"/>
+    </CEffectDamage>
+    <CEffectDamage id="ThorsHammerDamage">
+        <Amount value="30"/>
+    </CEffectDamage>
+    <CEffectDamage id="TwinGatlingCannons">
+        <Amount value="12"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="TalonsBurst">
+        <PeriodicEffectArray index="0" value="TalonsLM"/>
+    </CEffectCreatePersistent>
+    <CEffectLaunchMissile id="TalonsLM">
+        <EditorCategories value="Race:Zerg"/>
+        <ImpactEffect value="TalonsMissileDamage"/>
+        <AmmoUnit value="TalonsMissileWeapon"/>
+    </CEffectLaunchMissile>
+    <CEffectDamage id="TalonsMissileDamage" parent="Talons"/>
+    <CEffectDamage id="TwinIbiksCannon">
+        <Kind value="Ranged"/>
+    </CEffectDamage>
+    <!--    <CEffectCreateUnit id="InfestedTerransCreateEgg">
+        <ValidatorArray value="CliffLevelGE1"/>
+        <SpawnRange value="3"/>
+    </CEffectCreateUnit> -->
+    <!--    <CEffectLaunchMissile id="InfestedTerransLaunchMissile">
+        <Movers Link="InfestedTerransLayEggWeapon"/>
+    </CEffectLaunchMissile> -->
+</Catalog>

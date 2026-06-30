@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib08952066_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Tornadoes
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib08952066_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib08952066_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "Tornadoes");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib08952066_gt_Initialization_Init () {
+    lib08952066_gt_Initialization = TriggerCreate("lib08952066_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib08952066_gt_Initialization);
+}
+
+void lib08952066_InitTriggers () {
+    lib08952066_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib08952066_InitLib_completed = false;
+
+void lib08952066_InitLib () {
+    if (lib08952066_InitLib_completed) {
+        return;
+    }
+
+    lib08952066_InitLib_completed = true;
+
+    lib08952066_InitLibraries();
+    lib08952066_InitTriggers();
+}
+

@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibC0961474_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Micro Transactions
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libC0961474_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libC0961474_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "OrderCosts");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libC0961474_gt_Initialization_Init () {
+    libC0961474_gt_Initialization = TriggerCreate("libC0961474_gt_Initialization_Func");
+    TriggerAddEventMapInit(libC0961474_gt_Initialization);
+}
+
+void libC0961474_InitTriggers () {
+    libC0961474_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libC0961474_InitLib_completed = false;
+
+void libC0961474_InitLib () {
+    if (libC0961474_InitLib_completed) {
+        return;
+    }
+
+    libC0961474_InitLib_completed = true;
+
+    libC0961474_InitLibraries();
+    libC0961474_InitTriggers();
+}
+

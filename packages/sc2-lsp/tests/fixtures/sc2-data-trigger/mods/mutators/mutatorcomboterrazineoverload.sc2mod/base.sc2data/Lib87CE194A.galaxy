@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib87CE194A_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib87CE194A_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib87CE194A_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(24);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib87CE194A_gt_Initialization_Init () {
+    lib87CE194A_gt_Initialization = TriggerCreate("lib87CE194A_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib87CE194A_gt_Initialization);
+}
+
+void lib87CE194A_InitTriggers () {
+    lib87CE194A_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib87CE194A_InitLib_completed = false;
+
+void lib87CE194A_InitLib () {
+    if (lib87CE194A_InitLib_completed) {
+        return;
+    }
+
+    lib87CE194A_InitLib_completed = true;
+
+    lib87CE194A_InitLibraries();
+    lib87CE194A_InitTriggers();
+}
+

@@ -1,0 +1,37 @@
+include "TriggerLibs/NativeLib"
+include "LibComC_h"
+
+include "LibCMST_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Story (Common)
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libCMST_InitLibraries () {
+    libNtve_InitVariables();
+    libComC_InitVariables();
+}
+
+// Functions
+void libCMST_gf_CS_Initialize (string lp_storyMap) {
+    // Implementation
+    libComC_gf_CC_Initialize(lp_storyMap);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libCMST_InitLib_completed = false;
+
+void libCMST_InitLib () {
+    if (libCMST_InitLib_completed) {
+        return;
+    }
+
+    libCMST_InitLib_completed = true;
+
+    libCMST_InitLibraries();
+}
+
+include "LibComC"
+

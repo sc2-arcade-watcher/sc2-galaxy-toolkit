@@ -1,0 +1,2944 @@
+//==================================================================================================
+//  Terran Melee Cheater-Insane
+//==================================================================================================
+
+// very similar to Very Hard builds, just tweaked for the extra resource rate
+
+bool TerranOpenRushMarineChIn (int player);                   // heavy early marine rush 
+bool TerranOpenRushMarineReaperChIn (int player);             // marine w/ early reaper harass
+bool TerranOpenRushProxyBarracksChIn (int player);            // proxy barracks marine rush
+bool TerranOpenTimingMMStimChIn (int player);                 // stim timing push
+bool TerranOpenTimingHellionMarauderChIn (int player);        // hellion marauder timing push
+bool TerranOpenTimingMariSiegeChIn (int player);              // marine + siege push
+bool TerranOpenTimingCloakBansheeChIn (int player);           // cloak banshee timing
+bool TerranOpenPowerMacroQuickExpGndChIn (int player);        // aggresive quick expand
+bool TerranOpenPowerMacroMarineExpGndChIn (int player);       // gasless marines expand
+bool TerranOpenPowerMacroDefenseExpGndChIn (int player);      // safer marine/siege expand
+bool TerranOpenAirOneBaseAirChIn (int player);                // single base "island" air build
+bool TerranOpenAirOneBaseDropChIn (int player);               // single base "island" drop build
+bool TerranOpenAirCloakBansheeChIn (int player);              // single base "island" cloak banshee
+bool TerranOpenAirQuickExpandAirChIn (int player);            // quick expand air build
+
+bool TerranMidRushTimingMMMedivacChIn (int player);           // continued agression with mmm
+bool TerranMidRushTimingDefensiveExpandChIn (int player);     // transition from early pressure to a macro game
+bool TerranMidPowerMMMedivacChIn (int player);                // standard bio attack
+bool TerranMidPowerMMSiegeChIn (int player);                  // bio+siege
+bool TerranMidPowerSiegeBansheeChIn (int player);             // delayed 1,1,1
+bool TerranMidPowerHellionSiegeChIn (int player);             // low-tech mech
+bool TerranMidPowerSiegeThorChIn (int player);                // high-tech mech
+bool TerranMidMacroBioChIn (int player);                      // macro toward late game bio
+bool TerranMidMacroMechChIn (int player);                     // macro toward late game mech
+bool TerranMidMacroThorBCChIn (int player);                   // macro toward late game thor/bc
+bool TerranMidAirOneBaseAirChIn (int player);                 // continue single base "island" air build
+bool TerranMidAirOneBaseDropChIn (int player);                // continue single base "island" drop build
+bool TerranMidAirExpansionVikingBansheeChIn (int player);     // quick expand viking/banshee attack
+bool TerranMidAirExpansionBCChIn (int player);                // quick expand battlecruiser attack
+bool TerranMidAirExpansionDropAirChIn (int player);           // quick expand drop + air attack
+bool TerranMidAirMacroChIn (int player);                      // macro toward a large late game air force
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenChIn
+//--------------------------------------------------------------------------------------------------
+void TerranOpenChIn (int player) {
+    bool done = false;
+    int buildIndex;
+
+    AIEarlyDefenseScouting(player);
+
+    // see if we need to switch builds
+    UpdateHDTerranOpening(player);
+    
+    buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (buildIndex == e_hdBuildIndex_TOpenRush_Marine)                      { done = TerranOpenRushMarineChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenRush_MarineReaper)           { done = TerranOpenRushMarineReaperChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenRush_ProxyBarracks)          { done = TerranOpenRushProxyBarracksChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenTiming_MMStim)               { done = TerranOpenTimingMMStimChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenTiming_HellionMarauder)      { done = TerranOpenTimingHellionMarauderChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenTiming_MariSiege)            { done = TerranOpenTimingMariSiegeChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenTiming_CloakBanshee)         { done = TerranOpenTimingCloakBansheeChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenPowerMacro_QuickExpGnd)      { done = TerranOpenPowerMacroQuickExpGndChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenPowerMacro_MarineExpGnd)     { done = TerranOpenPowerMacroMarineExpGndChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenPowerMacro_DefenseExpGnd)    { done = TerranOpenPowerMacroDefenseExpGndChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenAir_OneBaseAir)              { done = TerranOpenAirOneBaseAirChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenAir_OneBaseDrop)             { done = TerranOpenAirOneBaseDropChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenAir_CloakBanshee)            { done = TerranOpenAirCloakBansheeChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TOpenAir_QuickExpandAir)          { done = TerranOpenAirQuickExpandAirChIn (player); }
+    else { ErrorMeleeScript(player, "Invalid Open BuildIndex TerranChIn"); }
+
+    if (done) {
+        TerranHDInitMid(player); // Transition to MidGame
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidChIn
+//--------------------------------------------------------------------------------------------------
+void TerranMidChIn (int player) {
+    bool done = false;
+    int buildIndex;
+    
+    // enable scouting as appropriate
+    if (AIGetUserInt(player, c_numGroundStartLocs) > 0) {
+        AIScoutingEnable(player, 15, c_TU_SCV);
+        AIEarlyDefenseScouting(player);
+    }
+    else {
+        AIScoutingEnable(player, 1, c_TU_Medivac);
+    }
+
+    // see if we need to switch builds
+    UpdateHDTerranMidGame(player);
+    
+    buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (buildIndex == e_hdBuildIndex_TMidRushTiming_MMMedivac)              { done = TerranMidRushTimingMMMedivacChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidRushTiming_DefensiveExpand)   { done = TerranMidRushTimingDefensiveExpandChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidPower_MMMedivac)              { done = TerranMidPowerMMMedivacChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidPower_MMSiege)                { done = TerranMidPowerMMSiegeChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidPower_SiegeBanshee)           { done = TerranMidPowerSiegeBansheeChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidPower_HellionSiege)           { done = TerranMidPowerHellionSiegeChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidPower_SiegeThor)              { done = TerranMidPowerSiegeThorChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidMacro_Bio)                    { done = TerranMidMacroBioChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidMacro_Mech)                   { done = TerranMidMacroMechChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidMacro_ThorBC)                 { done = TerranMidMacroThorBCChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidAir_OneBaseAir)               { done = TerranMidAirOneBaseAirChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidAir_OneBaseDrop)              { done = TerranMidAirOneBaseDropChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidAir_ExpansionVikingBanshee)   { done = TerranMidAirExpansionVikingBansheeChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidAir_ExpansionBC)              { done = TerranMidAirExpansionBCChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidAir_ExpansionDropAir)         { done = TerranMidAirExpansionDropAirChIn (player); }
+    else if (buildIndex == e_hdBuildIndex_TMidAir_Macro)                    { done = TerranMidAirMacroChIn (player); }
+    else { ErrorMeleeScript(player, "Invalid Mid BuildIndex TerranChIn"); }
+
+    if (done) {
+        TerranHDInitLate(player); // Transition to LateGame
+    }
+}
+
+//==================================================================================================
+//  OPENINGS
+//==================================================================================================
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenRushMarineChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranOpenRushMarineChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 12, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 13, c_TU_SCV );
+    AISetStock( player, 3, c_TB_Barracks );
+    AISetStock( player, 15, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 4, c_TB_Barracks );
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 15, c_TU_Marine );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 20, c_TU_Marine );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    
+    TerranBasicDefenseStock(player);
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    AIScoutingEnableWithPreReq(player, 14, c_TU_SCV, 3, c_TB_Barracks, c_techCountCompleteOnly);
+    AISetAttackStatus(player, c_TU_Marine, 2, 7, c_continuousMerge);
+
+    if (AIGetTime() < 240) {
+        if (AITechCount(player, c_TU_Marine, c_techCountInProgressOrBetter) < 19) {
+            return false;
+        }
+        if (AITechCount(player, c_TB_SupplyDepot, c_techCountInProgressOrBetter) < 4) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenRushMarineReaperChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranOpenRushMarineReaperChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 17, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Barracks );
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+
+    TerranBasicDefenseStock(player);
+
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 3, c_TB_Barracks );
+    AISetStock( player, 2, c_TU_Reaper );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 4, c_TU_Reaper );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 5, c_TU_Reaper );
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 22, c_TU_SCV );
+    
+    if (AITechCount(player, c_TU_SCV, c_techCountQueuedOrBetter) >= 17) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 6, c_TU_Reaper );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 8, c_TU_Marine );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    AIScoutingEnableWithPreReq(player, 17, c_TU_SCV, 1, c_TB_OrbitalCommand, c_techCountInProgressOrBetter);
+    AISetAttackStatus(player, c_TU_Marine, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_TU_Reaper, 1, 5, c_continuousMerge);
+
+    if (AIGetTime() < 270) {
+        if (AITechCount(player, c_TU_Reaper, c_techCountInProgressOrBetter) < 6) {
+            return false;
+        }
+        if (AITechCount(player, c_TB_Refinery, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+        if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+    
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenRushProxyBarracksChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranOpenRushProxyBarracksChIn (int player) {
+
+    // not yet a proxy build, needs to be fixed
+    // this build is not used
+
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 12, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );     // proxy
+    AISetStock( player, 2, c_TB_Barracks );        // proxy
+    AISetStock( player, 15, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 1, c_TB_Bunker );          // proxy
+    AISetStock( player, 17, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 6, c_TU_Marine );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 8, c_TU_Marine );
+    
+    TerranBasicDefenseStock(player);
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    AIScoutingEnableWithPreReq(player, 14, c_TU_SCV, 2, c_TB_Barracks, c_techCountCompleteOnly);
+    AISetAttackStatus(player, c_TU_Marine, 2, 4, c_continuousMerge);
+
+    if (AIGetTime() < 210) {
+        if (AITechCount(player, c_TU_Marine, c_techCountInProgressOrBetter) < 8) {
+            return false;
+        }
+        if (AITechCount(player, c_TB_OrbitalCommand, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenTimingMMStimChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranOpenTimingMMStimChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 17, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Barracks );
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    
+    TerranBasicDefenseStock(player);
+
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 3, c_TB_Barracks );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 2, c_TB_BarracksTechLab );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 6, c_TU_Marine );
+    AISetStock( player, 1, c_TR_MarineStimPack );
+    AISetStock( player, 1, c_TR_MarauderSlow );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 9, c_TU_Marine );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 2, c_TU_Marauder );
+    AISetStock( player, 10, c_TU_Marine );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 13, c_TU_Marine );
+    AISetStock( player, 1, c_TR_MarineShield );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 14, c_TU_Marine );
+    AISetStock( player, 4, c_TU_Marauder );
+    AISetStock( player, 15, c_TU_Marine );
+    AISetStock( player, 24, c_TU_SCV );
+    AISetStock( player, 6, c_TU_Marauder );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 18, c_TU_Marine );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 14, c_TU_SCV, 1, c_TB_Barracks, c_techCountCompleteOnly);
+    AISetAttackStatus(player, c_TU_Marine, 3, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_TU_Marauder, 1, 999, c_continuousMerge);
+
+    if (AITechCount(player, c_TU_Marine, c_techCountCompleteOnly) >= 8) {
+        AISetAttackStatus(player, c_TU_Marauder, 1, 2, c_continuousMerge);
+    }
+    
+    if (AIGetTime() < 300) {
+        if (AITechCount(player, c_TU_Marauder, c_techCountInProgressOrBetter) < 6) {
+            return false;
+        }        
+        if (AITechCount(player, c_TB_Refinery, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenTimingHellionMarauderChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranOpenTimingHellionMarauderChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 15, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    
+    TerranBasicDefenseStock(player);
+
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TB_Barracks );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 1, c_TB_BarracksTechLab );
+    AISetStock( player, 1, c_TU_Hellion );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TU_Marauder );
+    AISetStock( player, 1, c_TR_MarauderSlow );
+    AISetStock( player, 2, c_TU_Hellion );
+    AISetStock( player, 2, c_TB_BarracksTechLab );
+    AISetStock( player, 2, c_TU_Marauder );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marauder );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 3, c_TU_Hellion );
+    AISetStock( player, 5, c_TU_Marauder );
+    AISetStock( player, 4, c_TU_Hellion );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 7, c_TU_Marauder );
+    AISetStock( player, 5, c_TU_Hellion );
+    AISetStock( player, 9, c_TU_Marauder );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 24, c_TU_SCV );
+    AISetStock( player, 6, c_TU_Hellion );
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 14, c_TU_SCV, 1, c_TB_Barracks, c_techCountCompleteOnly);
+    AISetAttackStatus(player, c_TU_Marine, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_TU_Marauder, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_TU_Hellion, 1, 4, c_continuousMerge);
+
+    if (AIGetTime() < 300) {
+        if (AITechCount(player, c_TU_Hellion, c_techCountInProgressOrBetter) < 5) {
+            return false;
+        }
+        if (AITechCount(player, c_TU_Marauder, c_techCountInProgressOrBetter) < 5) {
+            return false;
+        }
+    }
+
+    if (AITechCount(player, c_TU_Marauder, c_techCountCompleteOnly) >= 4) {
+        AISetAttackStatus(player, c_TU_Hellion, 1, 3, c_continuousMerge);
+    }
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenTimingMariSiegeChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranOpenTimingMariSiegeChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 15, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    
+    TerranBasicDefenseStock(player);
+
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TB_Barracks );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TB_FactoryTechLab );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 1, c_TU_SiegeTank );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 24, c_TU_SCV );
+    AISetStock( player, 9, c_TU_Marine );
+    AISetStock( player, 2, c_TU_SiegeTank );
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 11, c_TU_Marine );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 3, c_TU_SiegeTank );
+    AISetStock( player, 13, c_TU_Marine );
+    AISetStock( player, 26, c_TU_SCV );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 17, c_TU_Marine );
+    AISetStock( player, 4, c_TU_SiegeTank );
+    AISetStock( player, 27, c_TU_SCV );
+    AISetStock( player, 7, c_TB_SupplyDepot );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 12, c_TU_SCV, 1, c_TB_Barracks, c_techCountCompleteOnly);
+    AISetAttackStatus(player, c_TU_Marine, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_TU_SiegeTank, 1, 2, c_continuousMerge);
+
+    if (AIGetTime() < 300) {
+        if (AITechCount(player, c_TU_SiegeTank, c_techCountInProgressOrBetter) < 4) {
+            return false;
+        }
+        if (AITechCount(player, c_TU_Marine, c_techCountInProgressOrBetter) < 11) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenTimingCloakBansheeChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranOpenTimingCloakBansheeChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 15, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 17, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 19, c_TU_SCV );
+    
+    TerranBasicDefenseStock(player);
+    
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 2, c_TU_Marine );    
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TB_Starport );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TB_StarportTechLab );
+    AISetStock( player, 1, c_TR_BansheeCloak );
+    AISetStock( player, 2, c_TU_Banshee );
+    AISetStock( player, 24, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 26, c_TU_SCV );
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 27, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Banshee );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 28, c_TU_SCV );
+    AISetStock( player, 6, c_TU_Marine );
+    AISetStock( player, 29, c_TU_SCV );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 6, c_TU_Banshee );
+    AISetStock( player, 30, c_TU_SCV );
+    AISetStock( player, 7, c_TB_SupplyDepot );
+    AISetStock( player, 8, c_TU_Marine );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    // attack is done by diversion wave with banshees
+    if (AITechCount(player, c_TU_Banshee, c_techCountCompleteOnly) >= 2) {
+        AISetFlag(player, e_flagsDiversion, true);
+    }
+    
+    AIScoutingEnableWithPreReq(player, 20, c_TU_SCV, 1, c_TB_Factory, c_techCountCompleteOnly);
+
+    if (AIGetTime() < 330) {
+        if (AITechCount(player, c_TU_Banshee, c_techCountInProgressOrBetter) < 6) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenPowerMacroQuickExpGndChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranOpenPowerMacroQuickExpGndChIn (int player) {
+    AIClearStock(player);
+
+    // riskier very fast expansion
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 17, c_TU_SCV );
+    
+    TerranBasicDefenseStock(player);
+
+    if (AITechCount(player, c_TU_SCV, c_techCountQueuedOrBetter) >= 17) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 18, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 2, c_TU_Marine );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 18, c_TU_SCV, 1, c_TB_Barracks, c_techCountCompleteOnly);
+
+    if (AIGetTime() < 120) {
+        if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenPowerMacroMarineExpGndChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranOpenPowerMacroMarineExpGndChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    
+    TerranBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_TU_SCV );
+
+    if (AITechCount(player, c_TU_SCV, c_techCountInProgressOrBetter) >= 18) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 22, c_TU_SCV );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 18, c_TU_SCV, 1, c_TB_OrbitalCommand, c_techCountInProgressOrBetter);
+
+    if (AIGetTime() < 150) {
+        if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenPowerMacroDefenseExpGndChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranOpenPowerMacroDefenseExpGndChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 15, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    
+    TerranBasicDefenseStock(player);
+
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 2, c_TB_Barracks );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 1, c_TB_FactoryTechLab );
+    AISetStock( player, 24, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 1, c_TU_SiegeTank );
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 26, c_TU_SCV );
+    
+    if (AITechCount(player, c_TU_SCV, c_techCountQueuedOrBetter) >= 25) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 27, c_TU_SCV );
+    AISetStock( player, 6, c_TU_Marine );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TU_SiegeTank );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 8, c_TU_Marine );
+    AISetStock( player, 28, c_TU_SCV );
+    AISetStock( player, 3, c_TU_SiegeTank );
+    AISetStock( player, 9, c_TU_Marine );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    AIScoutingEnableWithPreReq(player, 18, c_TU_SCV, 1, c_TB_Factory, c_techCountCompleteOnly);
+
+    if (AIGetTime() < 240) {
+        if (AITechCount(player, c_TU_SiegeTank, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenAirOneBaseAirChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranOpenAirOneBaseAirChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 15, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 17, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 19, c_TU_SCV );
+    
+    TerranBasicDefenseStock(player);
+    
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 2, c_TU_Marine );    
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TB_Starport );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TU_Viking );
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 6, c_TU_Marine );
+    AISetStock( player, 4, c_TU_Viking );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 6, c_TU_Viking );
+    AISetStock( player, 24, c_TU_SCV );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 8, c_TU_Marine );
+    AISetStock( player, 1, c_TU_WidowMine );    
+    AISetStock( player, 1, c_TB_EngineeringBay );
+    AISetStock( player, 2, c_TU_Medivac );
+    AISetStock( player, 26, c_TU_SCV );
+    AISetStock( player, 9, c_TU_Marine );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_TU_Viking_Alias, 2, 6, c_continuousMerge);
+    
+    if (AIGetTime() < 330) {
+        if (AITechCount(player, c_TU_Viking_Alias, c_techCountInProgressOrBetter) < 6) {
+            return false;
+        }
+        if (AITechCount(player, c_TU_Medivac, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenAirOneBaseDropChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranOpenAirOneBaseDropChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 15, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 17, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 19, c_TU_SCV );
+    
+    TerranBasicDefenseStock(player);
+    
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Starport );
+    AISetStock( player, 1, c_TU_WidowMine );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 2, c_TU_WidowMine );
+    AISetStock( player, 24, c_TU_SCV );
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 1, c_TU_Medivac );
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 6, c_TU_Marine );
+    AISetStock( player, 26, c_TU_SCV );
+    AISetStock( player, 3, c_TU_WidowMine );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 27, c_TU_SCV );
+    AISetStock( player, 2, c_TU_Medivac );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 28, c_TU_SCV );
+    AISetStock( player, 8, c_TU_Marine );
+    AISetStock( player, 2, c_TB_Starport );
+    AISetStock( player, 29, c_TU_SCV );
+    AISetStock( player, 9, c_TU_Marine );
+    AISetStock( player, 4, c_TU_WidowMine );
+    AISetStock( player, 1, c_TU_Viking );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 30, c_TU_SCV );
+    AISetStock( player, 10, c_TU_Marine );
+    AISetStock( player, 2, c_TU_Viking );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    if (AITechCount(player, c_TU_Medivac, c_techCountCompleteOnly) >= 2) {
+        AISetAttackStatus(player, c_TU_Marine, 4, 7, c_continuousMerge);
+        AISetAttackStatus(player, c_TU_WidowMine, 1, 2, c_continuousMerge);
+    }
+    
+    if (AIGetTime() < 300) {
+        if (AITechCount(player, c_TU_Medivac, c_techCountCompleteOnly) < 2) {
+            return false;
+        }
+        if (AITechCount(player, c_TU_Viking, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenAirCloakBansheeChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranOpenAirCloakBansheeChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 15, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 17, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 19, c_TU_SCV );
+    
+    TerranBasicDefenseStock(player);
+    
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 2, c_TU_Marine );    
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TB_Starport );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TB_StarportTechLab );
+    AISetStock( player, 1, c_TR_BansheeCloak );
+    AISetStock( player, 2, c_TU_Banshee );
+    AISetStock( player, 24, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 26, c_TU_SCV );
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 27, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Banshee );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 28, c_TU_SCV );
+    AISetStock( player, 6, c_TU_Marine );
+    AISetStock( player, 29, c_TU_SCV );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 6, c_TU_Banshee );
+    AISetStock( player, 30, c_TU_SCV );
+    AISetStock( player, 7, c_TB_SupplyDepot );
+    AISetStock( player, 8, c_TU_Marine );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    // attack is done by diversion wave with banshees
+    if (AITechCount(player, c_TU_Banshee, c_techCountCompleteOnly) >= 2) {
+        AISetFlag(player, e_flagsDiversion, true);
+    }
+    
+    AIScoutingEnableWithPreReq(player, 20, c_TU_SCV, 1, c_TB_Factory, c_techCountCompleteOnly);
+
+    if (AIGetTime() < 330) {
+        if (AITechCount(player, c_TU_Banshee, c_techCountInProgressOrBetter) < 6) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranOpenAirQuickExpandAirChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranOpenAirQuickExpandAirChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 17, c_TU_SCV );
+    
+    TerranBasicDefenseStock(player);
+
+    if (AITechCount(player, c_TU_SCV, c_techCountQueuedOrBetter) >= 17) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 18, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 22, c_TU_SCV );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    if (AIGetTime() < 120) {
+        if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to MidGame
+}
+
+//==================================================================================================
+//  MID GAME
+//==================================================================================================
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidRushTimingMMMedivacChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranMidRushTimingMMMedivacChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 15, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 18, c_TU_SCV );
+    
+    TerranBasicDefenseStock(player);
+        
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Barracks );
+    
+    TerranHDDefaultExtraMidStock(player);
+
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 1, c_TB_Starport );
+    AISetStock( player, 24, c_TU_SCV );
+    AISetStock( player, 2, c_TB_BarracksTechLab );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 1, c_TU_Medivac );
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 26, c_TU_SCV );
+    AISetStock( player, 1, c_TR_MarineStimPack );
+    AISetStock( player, 9, c_TU_Marine );
+    AISetStock( player, 2, c_TU_Medivac );
+    AISetStock( player, 1, c_TR_MarineShield );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 11, c_TU_Marine );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    AISetStock( player, 27, c_TU_SCV );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 3, c_TU_Medivac );
+    AISetStock( player, 4, c_TU_Marauder );
+    AISetStock( player, 4, c_TU_Medivac );
+    AISetStock( player, 13, c_TU_Marine );
+    AISetStock( player, 28, c_TU_SCV );
+
+    if (AITechCount(player, c_TU_SCV, c_techCountQueuedOrBetter) >= 28) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 7, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TR_MarauderSlow );
+    AISetStock( player, 29, c_TU_SCV );
+    AISetStock( player, 15, c_TU_Marine );
+    AISetStock( player, 5, c_TU_Medivac );
+    AISetStock( player, 30, c_TU_SCV );
+    AISetStock( player, 17, c_TU_Marine );
+    AISetStock( player, 2, c_TB_EngineeringBay );    
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_TU_Marine, 4, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_TU_Marauder, 4, 999, c_continuousMerge);
+    if (AITechCount(player, c_TU_Medivac, c_techCountCompleteOnly) >= 3) {
+        AISetAttackStatus(player, c_TU_Marine, 2, 13, c_continuousMerge);
+        AISetAttackStatus(player, c_TU_Marauder, 1, 2, c_continuousMerge);
+    }
+    
+    if (AIGetTime() < 390) {
+        if (AITechCount(player, c_TU_Medivac, c_techCountInProgressOrBetter) < 4) {
+            return false;
+        }
+        if (AITechCount(player, c_TR_MarauderSlow, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidRushTimingDefensiveExpandChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranMidRushTimingDefensiveExpandChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 15, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    
+    TerranBasicDefenseStock(player);
+
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TB_Barracks );    
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TB_FactoryTechLab );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 1, c_TU_SiegeTank );
+    AISetStock( player, 6, c_TU_Marine );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+    
+    AISetStock( player, 24, c_TU_SCV );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 8, c_TU_Marine );
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 9, c_TU_Marine );
+    AISetStock( player, 2, c_TU_SiegeTank );
+    AISetStock( player, 26, c_TU_SCV );
+    
+    if (AITechCount(player, c_TU_SCV, c_techCountQueuedOrBetter) >= 26) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+    
+    TerranHDDefaultExtraMidStock(player);
+
+    AISetStock( player, 27, c_TU_SCV );
+    AISetStock( player, 11, c_TU_Marine );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 28, c_TU_SCV );    
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 2, c_TB_BarracksTechLab );
+    AISetStock( player, 29, c_TU_SCV );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 30, c_TU_SCV );
+    AISetStock( player, 13, c_TU_Marine );
+    AISetStock( player, 3, c_TU_SiegeTank );
+    AISetStock( player, 31, c_TU_SCV );
+    AISetStock( player, 15, c_TU_Marine );
+    AISetStock( player, 32, c_TU_SCV );
+    AISetStock( player, 8, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TB_Starport );
+    AISetStock( player, 33, c_TU_SCV );
+    
+    if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) >= 2) {
+        AISetStock( player, 2, c_TB_OrbitalCommand );
+    }
+    
+    AISetStock( player, 2, c_TU_Marauder );
+    AISetStock( player, 34, c_TU_SCV );
+    AISetStock( player, 4, c_TU_SiegeTank );
+    AISetStock( player, 35, c_TU_SCV );
+    AISetStock( player, 17, c_TU_Marine );
+    AISetStock( player, 37, c_TU_SCV );
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    // don't attack alone, but be willing to support an attack
+    AISetAttackStatus(player, c_TU_Marine, 4, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_TU_Marauder, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_TU_SiegeTank, 2, 999, c_continuousMerge);
+    
+    if (AIGetTime() < 360) {
+        if (AITechCount(player, c_TU_Marauder, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }        
+        if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) >= 2) {
+            if (AITechCount(player, c_TB_OrbitalCommand, c_techCountInProgressOrBetter) < 2) {
+                return false;
+            }
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidPowerMMMedivacChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranMidPowerMMMedivacChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    
+    TerranBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_TU_SCV );
+
+    if (AITechCount(player, c_TU_SCV, c_techCountInProgressOrBetter) >= 18) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 2, c_TB_Barracks );
+    
+    TerranHDDefaultExtraMidStock(player);
+
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 23, c_TU_SCV );
+    
+    if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) >= 2) {
+        AISetStock( player, 2, c_TB_OrbitalCommand );
+    }
+    
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 24, c_TU_SCV );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+    
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 27, c_TU_SCV );
+    AISetStock( player, 9, c_TU_Marine );
+    AISetStock( player, 29, c_TU_SCV );
+    AISetStock( player, 3, c_TB_Barracks );
+    AISetStock( player, 31, c_TU_SCV );
+    AISetStock( player, 2, c_TB_BarracksTechLab );
+    AISetStock( player, 1, c_TB_Starport );
+    AISetStock( player, 1, c_TB_FactoryTechLab );
+    AISetStock( player, 35, c_TU_SCV );
+    AISetStock( player, 11, c_TU_Marine );
+    AISetStock( player, 1, c_TR_MarineStimPack );
+    AISetStock( player, 1, c_TR_MarineShield );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 13, c_TU_Marine );
+    AISetStock( player, 37, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Medivac );
+    AISetStock( player, 14, c_TU_Marine );
+    AISetStock( player, 3, c_TB_Refinery );
+    AISetStock( player, 16, c_TU_Marine );
+    AISetStock( player, 39, c_TU_SCV );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TU_Marauder );
+    AISetStock( player, 17, c_TU_Marine );
+    AISetStock( player, 41, c_TU_SCV );
+    AISetStock( player, 2, c_TU_Medivac );
+    AISetStock( player, 4, c_TU_Marauder );
+    AISetStock( player, 18, c_TU_Marine );
+    AISetStock( player, 8, c_TB_SupplyDepot );
+    AISetStock( player, 43, c_TU_SCV );
+    AISetStock( player, 4, c_TB_Refinery );
+    AISetStock( player, 6, c_TU_Marauder );
+    AISetStock( player, 19, c_TU_Marine );
+    AISetStock( player, 1, c_TU_SiegeTank );
+    AISetStock( player, 9, c_TB_SupplyDepot );
+    AISetStock( player, 3, c_TU_Medivac );
+    AISetStock( player, 10, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TR_MarauderSlow );
+    AISetStock( player, 45, c_TU_SCV );
+    AISetStock( player, 20, c_TU_Marine );
+    AISetStock( player, 8, c_TU_Marauder );
+    AISetStock( player, 47, c_TU_SCV );
+    AISetStock( player, 2, c_TU_SiegeTank );
+    AISetStock( player, 2, c_TB_EngineeringBay );
+    AISetStock( player, 4, c_TU_Medivac );
+    AISetStock( player, 21, c_TU_Marine );
+    AISetStock( player, 10, c_TU_Marauder );
+    AISetStock( player, 49, c_TU_SCV );
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_TU_Marine, 4, 999, c_continuousMerge);  
+    AISetAttackStatus(player, c_TU_Marauder, 2, 999, c_continuousMerge);
+    if (AITechCount(player, c_TU_Medivac, c_techCountCompleteOnly) >= 3) {
+        if (AITechCount(player, c_TU_SiegeTank, c_techCountCompleteOnly) >= 1) {
+            AISetAttackStatus(player, c_TU_Marine, 4, 18, c_continuousMerge);  
+            AISetAttackStatus(player, c_TU_Marauder, 2, 4, c_continuousMerge);
+        }
+    }
+    
+    if (AIGetTime() < 420) {
+        if (AITechCount(player, c_TU_SiegeTank, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+        if (AITechCount(player, c_TU_Medivac, c_techCountInProgressOrBetter) < 4) {
+            return false;
+        }
+        if (AITechCount(player, c_TB_EngineeringBay, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidPowerMMSiegeChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranMidPowerMMSiegeChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    
+    TerranBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_TU_SCV );
+
+    if (AITechCount(player, c_TU_SCV, c_techCountInProgressOrBetter) >= 18) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 2, c_TB_Barracks );
+    
+    TerranHDDefaultExtraMidStock(player);
+
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 23, c_TU_SCV );
+    
+    if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) >= 2) {
+        AISetStock( player, 2, c_TB_OrbitalCommand );
+    }
+    
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 24, c_TU_SCV );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+    
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 27, c_TU_SCV );
+    AISetStock( player, 9, c_TU_Marine );
+    AISetStock( player, 29, c_TU_SCV );
+    AISetStock( player, 3, c_TB_Barracks );
+    AISetStock( player, 31, c_TU_SCV );
+    AISetStock( player, 2, c_TB_BarracksTechLab );
+    AISetStock( player, 1, c_TB_FactoryTechLab );
+    AISetStock( player, 33, c_TU_SCV );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 35, c_TU_SCV );
+    AISetStock( player, 11, c_TU_Marine );
+    AISetStock( player, 1, c_TR_MarineStimPack );
+    AISetStock( player, 1, c_TU_SiegeTank );
+    AISetStock( player, 1, c_TR_MarineShield );
+    AISetStock( player, 37, c_TU_SCV );
+    AISetStock( player, 14, c_TU_Marine );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 39, c_TU_SCV );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TU_SiegeTank );
+    AISetStock( player, 2, c_TU_Marauder );
+    AISetStock( player, 15, c_TU_Marine );
+    AISetStock( player, 41, c_TU_SCV );
+    AISetStock( player, 7, c_TB_SupplyDepot );
+    AISetStock( player, 3, c_TB_Refinery );
+    AISetStock( player, 43, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marauder );
+    AISetStock( player, 16, c_TU_Marine );
+    AISetStock( player, 8, c_TB_SupplyDepot );
+    AISetStock( player, 45, c_TU_SCV );
+    AISetStock( player, 3, c_TU_SiegeTank );
+    AISetStock( player, 9, c_TB_SupplyDepot );
+    AISetStock( player, 6, c_TU_Marauder );
+    AISetStock( player, 17, c_TU_Marine );
+    AISetStock( player, 1, c_TR_MarauderSlow );
+    AISetStock( player, 4, c_TB_Refinery );
+    AISetStock( player, 47, c_TU_SCV );
+    AISetStock( player, 10, c_TB_SupplyDepot );
+    AISetStock( player, 8, c_TU_Marauder );
+    AISetStock( player, 18, c_TU_Marine );
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_TU_Marine, 4, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_TU_Marauder, 2, 999, c_continuousMerge);
+    if (AITechCount(player, c_TU_Marine, c_techCountCompleteOnly) >= 12) {
+        AISetAttackStatus(player, c_TU_SiegeTank_Alias, 1, 2, c_continuousMerge);
+    }
+    
+    if (AIGetTime() < 390) {
+        if (AITechCount(player, c_TU_SiegeTank_Alias, c_techCountInProgressOrBetter) < 3) {
+            return false;
+        }
+        if (AITechCount(player, c_TR_MarauderSlow, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidPowerSiegeBansheeChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranMidPowerSiegeBansheeChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    
+    TerranBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_TU_SCV );
+
+    if (AITechCount(player, c_TU_SCV, c_techCountInProgressOrBetter) >= 18) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 2, c_TB_Barracks );
+    
+    TerranHDDefaultExtraMidStock(player);
+
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 23, c_TU_SCV );
+    
+    if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) >= 2) {
+        AISetStock( player, 2, c_TB_OrbitalCommand );
+    }
+    
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 24, c_TU_SCV );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+    
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 27, c_TU_SCV );
+    AISetStock( player, 9, c_TU_Marine );
+    AISetStock( player, 31, c_TU_SCV );
+    AISetStock( player, 11, c_TU_Marine );
+    AISetStock( player, 4, c_TB_Refinery );
+    AISetStock( player, 1, c_TB_FactoryTechLab );
+    AISetStock( player, 1, c_TB_Starport );
+    AISetStock( player, 33, c_TU_SCV );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 13, c_TU_Marine );
+    AISetStock( player, 35, c_TU_SCV );
+    AISetStock( player, 1, c_TU_SiegeTank );
+    AISetStock( player, 37, c_TU_SCV );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 15, c_TU_Marine );
+    AISetStock( player, 1, c_TB_StarportTechLab );
+    AISetStock( player, 39, c_TU_SCV );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 41, c_TU_SCV );
+    AISetStock( player, 2, c_TU_SiegeTank );
+    AISetStock( player, 1, c_TU_Banshee );
+    AISetStock( player, 7, c_TB_SupplyDepot );
+    AISetStock( player, 43, c_TU_SCV );
+    AISetStock( player, 17, c_TU_Marine );
+    AISetStock( player, 8, c_TB_SupplyDepot );
+    AISetStock( player, 45, c_TU_SCV );
+    AISetStock( player, 1, c_TR_BansheeCloak );
+    AISetStock( player, 3, c_TU_SiegeTank );
+    AISetStock( player, 9, c_TB_SupplyDepot );
+    AISetStock( player, 47, c_TU_SCV );
+    AISetStock( player, 2, c_TB_BarracksTechLab );
+    AISetStock( player, 2, c_TU_Banshee );
+    AISetStock( player, 49, c_TU_SCV );
+    AISetStock( player, 2, c_TB_EngineeringBay );
+    AISetStock( player, 1, c_TR_MarineStimPack );
+    AISetStock( player, 1, c_TR_MarineShield );
+    AISetStock( player, 4, c_TU_SiegeTank );
+    AISetStock( player, 2, c_TU_Marauder );
+    AISetStock( player, 10, c_TB_SupplyDepot );
+    AISetStock( player, 51, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Banshee );
+    AISetStock( player, 11, c_TB_SupplyDepot );
+    AISetStock( player, 3, c_TU_Marauder );
+    AISetStock( player, 1, c_TR_InfantryArmor1 );
+    AISetStock( player, 1, c_TR_InfantryArmor2 );
+    AISetStock( player, 5, c_TU_SiegeTank );
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_TU_Marine, 4, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_TU_Marauder, 2, 999, c_continuousMerge);
+    if (AITechCount(player, c_TU_Marine, c_techCountCompleteOnly) >= 14) {
+        AISetAttackStatus(player, c_TU_SiegeTank_Alias, 1, 3, c_continuousMerge);
+    }
+    
+    if (AIGetTime() < 420) {
+        if (AITechCount(player, c_TU_SiegeTank_Alias, c_techCountInProgressOrBetter) < 4) {
+            return false;
+        }
+        if (AITechCount(player, c_TU_Banshee, c_techCountInProgressOrBetter) < 3) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidPowerHellionSiegeChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranMidPowerHellionSiegeChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    
+    TerranBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_TU_SCV );
+
+    if (AITechCount(player, c_TU_SCV, c_techCountInProgressOrBetter) >= 18) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+
+    TerranHDDefaultExtraMidStock(player);
+    
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 5, c_TU_Marine );
+
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) >= 2) {
+        AISetStock( player, 2, c_TB_OrbitalCommand );
+    }
+
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 24, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Factory );
+    AISetStock( player, 6, c_TU_Marine );
+    AISetStock( player, 26, c_TU_SCV );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 28, c_TU_SCV );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TB_FactoryTechLab );
+    AISetStock( player, 30, c_TU_SCV );
+    AISetStock( player, 8, c_TU_Marine );
+    AISetStock( player, 32, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Hellion );
+    AISetStock( player, 1, c_TU_SiegeTank );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 4, c_TB_Refinery );
+    AISetStock( player, 34, c_TU_SCV );
+    AISetStock( player, 9, c_TU_Marine );
+    AISetStock( player, 2, c_TU_Hellion );
+    AISetStock( player, 36, c_TU_SCV );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 10, c_TU_Marine );
+    AISetStock( player, 38, c_TU_SCV );
+    AISetStock( player, 2, c_TU_SiegeTank );
+    AISetStock( player, 3, c_TU_Hellion );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 40, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Armory );
+    AISetStock( player, 4, c_TU_Hellion );
+    AISetStock( player, 42, c_TU_SCV );
+    AISetStock( player, 7, c_TB_SupplyDepot );
+    AISetStock( player, 3, c_TU_SiegeTank );
+    AISetStock( player, 11, c_TU_Marine );
+    AISetStock( player, 44, c_TU_SCV );
+    AISetStock( player, 8, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TR_HellionDamage );
+    AISetStock( player, 5, c_TU_Hellion );
+    AISetStock( player, 46, c_TU_SCV );
+    AISetStock( player, 4, c_TU_SiegeTank );
+    AISetStock( player, 2, c_TB_Armory );
+    AISetStock( player, 1, c_TR_VehicleWeapons1 );
+    AISetStock( player, 12, c_TU_Marine );
+    AISetStock( player, 48, c_TU_SCV );
+    AISetStock( player, 6, c_TU_Hellion );
+    AISetStock( player, 9, c_TB_SupplyDepot );
+    AISetStock( player, 3, c_TB_Factory );
+    AISetStock( player, 50, c_TU_SCV );
+    AISetStock( player, 10, c_TB_SupplyDepot );
+    AISetStock( player, 7, c_TU_Hellion );
+    AISetStock( player, 5, c_TU_SiegeTank );
+    AISetStock( player, 52, c_TU_SCV );
+    AISetStock( player, 1, c_TR_MechPlating1 );
+    AISetStock( player, 8, c_TU_Hellion );
+    AISetStock( player, 6, c_TU_SiegeTank );
+    AISetStock( player, 2, c_TB_FactoryTechLab );
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    AISetAttackStatus(player, c_TU_Marine, 4, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_TU_Hellion, 1, 999, c_continuousMerge);
+    if (AITechCount(player, c_TU_SiegeTank_Alias, c_techCountCompleteOnly) >= 4) {
+        AISetAttackStatus(player, c_TU_Marine, 4, 10, c_continuousMerge);
+        AISetAttackStatus(player, c_TU_Hellion, 1, 5, c_continuousMerge);
+    }
+
+    if (AIGetTime() < 420) {
+        if (AITechCount(player, c_TB_Factory, c_techCountInProgressOrBetter) < 3) {
+            return false;
+        }
+        if (AITechCount(player, c_TR_VehicleWeapons1, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+        if (AITechCount(player, c_TR_MechPlating1, c_techCountInProgressOrBetter) < 3) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidPowerSiegeThorChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranMidPowerSiegeThorChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    
+    TerranBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_TU_SCV );
+
+    if (AITechCount(player, c_TU_SCV, c_techCountInProgressOrBetter) >= 18) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+
+    TerranHDDefaultExtraMidStock(player);
+    
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 5, c_TU_Marine );
+
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) >= 2) {
+        AISetStock( player, 2, c_TB_OrbitalCommand );
+    }
+
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 24, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Factory );
+    AISetStock( player, 6, c_TU_Marine );
+    AISetStock( player, 26, c_TU_SCV );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 28, c_TU_SCV );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TB_FactoryTechLab );
+    AISetStock( player, 30, c_TU_SCV );
+    AISetStock( player, 2, c_TB_FactoryTechLab );
+    AISetStock( player, 32, c_TU_SCV );
+    AISetStock( player, 1, c_TU_SiegeTank );
+    AISetStock( player, 4, c_TB_Refinery );
+    AISetStock( player, 34, c_TU_SCV );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TU_SiegeTank );
+    AISetStock( player, 36, c_TU_SCV );
+    AISetStock( player, 3, c_TU_SiegeTank );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 8, c_TU_Marine );
+    AISetStock( player, 38, c_TU_SCV );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 40, c_TU_SCV );
+    AISetStock( player, 4, c_TU_SiegeTank );
+    AISetStock( player, 42, c_TU_SCV );
+    AISetStock( player, 7, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TB_Armory );
+    AISetStock( player, 9, c_TU_Marine );
+    AISetStock( player, 44, c_TU_SCV );
+    AISetStock( player, 5, c_TU_SiegeTank );
+    AISetStock( player, 46, c_TU_SCV );
+    AISetStock( player, 8, c_TB_SupplyDepot );
+    AISetStock( player, 10, c_TU_Marine );
+    AISetStock( player, 6, c_TU_SiegeTank );
+    AISetStock( player, 48, c_TU_SCV );
+    AISetStock( player, 9, c_TB_SupplyDepot );
+    AISetStock( player, 7, c_TU_SiegeTank );
+    AISetStock( player, 11, c_TU_Marine );
+    AISetStock( player, 10, c_TB_SupplyDepot );
+    AISetStock( player, 50, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Thor );
+    AISetStock( player, 12, c_TU_Marine );
+    AISetStock( player, 11, c_TB_SupplyDepot );
+    AISetStock( player, 52, c_TU_SCV );
+    AISetStock( player, 2, c_TU_Thor );
+    AISetStock( player, 1, c_TR_VehicleWeapons1 );
+    AISetStock( player, 13, c_TU_Marine );
+    AISetStock( player, 12, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TB_Barracks );
+    AISetStock( player, 2, c_TB_Armory );
+    AISetStock( player, 54, c_TU_SCV );
+    AISetStock( player, 14, c_TU_Marine );
+    AISetStock( player, 3, c_TU_Thor );
+    AISetStock( player, 13, c_TB_SupplyDepot );
+    AISetStock( player, 15, c_TU_Marine );
+    AISetStock( player, 4, c_TU_Thor );
+    AISetStock( player, 17, c_TU_Marine );
+    AISetStock( player, 1, c_TR_MechPlating1 );
+    
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    AISetAttackStatus(player, c_TU_Marine, 4, 999, c_continuousMerge);
+    if (AITechCount(player, c_TU_SiegeTank, c_techCountCompleteOnly) >= 5) {
+        AISetAttackStatus(player, c_TU_Thor, 1, 2, c_continuousMerge);
+    }
+
+    if (AIGetTime() < 480) {
+        if (AITechCount(player, c_TU_Thor, c_techCountInProgressOrBetter) < 4) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidMacroBioChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranMidMacroBioChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    
+    TerranBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_TU_SCV );
+
+    if (AITechCount(player, c_TU_SCV, c_techCountInProgressOrBetter) >= 18) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 2, c_TB_Barracks );
+    
+    TerranHDDefaultExtraMidStock(player);
+
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 23, c_TU_SCV );
+    
+    if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) >= 2) {
+        AISetStock( player, 2, c_TB_OrbitalCommand );
+    }
+    
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 24, c_TU_SCV );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+    
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 27, c_TU_SCV );
+    AISetStock( player, 9, c_TU_Marine );
+    AISetStock( player, 29, c_TU_SCV );
+    AISetStock( player, 3, c_TB_Barracks );
+    AISetStock( player, 31, c_TU_SCV );
+    AISetStock( player, 2, c_TB_BarracksTechLab );
+    AISetStock( player, 1, c_TB_Starport );
+    AISetStock( player, 1, c_TB_FactoryTechLab );
+    AISetStock( player, 35, c_TU_SCV );
+    AISetStock( player, 11, c_TU_Marine );
+    AISetStock( player, 1, c_TR_MarineStimPack );
+    AISetStock( player, 1, c_TR_MarineShield );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 4, c_TB_Refinery );
+    AISetStock( player, 37, c_TU_SCV );
+    AISetStock( player, 14, c_TU_Marine );
+    AISetStock( player, 39, c_TU_SCV );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TU_Medivac );
+    AISetStock( player, 41, c_TU_SCV );
+    AISetStock( player, 1, c_TU_SiegeTank );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 17, c_TU_Marine );
+    AISetStock( player, 43, c_TU_SCV );
+    AISetStock( player, 7, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TU_Medivac );
+    AISetStock( player, 2, c_TB_EngineeringBay );
+    AISetStock( player, 2, c_TU_Marauder );
+    AISetStock( player, 18, c_TU_Marine );
+    AISetStock( player, 45, c_TU_SCV );
+    AISetStock( player, 2, c_TU_SiegeTank );
+    AISetStock( player, 1, c_TR_MarauderSlow );
+    AISetStock( player, 8, c_TB_SupplyDepot );
+    AISetStock( player, 47, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Medivac );
+    AISetStock( player, 49, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marauder );
+    AISetStock( player, 19, c_TU_Marine );
+    AISetStock( player, 9, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TR_InfantryWeapons1 );
+    AISetStock( player, 1, c_TR_InfantryArmor1 );
+    AISetStock( player, 51, c_TU_SCV );
+    AISetStock( player, 10, c_TB_SupplyDepot );
+    AISetStock( player, 3, c_TU_SiegeTank );
+    AISetStock( player, 4, c_TU_Medivac );
+    AISetStock( player, 53, c_TU_SCV );
+    AISetStock( player, 11, c_TB_SupplyDepot );
+    AISetStock( player, 6, c_TU_Marauder );
+    AISetStock( player, 20, c_TU_Marine );
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    // don't attack alone, but be willing to support an attack
+    AISetAttackStatus(player, c_TU_Marine, 4, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_TU_Marauder, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_TU_SiegeTank, 2, 999, c_continuousMerge);
+
+    if (AIGetTime() < 420) {
+        if (AITechCount(player, c_TU_SiegeTank, c_techCountInProgressOrBetter) < 3) {
+            return false;
+        }
+        if (AITechCount(player, c_TU_Medivac, c_techCountInProgressOrBetter) < 4) {
+            return false;
+        }
+        if (AITechCount(player, c_TR_InfantryWeapons1, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+        if (AITechCount(player, c_TR_InfantryArmor1, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidMacroMechChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranMidMacroMechChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    
+    TerranBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_TU_SCV );
+
+    if (AITechCount(player, c_TU_SCV, c_techCountInProgressOrBetter) >= 18) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+
+    TerranHDDefaultExtraMidStock(player);
+    
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 5, c_TU_Marine );
+
+    TerranHDEmergencyDetectionAntiAir(player);
+
+    if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) >= 2) {
+        AISetStock( player, 2, c_TB_OrbitalCommand );
+    }
+
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 24, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Factory );
+    AISetStock( player, 6, c_TU_Marine );
+    AISetStock( player, 26, c_TU_SCV );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 28, c_TU_SCV );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TB_FactoryTechLab );
+    AISetStock( player, 30, c_TU_SCV );
+    AISetStock( player, 2, c_TB_FactoryTechLab );
+    AISetStock( player, 32, c_TU_SCV );
+    AISetStock( player, 1, c_TU_SiegeTank );
+    AISetStock( player, 4, c_TB_Refinery );
+    AISetStock( player, 34, c_TU_SCV );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TU_SiegeTank );
+    AISetStock( player, 36, c_TU_SCV );
+    AISetStock( player, 3, c_TU_SiegeTank );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 8, c_TU_Marine );
+    AISetStock( player, 38, c_TU_SCV );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 40, c_TU_SCV );
+    AISetStock( player, 4, c_TU_SiegeTank );
+    AISetStock( player, 42, c_TU_SCV );
+    AISetStock( player, 7, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TB_Armory );
+    AISetStock( player, 9, c_TU_Marine );
+    AISetStock( player, 44, c_TU_SCV );
+    AISetStock( player, 5, c_TU_SiegeTank );
+    AISetStock( player, 46, c_TU_SCV );
+    AISetStock( player, 8, c_TB_SupplyDepot );
+    AISetStock( player, 10, c_TU_Marine );
+    AISetStock( player, 6, c_TU_SiegeTank );
+    AISetStock( player, 2, c_TB_Armory );
+    AISetStock( player, 48, c_TU_SCV );
+    AISetStock( player, 9, c_TB_SupplyDepot );
+    AISetStock( player, 7, c_TU_SiegeTank );
+    AISetStock( player, 11, c_TU_Marine );
+    AISetStock( player, 10, c_TB_SupplyDepot );
+    AISetStock( player, 50, c_TU_SCV );
+    AISetStock( player, 8, c_TU_SiegeTank );
+    AISetStock( player, 12, c_TU_Marine );
+    AISetStock( player, 52, c_TU_SCV );
+    AISetStock( player, 1, c_TR_VehicleWeapons1 );
+    AISetStock( player, 11, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TB_Barracks );
+    AISetStock( player, 54, c_TU_SCV );
+    AISetStock( player, 12, c_TB_SupplyDepot );
+    AISetStock( player, 9, c_TU_SiegeTank );
+    AISetStock( player, 13, c_TU_Marine );
+    AISetStock( player, 1, c_TR_MechPlating1 );
+    AISetStock( player, 14, c_TU_Marine );
+    AISetStock( player, 10, c_TU_SiegeTank );
+    AISetStock( player, 56, c_TU_SCV );
+    AISetStock( player, 3, c_TB_Barracks );
+    
+    AISetStock( player, 1, c_TU_Thor );
+
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    // don't attack alone, but be willing to support an attack
+    AISetAttackStatus(player, c_TU_Marine, 4, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_TU_SiegeTank, 2, 999, c_continuousMerge);
+
+    if (AIGetTime() < 420) {
+        if (AITechCount(player, c_TU_SiegeTank, c_techCountInProgressOrBetter) < 7) {
+            return false;
+        }
+        if (AITechCount(player, c_TR_VehicleWeapons1, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+        if (AITechCount(player, c_TR_MechPlating1, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidMacroThorBCChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranMidMacroThorBCChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    
+    TerranBasicDefenseStock(player);
+
+    AISetStock( player, 18, c_TU_SCV );
+
+    if (AITechCount(player, c_TU_SCV, c_techCountInProgressOrBetter) >= 18) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+    
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 2, c_TB_Barracks );
+    
+    TerranHDDefaultExtraMidStock(player);
+
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 23, c_TU_SCV );
+    
+    if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) >= 2) {
+        AISetStock( player, 2, c_TB_OrbitalCommand );
+    }
+    
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 24, c_TU_SCV );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+    
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 27, c_TU_SCV );
+    AISetStock( player, 9, c_TU_Marine );
+    AISetStock( player, 31, c_TU_SCV );
+    AISetStock( player, 11, c_TU_Marine );
+    AISetStock( player, 4, c_TB_Refinery );
+    AISetStock( player, 1, c_TB_FactoryTechLab );
+    AISetStock( player, 1, c_TB_Starport );
+    AISetStock( player, 33, c_TU_SCV );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 13, c_TU_Marine );
+    AISetStock( player, 35, c_TU_SCV );
+    AISetStock( player, 1, c_TU_SiegeTank );
+    AISetStock( player, 37, c_TU_SCV );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 15, c_TU_Marine );
+    AISetStock( player, 1, c_TB_StarportTechLab );
+    AISetStock( player, 39, c_TU_SCV );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 41, c_TU_SCV );
+    AISetStock( player, 2, c_TU_SiegeTank );
+    AISetStock( player, 1, c_TB_Armory );
+    AISetStock( player, 1, c_TB_FusionCore );
+    AISetStock( player, 43, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Liberator );
+    AISetStock( player, 7, c_TB_SupplyDepot );
+    AISetStock( player, 45, c_TU_SCV );
+    AISetStock( player, 3, c_TU_SiegeTank );
+    AISetStock( player, 8, c_TB_SupplyDepot );
+    AISetStock( player, 49, c_TU_SCV );
+    AISetStock( player, 17, c_TU_Marine );
+    AISetStock( player, 2, c_TU_Liberator );
+    AISetStock( player, 1, c_TU_Thor );
+    AISetStock( player, 9, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TR_VehicleWeapons1 );
+    AISetStock( player, 51, c_TU_SCV );
+    AISetStock( player, 10, c_TB_SupplyDepot );
+    AISetStock( player, 19, c_TU_Marine );
+    AISetStock( player, 11, c_TB_SupplyDepot );
+    AISetStock( player, 53, c_TU_SCV );
+    AISetStock( player, 21, c_TU_Marine );
+    AISetStock( player, 1, c_TU_Battlecruiser );
+    AISetStock( player, 2, c_TU_Thor );
+    AISetStock( player, 13, c_TB_SupplyDepot );
+    AISetStock( player, 55, c_TU_SCV );
+    
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    // don't attack alone, but be willing to support an attack
+    AISetAttackStatus(player, c_TU_SiegeTank, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_TU_Thor, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_TU_Battlecruiser, 1, 999, c_continuousMerge);
+
+    if (AIGetTime() < 450) {
+        if (AITechCount(player, c_TU_Thor, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+        if (AITechCount(player, c_TU_Battlecruiser, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidAirOneBaseAirChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranMidAirOneBaseAirChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 15, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 17, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 19, c_TU_SCV );
+    
+    TerranBasicDefenseStock(player);
+    
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 2, c_TU_Marine );    
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TB_Starport );
+    
+    TerranHDDefaultExtraMidStock(player);
+
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TU_Viking );
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 6, c_TU_Marine );
+    AISetStock( player, 4, c_TU_Viking );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 6, c_TU_Viking );
+    AISetStock( player, 24, c_TU_SCV );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 8, c_TU_Marine );
+    AISetStock( player, 1, c_TU_WidowMine );    
+    AISetStock( player, 1, c_TB_EngineeringBay );
+    AISetStock( player, 2, c_TU_Medivac );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 26, c_TU_SCV );
+    AISetStock( player, 9, c_TU_Marine );    
+
+    TerranHDEmergencyDetectionAntiAir(player);
+    
+    AISetStock( player, 1, c_TU_Liberator );
+    AISetStock( player, 7, c_TB_SupplyDepot );
+    AISetStock( player, 27, c_TU_SCV );
+    AISetStock( player, 10, c_TU_Marine );
+    AISetStock( player, 2, c_TU_Liberator );
+    AISetStock( player, 2, c_TU_WidowMine );
+    AISetStock( player, 8, c_TB_SupplyDepot );
+    AISetStock( player, 28, c_TU_SCV );
+    AISetStock( player, 11, c_TU_Marine );
+    AISetStock( player, 9, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TB_Barracks );
+    AISetStock( player, 3, c_TU_Liberator );
+    AISetStock( player, 7, c_TU_Viking );
+    AISetStock( player, 10, c_TB_SupplyDepot );
+    AISetStock( player, 29, c_TU_SCV );
+    AISetStock( player, 12, c_TU_Marine );
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    AISetAttackStatus(player, c_TU_Viking_Alias, 2, 999, c_continuousMerge);
+    if (AITechCount(player, c_TU_Medivac, c_techCountCompleteOnly) >= 1) {
+        AISetAttackStatus(player, c_TU_Marine, 6, 999, c_continuousMerge);
+    }
+    AISetAttackStatus(player, c_TU_Liberator, 1, 2, c_continuousMerge);
+    
+    if (AIGetTime() < 420) {
+        if (AITechCount(player, c_TU_Viking_Alias, c_techCountInProgressOrBetter) < 6) {
+            return false;
+        }
+        if (AITechCount(player, c_TU_Liberator, c_techCountInProgressOrBetter) < 3) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidAirOneBaseDropChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranMidAirOneBaseDropChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 15, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 16, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 17, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 19, c_TU_SCV );
+    
+    TerranBasicDefenseStock(player);
+    
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 20, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Starport );
+    
+    TerranHDEmergencyDetectionAntiAir(player);
+    TerranHDDefaultExtraMidStock(player);
+
+    AISetStock( player, 1, c_TU_WidowMine );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 2, c_TU_WidowMine );
+    AISetStock( player, 24, c_TU_SCV );
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 1, c_TU_Medivac );
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 6, c_TU_Marine );
+    AISetStock( player, 26, c_TU_SCV );
+    AISetStock( player, 3, c_TU_WidowMine );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 27, c_TU_SCV );
+    AISetStock( player, 2, c_TU_Medivac );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 28, c_TU_SCV );
+    AISetStock( player, 8, c_TU_Marine );
+    AISetStock( player, 2, c_TB_Starport );
+    AISetStock( player, 29, c_TU_SCV );
+    AISetStock( player, 9, c_TU_Marine );
+    AISetStock( player, 4, c_TU_WidowMine );
+    AISetStock( player, 1, c_TU_Viking );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 30, c_TU_SCV );
+    AISetStock( player, 10, c_TU_Marine );
+    AISetStock( player, 2, c_TU_Viking );
+    AISetStock( player, 7, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TU_Liberator );
+    AISetStock( player, 11, c_TU_Marine );
+    AISetStock( player, 2, c_TB_Barracks );
+    AISetStock( player, 2, c_TU_Liberator );
+    AISetStock( player, 8, c_TB_SupplyDepot );
+    AISetStock( player, 12, c_TU_Marine );
+    AISetStock( player, 1, c_TB_FactoryTechLab );
+    AISetStock( player, 3, c_TU_Liberator );
+    AISetStock( player, 9, c_TB_SupplyDepot );
+    AISetStock( player, 14, c_TU_Marine );
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    if ( (AITechCount(player, c_TU_Medivac, c_techCountCompleteOnly) >= 2) &&
+         (AITechCount(player, c_TU_Liberator, c_techCountCompleteOnly) >= 2) ) {
+        AISetAttackStatus(player, c_TU_Marine, 4, 7, c_continuousMerge);
+        AISetAttackStatus(player, c_TU_WidowMine, 1, 2, c_continuousMerge);
+    }
+    
+    if (AIGetTime() < 390) {
+        if (AITechCount(player, c_TU_Liberator, c_techCountInProgressOrBetter) < 3) {
+            return false;
+        }
+        if (AITechCount(player, c_TU_Marine, c_techCountInProgressOrBetter) < 12) {
+            return false;
+        }
+    }
+
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidAirExpansionVikingBansheeChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranMidAirExpansionVikingBansheeChIn (int player) {
+    AISetFlag(player, e_flagsDiversion, true);
+
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 17, c_TU_SCV );
+    
+    TerranBasicDefenseStock(player);
+
+    if (AITechCount(player, c_TU_SCV, c_techCountQueuedOrBetter) >= 17) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 18, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    
+    if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) >= 2) {
+        AISetStock( player, 2, c_TB_OrbitalCommand );
+    }
+    
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Starport );
+
+    TerranHDEmergencyDetectionAntiAir(player);
+    TerranHDDefaultExtraMidStock(player);
+
+    AISetStock( player, 29, c_TU_SCV );
+    AISetStock( player, 3, c_TB_Starport );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 31, c_TU_SCV );
+    AISetStock( player, 4, c_TB_Refinery );
+    AISetStock( player, 33, c_TU_SCV );
+    AISetStock( player, 2, c_TU_Viking );
+    AISetStock( player, 35, c_TU_SCV );
+    AISetStock( player, 1, c_TB_StarportTechLab );
+    AISetStock( player, 37, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 39, c_TU_SCV );
+    AISetStock( player, 3, c_TB_StarportTechLab );
+    AISetStock( player, 1, c_TU_Banshee );
+    AISetStock( player, 1, c_TR_BansheeCloak );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 41, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Banshee );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 43, c_TU_SCV );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 45, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Banshee );
+    AISetStock( player, 7, c_TB_SupplyDepot );
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 47, c_TU_SCV );
+    AISetStock( player, 8, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TU_Liberator );
+    AISetStock( player, 49, c_TU_SCV );
+    AISetStock( player, 9, c_TB_SupplyDepot );
+    AISetStock( player, 51, c_TU_SCV );
+    AISetStock( player, 6, c_TU_Marine );
+    AISetStock( player, 3, c_TU_Liberator );
+    AISetStock( player, 53, c_TU_SCV );
+    AISetStock( player, 7, c_TU_Marine );
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    // attack is done by diversion wave with banshees
+
+    if (AIGetTime() < 420) {
+        if (AITechCount(player, c_TU_Liberator, c_techCountInProgressOrBetter) < 3) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidAirExpansionBCChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranMidAirExpansionBCChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 17, c_TU_SCV );
+    
+    TerranBasicDefenseStock(player);
+
+    if (AITechCount(player, c_TU_SCV, c_techCountQueuedOrBetter) >= 17) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 18, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    
+    if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) >= 2) {
+        AISetStock( player, 2, c_TB_OrbitalCommand );
+    }
+    
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Starport );
+
+    TerranHDEmergencyDetectionAntiAir(player);
+    TerranHDDefaultExtraMidStock(player);
+
+    AISetStock( player, 29, c_TU_SCV );
+    AISetStock( player, 4, c_TB_Refinery );
+    AISetStock( player, 31, c_TU_SCV );
+    AISetStock( player, 2, c_TU_Viking );
+    AISetStock( player, 33, c_TU_SCV );
+    AISetStock( player, 1, c_TB_FusionCore );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 37, c_TU_SCV );
+    AISetStock( player, 2, c_TB_StarportTechLab );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 39, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TU_Battlecruiser );
+    AISetStock( player, 41, c_TU_SCV );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 2, c_TU_Battlecruiser );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 43, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 7, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TR_BattlecruiserYamato );
+    AISetStock( player, 45, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 8, c_TB_SupplyDepot );
+    AISetStock( player, 47, c_TU_SCV );
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 9, c_TB_SupplyDepot );
+    AISetStock( player, 49, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Battlecruiser );
+    AISetStock( player, 51, c_TU_SCV );
+    AISetStock( player, 6, c_TU_Marine );
+    AISetStock( player, 10, c_TB_SupplyDepot );
+    AISetStock( player, 4, c_TU_Battlecruiser );
+    AISetStock( player, 53, c_TU_SCV );
+    AISetStock( player, 7, c_TU_Marine );
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    // don't attack alone, but be willing to support an attack
+    if (AITechCount(player, c_TU_Medivac, c_techCountCompleteOnly) >= 1) {
+        AISetAttackStatus(player, c_TU_Marine, 4, 999, c_continuousMerge);
+    }
+    AISetAttackStatus(player, c_TU_Viking, 2, 999, c_continuousMerge);
+    AISetAttackStatus(player, c_TU_Battlecruiser, 1, 999, c_continuousMerge);
+
+    if (AIGetTime() < 420) {
+        if (AITechCount(player, c_TU_Battlecruiser, c_techCountInProgressOrBetter) < 4) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidAirExpansionDropAirChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranMidAirExpansionDropAirChIn (int player) {
+    AISetFlag(player, e_flagsDiversion, true);
+
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 17, c_TU_SCV );
+    
+    TerranBasicDefenseStock(player);
+
+    if (AITechCount(player, c_TU_SCV, c_techCountQueuedOrBetter) >= 17) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 18, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    
+    if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) >= 2) {
+        AISetStock( player, 2, c_TB_OrbitalCommand );
+    }
+    
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 2, c_TB_Barracks );
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 1, c_TB_Starport );
+
+    TerranHDEmergencyDetectionAntiAir(player);
+    TerranHDDefaultExtraMidStock(player);
+
+    AISetStock( player, 27, c_TU_SCV );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 1, c_TU_WidowMine );
+    AISetStock( player, 29, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 31, c_TU_SCV );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 33, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Medivac );
+    AISetStock( player, 2, c_TU_WidowMine );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 35, c_TU_SCV );
+    AISetStock( player, 9, c_TU_Marine );
+    AISetStock( player, 37, c_TU_SCV );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TU_Medivac );
+    AISetStock( player, 3, c_TU_WidowMine );
+    AISetStock( player, 2, c_TB_Starport );
+    AISetStock( player, 39, c_TU_SCV );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 11, c_TU_Marine );
+    AISetStock( player, 41, c_TU_SCV );
+    AISetStock( player, 4, c_TB_Refinery );
+    AISetStock( player, 7, c_TB_SupplyDepot );
+    AISetStock( player, 4, c_TU_WidowMine );
+    AISetStock( player, 3, c_TU_Medivac );
+    AISetStock( player, 13, c_TU_Marine );
+    AISetStock( player, 43, c_TU_SCV );
+    AISetStock( player, 8, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TU_Viking );
+    AISetStock( player, 15, c_TU_Marine );
+    AISetStock( player, 45, c_TU_SCV );
+    AISetStock( player, 1, c_TB_FactoryTechLab );
+    AISetStock( player, 9, c_TB_SupplyDepot );
+    AISetStock( player, 3, c_TB_Barracks );
+    AISetStock( player, 4, c_TU_Medivac );
+    AISetStock( player, 47, c_TU_SCV );
+    AISetStock( player, 10, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TU_Viking );
+    AISetStock( player, 17, c_TU_Marine );
+    AISetStock( player, 49, c_TU_SCV );
+    AISetStock( player, 1, c_TU_SiegeTank );
+    AISetStock( player, 11, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TB_BarracksTechLab );
+    AISetStock( player, 1, c_TU_Liberator );
+    AISetStock( player, 51, c_TU_SCV );
+    AISetStock( player, 12, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TU_Liberator );
+    AISetStock( player, 53, c_TU_SCV );
+    AISetStock( player, 1, c_TR_MarineShield );
+    AISetStock( player, 1, c_TR_MarineStimPack );
+    AISetStock( player, 2, c_TU_SiegeTank );
+    AISetStock( player, 2, c_TU_Marauder );
+    AISetStock( player, 18, c_TU_Marine );
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+
+    if (AITechCount(player, c_TU_Medivac, c_techCountCompleteOnly) >= 4) {
+        AISetAttackStatus(player, c_TU_Marine, 2, 8, c_continuousMerge);
+        AISetAttackStatus(player, c_TU_WidowMine, 2, 4, c_continuousMerge);
+    }
+    
+    if (AIGetTime() < 420) {
+        if (AITechCount(player, c_TR_MarineShield, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+        if (AITechCount(player, c_TR_MarineStimPack, c_techCountInProgressOrBetter) < 1) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMidAirMacroChIn
+//--------------------------------------------------------------------------------------------------
+bool TerranMidAirMacroChIn (int player) {
+    AIClearStock(player);
+    
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 14, c_TU_SCV );
+    AISetStock( player, 1, c_TB_SupplyDepot );
+    AISetStock( player, 17, c_TU_SCV );
+    
+    TerranBasicDefenseStock(player);
+
+    if (AITechCount(player, c_TU_SCV, c_techCountQueuedOrBetter) >= 17) {
+        if (TerranHDFastExpand(player)) { return false; }
+    }
+
+    AISetStock( player, 18, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Refinery );
+    AISetStock( player, 19, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 21, c_TU_SCV );
+    AISetStock( player, 2, c_TB_SupplyDepot );
+    AISetStock( player, 22, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 23, c_TU_SCV );
+    AISetStock( player, 1, c_TB_Factory );
+    AISetStock( player, 1, c_TB_OrbitalCommand );
+    
+    if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountInProgressOrBetter) >= 2) {
+        AISetStock( player, 2, c_TB_OrbitalCommand );
+    }
+    
+    AISetStock( player, 25, c_TU_SCV );
+    AISetStock( player, 2, c_TB_Starport );
+
+    TerranHDEmergencyDetectionAntiAir(player);
+    TerranHDDefaultExtraMidStock(player);
+
+    AISetStock( player, 29, c_TU_SCV );
+    AISetStock( player, 4, c_TB_Refinery );
+    AISetStock( player, 31, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Marine );
+    AISetStock( player, 3, c_TB_SupplyDepot );
+    AISetStock( player, 33, c_TU_SCV );
+    AISetStock( player, 2, c_TU_Marine );
+    AISetStock( player, 2, c_TU_Viking );
+    AISetStock( player, 35, c_TU_SCV );
+    AISetStock( player, 4, c_TB_SupplyDepot );
+    AISetStock( player, 3, c_TU_Marine );
+    AISetStock( player, 37, c_TU_SCV );
+    AISetStock( player, 4, c_TU_Marine );
+    AISetStock( player, 39, c_TU_SCV );
+    AISetStock( player, 1, c_TU_Medivac );
+    AISetStock( player, 1, c_TU_Liberator );
+    AISetStock( player, 5, c_TB_SupplyDepot );
+    AISetStock( player, 41, c_TU_SCV );
+    AISetStock( player, 5, c_TU_Marine );
+    AISetStock( player, 2, c_TB_Armory );
+    AISetStock( player, 43, c_TU_SCV );
+    AISetStock( player, 6, c_TU_Marine );
+    AISetStock( player, 2, c_TU_Liberator );
+    AISetStock( player, 6, c_TB_SupplyDepot );
+    AISetStock( player, 2, c_TU_Medivac );
+    AISetStock( player, 45, c_TU_SCV );
+    AISetStock( player, 7, c_TU_Marine );
+    AISetStock( player, 7, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TB_FusionCore );
+    AISetStock( player, 47, c_TU_SCV );
+    AISetStock( player, 8, c_TU_Marine );
+    AISetStock( player, 8, c_TB_SupplyDepot );
+    AISetStock( player, 1, c_TR_ShipWeapons1 );
+    AISetStock( player, 1, c_TR_MechPlating1 );
+    AISetStock( player, 2, c_TB_StarportTechLab );
+    AISetStock( player, 49, c_TU_SCV );
+    AISetStock( player, 9, c_TU_Marine );
+    AISetStock( player, 9, c_TB_SupplyDepot );
+    AISetStock( player, 51, c_TU_SCV );
+    AISetStock( player, 10, c_TU_Marine );
+    AISetStock( player, 1, c_TU_Battlecruiser );
+    AISetStock( player, 2, c_TB_Barracks );
+    AISetStock( player, 10, c_TB_SupplyDepot );
+    AISetStock( player, 53, c_TU_SCV );
+    AISetStock( player, 2, c_TU_Battlecruiser );
+
+    AIEnableStock(player);
+
+    //---------------------------------------------------------
+    
+    // don't attack alone, but be willing to support an attack
+    if (AITechCount(player, c_TU_Medivac, c_techCountCompleteOnly) >= 1) {
+        AISetAttackStatus(player, c_TU_Marine, 4, 999, c_continuousMerge);
+    }
+    AISetAttackStatus(player, c_TU_Viking, 2, 999, c_continuousMerge);
+
+    if (AIGetTime() < 420) {
+        if (AITechCount(player, c_TU_Battlecruiser, c_techCountInProgressOrBetter) < 2) {
+            return false;
+        }
+    }
+
+    return true;  // Transition to LateGame
+}
+
+//==================================================================================================
+//  LATE GAME
+//==================================================================================================
+
+// Late Game is very similar to VyHd, but no upgrade limits and aggressive expanding since we should have the resources
+
+//--------------------------------------------------------------------------------------------------
+//  TerranLateChIn
+//--------------------------------------------------------------------------------------------------
+void TerranLateChIn (int player) {
+    int armyCompareEstimate = AIArmyComparisonEstimate(player);
+    int foodUsed = PlayerGetPropertyInt(player, c_playerPropSuppliesUsed);
+
+    // only allow scouting if I have plenty of workers
+    AIScoutingEnable(player, 16, c_TU_SCV);
+    
+    // don't limit teching on insane, assume we'll have the resources
+    //AISetTechLimitLevels(player);
+
+
+// ****************** Start Restock ****************** //
+    AIClearStock(player);
+
+// Very basic recovery start
+    TerranHDRecoveryStart(player);
+
+// Very basic farms & peons
+    AISetStockFarms( player, c_TB_SupplyDepot, c_stockNormalFarms);
+    AISetStockPeons( player, 16, c_TU_SCV, c_stockMinPeons, c_stockAlways);
+
+// Desperate expand (we're about to run out of minerals/gas)
+    AIDefaultExpansion(player, c_TB_CommandCenter, 3000, 1000, c_expandVitalHard);
+
+// Choose what type of endgame army we'd like to make
+    UpdateHDTerranLateGameArmy(player);
+
+// Bare minimum army
+    if (foodUsed < 180) {
+        TerranHDLateGameArmy(player, e_armyTypeMinimum);
+    }
+
+// Basic peons
+    AISetStockPeons( player, 24, c_TU_SCV, c_stockMinPeons, c_stockAlways);
+
+// Urgent early detection
+    if (AINeedsDetection(player)) {
+        AISetStock( player, 1, c_TU_Raven );
+        AISetStock( player, 1, c_TB_OrbitalCommand );
+    }
+
+// Barely adequete army including anti-air
+    if (foodUsed < 180) {
+        TerranHDLateGameArmy(player, e_armyTypeBase);
+    }
+    
+// Basic towns, farms, & peons
+    AIDefaultEconomy(player, c_TB_CommandCenter_Alias, c_TB_Refinery, c_TB_SupplyDepot, c_TU_SCV, 70, c_stockAlways);
+
+// Low expand (we're running low on minerals/gas)
+    AIAdjustedDefaultExpansion(player, c_TB_CommandCenter, 7000, 3000, c_expandVitalHard, armyCompareEstimate);
+
+// Minimum normal detection
+    if (AISuspectDetectionDanger(player, c_lateDetectionDangerTime)) {
+        AISetStock( player, 1, c_TB_OrbitalCommand );
+    }
+
+// On an air map build at least one transport as long as we have some other units/army
+    if (AIGetUserInt(player, c_numGroundStartLocs) == 0) {
+        AISetStock( player, 1, c_TU_Medivac );
+    }
+
+// Nearly food capped units
+    if (foodUsed > 160) {
+        AISetStock( player, 2, c_TU_Raven );
+        AISetStock( player, 2, c_TU_Medivac );
+        if (AIWantsMultipleTransport(player)) {
+            AISetStock( player, 8, c_TU_Medivac );
+        }
+
+        if (foodUsed >= 180) {
+            TerranHDLateGameArmy(player, e_armyTypeMinimum);
+            TerranHDLateGameArmy(player, e_armyTypeBase);
+        }
+    }
+
+// Basic small army
+    TerranHDLateGameArmy(player, e_armyTypeSmall);
+
+// Basic production buildings
+    AISetStock( player, 2, c_TB_Barracks );
+    AISetStock( player, 1, c_TB_BarracksTechLab );
+    
+// Normal expand
+    AIAdjustedDefaultExpansion(player, c_TB_CommandCenter, 17000, 7000, c_expandNormalHard, armyCompareEstimate);
+    
+// Make Counter Units
+    TerranHDMakeCounters(player);
+
+// Vital upgrades
+    TerranHDVitalUpgrades(player);
+
+// Medium sized army
+    TerranHDLateGameArmy(player, e_armyTypeMedium);
+
+// General upgrades
+    TerranHDGeneralUpgrades(player);
+    
+// Other towns defense
+    TerranHDDefenseOtherTowns(player);
+
+// Large sized army
+    TerranHDLateGameArmy(player, e_armyTypeLarge);
+
+// Main base defense
+    TerranHDDefenseMainTown(player);
+
+// Terran harrassment
+    TerranHDHarass(player);
+
+// Multiple detectors & scouts & a transport
+    AISetStockUnitNext( player, 1, c_TU_Medivac, c_stockAlways );
+    AISetStockUnitNext( player, 2, c_TU_Raven, c_stockAlways );
+
+// Middle expand
+    AIAdjustedDefaultExpansion(player, c_TB_CommandCenter, 24000, 10000, c_expandNormalHard, armyCompareEstimate);
+
+// Extra detection & scouts & transports
+    AISetStockUnitNext( player, 4, c_TU_Medivac, c_stockAlways );
+    
+// Late expand
+    AIAdjustedDefaultExpansion(player, c_TB_CommandCenter, 28000, 12000, c_expandNormalHard, armyCompareEstimate);
+  
+// Extra production buildings
+    AISetStockUnitNext( player, 4, c_TB_Barracks,           c_stockIdle );
+    AISetStockUnitNext( player, 1, c_TB_BarracksTechLab,    c_stockIdle );
+    AISetStockUnitNext( player, 1, c_TB_BarracksReactor,    c_stockIdle );
+    AISetStockUnitNext( player, 2, c_TB_Factory,            c_stockIdle );
+    AISetStockUnitNext( player, 2, c_TB_Starport,           c_stockIdle );
+    AISetStockUnitNext( player, 2, c_TB_FactoryTechLab,     c_stockIdle );
+    AISetStockUnitNext( player, 1, c_TB_StarportTechLab,    c_stockIdle );
+    AISetStockUnitNext( player, 2, c_TB_BarracksTechLab,    c_stockIdle );
+
+// Extra research buildings
+    if (AIHasRes(player,700,500)) {
+        AISetStockUnitNext( player, 2, c_TB_EngineeringBay, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TB_Armory, c_stockAlways );
+    }
+
+// Minor upgrades
+    TerranHDMinorUpgrades(player);
+
+// Idle expand (very low priority, to prevent us from sitting around with idle peons)
+    AIAdjustedDefaultExpansion(player, c_TB_CommandCenter, 40000, 16000, c_expandIdleHard, armyCompareEstimate);
+
+// Entire Army
+    TerranHDLateGameArmy(player, e_armyTypeFull);
+
+    AIEnableStock(player);    
+// ****************** End Restock ****************** //
+
+}

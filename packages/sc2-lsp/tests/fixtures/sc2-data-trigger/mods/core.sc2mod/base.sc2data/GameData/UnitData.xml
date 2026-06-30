@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <const id="Burrow" path="CUnit.Collide.index" value="Land1"/>
+    <const id="TinyCritter" path="CUnit.Collide.index" value="Land8"/>
+    <const id="Swarm" path="CUnit.Collide.index" value="Land4"/>
+    <const id="ForceField" path="CUnit.Collide.index" value="Land9"/>
+    <const id="Locust" path="CUnit.Collide.index" value="Land11"/>
+    <const id="DisruptorPhased" path="CUnit.Collide.index" value="Land15"/>
+    <const id="Structure" path="CUnit.Collide.index" value="Land6"/>
+    <const id="FlyingImmobile" path="CUnit.Collide.index" value="Air2"/>
+    <const id="FlyingEscorts" path="CUnit.Collide.index" value="Air3"/>
+    <const id="Ground" path="CUnit.Collide.index" value="Land2"/>
+    <const id="LocustForceField" path="CUnit.Collide.index" value="Land12"/>
+    <const id="Flying" path="CUnit.Collide.index" value="Air1"/>
+    <const id="Colossus" path="CUnit.Collide.index" value="Land5"/>
+    <const id="CreepTumor" path="CUnit.Collide.index" value="Land10"/>
+    <const id="RoachBurrow" path="CUnit.Collide.index" value="Land7"/>
+    <const id="Phased" path="CUnit.Collide.index" value="Land14"/>
+    <const id="Larva" path="CUnit.Collide.index" value="Land3"/>
+    <!-- 0-15 are used for land based units, any bit used will cause the unit to walk on the ground -->
+    <!-- 16-31 are used for air based units -->
+    <CUnit default="1">
+        <Name value="Unit/Name/##id##"/>
+        <Description value="Button/Tooltip/##id##"/>
+        <DeathRevealFilters value="Visible;Player,Ally,Neutral,Missile,Dead,Hidden"/>
+        <DeathRevealRadius value="2"/>
+        <DeathRevealDuration value="4"/>
+        <DeathRevealType value="Snapshot"/>
+        <Race value="Neut"/>
+        <DefaultAcquireLevel value="Offensive"/>
+        <Response value="Acquire"/>
+        <ResourceState value="Unknown"/>
+        <ResourceType value="Unknown"/>
+        <LifeStart value="1"/>
+        <LifeMax value="1"/>
+        <LifeArmorName value="Unit/LifeArmorName/None"/>
+        <Mover value="Ground"/>
+        <StationaryTurningRate value="720"/>
+        <TurningRate value="720"/>
+        <Radius value="0.5"/>
+        <SeparationRadius value="0.5"/>
+        <MinimapRadius value="0.5"/>
+        <EditorCategories value="ObjectType:Unit"/>
+        <TacticalAIFilters value="-;Player,Ally,Neutral"/>
+        <AIEvalFactor value="1"/>
+        <Mass value="0.4"/>
+        <FlagArray index="Turnable" value="1"/>
+        <FlagArray index="Movable" value="1"/>
+        <FlagArray index="Unclickable" value="1"/>
+        <FlagArray index="Unhighlightable" value="1"/>
+        <FlagArray index="Untooltipable" value="1"/>
+        <FlagArray index="KillCredit" value="1"/>
+        <FlagArray index="ShowResources" value="1"/>
+        <FlagArray index="ClearRallyOnTargetLost" value="1"/>
+        <FlagArray index="PlayerRevivable" value="1"/>
+        <FlagArray index="CameraFollow" value="1"/>
+        <EditorFlags index="BlockStructures" value="1"/>
+        <PushPriority value="10"/>
+        <LeaderAlias value="##id##"/>
+        <HotkeyAlias value="##id##"/>
+        <SelectAlias value="##id##"/>
+        <SubgroupAlias value="##id##"/>
+        <OccludeHeight value="0.75"/>
+        <TacticalAI value="##id##"/>
+        <AIEvaluateAlias value="##id##"/>
+        <ReviveType value="##id##"/>
+        <PawnItemReduction value="1"/>
+        <Fidget>
+            <DelayMax value="30"/>
+            <DelayMin value="10"/>
+            <DistanceMax value="4"/>
+            <DistanceMin value="1"/>
+            <TurnAngle value="90"/>
+            <TurningRate value="90"/>
+            <ChanceArray index="Idle" value="100"/>
+        </Fidget>
+        <ReviveInfoBase>
+            <Charge Link="##id##/Revive" Location="Unit"/>
+            <Cooldown Link="##id##/Revive" Location="Unit"/>
+        </ReviveInfoBase>
+        <InnerRadiusSafetyMultiplier value="1"/>
+    </CUnit>
+    <CUnit default="1" id="DESTRUCTIBLE">
+        <DeathRevealRadius value="0"/>
+        <DeathRevealDuration value="0"/>
+        <FogVisibility value="Snapshot"/>
+        <Response value="Nothing"/>
+        <LifeStart value="10"/>
+        <LifeMax value="10"/>
+        <StationaryTurningRate value="0"/>
+        <TurningRate value="0"/>
+        <MinimapRadius value="0"/>
+        <EditorCategories value="ObjectType:Destructible"/>
+        <FlagArray index="Turnable" value="0"/>
+        <FlagArray index="CreateVisible" value="1"/>
+        <FlagArray index="Uncommandable" value="1"/>
+        <FlagArray index="KillCredit" value="0"/>
+        <FlagArray index="Destructible" value="1"/>
+        <Fidget DelayMax="0" DelayMin="0"/>
+    </CUnit>
+    <CUnit default="1" id="ITEM">
+        <Sight value="2.5"/>
+        <DeathRevealRadius value="0"/>
+        <DeathRevealDuration value="0"/>
+        <Response value="Nothing"/>
+        <LifeStart value="10"/>
+        <LifeMax value="10"/>
+        <StationaryTurningRate value="0"/>
+        <TurningRate value="0"/>
+        <MinimapRadius value="0"/>
+        <EditorCategories value="ObjectType:Item"/>
+        <Item value="##id##"/>
+        <FlagArray index="Turnable" value="0"/>
+        <FlagArray index="Uncommandable" value="1"/>
+        <FlagArray index="KillCredit" value="0"/>
+        <FlagArray index="Invulnerable" value="1"/>
+        <Fidget DelayMax="0" DelayMin="0"/>
+    </CUnit>
+    <CUnit default="1" id="POWERUP">
+        <DeathRevealRadius value="0"/>
+        <DeathRevealDuration value="0"/>
+        <Response value="Nothing"/>
+        <LifeStart value="10"/>
+        <LifeMax value="10"/>
+        <StationaryTurningRate value="0"/>
+        <TurningRate value="0"/>
+        <MinimapRadius value="0"/>
+        <EditorCategories value="ObjectType:Item"/>
+        <PowerupEffect value="##id##"/>
+        <PowerupCost>
+            <Charge>
+                <CountMax value="1"/>
+                <CountStart value="1"/>
+                <CountUse value="1"/>
+                <Link value="##id##"/>
+            </Charge>
+            <Cooldown Link="##id##"/>
+        </PowerupCost>
+        <FlagArray index="Turnable" value="0"/>
+        <FlagArray index="Uncommandable" value="1"/>
+        <FlagArray index="KillCredit" value="0"/>
+        <Fidget DelayMax="0" DelayMin="0"/>
+    </CUnit>
+    <CUnit default="1" id="SMCAMERA">
+        <Mob value="Story"/>
+        <DeathRevealRadius value="0"/>
+        <DeathRevealDuration value="0"/>
+        <Response value="Nothing"/>
+        <StationaryTurningRate value="0"/>
+        <TurningRate value="0"/>
+        <Radius value="0"/>
+        <SeparationRadius value="0"/>
+        <MinimapRadius value="0"/>
+        <EditorCategories value="ObjectType:PropStory"/>
+        <FlagArray index="Unclickable" value="0"/>
+        <FlagArray index="Unhighlightable" value="0"/>
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="UseLineOfSight" value="1"/>
+        <FlagArray index="KillCredit" value="0"/>
+        <FlagArray index="IgnoreTerrainZInit" value="1"/>
+        <PlaneArray index="Ground" value="1"/>
+        <Collide index="Ground" value="1"/>
+        <AbilArray Link="stop"/>
+        <AbilArray Link="move"/>
+        <Fidget DelayMax="0" DelayMin="0"/>
+    </CUnit>
+    <CUnit default="1" id="SMCHARACTER">
+        <Mob value="Story"/>
+        <DeathRevealRadius value="0"/>
+        <DeathRevealDuration value="0"/>
+        <Response value="Nothing"/>
+        <Speed value="0.4492"/>
+        <Acceleration value="1000"/>
+        <LateralAcceleration value="46.0625"/>
+        <StationaryTurningRate value="225"/>
+        <TurningRate value="180"/>
+        <Radius value="0"/>
+        <SeparationRadius value="0"/>
+        <MinimapRadius value="0"/>
+        <EditorCategories value="ObjectType:CharacterStory"/>
+        <FlagArray index="Unclickable" value="0"/>
+        <FlagArray index="Unhighlightable" value="0"/>
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="UseLineOfSight" value="1"/>
+        <FlagArray index="KillCredit" value="0"/>
+        <PlaneArray index="Ground" value="1"/>
+        <Collide index="Ground" value="1"/>
+        <AbilArray Link="stop"/>
+        <AbilArray Link="move"/>
+        <Fidget DelayMax="20">
+            <ChanceArray index="Anim" value="95"/>
+            <ChanceArray index="Idle" value="5"/>
+        </Fidget>
+    </CUnit>
+    <CUnit default="1" id="STARMAP">
+        <Mob value="Story"/>
+        <DeathRevealRadius value="0"/>
+        <DeathRevealDuration value="0"/>
+        <Response value="Nothing"/>
+        <Mover value="Fly"/>
+        <StationaryTurningRate value="180"/>
+        <TurningRate value="180"/>
+        <Radius value="0"/>
+        <SeparationRadius value="0"/>
+        <MinimapRadius value="0"/>
+        <EditorCategories value="ObjectType:Campaign"/>
+        <FlagArray index="Unclickable" value="0"/>
+        <FlagArray index="Unhighlightable" value="0"/>
+        <FlagArray index="Untooltipable" value="0"/>
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="UseLineOfSight" value="1"/>
+        <FlagArray index="KillCredit" value="0"/>
+        <FlagArray index="IgnoreTerrainZInit" value="1"/>
+        <PlaneArray index="Air" value="1"/>
+        <Collide index="Flying" value="1"/>
+        <Fidget DelayMax="0" DelayMin="0"/>
+    </CUnit>
+    <CUnit default="1" id="SMSET">
+        <Mob value="Story"/>
+        <Race value="Terr"/>
+        <DeathRevealRadius value="0"/>
+        <DeathRevealDuration value="0"/>
+        <Response value="Nothing"/>
+        <StationaryTurningRate value="180"/>
+        <TurningRate value="180"/>
+        <Radius value="0"/>
+        <SeparationRadius value="0"/>
+        <MinimapRadius value="0"/>
+        <EditorCategories value="ObjectType:SetStory"/>
+        <FlagArray index="Unclickable" value="0"/>
+        <FlagArray index="Unhighlightable" value="0"/>
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="UseLineOfSight" value="1"/>
+        <FlagArray index="KillCredit" value="0"/>
+        <FlagArray index="IgnoreTerrainZInit" value="1"/>
+        <PlaneArray index="Ground" value="1"/>
+        <Collide index="Ground" value="1"/>
+        <Fidget DelayMax="0" DelayMin="0"/>
+        <FogVisibility value="Visible"/>
+    </CUnit>
+    <CUnit default="1" id="MISSILE">
+        <DeathRevealRadius value="0"/>
+        <DeathRevealDuration value="0"/>
+        <Response value="Nothing"/>
+        <LifeStart value="10"/>
+        <LifeMax value="10"/>
+        <Mover value="##id##"/>
+        <PlaneArray index="Air" value="1"/>
+        <Radius value="0"/>
+        <SeparationRadius value="0"/>
+        <MinimapRadius value="0"/>
+        <EditorCategories value="ObjectType:Projectile"/>
+        <FlagArray index="Turnable" value="0"/>
+        <FlagArray index="Uncommandable" value="1"/>
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="Missile" value="1"/>
+        <FlagArray index="KillCredit" value="0"/>
+        <FlagArray index="NoScore" value="1"/>
+        <FlagArray index="NoDeathEvent" value="1"/>
+        <EditorFlags index="NoPlacement" value="1"/>
+        <LeaderAlias value=""/>
+        <HotkeyAlias value=""/>
+        <Fidget DelayMax="0" DelayMin="0"/>
+    </CUnit>
+    <CUnit default="1" id="MISSILE_INVULNERABLE" parent="MISSILE">
+        <FlagArray index="Invulnerable" value="1"/>
+    </CUnit>
+    <CUnit default="1" id="MISSILE_HALFLIFE" parent="MISSILE">
+        <LifeStart value="5"/>
+        <LifeMax value="5"/>
+    </CUnit>
+    <CUnit default="1" id="PLACEHOLDER">
+        <DeathRevealRadius value="0"/>
+        <DeathRevealDuration value="0"/>
+        <FlagArray index="Uncommandable" value="1"/>
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="NoDraw" value="1"/>
+        <FlagArray index="Invulnerable" value="1"/>
+        <FlagArray index="NoScore" value="1"/>
+        <EditorFlags index="NoPlacement" value="1"/>
+        <PlaneArray index="Ground" value="1"/>
+    </CUnit>
+    <CUnit default="1" id="PLACEHOLDER_AIR">
+        <Mover value="Fly"/>
+        <DeathRevealRadius value="0"/>
+        <DeathRevealDuration value="0"/>
+        <FlagArray index="Uncommandable" value="1"/>
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="NoDraw" value="1"/>
+        <FlagArray index="Invulnerable" value="1"/>
+        <FlagArray index="NoScore" value="1"/>
+        <EditorFlags index="NoPlacement" value="1"/>
+        <PlaneArray index="Air" value="1"/>
+    </CUnit>
+    <CUnit default="1" id="PATHINGBLOCKER">
+        <Mob value="Multiplayer"/>
+        <SeparationRadius value="0"/>
+        <MinimapRadius value="0"/>
+        <EditorCategories value="ObjectType:Other,ObjectFamily:Melee"/>
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="PreventReveal" value="1"/>
+        <FlagArray index="Undetectable" value="1"/>
+        <FlagArray index="Unradarable" value="1"/>
+        <FlagArray index="Invulnerable" value="1"/>
+        <EditorFlags index="NeutralDefault" value="1"/>
+        <Collide index="Burrow" value="1"/>
+        <Collide index="Ground" value="1"/>
+        <Collide index="Structure" value="1"/>
+        <PlaneArray index="Ground" value="1"/>
+    </CUnit>
+    <CUnit default="1" id="BEACON">
+        <LeaderAlias value=""/>
+        <HotkeyAlias value=""/>
+        <LifeStart value="10000"/>
+        <LifeMax value="10000"/>
+        <Response value="Nothing"/>
+        <MinimapRadius value="1"/>
+        <FlagArray index="Turnable" value="0"/>
+        <FlagArray index="Movable" value="0"/>
+        <FlagArray index="Uncommandable" value="1"/>
+        <FlagArray index="Untooltipable" value="0"/>
+        <FlagArray index="Unselectable" value="1"/>
+        <FlagArray index="Untargetable" value="1"/>
+        <FlagArray index="Undetectable" value="1"/>
+        <FlagArray index="Unradarable" value="1"/>
+        <FlagArray index="Invulnerable" value="1"/>
+        <FlagArray index="NoScore" value="1"/>
+        <FlagArray index="ShareControl" value="1"/>
+        <EditorFlags index="NoPlacement" value="1"/>
+        <EditorFlags index="NoPalettes" value="1"/>
+        <PlaneArray index="Air" value="1"/>
+    </CUnit>
+    <CUnit id="Ball">
+        <Speed value="6"/>
+        <Acceleration value="2.1875"/>
+        <Height value="0.5"/>
+        <Radius value="0.625"/>
+        <SeparationRadius value="0.625"/>
+        <SubgroupPriority value="1"/>
+        <MinimapRadius value="0.625"/>
+        <FlagArray index="Bounce" value="1"/>
+        <EditorFlags index="NoPalettes" value="1"/>
+        <AbilArray Link="stop"/>
+        <AbilArray Link="move"/>
+        <AbilArray Link="Taunt"/>
+        <BehaviorArray Link="PermanentlyInvulnerable"/>
+        <CardLayouts>
+            <LayoutButtons Face="Move" Type="AbilCmd" AbilCmd="move,Move" Row="0" Column="0"/>
+            <LayoutButtons Face="Stop" Type="AbilCmd" AbilCmd="stop,Stop" Row="0" Column="1"/>
+            <LayoutButtons Face="MoveHoldPosition" Type="AbilCmd" AbilCmd="move,HoldPos" Row="0" Column="2"/>
+            <LayoutButtons Face="MovePatrol" Type="AbilCmd" AbilCmd="move,Patrol" Row="1" Column="0"/>
+            <LayoutButtons Face="Taunt" Type="AbilCmd" AbilCmd="Taunt,Execute" Row="3" Column="0"/>
+        </CardLayouts>
+        <Attributes index="Biological" value="1"/>
+        <Deceleration value="2.1875"/>
+        <LateralAcceleration value="2.1875"/>
+        <InnerRadius value="0.625"/>
+    </CUnit>
+    <CUnit id="System_Snapshot_Dummy">
+        <!-- Dummy unit for setting up a snapshot when we don't have a specific unit type available. -->
+        <EditorFlags index="NoPlacement" value="1"/>
+        <EditorCategories value="ObjectType:Other"/>
+    </CUnit>
+    <CUnit id="StereoscopicOptionsUnit">
+        <EditorFlags index="NoPlacement" value="1"/>
+        <EditorFlags index="NoPalettes" value="1"/>
+        <EditorCategories value="ObjectType:Other"/>
+    </CUnit>
+</Catalog>

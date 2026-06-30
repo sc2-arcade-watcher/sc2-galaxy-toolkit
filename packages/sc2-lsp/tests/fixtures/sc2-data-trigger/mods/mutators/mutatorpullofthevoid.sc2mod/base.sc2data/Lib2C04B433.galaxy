@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib2C04B433_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: PulloftheVoid
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib2C04B433_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib2C04B433_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "DeathPull");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib2C04B433_gt_Initialization_Init () {
+    lib2C04B433_gt_Initialization = TriggerCreate("lib2C04B433_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib2C04B433_gt_Initialization);
+}
+
+void lib2C04B433_InitTriggers () {
+    lib2C04B433_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib2C04B433_InitLib_completed = false;
+
+void lib2C04B433_InitLib () {
+    if (lib2C04B433_InitLib_completed) {
+        return;
+    }
+
+    lib2C04B433_InitLib_completed = true;
+
+    lib2C04B433_InitLibraries();
+    lib2C04B433_InitTriggers();
+}
+

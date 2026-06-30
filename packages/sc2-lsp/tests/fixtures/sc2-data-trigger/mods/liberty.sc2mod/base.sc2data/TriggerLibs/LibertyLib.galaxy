@@ -1,0 +1,1167 @@
+include "TriggerLibs/NativeLib"
+
+include "TriggerLibs/LibertyLib_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Liberty
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libLbty_InitLibraries () {
+    libNtve_InitVariables();
+}
+
+// Variable Initialization
+bool libLbty_InitVariables_completed = false;
+
+void libLbty_InitVariables () {
+    int init_i;
+
+    if (libLbty_InitVariables_completed) {
+        return;
+    }
+
+    libLbty_InitVariables_completed = true;
+
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        libLbty_gv_pingResetTimer[init_i] = TimerCreate();
+    }
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        libLbty_gv_pingSuppressionTimer[init_i] = TimerCreate();
+    }
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        libLbty_gv_pingLockoutTimer[init_i] = TimerCreate();
+    }
+    libLbty_gv_pingValidPlayers = PlayerGroupEmpty();
+    libLbty_gv_pingPanelMinimapButton = c_invalidDialogControlId;
+    libLbty_gv_meleeSurrender_PlayersSurrendering = PlayerGroupEmpty();
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        libLbty_gv_meleeSurrender_PlayersAnswered[init_i] = PlayerGroupEmpty();
+    }
+    libLbty_gv_meleeSurrender_PlayersTried = PlayerGroupEmpty();
+    for (init_i = 0; init_i <= 32; init_i += 1) {
+        libLbty_gv_meleeSurrender_Dialog[init_i] = c_invalidDialogId;
+    }
+    for (init_i = 0; init_i <= 32; init_i += 1) {
+        libLbty_gv_meleeSurrender_BtnYes[init_i] = c_invalidDialogControlId;
+    }
+    for (init_i = 0; init_i <= 32; init_i += 1) {
+        libLbty_gv_meleeSurrender_BtnNo[init_i] = c_invalidDialogControlId;
+    }
+    for (init_i = 0; init_i <= 32; init_i += 1) {
+        libLbty_gv_meleeSurrender_Title[init_i] = c_invalidDialogControlId;
+    }
+}
+
+// Presets
+// Functions
+void libLbty_gf_PingPlay (int lp_pingType, int lp_player, point lp_pingLocation, int lp_gameUser, string lp_pingTargetType, point lp_pingTargetPosition, int lp_pingTargetOwner) {
+    // Variable Declarations
+    string lv_pingMinimapModel;
+    string lv_pingEffect;
+    soundlink lv_pingSound;
+    fixed lv_pingScale;
+    text lv_tooltipLabel;
+    unit lv_pingUnit;
+    playergroup lv_pingPlayers;
+    int lv_indexPlayer;
+    int lv_gameUserIndex;
+
+    // Automatic Variable Declarations
+    int auto699398C7_val;
+
+    // Variable Initialization
+    lv_pingSound = SoundLink("EditorDefaultSound", -1);
+    lv_pingScale = 1.0;
+    lv_pingPlayers = PlayerGroupEmpty();
+
+    // Implementation
+    lv_gameUserIndex = ((lp_gameUser)-999);
+    if (((lv_gameUserIndex < 0) || (lv_gameUserIndex > 16))) {
+        return ;
+    }
+
+    libNtve_gf_AddPlayerGroupToPlayerGroup(PlayerGroupAlliance(c_playerGroupAlly, lp_player), lv_pingPlayers);
+    PlayerGroupAdd(lv_pingPlayers, lp_player);
+    if ((TimerGetRemaining(libLbty_gv_pingSuppressionTimer[lv_gameUserIndex]) > 0.0)) {
+        return ;
+    }
+
+    if ((TimerGetRemaining(libLbty_gv_pingLockoutTimer[lv_gameUserIndex]) > 0.0)) {
+        GameUserDisplayMessage(lp_gameUser, c_messageAreaChat, StringExternal("Param/Value/lib_Lbty_83E22934"));
+        return ;
+    }
+
+    libLbty_gv_pingRecentCount[lv_gameUserIndex] += 1;
+    TimerStart(libLbty_gv_pingSuppressionTimer[lv_gameUserIndex], libLbty_gv_c_PINGSUPPRESSIONTIME, false, c_timeGame);
+    TimerStart(libLbty_gv_pingResetTimer[lv_gameUserIndex], libLbty_gv_c_PINGRESETTIME, false, c_timeGame);
+    if ((libLbty_gv_pingRecentCount[lv_gameUserIndex] >= libLbty_gv_c_PINGMAXCOUNT)) {
+        TimerStart(libLbty_gv_pingLockoutTimer[lv_gameUserIndex], libLbty_gv_c_PINGLOCKOUTTIME, false, c_timeGame);
+    }
+
+    auto699398C7_val = lp_pingType;
+    if (auto699398C7_val == 0) {
+        TextExpressionSetToken("Param/Expression/lib_Lbty_8E0C96E8", "ID", IntToText(lp_player));
+        TextExpressionSetToken("Param/Expression/lib_Lbty_8E0C96E8", "PLAYER", GameUserName(lp_gameUser));
+        UIDisplayMessage(lv_pingPlayers, c_messageAreaChat, TextExpressionAssemble("Param/Expression/lib_Lbty_8E0C96E8"));
+        lv_pingSound = SoundLink("UI_PingAdvanced_Attack", -1);
+        lv_pingMinimapModel = "PingPanelPingAttack";
+        lv_pingEffect = "PingPanelBeaconAttack";
+        lv_pingScale = 0.6;
+        lv_tooltipLabel = StringExternal("Param/Value/lib_Lbty_CF62ED5B");
+    }
+    else if (auto699398C7_val == 3) {
+        TextExpressionSetToken("Param/Expression/lib_Lbty_6846955F", "ID", IntToText(lp_player));
+        TextExpressionSetToken("Param/Expression/lib_Lbty_6846955F", "PLAYER", GameUserName(lp_gameUser));
+        UIDisplayMessage(lv_pingPlayers, c_messageAreaChat, TextExpressionAssemble("Param/Expression/lib_Lbty_6846955F"));
+        lv_pingSound = SoundLink("UI_PingAdvanced_Defend", -1);
+        lv_pingMinimapModel = "PingPanelPingDefend";
+        lv_pingEffect = "PingPanelBeaconDefend";
+        lv_pingScale = 0.6;
+        lv_tooltipLabel = StringExternal("Param/Value/lib_Lbty_4AA8D98F");
+    }
+    else if (auto699398C7_val == 2) {
+        TextExpressionSetToken("Param/Expression/lib_Lbty_F9C18C18", "ID", IntToText(lp_player));
+        TextExpressionSetToken("Param/Expression/lib_Lbty_F9C18C18", "PLAYER", GameUserName(lp_gameUser));
+        UIDisplayMessage(lv_pingPlayers, c_messageAreaChat, TextExpressionAssemble("Param/Expression/lib_Lbty_F9C18C18"));
+        lv_pingSound = SoundLink("UI_PingAdvanced_Retreat", -1);
+        lv_pingMinimapModel = "PingPanelPingRetreat";
+        lv_pingEffect = "PingPanelBeaconRetreat";
+        lv_pingScale = 0.6;
+        lv_tooltipLabel = StringExternal("Param/Value/lib_Lbty_B2C30E86");
+    }
+    else if (auto699398C7_val == 1) {
+        TextExpressionSetToken("Param/Expression/lib_Lbty_273AE718", "ID", IntToText(lp_player));
+        TextExpressionSetToken("Param/Expression/lib_Lbty_273AE718", "PLAYER", GameUserName(lp_gameUser));
+        UIDisplayMessage(lv_pingPlayers, c_messageAreaChat, TextExpressionAssemble("Param/Expression/lib_Lbty_273AE718"));
+        lv_pingSound = SoundLink("UI_PingAdvanced_OnMyWay", -1);
+        lv_pingMinimapModel = "PingPanelPingOnMyWay";
+        lv_pingEffect = "PingPanelBeaconOnMyWay";
+        lv_pingScale = 0.6;
+        lv_tooltipLabel = StringExternal("Param/Value/lib_Lbty_67146A4F");
+    }
+    else {
+        if ((lp_pingTargetType != null)) {
+            libLbty_gf_PingPlayUnit(lp_pingTargetType, lp_pingTargetPosition, lp_pingTargetOwner, lp_player, lp_gameUser);
+            return ;
+        }
+
+        lv_pingSound = SoundLink("UI_MiniMapPing", -1);
+        lv_pingMinimapModel = "MinimapPing";
+    }
+    if ((lv_pingEffect != null)) {
+        libLbty_gf_PingBeaconAdd(lv_pingEffect, lp_pingLocation, lp_player);
+    }
+
+    libNtve_gf_CreatePingFacingAngle(lv_pingPlayers, lv_pingMinimapModel, lp_pingLocation, libNtve_gf_ConvertPlayerColorToColor(PlayerGetColorIndex(lp_player, false)), 5.0, 270.0);
+    PingSetScale(PingLastCreated(), lv_pingScale);
+    SoundPlayForPlayer(lv_pingSound, c_maxPlayers, lv_pingPlayers, 100.0, 0.0);
+    if (((lv_tooltipLabel != null) == true)) {
+        TextExpressionSetToken("Param/Expression/lib_Lbty_28B1D376", "A", PlayerName(lp_player));
+        TextExpressionSetToken("Param/Expression/lib_Lbty_28B1D376", "B", lv_tooltipLabel);
+        PingSetTooltip(PingLastCreated(), TextExpressionAssemble("Param/Expression/lib_Lbty_28B1D376"));
+    }
+    else {
+        PingSetTooltip(PingLastCreated(), PlayerName(lp_player));
+    }
+}
+
+void libLbty_gf_PingPlayUnit (string lp_pingTargetType, point lp_pingTargetPosition, int lp_pingTargetOwner, int lp_player, int lp_gameUser) {
+    // Variable Declarations
+    string lv_pingMinimapModel;
+    string lv_pingEffect;
+    soundlink lv_pingSound;
+    fixed lv_pingScale;
+    text lv_tooltipLabel;
+    playergroup lv_pingPlayers;
+    int lv_indexPlayer;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_pingSound = SoundLink("EditorDefaultSound", -1);
+    lv_pingScale = 1.0;
+    lv_pingPlayers = PlayerGroupEmpty();
+
+    // Implementation
+    libNtve_gf_AddPlayerGroupToPlayerGroup(PlayerGroupAlliance(c_playerGroupAlly, lp_player), lv_pingPlayers);
+    PlayerGroupAdd(lv_pingPlayers, lp_player);
+    if ((libNtve_gf_PlayerIsEnemy(lp_player, lp_pingTargetOwner, libNtve_ge_PlayerRelation_Enemy) == true)) {
+        if ((EventPingUnitIsUnderConstruction() == true) && (VisIsVisibleForPlayer(lp_player, lp_pingTargetPosition) == false)) {
+            TextExpressionSetToken("Param/Expression/lib_Lbty_408B1BB0", "ID", IntToText(lp_player));
+            TextExpressionSetToken("Param/Expression/lib_Lbty_408B1BB0", "PLAYER", GameUserName(lp_gameUser));
+            TextExpressionSetToken("Param/Expression/lib_Lbty_408B1BB0", "ENEMYID", IntToText(lp_pingTargetOwner));
+            TextExpressionSetToken("Param/Expression/lib_Lbty_408B1BB0", "ENEMY", PlayerName(lp_pingTargetOwner));
+            UIDisplayMessage(lv_pingPlayers, c_messageAreaChat, TextExpressionAssemble("Param/Expression/lib_Lbty_408B1BB0"));
+            lv_tooltipLabel = StringExternal("Param/Value/lib_Lbty_2EEBF357");
+        }
+        else {
+            TextExpressionSetToken("Param/Expression/lib_Lbty_2B377E06", "ID", IntToText(lp_player));
+            TextExpressionSetToken("Param/Expression/lib_Lbty_2B377E06", "PLAYER", GameUserName(lp_gameUser));
+            TextExpressionSetToken("Param/Expression/lib_Lbty_2B377E06", "ENEMYID", IntToText(lp_pingTargetOwner));
+            TextExpressionSetToken("Param/Expression/lib_Lbty_2B377E06", "ENEMY", UnitTypeGetName(lp_pingTargetType));
+            UIDisplayMessage(lv_pingPlayers, c_messageAreaChat, TextExpressionAssemble("Param/Expression/lib_Lbty_2B377E06"));
+            TextExpressionSetToken("Param/Expression/lib_Lbty_19690D39", "A", UnitTypeGetName(lp_pingTargetType));
+            lv_tooltipLabel = TextExpressionAssemble("Param/Expression/lib_Lbty_19690D39");
+        }
+        lv_pingSound = SoundLink("UI_PingAdvanced_Attack", -1);
+        lv_pingMinimapModel = "PingPanelPingAttack";
+        lv_pingEffect = "PingPanelBeaconAttack";
+        lv_pingScale = 0.6;
+    }
+    else if ((libNtve_gf_PlayerIsEnemy(lp_player, lp_pingTargetOwner, libNtve_ge_PlayerRelation_Ally) == true)) {
+        TextExpressionSetToken("Param/Expression/lib_Lbty_87A7C4FB", "ID", IntToText(lp_player));
+        TextExpressionSetToken("Param/Expression/lib_Lbty_87A7C4FB", "PLAYER", GameUserName(lp_gameUser));
+        TextExpressionSetToken("Param/Expression/lib_Lbty_87A7C4FB", "ENEMYID", IntToText(lp_pingTargetOwner));
+        TextExpressionSetToken("Param/Expression/lib_Lbty_87A7C4FB", "ENEMY", UnitTypeGetName(lp_pingTargetType));
+        UIDisplayMessage(lv_pingPlayers, c_messageAreaChat, TextExpressionAssemble("Param/Expression/lib_Lbty_87A7C4FB"));
+        lv_pingSound = SoundLink("UI_PingAdvanced_Defend", -1);
+        lv_pingMinimapModel = "PingPanelPingDefend";
+        lv_pingEffect = "PingPanelBeaconDefend";
+        lv_pingScale = 0.6;
+        TextExpressionSetToken("Param/Expression/lib_Lbty_AF192CF6", "A", UnitTypeGetName(lp_pingTargetType));
+        lv_tooltipLabel = TextExpressionAssemble("Param/Expression/lib_Lbty_AF192CF6");
+    }
+    else if ((CatalogFieldValueGet(c_gameCatalogUnit, lp_pingTargetType, "ResourceState", c_playerAny) != "Unknown")) {
+        TextExpressionSetToken("Param/Expression/lib_Lbty_ED0924D6", "ID", IntToText(lp_player));
+        TextExpressionSetToken("Param/Expression/lib_Lbty_ED0924D6", "PLAYER", GameUserName(lp_gameUser));
+        UIDisplayMessage(lv_pingPlayers, c_messageAreaChat, TextExpressionAssemble("Param/Expression/lib_Lbty_ED0924D6"));
+        lv_pingSound = SoundLink("UI_PingAdvanced_OnMyWay", -1);
+        lv_pingMinimapModel = "PingPanelPingOnMyWay";
+        lv_pingEffect = "PingPanelBeaconOnMyWay";
+        lv_pingScale = 0.6;
+        TextExpressionSetToken("Param/Expression/lib_Lbty_1E5023B8", "A", UnitTypeGetName(lp_pingTargetType));
+        lv_tooltipLabel = TextExpressionAssemble("Param/Expression/lib_Lbty_1E5023B8");
+    }
+    else if (true) {
+        lv_pingSound = SoundLink("UI_MiniMapPing", -1);
+        lv_pingMinimapModel = "MinimapPing";
+    }
+    if ((lv_pingEffect != null)) {
+        libLbty_gf_PingBeaconAdd(lv_pingEffect, lp_pingTargetPosition, lp_player);
+    }
+
+    libNtve_gf_CreatePingFacingAngle(lv_pingPlayers, lv_pingMinimapModel, lp_pingTargetPosition, libNtve_gf_ConvertPlayerColorToColor(PlayerGetColorIndex(lp_player, false)), 5.0, 270.0);
+    PingSetScale(PingLastCreated(), lv_pingScale);
+    SoundPlayForPlayer(lv_pingSound, c_maxPlayers, lv_pingPlayers, 100.0, 0.0);
+    TextExpressionSetToken("Param/Expression/lib_Lbty_37F3FB21", "A", PlayerName(lp_player));
+    TextExpressionSetToken("Param/Expression/lib_Lbty_37F3FB21", "B", lv_tooltipLabel);
+    PingSetTooltip(PingLastCreated(), TextExpressionAssemble("Param/Expression/lib_Lbty_37F3FB21"));
+}
+
+void libLbty_gf_PingBeaconAdd (string lp_beaconEffect, point lp_location, int lp_player) {
+    // Variable Declarations
+    int lv_beaconIndex;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Implementation
+    PlayerCreateEffectPoint(lp_player, lp_beaconEffect, lp_location);
+}
+
+void libLbty_gf_PingMinimapButtonUpdate () {
+    // Variable Declarations
+    playergroup lv_standardPlayers;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_standardPlayers = PlayerGroupEmpty();
+
+    // Implementation
+    if ((libLbty_gv_pingPanelMinimapButton == c_invalidDialogControlId)) {
+        DialogControlHookupStandard(c_triggerControlTypeButton, "UIContainer/ConsoleUIContainer/MinimapPanel/PingButton");
+        libLbty_gv_pingPanelMinimapButton = DialogControlLastCreated();
+    }
+
+    lv_standardPlayers = PlayerGroupAll();
+    libNtve_gf_RemovePlayerGroupFromPlayerGroup(libLbty_gv_pingValidPlayers, lv_standardPlayers);
+    if ((PlayerGroupCount(lv_standardPlayers) > 0)) {
+        libNtve_gf_SetDialogItemTooltip(libLbty_gv_pingPanelMinimapButton, StringExternal("UI/PingTip"), PlayerGroupAll());
+    }
+
+    if ((PlayerGroupCount(libLbty_gv_pingValidPlayers) > 0)) {
+        libNtve_gf_SetDialogItemTooltip(libLbty_gv_pingPanelMinimapButton, StringExternal("UI/AdvancedPingTip"), PlayerGroupAll());
+    }
+
+}
+
+void libLbty_gf_EnableDisablePingPanel (bool lp_enableDisable, playergroup lp_players) {
+    // Automatic Variable Declarations
+    // Implementation
+    if ((lp_enableDisable == true)) {
+        libNtve_gf_AddPlayerGroupToPlayerGroup(lp_players, libLbty_gv_pingValidPlayers);
+        PingSetPlayerPingsShown(lp_players, false);
+        UISetFrameVisible(lp_players, c_syncFrameTypePingPanel, true);
+        TriggerEnable(libLbty_gt_PingUsed, true);
+    }
+    else {
+        PingSetPlayerPingsShown(lp_players, true);
+        libNtve_gf_RemovePlayerGroupFromPlayerGroup(lp_players, libLbty_gv_pingValidPlayers);
+        UISetFrameVisible(lp_players, c_syncFrameTypePingPanel, false);
+        if ((PlayerGroupCount(libLbty_gv_pingValidPlayers) == 0)) {
+            TriggerEnable(libLbty_gt_PingUsed, false);
+        }
+
+    }
+    libLbty_gf_PingMinimapButtonUpdate();
+}
+
+void libLbty_gf_MeleeSurrender_AIWantToSurrender (int lp_player) {
+    // Variable Declarations
+    int lv_dialogPlayer;
+    playergroup lv_dialogPlayerGroup;
+
+    // Automatic Variable Declarations
+    playergroup auto6E437A13_g;
+
+    // Variable Initialization
+    lv_dialogPlayerGroup = PlayerGroupEmpty();
+
+    // Implementation
+    auto6E437A13_g = PlayerGroupAll();
+    lv_dialogPlayer = -1;
+    while (true) {
+        lv_dialogPlayer = PlayerGroupNextPlayer(auto6E437A13_g, lv_dialogPlayer);
+        if (lv_dialogPlayer < 0) { break; }
+        if ((PlayerType(lv_dialogPlayer) == c_playerTypeUser) && (PlayerStatus(lv_dialogPlayer) == c_playerStatusActive)) {
+            PlayerGroupAdd(lv_dialogPlayerGroup, lv_dialogPlayer);
+        }
+
+    }
+    PlayerGroupAdd(libLbty_gv_meleeSurrender_PlayersSurrendering, lp_player);
+    DialogCreate(460, 200, c_anchorTopRight, 40, 80, false);
+    libLbty_gv_meleeSurrender_Dialog[lp_player] = DialogLastCreated();
+    DialogControlCreate(DialogLastCreated(), c_triggerControlTypeLabel);
+    libLbty_gv_meleeSurrender_Title[lp_player] = DialogControlLastCreated();
+    libNtve_gf_SetDialogItemText(DialogControlLastCreated(), (TextWithColor(PlayerName(lp_player), libNtve_gf_ConvertPlayerColorToColor(PlayerGetColorIndex(lp_player, false))) + StringExternal("Param/Value/lib_Lbty_1D191C56")), PlayerGroupAll());
+    DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), 360, 50);
+    libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "AISurrenderTitle", PlayerGroupAll());
+    DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, 45);
+    DialogControlCreate(DialogLastCreated(), c_triggerControlTypeLabel);
+    libNtve_gf_SetDialogItemText(DialogControlLastCreated(), (StringExternal("Param/Value/lib_Lbty_109B05BD")), PlayerGroupAll());
+    DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), 360, 50);
+    libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "AISurrenderText", PlayerGroupAll());
+    DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, 85);
+    DialogControlCreate(DialogLastCreated(), c_triggerControlTypeButton);
+    libLbty_gv_meleeSurrender_BtnYes[lp_player] = DialogControlLastCreated();
+    libNtve_gf_SetDialogItemText(DialogControlLastCreated(), StringExternal("Param/Value/lib_Lbty_0EE84E8F"), PlayerGroupAll());
+    DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), 160, 45);
+    libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "AISurrenderButton", PlayerGroupAll());
+    DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorBottom, -85, 35);
+    DialogControlCreate(DialogLastCreated(), c_triggerControlTypeButton);
+    libLbty_gv_meleeSurrender_BtnNo[lp_player] = DialogControlLastCreated();
+    libNtve_gf_SetDialogItemText(DialogControlLastCreated(), StringExternal("Param/Value/lib_Lbty_4022654D"), PlayerGroupAll());
+    DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), 160, 45);
+    libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "AISurrenderButton", PlayerGroupAll());
+    DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorBottom, 85, 35);
+    DialogSetVisible(DialogLastCreated(), lv_dialogPlayerGroup, true);
+    libLbty_gf_MeleeSurrender_UpdateDialogs();
+    libLbty_gv_meleeSurrender_FlashingPlayer = lp_player;
+    TriggerExecute(libLbty_gt_MeleeSurrender_FlashDialog, true, false);
+}
+
+void libLbty_gf_MeleeSurrender_UpdateDialogs () {
+    // Variable Declarations
+    int lv_y;
+    int lv_humanPlayer;
+    int lv_computerPlayer;
+
+    // Automatic Variable Declarations
+    playergroup auto3BBFF67A_g;
+    playergroup autoC94FE865_g;
+
+    // Variable Initialization
+
+    // Implementation
+    auto3BBFF67A_g = PlayerGroupAll();
+    lv_humanPlayer = -1;
+    while (true) {
+        lv_humanPlayer = PlayerGroupNextPlayer(auto3BBFF67A_g, lv_humanPlayer);
+        if (lv_humanPlayer < 0) { break; }
+        lv_y = 40;
+        autoC94FE865_g = libLbty_gv_meleeSurrender_PlayersSurrendering;
+        lv_computerPlayer = -1;
+        while (true) {
+            lv_computerPlayer = PlayerGroupNextPlayer(autoC94FE865_g, lv_computerPlayer);
+            if (lv_computerPlayer < 0) { break; }
+            if ((PlayerGroupHasPlayer(libLbty_gv_meleeSurrender_PlayersAnswered[lv_humanPlayer], lv_computerPlayer) == false)) {
+                DialogSetPosition(libLbty_gv_meleeSurrender_Dialog[lv_computerPlayer], c_anchorTopRight, 10, lv_y);
+                lv_y += 200;
+            }
+            else {
+                DialogSetVisible(libLbty_gv_meleeSurrender_Dialog[lv_computerPlayer], PlayerGroupSingle(lv_humanPlayer), false);
+            }
+        }
+    }
+}
+
+point libLbty_gf_ValidatedPoint (point lp_point) {
+    // Variable Declarations
+    fixed lv_boundsWest;
+    fixed lv_boundsEast;
+    fixed lv_boundsNorth;
+    fixed lv_boundsSouth;
+    fixed lv_returnX;
+    fixed lv_returnY;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Implementation
+    lv_boundsWest = (PointGetX(RegionGetCenter(RegionPlayableMap())) - (libNtve_gf_WidthOfRegion(RegionPlayableMap()) / 2.0));
+    lv_boundsEast = (PointGetX(RegionGetCenter(RegionPlayableMap())) + (libNtve_gf_WidthOfRegion(RegionPlayableMap()) / 2.0));
+    lv_boundsNorth = (PointGetY(RegionGetCenter(RegionPlayableMap())) + (libNtve_gf_HeightOfRegion(RegionPlayableMap()) / 2.0));
+    lv_boundsSouth = (PointGetY(RegionGetCenter(RegionPlayableMap())) - (libNtve_gf_HeightOfRegion(RegionPlayableMap()) / 2.0));
+    if ((PointGetX(lp_point) < lv_boundsWest)) {
+        lv_returnX = lv_boundsWest;
+    }
+    else {
+        if ((PointGetX(lp_point) > lv_boundsEast)) {
+            lv_returnX = lv_boundsEast;
+        }
+        else {
+            lv_returnX = PointGetX(lp_point);
+        }
+    }
+    if ((PointGetY(lp_point) < lv_boundsSouth)) {
+        lv_returnY = lv_boundsSouth;
+    }
+    else {
+        if ((PointGetY(lp_point) > lv_boundsNorth)) {
+            lv_returnY = lv_boundsNorth;
+        }
+        else {
+            lv_returnY = PointGetY(lp_point);
+        }
+    }
+    return Point(lv_returnX, lv_returnY);
+}
+
+void libLbty_gf_PlayAnnouncerNumberSound (int lp_number, playergroup lp_players, fixed lp_volume) {
+    int init_i;
+
+    // Variable Declarations
+    soundlink[20] lv_soundReferenceArray119;
+    soundlink[10] lv_soundReferenceArrayTens;
+    int lv_i;
+    string lv_soundIDString;
+    int lv_numberLength;
+    int lv_positionFromRight;
+    int lv_placeValue;
+    int lv_onesPlace;
+    int lv_tensPlace;
+    int lv_numberOfSoundsToPlay;
+    soundlink[15] lv_soundsToPlay;
+
+    // Automatic Variable Declarations
+    const int auto9950847A_ae = 19;
+    const int auto9950847A_ai = 1;
+    const int auto52D8689C_ae = 9;
+    const int auto52D8689C_ai = 1;
+    int auto3340955B_ae;
+    const int auto3340955B_ai = 1;
+    int auto9CEBDA15_ae;
+    const int auto9CEBDA15_ai = 1;
+
+    // Variable Initialization
+    for (init_i = 0; init_i <= 19; init_i += 1) {
+        lv_soundReferenceArray119[init_i] = SoundLink("EditorDefaultSound", -1);
+    }
+    for (init_i = 0; init_i <= 9; init_i += 1) {
+        lv_soundReferenceArrayTens[init_i] = SoundLink("EditorDefaultSound", -1);
+    }
+    lv_soundIDString = "";
+    for (init_i = 0; init_i <= 14; init_i += 1) {
+        lv_soundsToPlay[init_i] = SoundLink("EditorDefaultSound", -1);
+    }
+
+    // Implementation
+    if (((lp_number < 0) || (lp_number > 999999999))) {
+        return ;
+    }
+
+    lv_i = 1;
+    for ( ; ( (auto9950847A_ai >= 0 && lv_i <= auto9950847A_ae) || (auto9950847A_ai < 0 && lv_i >= auto9950847A_ae) ) ; lv_i += auto9950847A_ai ) {
+        lv_soundIDString = ("ModUtilityVoiceModUtilityVoice000" + IntToString((lv_i + 15)));
+        lv_soundReferenceArray119[lv_i] = SoundLink(lv_soundIDString, 0);
+    }
+    lv_i = 2;
+    for ( ; ( (auto52D8689C_ai >= 0 && lv_i <= auto52D8689C_ae) || (auto52D8689C_ai < 0 && lv_i >= auto52D8689C_ae) ) ; lv_i += auto52D8689C_ai ) {
+        lv_soundIDString = ("ModUtilityVoiceModUtilityVoice000" + IntToString((lv_i + 33)));
+        lv_soundReferenceArrayTens[lv_i] = SoundLink(lv_soundIDString, 0);
+    }
+    if ((lp_number == 0)) {
+        SoundPlay(SoundLink("ModUtilityVoiceModUtilityVoice00015", 0), lp_players, lp_volume, 0.0);
+        return ;
+    }
+
+    if ((lp_number < 10)) {
+        SoundPlay(lv_soundReferenceArray119[lp_number], lp_players, lp_volume, 0.0);
+        return ;
+    }
+
+    lv_numberLength = StringLength(IntToString(lp_number));
+    auto3340955B_ae = lv_numberLength;
+    lv_i = 1;
+    for ( ; ( (auto3340955B_ai >= 0 && lv_i <= auto3340955B_ae) || (auto3340955B_ai < 0 && lv_i >= auto3340955B_ae) ) ; lv_i += auto3340955B_ai ) {
+        lv_positionFromRight = ((lv_numberLength + 1) - lv_i);
+        if ((ModI(lv_positionFromRight, 3) == 0)) {
+            lv_placeValue = StringToInt(StringSub(IntToString(lp_number), lv_i, lv_i));
+            if ((lv_placeValue != 0)) {
+                lv_numberOfSoundsToPlay += 1;
+                lv_soundsToPlay[lv_numberOfSoundsToPlay] = lv_soundReferenceArray119[lv_placeValue];
+                lv_numberOfSoundsToPlay += 1;
+                lv_soundsToPlay[lv_numberOfSoundsToPlay] = SoundLink("ModUtilityVoiceModUtilityVoice00043", -1);
+            }
+
+        }
+
+        if ((ModI((lv_positionFromRight + 1), 3) == 0)) {
+            lv_placeValue = StringToInt(StringSub(IntToString(lp_number), lv_i, (lv_i + 1)));
+            if ((lv_placeValue > 0)) {
+                if ((lv_placeValue < 20)) {
+                    lv_numberOfSoundsToPlay += 1;
+                    lv_soundsToPlay[lv_numberOfSoundsToPlay] = lv_soundReferenceArray119[lv_placeValue];
+                }
+                else {
+                    lv_tensPlace = StringToInt(StringSub(IntToString(lv_placeValue), 1, 1));
+                    lv_onesPlace = StringToInt(StringSub(IntToString(lv_placeValue), 2, 2));
+                    lv_numberOfSoundsToPlay += 1;
+                    lv_soundsToPlay[lv_numberOfSoundsToPlay] = lv_soundReferenceArrayTens[lv_tensPlace];
+                    lv_numberOfSoundsToPlay += 1;
+                    lv_soundsToPlay[lv_numberOfSoundsToPlay] = lv_soundReferenceArray119[lv_onesPlace];
+                }
+            }
+
+        }
+
+        if ((lv_positionFromRight == 4)) {
+            lv_placeValue = StringToInt(StringSub(IntToString(lp_number), lv_i, lv_i));
+            if ((lv_numberLength == 4)) {
+                lv_numberOfSoundsToPlay += 1;
+                lv_soundsToPlay[lv_numberOfSoundsToPlay] = lv_soundReferenceArray119[lv_placeValue];
+            }
+
+            if ((lv_numberLength == 7)) {
+                lv_placeValue = StringToInt(StringSub(IntToString(lp_number), 2, 4));
+                if ((lv_placeValue > 0)) {
+                    lv_numberOfSoundsToPlay += 1;
+                    lv_soundsToPlay[lv_numberOfSoundsToPlay] = SoundLink("ModUtilityVoiceModUtilityVoice00044", -1);
+                }
+
+            }
+            else {
+                lv_numberOfSoundsToPlay += 1;
+                lv_soundsToPlay[lv_numberOfSoundsToPlay] = SoundLink("ModUtilityVoiceModUtilityVoice00044", -1);
+            }
+        }
+
+        if ((lv_positionFromRight == 7)) {
+            if ((lv_numberLength == 7)) {
+                lv_placeValue = StringToInt(StringSub(IntToString(lp_number), lv_i, lv_i));
+                lv_numberOfSoundsToPlay += 1;
+                lv_soundsToPlay[lv_numberOfSoundsToPlay] = lv_soundReferenceArray119[lv_placeValue];
+            }
+
+            lv_numberOfSoundsToPlay += 1;
+            lv_soundsToPlay[lv_numberOfSoundsToPlay] = SoundLink("ModUtilityVoiceModUtilityVoice00045", -1);
+        }
+
+    }
+    auto9CEBDA15_ae = lv_numberOfSoundsToPlay;
+    lv_i = 1;
+    for ( ; ( (auto9CEBDA15_ai >= 0 && lv_i <= auto9CEBDA15_ae) || (auto9CEBDA15_ai < 0 && lv_i >= auto9CEBDA15_ae) ) ; lv_i += auto9CEBDA15_ai ) {
+        SoundPlay(lv_soundsToPlay[lv_i], lp_players, lp_volume, 0.0);
+        SoundWait(SoundLastPlayed(), 0.25, c_soundOffsetEnd);
+    }
+}
+
+void libLbty_gf_PlayTransmissionCueSound (playergroup lp_playerGroup) {
+    // Automatic Variable Declarations
+    // Implementation
+    SoundPlay(SoundLink("Dialogue_TransmissionStart", 0), lp_playerGroup, 100.0, 0.0);
+    Wait(0.25, c_timeReal);
+}
+
+void libLbty_gf_SetAllSoundChannelVolumesStandardTiming (int lp_mode, playergroup lp_players) {
+    // Automatic Variable Declarations
+    // Implementation
+    if ((lp_mode == libNtve_ge_VolumeChannelMode_Game)) {
+        libNtve_gf_SetAllSoundChannelVolumes(lp_mode, lp_players, 2.5);
+        SoundChannelSetVolume(lp_players, c_soundCategoryVoice, 100.0, 0.5);
+    }
+    else {
+        libNtve_gf_SetAllSoundChannelVolumes(lp_mode, lp_players, 1.0);
+        SoundChannelSetVolume(lp_players, c_soundCategoryVoice, 0.0, 0.25);
+    }
+}
+
+void libLbty_gf_OrderWorkerstoGatherNearbyResources (region lp_region, int lp_player) {
+    // Variable Declarations
+    unit lv_indexWorker;
+    unitgroup lv_resourceGroup;
+    unit lv_indexResource;
+
+    // Automatic Variable Declarations
+    unitgroup autoD0401743_g;
+    int autoD0401743_u;
+    unitgroup auto9E4A1F0D_g;
+    int auto9E4A1F0D_u;
+
+    // Variable Initialization
+    lv_resourceGroup = UnitGroupEmpty();
+
+    // Implementation
+    autoD0401743_g = UnitGroup(null, lp_player, lp_region, UnitFilter((1 << c_targetFilterWorker), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoD0401743_u = UnitGroupCount(autoD0401743_g, c_unitCountAll);
+    for (;; autoD0401743_u -= 1) {
+        lv_indexWorker = UnitGroupUnitFromEnd(autoD0401743_g, autoD0401743_u);
+        if (lv_indexWorker == null) { break; }
+        UnitGroupClear(lv_resourceGroup);
+        auto9E4A1F0D_g = UnitGroup(null, c_playerAny, RegionCircle(UnitGetPosition(lv_indexWorker), 6.0), UnitFilter((1 << c_targetFilterHarvestableResource), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+        auto9E4A1F0D_u = UnitGroupCount(auto9E4A1F0D_g, c_unitCountAll);
+        for (;; auto9E4A1F0D_u -= 1) {
+            lv_indexResource = UnitGroupUnitFromEnd(auto9E4A1F0D_g, auto9E4A1F0D_u);
+            if (lv_indexResource == null) { break; }
+            if ((true) && ((UnitGetOwner(lv_indexResource) == 0) || (UnitGetOwner(lv_indexResource) == lp_player))) {
+                UnitGroupAdd(lv_resourceGroup, lv_indexResource);
+            }
+
+        }
+        if ((UnitGroupCount(lv_resourceGroup, c_unitCountAlive) > 0)) {
+            UnitIssueOrder(lv_indexWorker, OrderTargetingUnit(null, UnitGroupClosestToPoint(lv_resourceGroup, UnitGetPosition(lv_indexWorker))), c_orderQueueReplace);
+        }
+
+    }
+}
+
+void libLbty_gf_OrderTransporttoUnloadAllthenDespawn (unit lp_transport, point lp_targetPoint, point lp_despawnPoint) {
+    // Automatic Variable Declarations
+    // Implementation
+    libLbty_gv_transportUnit_Param = lp_transport;
+    libLbty_gv_transportTargetPoint_Param = lp_targetPoint;
+    libLbty_gv_transportDespawnPoint_Param = lp_despawnPoint;
+    TriggerExecute(libLbty_gt_TransportController, true, false);
+}
+
+void libLbty_gf_AutoRevealRegion (region lp_visibilityRegion, region lp_triggeringRegion, int lp_player) {
+    // Automatic Variable Declarations
+    // Implementation
+    if ((libLbty_gv_autoRevealers.lv_count >= 64)) {
+        return ;
+    }
+
+    VisRevealerCreate(lp_player, lp_visibilityRegion);
+    libLbty_gv_autoRevealers.lv_revealers[libLbty_gv_autoRevealers.lv_count] = VisRevealerLastCreated();
+    VisRevealerEnable(VisRevealerLastCreated(), false);
+    libLbty_gv_autoRevealers.lv_triggeringRegions[libLbty_gv_autoRevealers.lv_count] = lp_triggeringRegion;
+    libLbty_gv_autoRevealers.lv_triggeringPlayers[libLbty_gv_autoRevealers.lv_count] = lp_player;
+    libLbty_gv_autoRevealers.lv_count += 1;
+    TriggerExecute(libLbty_gt_AutoRevealRegionController, true, false);
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: PingUsed
+//--------------------------------------------------------------------------------------------------
+bool libLbty_gt_PingUsed_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    unit lv_pingUnit;
+    int lv_pingType;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((PlayerGroupHasPlayer(libLbty_gv_pingValidPlayers, EventPlayer()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_pingType = (EventPingOption());
+    if ((lv_pingType != 4)) {
+        libLbty_gf_PingPlay(lv_pingType, EventPlayer(), EventPingPoint(), EventGameUser(), EventPingUnitType(), EventPingUnitPosition(), EventPingUnitControlPlayer());
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libLbty_gt_PingUsed_Init () {
+    libLbty_gt_PingUsed = TriggerCreate("libLbty_gt_PingUsed_Func");
+    TriggerEnable(libLbty_gt_PingUsed, false);
+    TriggerAddEventPing(libLbty_gt_PingUsed, c_playerAny);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: PingResetTimerExprires
+//--------------------------------------------------------------------------------------------------
+bool libLbty_gt_PingResetTimerExprires_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_timerIndex;
+
+    // Automatic Variable Declarations
+    const int auto832E5E31_ae = 16;
+    const int auto832E5E31_ai = 1;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_timerIndex = 1;
+    for ( ; ( (auto832E5E31_ai >= 0 && lv_timerIndex <= auto832E5E31_ae) || (auto832E5E31_ai < 0 && lv_timerIndex >= auto832E5E31_ae) ) ; lv_timerIndex += auto832E5E31_ai ) {
+        if ((EventTimer() == libLbty_gv_pingResetTimer[lv_timerIndex])) {
+            libLbty_gv_pingRecentCount[lv_timerIndex] = 0;
+            return true;
+        }
+
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libLbty_gt_PingResetTimerExprires_Init () {
+    libLbty_gt_PingResetTimerExprires = TriggerCreate("libLbty_gt_PingResetTimerExprires_Func");
+    TriggerAddEventTimer(libLbty_gt_PingResetTimerExprires, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: PingPanelAutoDisable
+//--------------------------------------------------------------------------------------------------
+bool libLbty_gt_PingPanelAutoDisable_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((PlayerGroupCount(libLbty_gv_pingValidPlayers) == 0)) {
+        UISetFrameVisible(PlayerGroupAll(), c_syncFrameTypePingPanel, false);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libLbty_gt_PingPanelAutoDisable_Init () {
+    libLbty_gt_PingPanelAutoDisable = TriggerCreate("libLbty_gt_PingPanelAutoDisable_Func");
+    TriggerAddEventMapInit(libLbty_gt_PingPanelAutoDisable);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: MeleeSurrender_Surrender
+//--------------------------------------------------------------------------------------------------
+bool libLbty_gt_MeleeSurrender_Surrender_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_player;
+    bool lv_meleeAIUsed;
+
+    // Automatic Variable Declarations
+    playergroup auto1DA84066_g;
+    playergroup auto576EC8AD_g;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto1DA84066_g = PlayerGroupAll();
+    lv_player = -1;
+    while (true) {
+        lv_player = PlayerGroupNextPlayer(auto1DA84066_g, lv_player);
+        if (lv_player < 0) { break; }
+        if ((PlayerType(lv_player) == c_playerTypeComputer) && (AIIsCampaign(lv_player) == false)) {
+            lv_meleeAIUsed = true;
+            break;
+        }
+
+    }
+    if ((lv_meleeAIUsed == false)) {
+        TriggerEnable(TriggerGetCurrent(), false);
+        return true;
+    }
+
+    auto576EC8AD_g = PlayerGroupAll();
+    lv_player = -1;
+    while (true) {
+        lv_player = PlayerGroupNextPlayer(auto576EC8AD_g, lv_player);
+        if (lv_player < 0) { break; }
+        if ((PlayerType(lv_player) == c_playerTypeComputer) && (AIIsCampaign(lv_player) == false)) {
+            if ((AIGivingUp(lv_player) == true) && (PlayerGroupHasPlayer(libLbty_gv_meleeSurrender_PlayersSurrendering, lv_player) == false) && (PlayerGroupHasPlayer(libLbty_gv_meleeSurrender_PlayersTried, lv_player) == false)) {
+                libLbty_gf_MeleeSurrender_AIWantToSurrender(lv_player);
+            }
+
+        }
+
+        if ((PlayerGroupHasPlayer(libLbty_gv_meleeSurrender_PlayersSurrendering, lv_player) == true) && ((PlayerStatus(lv_player) != c_playerStatusActive) || (AIGivingUp(lv_player) == false))) {
+            PlayerGroupRemove(libLbty_gv_meleeSurrender_PlayersSurrendering, lv_player);
+            DialogDestroy(libLbty_gv_meleeSurrender_Dialog[lv_player]);
+            libLbty_gv_meleeSurrender_Dialog[lv_player] = c_invalidDialogId;
+            libLbty_gf_MeleeSurrender_UpdateDialogs();
+        }
+
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libLbty_gt_MeleeSurrender_Surrender_Init () {
+    libLbty_gt_MeleeSurrender_Surrender = TriggerCreate("libLbty_gt_MeleeSurrender_Surrender_Func");
+    TriggerAddEventTimePeriodic(libLbty_gt_MeleeSurrender_Surrender, 1.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: MeleeSurrender_SurrenderClickedButton
+//--------------------------------------------------------------------------------------------------
+bool libLbty_gt_MeleeSurrender_SurrenderClickedButton_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_player;
+
+    // Automatic Variable Declarations
+    playergroup auto81B1DF8B_g;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto81B1DF8B_g = PlayerGroupAll();
+    lv_player = -1;
+    while (true) {
+        lv_player = PlayerGroupNextPlayer(auto81B1DF8B_g, lv_player);
+        if (lv_player < 0) { break; }
+        if ((libLbty_gv_meleeSurrender_BtnYes[lv_player] == EventDialogControl())) {
+            PlayerGroupRemove(libLbty_gv_meleeSurrender_PlayersSurrendering, lv_player);
+            PlayerGroupAdd(libLbty_gv_meleeSurrender_PlayersTried, lv_player);
+            DialogDestroy(libLbty_gv_meleeSurrender_Dialog[lv_player]);
+            libLbty_gv_meleeSurrender_Dialog[lv_player] = c_invalidDialogId;
+            TextExpressionSetToken("Param/Expression/lib_Lbty_C971EED3", "A", PlayerName(lv_player));
+            TextExpressionSetToken("Param/Expression/lib_Lbty_C971EED3", "B", PlayerName(EventPlayer()));
+            UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, TextExpressionAssemble("Param/Expression/lib_Lbty_C971EED3"));
+            libLbty_gf_MeleeSurrender_UpdateDialogs();
+            AIGoodGame(lv_player);
+        }
+        else {
+            if ((libLbty_gv_meleeSurrender_BtnNo[lv_player] == EventDialogControl())) {
+                PlayerGroupAdd(libLbty_gv_meleeSurrender_PlayersAnswered[EventPlayer()], lv_player);
+                libLbty_gf_MeleeSurrender_UpdateDialogs();
+            }
+
+        }
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libLbty_gt_MeleeSurrender_SurrenderClickedButton_Init () {
+    libLbty_gt_MeleeSurrender_SurrenderClickedButton = TriggerCreate("libLbty_gt_MeleeSurrender_SurrenderClickedButton_Func");
+    TriggerAddEventDialogControl(libLbty_gt_MeleeSurrender_SurrenderClickedButton, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: MeleeSurrender_FlashDialog
+//--------------------------------------------------------------------------------------------------
+bool libLbty_gt_MeleeSurrender_FlashDialog_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_player;
+
+    // Automatic Variable Declarations
+    const int auto9A1B90A5_n = 5;
+    int auto9A1B90A5_i;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_player = libLbty_gv_meleeSurrender_FlashingPlayer;
+    for (auto9A1B90A5_i = 1; auto9A1B90A5_i <= auto9A1B90A5_n; auto9A1B90A5_i += 1) {
+        if ((PlayerGroupHasPlayer(libLbty_gv_meleeSurrender_PlayersSurrendering, lv_player) == false)) {
+            return true;
+        }
+
+        libNtve_gf_SetDialogItemStyle(libLbty_gv_meleeSurrender_Title[lv_player], "AISurrenderTitle", PlayerGroupAll());
+        Wait(0.6, c_timeReal);
+        if ((PlayerGroupHasPlayer(libLbty_gv_meleeSurrender_PlayersSurrendering, lv_player) == false)) {
+            return true;
+        }
+
+        libNtve_gf_SetDialogItemStyle(libLbty_gv_meleeSurrender_Title[lv_player], "AISurrenderTitleAlt", PlayerGroupAll());
+        Wait(0.6, c_timeReal);
+    }
+    if ((PlayerGroupHasPlayer(libLbty_gv_meleeSurrender_PlayersSurrendering, lv_player) == true)) {
+        libNtve_gf_SetDialogItemStyle(libLbty_gv_meleeSurrender_Title[lv_player], "AISurrenderTitle", PlayerGroupAll());
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libLbty_gt_MeleeSurrender_FlashDialog_Init () {
+    libLbty_gt_MeleeSurrender_FlashDialog = TriggerCreate("libLbty_gt_MeleeSurrender_FlashDialog_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Transport Controller
+//--------------------------------------------------------------------------------------------------
+bool libLbty_gt_TransportController_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    unit lv_transportUnit;
+    point lv_transportTargetPoint;
+    point lv_transportDespawnPoint;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_transportUnit = libLbty_gv_transportUnit_Param;
+    lv_transportTargetPoint = libLbty_gf_ValidatedPoint(libLbty_gv_transportTargetPoint_Param);
+    lv_transportDespawnPoint = libLbty_gf_ValidatedPoint(libLbty_gv_transportDespawnPoint_Param);
+    if ((UnitCargoValue(lv_transportUnit, c_unitCargoSpaceTotal) == 0)) {
+        return true;
+    }
+
+    while (true) {
+        if ((UnitIsAlive(lv_transportUnit) == false)) {
+            return true;
+        }
+
+        if ((UnitCargoValue(lv_transportUnit, c_unitCargoUnitCount) > 0)) {
+            UnitIssueOrder(lv_transportUnit, OrderTargetingPoint(AbilityCommand("MedivacTransport", 2), lv_transportTargetPoint), c_orderQueueReplace);
+        }
+        else {
+            if ((RegionContainsPoint(RegionCircle(lv_transportDespawnPoint, 1.0), UnitGetPosition(lv_transportUnit)) == true)) {
+                UnitRemove(lv_transportUnit);
+                return true;
+            }
+            else {
+                UnitIssueOrder(lv_transportUnit, OrderTargetingPoint(AbilityCommand("move", 0), lv_transportDespawnPoint), c_orderQueueReplace);
+            }
+        }
+        Wait(1.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libLbty_gt_TransportController_Init () {
+    libLbty_gt_TransportController = TriggerCreate("libLbty_gt_TransportController_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Confetti
+//--------------------------------------------------------------------------------------------------
+bool libLbty_gt_Confetti_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    string lv_upgrade;
+    string lv_model;
+    string lv_modelLow;
+    string lv_key;
+    string lv_asset;
+    int lv_p;
+
+    // Automatic Variable Declarations
+    playergroup autoD2C094C9_g;
+    int auto8BCC20E5_catalog;
+    int auto8BCC20E5_i;
+    playergroup autoF17331BD_g;
+    playergroup autoBB2E4608_g;
+
+    // Variable Initialization
+    lv_upgrade = EventUpgradeName();
+    lv_key = "UnitDeath";
+    lv_asset = "";
+
+    // Conditions
+    if (testConds) {
+        if (!((lv_upgrade == "Confetti"))) {
+            return false;
+        }
+
+        if (!((GameMapIsBlizzard() == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    autoD2C094C9_g = PlayerGroupAll();
+    lv_p = -1;
+    while (true) {
+        lv_p = PlayerGroupNextPlayer(autoD2C094C9_g, lv_p);
+        if (lv_p < 0) { break; }
+        CatalogLinkReplace(lv_p, c_gameCatalogModel, "ViperDeathAddition", ("Confetti_Explosion_Medium"));
+    }
+    auto8BCC20E5_catalog = c_gameCatalogModel;
+    auto8BCC20E5_i = 1;
+    for ( ; auto8BCC20E5_i <= CatalogEntryCount(c_gameCatalogModel) ; auto8BCC20E5_i += 1 ) {
+        lv_model = CatalogEntryGet(auto8BCC20E5_catalog, auto8BCC20E5_i);
+        lv_modelLow = (CatalogFieldValueGet(c_gameCatalogModel, lv_model, "LowQualityModel", c_playerAny));
+        if ((CatalogEntryIsValid(c_gameCatalogModel, lv_modelLow) == true)) {
+            lv_asset = CatalogFieldValueGet(c_gameCatalogModel, lv_modelLow, "Model", c_playerAny);
+            if (((StringContains(lv_asset, lv_key, c_stringAnywhere, c_stringNoCase) == true) || (StringContains(lv_asset, "BloodDeath", c_stringAnywhere, c_stringNoCase) == true) || (StringContains(lv_asset, "Spirit", c_stringAnywhere, c_stringNoCase) == true))) {
+                autoBB2E4608_g = PlayerGroupAll();
+                lv_p = -1;
+                while (true) {
+                    lv_p = PlayerGroupNextPlayer(autoBB2E4608_g, lv_p);
+                    if (lv_p < 0) { break; }
+                    if (((StringContains((lv_modelLow), "Large", c_stringAnywhere, c_stringNoCase) == true) || (StringContains(lv_asset, "Large", c_stringAnywhere, c_stringNoCase) == true))) {
+                        CatalogLinkReplace(lv_p, c_gameCatalogModel, (lv_model), ("Confetti_Explosion_Large"));
+                    }
+                    else if (((StringContains((lv_modelLow), "Small", c_stringAnywhere, c_stringNoCase) == true) || (StringContains(lv_asset, "Small", c_stringAnywhere, c_stringNoCase) == true) || (StringContains(lv_asset, "BloodDeath", c_stringAnywhere, c_stringNoCase) == true) || (StringContains(lv_asset, "Spirit", c_stringAnywhere, c_stringNoCase) == true))) {
+                        CatalogLinkReplace(lv_p, c_gameCatalogModel, (lv_model), ("Confetti_Explosion_Small"));
+                    }
+                    else if (true) {
+                        CatalogLinkReplace(lv_p, c_gameCatalogModel, (lv_model), ("Confetti_Explosion_Medium"));
+                    }
+                }
+            }
+
+        }
+        else {
+            if ((StringContains((lv_model), "Ragdoll", c_stringAnywhere, c_stringNoCase) == true)) {
+                autoF17331BD_g = PlayerGroupAll();
+                lv_p = -1;
+                while (true) {
+                    lv_p = PlayerGroupNextPlayer(autoF17331BD_g, lv_p);
+                    if (lv_p < 0) { break; }
+                    CatalogLinkReplace(lv_p, c_gameCatalogModel, (lv_model), "WrongModel!");
+                }
+            }
+
+        }
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libLbty_gt_Confetti_Init () {
+    libLbty_gt_Confetti = TriggerCreate("libLbty_gt_Confetti_Func");
+    TriggerAddEventUpgradeLevelChanged(libLbty_gt_Confetti, c_playerAny);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: ConfettiAutoDisable
+//--------------------------------------------------------------------------------------------------
+bool libLbty_gt_ConfettiAutoDisable_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((GameMapIsBlizzard() == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerDestroy(libLbty_gt_Confetti);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libLbty_gt_ConfettiAutoDisable_Init () {
+    libLbty_gt_ConfettiAutoDisable = TriggerCreate("libLbty_gt_ConfettiAutoDisable_Func");
+    TriggerAddEventMapInit(libLbty_gt_ConfettiAutoDisable);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Auto-Reveal Region Controller
+//--------------------------------------------------------------------------------------------------
+bool libLbty_gt_AutoRevealRegionController_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_i;
+
+    // Automatic Variable Declarations
+    int auto9C97A7B7_ae;
+    const int auto9C97A7B7_ai = 1;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    while (true) {
+        auto9C97A7B7_ae = (libLbty_gv_autoRevealers.lv_count - 1);
+        lv_i = 0;
+        for ( ; ( (auto9C97A7B7_ai >= 0 && lv_i <= auto9C97A7B7_ae) || (auto9C97A7B7_ai < 0 && lv_i >= auto9C97A7B7_ae) ) ; lv_i += auto9C97A7B7_ai ) {
+            if ((UnitGroupCount(UnitGroup(null, libLbty_gv_autoRevealers.lv_triggeringPlayers[lv_i], libLbty_gv_autoRevealers.lv_triggeringRegions[lv_i], UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1), c_unitCountAlive) > 0)) {
+                VisRevealerEnable(libLbty_gv_autoRevealers.lv_revealers[lv_i], true);
+            }
+            else {
+                VisRevealerEnable(libLbty_gv_autoRevealers.lv_revealers[lv_i], false);
+            }
+        }
+        Wait(1.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libLbty_gt_AutoRevealRegionController_Init () {
+    libLbty_gt_AutoRevealRegionController = TriggerCreate("libLbty_gt_AutoRevealRegionController_Func");
+}
+
+void libLbty_InitTriggers () {
+    libLbty_gt_PingUsed_Init();
+    libLbty_gt_PingResetTimerExprires_Init();
+    libLbty_gt_PingPanelAutoDisable_Init();
+    libLbty_gt_MeleeSurrender_Surrender_Init();
+    libLbty_gt_MeleeSurrender_SurrenderClickedButton_Init();
+    libLbty_gt_MeleeSurrender_FlashDialog_Init();
+    libLbty_gt_TransportController_Init();
+    libLbty_gt_Confetti_Init();
+    libLbty_gt_ConfettiAutoDisable_Init();
+    libLbty_gt_AutoRevealRegionController_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libLbty_InitLib_completed = false;
+
+void libLbty_InitLib () {
+    if (libLbty_InitLib_completed) {
+        return;
+    }
+
+    libLbty_InitLib_completed = true;
+
+    libLbty_InitLibraries();
+    libLbty_InitVariables();
+    libLbty_InitTriggers();
+}
+

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CValidatorCombine id="CasterIsUnpoweredAndNotUnderConstructionAndHasDarkProtoss">
+        <Type value="And"/>
+        <CombineArray value="HasNoPower"/>
+        <CombineArray value="IsNotConstructing"/>
+        <CombineArray value="NoDarkProtoss"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="HasVoidRaySwarmDamageBoost">
+        <WhichUnit Value="Source"/>
+        <Value value="1"/>
+        <Behavior value="VoidRaySwarmDamageBoost"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorCombine id="GasCanisterGatherValidTarget">
+        <CombineArray value="IsGasCanisterProtoss50"/>
+        <CombineArray value="IsGasCanisterProtoss25"/>
+        <CombineArray value="IsGasCanisterProtoss"/>
+        <CombineArray value="IsNaturalGas50"/>
+        <CombineArray value="IsNaturalGas25"/>
+        <CombineArray value="IsNaturalGas"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="IsGasCanisterProtoss50">
+        <Value value="GasCanisterProtoss50"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsGasCanisterProtoss25">
+        <Value value="GasCanisterProtoss25"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsGasCanisterProtoss">
+        <Value value="GasCanisterProtoss"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsNaturalGas50">
+        <Value value="NaturalGas50"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsNaturalGas25">
+        <Value value="NaturalGas25"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsNaturalGas">
+        <Value value="NaturalGas"/>
+    </CValidatorUnitType>
+    <CValidatorUnitOrderQueue id="CasterOrderNotGasCanisterGather">
+        <AbilLink value="GasCanisterGather"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitCompareBehaviorCount id="HasDetector8">
+        <Behavior value="Detector8"/>
+        <Compare value="GT"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorCombine id="HasDetector">
+        <CombineArray value="HasDetector10"/>
+        <CombineArray value="HasDetector11"/>
+        <CombineArray value="HasDetector12"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="VoidRayChargeBeamCounterCheckPhase2Ready">
+        <Type value="And"/>
+        <CombineArray value="VoidRayChargeBeamCounterPhase2CountHigh"/>
+        <CombineArray value="VoidRayChargeBeamCounterPhase2CountLow"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="VoidRayChargeBeamCounterCheckPhase3Ready">
+        <Type value="And"/>
+        <CombineArray value="VoidRayChargeBeamCounterPhase3CountLow"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="VoidRayChargeBeamCounterPhase1">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LT"/>
+        <Value value="6"/>
+        <Behavior value="VoidRayChargeBeamCounter"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="VoidRayChargeBeamCounterPhase2CountLow">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="6"/>
+        <Behavior value="VoidRayChargeBeamCounter"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="VoidRayChargeBeamCounterPhase2CountHigh">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LT"/>
+        <Value value="12"/>
+        <Behavior value="VoidRayChargeBeamCounter"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="VoidRayChargeBeamCounterPhase3CountLow">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="12"/>
+        <Behavior value="VoidRayChargeBeamCounter"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerRequirement id="HaveVoidRayBeamCanCharge">
+        <ResultNoPlayer value="Error"/>
+        <Find value="1"/>
+        <Value value="HaveVoidRayBeamCanCharge"/>
+    </CValidatorPlayerRequirement>
+</Catalog>

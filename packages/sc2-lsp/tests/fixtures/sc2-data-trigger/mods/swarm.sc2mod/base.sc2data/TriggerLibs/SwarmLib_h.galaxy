@@ -1,0 +1,36 @@
+include "TriggerLibs/natives"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Swarm
+//--------------------------------------------------------------------------------------------------
+// Preset Declarations
+const int libHots_ge__UnitDataType_Actor = 0;
+const int libHots_ge__UnitDataType_TextTag = 1;
+const int libHots_ge__UnitDataType_Point = 2;
+const int libHots_ge__UnitDataType_Ping = 3;
+
+// Variable Declarations
+sound libHots_gv_soundLinkAsMusic;
+int libHots_gv_soundLinkAsMusicCurrentlyPlaying;
+bool libHots_gv_soundLinkAsMusicLoopForever;
+
+// Function Declarations
+int libHots_gf_DifficultyValueInt2 (int lp_easy, int lp_normal, int lp_hard);
+fixed libHots_gf_DifficultyValueFixed2 (fixed lp_easy, fixed lp_normal, fixed lp_hard);
+string libHots_gf_DifficultyValueSwarmUnitType (string lp_easy, string lp_normal, string lp_hard);
+bool libHots_gf_DifficultyValueSwarmBoolean (bool lp_easy, bool lp_normal, bool lp_hard);
+string libHots_gf__UnitDataName (int lp_type, unit lp_unit, int lp_index);
+void libHots_gf_StoreActorForUnit (unit lp_unit, int lp_index, actor lp_actor);
+actor libHots_gf_ActorForUnit (unit lp_unit, int lp_index);
+void libHots_gf_StoreTextTagForUnit (unit lp_unit, int lp_index, int lp_textTag);
+int libHots_gf_TextTagForUnit (unit lp_unit, int lp_index);
+void libHots_gf_StorePointForUnit (unit lp_unit, int lp_index, point lp_point);
+point libHots_gf_PointStoredForUnit (unit lp_unit, int lp_index);
+void libHots_gf_StorePingForUnit (unit lp_unit, int lp_index, int lp_ping);
+int libHots_gf_PingStoredForUnit (unit lp_unit, int lp_index);
+void libHots_gf_PlaySoundLinkasMusic (soundlink lp_soundLink, bool lp_loopForever, bool lp_unpauseSountrackAfter);
+void libHots_gf_StopSoundLinkCurrentlyPlayingasMusic ();
+
+// Library Initialization
+void libHots_InitVariables ();
+

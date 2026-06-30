@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <SSpawnInfo>
+        <Count value="1"/>
+    </SSpawnInfo>
+    <SModification>
+        <VitalMaxIncreaseAffectsCurrentArray index="Life" value="1"/>
+        <VitalMaxIncreaseAffectsCurrentArray index="Shields" value="1"/>
+        <VitalMaxIncreaseAffectsCurrentArray index="Energy" value="1"/>
+    </SModification>
+    <SDeathResponse>
+        <Type index="Remove" value="0"/>
+    </SDeathResponse>
+    <SCost>
+        <Charge Link="Behavior/##id##" Location="Behavior"/>
+        <Cooldown Link="Behavior/##id##" Location="Behavior"/>
+    </SCost>
+    <CBehavior default="1">
+        <Name value="Behavior/Name/##id##"/>
+        <Tooltip value="Behavior/Tooltip/##id##"/>
+        <InfoIcon value="Assets\Textures\btn-missing-kaeo.dds"/>
+        <EditorCategories value="Race:Neutral,AbilityorEffectType:Units"/>
+    </CBehavior>
+    <CBehaviorAttribute default="1">
+        <MaxPoints value="255"/>
+    </CBehaviorAttribute>
+    <CBehaviorBuff default="1">
+        <MaxStackCount value="1"/>
+        <DurationBonusMin value="-1"/>
+        <DurationBonusMax value="-1"/>
+        <TimeScaleSource Value="Target"/>
+        <Player Value="Unknown"/>
+        <AcquirePlayer Value="Unknown"/>
+        <BuffFlags index="Countdown" value="1"/>
+        <BuffFlags index="RemoveDamageResponseExhausted" value="1"/>
+        <DamageResponse Location="Defender"/>
+        <KillCredit Value="Unknown"/>
+        <RevealUnit Value="Unknown"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff default="1" id="Detector">
+        <Modification DetectFilters="-;Missile"/>
+        <BehaviorCategories index="User14" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff default="1" id="Radar">
+        <Modification RadarFilters="-;RawResource,HarvestableResource,Missile,Destructible,Buried,Cloaked"/>
+    </CBehaviorBuff>
+    <CBehaviorClickResponse default="1">
+        <Chance value="1"/>
+    </CBehaviorClickResponse>
+    <CBehaviorConjoined default="1">
+        <ConjoinedFlags index="ShareLife" value="1"/>
+        <ConjoinedFlags index="ShareAcquire" value="1"/>
+    </CBehaviorConjoined>
+    <CBehaviorCreepSource default="1"/>
+    <CBehaviorJump default="1"/>
+    <CBehaviorPowerSource default="1">
+        <PowerLink value="##id##"/>
+        <CliffLevelFlags index="Lower" value="1"/>
+        <CliffLevelFlags index="Equal" value="1"/>
+        <CliffLevelFlags index="Higher" value="1"/>
+    </CBehaviorPowerSource>
+    <CBehaviorPowerUser default="1"/>
+    <CBehaviorResource default="1">
+        <CarryResourceBehavior value="Carry##id##"/>
+        <EnabledSearchFilters value="Worker;Dead"/>
+        <EnabledSearchRadius value="5"/>
+    </CBehaviorResource>
+    <CBehaviorReveal default="1"/>
+    <CBehaviorSpawn default="1">
+        <Range value="500"/>
+    </CBehaviorSpawn>
+    <CBehaviorVeterancy default="1">
+        <Flags index="CombineNumericModifications" value="1"/>
+        <Flags index="CombineXP" value="1"/>
+        <ShareFilters index="DamageDealt" value="-;Ally,Neutral,Enemy,Hallucination"/>
+        <ShareFilters index="DamageTaken" value="-;Ally,Neutral,Enemy,Hallucination"/>
+        <ShareFilters index="Kills" value="-;Ally,Neutral,Enemy,Hallucination"/>
+        <TargetFilters index="DamageDealt" value="-;Player,Ally,Neutral,Hallucination"/>
+        <TargetFilters index="DamageTaken" value="-;Player,Ally,Neutral,Hallucination"/>
+        <TargetFilters index="Kills" value="-;Player,Ally,Neutral,Hallucination"/>
+        <XPFraction index="Kills" value="1"/>
+    </CBehaviorVeterancy>
+    <CBehaviorWander default="1">
+        <TimeLimitFactor value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+    </CBehaviorWander>
+    <CBehaviorBuff default="1" id="TimedLife">
+        <InfoFlags index="Hidden" value="1"/>
+        <DurationRandomMax value="0.3"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <ExpireEffect value="TimedLifeFate"/>
+        <KillCredit Value="Caster"/>
+        <Modification>
+            <StateFlags index="Summoned" value="1"/>
+        </Modification>
+        <BehaviorFlags index="Permanent" value="1"/>
+        <BehaviorFlags index="EnabledWhileDead" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DamageDealtDouble">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <DamageDealtFraction index="Spell" value="2"/>
+            <DamageDealtFraction index="Melee" value="2"/>
+            <DamageDealtFraction index="Ranged" value="2"/>
+            <DamageDealtFraction index="Splash" value="2"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DamageTakenDouble">
+        <InfoFlags index="Hidden" value="1"/>
+        <DamageResponse Chance="1" ModifyFraction="2"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PrivateTimedLife" parent="TimedLife"/>
+    <CBehaviorBuff id="PublicTimedLife" parent="TimedLife">
+        <DisplayDuration index="Enemy" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PermanentlyCloaked">
+        <Modification>
+            <StateFlags index="Cloak" value="1"/>
+        </Modification>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-cloak.dds"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Radar25" parent="Radar">
+        <Modification Radar="25"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PermanentlyInvulnerable">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <StateFlags index="Invulnerable" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="tauntb">
+        <Alignment value="Negative"/>
+        <Duration value="16.6667"/>
+        <Modification MoveSpeedMultiplier="2"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PermanentlyUncommandable">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <StateFlags index="Uncommandable" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PermanentShareVision">
+        <InfoFlags index="Hidden" value="1"/>
+        <MaxStackCount value="0"/>
+        <Modification>
+            <ModifyFlags index="ShareSight" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PermanentSuppressFoodUsed">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <StateFlags index="SuppressFoodUsed" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DamageTakenMinimal">
+        <InfoFlags index="Hidden" value="1"/>
+        <DamageResponse Chance="1" ModifyFraction="0.1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DamageTakenNone">
+        <InfoFlags index="Hidden" value="1"/>
+        <DamageResponse Chance="1" ModifyFraction="0" ModifyMinimumDamage="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DamageDealtMinimal">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <DamageDealtFraction index="Spell" value="-0.9"/>
+            <DamageDealtFraction index="Melee" value="-0.9"/>
+            <DamageDealtFraction index="Ranged" value="-0.9"/>
+            <DamageDealtFraction index="Splash" value="-0.9"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DamageDealtNone">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <DamageDealtMaximum index="Spell" value="0"/>
+            <DamageDealtMaximum index="Melee" value="0"/>
+            <DamageDealtMaximum index="Ranged" value="0"/>
+            <DamageDealtMaximum index="Splash" value="0"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DamageDealtMega">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <DamageDealtFraction index="Spell" value="3"/>
+            <DamageDealtFraction index="Melee" value="3"/>
+            <DamageDealtFraction index="Ranged" value="3"/>
+            <DamageDealtFraction index="Splash" value="3"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DamageTakenMega">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <DamageTakenFraction index="Spell" value="3"/>
+            <DamageTakenFraction index="Melee" value="3"/>
+            <DamageTakenFraction index="Ranged" value="3"/>
+            <DamageTakenFraction index="Splash" value="3"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Precursor">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="NoDraw" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorReveal id="AttackReveal">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="3"/>
+    </CBehaviorReveal>
+    <CBehaviorBuff id="DeathOffCreep">
+        <InfoFlags index="Hidden" value="1"/>
+        <DisableValidatorArray value="NotNearCreep"/>
+        <PeriodicEffect value="Suicide"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Rescued">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="0.125"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DisableAbils">
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="TransientMorph">
+        <Modification>
+            <StateFlags index="TransientMorph" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <!-- This is designed to be global for any grabbed style behavior, so that we only need the one set of actor messages -->
+    <CBehaviorBuff id="Grabbed">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Modification>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="Stasis" value="1"/>
+            <StateFlags index="Stun" value="1"/>
+            <StateFlags index="SuppressCollision" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+        </Modification>
+        <RemoveValidatorArray value="GrabCasterNotDead"/>
+    </CBehaviorBuff>
+</Catalog>

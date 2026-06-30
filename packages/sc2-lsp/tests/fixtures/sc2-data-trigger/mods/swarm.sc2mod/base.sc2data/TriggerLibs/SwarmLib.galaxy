@@ -1,0 +1,266 @@
+include "TriggerLibs/NativeLib"
+
+include "TriggerLibs/SwarmLib_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Swarm
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libHots_InitLibraries () {
+    libNtve_InitVariables();
+}
+
+// Variable Initialization
+bool libHots_InitVariables_completed = false;
+
+void libHots_InitVariables () {
+    if (libHots_InitVariables_completed) {
+        return;
+    }
+
+    libHots_InitVariables_completed = true;
+
+}
+
+// Presets
+// Functions
+int libHots_gf_DifficultyValueInt2 (int lp_easy, int lp_normal, int lp_hard) {
+    // Automatic Variable Declarations
+    int auto7E330680_val;
+
+    // Implementation
+    auto7E330680_val = PlayerDifficulty(1);
+    if (auto7E330680_val == 1) {
+        return lp_easy;
+    }
+    else if (auto7E330680_val == 2) {
+        return lp_normal;
+    }
+    else if (auto7E330680_val == 3) {
+        return lp_hard;
+    }
+    else if (auto7E330680_val == 4) {
+        return lp_hard;
+    }
+    else {
+        return lp_normal;
+    }
+}
+
+fixed libHots_gf_DifficultyValueFixed2 (fixed lp_easy, fixed lp_normal, fixed lp_hard) {
+    // Automatic Variable Declarations
+    int auto710BB8AB_val;
+
+    // Implementation
+    auto710BB8AB_val = PlayerDifficulty(1);
+    if (auto710BB8AB_val == 1) {
+        return lp_easy;
+    }
+    else if (auto710BB8AB_val == 2) {
+        return lp_normal;
+    }
+    else if (auto710BB8AB_val == 3) {
+        return lp_hard;
+    }
+    else if (auto710BB8AB_val == 4) {
+        return lp_hard;
+    }
+    else {
+        return lp_normal;
+    }
+}
+
+string libHots_gf_DifficultyValueSwarmUnitType (string lp_easy, string lp_normal, string lp_hard) {
+    // Automatic Variable Declarations
+    int autoFB090189_val;
+
+    // Implementation
+    autoFB090189_val = PlayerDifficulty(1);
+    if (autoFB090189_val == 1) {
+        return lp_easy;
+    }
+    else if (autoFB090189_val == 2) {
+        return lp_normal;
+    }
+    else if (autoFB090189_val == 3) {
+        return lp_hard;
+    }
+    else if (autoFB090189_val == 4) {
+        return lp_hard;
+    }
+    else {
+        return lp_normal;
+    }
+}
+
+bool libHots_gf_DifficultyValueSwarmBoolean (bool lp_easy, bool lp_normal, bool lp_hard) {
+    // Automatic Variable Declarations
+    int auto037EAAEE_val;
+
+    // Implementation
+    auto037EAAEE_val = PlayerDifficulty(1);
+    if (auto037EAAEE_val == 1) {
+        return lp_easy;
+    }
+    else if (auto037EAAEE_val == 2) {
+        return lp_normal;
+    }
+    else if (auto037EAAEE_val == 3) {
+        return lp_hard;
+    }
+    else if (auto037EAAEE_val == 4) {
+        return lp_hard;
+    }
+    else {
+        return lp_normal;
+    }
+}
+
+string libHots_gf__UnitDataName (int lp_type, unit lp_unit, int lp_index) {
+    // Variable Declarations
+    string lv_name;
+
+    // Automatic Variable Declarations
+    int auto52CDE657_val;
+
+    // Variable Initialization
+    lv_name = "";
+
+    // Implementation
+    auto52CDE657_val = lp_type;
+    if (auto52CDE657_val == libHots_ge__UnitDataType_Actor) {
+        lv_name = "UDACTOR_";
+    }
+    else if (auto52CDE657_val == libHots_ge__UnitDataType_TextTag) {
+        lv_name = "UDTEXTTAG_";
+    }
+    else if (auto52CDE657_val == libHots_ge__UnitDataType_Point) {
+        lv_name = "UDPOINT_";
+    }
+    else if (auto52CDE657_val == libHots_ge__UnitDataType_Ping) {
+        lv_name = "UDPING_";
+    }
+    else {
+    }
+    lv_name = (lv_name + IntToString(UnitGetTag(lp_unit)) + "_" + IntToString(lp_index));
+    return lv_name;
+}
+
+void libHots_gf_StoreActorForUnit (unit lp_unit, int lp_index, actor lp_actor) {
+    // Automatic Variable Declarations
+    // Implementation
+    DataTableSetActor(true, libHots_gf__UnitDataName(libHots_ge__UnitDataType_Actor, lp_unit, lp_index), lp_actor);
+}
+
+actor libHots_gf_ActorForUnit (unit lp_unit, int lp_index) {
+    // Automatic Variable Declarations
+    // Implementation
+    return DataTableGetActor(true, libHots_gf__UnitDataName(libHots_ge__UnitDataType_Actor, lp_unit, lp_index));
+}
+
+void libHots_gf_StoreTextTagForUnit (unit lp_unit, int lp_index, int lp_textTag) {
+    // Automatic Variable Declarations
+    // Implementation
+    libNtve_gf_SaveDataTableValueTextTag(true, libHots_gf__UnitDataName(libHots_ge__UnitDataType_TextTag, lp_unit, lp_index), lp_textTag);
+}
+
+int libHots_gf_TextTagForUnit (unit lp_unit, int lp_index) {
+    // Automatic Variable Declarations
+    // Implementation
+    return libNtve_gf_ValueFromDataTableTextTag(true, libHots_gf__UnitDataName(libHots_ge__UnitDataType_TextTag, lp_unit, lp_index));
+}
+
+void libHots_gf_StorePointForUnit (unit lp_unit, int lp_index, point lp_point) {
+    // Automatic Variable Declarations
+    // Implementation
+    DataTableSetPoint(true, libHots_gf__UnitDataName(libHots_ge__UnitDataType_Point, lp_unit, lp_index), lp_point);
+}
+
+point libHots_gf_PointStoredForUnit (unit lp_unit, int lp_index) {
+    // Automatic Variable Declarations
+    // Implementation
+    return DataTableGetPoint(true, libHots_gf__UnitDataName(libHots_ge__UnitDataType_Point, lp_unit, lp_index));
+}
+
+void libHots_gf_StorePingForUnit (unit lp_unit, int lp_index, int lp_ping) {
+    // Automatic Variable Declarations
+    // Implementation
+    DataTableSetPing(true, libHots_gf__UnitDataName(libHots_ge__UnitDataType_Ping, lp_unit, lp_index), lp_ping);
+}
+
+int libHots_gf_PingStoredForUnit (unit lp_unit, int lp_index) {
+    // Automatic Variable Declarations
+    // Implementation
+    return DataTableGetPing(true, libHots_gf__UnitDataName(libHots_ge__UnitDataType_Ping, lp_unit, lp_index));
+}
+
+trigger auto_libHots_gf_PlaySoundLinkasMusic_Trigger = null;
+soundlink auto_libHots_gf_PlaySoundLinkasMusic_lp_soundLink;
+bool auto_libHots_gf_PlaySoundLinkasMusic_lp_loopForever;
+bool auto_libHots_gf_PlaySoundLinkasMusic_lp_unpauseSountrackAfter;
+
+void libHots_gf_PlaySoundLinkasMusic (soundlink lp_soundLink, bool lp_loopForever, bool lp_unpauseSountrackAfter) {
+    auto_libHots_gf_PlaySoundLinkasMusic_lp_soundLink = lp_soundLink;
+    auto_libHots_gf_PlaySoundLinkasMusic_lp_loopForever = lp_loopForever;
+    auto_libHots_gf_PlaySoundLinkasMusic_lp_unpauseSountrackAfter = lp_unpauseSountrackAfter;
+
+    if (auto_libHots_gf_PlaySoundLinkasMusic_Trigger == null) {
+        auto_libHots_gf_PlaySoundLinkasMusic_Trigger = TriggerCreate("auto_libHots_gf_PlaySoundLinkasMusic_TriggerFunc");
+    }
+
+    TriggerExecute(auto_libHots_gf_PlaySoundLinkasMusic_Trigger, false, false);
+}
+
+bool auto_libHots_gf_PlaySoundLinkasMusic_TriggerFunc (bool testConds, bool runActions) {
+    soundlink lp_soundLink = auto_libHots_gf_PlaySoundLinkasMusic_lp_soundLink;
+    bool lp_loopForever = auto_libHots_gf_PlaySoundLinkasMusic_lp_loopForever;
+    bool lp_unpauseSountrackAfter = auto_libHots_gf_PlaySoundLinkasMusic_lp_unpauseSountrackAfter;
+
+    // Automatic Variable Declarations
+    // Implementation
+    libHots_gv_soundLinkAsMusicCurrentlyPlaying += 1;
+    libHots_gv_soundLinkAsMusicLoopForever = lp_loopForever;
+    SoundStop(libHots_gv_soundLinkAsMusic, true);
+    SoundtrackPause(PlayerGroupAll(), c_soundtrackCategoryMusic, true, true);
+    SoundPlay(lp_soundLink, PlayerGroupAll(), 100.0, 0.0);
+    libHots_gv_soundLinkAsMusic = SoundLastPlayed();
+    SoundWait(SoundLastPlayed(), 0.0, c_soundOffsetEnd);
+    libHots_gv_soundLinkAsMusicCurrentlyPlaying -= 1;
+    if ((libHots_gv_soundLinkAsMusicCurrentlyPlaying == 0)) {
+        if ((libHots_gv_soundLinkAsMusicLoopForever == true)) {
+            libHots_gf_PlaySoundLinkasMusic(lp_soundLink, true, true);
+        }
+        else {
+            if ((lp_unpauseSountrackAfter == true)) {
+                SoundtrackPause(PlayerGroupAll(), c_soundtrackCategoryMusic, false, true);
+            }
+
+        }
+    }
+
+    return true;
+}
+
+void libHots_gf_StopSoundLinkCurrentlyPlayingasMusic () {
+    // Automatic Variable Declarations
+    // Implementation
+    libHots_gv_soundLinkAsMusicLoopForever = false;
+    SoundStop(libHots_gv_soundLinkAsMusic, true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libHots_InitLib_completed = false;
+
+void libHots_InitLib () {
+    if (libHots_InitLib_completed) {
+        return;
+    }
+
+    libHots_InitLib_completed = true;
+
+    libHots_InitLibraries();
+    libHots_InitVariables();
+}
+

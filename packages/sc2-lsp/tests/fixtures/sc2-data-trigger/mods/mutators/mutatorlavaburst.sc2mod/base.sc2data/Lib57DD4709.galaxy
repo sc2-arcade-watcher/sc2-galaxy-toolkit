@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib57DD4709_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Lava Burst
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib57DD4709_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib57DD4709_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "LavaBurst");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib57DD4709_gt_Initialization_Init () {
+    lib57DD4709_gt_Initialization = TriggerCreate("lib57DD4709_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib57DD4709_gt_Initialization);
+}
+
+void lib57DD4709_InitTriggers () {
+    lib57DD4709_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib57DD4709_InitLib_completed = false;
+
+void lib57DD4709_InitLib () {
+    if (lib57DD4709_InitLib_completed) {
+        return;
+    }
+
+    lib57DD4709_InitLib_completed = true;
+
+    lib57DD4709_InitLibraries();
+    lib57DD4709_InitTriggers();
+}
+

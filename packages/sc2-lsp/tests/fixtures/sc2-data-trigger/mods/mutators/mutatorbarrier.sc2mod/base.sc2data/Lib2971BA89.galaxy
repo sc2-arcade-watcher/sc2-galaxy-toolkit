@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib2971BA89_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Barrier
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib2971BA89_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib2971BA89_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "Barrier");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib2971BA89_gt_Initialization_Init () {
+    lib2971BA89_gt_Initialization = TriggerCreate("lib2971BA89_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib2971BA89_gt_Initialization);
+}
+
+void lib2971BA89_InitTriggers () {
+    lib2971BA89_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib2971BA89_InitLib_completed = false;
+
+void lib2971BA89_InitLib () {
+    if (lib2971BA89_InitLib_completed) {
+        return;
+    }
+
+    lib2971BA89_InitLib_completed = true;
+
+    lib2971BA89_InitLibraries();
+    lib2971BA89_InitTriggers();
+}
+

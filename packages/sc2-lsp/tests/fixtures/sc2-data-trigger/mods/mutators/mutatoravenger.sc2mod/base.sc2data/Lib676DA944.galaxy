@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib676DA944_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Avenger
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib676DA944_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib676DA944_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "Avenger");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib676DA944_gt_Initialization_Init () {
+    lib676DA944_gt_Initialization = TriggerCreate("lib676DA944_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib676DA944_gt_Initialization);
+}
+
+void lib676DA944_InitTriggers () {
+    lib676DA944_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib676DA944_InitLib_completed = false;
+
+void lib676DA944_InitLib () {
+    if (lib676DA944_InitLib_completed) {
+        return;
+    }
+
+    lib676DA944_InitLib_completed = true;
+
+    lib676DA944_InitLibraries();
+    lib676DA944_InitTriggers();
+}
+

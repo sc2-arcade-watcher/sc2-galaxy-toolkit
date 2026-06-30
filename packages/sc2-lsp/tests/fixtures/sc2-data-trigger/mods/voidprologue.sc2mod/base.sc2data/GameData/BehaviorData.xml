@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CBehaviorBuff id="GravitonBeam">
+        <Duration value="10"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="GravitonBeamHeight">
+        <BuffFlags index="Channeling" value="0"/>
+        <Duration value="10"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PrologueInvisibleGasHarvester">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Period value="6"/>
+        <PeriodicEffect value="PrologueInvisibleGasHarvester"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PrologueVoidArmor">
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Modification>
+            <VitalMaxArray index="Shields" value="100"/>
+        </Modification>
+        <Duration value="10"/>
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-gravitonbeam.dds"/>
+        <RemoveValidatorArray value="ShieldGZero"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="VoidRaySwarmDamageBoost">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-prismaticbeam.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <DisplayDuration index="Enemy" value="1"/>
+        <Duration value="20"/>
+        <Modification>
+            <DamageDealtAttributeScaled index="Armored" value="6"/>
+        </Modification>
+    </CBehaviorBuff>
+    <!--CBehaviorBuff id="PrologueHarnessingEnergies">
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-purify.dds"/>
+        <EditorCategories value="AbilityorEffectType:Units,Race:Protoss"/>
+        <Period value="3"/>
+        <PeriodicEffect value="PrologueHarnessedEnergiesSearch"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PrologueHarnessedEnergies">
+        <InfoIcon value="Assets\Textures\btn-ability-terran-electricfield.dds"/>
+        <EditorCategories value="AbilityorEffectType:Units,Race:Protoss"/>
+        <Duration value="60"/>
+        <Modification MoveSpeedMultiplier="1.1" AttackSpeedMultiplier="1.15">
+            <VitalRegenArray index="Shields" value="6"/>
+        </Modification>
+        <DisplayDuration index="Self" value="1"/>
+    </CBehaviorBuff-->
+    <CBehaviorBuff id="LightningShooterPsiStorm">
+        <Alignment value="Negative"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-psistorm.dds"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <TimeScaleSource Value="Global"/>
+        <Duration value="0.6"/>
+        <Period value="0.5"/>
+        <InitialEffect value="LightningShooterPsiStormDamageInitial"/>
+        <PeriodicEffect value="LightningShooterPsiStormDamage"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="GasCanisterGatherSearch">
+        <InitialEffect value="GasCanisterGatherTargetSearch"/>
+        <FinalEffect value="GasCanisterGatherTargetFailed"/>
+        <Duration value="0.0625"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="GasCanisterGatherTarget">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="25"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <DisplayDuration index="Enemy" value="1"/>
+        <Modification>
+            <AbilLinkDisableArray value="PickupGas100"/>
+            <AbilLinkDisableArray value="PickupGas50"/>
+            <AbilLinkDisableArray value="PickupGas25"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="GasCanisterGatherCaster">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="25"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <DisplayDuration index="Enemy" value="1"/>
+        <FinalEffect value="GasCanisterGatherReapplyAB"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="GasCanisterGatherReapply">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="0.5"/>
+        <FinalEffect value="GasCanisterGatherSearchAB"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ProtossGenericWarpIn">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Duration value="5"/>
+        <Modification>
+            <StateFlags index="Stun" value="1"/>
+            <StateFlags index="SuppressDetection" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ProtossGenericWarpOut">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Duration value="5"/>
+        <Modification>
+            <StateFlags index="Stun" value="1"/>
+            <StateFlags index="SuppressDetection" value="1"/>
+        </Modification>
+        <FinalEffect value="SuicideRemove"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PrologueEnemyObserver">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <ModifyFlags index="Detected" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ZHybridPsychicClonesCasterShadowOfTheVoid">
+        <InfoFlags index="Hidden" value="1"/>
+        <InfoIcon value="Assets\Textures\btn-ability-terran-liftoff.dds"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Modification>
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="Stasis" value="1"/>
+            <StateFlags index="Stun" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ZHybridPsychicClonesSpawnShadowOfTheVoid">
+        <InfoFlags index="Hidden" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ZergDoorInfestation">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ResidualVortexSpawnPrecursor">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Modification>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="NoDraw" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="TerranWarpIn">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="4.9375"/>
+        <DurationRandomMax value="0"/>
+        <Modification>
+            <StateFlags index="Stun" value="1"/>
+            <StateFlags index="SuppressCloak" value="1"/>
+            <StateFlags index="SuppressDetection" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="EnemyObserved">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Duration value="3"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ImmortalBarrierBase">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-hardenedshields.dds"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="10"/>
+        <DamageResponse>
+            <Chance value="1"/>
+            <ModifyFraction value="0"/>
+            <ModifyLimit value="100"/>
+            <ModifyMinimumDamage value="1"/>
+        </DamageResponse>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="VoidRayChargeBeamCounter">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="5"/>
+        <BuffFlags index="RefreshStack" value="1"/>
+        <MaxStackCount value="30"/>
+        <InitialEffect value="VoidRayChargeBeamCounterCheck"/>
+        <RefreshEffect value="VoidRayChargeBeamCounterCheck"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="VoidRayChargeBeamPhase2">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="5"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="VoidRayChargeBeamPhase3">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="5"/>
+    </CBehaviorBuff>
+</Catalog>

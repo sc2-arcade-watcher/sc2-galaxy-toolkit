@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibEAA2BD50_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Inspiration
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libEAA2BD50_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libEAA2BD50_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "Inspiration");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libEAA2BD50_gt_Initialization_Init () {
+    libEAA2BD50_gt_Initialization = TriggerCreate("libEAA2BD50_gt_Initialization_Func");
+    TriggerAddEventMapInit(libEAA2BD50_gt_Initialization);
+}
+
+void libEAA2BD50_InitTriggers () {
+    libEAA2BD50_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libEAA2BD50_InitLib_completed = false;
+
+void libEAA2BD50_InitLib () {
+    if (libEAA2BD50_InitLib_completed) {
+        return;
+    }
+
+    libEAA2BD50_InitLib_completed = true;
+
+    libEAA2BD50_InitLibraries();
+    libEAA2BD50_InitTriggers();
+}
+

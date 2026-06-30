@@ -1,0 +1,1478 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CBehaviorBuff default="1" id="SwarmHostEggAnimationDefault">
+        <InfoFlags index="Hidden" value="1"/>
+        <DisableValidatorArray value="NotStasis"/>
+        <DisableValidatorArray value="NotVortexd"/>
+        <DisableValidatorArray value="NotGravitonBeamd"/>
+        <DisableValidatorArray value="NotThunderCannond"/>
+        <Duration value="25"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff default="1" id="ExtendBridgeExtend">
+        <Duration value="900"/>
+        <ExpireEffect value="##id##"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <DisplayDuration index="Neutral" value="1"/>
+        <DisplayDuration index="Enemy" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="BlindingCloudStructure">
+        <TimeScaleSource Value="Global"/>
+        <Alignment value="Negative"/>
+        <InfoIcon value="Assets\Textures\btn-ability-zerg-blindingcloud.dds"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Duration value="0.625"/>
+        <Modification WeaponRange="-20" DetectArc="0" RadarArc="0"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleRockTowerConjoinedSearch">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Duration value="0.0625"/>
+        <FinalEffect value="CollapsibleRockTowerConjoinedSearch"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleRockTowerRampDiagonalConjoinedSearch">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Duration value="0.0625"/>
+        <FinalEffect value="CollapsibleRockTowerRampDiagonalConjoinedSearch"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleTerranTowerConjoinedSearch">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Duration value="0.0625"/>
+        <FinalEffect value="CollapsibleTerranTowerConjoinedSearch"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleTerranTowerRampDiagonalConjoinedSearch">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Duration value="0.0625"/>
+        <FinalEffect value="CollapsibleTerranTowerRampDiagonalConjoinedSearch"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleTerranTowerRampLeft">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <InitialEffect value="CollapsibleTerranTowerRampLeftCP"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleTerranTowerRampLeftFalling">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="2.7875"/>
+        <FinalEffect value="CollapsibleTerranTowerRubbleCPRampLeft"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleTerranTowerRampRight">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <InitialEffect value="CollapsibleTerranTowerRampRightCP"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleTerranTowerRampRightFalling">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="2.7875"/>
+        <FinalEffect value="CollapsibleTerranTowerRubbleCPRampRight"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DigesterCreepSprayVision">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Modification SightBonus="7" DetectArc="0" RadarArc="0"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="InvulnerabilityShield">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-shieldbattery-color.dds"/>
+        <Duration value="5"/>
+        <Modification>
+            <StateFlags index="Invulnerable" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MothershipCoreRecalled">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="5"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="SuppressPassenger" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <AbilClassDisableArray index="CAbilAttack" value="1"/>
+            <AbilClassDisableArray index="CAbilMove" value="1"/>
+            <AbilLinkEnableArray value="BansheeCloak"/>
+            <AbilLinkEnableArray value="VolatileBurstBuilding"/>
+            <AbilLinkEnableArray value="GhostCloak"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MothershipCoreRecalling">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="2"/>
+        <ExpireEffect value="MothershipCoreMassRecallSet"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="SuppressPassenger" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <AbilClassDisableArray index="CAbilAttack" value="1"/>
+            <AbilClassDisableArray index="CAbilMove" value="1"/>
+            <AbilLinkEnableArray value="BansheeCloak"/>
+            <AbilLinkEnableArray value="VolatileBurstBuilding"/>
+            <AbilLinkEnableArray value="GhostCloak"/>
+        </Modification>
+        <RemoveValidatorArray value="CasterNotDead"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MineDroneCountdown">
+        <Alignment value="Negative"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <DisplayDuration index="Enemy" value="1"/>
+        <Duration value="10"/>
+        <Period value="5.1"/>
+        <InitialEffect value="MineDroneCountdownDamageDummy"/>
+        <PeriodicEffect value="MineDroneCountdownDamageDummy"/>
+        <ExpireEffect value="MineDroneExplodeSet"/>
+        <Modification>
+            <ModifyFlags index="Reveal" value="1"/>
+            <ModifyFlags index="Detected" value="1"/>
+            <ModifyFlags index="ShareSight" value="1"/>
+            <AbilLinkDisableArray value="ZergBuild"/>
+            <AbilLinkDisableArray value="MorphZerglingToBaneling"/>
+            <AbilLinkDisableArray value="MorphToOverseer"/>
+            <AbilLinkDisableArray value="MorphToBroodLord"/>
+            <AbilLinkDisableArray value="ArchonWarp"/>
+        </Modification>
+        <InfoIcon value="Assets\Textures\btn-unit-terran-widowmine.dds"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MothershipStasis">
+        <Alignment value="Negative"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-phaseshift2.dds"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="20"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/>
+            <StateFlags index="Stasis" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="SuppressCloak" value="1"/>
+            <StateFlags index="SuppressDetection" value="1"/>
+            <!--StateFlags index="SuppressFoodMade" value="1"/-->
+            <StateFlags index="SuppressRadar" value="1"/>
+            <!--StateFlags index="SuppressTech" value="1"/-->
+            <StateFlags index="SuppressEnergy" value="1"/>
+        </Modification>
+        <RemoveValidatorArray value="IsFlying"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MothershipStasisCaster">
+        <Alignment value="Negative"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-phaseshift2.dds"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="20"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <Modification>
+            <StateFlags index="Stasis" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="SuppressCloak" value="1"/>
+            <StateFlags index="SuppressDetection" value="1"/>
+            <StateFlags index="SuppressRadar" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MothershipCoreEnergizeVisual">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-feedback-color.dds"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NydusDestroyerInvulnerability">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <RemoveValidatorArray value="IsConstructing"/>
+        <Duration value="15"/>
+        <Modification>
+            <StateFlags index="Invulnerable" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Revelation" parent="Detector">
+        <Alignment value="Positive"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification Detect="11"/>
+        <InfoIcon value="Assets\Textures\btn-status-detector.dds"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="OracleRevelation">
+        <Alignment value="Negative"/>
+        <InfoIcon value="Assets\Textures\btn-status-detector.dds"/>
+        <Modification>
+            <ModifyFlags index="Reveal" value="1"/>
+        </Modification>
+        <Duration value="60"/>
+        <RemoveValidatorArray value="NotCloaked"/>
+        <RemoveValidatorArray value="IsNotBuried"/>
+        <FinalEffect value="RevelationDestroy"/>
+        <ExpireEffect value="RevelationDestroy"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SalvageBaneling" parent="Salvage">
+        <Duration value="10"/>
+        <Name value="Behavior/Name/SalvageBaneling"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SalvageDrone" parent="Salvage">
+        <Duration value="10"/>
+        <Name value="Behavior/Name/SalvageDrone"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SalvageHydralisk" parent="Salvage">
+        <Duration value="10"/>
+        <Name value="Behavior/Name/SalvageHydralisk"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SalvageInfestor" parent="Salvage">
+        <Duration value="10"/>
+        <Name value="Behavior/Name/SalvageInfestor"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SalvageQueen" parent="Salvage">
+        <Duration value="10"/>
+        <Name value="Behavior/Name/SalvageQueen"/>
+    </CBehaviorBuff>
+    <CBehaviorCreepSource id="DigesterCreep">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Start value="DigesterCreepStart"/>
+        <Birth value="DigesterCreepStart"/>
+        <Grown value="DigesterCreepGrown"/>
+    </CBehaviorCreepSource>
+    <CBehaviorBuff id="DigesterCreepSprayUnitTimedLife" parent="TimedLife">
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Duration value="6"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DigesterCreepSprayFinal">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <FinalEffect value="DigesterCreepDestroyPersistent"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SalvageRoach" parent="Salvage">
+        <Duration value="10"/>
+        <Name value="Behavior/Name/SalvageRoach"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SalvageSwarmHost" parent="Salvage">
+        <Duration value="10"/>
+        <Name value="Behavior/Name/SalvageSwarmHost"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SalvageUltralisk" parent="Salvage">
+        <Duration value="10"/>
+        <Name value="Behavior/Name/SalvageUltralisk"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SalvageZergling" parent="Salvage">
+        <Duration value="10"/>
+        <Name value="Behavior/Name/SalvageZergling"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="GhostSnipeDoT">
+        <Alignment value="Negative"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="30"/>
+        <Period value="1"/>
+        <PeriodicEffect value="GhostSnipeDoTDamage"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ChangelingDisguise">
+        <InitialEffect value="DisguiseSearch"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NexusPhaseShift">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-cloakfield.dds"/>
+        <DisplayDuration index="Self" value="1"/>
+        <TimeScaleSource Value="Global"/>
+        <Duration value="50"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <ModifyFlags index="EnableMove" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="QueenFlying">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Modification>
+            <AbilLinkDisableArray value="QueenBuild"/>
+            <AbilLinkDisableArray value="BurrowQueenDown"/>
+            <AbilLinkDisableArray value="SpawnLarva"/>
+            <AbilLinkDisableArray value="Transfusion"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NexusInvulnerability">
+        <Duration value="20"/>
+        <Modification>
+            <StateFlags index="Invulnerable" value="1"/>
+        </Modification>
+        <TimeScaleSource Value="Global"/>
+        <Alignment value="Positive"/>
+        <DisplayDuration index="Self" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="RoughTerrainSearch">
+        <Period value="0.2"/>
+        <PeriodicEffect value="RoughTerrainSearch"/>
+        <Alignment value="Positive"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="RoughTerrainSlow">
+        <Alignment value="Negative"/>
+        <InfoIcon value="Assets\Textures\btn-minimap-ping.dds"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="0.4"/>
+        <TimeScaleSource Value="Global"/>
+        <Modification MoveSpeedMultiplier="0.7"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="OracleCloakField">
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Period value="0.2"/>
+        <Duration value="60"/>
+        <PeriodicEffect value="OracleCloakingFieldSearchSet"/>
+        <InfoIcon value="Assets\Textures\BTN-Ability-Protoss-CloakField.dds"/>
+        <Alignment value="Positive"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisableValidatorArray value="NotStasis"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="OracleCloakFieldEffect">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-cloakfield.dds"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="0.5417"/>
+        <Modification>
+            <StateFlags index="Cloak" value="1"/>
+        </Modification>
+        <TimeScaleSource Value="Global"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="OracleNoCloak">
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <StateFlags index="SuppressCloak" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Detector9" parent="Detector">
+        <InfoIcon value="Assets\Textures\btn-status-detector.dds"/>
+        <Modification Detect="9"/>
+        <Alignment value="Positive"/>
+        <InfoFlags index="Hidden" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ScryerFriendly">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-preordain.dds"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="120"/>
+        <Modification>
+            <StateFlags index="Detector" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SpectreShield">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\BTN-Ability-Protoss-HardenedShields.dds"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <Duration value="30"/>
+        <DamageResponse Chance="1" ModifyFraction="0" ModifyMinimumDamage="1"/>
+        <Modification>
+            <StateFlags index="Invulnerable" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ViperConsumeStructure">
+        <Alignment value="Negative"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <!--BuffFlags index="Channeled" value="1"/-->
+        <InfoIcon value="Assets\Textures\btn-ability-zerg-corruption-color.dds"/>
+        <MaxStackCount value="100"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="RestoreShields">
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="15"/>
+        <DisableValidatorArray value="RestoreShieldsOutofCombat"/>
+        <Modification>
+            <VitalRegenArray index="Shields" value="8"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleTowerInvulnerable">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+        </Modification>
+        <TimeScaleSource Value="Global"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="FlyerShield">
+        <Alignment value="Positive"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <InfoIcon value="Assets\Textures\BTN-Ability-Protoss-HardenedShields.dds"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="45"/>
+        <DamageResponse>
+            <Chance value="1"/>
+            <ClampMaximum value="5"/>
+            <Minimum value="5"/>
+            <TargetFilters value="Ground;-"/>
+            <Kind index="Spell" value="0"/>
+        </DamageResponse>
+    </CBehaviorBuff>
+    <!--CBehaviorBuff id="LocustSpawnDummy">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Structures"/>
+        <MaxStackCount value="0"/>
+    </CBehaviorBuff>
+    <CBehaviorSpawn id="SpawnLocusts">
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Structures"/>
+        <InfoArray>
+            <Unit value="LocustDummy"/>
+            <MaxCount value="2"/>
+            <Requirements value="SwarmHostSpawnLocusts"/>
+            <Delay value="0.0625"/>
+            <Effect value="LocustsRemoveSpawnBehavior"/>
+        </InfoArray>
+        <Slop value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Range value="5"/>
+        <Limit value="4"/>
+        <Offset value="0,0"/>
+        <Flags index="HideCount" value="1"/>
+    </CBehaviorSpawn-->
+    <CBehaviorBuff id="SupplyDrop">
+        <DisableValidatorArray value="NotBuildingStasis"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="BurrowCharging">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Modification MoveSpeedBonus="2">
+            <ModifyFlags index="OrdersUninterruptible" value="1"/>
+            <StateFlags index="Bury" value="1"/>
+            <StateFlags index="Cloak" value="1"/>
+            <StateFlags index="SuppressCollision" value="1"/>
+            <WeaponDisableArray value="KaiserBlades"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="BurrowChargingRevD">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Modification MoveSpeedBonus="-0.5">
+            <ModifyFlags index="OrdersUninterruptible" value="1"/>
+            <StateFlags index="Bury" value="1"/>
+            <StateFlags index="Cloak" value="1"/>
+            <StateFlags index="SuppressCollision" value="1"/>
+            <WeaponDisableArray value="KaiserBlades"/>
+        </Modification>
+    </CBehaviorBuff>
+    <!--CBehaviorBuff id="BurrowChargeRevE">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Modification MoveSpeedBonus="-0.5">
+            <ModifyFlags index="OrdersUninterruptible" value="1"/>
+            <StateFlags index="Bury" value="1"/>
+            <StateFlags index="Cloak" value="1"/>
+            <StateFlags index="SuppressCollision" value="1"/>
+        </Modification>
+        <FinalEffect value="BurrowChargeTargetSearchRevD"/>
+        <RemoveValidatorArray value="BurrowChargeRevEMinDistance"/>
+    </CBehaviorBuff-->
+    <!--CBehaviorBuff id="HardenedShield">
+        <DamageResponse Minimum="11">
+            <Kind index="Spell" value="1"/>
+        </DamageResponse>
+    </CBehaviorBuff-->
+    <CBehaviorBuff id="ReaperRegen">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <DisableValidatorArray value="ReaperOutOfCombat"/>
+        <DisableValidatorArray value="NotFullLife"/>
+        <!--DisableValidatorArray value="HaveCombatDrugs"/-->
+        <Modification>
+            <VitalRegenArray index="Life" value="2"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="HellionTankReady">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="4"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MercenaryCycloneMissiles">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Modification>
+            <WeaponEnableArray value="CycloneMissiles"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MercenarySensorDish">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Modification SightBonus="3"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MercenaryShield">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Modification>
+            <VitalMaxArray index="Life" value="100"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Recalled">
+        <Modification>
+            <AbilLinkEnableArray value="VolatileBurstBuilding"/>
+            <AbilLinkEnableArray value="GhostCloak"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Recalling">
+        <Duration value="1"/>
+        <Modification>
+            <AbilLinkEnableArray value="VolatileBurstBuilding"/>
+            <AbilLinkEnableArray value="GhostCloak"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Scryer">
+        <Alignment value="Negative"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="60"/>
+        <Modification>
+            <StateFlags index="RevealProgress" value="1"/>
+            <StateFlags index="SuppressCloak" value="1"/>
+        </Modification>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-preordain.dds"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="FungalGrowthMovement">
+        <RemoveValidatorArray value="TargetIsNotUnstoppable"/>
+        <DisableValidatorArray value="NotBurrowCharging"/>
+        <Modification>
+            <AbilLinkDisableArray value="MorphToSwarmHostBurrowedMP"/>
+            <AbilLinkDisableArray value="MorphToSwarmHostMP"/>
+            <AbilLinkDisableArray value="MorphToHellionTank"/>
+            <AbilLinkDisableArray value="MorphToHellion"/>
+            <AbilLinkDisableArray value="WidowMineBurrow"/>
+            <AbilLinkDisableArray value="WidowMineUnburrow"/>
+            <AbilLinkDisableArray value="PhasingMode"/>
+            <AbilLinkDisableArray value="TransportMode"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Clone">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Modification>
+            <StateFlags index="SuppressRequirements" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CloneDummy">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="1"/>
+        <Modification>
+            <StateFlags index="Stun" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleRockTowerFalling">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="2.7875"/>
+        <FinalEffect value="CollapsibleRockTowerRubbleCP"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleTerranTowerFalling">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="2.7875"/>
+        <FinalEffect value="CollapsibleTerranTowerRubbleCP"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="StunRoundInitialBehavior">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="4"/>
+        <ExpireEffect value="StunRoundSearch"/>
+        <BehaviorCategories index="Stun" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PostWarp">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="2"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <AbilClassDisableArray index="CAbilAttack" value="1"/>
+            <AbilClassDisableArray index="CAbilMove" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="BuildingShield">
+        <Alignment value="Positive"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="20"/>
+        <Modification>
+            <WeaponArray Link="BuildingShield"/>
+        </Modification>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-arcshield.dds"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="LocustMPStun">
+        <InfoFlags index="Hidden" value="1"/>
+        <FinalEffect value="LocustMPReady"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Duration value="2"/>
+        <Modification>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="Stun" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+        </Modification>
+        <BehaviorCategories index="Stun" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="LocustMPTimedLife">
+        <Tooltip value="Behavior/Tooltip/BroodlingFate"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <InfoIcon value="Assets\Textures\btn-ability-zerg-explode.dds"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Duration value="15"/>
+        <DurationRandomMax value="0.5"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <ExpireEffect value="TimedLifeFate"/>
+        <KillCredit Value="Caster"/>
+        <Modification>
+            <StateFlags index="Summoned" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="LaserSight">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="30"/>
+        <Modification WeaponRange="3"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ProtectiveBarrier">
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Duration value="5"/>
+        <DamageResponse Chance="1" ModifyFraction="0" ModifyMinimumDamage="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CorruptorGroundAttackDebuff">
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Duration value="0.6665"/>
+        <Alignment value="Negative"/>
+        <DamageResponse Chance="1" ModifyAmount="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="BattlecruiserAntiAirDisable">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="6"/>
+        <Modification>
+            <WeaponDisableArray value="ATALaserBattery"/>
+            <WeaponDisableArray value="ATSLaserBattery"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="BuildingStasis">
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="45"/>
+        <Modification>
+            <StateFlags index="Stasis" value="1"/>
+            <StateFlags index="Stun" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="SuppressCloak" value="1"/>
+            <StateFlags index="SuppressDetection" value="1"/>
+            <StateFlags index="SuppressFoodMade" value="1"/>
+            <StateFlags index="SuppressRadar" value="1"/>
+            <StateFlags index="SuppressTech" value="1"/>
+            <AbilClassDisableArray index="CAbilWarpTrain" value="1"/>
+            <BehaviorClassDisableArray index="CBehaviorPowerSource" value="1"/>
+            <BehaviorClassDisableArray index="CBehaviorResource" value="1"/>
+            <BehaviorLinkDisableArray value="SalvageBunker"/>
+            <BehaviorLinkDisableArray value="SalvageShared"/>
+            <BehaviorLinkDisableArray value="SensorTowerRadar"/>
+        </Modification>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-phaseshift2.dds"/>
+        <Alignment value="Negative"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SmokeScreenTimedLife">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="12"/>
+        <ExpireEffect value="TimedLifeFate"/>
+        <Modification>
+            <StateFlags index="Summoned" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Stasis">
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <ModifyFlags index="EnableAttack" value="1"/>
+            <ModifyFlags index="EnableMove" value="1"/>
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/>
+            <StateFlags index="Stasis" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="SuppressCloak" value="1"/>
+            <StateFlags index="SuppressDetection" value="1"/>
+            <StateFlags index="SuppressFoodMade" value="1"/>
+            <StateFlags index="SuppressRadar" value="1"/>
+            <StateFlags index="SuppressTech" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MakeNeutral">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Player Value="Neutral"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ResourceBlocker">
+        <Duration value="60"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <FinalEffect value="ResourceStunFinalSet"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <DisplayDuration index="Neutral" value="1"/>
+        <DisplayDuration index="Enemy" value="1"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <BehaviorClassDisableArray index="CBehaviorResource" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorConjoined id="ResourceBlockerConjoined">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Radius value="3.5"/>
+    </CBehaviorConjoined>
+    <CBehaviorConjoined id="CollapsibleRockTowerConjoined">
+        <InfoFlags index="Hidden" value="1"/>
+        <Radius value="15"/>
+    </CBehaviorConjoined>
+    <CBehaviorConjoined id="CollapsibleTerranTowerConjoined">
+        <InfoFlags index="Hidden" value="1"/>
+        <Radius value="15"/>
+    </CBehaviorConjoined>
+    <CBehaviorBuff id="ResourceStun">
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <InitialEffect value="ResourceStunCreateUnit"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-entomb.dds"/>
+        <Modification>
+            <BehaviorClassDisableArray index="CBehaviorResource" value="1"/>
+        </Modification>
+        <BehaviorCategories index="Stun" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorCreepSource id="MakeCreep5x5">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Structures"/>
+        <Period value="0.8332"/>
+        <Start value="Footprint5x5CreepSourceGrown"/>
+        <Birth value="Footprint5x5CreepSourceStart"/>
+        <Grown value="Footprint5x5CreepSourceGrown"/>
+    </CBehaviorCreepSource>
+    <CBehaviorBuff id="MaximumThrust">
+        <Alignment value="Positive"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="6"/>
+        <Modification MoveSpeedBonus="1.875" AccelerationBonus="2.25"/>
+        <InfoIcon value="Assets\Textures\btn-techupgrade-terran-charonboosters.dds"/>
+    </CBehaviorBuff>
+    <CBehaviorPowerSource id="PowerSource">
+        <Radius value="6.5"/>
+        <CliffLevelFlags index="Higher" value="0"/>
+    </CBehaviorPowerSource>
+    <CBehaviorBuff id="ChargeUp">
+        <Alignment value="Positive"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="30"/>
+        <Modification>
+            <WeaponEnableArray value="CarrierScarabsCharged"/>
+            <WeaponDisableArray value="CarrierScarabs"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CloakUnit">
+        <Alignment value="Positive"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="30"/>
+        <Modification>
+            <StateFlags index="Cloak" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NullField">
+        <Alignment value="Negative"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="0.6"/>
+        <Modification>
+            <StateFlags index="SuppressCloak" value="1"/>
+            <StateFlags index="SuppressEnergy" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Rescue">
+        <Alignment value="Positive"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="30"/>
+        <DamageResponse>
+            <Chance value="1"/>
+            <Fatal value="1"/>
+            <Handled value="RescueSet"/>
+            <ModifyFraction value="0"/>
+            <ModifyMinimumDamage value="1"/>
+        </DamageResponse>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SalvageReaper" parent="Salvage">
+        <Name value="Behavior/Name/SalvageReaper"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Angry">
+        <Alignment value="Positive"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Duration value="8"/>
+        <Modification>
+            <WeaponEnableArray value="ParasiteSporeAngry"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Benign">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Modification>
+            <StateFlags index="Benign" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ForceFieldFate">
+        <DisplayDuration index="Self" value="0"/>
+        <DisplayDuration index="Ally" value="0"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="VortexExit">
+        <Alignment value="Negative"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <InfoIcon value="Assets\Textures\BTN-Ability-Protoss-phaseshift.dds"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="1.5"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <ModifyFlags index="EnableMove" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="SuppressCloak" value="1"/>
+            <StateFlags index="SuppressDetection" value="1"/>
+            <StateFlags index="SuppressRadar" value="1"/>
+            <AbilClassEnableArray index="CAbilMorph" value="1"/>
+            <AbilClassEnableArray index="CAbilStop" value="1"/>
+            <AbilLinkEnableArray value="Warpable"/>
+            <AbilLinkEnableArray value="BroodLordQueue2"/>
+            <AbilLinkEnableArray value="BroodLordHangar"/>
+            <BehaviorClassDisableArray index="CBehaviorPowerSource" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="VortexBehavior">
+        <ExpireEffect value="VortexExit"/>
+        <Modification>
+            <BehaviorLinkDisableArray value="AreaDenialTank"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="VortexBehaviorEnemy">
+        <ExpireEffect value="VortexExit"/>
+        <Modification>
+            <BehaviorLinkDisableArray value="AreaDenialTank"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="FungalGrowth">
+        <Duration value="4"/>
+        <Period value="0.25"/>
+    </CBehaviorBuff>
+    <CBehaviorResource id="RawTerrazineGeyserGas">
+        <InfoFlags index="Hidden" value="1"/>
+        <InfoIcon value="Assets\Textures\icon-gas.dds"/>
+        <Capacity value="32000"/>
+        <Contents value="3750"/>
+        <HarvestAmount value="6"/>
+        <DepletionVariationCount value="6"/>
+    </CBehaviorResource>
+    <CBehaviorResource id="HarvestableTerrazineGeyserGas">
+        <InfoFlags index="Hidden" value="1"/>
+        <InfoIcon value="Assets\Textures\icon-gas.dds"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Capacity value="3750"/>
+        <HarvestTime value="1.981"/>
+        <HarvestAmount value="6"/>
+        <Flags index="HideHarvesters" value="1"/>
+        <RequiredAlliance value="Control"/>
+        <ExhaustedAlert value="ResourceExhausted_Terrazine"/>
+    </CBehaviorResource>
+    <CBehaviorResource id="HarvestableTerrazineGeyserGasProtoss">
+        <InfoFlags index="Hidden" value="1"/>
+        <InfoIcon value="Assets\Textures\icon-gas.dds"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Capacity value="3750"/>
+        <HarvestTime value="1.981"/>
+        <HarvestAmount value="6"/>
+        <Flags index="HideHarvesters" value="1"/>
+        <RequiredAlliance value="Control"/>
+        <ExhaustedAlert value="ResourceExhausted_Terrazine"/>
+    </CBehaviorResource>
+    <CBehaviorResource id="HarvestableTerrazineGeyserGasZerg">
+        <InfoFlags index="Hidden" value="1"/>
+        <InfoIcon value="Assets\Textures\icon-gas.dds"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Capacity value="3750"/>
+        <HarvestTime value="1.981"/>
+        <HarvestAmount value="6"/>
+        <Flags index="HideHarvesters" value="1"/>
+        <RequiredAlliance value="Control"/>
+        <ExhaustedAlert value="ResourceExhausted_Terrazine"/>
+    </CBehaviorResource>
+    <CBehaviorBuff id="CarryHarvestableTerrazineGeyserGas">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CarryHarvestableTerrazineGeyserGasProtoss">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CarryHarvestableTerrazineGeyserGasZerg">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="KickBlocker">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="LaserTargeting">
+        <Alignment value="Negative"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Duration value="0.6"/>
+        <DamageResponse Chance="1" ModifyFraction="2"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MultiplayerLootSpawner">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <FinalEffect value="MultiplayerLootSpawner"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SpawnInfestedMarines">
+        <Alignment value="Positive"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Modification>
+            <DeathResponse Chance="1" Effect="SpawnInfestedMarines"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Engage">
+        <InfoIcon value="Assets\Textures\btn-upgrade-zerg-anabolicsynthesis.dds"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Duration value="10.125"/>
+        <Modification MoveSpeedBonus="0.8515"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="TentaclesForce">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Duration value="0.13"/>
+        <Period value="0.0625"/>
+        <PeriodicEffect value="DubiousTentaclesApplyForce"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="TrainInfestedTerran">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Corruption">
+        <DisplayDuration index="Self" value="0"/>
+        <DisplayDuration index="Ally" value="0"/>
+        <DisplayDuration index="Enemy" value="0"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="0"/>
+            <ModifyFlags index="EnableAttack" value="0"/>
+            <ModifyFlags index="EnableMove" value="0"/>
+            <ModifyFlags index="SuppressMoving" value="0"/>
+            <ModifyFlags index="SuppressTurning" value="0"/>
+            <StateFlags index="SuppressAttack" value="0"/>
+            <StateFlags index="SuppressCloak" value="0"/>
+            <StateFlags index="SuppressDetection" value="0"/>
+            <StateFlags index="SuppressRadar" value="0"/>
+            <BehaviorClassDisableArray index="CBehaviorSpawn" value="0"/>
+            <BehaviorLinkDisableArray index="0" value=""/>
+        </Modification>
+        <DamageResponse Chance="1" ModifyFraction="1.2"/>
+    </CBehaviorBuff>
+    <!-- Cant parent from TimedLife due to the morph applying the InfestedTerranTimedLife behavior,-->
+    <!--        as the TimedLife parent would use <KillCredit Value="Caster"/> which sets kill credit to the egg -->
+    <CBehaviorBuff id="InfestedTerranTimedLife">
+        <Duration value="30"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MassiveVoidRayVulnerability">
+        <InfoFlags index="Hidden" value="1"/>
+        <DamageResponse Chance="1" ModifyFraction="1.2">
+            <RequireEffectArray value="PrismaticBeamMUx3"/>
+            <RequireEffectArray value="PrismaticBeamMUx1"/>
+            <RequireEffectArray value="PrismaticBeamMUx2"/>
+        </DamageResponse>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NeuralParasite">
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Enemy" value="1"/>
+        <Duration value="15"/>
+        <Modification>
+            <AbilLinkDisableArray value="Clone"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SurfaceForSpellCast">
+        <Modification>
+            <ModifyFlags index="SuppressMoving" value="0"/>
+            <ModifyFlags index="SuppressTurning" value="0"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SurfaceForSpellCastChanneled">
+        <Duration value="1.5"/>
+        <Modification>
+            <ModifyFlags index="SuppressMoving" value="0"/>
+            <ModifyFlags index="SuppressTurning" value="0"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CapResource">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Modification>
+            <BehaviorClassDisableArray index="CBehaviorResource" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="BlindingCloud">
+        <Alignment value="Negative"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Duration value="0.625"/>
+        <Modification WeaponRange="-20"/>
+        <InfoIcon value="Assets\Textures\btn-ability-zerg-blindingcloud.dds"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DestructibleStatue4x4">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <InitialEffect value="DestructibleStatueCreateRubblePersistent"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DestructibleStatueRubbleTimedLife">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Duration value="2.25"/>
+        <DurationRandomMax value="0.5"/>
+        <ExpireEffect value="DestructibleStatueRubbleSet"/>
+        <Modification>
+            <StateFlags index="Summoned" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleRockTower">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <InitialEffect value="CollapsibleRockTowerCP"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleRockTowerDiagonal">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <InitialEffect value="CollapsibleRockTowerDiagonalCP"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleTerranTower">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <InitialEffect value="CollapsibleTerranTowerCP"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleTerranTowerDiagonal">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <InitialEffect value="CollapsibleTerranTowerDiagonalCP"/>
+    </CBehaviorBuff>
+    <!--CBehaviorBuff id="CollapsibleRockTowerDiagonal">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <DamageResponse>
+            <Chance value="1"/>
+            <ClampMaximum value="0"/>
+            <Fatal value="1"/>
+            <Handled value="CollapsibleRockTowerDiagonalCPSet"/>
+            <ModifyMinimumDamage value="1"/>
+            <Ignore index="Life" value="1"/>
+        </DamageResponse>
+    </CBehaviorBuff-->
+    <CBehaviorBuff id="BurrowChargeMPKnockback">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Duration value="0.8"/>
+        <!--Modification Height="2" MoveSpeedMultiplier="1.5">
+            <ModifyFlags index="SuppressTurning" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <HeightTime index="Start" value="0.4"/>
+            <HeightTime index="Stop" value="0.25"/>
+        </Modification-->
+    </CBehaviorBuff>
+    <CBehaviorBuff id="UltraliskBurrowChargeKnockback">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Modification Height="2" MoveSpeedMultiplier="1.5">
+            <StateFlags index="Uncommandable" value="1"/>
+            <HeightTime index="Start" value="0.312"/>
+            <HeightTime index="Stop" value="0.25"/>
+        </Modification>
+        <InitialEffect value="UltraliskBurrowChargeTargetDamage"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="UltraliskBurrowChargeHold">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Duration value="1.5"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Yoink">
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <StateFlags index="Stun" value="1"/>
+            <StateFlags index="SuppressCloak" value="1"/>
+            <StateFlags index="SuppressCollision" value="1"/>
+            <!--ModifyFlags index="DisableAbils" value="1"/>
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/-->
+            <StateFlags index="SuppressPassenger" value="1"/>
+            <AbilLinkDisableArray value="WidowMineAttack"/>
+        </Modification>
+        <Duration value="2"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="YoinkMarker">
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="2"/>
+        <!--Modification>
+            <AbilLinkDisableArray value="AssaultMode"/>
+        </Modification-->
+    </CBehaviorBuff>
+    <CBehaviorBuff id="YoinkTentacle">
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="2"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PrecursorYoink">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="2.5"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="SuppressCollision" value="1"/>
+            <StateFlags index="NoDraw" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+        </Modification>
+        <FinalEffect value="SuicideRemove"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="YoinkWait">
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <InfoFlags index="Hidden" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ZergArtilleryDeath">
+        <Alignment value="Positive"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Modification>
+            <DeathResponse Chance="1" Effect="ZergArtilleryEggSearch"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="DoomDamageDelay" parent="TimedLife">
+        <InfoFlags index="Hidden" value="0"/>
+        <InfoIcon value="Assets\Textures\btn-ability-zerg-corruption-color.dds"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <DisplayDuration index="Enemy" value="1"/>
+        <Duration value="30"/>
+        <ExpireEffect value="DoomDamage"/>
+        <Modification AttackSpeedMultiplier="1.25"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="EyeStalk" parent="Detector">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-status-detector.dds"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+        <DisplayDuration index="Enemy" value="1"/>
+        <Modification Detect="11"/>
+        <RemoveValidatorArray value="NotMassive"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="BurrowCharge">
+        <Alignment value="Positive"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-charge.dds"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Modification MoveSpeedMultiplier="0.01">
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <AbilClassEnableArray index="CAbilMove" value="1"/>
+            <AbilLinkEnableArray value="attack"/>
+            <AbilLinkEnableArray value="stop"/>
+            <WeaponDisableArray value="MagnataurKaiserBlades"/>
+            <WeaponDisableArray value="MagnataurMonarchBlades"/>
+            <WeaponDisableArray value="MagnataurRampage"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ZergBuildingNotOnCreep">
+        <DisableValidatorArray value="NotHiddenSelf"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NeuralParasiteEffect">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PatrolSpeed">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <RemoveValidatorArray value="CasterNotInCombat"/>
+        <Modification MoveSpeedMaximum="2" MoveSpeedMinimum="2"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Remove">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <InitialEffect value="SuicideRemove"/>
+    </CBehaviorBuff>
+    <CBehaviorResource id="MineralFieldMineralsNoRemove">
+        <InfoIcon value="Assets\Textures\icon-mineral.dds"/>
+        <Capacity value="1500"/>
+        <Contents value="1500"/>
+        <HarvestTime value="2.786"/>
+        <HarvestAmount value="5"/>
+        <ReturnDelay value="0.5"/>
+        <ExhaustedAlert value="ResourceExhausted_Mineral"/>
+        <DepletionThreshold value="750"/>
+        <DepletionVariationCount value="4"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <IdealHarvesterCount value="3"/>
+    </CBehaviorResource>
+    <CBehaviorBuff id="CarryMineralFieldMineralsNoRemove">
+        <InfoFlags index="Hidden" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SuppressMoving">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Modification>
+            <ModifyFlags index="SuppressMoving" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SuppressCollision">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Modification>
+            <StateFlags index="SuppressCollision" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="VolatileBurstBuilding">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Modification>
+            <WeaponEnableArray value="VolatileBurst"/>
+            <WeaponDisableArray value="VolatileBurstBuilding"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Hidden">
+        <Alignment value="Positive"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <Modification>
+            <StateFlags index="Cloak" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="GravitonBeam">
+        <Modification>
+            <AbilLinkEnableArray value="MorphToSwarmHostMP"/>
+            <AbilLinkEnableArray value="WidowMineUnburrow"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Reveal">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <ModifyFlags index="Reveal" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SingleRecalling">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="2"/>
+        <ExpireEffect value="SingleRecallSet"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <AbilClassDisableArray index="CAbilAttack" value="1"/>
+            <AbilClassDisableArray index="CAbilMove" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SingleRecalled">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="2"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <AbilClassDisableArray index="CAbilAttack" value="1"/>
+            <AbilClassDisableArray index="CAbilMove" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorCreepSource id="MakeCreepNydusCreeper">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Structures"/>
+        <Period value="0.8332"/>
+        <Start value="CreepGrowthNydusCreeperStart"/>
+        <Birth value="CreepGrowthNydusCreeperStart"/>
+        <Grown value="CreepGrowthNydusCreeper"/>
+    </CBehaviorCreepSource>
+    <CBehaviorCreepSource id="MakeCreepNydusAttacker">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Structures"/>
+        <Period value="0.8332"/>
+        <Start value="CreepGrowthNydusAttackerStart"/>
+        <Birth value="CreepGrowthNydusAttackerStart"/>
+        <Grown value="CreepGrowthNydusAttacker"/>
+    </CBehaviorCreepSource>
+    <CBehaviorBuff id="MineDroneDOT">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="10"/>
+        <Period value="0.5"/>
+        <PeriodicEffect value="MineDroneDOTSearch"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MothershipCoreWeapon">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="25"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="NexusDeath">
+        <InfoFlags index="Hidden" value="1"/>
+        <FinalEffect value="NexusDeathSearch"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MothershipCoreDisableAttack">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <WeaponDisableArray value="MothershipCoreWeapon"/>
+        </Modification>
+        <!--WeaponDisableArray value="MothershipPurifyWeapon"/-->
+        <DisableValidatorArray value="HasMothershipCoreWeapon"/>
+        <DisableValidatorArray value="NoMothershipCorePurifyNexus"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PrecursorCreepTumor">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="NoDraw" value="1"/>
+            <RateMultiplierArray index="Progress" value="0.1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="WidowMineDelayRemoveAB">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="SuppressAttack" value="1"/>
+            <StateFlags index="NoDraw" value="1"/>
+        </Modification>
+        <Duration value="2"/>
+        <FinalEffect value="SuicideRemove"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MedivacSpeedBoost">
+        <Alignment value="Positive"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <Duration value="6"/>
+        <Modification MoveSpeedMultiplier="1.7" AccelerationBonus="3"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PrecursorLocust">
+        <InfoFlags index="Hidden" value="1"/>
+        <Modification>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="Stun" value="1"/>
+            <StateFlags index="NoDraw" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SwarmHostEggAnimationMP" parent="SwarmHostEggAnimationDefault">
+        <Duration value="23"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ExtendBridgeExtendingBridgeNEWide8Out" parent="ExtendBridgeExtend"/>
+    <CBehaviorBuff id="ExtendBridgeExtendingBridgeNWWide8Out" parent="ExtendBridgeExtend"/>
+    <CBehaviorBuff id="ExtendBridgeExtendingBridgeNEWide10Out" parent="ExtendBridgeExtend"/>
+    <CBehaviorBuff id="ExtendBridgeExtendingBridgeNWWide10Out" parent="ExtendBridgeExtend"/>
+    <CBehaviorBuff id="ExtendBridgeExtendingBridgeNEWide12Out" parent="ExtendBridgeExtend"/>
+    <CBehaviorBuff id="ExtendBridgeExtendingBridgeNWWide12Out" parent="ExtendBridgeExtend"/>
+    <CBehaviorBuff id="CritterFlee">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="1"/>
+        <Modification MoveSpeedMultiplier="2"/>
+        <FinalEffect value="CritterFleeIssueStopOrder"/>
+    </CBehaviorBuff>
+    <CBehaviorCreepSource id="makeCreep2x2Overlord">
+        <DisableValidatorArray value="NoYoink"/>
+    </CBehaviorCreepSource>
+    <CBehaviorBuff id="CollapsibleRockTowerFallingRampRight">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="2.7875"/>
+        <FinalEffect value="CollapsibleRockTowerRubbleCPRampRight"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleRockTowerRampRight">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <InitialEffect value="CollapsibleRockTowerRampRightCP"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleRockTowerFallingRampLeft">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="2.7875"/>
+        <FinalEffect value="CollapsibleRockTowerRubbleCPRampLeft"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="CollapsibleRockTowerRampLeft">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <InitialEffect value="CollapsibleRockTowerRampLeftCP"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MothershipResetEnergy">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Duration value="0.0625"/>
+        <InitialEffect value="ResetEnergySet"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PhaseShield">
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-preordain.dds"/>
+        <EditorCategories value="AbilityorEffectType:Units,Race:Protoss"/>
+        <Duration value="5"/>
+        <InitialEffect value="PhaseShieldRemoveBehaviorSet1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="Purify">
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-purify.dds"/>
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Duration value="60"/>
+        <Modification Detect="15.5">
+            <WeaponArray Link="MothershipCoreWeapon" Turret="Nexus"/>
+        </Modification>
+        <TimeScaleSource Value="Global"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="TimeWarpProduction">
+        <!-- Negative speed multiplier is to offset Purify on Nexus-->
+        <Modification AttackSpeedMultiplier="0.66"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="VoidSiphon">
+        <Alignment value="Negative"/>
+        <InfoIcon value="Assets\Textures\btn-ability-protoss-prismaticbeam-color.dds"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <BuffFlags index="Channeled" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="MothershipCorePurifyNexus">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Modification>
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <StateFlags index="SuppressEnergyRegen" value="1"/>
+            <AbilLinkDisableArray value="move"/>
+            <AbilLinkDisableArray value="MothershipCorePurifyNexus"/>
+            <AbilLinkDisableArray value="MorphToMothership"/>
+            <AbilLinkDisableArray value="MothershipCoreEnergize"/>
+            <AbilLinkDisableArray value="MothershipCoreMassRecall"/>
+            <AbilLinkDisableArray value="MothershipCoreWeapon"/>
+            <WeaponEnableArray value="MothershipCoreWeapon"/>
+            <WeaponDisableArray value="RepulsorCannon"/>
+        </Modification>
+        <InfoFlags index="Hidden" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="WidowMineAnimationController">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Duration value="40"/>
+        <DisableValidatorArray value="NotStasis"/>
+        <DisableValidatorArray value="NotVortexd"/>
+        <DisableValidatorArray value="NotGravitonBeamd"/>
+        <DisableValidatorArray value="NotThunderCannond"/>
+        <InfoFlags index="Hidden" value="1"/>
+        <DisplayDuration index="Self" value="1"/>
+        <DisplayDuration index="Ally" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="WidowMineArmed">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <InfoFlags index="Hidden" value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PrecursorCore">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="0.1"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="SuppressCollision" value="1"/>
+            <StateFlags index="NoDraw" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+        </Modification>
+        <FinalEffect value="SuicideRemove"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PrecursorBurrowChargeImpact">
+        <InfoFlags index="Hidden" value="1"/>
+        <Duration value="0.5"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="1"/>
+            <ModifyFlags index="SuppressMoving" value="1"/>
+            <ModifyFlags index="SuppressTurning" value="1"/>
+            <StateFlags index="Invulnerable" value="1"/>
+            <StateFlags index="SuppressCollision" value="1"/>
+            <StateFlags index="NoDraw" value="1"/>
+            <StateFlags index="Uncommandable" value="1"/>
+            <StateFlags index="Unselectable" value="1"/>
+            <StateFlags index="Untargetable" value="1"/>
+        </Modification>
+        <FinalEffect value="SuicideRemove"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="RockCrushSearch">
+        <InfoFlags index="Hidden" value="1"/>
+        <Period value="0.0625"/>
+        <PeriodicEffect value="RockCrushSearch"/>
+        <Duration value="1"/>
+    </CBehaviorBuff>
+</Catalog>

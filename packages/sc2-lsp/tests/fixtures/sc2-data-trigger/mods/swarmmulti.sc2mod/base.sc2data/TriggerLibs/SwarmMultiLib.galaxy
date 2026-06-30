@@ -1,0 +1,55 @@
+include "TriggerLibs/NativeLib"
+include "TriggerLibs/LibertyLib"
+
+include "TriggerLibs/SwarmMultiLib_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Swarm Multi
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libSwMp_InitLibraries () {
+    libNtve_InitVariables();
+    libLbty_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: PingPanelInitialize
+//--------------------------------------------------------------------------------------------------
+bool libSwMp_gt_PingPanelInitialize_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libLbty_gf_EnableDisablePingPanel(true, PlayerGroupAll());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSwMp_gt_PingPanelInitialize_Init () {
+    libSwMp_gt_PingPanelInitialize = TriggerCreate("libSwMp_gt_PingPanelInitialize_Func");
+    TriggerAddEventMapInit(libSwMp_gt_PingPanelInitialize);
+}
+
+void libSwMp_InitTriggers () {
+    libSwMp_gt_PingPanelInitialize_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libSwMp_InitLib_completed = false;
+
+void libSwMp_InitLib () {
+    if (libSwMp_InitLib_completed) {
+        return;
+    }
+
+    libSwMp_InitLib_completed = true;
+
+    libSwMp_InitLibraries();
+    libSwMp_InitTriggers();
+}
+

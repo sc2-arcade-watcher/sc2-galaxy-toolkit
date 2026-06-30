@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibC868430E_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Purifier Beam
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libC868430E_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libC868430E_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "PurifierBeam");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libC868430E_gt_Initialization_Init () {
+    libC868430E_gt_Initialization = TriggerCreate("libC868430E_gt_Initialization_Func");
+    TriggerAddEventMapInit(libC868430E_gt_Initialization);
+}
+
+void libC868430E_InitTriggers () {
+    libC868430E_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libC868430E_InitLib_completed = false;
+
+void libC868430E_InitLib () {
+    if (libC868430E_InitLib_completed) {
+        return;
+    }
+
+    libC868430E_InitLib_completed = true;
+
+    libC868430E_InitLibraries();
+    libC868430E_InitTriggers();
+}
+

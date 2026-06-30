@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib1A7F06AD_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Total Eclipse
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib1A7F06AD_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib1A7F06AD_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "UberDarkness");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib1A7F06AD_gt_Initialization_Init () {
+    lib1A7F06AD_gt_Initialization = TriggerCreate("lib1A7F06AD_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib1A7F06AD_gt_Initialization);
+}
+
+void lib1A7F06AD_InitTriggers () {
+    lib1A7F06AD_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib1A7F06AD_InitLib_completed = false;
+
+void lib1A7F06AD_InitLib () {
+    if (lib1A7F06AD_InitLib_completed) {
+        return;
+    }
+
+    lib1A7F06AD_InitLib_completed = true;
+
+    lib1A7F06AD_InitLibraries();
+    lib1A7F06AD_InitTriggers();
+}
+

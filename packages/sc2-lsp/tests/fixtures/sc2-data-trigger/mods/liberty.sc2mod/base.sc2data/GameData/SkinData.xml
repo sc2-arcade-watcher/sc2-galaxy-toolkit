@@ -1,0 +1,1362 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CSkin default="1" id="CollectionSkinBase">
+        <?token id="unit" type="CUnitLink"?>
+        <?token id="collection" value="Bogus"?>
+        <?token id="race" value="Neutral"?>
+        <Rotation value="35"/>
+        <ReplacementArray Catalog="Model" From="##unit##" To="##unit##_##collection##"/>
+        <ReplacementArray Catalog="Model" From="##unit##Death" To="##unit##_##collection##_Death"/>
+        <ReplacementArray Catalog="Model" From="##unit##DeathRagdoll" To="##unit##_##collection##_DeathRagdoll"/>
+        <ReplacementArray Catalog="Model" From="##unit##Portrait" To="##unit##_##collection##_Portrait"/>
+        <CollectionDisplayUnit value="##unit##"/>
+        <DisplayModel value="##unit##_##collection##"/>
+        <WarChestUILight value="WarChestSkinPreview_##collection##"/>
+        <CollectionDisplayModel value="##unit##_##collection##"/>
+        <VariationIcon value="Assets\Textures\btn-unit-##race##-##unit##-##collection##.dds"/>
+    </CSkin>
+    <CSkin default="1" id="CollectionSkinProtossDefault">
+        <?token id="unit" type="CUnitLink"?>
+        <Rotation value="35"/>
+        <Camera value="Star2CameraMid06"/>
+        <CollectionDisplayUnit value="##unit##"/>
+        <DisplayModel value="##unit##"/>
+        <CollectionDisplayModel value="##unit##"/>
+        <VariationIcon value="Assets\Textures\btn-unit-protoss-##unit##.dds"/>
+    </CSkin>
+    <CSkin default="1" id="CollectionSkinTerranDefault">
+        <?token id="unit" type="CUnitLink"?>
+        <Rotation value="35"/>
+        <Camera value="Star2CameraMid06"/>
+        <CollectionDisplayUnit value="##unit##"/>
+        <DisplayModel value="##unit##"/>
+        <CollectionDisplayModel value="##unit##"/>
+        <VariationIcon value="Assets\Textures\btn-unit-terran-##unit##.dds"/>
+    </CSkin>
+    <CSkin default="1" id="CollectionSkinZergDefault">
+        <?token id="unit" type="CUnitLink"?>
+        <Rotation value="35"/>
+        <Camera value="Star2CameraMid06"/>
+        <CollectionDisplayUnit value="##unit##"/>
+        <DisplayModel value="##unit##"/>
+        <CollectionDisplayModel value="##unit##"/>
+        <VariationIcon value="Assets\Textures\btn-unit-zerg-##unit##.dds"/>
+    </CSkin>
+    <!-- split these up as unused entries still take up memory -->
+    <CSkin default="1" id="CollectionSkinProtossWarpIn" parent="CollectionSkinBase">
+        <ReplacementArray Catalog="Model" From="##unit##WarpIn" To="##unit##_##collection##_WarpIn"/>
+    </CSkin>
+    <CSkin default="1" id="CollectionSkinProtossAir" parent="CollectionSkinBase">
+        <ReplacementArray Catalog="Model" From="##unit##WarpInStargate" To="##unit##_##collection##_WarpInStargate"/>
+    </CSkin>
+    <CSkin default="1" id="CollectionSkinZergGround" parent="CollectionSkinBase">
+        <ReplacementArray Catalog="Model" From="##unit##DeathFire" To="##unit##_##collection##_DeathFire"/>
+        <ReplacementArray Catalog="Model" From="##unit##DeathAcid" To="##unit##_##collection##_DeathAcid"/>
+    </CSkin>
+    <CSkin default="1" id="CollectionSkinBuilding">
+        <?token id="unit" type="CUnitLink"?>
+        <?token id="collection" value="Bogus"?>
+        <?token id="race" value="Neutral"?>
+        <Rotation value="35"/>
+        <ReplacementArray Catalog="Model" From="##unit##" To="##unit##_##collection##"/>
+        <ReplacementArray Catalog="Model" From="##unit##Death" To="##unit##_##collection##_Death"/>
+        <CollectionDisplayUnit value="##unit##"/>
+        <DisplayModel value="##unit##_##collection##"/>
+        <WarChestUILight value="WarChestSkinPreview_##collection##"/>
+        <CollectionDisplayModel value="##unit##_##collection##"/>
+        <VariationIcon value="Assets\Textures\btn-building-##race##-##unit##-##collection##.dds"/>
+    </CSkin>
+    <CSkin default="1" id="GhostAlternateBase">
+        <?token id="collection" value="Bogus"?>
+        <?token id="race" value="Terran"?>
+        <?token id="unit" value="Ghost"?>
+        <Rotation value="35"/>
+        <ReplacementArray Catalog="Model" From="##unit##Alternate" To="##unit##_##collection##"/>
+        <ReplacementArray Catalog="Model" From="##unit##AlternateDeath" To="##unit##_##collection##_Death"/>
+        <ReplacementArray Catalog="Model" From="##unit##AlternateDeathRagdoll" To="##unit##_##collection##_DeathRagdoll"/>
+        <ReplacementArray Catalog="Model" From="##unit##AlternatePortrait" To="##unit##_##collection##_Portrait"/>
+        <ReplacementArray Catalog="Model" From="##unit##AlternateDeathAcid" To="##unit##_##collection##_DeathAcid"/>
+        <ReplacementArray Catalog="Model" From="##unit##AlternateDeathBlast" To="##unit##_##collection##_DeathBlast"/>
+        <ReplacementArray Catalog="Model" From="##unit##AlternateDeathEviscerate" To="##unit##_##collection##_DeathEviscerate"/>
+        <ReplacementArray Catalog="Model" From="##unit##AlternateDeathFire" To="##unit##_##collection##_DeathFire"/>
+        <ReplacementArray Catalog="Unit" From="Ghost" To="GhostAlternate"/>
+        <ReplacementArray Catalog="Button" From="Ghost" To="GhostAlternate"/>
+        <CollectionDisplayUnit value="##unit##Alternate"/>
+        <DisplayModel value="##unit##_##collection##"/>
+        <WarChestUILight value="WarChestSkinPreview_##collection##"/>
+        <CollectionDisplayModel value="##unit##_##collection##"/>
+        <VariationIcon value="Assets\Textures\btn-unit-##race##-##unit##-##collection##.dds"/>
+        <Camera value="Star2CameraMid02"/>
+    </CSkin>
+    <CSkin default="1" id="MarineBase" parent="CollectionSkinBase">
+        <?token id="race" value="Terran"?>
+        <?token id="unit" type="CUnitLink" value="Marine"?>
+        <Camera value="Star2CameraMid01"/>
+        <ReplacementArray Catalog="Model" From="##unit##DeathAcid" To="##unit##_##collection##_DeathAcid"/>
+        <ReplacementArray Catalog="Model" From="##unit##DeathBlast" To="##unit##_##collection##_DeathBlast"/>
+        <ReplacementArray Catalog="Model" From="##unit##DeathEviscerate" To="##unit##_##collection##_DeathEviscerate"/>
+        <ReplacementArray Catalog="Model" From="##unit##DeathFire" To="##unit##_##collection##_DeathFire"/>
+    </CSkin>
+    <CSkin default="1" id="SCVBase" parent="CollectionSkinBase">
+        <?token id="race" value="Terran"?>
+        <?token id="unit" type="CUnitLink" value="SCV"?>
+        <Camera value="Star2CameraMid05"/>
+    </CSkin>
+    <CSkin default="1" id="MarauderBase" parent="CollectionSkinBase">
+        <?token id="race" value="Terran"?>
+        <?token id="unit" type="CUnitLink" value="Marauder"?>
+        <Camera value="Star2CameraMid02"/>
+        <ReplacementArray Catalog="Model" From="MarauderDeathEviscerate" To="Marauder_##collection##_DeathEviscerate"/>
+    </CSkin>
+    <CSkin default="1" id="ReaperBase" parent="CollectionSkinBase">
+        <?token id="race" value="Terran"?>
+        <?token id="unit" type="CUnitLink" value="Reaper"?>
+        <Camera value="Star2CameraMid02"/>
+    </CSkin>
+    <CSkin default="1" id="GhostBase" parent="CollectionSkinBase">
+        <?token id="race" value="Terran"?>
+        <?token id="unit" type="CUnitLink" value="Ghost"?>
+        <Camera value="Star2CameraMid02"/>
+        <ReplacementArray Catalog="Model" From="##unit##DeathAcid" To="##unit##_##collection##_DeathAcid"/>
+        <ReplacementArray Catalog="Model" From="##unit##DeathBlast" To="##unit##_##collection##_DeathBlast"/>
+        <ReplacementArray Catalog="Model" From="##unit##DeathEviscerate" To="##unit##_##collection##_DeathEviscerate"/>
+        <ReplacementArray Catalog="Model" From="##unit##DeathFire" To="##unit##_##collection##_DeathFire"/>
+    </CSkin>
+    <CSkin default="1" id="HellionBase" parent="CollectionSkinBase">
+        <?token id="race" value="Terran"?>
+        <?token id="unit" type="CUnitLink" value="Hellion"?>
+        <?token id="unitAlter" value="HellionTank"?>
+        <Camera value="Star2CameraMid06"/>
+        <ReplacementArray Catalog="Model" From="HellionTankMorph" To="Hellion_##collection##_Morph"/>
+        <ReplacementArray Catalog="Model" From="HellionTank" To="Hellion_##collection##_Hellbat"/>
+        <ReplacementArray Catalog="Model" From="HellionTankDeath" To="Hellion_##collection##_Hellbat_Death"/>
+        <ReplacementArray Catalog="Model" From="HellionTankDeathRagdoll" To="Hellion_##collection##_Hellbat_DeathRagdoll"/>
+        <CollectionDisplayModelAlternate value="##unit##_##collection##_Hellbat"/>
+        <CollectionDisplayUnitAlternate value="##unitAlter##"/>
+    </CSkin>
+    <CSkin default="1" id="SiegeTankBase" parent="CollectionSkinBase">
+        <?token id="race" value="Terran"?>
+        <?token id="unit" type="CUnitLink" value="SiegeTank"?>
+        <?token id="unitAlter" type="CUnitLink" value="SiegeTankSieged"?>
+        <Camera value="Star2CameraMid06"/>
+        <ReplacementArray Catalog="Model" From="SiegeTankSiegedMorph" To="SiegeTank_##collection##_Morph"/>
+        <ReplacementArray Catalog="Model" From="SiegeTankSieged" To="SiegeTank_##collection##_Sieged"/>
+        <ReplacementArray Catalog="Model" From="SiegeTankSiegedDeath" To="SiegeTank_##collection##_Sieged_Death"/>
+        <ReplacementArray Catalog="Model" From="SiegeTankSiegedDeathRagdoll" To="SiegeTank_##collection##_Sieged_DeathRagdoll"/>
+        <CollectionDisplayModelAlternate value="SiegeTank_##collection##_Sieged"/>
+        <CollectionDisplayUnitAlternate value="##unitAlter##"/>
+    </CSkin>
+    <CSkin default="1" id="ThorBase" parent="CollectionSkinBase">
+        <?token id="race" value="Terran"?>
+        <?token id="unit" type="CUnitLink" value="Thor"?>
+        <ReplacementArray Catalog="Model" From="ThorMorphDeath" To="##unit##_##collection##_Morph_Death"/>
+        <ReplacementArray Catalog="Model" From="ThorTransit" To="##unit##_##collection##_Transit"/>
+        <Camera value="Star2CameraHigher10"/>
+    </CSkin>
+    <CSkin default="1" id="VikingBase">
+        <?token id="collection" value="Bogus"?>
+        <?token id="unit" type="CUnitLink" value="Viking"?>
+        <?token id="race" value="Terran"?>
+        <ReplacementArray Catalog="Model" From="##unit##Morph" To="##unit##_##collection##_Morph"/>
+        <ReplacementArray Catalog="Model" From="##unit##Fighter" To="##unit##_##collection##_Fighter"/>
+        <ReplacementArray Catalog="Model" From="##unit##FighterDeath" To="##unit##_##collection##_Fighter_Death"/>
+        <ReplacementArray Catalog="Model" From="##unit##FighterDeathRagdoll" To="##unit##_##collection##_Fighter_DeathRagdoll"/>
+        <ReplacementArray Catalog="Model" From="##unit##FighterPortrait" To="##unit##_##collection##_Portrait"/>
+        <ReplacementArray Catalog="Model" From="##unit##Assault" To="##unit##_##collection##_Assault"/>
+        <ReplacementArray Catalog="Model" From="##unit##AssaultDeath" To="##unit##_##collection##_Assault_Death"/>
+        <ReplacementArray Catalog="Model" From="##unit##AssaultDeathRagdoll" To="##unit##_##collection##_Assault_DeathRagdoll"/>
+        <ReplacementArray Catalog="Model" From="##unit##AssaultPortrait" To="##unit##_##collection##_Portrait"/>
+        <VariationIcon value="Assets\Textures\btn-unit-##race##-##unit##-##collection##.dds"/>
+        <DisplayModel value="##unit##_##collection##_Fighter"/>
+        <Camera value="Star2CameraMid06"/>
+        <Rotation value="35"/>
+        <WarChestUILight value="WarChestSkinPreview_##collection##"/>
+        <CollectionDisplayModel value="Viking_##collection##_Fighter"/>
+        <CollectionDisplayUnit value="##unit##Fighter"/>
+        <CollectionDisplayModelAlternate value="Viking_##collection##_Assault"/>
+        <CollectionDisplayUnitAlternate value="##unit##Assault"/>
+    </CSkin>
+    <CSkin default="1" id="BansheeBase" parent="CollectionSkinBase">
+        <?token id="race" value="Terran"?>
+        <?token id="unit" type="CUnitLink" value="Banshee"?>
+        <Camera value="Star2CameraMid06"/>
+    </CSkin>
+    <CSkin default="1" id="LiberatorBase" parent="CollectionSkinBase">
+        <?token id="race" value="Terran"?>
+        <?token id="unit" type="CUnitLink" value="Liberator"?>
+        <Camera value="Star2CameraHigher10"/>
+        <ReplacementArray Catalog="Model" From="LiberatorAG" To="Liberator_##collection##"/>
+        <ReplacementArray Catalog="Model" From="LiberatorMorph_Death" To="Liberator_##collection##_Sieged_Death"/>
+        <CollectionDisplayModelAlternate value="Liberator_##collection##"/>
+        <CollectionDisplayUnitAlternate value="LiberatorAG"/>
+    </CSkin>
+    <CSkin default="1" id="RavenBase" parent="CollectionSkinBase">
+        <?token id="race" value="Terran"?>
+        <?token id="unit" type="CUnitLink" value="Raven"?>
+        <Camera value="Star2CameraMid06"/>
+        <ReplacementArray Catalog="Model" From="AutoTurret" To="AutoTurret_##collection##"/>
+        <ReplacementArray Catalog="Model" From="AutoTurretDeath" To="AutoTurret_##collection##_Death"/>
+    </CSkin>
+    <CSkin default="1" id="BattlecruiserBase" parent="CollectionSkinBase">
+        <?token id="race" value="Terran"?>
+        <?token id="unit" type="CUnitLink" value="Battlecruiser"?>
+        <Camera value="Star2CameraMid06"/>
+        <ReplacementArray Catalog="Model" From="BattlecruiserHyperjumpPlacement" To="Battlecruiser_##collection##_Hyperjump_Placement"/>
+        <ReplacementArray Catalog="Model" From="HyperjumpLaunch" To="Battlecruiser_##collection##_HyperjumpOut"/>
+        <ReplacementArray Catalog="Model" From="HyperjumpImpact" To="Battlecruiser_##collection##_HyperjumpIn"/>
+        <ReplacementArray Catalog="Model" From="BattlecruiserDeathA" To="Battlecruiser_##collection##_Yamato_Death"/>
+        <ReplacementArray Catalog="Model" From="BattlecruiserYamatoHyperjumpPlacement" To="Battlecruiser_##collection##_Yamato_Hyperjump_Placement"/>
+        <ReplacementArray Catalog="Model" From="HyperjumpLaunchUpgraded" To="Battlecruiser_##collection##_Yamato_HyperjumpOut"/>
+        <ReplacementArray Catalog="Model" From="HyperjumpImpactUpgraded" To="Battlecruiser_##collection##_Yamato_HyperjumpIn"/>
+    </CSkin>
+    <CSkin default="1" id="SupplyDepotBase">
+        <Camera value="Star2CameraMid07"/>
+        <Rotation value="35"/>
+        <CollectionDisplayUnit value="SupplyDepot"/>
+        <CollectionDisplayModel value="SupplyDepot"/>
+    </CSkin>
+    <CSkin default="1" id="DroneBase" parent="CollectionSkinZergGround">
+        <?token id="race" value="Zerg"?>
+        <?token id="unit" type="CUnitLink" value="Drone"?>
+        <Camera value="Star2CameraMid02"/>
+    </CSkin>
+    <CSkin default="1" id="ZerglingBase" parent="CollectionSkinZergGround">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="Zergling"?>
+        <ReplacementArray Catalog="Model" From="##unit##DeathEviscerate" To="##unit##_##collection##_DeathEviscerate"/>
+        <ReplacementArray Catalog="Model" From="##unit##Upgrade" To="##unit##_##collection##_Upgrade"/>
+        <ReplacementArray Catalog="Model" From="##unit##UpgradeDeath" To="##unit##_##collection##_Upgrade_Death"/>
+        <ReplacementArray Catalog="Model" From="##unit##UpgradeDeathEviscerate" To="##unit##_##collection##_Upgrade_DeathEviscerate"/>
+        <ReplacementArray Catalog="Model" From="##unit##UpgradeDeathFire" To="##unit##_##collection##_Upgrade_DeathFire"/>
+        <Camera value="Star2CameraMid02"/>
+    </CSkin>
+    <CSkin default="1" id="BanelingBase">
+        <?token id="collection" value="Bogus"?>
+        <?token id="unit" value="Baneling"?>
+        <?token id="race" value="Neutral"?>
+        <ReplacementArray Catalog="Model" From="##unit##" To="##unit##_##collection##"/>
+        <ReplacementArray Catalog="Model" From="##unit##Death" To="##unit##_##collection##_Death"/>
+        <ReplacementArray Catalog="Model" From="##unit##Death_Low" To="##unit##_##collection##_Death_Low"/>
+        <ReplacementArray Catalog="Model" From="##unit##Portrait" To="##unit##_##collection##_Portrait"/>
+        <DisplayModel value="##unit##_##collection##"/>
+        <Camera value="Star2CameraMid02"/>
+        <Rotation value="35"/>
+        <WarChestUILight value="WarChestSkinPreview_##collection##"/>
+        <CollectionDisplayModel value="##unit##_##collection##"/>
+        <CollectionDisplayUnit value="##unit##"/>
+        <VariationIcon value="Assets\Textures\btn-unit-##race##-##unit##-##collection##.dds"/>
+    </CSkin>
+    <CSkin default="1" id="RoachBase" parent="CollectionSkinZergGround">
+        <?token id="race" value="Zerg"?>
+        <?token id="unit" type="CUnitLink" value="Roach"?>
+        <ReplacementArray Catalog="Model" From="##unit##Upgrade" To="##unit##_##collection##_Upgrade"/>
+        <Camera value="Star2CameraMid02"/>
+    </CSkin>
+    <CSkin default="1" id="RavagerBase" parent="CollectionSkinZergGround">
+        <?token id="race" value="Zerg"?>
+        <?token id="unit" type="CUnitLink" value="Ravager"?>
+        <Camera value="Star2CameraMid08"/>
+    </CSkin>
+    <CSkin default="1" id="HydraliskBase" parent="CollectionSkinZergGround">
+        <?token id="race" value="Hydalisk"?>
+        <?token id="unit" type="CUnitLink" value="Hydralisk"?>
+        <Camera value="Star2CameraMid06"/>
+    </CSkin>
+    <CSkin default="1" id="LurkerBase">
+        <?token id="collection" value="Bogus"?>
+        <?token id="race" value="Zerg"?>
+        <?token id="unit" value="Lurker"?>
+        <ReplacementArray Catalog="Model" From="##unit##MP" To="##unit##_##collection##"/>
+        <ReplacementArray Catalog="Model" From="##unit##MPDeath" To="##unit##_##collection##_Death"/>
+        <ReplacementArray Catalog="Model" From="##unit##MPDeathRagdoll" To="##unit##_##collection##_DeathRagdoll"/>
+        <ReplacementArray Catalog="Model" From="##unit##MPPortrait" To="##unit##_##collection##_Portrait"/>
+        <ReplacementArray Catalog="Model" From="##unit##MPDeathFire" To="##unit##_##collection##_DeathFire"/>
+        <ReplacementArray Catalog="Model" From="##unit##MPDeathAcid" To="##unit##_##collection##_DeathAcid"/>
+        <DisplayModel value="##unit##_##collection##"/>
+        <Camera value="Star2CameraMid06"/>
+        <Rotation value="35"/>
+        <WarChestUILight value="WarChestSkinPreview_##collection##"/>
+        <CollectionDisplayModel value="##unit##_##collection##"/>
+        <CollectionDisplayUnit value="LurkerMP"/>
+        <VariationIcon value="Assets\Textures\btn-unit-##race##-##unit##-##collection##.dds"/>
+    </CSkin>
+    <CSkin default="1" id="OverlordBase" parent="CollectionSkinBase">
+        <?token id="race" value="Zerg"?>
+        <?token id="unit" type="CUnitLink" value="Overlord"?>
+        <ReplacementArray Catalog="Model" From="##unit##Transport" To="##unit##_##collection##_Transport"/>
+        <ReplacementArray Catalog="Model" From="##unit##TransportDeath" To="##unit##_##collection##_Transport_Death"/>
+        <Camera value="Star2CameraLow05"/>
+    </CSkin>
+    <CSkin default="1" id="OverseerBase" parent="CollectionSkinBase">
+        <?token id="race" value="Zerg"?>
+        <?token id="unit" type="CUnitLink" value="Overseer"?>
+        <Camera value="Star2CameraLow05"/>
+        <ReplacementArray Catalog="Model" From="##unit##OversightAddition" To="##unit##_##collection##_Oversight_Addition"/>
+    </CSkin>
+    <CSkin default="1" id="QueenBase" parent="CollectionSkinZergGround">
+        <?token id="race" value="Zerg"?>
+        <?token id="unit" type="CUnitLink" value="Queen"?>
+        <Camera value="Star2CameraMid06"/>
+    </CSkin>
+    <CSkin default="1" id="InfestorBase" parent="CollectionSkinZergGround">
+        <?token id="race" value="Zerg"?>
+        <?token id="unit" type="CUnitLink" value="Infestor"?>
+        <Camera value="Star2CameraMid06"/>
+    </CSkin>
+    <CSkin default="1" id="SwarmHostBase" parent="CollectionSkinBase">
+        <?token id="race" value="Zerg"?>
+        <?token id="unit" type="CUnitLink" value="SwarmHost"?>
+        <ReplacementArray Catalog="Model" From="LocustMPDeath" To="Locust_##collection##_Death"/>
+        <ReplacementArray Catalog="Model" From="LocustMPDeathFire" To="Locust_##collection##_DeathFire"/>
+        <ReplacementArray Catalog="Model" From="LocustMPDeathAcid" To="Locust_##collection##_DeathAcid"/>
+        <ReplacementArray Catalog="Model" From="LocustMPDeathRagdoll" To="Locust_##collection##_DeathRagdoll"/>
+        <ReplacementArray Catalog="Model" From="LocustMP" To="Locust_##collection##"/>
+        <ReplacementArray Catalog="Model" From="LocustMPFlying" To="Locust_##collection##_Flyer"/>
+        <ReplacementArray Catalog="Model" From="LocustMPFlyingDeath" To="Locust_##collection##_Flyer_Death"/>
+        <ReplacementArray Catalog="Model" From="LocustMPPortrait" To="Locust_##collection##_Portrait"/>
+        <ReplacementArray Catalog="Model" From="##unit##MP" To="##unit##_##collection##"/>
+        <ReplacementArray Catalog="Model" From="##unit##MPDeath" To="##unit##_##collection##_Death"/>
+        <ReplacementArray Catalog="Model" From="##unit##MPDeathFire" To="##unit##_##collection##_DeathFire"/>
+        <ReplacementArray Catalog="Model" From="##unit##MPDeathAcid" To="##unit##_##collection##_DeathAcid"/>
+        <Camera value="Star2CameraMid06"/>
+        <CollectionDisplayUnit value="##unit##MP"/>
+    </CSkin>
+    <CSkin default="1" id="MutaliskBase" parent="CollectionSkinBase">
+        <?token id="race" value="Zerg"?>
+        <?token id="unit" type="CUnitLink" value="Mutalisk"?>
+        <Camera value="Star2CameraMid06"/>
+    </CSkin>
+    <CSkin default="1" id="CorruptorBase" parent="CollectionSkinBase">
+        <?token id="race" value="Zerg"?>
+        <?token id="unit" type="CUnitLink" value="Corruptor"?>
+        <Camera value="Star2CameraMid06"/>
+    </CSkin>
+    <CSkin default="1" id="ViperBase">
+        <?token id="collection" value="Bogus"?>
+        <?token id="race" value="Zerg"?>
+        <?token id="unit" value="Viper"?>
+        <ReplacementArray Catalog="Model" From="##unit##" To="##unit##_##collection##"/>
+        <ReplacementArray Catalog="Model" From="##unit##DeathRagdoll" To="##unit##_##collection##_DeathRagdoll"/>
+        <ReplacementArray Catalog="Model" From="##unit##Portrait" To="##unit##_##collection##_Portrait"/>
+        <DisplayModel value="##unit##_##collection##"/>
+        <Camera value="Star2CameraMid06"/>
+        <Rotation value="35"/>
+        <WarChestUILight value="WarChestSkinPreview_##collection##"/>
+        <CollectionDisplayModel value="##unit##_##collection##"/>
+        <CollectionDisplayUnit value="##unit##"/>
+        <VariationIcon value="Assets\Textures\btn-unit-##race##-##unit##-##collection##.dds"/>
+    </CSkin>
+    <CSkin default="1" id="BroodLordBase" parent="CollectionSkinBase">
+        <?token id="race" value="Zerg"?>
+        <?token id="unit" type="CUnitLink" value="BroodLord"?>
+        <ReplacementArray Catalog="Model" From="Broodling" To="Broodling_##collection##"/>
+        <ReplacementArray Catalog="Model" From="BroodlingEscort" To="Broodling_##collection##"/>
+        <ReplacementArray Catalog="Model" From="BroodLordWeapon" To="Broodling_##collection##"/>
+        <ReplacementArray Catalog="Model" From="BroodLordBWeapon" To="Broodling_##collection##"/>
+        <ReplacementArray Catalog="Model" From="BroodlingDeath" To="Broodling_##collection##_Death"/>
+        <ReplacementArray Catalog="Model" From="BroodlingDeathRagdoll" To="Broodling_##collection##_DeathRagdoll"/>
+        <ReplacementArray Catalog="Model" From="BroodlingPortrait" To="Broodling_##collection##_Portrait"/>
+        <ReplacementArray Catalog="Model" From="BroodlingDeathFire" To="Broodling_##collection##_DeathFire"/>
+        <ReplacementArray Catalog="Model" From="BroodlingDeathAcid" To="Broodling_##collection##_DeathAcid"/>
+        <Camera value="Star2CameraLow05"/>
+    </CSkin>
+    <CSkin default="1" id="UltraliskBase" parent="CollectionSkinZergGround">
+        <?token id="race" value="Zerg"?>
+        <?token id="unit" type="CUnitLink" value="Ultralisk"?>
+        <Camera value="Star2CameraMid07"/>
+    </CSkin>
+    <CSkin default="1" id="ProbeBase" parent="CollectionSkinBase">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="Probe"?>
+        <Camera value="Star2CameraMid06"/>
+    </CSkin>
+    <CSkin default="1" id="ZealotBase" parent="CollectionSkinProtossWarpIn">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="Zealot"?>
+        <Camera value="Star2CameraMid02"/>
+    </CSkin>
+    <CSkin default="1" id="AdeptBase" parent="CollectionSkinProtossWarpIn">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="Adept"?>
+        <Camera value="Star2CameraMid02"/>
+        <Rotation value="345"/>
+    </CSkin>
+    <CSkin default="1" id="StalkerBase" parent="CollectionSkinProtossWarpIn">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="Stalker"?>
+        <ReplacementArray Catalog="Model" From="BlinkOriginModel" To="##unit##_##collection##_BlinkOut"/>
+        <Camera value="Star2CameraMid06"/>
+    </CSkin>
+    <CSkin default="1" id="SentryBase" parent="CollectionSkinProtossWarpIn">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="Sentry"?>
+        <Camera value="Star2CameraMid06"/>
+    </CSkin>
+    <CSkin default="1" id="HighTemplarBase" parent="CollectionSkinProtossWarpIn">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="HighTemplar"?>
+        <?token id="unitAlter" value="Archon"?>
+        <Camera value="Star2CameraMid06"/>
+        <ReplacementArray Catalog="Model" From="##unit##Shadow" To="##unit##_Purifier_Shadow"/>
+        <ReplacementArray Catalog="Model" From="##unitAlter##" To="##unitAlter##_Purifier"/>
+        <ReplacementArray Catalog="Model" From="##unitAlter##Death" To="##unitAlter##_Purifier_Death"/>
+        <ReplacementArray Catalog="Model" From="##unitAlter##Portrait" To="##unitAlter##_Purifier_Portrait"/>
+        <CollectionDisplayModelAlternate value="##unitAlter##_##collection##"/>
+        <CollectionDisplayUnitAlternate value="##unitAlter##"/>
+    </CSkin>
+    <CSkin default="1" id="DarkTemplarBase" parent="CollectionSkinProtossWarpIn">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="DarkTemplar"?>
+        <Camera value="Star2CameraMid06"/>
+        <ReplacementArray Catalog="Model" From="##unit##Death00" To="##unit##_##collection##_Death"/>
+        <ReplacementArray Catalog="Model" From="##unit##Death01" To="##unit##_##collection##_Death"/>
+        <ReplacementArray Catalog="Model" From="##unit##2Portrait" To="##unit##_##collection##_Portrait"/>
+    </CSkin>
+    <CSkin default="1" id="ImmortalBase" parent="CollectionSkinBase">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="Immortal"?>
+        <Camera value="Star2CameraHigh08"/>
+    </CSkin>
+    <CSkin default="1" id="ColossusBase" parent="CollectionSkinBase">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="Colossus"?>
+        <Camera value="Star2CameraHigher12"/>
+    </CSkin>
+    <CSkin default="1" id="PhoenixBase" parent="CollectionSkinProtossAir">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="Phoenix"?>
+        <Camera value="Star2CameraHigher12"/>
+    </CSkin>
+    <CSkin default="1" id="VoidRayBase" parent="CollectionSkinProtossAir">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="VoidRay"?>
+        <Camera value="Star2CameraHigher12"/>
+    </CSkin>
+    <CSkin default="1" id="CarrierBase" parent="CollectionSkinProtossAir">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="Carrier"?>
+        <Camera value="Star2CameraHigher12"/>
+        <ReplacementArray Catalog="Model" From="Interceptor" To="Interceptor_##collection##"/>
+        <ReplacementArray Catalog="Model" From="InterceptorDeath" To="Interceptor_##collection##_Death"/>
+        <ReplacementArray Catalog="Model" From="InterceptorDeathRagdoll" To="Interceptor_##collection##_DeathRagdoll"/>
+    </CSkin>
+    <CSkin default="1" id="MothershipBase" parent="CollectionSkinBase">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="Mothership"?>
+        <?token id="unitAlter" value="MothershipCore"?>
+        <Camera value="Star2CameraHigher12"/>
+        <!-- <CollectionDisplayModelAlternate value="##unitAlter##_##collection##"/> -->
+        <!-- <CollectionDisplayUnitAlternate value="##unitAlter##"/> -->
+        <ReplacementArray Catalog="Model" From="##unitAlter##" To="##unitAlter##_##collection##"/>
+        <ReplacementArray Catalog="Model" From="##unitAlter##Portrait" To="##unitAlter##_##collection##_Portrait"/>
+        <ReplacementArray Catalog="Model" From="##unitAlter##MorphAddition" To="##unitAlter##_##collection##_Morph_Addition"/>
+    </CSkin>
+    <CSkin default="1" id="ObserverBase" parent="CollectionSkinProtossWarpIn">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="Observer"?>
+        <Camera value="Star2CameraHigher12"/>
+    </CSkin>
+    <CSkin default="1" id="PylonBase">
+        <Camera value="Star2CameraHigh05"/>
+        <Rotation value="35"/>
+        <CollectionDisplayUnit value="Pylon"/>
+        <CollectionDisplayModel value="Pylon"/>
+    </CSkin>
+    <CSkin default="1" id="CycloneBase" parent="CollectionSkinBase">
+        <?token id="race" value="Terran"?>
+        <?token id="unit" type="CUnitLink" value="Cyclone"?>
+    </CSkin>
+    <CSkin default="1" id="MedivacBase" parent="CollectionSkinBase">
+        <?token id="race" value="Terran"?>
+        <?token id="unit" type="CUnitLink" value="Medivac"?>
+    </CSkin>
+    <CSkin default="1" id="WidowMineBase" parent="CollectionSkinBase">
+        <?token id="race" value="Terran"?>
+        <?token id="unit" type="CUnitLink" value="WidowMine"?>
+        <ReplacementArray Catalog="Model" From="WidowMineBurrowDeath" To="##unit##_##collection##_Burrow_Death"/>
+    </CSkin>
+    <CSkin default="1" id="FleetBeaconBase">
+        <Rotation value="35"/>
+        <CollectionDisplayUnit value="FleetBeacon"/>
+        <CollectionDisplayModel value="FleetBeacon"/>
+    </CSkin>
+    <CSkin default="1" id="PhotonCannonBase">
+        <Rotation value="35"/>
+        <CollectionDisplayUnit value="PhotonCannon"/>
+        <CollectionDisplayModel value="PhotonCannon"/>
+    </CSkin>
+    <CSkin default="1" id="DisruptorBase" parent="CollectionSkinBase">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="Disruptor"?>
+    </CSkin>
+    <CSkin default="1" id="ArchonBase">
+        <Rotation value="35"/>
+        <CollectionDisplayUnit value="Archon"/>
+        <CollectionDisplayModel value="Archon"/>
+    </CSkin>
+    <CSkin default="1" id="AssimilatorBase">
+        <Rotation value="35"/>
+        <CollectionDisplayUnit value="Assimilator"/>
+        <CollectionDisplayModel value="Assimilator"/>
+    </CSkin>
+    <CSkin default="1" id="ForgeBase">
+        <Rotation value="35"/>
+        <CollectionDisplayUnit value="Forge"/>
+        <CollectionDisplayModel value="Forge"/>
+    </CSkin>
+    <CSkin default="1" id="GatewayBase">
+        <Rotation value="35"/>
+        <CollectionDisplayUnit value="Gateway"/>
+        <CollectionDisplayModel value="Gateway"/>
+    </CSkin>
+    <CSkin default="1" id="RoboticsFacilityBase">
+        <Rotation value="35"/>
+        <CollectionDisplayUnit value="RoboticsFacility"/>
+        <CollectionDisplayModel value="RoboticsFacility"/>
+    </CSkin>
+    <CSkin default="1" id="RoboticsSupportBayBase">
+        <Rotation value="35"/>
+        <CollectionDisplayUnit value="RoboticsSupportBay"/>
+        <CollectionDisplayModel value="RoboticsSupportBay"/>
+    </CSkin>
+    <CSkin default="1" id="StargateBase">
+        <Rotation value="35"/>
+        <CollectionDisplayUnit value="Stargate"/>
+        <CollectionDisplayModel value="Stargate"/>
+    </CSkin>
+    <CSkin default="1" id="TempestBase" parent="CollectionSkinProtossAir">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="Tempest"?>
+    </CSkin>
+    <CSkin default="1" id="WarpPrismBase" parent="CollectionSkinProtossWarpIn">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="WarpPrism"?>
+        <?token id="unitAlter" type="CUnitLink" value="WarpPrismPhasing"?>
+        <CollectionDisplayUnit value="##unitAlter##"/>
+        <CollectionDisplayUnitAlternate value="##unit##"/>
+        <CollectionDisplayModelAlternate value="##unit##_##collection##"/>
+        <ReplacementArray Catalog="Model" From="##unitAlter##" To="##unit##_##collection##"/>
+        <ReplacementArray Catalog="Model" From="##unit##OpenDeath" To="##unit##_##collection##_Phasing_Death"/>
+        <ReplacementArray Catalog="Model" From="##unitAlter##DeathRagdoll" To="##unit##_##collection##_Phasing_DeathRagdoll"/>
+    </CSkin>
+    <CSkin default="1" id="OracleBase" parent="CollectionSkinProtossAir">
+        <?token id="race" value="Protoss"?>
+        <?token id="unit" type="CUnitLink" value="Oracle"?>
+        <ReplacementArray Catalog="Model" From="##unit##DeathMorph" To="##unit##_##collection##_Morph_Death"/>
+        <ReplacementArray Catalog="Model" From="##unit##DeathWalk" To="##unit##_##collection##_Walk_Death"/>
+        <ReplacementArray Catalog="Model" From="##unit##MorphDeathRagdoll" To="##unit##_##collection##_Morph_DeathRagdoll"/>
+    </CSkin>
+    <!-- Default Skins Begin -->
+    <CSkin id="SupplyDepot" parent="CollectionSkinTerranDefault" unit="SupplyDepot">
+        <Camera value="Star2CameraMid07"/>
+        <VariationIcon value="Assets\Textures\btn-building-terran-supplydepot.dds"/>
+    </CSkin>
+    <CSkin id="SCV" parent="CollectionSkinTerranDefault" unit="SCV">
+        <Camera value="Star2CameraMid05"/>
+    </CSkin>
+    <CSkin id="Marine" parent="CollectionSkinTerranDefault" unit="Marine">
+        <Camera value="Star2CameraMid02"/>
+        <IsDefaultSkin value="1"/>
+    </CSkin>
+    <CSkin id="Marauder" parent="CollectionSkinTerranDefault" unit="Marauder">
+        <Camera value="Star2CameraMid02"/>
+    </CSkin>
+    <CSkin id="Reaper" parent="CollectionSkinTerranDefault" unit="Reaper">
+        <Camera value="Star2CameraMid02"/>
+    </CSkin>
+    <CSkin id="Ghost" parent="CollectionSkinTerranDefault" unit="Ghost">
+        <Camera value="Star2CameraMid02"/>
+    </CSkin>
+    <CSkin id="Hellion" parent="CollectionSkinTerranDefault" unit="Hellion">
+        <CollectionDisplayUnitAlternate value="HellionTank"/>
+        <CollectionDisplayModelAlternate value="HellionTank"/>
+    </CSkin>
+    <CSkin id="Cyclone" parent="CollectionSkinTerranDefault" unit="Cyclone"/>
+    <CSkin id="WidowMine" parent="CollectionSkinTerranDefault" unit="WidowMine"/>
+    <CSkin id="SiegeTank" parent="CollectionSkinTerranDefault" unit="SiegeTank">
+        <CollectionDisplayUnitAlternate value="SiegeTankSieged"/>
+        <CollectionDisplayModelAlternate value="SiegeTankSieged"/>
+    </CSkin>
+    <CSkin id="Thor" parent="CollectionSkinTerranDefault" unit="Thor">
+        <Camera value="Star2CameraHigher10"/>
+    </CSkin>
+    <CSkin id="Medivac" parent="CollectionSkinTerranDefault" unit="Medivac"/>
+    <CSkin id="Banshee" parent="CollectionSkinTerranDefault" unit="Banshee"/>
+    <CSkin id="Viking" parent="CollectionSkinTerranDefault" unit="Viking">
+        <DisplayModel index="0" value="VikingAssault"/>
+        <CollectionDisplayModel value="VikingFighter"/>
+        <CollectionDisplayActor value="GenericSkinMorphPreview"/>
+        <CollectionDisplayUnit value="VikingFighter"/>
+        <CollectionDisplayUnitAlternate value="VikingAssault"/>
+        <CollectionDisplayModelAlternate value="VikingAssault"/>
+        <VariationIcon value="Assets\Textures\btn-unit-terran-vikingfighter.dds"/>
+    </CSkin>
+    <CSkin id="Liberator" parent="CollectionSkinTerranDefault" unit="Liberator">
+        <Camera value="Star2CameraHigher10"/>
+        <CollectionDisplayUnitAlternate value="LiberatorAG"/>
+        <CollectionDisplayModelAlternate value="LiberatorAG"/>
+    </CSkin>
+    <CSkin id="Raven" parent="CollectionSkinTerranDefault" unit="Raven"/>
+    <CSkin id="Battlecruiser" parent="CollectionSkinTerranDefault" unit="Battlecruiser"/>
+    <CSkin id="Pylon" parent="CollectionSkinProtossDefault" unit="Pylon">
+        <Camera value="Star2CameraHigh05"/>
+        <VariationIcon value="Assets\Textures\btn-building-protoss-pylon.dds"/>
+    </CSkin>
+    <CSkin id="Assimilator" parent="CollectionSkinProtossDefault" unit="Assimilator">
+        <VariationIcon value="Assets\Textures\btn-building-protoss-assimilator.dds"/>
+    </CSkin>
+    <CSkin id="PhotonCannon" parent="CollectionSkinProtossDefault" unit="PhotonCannon">
+        <VariationIcon value="Assets\Textures\btn-building-protoss-photoncannon.dds"/>
+    </CSkin>
+    <CSkin id="Gateway" parent="CollectionSkinProtossDefault" unit="Gateway">
+        <VariationIcon value="Assets\Textures\btn-building-protoss-gateway.dds"/>
+    </CSkin>
+    <CSkin id="Forge" parent="CollectionSkinProtossDefault" unit="Forge">
+        <VariationIcon value="Assets\Textures\btn-building-protoss-forge.dds"/>
+    </CSkin>
+    <CSkin id="RoboticsFacility" parent="CollectionSkinProtossDefault" unit="RoboticsFacility">
+        <VariationIcon value="Assets\Textures\btn-building-protoss-roboticsfacility.dds"/>
+    </CSkin>
+    <CSkin id="RoboticsSupportBay" parent="CollectionSkinProtossDefault" unit="RoboticsSupportBay">
+        <VariationIcon value="Assets\Textures\btn-building-protoss-roboticssupportbay.dds"/>
+    </CSkin>
+    <CSkin id="Stargate" parent="CollectionSkinProtossDefault" unit="Stargate">
+        <VariationIcon value="Assets\Textures\btn-building-protoss-stargate.dds"/>
+    </CSkin>
+    <CSkin id="FleetBeacon" parent="CollectionSkinProtossDefault" unit="FleetBeacon">
+        <VariationIcon value="Assets\Textures\btn-building-protoss-fleetbeacon.dds"/>
+    </CSkin>
+    <CSkin id="Probe" parent="CollectionSkinProtossDefault" unit="Probe"/>
+    <CSkin id="Zealot" parent="CollectionSkinProtossDefault" unit="Zealot">
+        <Camera value="Star2CameraMid02"/>
+    </CSkin>
+    <CSkin id="Sentry" parent="CollectionSkinProtossDefault" unit="Sentry"/>
+    <CSkin id="Adept" parent="CollectionSkinProtossDefault" unit="Adept">
+        <Camera value="Star2CameraMid02"/>
+        <Rotation value="345"/>
+    </CSkin>
+    <CSkin id="Stalker" parent="CollectionSkinProtossDefault" unit="Stalker"/>
+    <CSkin id="HighTemplar" parent="CollectionSkinProtossDefault" unit="HighTemplar">
+        <CollectionDisplayUnitAlternate value="Archon"/>
+        <CollectionDisplayModelAlternate value="Archon"/>
+    </CSkin>
+    <CSkin id="DarkTemplar" parent="CollectionSkinProtossDefault" unit="DarkTemplar"/>
+    <CSkin id="Archon" parent="CollectionSkinProtossDefault" unit="Archon"/>
+    <CSkin id="Observer" parent="CollectionSkinProtossDefault" unit="Observer">
+        <Camera value="Star2CameraHigher12"/>
+    </CSkin>
+    <CSkin id="WarpPrism" parent="CollectionSkinProtossDefault" unit="WarpPrism">
+        <CollectionDisplayUnit value="WarpPrismPhasing"/>
+        <CollectionDisplayUnitAlternate value="WarpPrism"/>
+        <CollectionDisplayModelAlternate value="WarpPrism"/>
+    </CSkin>
+    <CSkin id="Immortal" parent="CollectionSkinProtossDefault" unit="Immortal">
+        <Camera value="Star2CameraHigh08"/>
+    </CSkin>
+    <CSkin id="Disruptor" parent="CollectionSkinProtossDefault" unit="Disruptor"/>
+    <CSkin id="Colossus" parent="CollectionSkinProtossDefault" unit="Colossus">
+        <Camera value="Star2CameraHigher12"/>
+    </CSkin>
+    <CSkin id="Oracle" parent="CollectionSkinProtossDefault" unit="Oracle"/>
+    <CSkin id="Phoenix" parent="CollectionSkinProtossDefault" unit="Phoenix">
+        <Camera value="Star2CameraHigher12"/>
+    </CSkin>
+    <CSkin id="VoidRay" parent="CollectionSkinProtossDefault" unit="VoidRay">
+        <Camera value="Star2CameraHigher12"/>
+        <VariationIcon value="Assets\Textures\btn-unit-protoss-warpray.dds"/>
+    </CSkin>
+    <CSkin id="Tempest" parent="CollectionSkinProtossDefault" unit="Tempest"/>
+    <CSkin id="Carrier" parent="CollectionSkinProtossDefault" unit="Carrier">
+        <Camera value="Star2CameraHigher12"/>
+    </CSkin>
+    <CSkin id="Mothership" parent="CollectionSkinProtossDefault" unit="Mothership">
+        <Camera value="Star2CameraHigher12"/>
+        <!-- <CollectionDisplayModelAlternate value="MothershipCore"/> -->
+        <!-- <CollectionDisplayUnitAlternate value="MothershipCore"/> -->
+    </CSkin>
+    <CSkin id="Drone" parent="CollectionSkinZergDefault" unit="Drone">
+        <Camera value="Star2CameraMid02"/>
+    </CSkin>
+    <CSkin id="Overlord" parent="CollectionSkinZergDefault" unit="Overlord">
+        <Camera value="Star2CameraLow05"/>
+    </CSkin>
+    <CSkin id="Overseer" parent="CollectionSkinZergDefault" unit="Overseer">
+        <Camera value="Star2CameraLow05"/>
+    </CSkin>
+    <CSkin id="Zergling" parent="CollectionSkinZergDefault" unit="Zergling">
+        <Camera value="Star2CameraMid02"/>
+    </CSkin>
+    <CSkin id="Baneling" parent="CollectionSkinZergDefault" unit="Baneling">
+        <Camera value="Star2CameraMid02"/>
+    </CSkin>
+    <CSkin id="Queen" parent="CollectionSkinZergDefault" unit="Queen"/>
+    <CSkin id="Roach" parent="CollectionSkinZergDefault" unit="Roach">
+        <Camera value="Star2CameraMid02"/>
+    </CSkin>
+    <CSkin id="Ravager" parent="CollectionSkinZergDefault" unit="Ravager">
+        <Camera value="Star2CameraMid08"/>
+    </CSkin>
+    <CSkin id="Hydralisk" parent="CollectionSkinZergDefault" unit="Hydralisk"/>
+    <CSkin id="Lurker" parent="CollectionSkinZergDefault" unit="LurkerMP">
+        <VariationIcon value="Assets\Textures\btn-unit-zerg-lurker.dds"/>
+    </CSkin>
+    <CSkin id="Infestor" parent="CollectionSkinZergDefault" unit="Infestor"/>
+    <CSkin id="SwarmHost" parent="CollectionSkinZergDefault" unit="SwarmHostMP">
+        <VariationIcon value="Assets\Textures\btn-unit-zerg-swarmhost.dds"/>
+    </CSkin>
+    <CSkin id="Ultralisk" parent="CollectionSkinZergDefault" unit="Ultralisk">
+        <Camera value="Star2CameraMid07"/>
+    </CSkin>
+    <CSkin id="Mutalisk" parent="CollectionSkinZergDefault" unit="Mutalisk"/>
+    <CSkin id="Corruptor" parent="CollectionSkinZergDefault" unit="Corruptor"/>
+    <CSkin id="Viper" parent="CollectionSkinZergDefault" unit="Viper"/>
+    <CSkin id="BroodLord" parent="CollectionSkinZergDefault" unit="BroodLord">
+        <Camera value="Star2CameraLow05"/>
+    </CSkin>
+    <!-- Default End -->
+    <!-- Collector's Edition Skins -->
+    <CSkin id="ThorCE" parent="ThorBase" collection="CollectorEdition">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-thor-collectoredition.dds"/>
+    </CSkin>
+    <CSkin id="UltraliskCE" parent="UltraliskBase" collection="CollectorEdition">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-ultralisk-collectoredition.dds"/>
+    </CSkin>
+    <CSkin id="ColossusCE" parent="ColossusBase" collection="CollectorEdition">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-colossus-collectoredition.dds"/>
+    </CSkin>
+    <CSkin id="AdeptCE" parent="AdeptBase" collection="CollectorEdition">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-adept-collectoredition.dds"/>
+        <ReplacementArray Catalog="Model" From="AdeptProtossSpiritDeathModel" To="Adept_CollectorEdition_SpiritDeath_Addition"/>
+    </CSkin>
+    <!--Free to play veteran player skin-->
+    <CSkin id="GhostEidolon" parent="GhostBase" collection="Eidolon">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-ghost-eidolon.dds"/>
+    </CSkin>
+    <!--Blizzcon17 Skins-->
+    <CSkin id="DroneBlizzcon17" parent="DroneBase" collection="Blizzcon17">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Blizzcon17-Drone.dds"/>
+    </CSkin>
+    <CSkin id="ProbeBlizzcon17" parent="ProbeBase" collection="Blizzcon17">
+        <VariationIcon value="Assets\Textures\btn-unit-protoss-blizzcon17-probe.dds"/>
+    </CSkin>
+    <CSkin id="SCVBlizzcon17" parent="SCVBase" collection="Blizzcon17">
+        <VariationIcon value="Assets\Textures\btn-unit-terran-blizzcon17-scv.dds"/>
+    </CSkin>
+    <!-- Miscellaneous Skins -->
+    <CSkin id="MarauderDeluxe" parent="MarauderBase" collection="Deluxe">
+        <VariationIcon value="Assets\Textures\btn-unit-maurader-collectionskin-deluxe.dds"/>
+    </CSkin>
+    <CSkin id="RoachDeluxe" parent="RoachBase" collection="Deluxe">
+        <VariationIcon value="Assets\Textures\btn-unit-roach-collectionskin-deluxe.dds"/>
+    </CSkin>
+    <CSkin id="RavagerBone" parent="RavagerBase" collection="Bone">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Bone-Ravager.dds"/>
+    </CSkin>
+    <CSkin id="BroodLord_PremiumSkin_Aquatic" parent="BroodLordBase" collection="Aquatic">
+        <ReplacementArray Catalog="Sound" From="BroodLord_Attack" To="BroodLordAquatic_Attack"/>
+        <ReplacementArray Catalog="Sound" From="BroodLord_Death" To="BroodLordAquatic_Death"/>
+        <ReplacementArray Catalog="Sound" From="BroodLord_Pissed" To="BroodLordAquatic_Pissed"/>
+        <ReplacementArray Catalog="Sound" From="BroodLord_Ready" To="BroodLordAquatic_Ready"/>
+        <ReplacementArray Catalog="Sound" From="BroodLord_What" To="BroodLordAquatic_What"/>
+        <ReplacementArray Catalog="Sound" From="BroodLord_Yes" To="BroodLordAquatic_Yes"/>
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Aquatic-BroodLord.dds"/>
+    </CSkin>
+    <CSkin id="StalkerDeluxe" parent="StalkerBase" collection="Deluxe">
+        <VariationIcon value="Assets\Textures\btn-unit-stalker-collectionskin-deluxe.dds"/>
+    </CSkin>
+    <CSkin id="ImmortalAdun" parent="ImmortalBase" collection="Adun">
+        <ReplacementArray Catalog="Sound" From="Immortal_Attack" To="Immortal02_Attack"/>
+        <ReplacementArray Catalog="Sound" From="Immortal_Attack_NP" To="Immortal02_Attack_NP"/>
+        <ReplacementArray Catalog="Sound" From="Immortal_Death_NP" To="Immortal02_Death_NP"/>
+        <ReplacementArray Catalog="Sound" From="Immortal_Help" To="Immortal02_Help"/>
+        <ReplacementArray Catalog="Sound" From="Immortal_Pissed" To="Immortal02_Pissed"/>
+        <ReplacementArray Catalog="Sound" From="Immortal_Ready" To="Immortal02_Ready"/>
+        <ReplacementArray Catalog="Sound" From="Immortal_Ready_NP" To="Immortal02_Ready_NP"/>
+        <ReplacementArray Catalog="Sound" From="Immortal_What" To="Immortal02_What"/>
+        <ReplacementArray Catalog="Sound" From="Immortal_What_NP" To="Immortal02_What_NP"/>
+        <ReplacementArray Catalog="Sound" From="Immortal_Yes" To="Immortal02_Yes"/>
+        <VariationIcon value="Assets\Textures\btn-unit-collection-adun-immortal.dds"/>
+    </CSkin>
+    <CSkin id="Carrier_AmonBrood_Collection" parent="CarrierBase" collection="AmonBrood">
+        <ReplacementArray Catalog="Sound" From="Carrier_Attack" To="CarrierAmonBrood_Attack"/>
+        <ReplacementArray Catalog="Sound" From="Carrier_Attack_NP" To="CarrierAmonBrood_Attack_NP"/>
+        <ReplacementArray Catalog="Sound" From="Carrier_Death_NP" To="CarrierAmonBrood_Death_NP"/>
+        <ReplacementArray Catalog="Sound" From="Carrier_Help" To="CarrierAmonBrood_Help"/>
+        <ReplacementArray Catalog="Sound" From="Carrier_Movement" To="CarrierAmonBrood_Movement"/>
+        <ReplacementArray Catalog="Sound" From="Carrier_Pissed" To="CarrierAmonBrood_Pissed"/>
+        <ReplacementArray Catalog="Sound" From="Carrier_Ready" To="CarrierAmonBrood_Ready"/>
+        <ReplacementArray Catalog="Sound" From="Carrier_Ready_NP" To="CarrierAmonBrood_Ready_NP"/>
+        <ReplacementArray Catalog="Sound" From="Carrier_What" To="CarrierAmonBrood_What"/>
+        <ReplacementArray Catalog="Sound" From="Carrier_What_NP" To="CarrierAmonBrood_What_NP"/>
+        <ReplacementArray Catalog="Sound" From="Carrier_Yes" To="CarrierAmonBrood_Yes"/>
+        <VariationIcon value="Assets\Textures\btn-unit-collection-amonbroodr-carrier.dds"/>
+    </CSkin>
+    <CSkin id="VikingMecha" parent="VikingBase" collection="Mecha">
+        <ReplacementArray Catalog="Model" From="VikingAssaultAttackLaunch" To="VikingMechaAssaultWeaponLaunch"/>
+        <ReplacementArray Catalog="Sound" From="Viking_AssaultModeVO" To="VikingMech_AssaultModeVO"/>
+        <ReplacementArray Catalog="Sound" From="Viking_AssaultModeVO_NP" To="VikingMech_AssaultModeVO_NP"/>
+        <ReplacementArray Catalog="Sound" From="Viking_Attack" To="VikingMech_Attack"/>
+        <ReplacementArray Catalog="Sound" From="Viking_Attack_NP" To="VikingMech_Attack_NP"/>
+        <ReplacementArray Catalog="Sound" From="Viking_Death" To="VikingMech_Death"/>
+        <ReplacementArray Catalog="Sound" From="Viking_Death_NP" To="VikingMech_Death_NP"/>
+        <ReplacementArray Catalog="Sound" From="Viking_FighterModeVO" To="VikingMech_FighterModeVO"/>
+        <ReplacementArray Catalog="Sound" From="Viking_FighterModeVO_NP" To="VikingMech_FighterModeVO_NP"/>
+        <ReplacementArray Catalog="Sound" From="Viking_Help" To="VikingMech_Help"/>
+        <ReplacementArray Catalog="Sound" From="Viking_Pissed" To="VikingMech_Pissed"/>
+        <ReplacementArray Catalog="Sound" From="Viking_Ready" To="VikingMech_Ready"/>
+        <ReplacementArray Catalog="Sound" From="Viking_Ready_NP" To="VikingMech_Ready_NP"/>
+        <ReplacementArray Catalog="Sound" From="Viking_What" To="VikingMech_What"/>
+        <ReplacementArray Catalog="Sound" From="Viking_What_NP" To="VikingMech_What_NP"/>
+        <ReplacementArray Catalog="Sound" From="Viking_Yes" To="VikingMech_Yes"/>
+        <VariationIcon value="Assets\Textures\btn-unit-terran-mecha-viking.dds"/>
+    </CSkin>
+    <CSkin id="HellionJunker" parent="HellionBase" collection="Deluxe">
+        <ReplacementArray Catalog="Sound" From="Hellion_Movement" To="Hellion_Movement_Junker"/>
+        <ReplacementArray Catalog="Sound" From="Hellion_Attack" To="Hellion02_Attack"/>
+        <ReplacementArray Catalog="Sound" From="Hellion_Attack_NP" To="Hellion02_Attack_NP"/>
+        <ReplacementArray Catalog="Sound" From="Hellion_Death" To="Hellion02_Death"/>
+        <ReplacementArray Catalog="Sound" From="Hellion_Death_NP" To="Hellion02_Death_NP"/>
+        <ReplacementArray Catalog="Sound" From="Hellion_Evac" To="Hellion02_Evac"/>
+        <ReplacementArray Catalog="Sound" From="Hellion_Help" To="Hellion02_Help"/>
+        <ReplacementArray Catalog="Sound" From="Hellion_Pissed" To="Hellion02_Pissed"/>
+        <ReplacementArray Catalog="Sound" From="Hellion_Ready" To="Hellion02_Ready"/>
+        <ReplacementArray Catalog="Sound" From="Hellion_Ready_NP" To="Hellion02_Ready_NP"/>
+        <ReplacementArray Catalog="Sound" From="Hellion_What" To="Hellion02_What"/>
+        <ReplacementArray Catalog="Sound" From="Hellion_What_NP" To="Hellion02_What_NP"/>
+        <ReplacementArray Catalog="Sound" From="Hellion_Yes" To="Hellion02_Yes"/>
+        <ReplacementArray Catalog="Sound" From="HellionTank_Movement" To="HellionTank_Junker_Movement"/>
+        <ReplacementArray Catalog="Sound" From="HellionTank_Attack" To="HellionTank02_Attack"/>
+        <ReplacementArray Catalog="Sound" From="HellionTank_Attack_NP" To="HellionTank02_Attack_NP"/>
+        <ReplacementArray Catalog="Sound" From="HellionTank_Death" To="HellionTank02_Death"/>
+        <ReplacementArray Catalog="Sound" From="HellionTank_Death_NP" To="HellionTank02_Death_NP"/>
+        <ReplacementArray Catalog="Sound" From="HellionTank_Evac" To="HellionTank02_Evac"/>
+        <ReplacementArray Catalog="Sound" From="HellionTank_Help" To="HellionTank02_Help"/>
+        <ReplacementArray Catalog="Sound" From="HellionTank_Pissed" To="HellionTank02_Pissed"/>
+        <ReplacementArray Catalog="Sound" From="HellionTank_Ready" To="HellionTank02_Ready"/>
+        <ReplacementArray Catalog="Sound" From="HellionTank_Ready_NP" To="HellionTank02_Ready_NP"/>
+        <ReplacementArray Catalog="Sound" From="HellionTank_What" To="HellionTank02_What"/>
+        <ReplacementArray Catalog="Sound" From="HellionTank_What_NP" To="HellionTank02_What_NP"/>
+        <ReplacementArray Catalog="Sound" From="HellionTank_Yes" To="HellionTank02_Yes"/>
+        <VariationIcon value="Assets\Textures\btn-unit-terran-hellion-junker.dds"/>
+    </CSkin>
+    <CSkin id="ColossusTal" parent="ColossusBase" collection="Taldarim_MP">
+        <VariationIcon value="Assets\Textures\btn-unit-protoss-colossus-taldarim.dds"/>
+    </CSkin>
+    <CSkin id="HydraliskNoxious" parent="HydraliskBase" collection="Noxious">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Noxious-Hydralisk.dds"/>
+    </CSkin>
+    <CSkin id="SiegeTankMerc" parent="SiegeTankBase" collection="Commando">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-siegetank-commando.dds"/>
+    </CSkin>
+    <CSkin id="WarpPrismNerazim" parent="WarpPrismBase" collection="Nerazim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Nerazim-WarpPrism.dds"/>
+    </CSkin>
+    <CSkin id="GhostNova" parent="GhostAlternateBase" collection="Alternate">
+        <VariationIcon value="Assets\Textures\btn-unit-terran-dom-femaleghost.dds"/>
+    </CSkin>
+    <!-- Experience Level Skins -->
+    <CSkin id="MarineXPR" parent="MarineBase" collection="Merc">
+        <VariationIcon value="Assets\Textures\btn-unit-terran-merc-marine.dds"/>
+    </CSkin>
+    <CSkin id="SupplyDepotXPR" parent="SupplyDepotBase">
+        <ReplacementArray Catalog="Model" From="SupplyDepot" To="SupplyDepotXPR"/>
+        <ReplacementArray Catalog="Model" From="SupplyDepotLowered" To="SupplyDepotXPRLowered"/>
+        <ReplacementArray Catalog="Model" From="SupplyDepotDeath" To="SupplyDepotXPRDeath"/>
+        <ReplacementArray Catalog="Model" From="SupplyDepotPlacement" To="SupplyDepotXPRPlacement"/>
+        <VariationIcon value="Assets\Textures\btn-building-terran-supplydepotxpreward.dds"/>
+        <DisplayModel value="SupplyDepotXPR"/>
+        <!--EffectArray Operation="Set" Reference="Button,SupplyDepot,AlertIcon" Value="Assets\Textures\BTN-Building-Terran-SupplyDepotXPReward.dds"/>
+        <EffectArray Operation="Set" Reference="Button,SupplyDepot,Icon" Value="Assets\Textures\BTN-Building-Terran-SupplyDepotXPReward.dds"/>
+        <EffectArray Operation="Set" Reference="Button,Raise,AlertIcon" Value="Assets\Textures\BTN-Building-Terran-SupplyDepotXPReward.dds"/>
+        <EffectArray Operation="Set" Reference="Button,Raise,Icon" Value="Assets\Textures\BTN-Building-Terran-SupplyDepotXPReward.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,SupplyDepot,UnitIcon" Value="Assets\Textures\BTN-Building-Terran-SupplyDepotXPReward.dds"/-->
+        <CollectionDisplayModel value="SupplyDepotXPR"/>
+    </CSkin>
+    <CSkin id="ZerglingXPR" parent="ZerglingBase" collection="Mutant">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-zergling-mutant.dds"/>
+    </CSkin>
+    <CSkin id="OverlordXPR" parent="OverlordBase" collection="Mutant">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-overlord-mutant.dds"/>
+    </CSkin>
+    <CSkin id="ZealotXPR" parent="ZealotBase" collection="Judicator">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-zealot-judicator.dds"/>
+    </CSkin>
+    <CSkin id="PylonXPR" parent="PylonBase">
+        <ReplacementArray Catalog="Model" From="Pylon" To="PylonXPR"/>
+        <ReplacementArray Catalog="Model" From="PylonBirth" To="PylonXPRBirth"/>
+        <ReplacementArray Catalog="Model" From="PylonDeath" To="PylonXPRDeath"/>
+        <ReplacementArray Catalog="Model" From="PylonPlacement" To="PylonXPRPlacement"/>
+        <VariationIcon value="Assets\Textures\btn-unit-collection-pylon-judicator.dds"/>
+        <DisplayModel value="PylonXPR"/>
+        <!--EffectArray Operation="Set" Reference="Button,Pylon,AlertIcon" Value="Assets\Textures\btn-unit-collection-pylon-judicator.dds"/>
+        <EffectArray Operation="Set" Reference="Button,Pylon,Icon" Value="Assets\Textures\btn-unit-collection-pylon-judicator.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Pylon,BuildModel[0]" Value="PylonXPRBirth"/>
+        <EffectArray Operation="Set" Reference="Actor,Pylon,Wireframe.Image[0]" Value="Assets\Textures\wireframe-collection-pylon-judicator.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Pylon,WireframeShield.Image[0]" Value="Assets\Textures\wireframe-collection-pylon-judicator_shield01.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Pylon,WireframeShield.Image[1]" Value="Assets\Textures\wireframe-collection-pylon-judicator_shield02.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Pylon,WireframeShield.Image[2]" Value="Assets\Textures\wireframe-collection-pylon-judicator_shield03.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Pylon,GroupIcon.Image[0]" Value="Assets\Textures\wireframe-collection-pylon-judicator.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Pylon,UnitIcon" Value="Assets\Textures\btn-unit-collection-pylon-judicator.dds"/-->
+        <CollectionDisplayModel value="PylonXPR"/>
+    </CSkin>
+    <!--Warchest Skin-->
+    <!-- Protoss Tal'darim Skins -->
+    <CSkin id="PylonTaldarim" parent="PylonBase">
+        <ReplacementArray Catalog="Model" From="Pylon" To="Pylon_Taldarim"/>
+        <ReplacementArray Catalog="Model" From="PylonDeath" To="Pylon_Taldarim_Death"/>
+        <DisplayModel value="Pylon_Taldarim"/>
+        <VariationIcon value="Assets\Textures\btn-unit-protoss-alarak-taldarim-pylon.dds"/>
+        <!--EffectArray Operation="Set" Reference="Button,Pylon,AlertIcon" Value="Assets\Textures\btn-unit-collection-taldarim-Pylon.dds"/>
+        <EffectArray Operation="Set" Reference="Button,Pylon,Icon" Value="Assets\Textures\btn-unit-collection-taldarim-Pylon.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Pylon,Wireframe.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-Pylon.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Pylon,WireframeShield.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-Pylon-shield01.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Pylon,WireframeShield.Image[1]" Value="Assets\Textures\wireframe-collection-taldarim-Pylon-shield02.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Pylon,WireframeShield.Image[2]" Value="Assets\Textures\wireframe-collection-taldarim-Pylon-shield03.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Pylon,GroupIcon.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-Pylon.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Pylon,UnitIcon" Value="Assets\Textures\btn-unit-collection-taldarim-Pylon.dds"/-->
+    </CSkin>
+    <CSkin id="PhotonCannonTaldarim" parent="PhotonCannonBase">
+        <ReplacementArray Catalog="Model" From="PhotonCannon" To="PhotonCannon_Taldarim"/>
+        <ReplacementArray Catalog="Model" From="PhotonCannonDeath" To="PhotonCannon_Taldarim_Death"/>
+        <ReplacementArray Catalog="Model" From="PhotonCannonDeathUnpowered" To="PhotonCannon_Taldarim_DeathUnpowered"/>
+        <DisplayModel value="PhotonCannon_Taldarim"/>
+        <VariationIcon value="Assets\Textures\btn-unit-protoss-alarak-taldarim-photoncannon.dds"/>
+        <!--EffectArray Operation="Set" Reference="Button,PhotonCannon,AlertIcon" Value="Assets\Textures\btn-unit-collection-taldarim-PhotonCannon.dds"/>
+        <EffectArray Operation="Set" Reference="Button,PhotonCannon,Icon" Value="Assets\Textures\btn-unit-collection-taldarim-PhotonCannon.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,PhotonCannon,Wireframe.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-PhotonCannon.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,PhotonCannon,WireframeShield.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-PhotonCannon-shield01.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,PhotonCannon,WireframeShield.Image[1]" Value="Assets\Textures\wireframe-collection-taldarim-PhotonCannon-shield02.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,PhotonCannon,WireframeShield.Image[2]" Value="Assets\Textures\wireframe-collection-taldarim-PhotonCannon-shield03.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,PhotonCannon,GroupIcon.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-PhotonCannon.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,PhotonCannon,UnitIcon" Value="Assets\Textures\btn-unit-collection-taldarim-PhotonCannon.dds"/-->
+    </CSkin>
+    <CSkin id="AssimilatorTaldarim" parent="AssimilatorBase">
+        <ReplacementArray Catalog="Model" From="Assimilator" To="Assimilator_Taldarim"/>
+        <ReplacementArray Catalog="Model" From="AssimilatorDeath" To="Assimilator_Taldarim_Death"/>
+        <DisplayModel value="Assimilator_Taldarim"/>
+        <VariationIcon value="Assets\Textures\btn-unit-protoss-alarak-taldarim-assimilator.dds"/>
+        <!--EffectArray Operation="Set" Reference="Button,Assimilator,AlertIcon" Value="Assets\Textures\btn-unit-collection-taldarim-Assimilator.dds"/>
+        <EffectArray Operation="Set" Reference="Button,Assimilator,Icon" Value="Assets\Textures\btn-unit-collection-taldarim-Assimilator.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Assimilator,Wireframe.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-Assimilator.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Assimilator,WireframeShield.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-Assimilator-shield01.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Assimilator,WireframeShield.Image[1]" Value="Assets\Textures\wireframe-collection-taldarim-Assimilator-shield02.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Assimilator,WireframeShield.Image[2]" Value="Assets\Textures\wireframe-collection-taldarim-Assimilator-shield03.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Assimilator,GroupIcon.Image[0]" Value="Assets\Textures\wireframe-cit-collecollection-Assimilator-taldarim.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Assimilator,UnitIcon" Value="Assets\Textures\btn-untion-taldarim-Assimilator.dds"/-->
+    </CSkin>
+    <CSkin id="GatewayTaldarim" parent="GatewayBase">
+        <ReplacementArray Catalog="Model" From="Gateway" To="Gateway_Taldarim"/>
+        <ReplacementArray Catalog="Model" From="GatewayDeath" To="Gateway_Taldarim_Death"/>
+        <ReplacementArray Catalog="Model" From="WarpgateDeath" To="WarpGate_Taldarim_Death"/>
+        <DisplayModel value="Gateway_Taldarim"/>
+        <VariationIcon value="Assets\Textures\btn-unit-protoss-alarak-taldarim-gateway.dds"/>
+        <!--EffectArray Operation="Set" Reference="Button,Gateway,AlertIcon" Value="Assets\Textures\btn-unit-collection-taldarim-Gateway.dds"/>
+        <EffectArray Operation="Set" Reference="Button,Gateway,Icon" Value="Assets\Textures\btn-unit-collection-taldarim-Gateway.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Gateway,Wireframe.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-Gateway.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Gateway,WireframeShield.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-Gateway-shield01.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Gateway,WireframeShield.Image[1]" Value="Assets\Textures\wireframe-collection-taldarim-Gateway-shield02.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Gateway,WireframeShield.Image[2]" Value="Assets\Textures\wireframe-collection-taldarim-Gateway-shield03.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Gateway,GroupIcon.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-Gateway.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Gateway,UnitIcon" Value="Assets\Textures\btn-unit-collection-taldarim-Gateway.dds"/>
+        <EffectArray Operation="Set" Reference="Button,WarpGate,AlertIcon" Value="Assets\Textures\btn-unit-collection-taldarim-WarpGate.dds"/>
+        <EffectArray Operation="Set" Reference="Button,WarpGate,Icon" Value="Assets\Textures\btn-unit-collection-taldarim-WarpGate.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,WarpGate,Wireframe.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-WarpGate.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,WarpGate,WireframeShield.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-WarpGate-shield01.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,WarpGate,WireframeShield.Image[1]" Value="Assets\Textures\wireframe-collection-taldarim-WarpGate-shield02.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,WarpGate,WireframeShield.Image[2]" Value="Assets\Textures\wireframe-collection-taldarim-WarpGate-shield03.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,WarpGate,GroupIcon.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-WarpGate.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,WarpGate,UnitIcon" Value="Assets\Textures\btn-unit-collection-taldarim-WarpGate.dds"/-->
+    </CSkin>
+    <CSkin id="ForgeTaldarim" parent="ForgeBase">
+        <ReplacementArray Catalog="Model" From="Forge" To="Forge_Taldarim"/>
+        <ReplacementArray Catalog="Model" From="ForgeDeath" To="Forge_Taldarim_Death"/>
+        <DisplayModel value="Forge_Taldarim"/>
+        <VariationIcon value="Assets\Textures\btn-unit-protoss-alarak-taldarim-forge.dds"/>
+        <!--EffectArray Operation="Set" Reference="Button,Forge,AlertIcon" Value="Assets\Textures\btn-unit-collection-taldarim-Forge.dds"/>
+        <EffectArray Operation="Set" Reference="Button,Forge,Icon" Value="Assets\Textures\btn-unit-collection-taldarim-Forge.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Forge,Wireframe.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-Forge.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Forge,WireframeShield.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-Forge-shield01.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Forge,WireframeShield.Image[1]" Value="Assets\Textures\wireframe-collection-taldarim-Forge-shield02.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Forge,WireframeShield.Image[2]" Value="Assets\Textures\wireframe-collection-taldarim-Forge-shield03.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Forge,GroupIcon.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-Forge.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Forge,UnitIcon" Value="Assets\Textures\btn-unit-collection-taldarim-Forge.dds"/-->
+    </CSkin>
+    <CSkin id="RoboticsFacilityTaldarim" parent="RoboticsFacilityBase">
+        <ReplacementArray Catalog="Model" From="RoboticsFacility" To="RoboticsFacility_Taldarim"/>
+        <ReplacementArray Catalog="Model" From="RoboticsFacilityDeath" To="RoboticsFacility_Taldarim_Death"/>
+        <ReplacementArray Catalog="Model" From="RoboticsFacilityDeathUnpowered" To="RoboticsFacility_Taldarim_Death_Unpowered"/>
+        <DisplayModel value="RoboticsFacility_Taldarim"/>
+        <VariationIcon value="Assets\Textures\btn-unit-protoss-alarak-taldarim-roboticsfacility.dds"/>
+        <!--EffectArray Operation="Set" Reference="Button,RoboticsFacility,AlertIcon" Value="Assets\Textures\btn-unit-collection-taldarim-RoboticsFacility.dds"/>
+        <EffectArray Operation="Set" Reference="Button,RoboticsFacility,Icon" Value="Assets\Textures\btn-unit-collection-taldarim-RoboticsFacility.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,RoboticsFacility,Wireframe.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-RoboticsFacility.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,RoboticsFacility,WireframeShield.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-RoboticsFacility-shield01.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,RoboticsFacility,WireframeShield.Image[1]" Value="Assets\Textures\wireframe-collection-taldarim-RoboticsFacility-shield02.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,RoboticsFacility,WireframeShield.Image[2]" Value="Assets\Textures\wireframe-collection-taldarim-RoboticsFacility-shield03.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,RoboticsFacility,GroupIcon.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-RoboticsFacility.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,RoboticsFacility,UnitIcon" Value="Assets\Textures\btn-unit-collection-taldarim-RoboticsFacility.dds"/-->
+    </CSkin>
+    <CSkin id="RoboticsSupportBayTaldarim" parent="RoboticsSupportBayBase">
+        <ReplacementArray Catalog="Model" From="RoboticsSupportBay" To="RoboticsSupportBay_Taldarim"/>
+        <ReplacementArray Catalog="Model" From="RoboticsSupportBayDeath" To="RoboticsSupportBay_Taldarim_Death"/>
+        <ReplacementArray Catalog="Model" From="RoboticsSupportBayDeathUnpowered" To="RoboticsSupportBay_Taldarim_DeathUnpowered"/>
+        <DisplayModel value="RoboticsSupportBay_Taldarim"/>
+        <VariationIcon value="Assets\Textures\btn-unit-protoss-alarak-taldarim-roboticssupportbay.dds"/>
+        <!--EffectArray Operation="Set" Reference="Button,RoboticsSupportBay,AlertIcon" Value="Assets\Textures\btn-unit-collection-taldarim-RoboticsSupportBay.dds"/>
+        <EffectArray Operation="Set" Reference="Button,RoboticsSupportBay,Icon" Value="Assets\Textures\btn-unit-collection-taldarim-RoboticsSupportBay.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,RoboticsSupportBay,Wireframe.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-RoboticsSupportBay.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,RoboticsSupportBay,WireframeShield.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-RoboticsSupportBay-shield01.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,RoboticsSupportBay,WireframeShield.Image[1]" Value="Assets\Textures\wireframe-collection-taldarim-RoboticsSupportBay-shield02.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,RoboticsSupportBay,WireframeShield.Image[2]" Value="Assets\Textures\wireframe-collection-taldarim-RoboticsSupportBay-shield03.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,RoboticsSupportBay,GroupIcon.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-RoboticsSupportBay.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,RoboticsSupportBay,UnitIcon" Value="Assets\Textures\btn-unit-collection-taldarim-RoboticsSupportBay.dds"/-->
+    </CSkin>
+    <CSkin id="StargateTaldarim" parent="StargateBase">
+        <ReplacementArray Catalog="Model" From="Stargate" To="Stargate_Taldarim"/>
+        <ReplacementArray Catalog="Model" From="StargateDeath" To="Stargate_Taldarim_Death"/>
+        <ReplacementArray Catalog="Model" From="StargateDeathUnpowered" To="Stargate_Taldarim_Death_Unpowered"/>
+        <DisplayModel value="Stargate_Taldarim"/>
+        <VariationIcon value="Assets\Textures\btn-unit-protoss-alarak-taldarim-stargate.dds"/>
+        <!--EffectArray Operation="Set" Reference="Button,Stargate,AlertIcon" Value="Assets\Textures\btn-unit-collection-taldarim-Stargate.dds"/>
+        <EffectArray Operation="Set" Reference="Button,Stargate,Icon" Value="Assets\Textures\btn-unit-collection-taldarim-Stargate.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Stargate,Wireframe.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-Stargate.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Stargate,WireframeShield.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-Stargate-shield01.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Stargate,WireframeShield.Image[1]" Value="Assets\Textures\wireframe-collection-taldarim-Stargate-shield02.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Stargate,WireframeShield.Image[2]" Value="Assets\Textures\wireframe-collection-taldarim-Stargate-shield03.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Stargate,GroupIcon.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-Stargate.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,Stargate,UnitIcon" Value="Assets\Textures\btn-unit-collection-taldarim-Stargate.dds"/-->
+    </CSkin>
+    <CSkin id="FleetBeaconTaldarim" parent="FleetBeaconBase">
+        <ReplacementArray Catalog="Model" From="FleetBeacon" To="FleetBeacon_Taldarim"/>
+        <ReplacementArray Catalog="Model" From="FleetBeaconDeath" To="FleetBeacon_Taldarim_Death"/>
+        <ReplacementArray Catalog="Model" From="FleetBeaconDeathUnpowered" To="FleetBeacon_Taldarim_DeathUnpowered"/>
+        <DisplayModel value="FleetBeacon_Taldarim"/>
+        <VariationIcon value="Assets\Textures\btn-unit-protoss-alarak-taldarim-fleetbeacon.dds"/>
+        <!--EffectArray Operation="Set" Reference="Button,FleetBeacon,AlertIcon" Value="Assets\Textures\btn-unit-collection-taldarim-FleetBeacon.dds"/>
+        <EffectArray Operation="Set" Reference="Button,FleetBeacon,Icon" Value="Assets\Textures\btn-unit-collection-taldarim-FleetBeacon.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,FleetBeacon,Wireframe.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-FleetBeacon.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,FleetBeacon,WireframeShield.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-FleetBeacon-shield01.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,FleetBeacon,WireframeShield.Image[1]" Value="Assets\Textures\wireframe-collection-taldarim-FleetBeacon-shield02.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,FleetBeacon,WireframeShield.Image[2]" Value="Assets\Textures\wireframe-collection-taldarim-FleetBeacon-shield03.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,FleetBeacon,GroupIcon.Image[0]" Value="Assets\Textures\wireframe-collection-taldarim-FleetBeacon.dds"/>
+        <EffectArray Operation="Set" Reference="Actor,FleetBeacon,UnitIcon" Value="Assets\Textures\btn-unit-collection-taldarim-FleetBeacon.dds"/-->
+    </CSkin>
+    <CSkin id="ProbeTaldarim" parent="ProbeBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Taldarim-Probe.dds"/>
+    </CSkin>
+    <CSkin id="ZealotTaldarim" parent="ZealotBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Taldarim-Zealot.dds"/>
+    </CSkin>
+    <CSkin id="SentryTaldarim" parent="SentryBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Taldarim-Sentry.dds"/>
+    </CSkin>
+    <CSkin id="AdeptTaldarim" parent="AdeptBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Taldarim-Adept.dds"/>
+    </CSkin>
+    <CSkin id="StalkerTaldarim" parent="StalkerBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Taldarim-Stalker.dds"/>
+    </CSkin>
+    <CSkin id="HighTemplarTaldarim" parent="HighTemplarBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-taldarim-HighTemplar.dds"/>
+    </CSkin>
+    <CSkin id="DarkTemplarTaldarim" parent="DarkTemplarBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Taldarim-DarkTemplar.dds"/>
+    </CSkin>
+    <CSkin id="ObserverTaldarim" parent="ObserverBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Taldarim-Observer.dds"/>
+    </CSkin>
+    <CSkin id="WarpPrismTaldarim" parent="WarpPrismBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-taldarim-WarpPrism.dds"/>
+    </CSkin>
+    <CSkin id="ImmortalTaldarim" parent="ImmortalBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-taldarim-Immortal.dds"/>
+    </CSkin>
+    <CSkin id="DisruptorTaldarim" parent="DisruptorBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-taldarim-Disruptor.dds"/>
+    </CSkin>
+    <CSkin id="ColossusTaldarim" parent="ColossusBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-taldarim-Colossus.dds"/>
+    </CSkin>
+    <CSkin id="OracleTaldarim" parent="OracleBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Taldarim-Oracle.dds"/>
+    </CSkin>
+    <CSkin id="PhoenixTaldarim" parent="PhoenixBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-taldarim-Phoenix.dds"/>
+    </CSkin>
+    <CSkin id="VoidRayTaldarim" parent="VoidRayBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Taldarim-VoidRay.dds"/>
+    </CSkin>
+    <CSkin id="CarrierTaldarim" parent="CarrierBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-taldarim-Carrier.dds"/>
+    </CSkin>
+    <CSkin id="TempestTaldarim" parent="TempestBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-taldarim-Tempeest.dds"/>
+    </CSkin>
+    <CSkin id="MothershipTaldarim" parent="MothershipBase" collection="Taldarim">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Taldarim-Mothership.dds"/>
+    </CSkin>
+    <!-- Zerg Webby Skins -->
+    <CSkin id="DroneWebby" parent="DroneBase" collection="Webby">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Webby-Drone.dds"/>
+    </CSkin>
+    <CSkin id="ZerglingWebby" parent="ZerglingBase" collection="Webby">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Webby-Zergling.dds"/>
+    </CSkin>
+    <CSkin id="BanelingWebby" parent="BanelingBase" collection="Webby">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Webby-Baneling.dds"/>
+    </CSkin>
+    <CSkin id="RoachWebby" parent="RoachBase" collection="Webby">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Webby-Roach.dds"/>
+    </CSkin>
+    <CSkin id="RavagerWebby" parent="RavagerBase" collection="Webby">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Webby-Ravager.dds"/>
+    </CSkin>
+    <CSkin id="HydraliskWebby" parent="HydraliskBase" collection="Webby">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-webby-hydra.dds"/>
+    </CSkin>
+    <CSkin id="LurkerWebby" parent="LurkerBase" collection="Webby">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-webby-lurker.dds"/>
+    </CSkin>
+    <CSkin id="QueenWebby" parent="QueenBase" collection="Webby">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Webby-Queen.dds"/>
+    </CSkin>
+    <CSkin id="OverlordWebby" parent="OverlordBase" collection="Webby">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Webby-Overlord.dds"/>
+    </CSkin>
+    <CSkin id="OverSeerWebby" parent="OverseerBase" collection="Webby">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Webby-Overseer.dds"/>
+    </CSkin>
+    <CSkin id="InfestorWebby" parent="InfestorBase" collection="Webby">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Webby-Infestor.dds"/>
+    </CSkin>
+    <CSkin id="SwarmHostWebby" parent="SwarmHostBase" collection="Webby">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Webby-SwarmHost.dds"/>
+    </CSkin>
+    <CSkin id="ViperWebby" parent="ViperBase" collection="Webby">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Webby-Viper.dds"/>
+    </CSkin>
+    <CSkin id="MutaliskWebby" parent="MutaliskBase" collection="Webby">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Webby-Mutalisk.dds"/>
+    </CSkin>
+    <CSkin id="CorruptorWebby" parent="CorruptorBase" collection="Webby">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Webby-Corruptor.dds"/>
+    </CSkin>
+    <CSkin id="BroodLordWebby" parent="BroodLordBase" collection="Webby">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Webby-BroodLord.dds"/>
+    </CSkin>
+    <CSkin id="UltraliskWebby" parent="UltraliskBase" collection="Webby">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Webby-Ultralisk.dds"/>
+    </CSkin>
+    <!-- Terran Covert Op Skins -->
+    <CSkin id="SCVCovertOps" parent="SCVBase" collection="CovertOps">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-scv-covertops.dds"/>
+    </CSkin>
+    <CSkin id="MarineCovertOps" parent="MarineBase" collection="CovertOps">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Marine-CovertOps.dds"/>
+    </CSkin>
+    <CSkin id="MarauderCovertOps" parent="MarauderBase" collection="CovertOps">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-marauder-covertops.dds"/>
+    </CSkin>
+    <CSkin id="ReaperCovertOps" parent="ReaperBase" collection="CovertOps">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-reaper-covertops.dds"/>
+    </CSkin>
+    <CSkin id="GhostCovertOps" parent="GhostBase" collection="CovertOps">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-ghost-covertops.dds"/>
+    </CSkin>
+    <CSkin id="HellionCovertOps" parent="HellionBase" collection="CovertOps">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-hellion-covertops.dds"/>
+    </CSkin>
+    <CSkin id="CycloneCovertOps" parent="CycloneBase" collection="CovertOps">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-cyclone-covertops.dds"/>
+    </CSkin>
+    <CSkin id="SiegeTankCovertOps" parent="SiegeTankBase" collection="CovertOps">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-siegetank-covertops.dds"/>
+    </CSkin>
+    <CSkin id="WidowMineCovertOps" parent="WidowMineBase" collection="CovertOps">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-widowmine-covertops.dds"/>
+    </CSkin>
+    <CSkin id="ThorCovertOps" parent="ThorBase" collection="CovertOps">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-thor-covertops.dds"/>
+    </CSkin>
+    <CSkin id="MedivacCovertOps" parent="MedivacBase" collection="CovertOps">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-medivac-covertops.dds"/>
+    </CSkin>
+    <CSkin id="VikingCovertOps" parent="VikingBase" collection="CovertOps">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-vikingfighter-covertops.dds"/>
+    </CSkin>
+    <CSkin id="BansheeCovertOps" parent="BansheeBase" collection="CovertOps">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-banshee-covertops.dds"/>
+    </CSkin>
+    <CSkin id="RavenCovertOps" parent="RavenBase" collection="CovertOps">
+        <ReplacementArray Catalog="Model" From="PointDefenseDrone" To="DefensiveMatrixDrone_CovertOps"/>
+        <ReplacementArray Catalog="Model" From="PointDefenseDroneDeath" To="DefensiveMatrixDrone_CovertOps_Death"/>
+        <ReplacementArray Catalog="Model" From="PointDefenseDronePlacement" To="DefensiveMatrixDrone_CovertOps_Placement"/>
+        <ReplacementArray Catalog="Model" From="AutoTurretReleaseWeapon" To="AutoTurret_CovertOps_ReleaseWeapon"/>
+        <ReplacementArray Catalog="Model" From="AutoTurretReleaseMissileImpact" To="AutoTurret_CovertOps_ReleaseMissileImpact"/>
+        <ReplacementArray Catalog="Model" From="PointDefenseDroneReleaseWeapon" To="DefensiveMatrixDrone_CovertOpsReleaseWeapon"/>
+        <VariationIcon value="Assets\Textures\btn-unit-collection-raven-covertops.dds"/>
+    </CSkin>
+    <CSkin id="LiberatorCovertOps" parent="LiberatorBase" collection="CovertOps">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-liberator-covertops.dds"/>
+    </CSkin>
+    <CSkin id="BattlecruiserCovertOps" parent="BattlecruiserBase" collection="CovertOps">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-battlecruiser-covertops.dds"/>
+    </CSkin>
+    <!-- Zerg Primal Skins -->
+    <CSkin id="DronePrimal" parent="DroneBase" collection="Primal">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Primal-Drone.dds"/>
+    </CSkin>
+    <CSkin id="OverlordPrimal" parent="OverlordBase" collection="Primal">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Primal-Overlord.dds"/>
+    </CSkin>
+    <CSkin id="OverseerPrimal" parent="OverseerBase" collection="Primal">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Primal-Overseer.dds"/>
+    </CSkin>
+    <CSkin id="ZerglingPrimal" parent="ZerglingBase" collection="Primal">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Primal-Zergling.dds"/>
+    </CSkin>
+    <CSkin id="BanelingPrimal" parent="BanelingBase" collection="Primal">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Primal-Baneling.dds"/>
+    </CSkin>
+    <CSkin id="RoachPrimal" parent="RoachBase" collection="Primal">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Primal-Roach.dds"/>
+    </CSkin>
+    <CSkin id="RavagerPrimal" parent="RavagerBase" collection="Primal">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Primal-Ravager.dds"/>
+    </CSkin>
+    <CSkin id="HydraliskPrimal" parent="HydraliskBase" collection="Primal">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Primal-Hydralisk.dds"/>
+    </CSkin>
+    <CSkin id="LurkerPrimal" parent="LurkerBase" collection="Primal">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-primal-lurker.dds"/>
+    </CSkin>
+    <CSkin id="QueenPrimal" parent="QueenBase" collection="Primal">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Primal-Queen.dds"/>
+    </CSkin>
+    <CSkin id="SwarmHostPrimal" parent="SwarmHostBase" collection="Primal">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Primal-SwarmHost.dds"/>
+    </CSkin>
+    <CSkin id="InfestorPrimal" parent="InfestorBase" collection="Primal">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Primal-Infestor.dds"/>
+    </CSkin>
+    <CSkin id="MutaliskPrimal" parent="MutaliskBase" collection="Primal">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Primal-Mutalisk.dds"/>
+    </CSkin>
+    <CSkin id="CorruptorPrimal" parent="CorruptorBase" collection="Primal">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Primal-Corruptor.dds"/>
+    </CSkin>
+    <CSkin id="ViperPrimal" parent="ViperBase" collection="Primal">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Primal-Viper.dds"/>
+    </CSkin>
+    <CSkin id="BroodLordPrimal" parent="BroodLordBase" collection="Primal">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Primal-BroodLord.dds"/>
+    </CSkin>
+    <CSkin id="UltraliskPrimal" parent="UltraliskBase" collection="Primal">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Primal-Ultralisk.dds"/>
+    </CSkin>
+    <!-- Terran Junker Skins -->
+    <CSkin id="SCVJunker" parent="SCVBase" collection="Junker">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-scv-junker.dds"/>
+    </CSkin>
+    <CSkin id="MarineJunker" parent="MarineBase" collection="Junker">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Marine-Junker.dds"/>
+    </CSkin>
+    <CSkin id="ReaperJunker" parent="ReaperBase" collection="Junker">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-reaper-junker.dds"/>
+    </CSkin>
+    <CSkin id="MarauderJunker" parent="MarauderBase" collection="Junker">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-marauder-junker.dds"/>
+    </CSkin>
+    <CSkin id="GhostJunker" parent="GhostAlternateBase" collection="Junker">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-ghost-junker.dds"/>
+    </CSkin>
+    <CSkin id="HellionJunkerMM" parent="HellionBase" collection="Junker">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-hellion-junker.dds"/>
+    </CSkin>
+    <CSkin id="WidowMineJunker" parent="WidowMineBase" collection="Junker">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-widowmine-junker.dds"/>
+    </CSkin>
+    <CSkin id="CycloneJunker" parent="CycloneBase" collection="Junker">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-cyclone-junker.dds"/>
+    </CSkin>
+    <CSkin id="SiegeTankJunker" parent="SiegeTankBase" collection="Junker">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-tank-junker.dds"/>
+    </CSkin>
+    <CSkin id="ThorJunker" parent="ThorBase" collection="Junker">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-thor-junker.dds"/>
+    </CSkin>
+    <CSkin id="MedivacJunker" parent="MedivacBase" collection="Junker">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-medivac-junker.dds"/>
+    </CSkin>
+    <CSkin id="VikingJunker" parent="VikingBase" collection="Junker">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-vikingfighter-junker.dds"/>
+    </CSkin>
+    <CSkin id="BansheeJunker" parent="BansheeBase" collection="Junker">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-banshee-junker.dds"/>
+    </CSkin>
+    <CSkin id="LiberatorJunker" parent="LiberatorBase" collection="Junker">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-liberator-junker.dds"/>
+    </CSkin>
+    <CSkin id="RavenJunker" parent="RavenBase" collection="Junker">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-ravenmp-junker.dds"/>
+    </CSkin>
+    <CSkin id="BattlecruiserJunker" parent="BattlecruiserBase" collection="Junker">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-battlecruiser-junker.dds"/>
+    </CSkin>
+    <!-- Protoss Purifier Skins -->
+    <CSkin id="ProbePurifier" parent="ProbeBase" collection="Purifier">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-purifier-Probe.dds"/>
+    </CSkin>
+    <CSkin id="ZealotPurifier" parent="ZealotBase" collection="Purifier">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-purifier-Zealot.dds"/>
+    </CSkin>
+    <CSkin id="SentryPurifier" parent="SentryBase" collection="Purifier">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Purifier-Sentry.dds"/>
+    </CSkin>
+    <CSkin id="AdeptPurifier" parent="AdeptBase" collection="Purifier">
+        <ReplacementArray Catalog="Model" From="AdeptProtossSpiritDeathModel" To="Adept_Purifier_SpiritDeath_Addition"/>
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Purifier-Adept.dds"/>
+    </CSkin>
+    <CSkin id="StalkerPurifier" parent="StalkerBase" collection="Purifier">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-purifier-Stalker.dds"/>
+    </CSkin>
+    <CSkin id="HighTemplarPurifier" parent="HighTemplarBase" collection="Purifier">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-purifier-HighTemplar.dds"/>
+    </CSkin>
+    <CSkin id="DarkTemplarPurifier" parent="DarkTemplarBase" collection="Purifier">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-purifier-darktemplar.dds"/>
+    </CSkin>
+    <CSkin id="ObserverPurifier" parent="ObserverBase" collection="Purifier">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-purifier-Observer.dds"/>
+    </CSkin>
+    <CSkin id="WarpPrismPurifier" parent="WarpPrismBase" collection="Purifier">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-purifier-warpprism.dds"/>
+    </CSkin>
+    <CSkin id="ImmortalPurifier" parent="ImmortalBase" collection="Purifier">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-purifier-Immortal.dds"/>
+    </CSkin>
+    <CSkin id="DisruptorPurifier" parent="DisruptorBase" collection="Purifier">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-purifier-disruptor.dds"/>
+    </CSkin>
+    <CSkin id="ColossusPurifier" parent="ColossusBase" collection="Purifier">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-purifier-Colossus.dds"/>
+    </CSkin>
+    <CSkin id="OraclePurifier" parent="OracleBase" collection="Purifier">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-purifier-Oracle.dds"/>
+    </CSkin>
+    <CSkin id="PhoenixPurifier" parent="PhoenixBase" collection="Purifier">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-purifier-phoenix.dds"/>
+    </CSkin>
+    <CSkin id="VoidRayPurifier" parent="VoidRayBase" collection="Purifier">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Purifier-VoidRay.dds"/>
+    </CSkin>
+    <CSkin id="CarrierPurifier" parent="CarrierBase" collection="Purifier">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-purifier-Carrier.dds"/>
+    </CSkin>
+    <CSkin id="TempestPurifier" parent="TempestBase" collection="Purifier">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-purifier-tempest.dds"/>
+    </CSkin>
+    <CSkin id="MothershipPurifier" parent="MothershipBase" collection="Purifier">
+        <VariationIcon value="Assets\Textures\btn-unit-collection-Purifier-Mothership.dds"/>
+    </CSkin>
+</Catalog>

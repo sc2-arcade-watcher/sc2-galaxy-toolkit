@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibAD96C52F_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libAD96C52F_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libAD96C52F_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(52);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libAD96C52F_gt_Initialization_Init () {
+    libAD96C52F_gt_Initialization = TriggerCreate("libAD96C52F_gt_Initialization_Func");
+    TriggerAddEventMapInit(libAD96C52F_gt_Initialization);
+}
+
+void libAD96C52F_InitTriggers () {
+    libAD96C52F_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libAD96C52F_InitLib_completed = false;
+
+void libAD96C52F_InitLib () {
+    if (libAD96C52F_InitLib_completed) {
+        return;
+    }
+
+    libAD96C52F_InitLib_completed = true;
+
+    libAD96C52F_InitLibraries();
+    libAD96C52F_InitTriggers();
+}
+

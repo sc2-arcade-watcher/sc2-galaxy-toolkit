@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibFB5C6DA7_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Fireworks
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libFB5C6DA7_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libFB5C6DA7_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "Fireworks");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libFB5C6DA7_gt_Initialization_Init () {
+    libFB5C6DA7_gt_Initialization = TriggerCreate("libFB5C6DA7_gt_Initialization_Func");
+    TriggerAddEventMapInit(libFB5C6DA7_gt_Initialization);
+}
+
+void libFB5C6DA7_InitTriggers () {
+    libFB5C6DA7_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libFB5C6DA7_InitLib_completed = false;
+
+void libFB5C6DA7_InitLib () {
+    if (libFB5C6DA7_InitLib_completed) {
+        return;
+    }
+
+    libFB5C6DA7_InitLib_completed = true;
+
+    libFB5C6DA7_InitLibraries();
+    libFB5C6DA7_InitTriggers();
+}
+

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CBehaviorBuff id="Corruption">
+        <DisplayDuration index="Self" value="0"/>
+        <DisplayDuration index="Ally" value="0"/>
+        <DisplayDuration index="Enemy" value="0"/>
+        <Modification>
+            <ModifyFlags index="DisableAbils" value="0"/>
+            <ModifyFlags index="EnableAttack" value="0"/>
+            <ModifyFlags index="EnableMove" value="0"/>
+            <ModifyFlags index="SuppressMoving" value="0"/>
+            <ModifyFlags index="SuppressTurning" value="0"/>
+            <StateFlags index="SuppressAttack" value="0"/>
+            <StateFlags index="SuppressCloak" value="0"/>
+            <StateFlags index="SuppressDetection" value="0"/>
+            <StateFlags index="SuppressRadar" value="0"/>
+            <BehaviorClassDisableArray index="CBehaviorSpawn" value="0"/>
+            <BehaviorLinkDisableArray index="0" value=""/>
+        </Modification>
+        <DamageResponse Chance="1" ModifyFraction="1.2"/>
+    </CBehaviorBuff>
+    <!-- Cant parent from TimedLife due to the morph applying the InfestedTerranTimedLife behavior,-->
+    <!--        as the TimedLife parent would use <KillCredit Value="Caster"/> which sets kill credit to the egg -->
+    <CBehaviorBuff id="InfestedTerranTimedLife">
+        <Duration value="30"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SurfaceForSpellCast">
+        <Modification>
+            <ModifyFlags index="SuppressMoving" value="0"/>
+            <ModifyFlags index="SuppressTurning" value="0"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="SurfaceForSpellCastChanneled">
+        <Duration value="1.5"/>
+        <Modification>
+            <ModifyFlags index="SuppressMoving" value="0"/>
+            <ModifyFlags index="SuppressTurning" value="0"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorSpawn id="SpawnLarva">
+        <InfoArray Unit="Larva" Requirements="HaveSpawnLarvaInstant" Effect="SpawnLarvaInstantRemoveBehavior"/>
+    </CBehaviorSpawn>
+    <CBehaviorBuff id="SpawnLarvaInstant">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>
+        <MaxStackCount value="3"/>
+        <Duration value="0.1875"/>
+    </CBehaviorBuff>
+</Catalog>

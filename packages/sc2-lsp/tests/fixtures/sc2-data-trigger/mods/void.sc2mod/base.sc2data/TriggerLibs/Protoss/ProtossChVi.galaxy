@@ -1,0 +1,90 @@
+//==================================================================================================
+//  Protoss Melee Cheater-Vision
+//==================================================================================================
+
+// uses the very hard builds, but cheats vision to make better counters and stop cheese
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossOpenChVi
+//--------------------------------------------------------------------------------------------------
+void ProtossOpenChVi (int player) {
+    bool done = false;
+    int buildIndex;
+
+    AIEarlyDefenseScouting(player);
+
+    // see if we need to switch builds
+    UpdateHDProtossOpening(player);
+    
+    buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (buildIndex == e_hdBuildIndex_POpenRush_ZealotStalker)               { done = ProtossOpenRushZealotStalkerVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenRush_Adept)                  { done = ProtossOpenRushAdeptVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenRush_ProxyGate)              { done = ProtossOpenRushProxyGateVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenRush_CannonRush)             { done = ProtossOpenRushCannonRushVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenTiming_FourGate)             { done = ProtossOpenTimingFourGateVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenTiming_Adept)                { done = ProtossOpenTimingAdeptVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenTiming_GateImmortal)         { done = ProtossOpenTimingGateImmortalVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenTiming_StalkerBlink)         { done = ProtossOpenTimingStalkerBlinkVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenTiming_DTRush)               { done = ProtossOpenTimingDTRushVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenPowerMacro_QuickExpGnd)      { done = ProtossOpenPowerMacroQuickExpGndVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenPowerMacro_GateExpGnd)       { done = ProtossOpenPowerMacroGateExpGndVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenPowerMacro_DefenseExpGnd)    { done = ProtossOpenPowerMacroDefenseExpGndVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenAir_OneBaseAir)              { done = ProtossOpenAirOneBaseAirVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenAir_OneBaseDrop)             { done = ProtossOpenAirOneBaseDropVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_POpenAir_QuickExpandAir)          { done = ProtossOpenAirQuickExpandAirVyHd (player); }
+    else { ErrorMeleeScript(player, "Invalid Open BuildIndex ProtossChVi"); }
+
+    if (done) {
+        ProtossHDInitMid(player); // Transition to MidGame
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMidChVi
+//--------------------------------------------------------------------------------------------------
+void ProtossMidChVi (int player) {
+    bool done = false;
+    int buildIndex;
+    
+    // enable scouting as appropriate
+    if (AIGetUserInt(player, c_numGroundStartLocs) > 0) {
+        AIScoutingEnable(player, 15, c_PU_Probe);
+        AIEarlyDefenseScouting(player);
+    }
+    else {
+        AIScoutingEnable(player, 1, c_PU_Observer);
+    }
+
+    // see if we need to switch builds
+    UpdateHDProtossMidGame(player);
+    
+    buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (buildIndex == e_hdBuildIndex_PMidRushTiming_FourGateRobo)           { done = ProtossMidRushTimingFourGateRoboVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidRushTiming_DefensiveExpand)   { done = ProtossMidRushTimingDefensiveExpandVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidPower_SevenGateStalker)       { done = ProtossMidPowerSevenGateStalkerVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidPower_SevenGateAdept)         { done = ProtossMidPowerSevenGateAdeptVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidPower_GateImmortal)           { done = ProtossMidPowerGateImmortalVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidPower_GateColossi)            { done = ProtossMidPowerGateColossiVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidPower_GateAir)                { done = ProtossMidPowerGateAirVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidPower_GateVoidPhoenix)        { done = ProtossMidPowerGateVoidPhoenixVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidMacro_GateRobo)               { done = ProtossMidMacroGateRoboVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidMacro_GateAir)                { done = ProtossMidMacroGateAirVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidAir_OneBasePureAir)           { done = ProtossMidAirOneBasePureAirVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidAir_OneBasePureDrop)          { done = ProtossMidAirOneBasePureDropVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidAir_ExpansionVoidray)         { done = ProtossMidAirExpansionVoidrayVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidAir_ExpansionCapitalAir)      { done = ProtossMidAirExpansionCapitalAirVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidAir_ExpansionDropAir)         { done = ProtossMidAirExpansionDropAirVyHd (player); }
+    else if (buildIndex == e_hdBuildIndex_PMidAir_Macro)                    { done = ProtossMidAirMacroVyHd (player); }
+    else { ErrorMeleeScript(player, "Invalid Mid BuildIndex ProtossChVi"); }
+
+    if (done) {
+        ProtossHDInitLate(player); // Transition to LateGame
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossLateChVi
+//--------------------------------------------------------------------------------------------------
+void ProtossLateChVi (int player) {
+    ProtossLateVyHd(player);
+}

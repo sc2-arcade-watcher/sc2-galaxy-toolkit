@@ -1,0 +1,2311 @@
+//==================================================================================================
+//  Terran higher difficulty shared logic
+//==================================================================================================
+
+//==================================================================================================
+//  Terran Openings
+//==================================================================================================
+// rush builds
+const int e_hdBuildIndex_TOpenRush_Marine                = 100;   // heavy early marine rush 
+const int e_hdBuildIndex_TOpenRush_MarineReaper          = 101;   // marine w/ early reaper harass
+const int e_hdBuildIndex_TOpenRush_ProxyBarracks         = 102;   // proxy barracks marine rush
+// 1 base timing builds
+const int e_hdBuildIndex_TOpenTiming_MMStim              = 103;   // stim timing push
+const int e_hdBuildIndex_TOpenTiming_HellionMarauder     = 104;   // hellion marauder timing push
+const int e_hdBuildIndex_TOpenTiming_MariSiege           = 105;   // marine + siege push
+const int e_hdBuildIndex_TOpenTiming_CloakBanshee        = 106;   // cloak banshee timing
+// power & macro builds
+const int e_hdBuildIndex_TOpenPowerMacro_QuickExpGnd     = 107;   // aggresive quick expand
+const int e_hdBuildIndex_TOpenPowerMacro_MarineExpGnd    = 108;   // gasless marines expand
+const int e_hdBuildIndex_TOpenPowerMacro_DefenseExpGnd   = 109;   // safer marine/siege expand
+// air openings
+const int e_hdBuildIndex_TOpenAir_OneBaseAir             = 110;   // single base "island" air build
+const int e_hdBuildIndex_TOpenAir_OneBaseDrop            = 111;   // single base "island" drop build
+const int e_hdBuildIndex_TOpenAir_CloakBanshee           = 112;   // single base "island" cloak banshee
+const int e_hdBuildIndex_TOpenAir_QuickExpandAir         = 113;   // quick expand air build
+
+//==================================================================================================
+//  Terran MidGame
+//==================================================================================================
+// rush/timing continuation builds
+const int e_hdBuildIndex_TMidRushTiming_MMMedivac        = 130;   // continued agression with mmm
+const int e_hdBuildIndex_TMidRushTiming_DefensiveExpand  = 131;   // transition from early pressure to a macro game
+// 2-3 base power attack builds
+const int e_hdBuildIndex_TMidPower_MMMedivac             = 132;   // standard bio attack
+const int e_hdBuildIndex_TMidPower_MMSiege               = 133;   // bio+siege
+const int e_hdBuildIndex_TMidPower_SiegeBanshee          = 134;   // delayed 1,1,1
+const int e_hdBuildIndex_TMidPower_HellionSiege          = 135;   // low-tech mech
+const int e_hdBuildIndex_TMidPower_SiegeThor             = 136;   // high-tech mech
+// 3 base macro oriented builds
+const int e_hdBuildIndex_TMidMacro_Bio                   = 137;   // macro toward late game bio
+const int e_hdBuildIndex_TMidMacro_Mech                  = 138;   // macro toward late game mech
+const int e_hdBuildIndex_TMidMacro_ThorBC                = 139;   // macro toward late game thor/bc
+// air/island builds
+const int e_hdBuildIndex_TMidAir_OneBaseAir              = 140;   // continue single base "island" air build
+const int e_hdBuildIndex_TMidAir_OneBaseDrop             = 141;   // continue single base "island" drop build
+const int e_hdBuildIndex_TMidAir_ExpansionVikingBanshee  = 142;   // quick expand viking/banshee attack
+const int e_hdBuildIndex_TMidAir_ExpansionBC             = 143;   // quick expand battlecruiser attack
+const int e_hdBuildIndex_TMidAir_ExpansionDropAir        = 144;   // quick expand drop + air attack
+const int e_hdBuildIndex_TMidAir_Macro                   = 145;   // macro toward a large late game air force
+
+//==================================================================================================
+//  Terran LateGame
+//==================================================================================================
+// core builds
+const int e_hdBuildIndex_TLateCore_MMMediViking          = 160;   // Bio with vikings against Broodlord/Colossi
+const int e_hdBuildIndex_TLateCore_MMMediSiege           = 161;   // Bio with siegetanks against Baneling/Terran
+const int e_hdBuildIndex_TLateCore_MMMediHarass          = 162;   // Bio with minor harrass from ghosts(nuke) & cloak banshee
+const int e_hdBuildIndex_TLateCore_MMMediBC              = 163;   // Bio with high tech air
+// high tech builds
+const int e_hdBuildIndex_TLateHighTech_HellionSeige      = 164;   // Lower tech mech
+const int e_hdBuildIndex_TLateHighTech_SiegeThor         = 165;   // Higher tech mech
+const int e_hdBuildIndex_TLateHighTech_MechBC            = 166;   // Mech with a few battlecruisers
+// air builds
+const int e_hdBuildIndex_TLateAir_VikingBC               = 167;   // Focusses on vikings and battlecruisers
+const int e_hdBuildIndex_TLateAir_MixedAir               = 168;   // Uses a mix of all the air units
+// special/caster builds
+const int e_hdBuildIndex_TLateSpecial_MMMediHarass       = 169;   // Bio with lots of harrass from ghosts(nuke) & cloak banshee
+const int e_hdBuildIndex_TLateSpecial_MMMediGhostRaven   = 170;   // Bio with emp & pdd
+const int e_hdBuildIndex_TLateSpecial_MechBansheeRaven   = 171;   // Mech with banshee harass and raven backup
+const int e_hdBuildIndex_TLateSpecial_MechCycloneLib     = 172;   // Mech with extra cyclones & liberators
+
+
+//==================================================================================================
+//  ChooseHDTerranBuildFromSpecificBuild
+//==================================================================================================
+int ChooseHDTerranBuildFromSpecificBuild (int player, int specific, int mainState) {
+    int randomRoll = RandomInt(1, 100);
+
+    if (mainState == e_mainState_Open) {
+        if (specific == e_buildType_t1b_MMStim) {
+            return e_hdBuildIndex_TOpenTiming_MMStim;
+        } else if (specific == e_buildType_t1b_HellionMara) {
+            return e_hdBuildIndex_TOpenTiming_HellionMarauder;
+        } else if (specific == e_buildType_t1b_MariSiege) {
+            return e_hdBuildIndex_TOpenTiming_MariSiege;
+        } else if (specific == e_buildType_t1b_CloakBanshee) {
+            return e_hdBuildIndex_TOpenTiming_CloakBanshee;
+        } else if (specific == e_buildType_t2b_MMMedivac) {
+            if (randomRoll < 10)       { return e_hdBuildIndex_TOpenPowerMacro_QuickExpGnd; }        // 10%
+            else if (randomRoll < 25)  { return e_hdBuildIndex_TOpenPowerMacro_DefenseExpGnd; }      // 15%
+            else                       { return e_hdBuildIndex_TOpenPowerMacro_MarineExpGnd; }       // 75%
+        } else if (specific == e_buildType_t2b_MMSiege) {
+            if (randomRoll < 10)       { return e_hdBuildIndex_TOpenPowerMacro_QuickExpGnd; }        // 10%
+            else if (randomRoll < 25)  { return e_hdBuildIndex_TOpenPowerMacro_DefenseExpGnd; }      // 15%
+            else                       { return e_hdBuildIndex_TOpenPowerMacro_MarineExpGnd; }       // 75%
+        } else if (specific == e_buildType_t2b_SiegeBanshee) { // do a riskier expand to tech quicker
+            if (randomRoll < 30)       { return e_hdBuildIndex_TOpenPowerMacro_QuickExpGnd; }        // 30%
+            else if (randomRoll < 60)  { return e_hdBuildIndex_TOpenPowerMacro_DefenseExpGnd; }      // 30%
+            else                       { return e_hdBuildIndex_TOpenPowerMacro_MarineExpGnd; }       // 40%
+        } else if (specific == e_buildType_t2b_HellionSiege) {
+            if (randomRoll < 10)       { return e_hdBuildIndex_TOpenPowerMacro_QuickExpGnd; }        // 10%
+            else if (randomRoll < 25)  { return e_hdBuildIndex_TOpenPowerMacro_DefenseExpGnd; }      // 15%
+            else                       { return e_hdBuildIndex_TOpenPowerMacro_MarineExpGnd; }       // 75%
+        } else if (specific == e_buildType_t2b_SiegeThor) { // do a riskier expand to tech quicker
+            if (randomRoll < 20)       { return e_hdBuildIndex_TOpenPowerMacro_QuickExpGnd; }        // 20%
+            else if (randomRoll < 30)  { return e_hdBuildIndex_TOpenPowerMacro_DefenseExpGnd; }      // 10%
+            else                       { return e_hdBuildIndex_TOpenPowerMacro_MarineExpGnd; }       // 70%
+        } else if (specific == e_buildType_tm_MacroMMM) {
+            if (randomRoll < 10)       { return e_hdBuildIndex_TOpenPowerMacro_QuickExpGnd; }        // 10%
+            else if (randomRoll < 25)  { return e_hdBuildIndex_TOpenPowerMacro_DefenseExpGnd; }      // 15%
+            else                       { return e_hdBuildIndex_TOpenPowerMacro_MarineExpGnd; }       // 75%
+        } else if (specific == e_buildType_tm_MacroMech) {
+            if (randomRoll < 10)       { return e_hdBuildIndex_TOpenPowerMacro_QuickExpGnd; }        // 10%
+            else if (randomRoll < 25)  { return e_hdBuildIndex_TOpenPowerMacro_DefenseExpGnd; }      // 15%
+            else                       { return e_hdBuildIndex_TOpenPowerMacro_MarineExpGnd; }       // 75%
+        } else if (specific == e_buildType_tm_MacroThorBC) {
+            if (randomRoll < 10)       { return e_hdBuildIndex_TOpenPowerMacro_QuickExpGnd; }        // 10%
+            else if (randomRoll < 25)  { return e_hdBuildIndex_TOpenPowerMacro_DefenseExpGnd; }      // 15%
+            else                       { return e_hdBuildIndex_TOpenPowerMacro_MarineExpGnd; }       // 75%
+        }
+    }
+    else if (mainState == e_mainState_Mid) {
+        if (specific == e_buildType_t1b_MMStim) {
+            if (randomRoll < 25)      { return e_hdBuildIndex_TMidRushTiming_MMMedivac; }           // 25%
+            else                      { return e_hdBuildIndex_TMidRushTiming_DefensiveExpand; }     // 75%
+        } else if (specific == e_buildType_t1b_HellionMara) {
+            if (randomRoll < 25)      { return e_hdBuildIndex_TMidRushTiming_MMMedivac; }           // 25%
+            else                      { return e_hdBuildIndex_TMidRushTiming_DefensiveExpand; }     // 75%
+        } else if (specific == e_buildType_t1b_MariSiege) {
+            if (randomRoll < 25)      { return e_hdBuildIndex_TMidRushTiming_MMMedivac; }           // 25%
+            else                      { return e_hdBuildIndex_TMidRushTiming_DefensiveExpand; }     // 75%
+        } else if (specific == e_buildType_t1b_CloakBanshee) {
+            return e_hdBuildIndex_TMidRushTiming_DefensiveExpand;
+        } else if (specific == e_buildType_t2b_MMMedivac) {
+            return e_hdBuildIndex_TMidPower_MMMedivac;
+        } else if (specific == e_buildType_t2b_MMSiege) {
+            return e_hdBuildIndex_TMidPower_MMSiege;
+        } else if (specific == e_buildType_t2b_SiegeBanshee) {
+            return e_hdBuildIndex_TMidPower_SiegeBanshee;
+        } else if (specific == e_buildType_t2b_HellionSiege) {
+            return e_hdBuildIndex_TMidPower_HellionSiege;
+        } else if (specific == e_buildType_t2b_SiegeThor) {
+            return e_hdBuildIndex_TMidPower_SiegeThor;
+        } else if (specific == e_buildType_tm_MacroMMM) {
+            return e_hdBuildIndex_TMidMacro_Bio;
+        } else if (specific == e_buildType_tm_MacroMech) {
+            return e_hdBuildIndex_TMidMacro_Mech;
+        } else if (specific == e_buildType_tm_MacroThorBC) {
+            return e_hdBuildIndex_TMidMacro_ThorBC;
+        }
+    }
+    else if (mainState == e_mainState_Late) {
+        // only the macro builds are still applicable late game
+        if (specific == e_buildType_tm_MacroMMM) {
+            if (randomRoll < 40)      { return e_hdBuildIndex_TLateCore_MMMediViking; }             // 40%
+            else if (randomRoll < 90)      { return e_hdBuildIndex_TLateCore_MMMediSiege; }         // 50%
+            else if (randomRoll < 95)      { return e_hdBuildIndex_TLateCore_MMMediHarass; }        //  5%
+            else                      { return e_hdBuildIndex_TLateCore_MMMediBC; }                 //  5%
+        } else if (specific == e_buildType_tm_MacroMech) {
+            if (randomRoll < 40)      { return e_hdBuildIndex_TLateHighTech_HellionSeige; }         // 40%
+            else if (randomRoll < 90)      { return e_hdBuildIndex_TLateHighTech_SiegeThor; }       // 50%
+            else                      { return e_hdBuildIndex_TLateHighTech_MechBC; }               // 10%
+        } else if (specific == e_buildType_tm_MacroThorBC) {
+            if (randomRoll < 80)      { return e_hdBuildIndex_TLateAir_VikingBC; }                  // 80%
+            else                      { return e_hdBuildIndex_TLateAir_MixedAir; }                  // 20%
+        }
+    }
+
+    // not forced into a specific build at this stage
+    return e_buildType_Invalid;
+}
+
+//==================================================================================================
+//  OpenChooseHDTerranBuildFromType
+//==================================================================================================
+int OpenChooseHDTerranBuildFromType (int player, int openingType) {
+
+    AINewChooseSubState(player, e_openRollState, 1, 1000, e_hdBuildIndex_TOpenPowerMacro_MarineExpGnd);
+
+    if (openingType == e_buildType_Rush) {
+        AISetSubStateChance( e_hdBuildIndex_TOpenRush_Marine,           80 ); //   80
+        AISetSubStateChance( e_hdBuildIndex_TOpenRush_MarineReaper,     20 ); //  100
+        //AISetSubStateChance( e_hdBuildIndex_TOpenRush_Marine,           50 ); //   50
+        //AISetSubStateChance( e_hdBuildIndex_TOpenRush_MarineReaper,     10 ); //   60
+        //AISetSubStateChance( e_hdBuildIndex_TOpenRush_ProxyBarracks,    40 ); //  100
+    } else if (openingType == e_buildType_Timing) {
+        //                                                                  random protoss terran  zerg
+        AISetSubStateChanceRace( e_hdBuildIndex_TOpenTiming_MMStim,             50,    45,    40,    35 ); //  50,  45,  40,  35
+        AISetSubStateChanceRace( e_hdBuildIndex_TOpenTiming_HellionMarauder,    15,    10,    10,    35 ); //  65,  55,  50,  70
+        AISetSubStateChanceRace( e_hdBuildIndex_TOpenTiming_MariSiege,          20,    30,    35,    15 ); //  85,  85,  85,  85
+        AISetSubStateChanceRace( e_hdBuildIndex_TOpenTiming_CloakBanshee,       15,    15,    15,    15 ); // 100, 100, 100, 100
+    } else if (openingType == e_buildType_Macro) {
+        // on average play a bit safer and head toward late game
+        //                                                                  random protoss terran  zerg
+        AISetSubStateChanceRace( e_hdBuildIndex_TOpenPowerMacro_QuickExpGnd,    15,    10,    20,    10 ); //  15,  10,  20,  10
+        AISetSubStateChanceRace( e_hdBuildIndex_TOpenPowerMacro_MarineExpGnd,   65,    70,    60,    70 ); //  80,  80,  80,  80
+        AISetSubStateChanceRace( e_hdBuildIndex_TOpenPowerMacro_DefenseExpGnd,  20,    20,    20,    20 ); // 100, 100, 100, 100
+    } else if (openingType == e_buildType_Air) {
+        if (!AIHasNearbyOpenExpansion(player) && !AIIsExpandingOrHasExpanded(player)) {
+            // can't easily expand, go for a one base attack
+            AISetSubStateChance( e_hdBuildIndex_TOpenAir_OneBaseAir,        50 ); //   50
+            AISetSubStateChance( e_hdBuildIndex_TOpenAir_CloakBanshee,      30 ); //   80
+            AISetSubStateChance( e_hdBuildIndex_TOpenAir_OneBaseDrop,       20 ); //  100
+        } else {
+            AISetSubStateChance( e_hdBuildIndex_TOpenAir_OneBaseAir,        10 ); //   10
+            AISetSubStateChance( e_hdBuildIndex_TOpenAir_CloakBanshee,      10 ); //   20
+            AISetSubStateChance( e_hdBuildIndex_TOpenAir_OneBaseDrop,        5 ); //   25
+            AISetSubStateChance( e_hdBuildIndex_TOpenAir_QuickExpandAir,    75 ); //  100
+        }
+    } else {  ///if (openingType == e_buildType_Power)
+        // be a bit more aggresive to hit a power timing
+        //                                                                  random protoss terran  zerg
+        AISetSubStateChanceRace( e_hdBuildIndex_TOpenPowerMacro_QuickExpGnd,    20,    15,    25,    15 ); //  20,  15,  25,  15
+        AISetSubStateChanceRace( e_hdBuildIndex_TOpenPowerMacro_MarineExpGnd,   75,    80,    70,    80 ); //  95,  95,  95,  95
+        AISetSubStateChanceRace( e_hdBuildIndex_TOpenPowerMacro_DefenseExpGnd,   5,     5,     5,     5 ); // 100, 100, 100, 100
+    }
+
+    return  AIChooseSubState();
+}
+
+//==================================================================================================
+//  MidChooseHDTerranBuildFromType
+//==================================================================================================
+int MidChooseHDTerranBuildFromType (int player, int openingType, int prevBuildIdx) {
+
+    AINewChooseSubState(player, e_middleRollState, 1, 1000, e_hdBuildIndex_TMidPower_MMMedivac);
+
+    if (openingType == e_buildType_Rush) {
+        AISetSubStateChance( e_hdBuildIndex_TMidRushTiming_MMMedivac,        40 ); //   40
+        AISetSubStateChance( e_hdBuildIndex_TMidRushTiming_DefensiveExpand,  60 ); //  100
+    } else if (openingType == e_buildType_Timing) {
+        if (prevBuildIdx == e_hdBuildIndex_TOpenTiming_CloakBanshee) {
+            AISetSubStateChance( e_hdBuildIndex_TMidRushTiming_DefensiveExpand,  100 ); //  100
+        } else {
+            AISetSubStateChance( e_hdBuildIndex_TMidRushTiming_MMMedivac,        35 ); //   35
+            AISetSubStateChance( e_hdBuildIndex_TMidRushTiming_DefensiveExpand,  65 ); //  100
+        }
+    } else if (openingType == e_buildType_Macro) {
+            AISetSubStateChance( e_hdBuildIndex_TMidMacro_Bio,               90 ); //   90
+            AISetSubStateChance( e_hdBuildIndex_TMidMacro_Mech,              90 ); //   90
+            AISetSubStateChance( e_hdBuildIndex_TMidMacro_ThorBC,            10 ); //  100
+    } else if (openingType == e_buildType_Air) {
+        if (prevBuildIdx == e_hdBuildIndex_TOpenAir_OneBaseAir ||
+            prevBuildIdx == e_hdBuildIndex_TMidAir_OneBaseAir) {
+            AISetSubStateChance( e_hdBuildIndex_TMidAir_OneBaseAir,                 15 ); //   15
+            AISetSubStateChance( e_hdBuildIndex_TMidAir_ExpansionVikingBanshee,     20 ); //   35
+            AISetSubStateChance( e_hdBuildIndex_TMidAir_ExpansionBC,                25 ); //   60
+            AISetSubStateChance( e_hdBuildIndex_TMidAir_Macro,                      40 ); //  100
+        }
+        else if (prevBuildIdx == e_hdBuildIndex_TOpenAir_OneBaseDrop ||
+                 prevBuildIdx == e_hdBuildIndex_TMidAir_OneBaseDrop) {
+            AISetSubStateChance( e_hdBuildIndex_TMidAir_OneBaseDrop,                25 ); //   25
+            AISetSubStateChance( e_hdBuildIndex_TMidAir_ExpansionDropAir,           35 ); //   60
+            AISetSubStateChance( e_hdBuildIndex_TMidAir_Macro,                      40 ); //  100
+        }
+        else if (!AIHasNearbyOpenExpansion(player) && !AIIsExpandingOrHasExpanded(player)) {
+            // can't easily expand, continue to be a bit more aggressive
+            AISetSubStateChance( e_hdBuildIndex_TMidAir_ExpansionVikingBanshee,     30 ); //   30
+            AISetSubStateChance( e_hdBuildIndex_TMidAir_ExpansionBC,                30 ); //   60
+            AISetSubStateChance( e_hdBuildIndex_TMidAir_ExpansionDropAir,           20 ); //   80
+            AISetSubStateChance( e_hdBuildIndex_TMidAir_Macro,                      20 ); //  100
+        } else {
+            AISetSubStateChance( e_hdBuildIndex_TMidAir_ExpansionVikingBanshee,     25 ); //   25
+            AISetSubStateChance( e_hdBuildIndex_TMidAir_ExpansionBC,                25 ); //   50
+            AISetSubStateChance( e_hdBuildIndex_TMidAir_ExpansionDropAir,           10 ); //   60
+            AISetSubStateChance( e_hdBuildIndex_TMidAir_Macro,                      40 ); //  100
+        }
+    } else {  ///if (openingType == e_buildType_Power)
+        //                                                              random protoss terran  zerg
+        AISetSubStateChanceRace( e_hdBuildIndex_TMidPower_MMMedivac,        15,    20,    10,    20 ); //  15,  20,  10,  20
+        AISetSubStateChanceRace( e_hdBuildIndex_TMidPower_MMSiege,          35,    35,    40,    35 ); //  50,  55,  50,  55
+        AISetSubStateChanceRace( e_hdBuildIndex_TMidPower_SiegeBanshee,     40,    35,    40,    35 ); //  90,  90,  90,  90
+        AISetSubStateChanceRace( e_hdBuildIndex_TMidPower_HellionSiege,      5,     5,     5,     5 ); //  95,  95,  95,  95
+        AISetSubStateChanceRace( e_hdBuildIndex_TMidPower_SiegeThor,         5,     5,     5,     5 ); // 100, 100, 100, 100
+    }
+
+    return  AIChooseSubState();
+}
+
+//==================================================================================================
+//  LateChooseHDTerranBuildFromType
+//==================================================================================================
+int LateChooseHDTerranBuildFromType (int player, int lateGameType, int prevBuildIdx) {
+
+    AINewChooseSubState(player, e_lateRollState, 1, 1000, e_hdBuildIndex_TLateCore_MMMediSiege);
+
+    if (lateGameType == e_buildType_HighTech) {
+        //                                                                   random protoss terran  zerg
+        AISetSubStateChanceRace( e_hdBuildIndex_TLateHighTech_HellionSeige,      30,    20,    25,    50 ); //  30,  20,  25,  50
+        AISetSubStateChanceRace( e_hdBuildIndex_TLateHighTech_SiegeThor,         65,    75,    70,    45 ); //  95,  95,  95,  95
+        AISetSubStateChanceRace( e_hdBuildIndex_TLateHighTech_MechBC,             5,     5,     5,     5 ); // 100, 100, 100, 100
+    } else if (lateGameType == e_buildType_Special) {
+        AISetSubStateChance( e_hdBuildIndex_TLateSpecial_MMMediHarass,      20 ); //   20
+        AISetSubStateChance( e_hdBuildIndex_TLateSpecial_MMMediGhostRaven,  20 ); //   40
+        AISetSubStateChance( e_hdBuildIndex_TLateSpecial_MechBansheeRaven,  25 ); //   65
+        AISetSubStateChance( e_hdBuildIndex_TLateSpecial_MechCycloneLib,    35 ); //  100
+    } else if (lateGameType == e_buildType_Air) {
+        if (AIEnemyBuildingsOnlyOnOtherIslands(player)) {
+            AISetSubStateChance( e_hdBuildIndex_TLateAir_VikingBC,              75 ); //   75
+            AISetSubStateChance( e_hdBuildIndex_TLateAir_MixedAir,              25 ); //  100
+        } else {
+            AISetSubStateChance( e_hdBuildIndex_TLateAir_VikingBC,              50 ); //   50
+            AISetSubStateChance( e_hdBuildIndex_TLateAir_MixedAir,              50 ); //  100
+        }
+    } else {  //if (lateGameType == e_buildType_Core)
+        AISetSubStateChance( e_hdBuildIndex_TLateCore_MMMediViking,         40 ); //   40
+        AISetSubStateChance( e_hdBuildIndex_TLateCore_MMMediSiege,          50 ); //   90
+        AISetSubStateChance( e_hdBuildIndex_TLateCore_MMMediHarass,          5 ); //   95
+        AISetSubStateChance( e_hdBuildIndex_TLateCore_MMMediBC,              5 ); //  100
+    }
+    // e_buildType_Mixed should be unused, but will map to a Core build if used
+
+    return  AIChooseSubState();
+}
+
+//==================================================================================================
+//  OpenChooseHDTerranCounterBuild
+//==================================================================================================
+int OpenChooseHDTerranCounterBuild (int player, bool onlyMustSwitch) {
+    // counter logic is primarily aimed at 1v1 games and does not consider allies under attack etc
+    int currentOpening = AIGetUserInt(player, c_openingBuildType);
+    int currentExactBuild = AIGetUserInt(player, c_currentBuildIndex);
+    int lobbyBuild = PlayerAIBuildNumber(player);
+
+    // don't use counter logic if we were told to do a specific opening
+    if (PlayerBeaconBuildMenuWasFromPlayer(player, c_buildMenuOpening)) {
+        return e_buildType_Invalid;
+    }
+    if (AIGetUserInt(player, c_specificLobbyBuild) != e_buildType_Invalid) {
+        return e_buildType_Invalid;
+    }
+    if (lobbyBuild >= e_buildType_Rush && lobbyBuild <= e_buildType_Air) {
+        return e_buildType_Invalid;
+    }
+
+    if (currentOpening == e_buildType_Rush) {
+        if (AIHighDontRush(player))  {
+            // we were planning to rush, but enemy is well prepared, switch to a timing attack
+            AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+            AISetOpeningBuildMenuFromScriptType(player);
+
+            // choose a timing build based on our current tech
+            if (AITechCount(player, c_TB_FactoryTechLab, c_techCountInProgressOrBetter) > 0) {
+                return e_hdBuildIndex_TOpenTiming_MariSiege;
+            }
+            if (AITechCount(player, c_TB_Factory, c_techCountInProgressOrBetter) > 0) {
+                return e_hdBuildIndex_TOpenTiming_HellionMarauder;
+            }
+            return e_hdBuildIndex_TOpenTiming_MMStim;
+        }
+    }
+    else if (currentOpening == e_buildType_Timing) {
+        if (AIHighCurrentlyUnderHeavyAttack(player))  {
+            if (currentExactBuild == e_hdBuildIndex_TOpenTiming_CloakBanshee) {
+                if (AITechCount(player, c_TB_StarportTechLab, c_techCountInProgressOrBetter) > 0) {
+                    // we already have a starport tech lab in progress, try to get banshees
+                    return e_buildType_Invalid;
+                }
+            }
+            if (currentExactBuild != e_hdBuildIndex_TOpenTiming_MMStim) {
+                if (AITechCount(player, c_TB_Factory, c_techCountInProgressOrBetter) <= 0) {
+                    // unless we're close to having a factory, just switch to bio to hold
+                    return e_hdBuildIndex_TOpenTiming_MMStim;
+                }
+                if (currentExactBuild == e_hdBuildIndex_TOpenTiming_MariSiege) {
+                    if (AITechCount(player, c_TB_FactoryTechLab, c_techCountInProgressOrBetter) > 0) {
+                        // we have a factory, but not a techlab, try hellion marauder, instead of siegetanks
+                        return e_hdBuildIndex_TOpenTiming_HellionMarauder;
+                    }
+                }
+            }
+        }
+    }
+    else if (currentOpening == e_buildType_Power) {
+        if (AIIsExpandingOrHasExpanded(player)) {
+            // if we've already expanded, just stick with a power build, but use the defensive one
+            if (AIGetUserInt(player, c_currentBuildIndex) != e_hdBuildIndex_TOpenPowerMacro_DefenseExpGnd) {
+                return e_hdBuildIndex_TOpenPowerMacro_DefenseExpGnd;
+            }
+            // already using e_hdBuildIndex_TOpenPowerMacro_DefenseExpGnd
+            return e_buildType_Invalid;
+        }
+        
+        if (AIHighOpponentLikelyRushing(player) || AIHighCurrentlyUnderHeavyAttack(player))  {
+            // switch to a timing build (since that is more oriented toward immediate army)
+            AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+            AISetOpeningBuildMenuFromScriptType(player);
+
+            // choose a timing build based on our current tech
+            if (AITechCount(player, c_TB_FactoryTechLab, c_techCountInProgressOrBetter) > 0) {
+                return e_hdBuildIndex_TOpenTiming_MariSiege;
+            }
+            if (AITechCount(player, c_TB_Factory, c_techCountInProgressOrBetter) > 0) {
+                return e_hdBuildIndex_TOpenTiming_HellionMarauder;
+            }
+            return e_hdBuildIndex_TOpenTiming_MMStim;
+        }
+    }
+    else if (currentOpening == e_buildType_Macro) {
+        if (!AIHighOpponentLikelyRushing(player) && 
+            !AIHighCurrentlyUnderHeavyAttack(player) && 
+            !AIHighEnemyArmyLarger(player))  {
+            // not aware that we should switch, so stay with the macro build
+            return e_buildType_Invalid;
+        }
+
+        if (AIIsExpandingOrHasExpanded(player)) {
+            // if we've already expanded, switch to defensive power build instead of macro
+            AISetUserInt(player, c_openingBuildType, e_buildType_Power);
+            AISetOpeningBuildMenuFromScriptType(player);
+            return e_hdBuildIndex_TOpenPowerMacro_DefenseExpGnd;
+        }
+        else {
+            // haven't already expanded, switch to a timing build 
+            // (since that is more oriented toward immediate army)
+            AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+            AISetOpeningBuildMenuFromScriptType(player);
+
+            // choose a timing build based on our current tech
+            if (AITechCount(player, c_TB_FactoryTechLab, c_techCountInProgressOrBetter) > 0) {
+                return e_hdBuildIndex_TOpenTiming_MariSiege;
+            }
+            if (AITechCount(player, c_TB_Factory, c_techCountInProgressOrBetter) > 0) {
+                return e_hdBuildIndex_TOpenTiming_HellionMarauder;
+            }
+            return e_hdBuildIndex_TOpenTiming_MMStim;
+        }
+    }
+
+    return e_buildType_Invalid;
+}
+
+//==================================================================================================
+//  MidHDTerranCounterPowerBuild
+//==================================================================================================
+int MidHDTerranCounterPowerBuild (int player, int currentExactBuild) {
+
+    if (currentExactBuild == e_hdBuildIndex_TMidPower_SiegeThor) {
+        if (AITechCount(player, c_TB_FactoryTechLab, c_techCountInProgressOrBetter) >= 2) {
+            // allowed to keep this build
+            return e_buildType_Invalid;
+        }
+        if (AITechCount(player, c_TB_Factory, c_techCountInProgressOrBetter) >= 2) {
+            // switch to just hellion siege
+            return e_hdBuildIndex_TMidPower_HellionSiege;
+        }
+    }    
+    else if (currentExactBuild == e_hdBuildIndex_TMidPower_SiegeBanshee) {
+        if (AITechCount(player, c_TB_StarportTechLab, c_techCountInProgressOrBetter) >= 1) {
+            // allowed to keep this build
+            return e_buildType_Invalid;
+        }
+        if (AITechCount(player, c_TB_Factory, c_techCountInProgressOrBetter) >= 2) {
+            // switch to just hellion siege
+            return e_hdBuildIndex_TMidPower_HellionSiege;
+        }
+    }
+    else if (currentExactBuild == e_hdBuildIndex_TMidPower_HellionSiege) {
+        if (AITechCount(player, c_TB_Factory, c_techCountInProgressOrBetter) >= 2) {
+            // allowed to keep this build
+            return e_buildType_Invalid;
+        }
+    }
+    else if (currentExactBuild == e_hdBuildIndex_TMidPower_MMSiege || currentExactBuild == e_hdBuildIndex_TMidPower_MMMedivac) {
+        // allowed to keep this build
+        return e_buildType_Invalid;
+    }
+
+    // choose a bio based build
+    if (RandomInt(1, 100) > 45) {
+        return e_hdBuildIndex_TMidPower_MMSiege; // 55%
+    }
+    return e_hdBuildIndex_TMidPower_MMMedivac; // 45%
+}
+
+//==================================================================================================
+//  MidChooseHDTerranCounterBuild
+//==================================================================================================
+int MidChooseHDTerranCounterBuild (int player, bool onlyMustSwitch) {
+    // counter logic is primarily aimed at 1v1 games and does not consider allies under attack etc
+    int currentOpening = AIGetUserInt(player, c_openingBuildType);
+    int currentExactBuild = AIGetUserInt(player, c_currentBuildIndex);
+    int lobbyBuild = PlayerAIBuildNumber(player);
+
+    // don't use counter logic if we were told to do a specific opening
+    if (PlayerBeaconBuildMenuWasFromPlayer(player, c_buildMenuOpening)) {
+        return e_buildType_Invalid;
+    }
+    if (AIGetUserInt(player, c_specificLobbyBuild) != e_buildType_Invalid) {
+        return e_buildType_Invalid;
+    }
+    if (lobbyBuild >= e_buildType_Rush && lobbyBuild <= e_buildType_Air) {
+        return e_buildType_Invalid;
+    }
+
+    if (currentOpening == e_buildType_Rush || currentOpening == e_buildType_Timing) {
+        if (!AIIsExpandingOrHasExpanded(player)) {
+            if (AIHighCurrentlyUnderHeavyAttack(player) || AIHighEnemyArmyLarger(player))  {
+                if (currentExactBuild == e_hdBuildIndex_TMidRushTiming_DefensiveExpand) {
+                    // don't expand if we're under attack or behind on army
+                    return e_hdBuildIndex_TMidRushTiming_MMMedivac;
+                }
+            }
+        }
+    }
+    else if (currentOpening == e_buildType_Power) {          
+        if (!AIIsExpandingOrHasExpanded(player)) {
+            if (AIHighOpponentLikelyRushing(player) || AIHighCurrentlyUnderHeavyAttack(player))  {
+                // don't expand if we're under attack or behind on army, instead switch to an army heavy timing build
+                AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+                AISetOpeningBuildMenuFromScriptType(player);
+
+                return e_hdBuildIndex_TMidRushTiming_MMMedivac;
+            }
+        }
+        else {
+            // we've already expanded, just stick with a power build, but use the one that best fits our tech
+            return MidHDTerranCounterPowerBuild(player, currentExactBuild);
+        }
+    }
+    else if (currentOpening == e_buildType_Macro) {
+        if (!AIHighOpponentLikelyRushing(player) && 
+            !AIHighCurrentlyUnderHeavyAttack(player) && 
+            !AIHighEnemyArmyLarger(player))  {
+            // not aware that we should switch, so stay with the macro build
+            return e_buildType_Invalid;
+        }
+
+        if (AIIsExpandingOrHasExpanded(player)) {
+            // if we've already expanded, switch to defensive power build instead of macro
+            AISetUserInt(player, c_openingBuildType, e_buildType_Power);
+            AISetOpeningBuildMenuFromScriptType(player);
+            return MidHDTerranCounterPowerBuild(player, currentExactBuild);
+        }
+        else {
+            // haven't already expanded, switch to an army heavy timing build 
+            AISetUserInt(player, c_openingBuildType, e_buildType_Timing);
+            AISetOpeningBuildMenuFromScriptType(player);
+
+            return e_hdBuildIndex_TMidRushTiming_MMMedivac;
+        }
+    }
+
+    return e_buildType_Invalid;
+}
+
+//==================================================================================================
+//  LateChooseHDTerranCounterBuild
+//==================================================================================================
+int LateChooseHDTerranCounterBuild (int player, bool onlyMustSwitch) {
+    // counter logic is primarily aimed at 1v1 games and does not consider allies under attack etc
+    int currentLateGame = AIGetUserInt(player, c_lateGameBuildType);
+    int currentBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int newLateGame = e_buildType_Core;
+    bool needsNewBuild = false;
+
+    // don't use counter logic if we were told to do a specific opening
+    if (PlayerBeaconBuildMenuWasFromPlayer(player, c_buildMenuLateGame)) {
+        return e_buildType_Invalid;
+    }
+
+    // for variety not much counter logic, only need to worry about using an advanced build when under attack
+    if (!AIHighLateGameUnderHeavyAttack(player)) {
+        return e_buildType_Invalid;
+    }
+
+    // we're under heavy attack, don't use caster builds or builds we don't have tech for
+    // note this logic can't conflict with UpdateHDTerranLateGameArmy or it will switch back and forth
+    if (currentLateGame == e_buildType_Special || currentLateGame == e_buildType_Mixed) {
+        needsNewBuild = true;
+    }
+    else if (currentLateGame == e_buildType_Air) {
+        if (!AIEnemyBuildingsOnlyOnOtherIslands(player)) {
+            if (AITechCount(player, c_TB_Starport, c_techCountCompleteOnly) < 2) {
+                needsNewBuild = true;
+            }
+        }
+    }
+    else if (currentLateGame == e_buildType_HighTech) {
+        if (AITechCount(player, c_TB_Factory, c_techCountCompleteOnly) < 2) {
+            needsNewBuild = true;
+        }
+    }
+
+    if (!needsNewBuild) {
+        return e_buildType_Invalid;
+    }
+
+    // pick a new build
+    newLateGame = AIRandomlyChooseLateGameBuild(player);
+    if (newLateGame == currentLateGame) {
+        // this shouldn't happen, but just in case
+        return e_buildType_Invalid;
+    }
+
+    AISetUserInt(player, c_lateGameBuildType, newLateGame);
+    AISetLateGameBuildMenuFromScriptType(player);
+    return LateChooseHDTerranBuildFromType(player, newLateGame, currentBuildIndex);
+}
+
+//==================================================================================================
+//  PickHDTerranOpening
+//==================================================================================================
+int PickHDTerranOpening(int player) {
+    int race = AIGetEnemyRaceVal(player);
+    int currentBuildIndex;
+    int openingType;
+    int specificBuild;
+
+    if (AIState(player, e_mainState) != e_mainState_Open) {
+        AISetUserInt(player, c_currentBuildIndex, e_buildType_Invalid);
+    }
+    
+    // read opening data from lobby / build options menu
+    AIChooseNextOpeningBuild(player);
+
+    // if a specific build was choosen use that
+    specificBuild = AIGetUserInt(player, c_specificLobbyBuild);
+    if (specificBuild != e_buildType_Invalid) {
+        currentBuildIndex = ChooseHDTerranBuildFromSpecificBuild(player, specificBuild, e_mainState_Open);
+        if (currentBuildIndex != e_buildType_Invalid) {
+            return currentBuildIndex;
+        }
+    }
+
+    // should we do a specific counter build?
+    currentBuildIndex = OpenChooseHDTerranCounterBuild(player, false);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // if our previous current build is still valid then keep that
+    currentBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // otherwise pick an opening within the openingBuildType constraint
+    openingType = AIGetUserInt(player, c_openingBuildType);
+    currentBuildIndex = OpenChooseHDTerranBuildFromType(player, openingType);
+    return currentBuildIndex;
+}
+
+//==================================================================================================
+//  UpdateHDTerranOpening
+//==================================================================================================
+void UpdateHDTerranOpening (int player) {
+    int mainSubState = AIState(player, e_mainSubState);
+    int buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int counterBuild;
+    
+    if  ( mainSubState != e_mainSubState_Build || 
+          buildIndex == e_hdBuildIndex_Invalid || 
+          AIHasPlayerChangedCurrentOpening(player) ) {
+        // we should pick a new opening build
+        AISetMainState(player, e_mainState_Open, e_mainSubState_Init);        
+        buildIndex = PickHDTerranOpening(player);
+        AISetUserInt(player, c_currentBuildIndex, buildIndex);
+        AISetMainState(player, e_mainState_Open, e_mainSubState_Build);
+    } else {
+        counterBuild = OpenChooseHDTerranCounterBuild(player, true);
+        if (counterBuild != e_buildType_Invalid) {
+            AISetUserInt(player, c_currentBuildIndex, counterBuild);
+        }
+    }
+}
+
+//==================================================================================================
+//  PickHDTerranMidGame
+//==================================================================================================
+int PickHDTerranMidGame(int player) {
+    int prevBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int race = AIGetEnemyRaceVal(player);
+    int currentBuildIndex;
+    int openingType;
+    int specificBuild;
+
+    if (AIState(player, e_mainState) != e_mainState_Mid) {
+        AISetUserInt(player, c_currentBuildIndex, e_buildType_Invalid);
+    }
+    
+    // read opening data from lobby / build options menu
+    AIChooseNextOpeningBuild(player);
+
+    // if a specific build was choosen use that
+    specificBuild = AIGetUserInt(player, c_specificLobbyBuild);
+    if (specificBuild != e_buildType_Invalid) {
+        currentBuildIndex = ChooseHDTerranBuildFromSpecificBuild(player, specificBuild, e_mainState_Mid);
+        if (currentBuildIndex != e_buildType_Invalid) {
+            return currentBuildIndex;
+        }
+    }
+
+    // should we do a specific counter build?
+    currentBuildIndex = MidChooseHDTerranCounterBuild(player, false);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // if our previous current build is still valid then keep that
+    currentBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // otherwise pick an midgame within the openingBuildType constraint
+    openingType = AIGetUserInt(player, c_openingBuildType);
+    currentBuildIndex = MidChooseHDTerranBuildFromType(player, openingType, prevBuildIndex);
+    return currentBuildIndex;
+}
+
+//==================================================================================================
+//  UpdateHDTerranMidGame
+//==================================================================================================
+void UpdateHDTerranMidGame (int player) {
+    int mainSubState = AIState(player, e_mainSubState);
+    int buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int counterBuild;
+    
+    if  ( mainSubState != e_mainSubState_Build || 
+          buildIndex == e_hdBuildIndex_Invalid || 
+          AIHasPlayerChangedCurrentOpening(player) ) {
+        // we should pick a new midGame build
+        AISetMainState(player, e_mainState_Mid, e_mainSubState_Init);        
+        buildIndex = PickHDTerranMidGame(player);
+        AISetUserInt(player, c_currentBuildIndex, buildIndex);
+        AISetMainState(player, e_mainState_Mid, e_mainSubState_Build);
+    } else {
+        counterBuild = MidChooseHDTerranCounterBuild(player, true);
+        if (counterBuild != e_buildType_Invalid) {
+            AISetUserInt(player, c_currentBuildIndex, counterBuild);
+        }
+    }
+}
+
+//==================================================================================================
+//  PickHDTerranLateGame
+//==================================================================================================
+int PickHDTerranLateGame(int player) {
+    int prevBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int race = AIGetEnemyRaceVal(player);
+    int currentBuildIndex;
+    int lateGameType;
+    int specificBuild;
+
+    if (AIState(player, e_mainState) != e_mainState_Late) {
+        AISetUserInt(player, c_currentBuildIndex, e_buildType_Invalid);
+    }
+    
+    // read late game data from lobby / build options menu
+    AIChooseNextLateGameBuild(player);
+
+    // if a specific build was choosen use that
+    specificBuild = AIGetUserInt(player, c_specificLobbyBuild);
+    if (specificBuild != e_buildType_Invalid) {
+        currentBuildIndex = ChooseHDTerranBuildFromSpecificBuild(player, specificBuild, e_mainState_Late);
+        if (currentBuildIndex != e_buildType_Invalid) {
+            return currentBuildIndex;
+        }
+    }
+
+    // should we do a specific counter build?
+    currentBuildIndex = LateChooseHDTerranCounterBuild(player, false);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // if our previous current build is still valid then keep that
+    currentBuildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (currentBuildIndex != e_buildType_Invalid) {
+        return currentBuildIndex;
+    }
+
+    // otherwise pick an opening within the lateGameBuildType constraint
+    lateGameType = AIGetUserInt(player, c_lateGameBuildType);
+    currentBuildIndex = LateChooseHDTerranBuildFromType(player, lateGameType, prevBuildIndex);
+    return currentBuildIndex;
+}
+
+//==================================================================================================
+//  UpdateHDTerranLateGameArmy
+//==================================================================================================
+void UpdateHDTerranLateGameArmy (int player) {
+    int mainSubState = AIState(player, e_mainSubState);
+    int buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    int lateGameType = AIGetUserInt(player, c_lateGameBuildType);
+    int newArmyTime = AIGetUserInt(player, c_nextArmyTime);
+    bool pickNewArmy = false;
+    int counterBuild;
+    
+    // should we choose a very specific counter build given the current game situation
+    counterBuild = LateChooseHDTerranCounterBuild(player, true);
+    if (counterBuild != e_buildType_Invalid) {
+        AIHighSetLateGameArmy(player, counterBuild);
+        return;
+    }
+
+    if  (mainSubState != e_mainSubState_Build || buildIndex == e_hdBuildIndex_Invalid) {
+        // if we haven't picked a lategame build, we should do so now
+        pickNewArmy = true;
+    }
+    else if (AIHasPlayerChangedCurrentLateGame(player)) {
+        // or the player has ordered us to change, pick a new build now
+        pickNewArmy = true;
+    }
+    else if (newArmyTime < FixedToInt(AIGetTime()) && !AIHighCurrentlyUnderHeavyAttack(player)) {
+        // been using the previous army a while and not currently under attack, switch to a new one
+        pickNewArmy = true;
+    }
+    else if (AIEnemyBuildingsOnlyOnOtherIslands(player) && (lateGameType != e_buildType_Air)) {
+        // if the enemy is hiding on an island and we're not using an air build, switch to air
+        pickNewArmy = true;
+    }
+
+    if (pickNewArmy) {
+        AISetMainState(player, e_mainState_Late, e_mainSubState_Init);        
+        buildIndex = PickHDTerranLateGame(player);
+        AIHighSetLateGameArmy(player, buildIndex);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDInitMid
+//--------------------------------------------------------------------------------------------------
+void TerranHDInitMid (int player) {
+    // pick a midGame build using the generic logic
+    int buildIndex = PickHDTerranMidGame(player);
+    
+    AISetFlag(player, e_flagsLateScout, true);
+    
+    AISetUserInt(player, c_currentBuildIndex, buildIndex);
+    AISetMainState(player, e_mainState_Mid, e_mainSubState_Build);
+}
+
+//==================================================================================================
+//  Terran Shared Late Game
+//==================================================================================================
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDInitLate
+//--------------------------------------------------------------------------------------------------
+void TerranHDInitLate (int player) {
+    int delay;
+
+    // turn on attacking if it's not already on, but delay the next attack 4-6 minutes
+    if (AIState(player, e_attackState) == e_attackState_Wait) {
+        AIWaveMerge(player, c_waveMain, c_waveAttack);
+        AISetAttackState(player, e_attackState_Idle);
+
+        delay = FixedToInt(AIGetTime()) + RandomInt(240, 360);
+        AISetUserInt(player, c_delayNextAttack, delay);
+    }
+
+    // set initial late game flags
+    AISetFlag(player, e_flagsTimeout, true);
+    AISetFlag(player, e_flagsDetect, true);
+    AISetFlag(player, e_flagsLateScout, true);
+    AISetFlag(player, e_flagsClearObs, true);
+    AISetFlag(player, e_flagsDiversion, true);
+    AISetFlag(player, e_flagsEarlyDefScout, false);
+    AISetDifficulty(player, c_diffEarlyGameRepair, false);
+
+    AIEarlyDefenseEnable(player, false, false);
+    
+    // we'll pick a late game build in the regular late game logic
+    AISetUserInt(player, c_currentBuildIndex, e_hdBuildIndex_Invalid);
+    AISetMainState(player, e_mainState_Late, e_mainSubState_Build);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDRecoveryStart
+//--------------------------------------------------------------------------------------------------
+void TerranHDRecoveryStart (int player) {
+
+    AISetStock( player, 1, c_TB_CommandCenter_Alias );
+    AISetStock( player, 1, c_TU_SCV );
+    AISetStockFarms( player, c_TB_SupplyDepot, c_stockNeededFarms);
+    AISetStock( player, 12, c_TU_SCV );
+
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDVitalUpgrades
+//--------------------------------------------------------------------------------------------------
+void TerranHDVitalUpgrades (int player) {
+    
+    if (AIHighCurrentlyUnderHeavyAttack(player)) {
+        return;
+    }
+
+    if (AITechCount(player, c_TU_Banshee, c_techCountCompleteOnly) >= 2) {
+        AISetStock( player, 1, c_TR_BansheeCloak );
+    }
+
+    if (AITechCount(player, c_TU_Marine, c_techCountInProgressOrBetter) >= 12) {
+        AISetStock( player, 1, c_TR_MarineStimPack );
+        AISetStock( player, 1, c_TR_MarineShield );
+    }
+    
+    if (AITechCount(player, c_TU_Marauder, c_techCountInProgressOrBetter) >= 8) {
+        AISetStock( player, 1, c_TR_MarineStimPack );
+        AISetStock( player, 1, c_TR_MarauderSlow );
+    }
+    
+    if (AITechCount(player, c_TU_Marine, c_techCountInProgressOrBetter) +
+        AITechCount(player, c_TU_Marauder, c_techCountInProgressOrBetter) +        
+        AITechCount(player, c_TU_Reaper, c_techCountInProgressOrBetter) >= 12)
+    {
+        AISetStock( player, 1, c_TR_InfantryWeapons1 );
+        AISetStock( player, 1, c_TR_InfantryArmor1 );
+        AISetStockUnitNext( player, 2, c_TB_EngineeringBay, c_stockAlways );
+    }
+    
+    if (AITechCount(player, c_TU_SiegeTank_Alias, c_techCountInProgressOrBetter) +
+        AITechCount(player, c_TU_Hellion, c_techCountInProgressOrBetter) >= 6)
+    {
+        AISetStock( player, 1, c_TR_VehicleWeapons1 );
+        AISetStock( player, 1, c_TR_MechPlating1 );
+        AISetStockUnitNext( player, 2, c_TB_Armory, c_stockAlways );
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDGeneralUpgrades
+//--------------------------------------------------------------------------------------------------
+void TerranHDGeneralUpgrades (int player) {
+    if (AIHighCurrentlyUnderHeavyAttack(player)) {
+        return;
+    }
+    
+    if (AITechCount(player, c_TU_Marine, c_techCountInProgressOrBetter) +
+        AITechCount(player, c_TU_Marauder, c_techCountInProgressOrBetter) +        
+        AITechCount(player, c_TU_Reaper, c_techCountInProgressOrBetter) >= 12)
+    {
+        AINewTechStock(player);
+        AITechStockAdd(c_TR_InfantryWeapons1);
+        AITechStockAdd(c_TR_InfantryWeapons2);
+        AITechStockAdd(c_TR_InfantryWeapons3);
+        AITechStockAdd(c_TR_InfantryArmor1);
+        AITechStockAdd(c_TR_InfantryArmor2);
+        AITechStockAdd(c_TR_InfantryArmor3);
+        AISetStockTechNextUnCap(player,1000,1000);
+
+        AISetStockUnitNext( player, 2, c_TB_EngineeringBay, c_stockAlways );
+    }
+    
+    if (AITechCount(player, c_TU_Hellion, c_techCountInProgressOrBetter) >= 6) {
+        AISetStock( player, 1, c_TR_HellionDamage );
+    }    
+    if (AITechCount(player, c_TU_Cyclone, c_techCountInProgressOrBetter) >= 6) {
+        AISetStock( player, 1, c_TR_CycloneDamage );
+    }
+    
+    if (AITechCount(player, c_TU_SiegeTank_Alias, c_techCountInProgressOrBetter) +
+        AITechCount(player, c_TU_Hellion, c_techCountInProgressOrBetter) >= 6)
+    {
+        AINewTechStock(player);
+        AITechStockAdd(c_TR_VehicleWeapons1);
+        AITechStockAdd(c_TR_VehicleWeapons2);
+        AITechStockAdd(c_TR_VehicleWeapons3);
+        AITechStockAdd(c_TR_MechPlating1);
+        AITechStockAdd(c_TR_MechPlating2);
+        AITechStockAdd(c_TR_MechPlating3);
+        AISetStockTechNextUnCap(player,1000,1000);
+
+        AISetStockUnitNext( player, 2, c_TB_Armory, c_stockAlways );
+    }
+
+    if (AITechCount(player, c_TU_Ghost, c_techCountCompleteOnly) >= 2) {
+        AISetStock( player, 1, c_TR_GhostCloak );
+    }
+
+    if (AITechCount(player, c_TU_Viking_Alias, c_techCountInProgressOrBetter) +
+        AITechCount(player, c_TU_Banshee, c_techCountInProgressOrBetter) +
+        AITechCount(player, c_TU_Battlecruiser, c_techCountInProgressOrBetter) >= 8)
+    {
+        AINewTechStock(player);
+        AITechStockAdd(c_TR_ShipWeapons1);
+        AITechStockAdd(c_TR_ShipWeapons2);
+        AITechStockAdd(c_TR_ShipWeapons3);
+        AITechStockAdd(c_TR_MechPlating1);
+        AITechStockAdd(c_TR_MechPlating2);
+        AITechStockAdd(c_TR_MechPlating3);
+        AISetStockTechNextUnCap(player,1000,1000);
+
+        AISetStockUnitNext( player, 2, c_TB_Armory, c_stockAlways );
+    }
+    
+    if (AITechCount(player, c_TU_Battlecruiser, c_techCountInProgressOrBetter) >= 3) {
+        AISetStock( player, 1, c_TR_BattlecruiserYamato );
+    }
+
+    if (AITechCount(player, c_TU_Liberator, c_techCountCompleteOnly) >= 4) {
+        AISetStock( player, 1, c_TR_LiberatorRange );
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDMinorUpgrades
+//--------------------------------------------------------------------------------------------------
+void TerranHDMinorUpgrades (int player) {
+
+    if (AITechCount(player, c_TU_Banshee, c_techCountInProgressOrBetter) >= 3) {
+        AISetStock( player, 1, c_TR_BansheeSpeed );
+    }
+
+    if (AITechCount(player, c_TU_Medivac, c_techCountInProgressOrBetter) >= 4) {
+        AISetStock( player, 1, c_TR_MedivacLongerBoost );
+    }
+
+    if (AITechCount(player, c_TU_Battlecruiser, c_techCountInProgressOrBetter) >= 3) {
+        AISetStock( player, 1, c_TR_BattlecruiserEnergy );
+    }
+
+    if (AITechCount(player, c_TU_Raven, c_techCountInProgressOrBetter) >= 4) {
+        AISetStock( player, 1, c_TR_RavenDamage );
+        AISetStock( player, 1, c_TR_RavenEnergy );
+    }
+
+    if (AITechCount(player, c_TB_MissileTurret, c_techCountInProgressOrBetter) +
+        AITechCount(player, c_TB_PlanetaryFortress, c_techCountInProgressOrBetter) >= 4) {
+        AISetStock( player, 1, c_TR_MissileTurretRange);
+    }
+
+    //if (AITechCount(player, c_TB_Bunker, c_techCountCompleteOnly) >= 1) {
+    //    AISetStock( player, 1, c_TR_BunkerSpace);
+    //}
+
+    AISetStock( player, 1, c_TR_BuildingArmor);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDDefaultExtraMidStock
+//--------------------------------------------------------------------------------------------------
+void TerranHDDefaultExtraMidStock (int player) {
+    if (AIGetUserInt(player, c_numGroundStartLocs) > 0) {
+        if (AIHasRes(player,700,0)) {
+            AISetStockUnitNext( player, 3, c_TB_Barracks, c_stockIdle );
+            if (AITechCount(player, c_TB_Barracks, c_techCountInProgressOrBetter) >= 3) {
+                if (AIHasRes(player,700,600)) {
+                    if (AITechCount(player, c_TB_Factory, c_techCountInProgressOrBetter) > 0) {
+                        AISetStockUnitNext( player, 3, c_TB_Factory, c_stockIdle );
+                    }
+                    if (AITechCount(player, c_TB_Starport, c_techCountInProgressOrBetter) > 0) {
+                        AISetStockUnitNext( player, 3, c_TB_Starport, c_stockIdle );
+                    }
+                }
+            }
+        }
+    } else {        
+        if (AIHasRes(player,400,200)) {
+            AISetStock( player, 1, c_TU_Medivac );
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDEmergencyDetectionAntiAir
+//--------------------------------------------------------------------------------------------------
+void TerranHDEmergencyDetectionAntiAir (int player) {
+    if (AIGetTime() < 240) {
+        return; // don't worry about anti-air or detection prior to 4 minutes (even if the player requests it)
+    }
+
+    if (AISuspectDetectionDanger(player, c_earlyDetectionDangerTime)) {
+        AISetStock( player, 1, c_TU_Raven );
+        AISetStock( player, 2, c_TB_MissileTurret );
+    }
+    if (AISuspectAirDanger(player, c_earlyAirDangerTime)) {
+        AISetStock( player, 2, c_TB_MissileTurret );
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDDefenseMainTown
+//--------------------------------------------------------------------------------------------------
+void TerranHDDefenseMainTown (int player) {   
+    int mainTown;
+    int state; 
+    int turretInTown;
+    int bunkerInTown;
+    int turretCount;
+    int bunkerCount;
+    int commandInTown;
+    int orbitalCount;
+    int amount;
+    int foodUsed = PlayerGetPropertyInt(player, c_playerPropSuppliesUsed);
+
+    mainTown = AIGetMainTown(player);
+
+    state = AIGetTownState(player, mainTown);
+    if (state != c_townStateEstablished) {
+        return;
+    }
+
+    amount = 3;
+    if (foodUsed > 140) {
+        if (AIHasRes(player,1200,0)) {
+            amount = 4;
+        }
+    }
+
+    turretInTown = AIGetBuildingCountInTown(player, mainTown, c_TB_MissileTurret, c_techCountCompleteOnly);
+    if (turretInTown < amount) {
+        turretCount = AITechCount(player, c_TB_MissileTurret, c_techCountCompleteOnly) + 1;
+        AISetStockEx(player, mainTown, turretCount, c_TB_MissileTurret, c_makeResourceDefense, 0);
+        return;
+    }
+
+    // bunkers just aren't useful by time the AI makes them
+    //bunkerInTown = AIGetBuildingCountInTown(player, mainTown, c_TB_Bunker, c_techCountCompleteOnly);
+    //if (bunkerInTown < 2) {
+    //    bunkerCount = AITechCount(player, c_TB_Bunker, c_techCountCompleteOnly) + 1;
+    //    AISetStockEx(player, mainTown, bunkerCount, c_TB_Bunker, c_makeDefense, 0);
+    //    return;
+    //}
+
+    commandInTown = AIGetBuildingCountInTown(player, mainTown, c_TB_CommandCenter, c_techCountCompleteOnly);
+    if (commandInTown > 0) {
+        orbitalCount = AITechCount(player, c_TB_OrbitalCommand, c_techCountCompleteOnly) + 1;
+        AISetStockEx(player, mainTown, orbitalCount, c_TB_OrbitalCommand, c_makeDefault, 0);
+        return;
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDDefenseOtherTowns
+//--------------------------------------------------------------------------------------------------
+void TerranHDDefenseOtherTowns (int player) {
+    int i = 0;
+    int town;
+    int mainTown;
+    int state;
+    int minLeftInTown;
+    int orbitalTotal = AITechCount(player, c_TB_OrbitalCommand, c_techCountQueuedOrBetter);
+    int orbitalIncomplete = AITechCount(player, c_TB_OrbitalCommand, c_techCountIncompleteOnly);
+    int planetaryIncomplete;
+    int amount;
+    int foodUsed = PlayerGetPropertyInt(player, c_playerPropSuppliesUsed);
+    
+    mainTown = AIGetMainTown(player);
+
+    while (i < c_townMax) {
+        town = i;
+        i = i + 1;
+
+        if (town == mainTown) {
+            continue;
+        }
+        state = AIGetTownState(player, town);
+        if (state != c_townStateEstablished) {
+            continue;
+        }
+
+        minLeftInTown = AIGetMineralAmountLeft(player, town);
+        if (orbitalIncomplete == 0) {
+            if (AIGetBuildingCountInTown(player, town, c_TB_CommandCenter, c_techCountCompleteOnly) > 0) {
+                if (orbitalTotal < 3) {
+                    AISetStockEx(player, town, 1, c_TB_OrbitalCommand, c_makeDefault, 0);
+                    orbitalIncomplete = orbitalIncomplete + 1;
+                    orbitalTotal = orbitalTotal + 1;
+                    continue;
+                }
+                else {
+                    planetaryIncomplete = AITechCount(player, c_TB_PlanetaryFortress, c_techCountIncompleteOnly);
+                    if (planetaryIncomplete == 0) {
+                        if (minLeftInTown > 1000) {
+                            AISetStockEx(player, town, 1, c_TB_PlanetaryFortress, c_makeDefault, 0);
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (minLeftInTown > 1000) {
+            amount = 2;
+            if (foodUsed > 140) {
+                if (AIHasRes(player,1200,0)) {
+                    amount = 3;
+                }
+            }
+            
+            AISetStockEx(player, town, amount, c_TB_MissileTurret, c_makeResourceDefense | c_nearDropoff, 0);
+            //AISetStockEx(player, town, 1, c_TB_Bunker, c_makeDefense, 0);
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDMakeCounters
+//--------------------------------------------------------------------------------------------------
+void TerranHDMakeCounters (int player) {
+    fixed groundMultiplier = 1.0;
+    fixed airMultiplier = 1.0;
+
+    if (AIEnemyBuildingsOnlyOnOtherIslands(player)) {
+        // when sieging an island limit making ground counters
+        groundMultiplier = 0.33;
+        airMultiplier = 1.25;
+    }
+
+    AIMakeCounters(player, c_TU_Marine,         c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_TU_Marauder,       c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_TU_Reaper,         c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_TU_Ghost,          c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_TU_Hellion,        c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_TU_WidowMine,      c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_TU_SiegeTank,      c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_TU_Cyclone,        c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_TU_Thor,           c_stockAlways, groundMultiplier);
+    AIMakeCounters(player, c_TU_Viking,         c_stockAlways, airMultiplier);
+    AIMakeCounters(player, c_TU_Raven,          c_stockAlways, 1.0);
+    AIMakeCounters(player, c_TU_Banshee,        c_stockAlways, airMultiplier);
+    AIMakeCounters(player, c_TU_Liberator,      c_stockAlways, airMultiplier);
+    AIMakeCounters(player, c_TU_Battlecruiser,  c_stockAlways, airMultiplier);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDLateGameArmy Helper functions
+//--------------------------------------------------------------------------------------------------
+bool TerranHDLateCoreMMMediViking (int player, int state);             // Bio with vikings against Broodlord/Colossi
+bool TerranHDLateCoreMMMediSiege (int player, int state);              // Bio with siegetanks against Baneling/Terran
+bool TerranHDLateCoreMMMediHarass (int player, int state);             // Bio with harrass from ghosts(nuke) & cloak banshee
+bool TerranHDLateCoreMMMediBC (int player, int state);                 // Bio with high tech air
+bool TerranHDLateHighTechHellionSeige (int player, int state);         // Lower tech mech
+bool TerranHDLateHighTechSiegeThor (int player, int state);            // Higher tech mech
+bool TerranHDLateHighTechMechBC (int player, int state);               // Mech with a few battlecruisers
+bool TerranHDLateAirVikingBC (int player, int state);                  // Focusses on vikings and battlecruisers
+bool TerranHDLateAirMixedAir (int player, int state);                  // Uses a mix of all the air units
+bool TerranHDLateSpecialMMMediHarass (int player, int state);          // Bio with harrass from ghosts(nuke) & cloak banshee
+bool TerranHDLateSpecialMMMediGhostRaven (int player, int state);      // Bio with emp & pdd
+bool TerranHDLateSpecialMechBansheeRaven (int player, int state);      // Mech with banshee harass and raven backup
+bool TerranHDLateSpecialMechCycloneLib (int player, int state);        // Mech with extra cyclones & liberators
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDCallLateGameArmy
+//--------------------------------------------------------------------------------------------------
+bool TerranHDCallLateGameArmy (int player, int buildIndex, int state) {
+
+    if (buildIndex == e_hdBuildIndex_TLateCore_MMMediViking)                { return TerranHDLateCoreMMMediViking (player, state); }
+    else if (buildIndex == e_hdBuildIndex_TLateCore_MMMediSiege)            { return TerranHDLateCoreMMMediSiege (player, state); }
+    else if (buildIndex == e_hdBuildIndex_TLateCore_MMMediHarass)           { return TerranHDLateCoreMMMediHarass (player, state); }
+    else if (buildIndex == e_hdBuildIndex_TLateCore_MMMediBC)               { return TerranHDLateCoreMMMediBC (player, state); }
+    else if (buildIndex == e_hdBuildIndex_TLateHighTech_HellionSeige)       { return TerranHDLateHighTechHellionSeige (player, state); }
+    else if (buildIndex == e_hdBuildIndex_TLateHighTech_SiegeThor)          { return TerranHDLateHighTechSiegeThor (player, state); }
+    else if (buildIndex == e_hdBuildIndex_TLateHighTech_MechBC)             { return TerranHDLateHighTechMechBC (player, state); }
+    else if (buildIndex == e_hdBuildIndex_TLateAir_VikingBC)                { return TerranHDLateAirVikingBC (player, state); }
+    else if (buildIndex == e_hdBuildIndex_TLateAir_MixedAir)                { return TerranHDLateAirMixedAir (player, state); }
+    else if (buildIndex == e_hdBuildIndex_TLateSpecial_MMMediHarass)        { return TerranHDLateSpecialMMMediHarass (player, state); }
+    else if (buildIndex == e_hdBuildIndex_TLateSpecial_MMMediGhostRaven)    { return TerranHDLateSpecialMMMediGhostRaven (player, state); }
+    else if (buildIndex == e_hdBuildIndex_TLateSpecial_MechBansheeRaven)    { return TerranHDLateSpecialMechBansheeRaven (player, state); }
+    else if (buildIndex == e_hdBuildIndex_TLateSpecial_MechCycloneLib)      { return TerranHDLateSpecialMechCycloneLib (player, state); }
+    else { ErrorMeleeScript(player, "Invalid Late BuildIndex TerranCallLateGameArmy"); }
+
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDLateGameArmy
+//--------------------------------------------------------------------------------------------------
+void TerranHDLateGameArmy (int player, int state) {
+    int buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    TerranHDCallLateGameArmy(player, buildIndex, state);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDIsSubStateStillValid
+//--------------------------------------------------------------------------------------------------
+bool TerranHDIsSubStateStillValid (int player, int buildIndex) {
+    return TerranHDCallLateGameArmy(player, buildIndex, e_armyTypeValidate);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDLateCoreMMMediViking
+//--------------------------------------------------------------------------------------------------
+bool TerranHDLateCoreMMMediViking (int player, int state) {
+    if (state == e_armyTypeValidate) {
+        // this is our default late game subState needs to always return valid
+        return true;
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 8, c_TU_Marine, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding  
+        AISetStockUnitNext( player, 2, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Marauder, c_stockAlways );      
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 2, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 6, c_TU_Marauder, c_stockAlways );
+        AISetStock( player, 1, c_TR_MarineStimPack );
+        AISetStockUnitNext( player, 12, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_TB_Factory,            c_stockIdle );
+        return true;  //  28 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player, 3, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 14, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Marauder, c_stockAlways );
+        return true;  //  44 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 4, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_StarportReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 4, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_TU_Marine, c_stockAlways );
+        AISetStock( player, 1, c_TR_MarineShield );
+        AISetStockUnitNext( player, 6, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_TU_Marauder, c_stockAlways );
+        return true;  //  72 food cap
+    }
+    if (state == e_armyTypeFull) { 
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 5, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 3, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 30, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 36, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 48, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 36, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Medivac, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDLateCoreMMMediSiege
+//--------------------------------------------------------------------------------------------------
+bool TerranHDLateCoreMMMediSiege (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_TB_Factory, c_techCountCompleteOnly);
+        return (techCount >= 1);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 8, c_TU_Marine, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding  
+        AISetStockUnitNext( player, 2, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Marauder, c_stockAlways );      
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 2, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 6, c_TU_Marauder, c_stockAlways );
+        AISetStock( player, 1, c_TR_MarineStimPack );
+        AISetStockUnitNext( player, 12, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_TB_Factory,            c_stockIdle );
+        return true;  //  28 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player, 3, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 14, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_SiegeTank, c_stockAlways );
+        return true;  //  46 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 4, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_StarportReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_WidowMine_Alias, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 5, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 3, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 4, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Cyclone, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 14, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_WidowMine_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 28, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 32, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Cyclone, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_SiegeTank, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDLateCoreMMMediHarass
+//--------------------------------------------------------------------------------------------------
+bool TerranHDLateCoreMMMediHarass (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_TB_Barracks, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 8, c_TU_Marine, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding  
+        AISetStockUnitNext( player, 2, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Marauder, c_stockAlways );      
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 2, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 6, c_TU_Marauder, c_stockAlways );
+        AISetStock( player, 1, c_TR_MarineStimPack );
+        AISetStockUnitNext( player, 12, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_TB_Factory,            c_stockIdle );
+        return true;  //  28 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player, 3, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 14, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_TU_Marine, c_stockAlways );
+        return true;  //  48 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 4, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_StarportReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 4, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_TU_Marine, c_stockAlways );
+        AISetStock( player, 1, c_TR_MarineShield );
+        AISetStockUnitNext( player, 2, c_TU_Banshee, c_stockAlways );
+        AISetStock( player, 1, c_TR_BansheeCloak );
+        AISetStockUnitNext( player, 3, c_TU_Viking, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 5, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 3, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 6, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Banshee, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 30, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 36, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Banshee, c_stockAlways );
+        AISetStockUnitNext( player, 44, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 32, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Medivac, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDLateCoreMMMediBC
+//--------------------------------------------------------------------------------------------------
+bool TerranHDLateCoreMMMediBC (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount += AITechCount(player, c_TB_Starport, c_techCountCompleteOnly);
+        return (techCount >= 1);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 8, c_TU_Marine, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding  
+        AISetStockUnitNext( player, 2, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Marauder, c_stockAlways );      
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 2, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 6, c_TU_Marauder, c_stockAlways );
+        AISetStock( player, 1, c_TR_MarineStimPack );
+        AISetStockUnitNext( player, 12, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_TB_Factory,            c_stockIdle );
+        return true;  //  28 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player, 3, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 14, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Marauder, c_stockAlways );
+        return true;  //  44 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 4, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_StarportReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 4, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_TU_Marine, c_stockAlways );
+        AISetStock( player, 1, c_TR_MarineShield );
+        AISetStockUnitNext( player, 2, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Battlecruiser, c_stockAlways );
+        return true;  //  72 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 5, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 3, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 30, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Battlecruiser, c_stockAlways );
+        AISetStockUnitNext( player, 30, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 36, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 5, c_TU_Battlecruiser, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 40, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 30, c_TU_Marauder, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDLateHighTechHellionSeige
+//--------------------------------------------------------------------------------------------------
+bool TerranHDLateHighTechHellionSeige (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_TB_Factory, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 8, c_TU_Marine, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding
+        AISetStockUnitNext( player, 2, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_SiegeTank, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 2, c_TB_Factory, c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_FactoryTechLab, c_stockIdle );
+        AISetStockUnitNext( player, 4, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_SiegeTank, c_stockAlways );
+        return true;  //  28 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player, 3, c_TB_Factory, c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TB_FactoryTechLab, c_stockIdle );  
+        AISetStockUnitNext( player, 6, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Hellion, c_stockAlways );      
+        AISetStock( player, 1, c_TR_HellionDamage );
+        AISetStockUnitNext( player, 10, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Marauder, c_stockAlways );
+        return true;  //  48 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 2, c_TU_Cyclone, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_WidowMine_Alias, c_stockAlways );
+        return true;  //  68 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 4, c_TB_Factory, c_stockIdle );
+        AISetStockUnitNext( player, 3, c_TB_FactoryTechLab, c_stockIdle );
+        AISetStockUnitNext( player, 8, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Thor, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_WidowMine_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Cyclone, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Thor, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Marauder, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDLateHighTechSiegeThor
+//--------------------------------------------------------------------------------------------------
+bool TerranHDLateHighTechSiegeThor (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_TB_Factory, c_techCountCompleteOnly);
+        techCount = AITechCount(player, c_TB_Armory, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 8, c_TU_Marine, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding
+        AISetStockUnitNext( player, 2, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_SiegeTank, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 2, c_TB_Factory, c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_FactoryTechLab, c_stockIdle );
+        AISetStockUnitNext( player, 4, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_SiegeTank, c_stockAlways );
+        return true;  //  28 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts  
+        AISetStockUnitNext( player, 3, c_TB_Factory, c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TB_FactoryTechLab, c_stockIdle );  
+        AISetStockUnitNext( player, 6, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Hellion, c_stockAlways );      
+        AISetStock( player, 1, c_TR_HellionDamage );
+        AISetStockUnitNext( player, 2, c_TU_Thor, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 3, c_TB_FactoryTechLab, c_stockIdle );
+        AISetStockUnitNext( player, 8, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Thor, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_WidowMine_Alias, c_stockAlways );
+        return true;  //  72 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 4, c_TB_Factory, c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TU_Cyclone, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Thor, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_WidowMine_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Cyclone, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Thor, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Marauder, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDLateHighTechMechBC
+//--------------------------------------------------------------------------------------------------
+bool TerranHDLateHighTechMechBC (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_TB_Factory, c_techCountCompleteOnly);
+        techCount = AITechCount(player, c_TB_Starport, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 8, c_TU_Marine, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding
+        AISetStockUnitNext( player, 2, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_SiegeTank, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 2, c_TB_Factory, c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_FactoryTechLab, c_stockIdle );
+        AISetStockUnitNext( player, 4, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_SiegeTank, c_stockAlways );
+        return true;  //  28 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts  
+        AISetStockUnitNext( player, 3, c_TB_Factory, c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TB_FactoryTechLab, c_stockIdle );  
+        AISetStockUnitNext( player, 6, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Hellion, c_stockAlways );      
+        AISetStock( player, 1, c_TR_HellionDamage );
+        AISetStockUnitNext( player, 10, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Marauder, c_stockAlways );
+        return true;  //  48 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 8, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Battlecruiser, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_WidowMine_Alias, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 4, c_TB_Factory, c_stockIdle );
+        AISetStockUnitNext( player, 3, c_TB_FactoryTechLab, c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TU_Cyclone, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Battlecruiser, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Battlecruiser, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_WidowMine_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Cyclone, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 14, c_TU_Marauder, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDLateAirVikingBC
+//--------------------------------------------------------------------------------------------------
+bool TerranHDLateAirVikingBC (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_TB_Starport, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 3, c_TU_Viking, c_stockAlways );
+        return true;  //  6 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding  
+        AISetStockUnitNext( player, 6, c_TU_Viking, c_stockAlways );  
+        return true;  //  12 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 2, c_TB_Starport, c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_StarportTechLab, c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_StarportReactor, c_stockIdle );
+        AISetStockUnitNext( player, 10, c_TU_Viking, c_stockAlways );
+        return true;  //  20 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player, 2, c_TU_Battlecruiser, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Battlecruiser, c_stockAlways );
+        return true;  //  44 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 3, c_TB_Starport, c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TB_StarportTechLab, c_stockIdle );
+        AISetStockUnitNext( player, 6, c_TU_Battlecruiser, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_TB_Starport,           c_stockIdle );
+        AISetStockUnitNext( player, 3, c_TB_StarportTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 12, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Battlecruiser, c_stockAlways );
+        return true;  //  72 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 4, c_TB_Starport,           c_stockIdle );
+        AISetStockUnitNext( player, 3, c_TB_StarportTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Battlecruiser, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Raven, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_TU_Battlecruiser, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Banshee, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 22, c_TU_Battlecruiser, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDLateAirMixedAir
+//--------------------------------------------------------------------------------------------------
+bool TerranHDLateAirMixedAir (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_TB_Starport, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 3, c_TU_Viking, c_stockAlways );
+        return true;  //  6 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding  
+        AISetStockUnitNext( player, 6, c_TU_Viking, c_stockAlways );  
+        return true;  //  12 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 2, c_TB_Starport, c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_StarportTechLab, c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_StarportReactor, c_stockIdle );
+        AISetStockUnitNext( player, 8, c_TU_Viking, c_stockAlways );
+        return true;  //  16 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player, 2, c_TU_Battlecruiser, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Raven, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Battlecruiser, c_stockAlways );
+        return true;  //  44 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 3, c_TB_Starport,           c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TB_StarportTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 6, c_TU_Battlecruiser, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Raven, c_stockAlways );
+        return true;  //  68 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 4, c_TB_Starport,           c_stockIdle );
+        AISetStockUnitNext( player, 3, c_TB_StarportTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Battlecruiser, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Raven, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_TU_Battlecruiser, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Banshee, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_TU_Battlecruiser, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDLateSpecialMMMediHarass
+//--------------------------------------------------------------------------------------------------
+bool TerranHDLateSpecialMMMediHarass (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_TB_Barracks, c_techCountCompleteOnly);
+        techCount = AITechCount(player, c_TB_GhostAcademy, c_techCountCompleteOnly);
+        techCount = AITechCount(player, c_TB_Starport, c_techCountCompleteOnly);
+        return (techCount >= 3);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 8, c_TU_Marine, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding  
+        AISetStockUnitNext( player, 2, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Marauder, c_stockAlways );      
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 2, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 6, c_TU_Marauder, c_stockAlways );
+        AISetStock( player, 1, c_TR_MarineStimPack );
+        AISetStockUnitNext( player, 12, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_TB_Factory,            c_stockIdle );
+        return true;  //  28 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player, 3, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 8, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 14, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Marauder, c_stockAlways );
+        return true;  //  48 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 4, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_StarportReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 4, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_TU_Marine, c_stockAlways );
+        AISetStock( player, 1, c_TR_MarineShield );
+        AISetStockUnitNext( player, 2, c_TU_Banshee, c_stockAlways );
+        AISetStock( player, 1, c_TR_BansheeCloak );
+        AISetStockUnitNext( player, 4, c_TU_Viking, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 5, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 3, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 10, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Banshee, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 30, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Banshee, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 32, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Banshee, c_stockAlways );
+        AISetStockUnitNext( player, 28, c_TU_Marauder, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDLateSpecialMMMediGhostRaven
+//--------------------------------------------------------------------------------------------------
+bool TerranHDLateSpecialMMMediGhostRaven (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_TB_Barracks, c_techCountCompleteOnly);
+        techCount = AITechCount(player, c_TB_GhostAcademy, c_techCountCompleteOnly);
+        techCount = AITechCount(player, c_TB_Starport, c_techCountCompleteOnly);
+        return (techCount >= 3);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 8, c_TU_Marine, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding  
+        AISetStockUnitNext( player, 2, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Marauder, c_stockAlways );      
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 2, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 6, c_TU_Marauder, c_stockAlways );
+        AISetStock( player, 1, c_TR_MarineStimPack );
+        AISetStockUnitNext( player, 12, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 1, c_TB_Factory,            c_stockIdle );
+        return true;  //  28 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts
+        AISetStockUnitNext( player, 3, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 8, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 14, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Marauder, c_stockAlways );
+        return true;  //  48 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 4, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_StarportReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 4, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_TU_Marine, c_stockAlways );
+        AISetStock( player, 1, c_TR_MarineShield );
+        AISetStockUnitNext( player, 3, c_TU_Raven, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Viking, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 5, c_TB_Barracks,           c_stockIdle );
+        AISetStockUnitNext( player, 3, c_TB_BarracksTechLab,    c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_BarracksReactor,    c_stockIdle );
+        AISetStockUnitNext( player, 10, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 20, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Raven, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 30, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Raven, c_stockAlways );
+        AISetStockUnitNext( player, 24, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 36, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 14, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 16, c_TU_Raven, c_stockAlways );
+        AISetStockUnitNext( player, 40, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 28, c_TU_Marauder, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDLateSpecialMechBansheeRaven
+//--------------------------------------------------------------------------------------------------
+bool TerranHDLateSpecialMechBansheeRaven (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_TB_Factory, c_techCountCompleteOnly);
+        techCount = AITechCount(player, c_TB_Starport, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 8, c_TU_Marine, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding
+        AISetStockUnitNext( player, 2, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_SiegeTank, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 2, c_TB_Factory, c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_FactoryTechLab, c_stockIdle );
+        AISetStockUnitNext( player, 4, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_SiegeTank, c_stockAlways );
+        return true;  //  28 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts  
+        AISetStockUnitNext( player, 3, c_TB_Factory, c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TB_FactoryTechLab, c_stockIdle );  
+        AISetStockUnitNext( player, 6, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Hellion, c_stockAlways );      
+        AISetStock( player, 1, c_TR_HellionDamage );
+        AISetStockUnitNext( player, 4, c_TU_WidowMine_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Marauder, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 2, c_TU_Cyclone, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Banshee, c_stockAlways );
+        AISetStock( player, 1, c_TR_BansheeCloak );
+        AISetStockUnitNext( player, 3, c_TU_Raven, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 4, c_TB_Factory, c_stockIdle );
+        AISetStockUnitNext( player, 3, c_TB_FactoryTechLab, c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TB_Starport, c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TB_StarportTechLab, c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Banshee, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Raven, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Cyclone, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_WidowMine_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Banshee, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Raven, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Viking, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDLateSpecialMechCycloneLib
+//--------------------------------------------------------------------------------------------------
+bool TerranHDLateSpecialMechCycloneLib (int player, int state) {
+    int techCount;
+    if (state == e_armyTypeValidate) {
+        techCount = AITechCount(player, c_TB_Factory, c_techCountCompleteOnly);
+        techCount = AITechCount(player, c_TB_Starport, c_techCountCompleteOnly);
+        return (techCount >= 2);
+    }
+
+    if (state == e_armyTypeMinimum) {
+        // bare minimum army, only thing higher priority is bare minimum economy
+        AISetStockUnitNext( player, 8, c_TU_Marine, c_stockAlways );
+        return true;  //  8 food cap
+    }
+    if (state == e_armyTypeBase) {
+        // barely adequete army including anti-air, higher priority than full economy and low expanding
+        AISetStockUnitNext( player, 2, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_SiegeTank, c_stockAlways );
+        return true;  //  18 food cap
+    }
+    if (state == e_armyTypeSmall) {
+        // small army, higher priority then important tech, basic production, basic defense, counters
+        AISetStockUnitNext( player, 2, c_TB_Factory, c_stockIdle );
+        AISetStockUnitNext( player, 1, c_TB_FactoryTechLab, c_stockIdle );
+        AISetStockUnitNext( player, 4, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_SiegeTank, c_stockAlways );
+        return true;  //  28 food cap
+    }
+    if (state == e_armyTypeMedium) {
+        // medium army, higher priority then general expansion, extra production, extra transports/scouts  
+        AISetStockUnitNext( player, 3, c_TB_Factory, c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TB_FactoryTechLab, c_stockIdle );  
+        AISetStockUnitNext( player, 6, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Hellion, c_stockAlways );      
+        AISetStock( player, 1, c_TR_HellionDamage );
+        AISetStockUnitNext( player, 4, c_TU_Cyclone, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Marine, c_stockAlways );
+        return true;  //  50 food cap
+    }
+    if (state == e_armyTypeLarge) {
+        // large army, higher priority then extra town defense & misc upgrades
+        AISetStockUnitNext( player, 8, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 3, c_TU_Raven, c_stockAlways );
+        return true;  //  70 food cap
+    }
+    if (state == e_armyTypeFull) {
+        // full army, lowest priority, this is the very last part of the stock
+        AISetStockUnitNext( player, 4, c_TB_Factory, c_stockIdle );
+        AISetStockUnitNext( player, 3, c_TB_FactoryTechLab, c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TB_Starport, c_stockIdle );
+        AISetStockUnitNext( player, 2, c_TB_StarportTechLab, c_stockIdle );
+        AISetStockUnitNext( player, 4, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Cyclone, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_SiegeTank, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Raven, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Viking, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Cyclone, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_WidowMine_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Marine, c_stockAlways );
+        AISetStockUnitNext( player, 6, c_TU_Marauder, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Banshee, c_stockAlways );
+        AISetStockUnitNext( player, 10, c_TU_Cyclone, c_stockAlways );
+        AISetStockUnitNext( player, 8, c_TU_Liberator_Alias, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Raven, c_stockAlways );
+        AISetStockUnitNext( player, 2, c_TU_Ghost, c_stockAlways );
+        AISetStockUnitNext( player, 4, c_TU_Medivac, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Hellion, c_stockAlways );
+        AISetStockUnitNext( player, 12, c_TU_Viking, c_stockAlways );
+        return true;  //  ~200 food cap
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranHDHarass
+//--------------------------------------------------------------------------------------------------
+void TerranHDHarass (int player) {
+
+    // Nuke harrassment
+    if (AITechCount(player, c_TU_Ghost, c_techCountCompleteOnly) >= 2) {
+        if (AITechCount(player, c_TB_GhostAcademy, c_techCountCompleteOnly) >= 1) {
+            AISetStock( player, 1, c_TR_GhostCloak );
+            if (AITechCount(player, c_TR_GhostCloak, c_techCountCompleteOnly) >= 1) {
+                AISetStock( player, 1, c_TU_Nuke );
+            }
+        }
+    }
+}

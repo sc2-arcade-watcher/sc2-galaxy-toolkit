@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CPreloadAsset default="1" id="VPPreloadImage">
+        <Flags index="MapCampaign" value="1"/>
+        <File value="Assets\Textures\##id##.dds"/>
+    </CPreloadAsset>
+    <CPreloadAsset default="1" id="VPPreloadAsset">
+        <Flags index="MapCampaign" value="1"/>
+    </CPreloadAsset>
+    <CPreloadScene default="1" id="VPPreloadScene">
+        <Flags index="MapCampaign" value="1"/>
+        <File value="Cutscenes\##id##.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadModel default="1" id="VPPreloadModel">
+        <Flags index="MapCampaign" value="1"/>
+    </CPreloadModel>
+    <CPreloadSound default="1" id="VPPreloadSound">
+        <Flags index="MapCampaign" value="1"/>
+    </CPreloadSound>
+    <CPreloadUnit default="1" id="VPPreloadUnit">
+        <Flags index="MapCampaign" value="1"/>
+    </CPreloadUnit>
+    <CPreloadActor default="1" id="VPPreloadActor">
+        <Flags index="MapCampaign" value="1"/>
+    </CPreloadActor>
+    <CPreloadConversation default="1" id="VPPreloadConversation">
+        <Flags index="MapCampaign" value="1"/>
+    </CPreloadConversation>
+    <CPreloadModel id="BriefingUnitSelectProtoss" parent="VPPreloadModel">
+        <NormalConditions value="TRUE"/>
+    </CPreloadModel>
+    <CPreloadActor id="FlashRescueSelection" parent="VPPreloadActor">
+        <NormalConditions value="TRUE"/>
+    </CPreloadActor>
+    <CPreloadAsset id="VP_VoidShared_ScoreScreen" parent="VPPreloadAsset">
+        <NormalConditions value="TRUE"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="UI\Layout\Custom\VoidShared_ScoreScreen.SC2Layout"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="VP_VoidShared_GenericTemplates" parent="VPPreloadAsset">
+        <NormalConditions value="TRUE"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="UI\Layout\Custom\VoidShared_GenericTemplates.SC2Layout"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="VoidShared_MissionLaunchUI2D" parent="VPPreloadAsset">
+        <NormalConditions value="VP_InVoidPrologue01Or02"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="UI\Layout\Custom\VoidShared_MissionLaunchUI2D.SC2Layout"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_loading_prologue02" parent="VPPreloadImage">
+        <NormalConditions value="VP_InVoidPrologue01Or02OrStory"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_loading_prologue03" parent="VPPreloadImage">
+        <NormalConditions value="VP_InVoidPrologue02Or03OrStory"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadConversation id="pPitch_VoidPrologue02" parent="VPPreloadConversation">
+        <NormalConditions value="VP_InVoidPrologue01OrStory"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_VoidPrologue03" parent="VPPreloadConversation">
+        <NormalConditions value="VP_InVoidPrologue02OrStory"/>
+    </CPreloadConversation>
+    <CPreloadAsset id="ui_void_storybutton_disabled" parent="VPPreloadImage">
+        <NormalConditions value="TRUE"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_loading_prologue01" parent="VPPreloadImage">
+        <NormalConditions value="VP_InVoidPrologue01"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_list_battlereports_zeratulswarning" parent="VPPreloadImage">
+        <NormalConditions value="VP_InVoidPrologue03"/>
+        <QueuedConditions value="VP_InVoidPrologue02"/>
+    </CPreloadAsset>
+</Catalog>

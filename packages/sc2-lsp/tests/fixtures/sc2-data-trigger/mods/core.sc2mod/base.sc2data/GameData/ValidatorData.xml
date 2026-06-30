@@ -1,0 +1,762 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CValidator default="1">
+        <ResultFailed value="Error"/>
+    </CValidator>
+    <CValidatorCombine default="1">
+        <Type value="Or"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareChargeUsed default="1"/>
+    <CValidatorCondition default="1"/>
+    <CValidatorEffect default="1">
+        <WhichEffect value="##id##"/>
+        <ResultNoEffect value="Error"/>
+    </CValidatorEffect>
+    <CValidatorEffectCompareDodged default="1">
+        <!-- If the effect is null it checks the total -->
+        <WhichEffect value=""/>
+        <Compare value="GT"/>
+    </CValidatorEffectCompareDodged>
+    <CValidatorEffectCompareEvaded default="1">
+        <!-- If the effect is null it checks the total -->
+        <WhichEffect value=""/>
+        <Compare value="GT"/>
+    </CValidatorEffectCompareEvaded>
+    <CValidatorEffectTreeUserData default="1">
+        <CheckExistence value="1"/>
+        <ResultNoKey value="Error,Error/EffectTreeNoKey"/>
+    </CValidatorEffectTreeUserData>
+    <CValidatorFunction default="1"/>
+    <CValidatorGameCompareTimeOfDay default="1"/>
+    <CValidatorGameCompareTerrain default="1"/>
+    <CValidatorGameCommanderActive default="1"/>
+    <CValidatorLocation default="1">
+        <WhichLocation Value="TargetPoint"/>
+    </CValidatorLocation>
+    <CValidatorLocationCompareCliffLevel default="1">
+        <OtherLocation Value="Unknown"/>
+    </CValidatorLocationCompareCliffLevel>
+    <CValidatorLocationComparePower default="1">
+        <FromUnit Value="Unknown"/>
+    </CValidatorLocationComparePower>
+    <CValidatorLocationCompareRange default="1"/>
+    <CValidatorLocationArc default="1">
+        <OtherLocation Value="Unknown"/>
+    </CValidatorLocationArc>
+    <CValidatorLocationCreep default="1">
+        <Find value="1"/>
+    </CValidatorLocationCreep>
+    <CValidatorLocationCrossChasm default="1">
+        <WhichLocation Value="CasterUnitOrPoint"/>
+        <OtherLocation Value="TargetUnitOrPoint"/>
+    </CValidatorLocationCrossChasm>
+    <CValidatorLocationCrossCliff default="1">
+        <WhichLocation Value="CasterUnitOrPoint"/>
+        <OtherLocation Value="TargetUnitOrPoint"/>
+    </CValidatorLocationCrossCliff>
+    <CValidatorLocationEnumArea default="1">
+        <Compare value="GT"/>
+        <LaunchLocation Value="OuterUnit"/>
+        <CombinedVital value="Unknown"/>
+        <SearchFlags index="OffsetAreaByAngle" value="1"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorLocationPathable default="1">
+        <Find value="1"/>
+        <Types index="Ground" value="1"/>
+        <Types index="Building" value="1"/>
+    </CValidatorLocationPathable>
+    <CValidatorLocationInPlayableMapArea default="1">
+        <WhichLocation Value="TargetUnitOrPoint"/>
+        <Find value="1"/>
+    </CValidatorLocationInPlayableMapArea>
+    <CValidatorLocationPlacement default="1">
+        <OtherUnit Value="Unknown"/>
+        <ResultFailed value="CantFindPlacementLocation"/>
+        <Range value="500"/>
+    </CValidatorLocationPlacement>
+    <CValidatorLocationShrub default="1">
+        <Find value="1"/>
+    </CValidatorLocationShrub>
+    <CValidatorLocationType default="1">
+        <WhichLocation Value="TargetUnitOrPoint"/>
+    </CValidatorLocationType>
+    <CValidatorLocationVision default="1">
+        <ResultFailed value="MustTargetVisibleLocation"/>
+        <Find value="1"/>
+    </CValidatorLocationVision>
+    <CValidatorPlayer default="1">
+        <OtherPlayer Value="Unknown"/>
+    </CValidatorPlayer>
+    <CValidatorPlayerCompareDifficulty default="1">
+        <WhichPlayer Value="Caster"/>
+        <Compare value="GE"/>
+    </CValidatorPlayerCompareDifficulty>
+    <CValidatorPlayerCompareRace default="1"/>
+    <CValidatorPlayerCompareResult default="1"/>
+    <CValidatorPlayerCompareType default="1"/>
+    <CValidatorPlayerAlliance default="1"/>
+    <CValidatorPlayerRequirement default="1"/>
+    <CValidatorUnit default="1">
+        <ResultNoUnit value="MustTargetUnit"/>
+        <WhichUnit Value="Target"/>
+        <OtherUnit Value="Unknown"/>
+    </CValidatorUnit>
+    <CValidatorUnitInWeaponRange default="1">
+        <WhichUnit Value="Caster"/>
+        <OtherUnit Value="Target"/>
+    </CValidatorUnitInWeaponRange>
+    <CValidatorUnitAI default="1">
+        <WhichUnit Value="Caster"/>
+        <Find value="1"/>
+    </CValidatorUnitAI>
+    <CValidatorUnitCombatAI default="1">
+        <WhichUnit Value="Caster"/>
+        <Find value="1"/>
+    </CValidatorUnitCombatAI>
+    <CValidatorUnitAbil default="1">
+        <AbilClass value="CAbilUnknown"/>
+    </CValidatorUnitAbil>
+    <CValidatorUnitBehaviorState default="1"/>
+    <CValidatorUnitState default="1"/>
+    <CValidatorUnitCompareResourceContents default="1"/>
+    <CValidatorUnitCompareResourceHarvesters default="1"/>
+    <CValidatorUnitFilters default="1"/>
+    <CValidatorUnitInventory default="1">
+        <ResultNoInventory value="MustTargetInventory"/>
+    </CValidatorUnitInventory>
+    <CValidatorUnitInventoryIsFull default="1">
+        <Find value="1"/>
+    </CValidatorUnitInventoryIsFull>
+    <CValidatorUnitInventoryContainsItem default="1">
+        <Find value="1"/>
+    </CValidatorUnitInventoryContainsItem>
+    <CValidatorUnitType default="1">
+        <Find value="1"/>
+    </CValidatorUnitType>
+    <CValidatorUnitFlying default="1">
+        <Find value="1"/>
+    </CValidatorUnitFlying>
+    <CValidatorUnitLastDamagePlayer default="1"/>
+    <CValidatorUnitKinetic default="1">
+        <Find value="1"/>
+    </CValidatorUnitKinetic>
+    <CValidatorUnitMissileNullified default="1"/>
+    <CValidatorUnitMover default="1"/>
+    <CValidatorUnitOrder default="1">
+        <WhichUnit Value="Caster"/>
+        <Target Value="Unknown"/>
+    </CValidatorUnitOrder>
+    <CValidatorUnitOrderQueue default="1">
+        <WhichUnit Value="Caster"/>
+        <Find value="1"/>
+        <Target Value="Unknown"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitOrderTargetPathable default="1">
+        <WhichUnit Value="Caster"/>
+        <Find value="1"/>
+    </CValidatorUnitOrderTargetPathable>
+    <CValidatorUnitOrderTargetType default="1">
+        <WhichUnit Value="Caster"/>
+        <Find value="1"/>
+    </CValidatorUnitOrderTargetType>
+    <CValidatorUnitPathable default="1">
+        <WhichUnit Value="Caster"/>
+        <WhichLocation Value="TargetUnitOrPoint"/>
+        <Find value="1"/>
+    </CValidatorUnitPathable>
+    <CValidatorUnitPathing default="1">
+        <Find value="1"/>
+    </CValidatorUnitPathing>
+    <CValidatorUnitScanning default="1">
+        <Find value="1"/>
+    </CValidatorUnitScanning>
+    <CValidatorUnitWeaponAnimating default="1">
+        <Find value="1"/>
+    </CValidatorUnitWeaponAnimating>
+    <CValidatorUnitWeaponFiring default="1">
+        <Find value="1"/>
+    </CValidatorUnitWeaponFiring>
+    <CValidatorUnitWeaponPlane default="1">
+        <Find value="1"/>
+    </CValidatorUnitWeaponPlane>
+    <CValidatorUnitCompareAIAreaEvalRatio default="1">
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareAIAreaEvalRatio>
+    <CValidatorUnitCompareAttackPriority default="1"/>
+    <CValidatorUnitCompareBehaviorCount default="1">
+        <ExcludeOriginPlayer Value="Unknown"/>
+        <ExcludeCasterUnit Value="Unknown"/>
+        <RequireOriginPlayer Value="Unknown"/>
+        <RequireCasterUnit Value="Unknown"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareCargo default="1"/>
+    <CValidatorUnitCompareDamageDealtTime default="1"/>
+    <CValidatorUnitCompareDamageTakenTime default="1"/>
+    <CValidatorUnitCompareDeath default="1"/>
+    <CValidatorUnitCompareField default="1"/>
+    <CValidatorUnitCompareKillCount default="1"/>
+    <CValidatorUnitCompareMarkerCount default="1"/>
+    <CValidatorUnitCompareMoverPhase default="1"/>
+    <CValidatorUnitCompareOrderCount default="1">
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareOrderCount>
+    <CValidatorUnitCompareOrderTargetRange default="1"/>
+    <CValidatorUnitComparePowerSourceLevel default="1"/>
+    <CValidatorUnitComparePowerUserLevel default="1"/>
+    <CValidatorUnitCompareSpeed default="1"/>
+    <CValidatorUnitCompareVeterancyLevel default="1"/>
+    <CValidatorUnitCompareVital default="1"/>
+    <CValidatorUnitCompareVitality default="1"/>
+    <CValidatorUnitCompareVital default="1" id="CasterLifePercent">
+        <WhichUnit Value="Caster"/>
+        <Type value="Fraction"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitDetected default="1"/>
+    <CValidatorCombine id="Error"/>
+    <CValidatorCombine id="HasEitherAntiGrav">
+        <CombineArray value="HasAntiGrav"/>
+        <CombineArray value="HasHybridAntiGrav"/>
+    </CValidatorCombine>
+    <CValidatorUnitMissileNullified id="MissileIsActive"/>
+    <CValidatorUnitPathing id="IsPathing">
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitPathing>
+    <CValidatorUnitCompareField id="IsFlying">
+        <Compare value="GE"/>
+        <Field value="Height"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareField>
+    <CValidatorUnitCompareField id="IsNotFlying">
+        <Compare value="LT"/>
+        <Field value="Height"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareField>
+    <CValidatorUnitFilters id="IsConstructing">
+        <Filters value="UnderConstruction;-"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitFilters id="CasterIsNotHidden">
+        <WhichUnit Value="Caster"/>
+        <Filters value="-;Hidden"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitFlying id="NotInAir">
+        <Find value="0"/>
+    </CValidatorUnitFlying>
+    <CValidatorCombine id="SplatHidden">
+        <CombineArray value="IsFlying"/>
+        <CombineArray value="IsConstructing"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="IsColossus">
+        <Value value="Colossus"/>
+    </CValidatorUnitType>
+    <CValidatorUnitWeaponPlane id="TargetAttacksGround"/>
+    <CValidatorUnitWeaponPlane id="TargetAttacksAir">
+        <Plane value="Air"/>
+    </CValidatorUnitWeaponPlane>
+    <CValidatorUnitType id="UseCliffSelection" parent="IsColossus"/>
+    <CValidatorUnitAI id="CasterCampaign"/>
+    <CValidatorUnitAI id="CasterNotCampaign" parent="CasterCampaign">
+        <Find value="0"/>
+    </CValidatorUnitAI>
+    <CValidatorCombine id="CasterWouldLikeToUnburrowMove">
+        <CombineArray value="CasterWantsToMove"/>
+        <CombineArray value="CasterForceUnburrow"/>
+        <CombineArray value="CasterForcedToMove"/>
+    </CValidatorCombine>
+    <CValidatorUnitAI id="CasterForceUnburrow">
+        <Flag value="ForceUnburrow"/>
+    </CValidatorUnitAI>
+    <CValidatorUnitAI id="CasterNotForceUnburrow" parent="CasterForceUnburrow">
+        <Find value="0"/>
+    </CValidatorUnitAI>
+    <CValidatorUnitAI id="CasterSuggestBurrow">
+        <Flag value="SuggestBurrow"/>
+    </CValidatorUnitAI>
+    <CValidatorUnitAI id="CasterNotSuggestBurrow" parent="CasterSuggestBurrow">
+        <Find value="0"/>
+    </CValidatorUnitAI>
+    <CValidatorUnitAI id="CasterSuggestUnburrow">
+        <Flag value="SuggestUnburrow"/>
+    </CValidatorUnitAI>
+    <CValidatorUnitAI id="CasterNotSuggestUnburrow" parent="CasterSuggestUnburrow">
+        <Find value="0"/>
+    </CValidatorUnitAI>
+    <CValidatorUnitAI id="CasterForcedToMove">
+        <Flag value="ForcedToMove"/>
+    </CValidatorUnitAI>
+    <CValidatorUnitAI id="CasterNotForcedToMove" parent="CasterForcedToMove">
+        <Find value="0"/>
+    </CValidatorUnitAI>
+    <CValidatorUnitAI id="CasterWantsToMove">
+        <Flag value="WantsToMove"/>
+    </CValidatorUnitAI>
+    <CValidatorUnitAI id="CasterNotWantsToMove" parent="CasterWantsToMove">
+        <Find value="0"/>
+    </CValidatorUnitAI>
+    <CValidatorUnitCombatAI id="AICasterInCombat"/>
+    <CValidatorUnitCombatAI id="AICasterNotInCombat">
+        <Find value="0"/>
+    </CValidatorUnitCombatAI>
+    <CValidatorUnitCompareVital id="TargetLifeFull">
+        <Compare value="GE"/>
+        <Type value="Fraction"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="TargetLifeNotFull">
+        <Compare value="LT"/>
+        <Type value="Fraction"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeFull">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Type value="Fraction"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeNotFull">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LT"/>
+        <Type value="Fraction"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareAttackPriority id="Threatens">
+        <Compare value="GE"/>
+        <Flags index="IsThreat" value="1"/>
+    </CValidatorUnitCompareAttackPriority>
+    <CValidatorUnitCompareOrderCount id="CasterHasOrders">
+        <Compare value="GT"/>
+    </CValidatorUnitCompareOrderCount>
+    <CValidatorUnitCompareOrderCount id="CasterHasNoOrders"/>
+    <CValidatorUnitCompareOrderCount id="CasterHasLE1Orders">
+        <Value value="1"/>
+        <Compare value="LE"/>
+    </CValidatorUnitCompareOrderCount>
+    <CValidatorUnitCompareOrderCount id="TargetHasNoOrders" parent="CasterHasNoOrders">
+        <WhichUnit Value="Target"/>
+    </CValidatorUnitCompareOrderCount>
+    <CValidatorCombine id="CasterWantsToMoveOrHasOrders">
+        <CombineArray value="CasterWantsToMove"/>
+        <CombineArray value="CasterHasOrders"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="AICasterWantsToMoveAndNotCombat">
+        <Type value="And"/>
+        <CombineArray value="CasterWantsToMove"/>
+        <CombineArray value="AICasterNotInCombat"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareVital id="CasterEnergyLT50">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LT"/>
+        <Value value="50"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterEnergyGE50" parent="CasterEnergyLT50">
+        <Compare value="GE"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterEnergyLT100" parent="CasterEnergyLT50">
+        <Value value="100"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterEnergyGE100" parent="CasterEnergyLT100">
+        <Compare value="GE"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterEnergyLT125" parent="CasterEnergyLT50">
+        <Value value="125"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterEnergyGE125" parent="CasterEnergyLT125">
+        <Compare value="GE"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterEnergyLT150" parent="CasterEnergyLT50">
+        <Value value="150"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterEnergyGE150" parent="CasterEnergyLT150">
+        <Compare value="GE"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterEnergyLT170" parent="CasterEnergyLT50">
+        <Value value="170"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterEnergyGE170" parent="CasterEnergyLT170">
+        <Compare value="GE"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeLT45">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LT"/>
+        <Value value="45"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeGE45" parent="CasterLifeLT45">
+        <Compare value="GE"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeLT50" parent="CasterLifeLT45">
+        <Value value="50"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeGE50" parent="CasterLifeLT50">
+        <Compare value="GE"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeGE60" parent="CasterLifeGE50">
+        <Value value="60"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="TargetLifeGE60" parent="CasterLifeGE50">
+        <WhichUnit Value="Target"/>
+        <Value value="60"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="TargetLifeGE20" parent="CasterLifeGE50">
+        <WhichUnit Value="Target"/>
+        <Value value="20"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="TargetLifeGE80" parent="CasterLifeGE50">
+        <WhichUnit Value="Target"/>
+        <Value value="80"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="TargetLifeGE200" parent="CasterLifeGE60">
+        <WhichUnit Value="Target"/>
+        <Value value="200"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterShieldsGE10">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="10"/>
+        <Vital value="Shields"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterShieldsLT10" parent="CasterShieldsGE10">
+        <Compare value="LT"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="TargetShieldsGE50">
+        <Compare value="GE"/>
+        <Value value="50"/>
+        <Vital value="Shields"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="TargetShieldsGE70" parent="TargetShieldsGE50">
+        <Value value="70"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="TargetEnergyGE70" parent="TargetShieldsGE70">
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeGT0Percent" parent="CasterLifePercent">
+        <Compare value="GT"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeLT0Percent" parent="CasterLifeGT0Percent">
+        <Compare value="LT"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeLT10Percent" parent="CasterLifePercent">
+        <Compare value="LT"/>
+        <Value value="0.1"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeGT10Percent" parent="CasterLifeLT10Percent">
+        <Compare value="GT"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeLT15Percent" parent="CasterLifePercent">
+        <Compare value="LT"/>
+        <Value value="0.15"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeGT15Percent" parent="CasterLifeLT15Percent">
+        <Compare value="GT"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeLT20Percent" parent="CasterLifePercent">
+        <Compare value="LT"/>
+        <Value value="0.2"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeGT20Percent" parent="CasterLifeLT20Percent">
+        <Compare value="GT"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeLT30Percent" parent="CasterLifePercent">
+        <Compare value="LT"/>
+        <Value value="0.3"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeGT30Percent" parent="CasterLifeLT30Percent">
+        <Compare value="GT"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeLT40Percent" parent="CasterLifePercent">
+        <Compare value="LT"/>
+        <Value value="0.4"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeLT50Percent" parent="CasterLifePercent">
+        <Compare value="LT"/>
+        <Value value="0.5"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeGT50Percent" parent="CasterLifeLT50Percent">
+        <Compare value="GT"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeGT60Percent" parent="CasterLifePercent">
+        <Compare value="GT"/>
+        <Value value="0.6"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeLT60Percent" parent="CasterLifeGT60Percent">
+        <Compare value="LT"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeLT75Percent" parent="CasterLifePercent">
+        <Compare value="LT"/>
+        <Value value="0.75"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeGT75Percent" parent="CasterLifeLT75Percent">
+        <Compare value="GT"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeGT90Percent" parent="CasterLifePercent">
+        <Compare value="GT"/>
+        <Value value="0.9"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeLT90Percent" parent="CasterLifeGT90Percent">
+        <Compare value="LT"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeLT100Percent" parent="CasterLifePercent">
+        <Compare value="LT"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeGT100Percent" parent="CasterLifeLT100Percent">
+        <Compare value="GT"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVitality id="CasterVitalityLE70Percent">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LE"/>
+        <Type value="Fraction"/>
+        <Value value="0.7"/>
+    </CValidatorUnitCompareVitality>
+    <CValidatorUnitCompareVitality id="CasterVitalityGT70Percent" parent="CasterVitalityLE70Percent">
+        <Compare value="GT"/>
+    </CValidatorUnitCompareVitality>
+    <CValidatorUnitCompareVitality id="CasterVitalityLT60Percent">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LT"/>
+        <Type value="Fraction"/>
+        <Value value="0.6"/>
+    </CValidatorUnitCompareVitality>
+    <CValidatorUnitCompareDamageTakenTime id="CasterInCombat">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LT"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareDamageTakenTime>
+    <CValidatorUnitCompareDamageTakenTime id="CasterNotInCombat">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="2"/>
+    </CValidatorUnitCompareDamageTakenTime>
+    <CValidatorUnitCompareDamageTakenTime id="TargetInCombat">
+        <Compare value="LT"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareDamageTakenTime>
+    <CValidatorUnitOrderQueue id="CasterIsAttacking">
+        <AbilLink value="attack"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorUnitAbil id="TargetCanAttack">
+        <Find value="1"/>
+        <AbilClass value="CAbilAttack"/>
+    </CValidatorUnitAbil>
+    <CValidatorUnitCompareRallyPointCount id="StandardRallyPointNotSet"/>
+    <CValidatorUnitCompareRallyPointCount id="WorkerRallyPointNotSet">
+        <Point value="1"/>
+    </CValidatorUnitCompareRallyPointCount>
+    <CValidatorUnitOrderQueue id="TargetAttackingCaster">
+        <WhichUnit Value="Target"/>
+        <AbilLink value="attack"/>
+        <Target Value="CasterUnit"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorPlayerCompareDifficulty id="CasterDifficultyGE0"/>
+    <CValidatorPlayerCompareDifficulty id="CasterDifficultyGE1">
+        <Value value="1"/>
+    </CValidatorPlayerCompareDifficulty>
+    <CValidatorPlayerCompareDifficulty id="CasterDifficultyGE2">
+        <Value value="2"/>
+    </CValidatorPlayerCompareDifficulty>
+    <CValidatorPlayerCompareDifficulty id="CasterDifficultyGE3">
+        <Value value="3"/>
+    </CValidatorPlayerCompareDifficulty>
+    <CValidatorPlayerCompareDifficulty id="CasterDifficultyGE4">
+        <Value value="4"/>
+    </CValidatorPlayerCompareDifficulty>
+    <CValidatorPlayerCompareDifficulty id="CasterDifficultyLT">
+        <Compare value="LT"/>
+    </CValidatorPlayerCompareDifficulty>
+    <CValidatorPlayerCompareDifficulty id="CasterDifficultyLT0" parent="CasterDifficultyLT"/>
+    <CValidatorPlayerCompareDifficulty id="CasterDifficultyLT1" parent="CasterDifficultyLT">
+        <Value value="1"/>
+    </CValidatorPlayerCompareDifficulty>
+    <CValidatorPlayerCompareDifficulty id="CasterDifficultyLT2" parent="CasterDifficultyLT">
+        <Value value="2"/>
+    </CValidatorPlayerCompareDifficulty>
+    <CValidatorPlayerCompareDifficulty id="CasterDifficultyLT3" parent="CasterDifficultyLT">
+        <Value value="3"/>
+    </CValidatorPlayerCompareDifficulty>
+    <CValidatorPlayerCompareDifficulty id="CasterDifficultyLT4" parent="CasterDifficultyLT">
+        <Value value="4"/>
+    </CValidatorPlayerCompareDifficulty>
+    <CValidatorUnitCompareSpeed id="CasterIsStationary">
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareSpeed>
+    <CValidatorUnitCompareField id="IsProtoss">
+        <Field value="Race"/>
+        <Value value="Prot"/>
+    </CValidatorUnitCompareField>
+    <CValidatorUnitCompareField id="IsTerran">
+        <Field value="Race"/>
+        <Value value="Terr"/>
+    </CValidatorUnitCompareField>
+    <CValidatorUnitCompareField id="IsZerg">
+        <Field value="Race"/>
+        <Value value="Zerg"/>
+        <ResultFailed value="CantTargetThatUnit,Error/CantTargetNonZerg"/>
+    </CValidatorUnitCompareField>
+    <CValidatorCombine id="NotZerg">
+        <CombineArray value="IsProtoss"/>
+        <CombineArray value="IsTerran"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="HasHybridAntiGrav">
+        <Compare value="NE"/>
+        <Behavior value="GravitonPrison"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="HasAntiGrav">
+        <Compare value="NE"/>
+        <Behavior value="GravitonBeam"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorCombine id="HasAntiGravProtoss">
+        <Type value="And"/>
+        <CombineArray value="HasEitherAntiGrav"/>
+        <CombineArray value="IsProtoss"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="HasAntiGravTerran">
+        <Type value="And"/>
+        <CombineArray value="HasEitherAntiGrav"/>
+        <CombineArray value="IsTerran"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="HasAntiGravZerg">
+        <Type value="And"/>
+        <CombineArray value="HasEitherAntiGrav"/>
+        <CombineArray value="IsZerg"/>
+    </CValidatorCombine>
+    <CValidatorLocationPathable id="Pathable">
+        <ResultFailed value="MustTargetWalkableLocation"/>
+    </CValidatorLocationPathable>
+    <CValidatorLocationPathable id="Walkable">
+        <Types index="Building" value="0"/>
+        <ResultFailed value="MustTargetWalkableLocation"/>
+    </CValidatorLocationPathable>
+    <CValidatorLocationCompareCliffLevel id="CliffLevelGE1">
+        <Compare value="GE"/>
+        <Value value="1"/>
+        <ResultFailed value="MustTargetWalkableLocation"/>
+    </CValidatorLocationCompareCliffLevel>
+    <CValidatorLocationCreep id="OnCreep">
+        <WhichLocation Value="SourceUnit"/>
+    </CValidatorLocationCreep>
+    <CValidatorLocationCreep id="NotOnCreep">
+        <WhichLocation Value="SourceUnit"/>
+        <Find value="0"/>
+    </CValidatorLocationCreep>
+    <CValidatorLocationCreep id="NotNearCreep">
+        <WhichLocation Value="SourceUnit"/>
+        <Find value="0"/>
+        <RadiusBonus value="0.365"/>
+    </CValidatorLocationCreep>
+    <CValidatorFunction id="Failure">
+        <ResultFallback value="Error"/>
+    </CValidatorFunction>
+    <CValidatorUnitFilters id="TargetIsEnemy">
+        <Filters value="-;Player,Ally,Neutral"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitFilters id="TargetIsAlly">
+        <Filters value="-;Player,Neutral,Enemy"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitFlying id="IsInAir"/>
+    <CValidatorUnitCompareCargo id="IsTransportFull"/>
+    <CValidatorUnitInventoryIsFull id="InventoryIsFull"/>
+    <CValidatorUnitLastDamagePlayer id="TargetLastDamagedByEnemy">
+        <Relationship value="Enemy"/>
+    </CValidatorUnitLastDamagePlayer>
+    <CValidatorCombine id="IsUnderFire">
+        <Type value="And"/>
+        <CombineArray value="TargetInCombat"/>
+        <CombineArray value="TargetLastDamagedByEnemy"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="IsConstructionUnderFire" parent="IsUnderFire">
+        <CombineArray value="IsConstructing"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="IsCasterLowHealthInCombat">
+        <Type value="And"/>
+        <CombineArray value="CasterInCombat"/>
+        <CombineArray value="CasterLifeLT20Percent"/>
+    </CValidatorCombine>
+    <CValidatorUnitFilters id="TargetIsCloaked">
+        <Filters value="Cloaked;-"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitFilters id="TargetIsVisible">
+        <Filters value="Visible;-"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitFilters id="CasterIsVisible">
+        <Filters value="Visible;-"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitFilters>
+    <CValidatorLocationCrossChasm id="TargetNotAcrossChasm">
+        <ResultFailed value="Error,Error/CantCrossChasms"/>
+    </CValidatorLocationCrossChasm>
+    <CValidatorLocationCrossCliff id="TargetNotAcrossCliff">
+        <ResultFailed value="Error,Error/CantCrossCliffs"/>
+    </CValidatorLocationCrossCliff>
+    <CValidatorUnitPathable id="TargetIsPathable">
+        <ResultFailed value="Error,Error/CantPathToLocation"/>
+    </CValidatorUnitPathable>
+    <CValidatorLocationCreep id="TargetOnCreep">
+        <ResultFailed value="CantBuildTooFarFromCreepSource"/>
+    </CValidatorLocationCreep>
+    <CValidatorLocationShrub id="LocationHasShrub"/>
+    <CValidatorLocationVision id="HasVisionOfTarget">
+        <ResultFailed value="CantSeeBuildLocation"/>
+    </CValidatorLocationVision>
+    <CValidatorUnitFilters id="IsSummonedUnit">
+        <Filters value="Summoned;-"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitFilters id="NotSummonedUnit">
+        <Filters value="-;Summoned"/>
+    </CValidatorUnitFilters>
+    <CValidatorLocationArc id="SourceFacingTargetWithin30">
+        <WhichLocation Value="SourceUnit"/>
+        <Arc value="29.9926"/>
+        <Value Value="TargetUnitOrPoint"/>
+    </CValidatorLocationArc>
+    <CValidatorUnitCompareBehaviorCount id="HasGrabbedBehavior">
+        <Value value="1"/>
+        <Behavior value="Grabbed"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitFilters id="GrabCasterNotDead">
+        <Filters value="-;Dead"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitCompareKillCount id="HasKills">
+        <Compare value="GT"/>
+    </CValidatorUnitCompareKillCount>
+    <CValidatorUnitCompareDamageDealtTime id="CasterRecentlyDealtDamage">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LT"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareDamageDealtTime>
+    <CValidatorUnitFilters id="TargetIsSelf">
+        <Filters value="Self;-"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitCompareBehaviorCount id="HasForceLowDeath">
+        <Behavior value="ForceLowDeath"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorCombine id="HasForceLowDeathProtoss">
+        <CombineArray value="IsProtoss"/>
+        <CombineArray value="HasForceLowDeath"/>
+        <Type value="And"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="HasForceLowDeathZerg">
+        <CombineArray value="IsZerg"/>
+        <CombineArray value="HasForceLowDeath"/>
+        <Type value="And"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="HasForceLowDeathTerran">
+        <CombineArray value="IsTerran"/>
+        <CombineArray value="HasForceLowDeath"/>
+        <Type value="And"/>
+    </CValidatorCombine>
+    <CValidatorEffectCompareDodged id="NotDodged"/>
+    <CValidatorEffectCompareEvaded id="NotEvaded"/>
+    <CValidatorPlayerCompareRace id="PlayerIsNeutral">
+        <Value value="Neut"/>
+    </CValidatorPlayerCompareRace>
+    <CValidatorPlayerCompareRace id="PlayerIsTerran">
+        <Value value="Terr"/>
+    </CValidatorPlayerCompareRace>
+    <CValidatorPlayerCompareRace id="PlayerIsZerg">
+        <Value value="Zerg"/>
+    </CValidatorPlayerCompareRace>
+    <CValidatorPlayerCompareRace id="PlayerIsProtoss">
+        <Value value="Prot"/>
+    </CValidatorPlayerCompareRace>
+</Catalog>

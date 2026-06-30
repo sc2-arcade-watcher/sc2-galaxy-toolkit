@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibAC4295E8_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libAC4295E8_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libAC4295E8_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(17);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libAC4295E8_gt_Initialization_Init () {
+    libAC4295E8_gt_Initialization = TriggerCreate("libAC4295E8_gt_Initialization_Func");
+    TriggerAddEventMapInit(libAC4295E8_gt_Initialization);
+}
+
+void libAC4295E8_InitTriggers () {
+    libAC4295E8_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libAC4295E8_InitLib_completed = false;
+
+void libAC4295E8_InitLib () {
+    if (libAC4295E8_InitLib_completed) {
+        return;
+    }
+
+    libAC4295E8_InitLib_completed = true;
+
+    libAC4295E8_InitLibraries();
+    libAC4295E8_InitTriggers();
+}
+

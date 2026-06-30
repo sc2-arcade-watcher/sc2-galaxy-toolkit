@@ -1,0 +1,90 @@
+//==================================================================================================
+//  Shared AI Functions   (Used in across campaign, melee & tactical)
+//==================================================================================================
+
+//--------------------------------------------------------------------------------------------------
+//  AINeedsDetection
+//--------------------------------------------------------------------------------------------------
+bool AINeedsDetection (int player) {
+    if (AIGetCloakedAttacker(player) != null) {
+        return true;
+    }
+    if (PlayerBeaconIsSet(player, c_beaconDetect)) {
+        return true;
+    }
+
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AISuspectDetectionDanger
+//--------------------------------------------------------------------------------------------------
+const int c_lateDetectionDangerTime = 60 * 10;
+const int c_earlyDetectionDangerTime = 60 * 12;  // later time since we'd prefer not to interrupt opening/midgame builds
+
+bool AISuspectDetectionDanger (int player, int dangerTime) {
+    bool suspectDanger = false;
+
+    if (AIGetTime() > dangerTime) {
+        // assume the enemy can make cloaked units after 10 minutes
+        return true;
+    }
+    if (AINeedsDetection(player)) {
+        return true;
+    }
+
+    // default logic simply checks if we've seen any units of a type added with AIAddDetectionDanger
+    suspectDanger = AIDefaultSuspectDetectionDanger(player);
+
+    // script additions / override of the default
+
+    return suspectDanger;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AISuspectAirDanger
+//--------------------------------------------------------------------------------------------------
+const int c_lateAirDangerTime = 60 * 10;
+const int c_earlyAirDangerTime = 60 * 12;  // later time since we'd prefer not to interrupt opening/midgame builds
+
+bool AISuspectAirDanger (int player, int dangerTime) {
+    bool suspectDanger = false;
+
+    if (AIGetTime() > dangerTime) {
+        // assume the enemy can make air units after 10 minutes
+        return true;
+    }
+
+    // default logic simply checks if we've seen any units of a type added with AIAddAirDanger
+    suspectDanger = AIDefaultSuspectAirDanger(player);
+
+    // script additions / override of the default
+
+    return suspectDanger;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AITownIsFull
+//--------------------------------------------------------------------------------------------------
+void AITownIsFull (int player, int town) {
+    // town was unable to place a building because it ran out of room, it may still 
+    // be possible to place a smaller building or a different type of building
+    AIUpdateMainTown(player);
+
+    // if we only have no non-full town, we may want to expand now
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AITownWasLost
+//--------------------------------------------------------------------------------------------------
+void AITownWasLost (int player, int town) {
+    // one of our towns was destroyed/lost, happens when we lose our last dropoff at the town (or all buildings).
+    AIUpdateMainTown(player);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIMineralsTotal
+//--------------------------------------------------------------------------------------------------
+int AIMineralsTotal (int player) {
+    return PlayerGetPropertyInt(player, c_playerPropMinerals) + AIGetMineralAmountLeft(player, c_townMax);
+}

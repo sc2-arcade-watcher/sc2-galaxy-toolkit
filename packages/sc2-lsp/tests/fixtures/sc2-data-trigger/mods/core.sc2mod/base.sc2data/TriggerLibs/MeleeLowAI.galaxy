@@ -1,0 +1,1005 @@
+//==================================================================================================
+//  Melee AI Functions only used by the lower difficulties.
+//==================================================================================================
+
+const int c_ldPhaseNone   = 0;
+const int c_ldPhaseOpen   = 1;
+const int c_ldPhaseMid    = 2;
+const int c_ldPhaseLate   = 3;
+const int c_ldPhaseFinal  = 4;
+
+const int c_ldMaxArmyStockSize = 32;
+const fixed c_ldArmyStockScale = 1000.0;
+const int c_ldArmyRoundUp = 500; //FixedToInt(c_ldArmyStockScale/2.0);
+
+//--------------------------------------------------------------------------------------------------
+//  AILowDifficultyInit
+//--------------------------------------------------------------------------------------------------
+void AILowDifficultyInit (int player) {
+    int diff = AIPlayerDifficulty(player);
+    if (diff < c_skirVeryEasy || diff > c_skirHard) {
+        return;
+    }
+
+    AISetStockArmyDefaultScale(player, c_ldArmyStockScale);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIClearStockArmy
+//--------------------------------------------------------------------------------------------------
+void AIClearStockArmy (int player) {
+    int index = 1;
+    while (index <= c_ldMaxArmyStockSize) {
+        AISetUserString(player, index, c_nullString);
+        AISetUserInt(player, index, 0);
+        index = index + 1;
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AISetStockArmyScale
+//--------------------------------------------------------------------------------------------------
+void AISetStockArmyScale (int player, fixed scale) {
+    int index = 1;
+    int count;
+
+    scale /= c_ldArmyStockScale;
+
+    while (index < c_ldMaxArmyStockSize) {
+        count = AIGetUserInt(player, index);
+        if (count <= 0) {
+            break;
+        }
+        // add "0.5" so we'll round to the nearest value
+        count += c_ldArmyRoundUp;
+
+        count = FixedToInt(IntToFixed(count) * scale);
+
+        if (count > 0) {
+            AISetStock(player, count, AIGetUserString(player, index));
+        }
+        index = index + 1;
+    }
+    if (index >= c_ldMaxArmyStockSize) {
+        if (AIGetUserInt(player, index) > 0) {
+            ErrorMeleeScript(player, "AISetStockArmy too much data");
+        }
+    }
+}
+
+
+//--------------------------------------------------------------------------------------------------
+//  AIGetStockArmyCount
+//--------------------------------------------------------------------------------------------------
+int AIGetStockArmyCount (int player) {
+    int index = 1;
+    int count;
+    int total;
+
+    while (index < c_ldMaxArmyStockSize) {
+        count = AIGetUserInt(player, index);
+        if (count <= 0) {
+            break;
+        }
+        // add "0.5" so we'll round to the nearest value
+        count += c_ldArmyRoundUp;
+
+        count = FixedToInt(IntToFixed(count) / c_ldArmyStockScale);
+
+        total += count;
+
+        index = index + 1;
+    }
+    if (index >= c_ldMaxArmyStockSize) {
+        if (AIGetUserInt(player, index) > 0) {
+            ErrorMeleeScript(player, "AISetStockArmy too much data");
+        }
+    }
+
+    return total;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AITestTimeout
+//--------------------------------------------------------------------------------------------------
+bool AITestTimeout (int player, int timeOut, int nextState, int nextSubState) {
+    bool sendAttack = true;
+    int waveCount;
+    int desiredArmyCount;
+    if (AIGetTime() < timeOut) {
+        return false;
+    }
+
+    if (AIState(player, e_mainState) == e_mainState_Open) {
+        if (AIGetUserInt(player, c_openingBuildType) == e_buildType_Macro) {
+            // macro build doesn't attack between open & mid
+            sendAttack = false;
+        }
+    }
+    if (sendAttack) {
+        waveCount = AIWaveUnitCount(AIWaveGet(player, c_waveMain)) + AIWaveUnitCount(AIWaveGet(player, c_waveAttack));
+        desiredArmyCount = AIGetStockArmyCount(player);
+        if (waveCount < desiredArmyCount/2) {
+            // army if less than half the size we wanted, don't bother to send it
+            sendAttack = false;
+        }
+    }
+
+    if (sendAttack) {
+        AIWaveMerge(player, c_waveMain, c_waveAttack);
+        AISetAttackState(player, e_attackState_Attack);
+    }
+
+    AISetMainState(player, nextState, nextSubState);
+    AIClearStockArmy(player);
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void AILDGeneralSharedLogic (int player) {
+    bool activateNextWave;
+
+    //scouting logic
+    if (AIGetNumWorkers(player) >= 6) {
+        if (PlayerBeaconIsSet(player, c_beaconScout)) {
+            AISetFlag(player, e_flagsScouting, true);
+        }
+        else if (AIGetTime() > 300) {
+            AISetFlag(player, e_flagsScouting, true);
+        }
+        else if (AIGetTime() > 40 && AIHasHumanAlly(player)) {
+            AISetFlag(player, e_flagsScouting, true);
+        }
+    }
+
+    // coop attacker logic
+    if (AIGetCoopFlag(player, c_coopWaveAttacker)) {
+        if (AIGetTime() > 330) {
+            if (AIState(player, e_attackState) == e_attackState_Wait) {
+                AISetAttackState(player, e_attackState_Attack);
+            }
+        }
+
+        activateNextWave = true;
+        if (AIState(player, e_attackState) == e_attackState_Wait) {
+            activateNextWave = false; // wait for the AI to activate
+        }
+        if (AIWaveUnitCount(AIWaveGet(player, c_waveAttack)) > 0) {
+            activateNextWave = false;
+        }
+        else if (AIWaveUnitCount(AIWaveGet(player, c_waveMain)) < 8) {
+            activateNextWave = false;
+        }
+
+        if (activateNextWave) {
+            AIWaveMerge(player, c_waveMain, c_waveAttack);
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIPickFrom2
+//--------------------------------------------------------------------------------------------------
+string AIPickFrom2 (string a, string b) {
+    int roll = RandomInt(1,2);
+    if (roll == 1) {
+        return a;
+    }
+    return b;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIPickFrom3
+//--------------------------------------------------------------------------------------------------
+string AIPickFrom3 (string a, string b, string c) {
+    int roll = RandomInt(1,3);
+    if (roll == 1) {
+        return a;
+    }
+    if (roll == 2) {
+        return b;
+    }
+    return c;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIAddToStockArmyPickFrom2Count
+//--------------------------------------------------------------------------------------------------
+void AIAddToStockArmyPickFrom2Count (int player, string a, int anum, string b, int bnum) {
+    int roll = RandomInt(1,2);
+    if (roll == 1) {
+        AIAddToStockArmy(player, a, anum);
+    } else {
+        AIAddToStockArmy(player, b, bnum);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIAddToStockArmyPickFrom3Count
+//--------------------------------------------------------------------------------------------------
+void AIAddToStockArmyPickFrom3Count (int player, string a, int anum, string b, int bnum, string c, int cnum) {
+    int roll = RandomInt(1,3);
+    if (roll == 1) {
+        AIAddToStockArmy(player, a, anum);
+    } else if (roll == 2) {
+        AIAddToStockArmy(player, b, bnum);
+    } else {
+        AIAddToStockArmy(player, c, cnum);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIGetWorkerDelay
+//--------------------------------------------------------------------------------------------------
+int AIGetWorkerDelay (int player) {
+    int diff = AIPlayerDifficulty(player); 
+    if (diff == c_skirVeryEasy) {
+        return 10;
+    }
+    if (diff == c_skirEasy) {
+        return 6;
+    }
+    if (diff == c_skirMedium) {
+        return 4;
+    }
+    if (diff == c_skirMed_Hard) {
+        return 2;
+    }
+
+    return 0;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIGetDefenseDelay
+//--------------------------------------------------------------------------------------------------
+int AIGetDefenseDelay (int player) {
+    int diff = AIPlayerDifficulty(player); 
+    if (diff == c_skirVeryEasy) {
+        return 40;
+    }
+    if (diff == c_skirEasy) {
+        return 20;
+    }
+    if (diff == c_skirMedium) {
+        return 10;
+    }
+    if (diff == c_skirMed_Hard) {
+        return 5;
+    }
+
+    return 0;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AIGetArmyDelay
+//--------------------------------------------------------------------------------------------------
+int AIGetArmyDelay (int player, int duration, int phase) {
+    int armyCount = AIGetStockArmyCount(player);
+    int buildType = AIGetUserInt(player, c_openingBuildType);
+    int timePerUnit;
+
+    if (armyCount == 0) {
+        ErrorMeleeScript(player, "AIGetArmyDelay no army?");
+        return 0;
+    }
+
+    // Subtract off 150 seconds from the duration. This gives us time to build the initial tech 
+    //   buildings we might need first and to ensure the last unit finishes in time.
+    duration -= 150;
+    if (phase == c_ldPhaseOpen) {
+        duration -= 150; // If this is the start of the game, subtract off 150 seconds for the initial ramp up.
+        if (buildType == e_buildType_Air) {
+            duration -= 180; // If this is an air build, subtract off another 180 seconds for additional ramp up.
+        }
+        else if (buildType == e_buildType_Macro) {
+            duration -= 60; // If this is a macro build, subtract off another 60 seconds for additional ramp up.
+        }
+    }
+
+    timePerUnit = duration / (armyCount + 1); // increase army count by one to ensure last unit is done in time 
+    if (timePerUnit < 3) {
+        return 0; // handles small and negative cases.
+    }
+
+    return timePerUnit;
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AISetupNextArmyStock
+//--------------------------------------------------------------------------------------------------
+int TemplateArmySetup(int player, int buildType);  // set up the next army, return duration
+
+void AISetupNextArmy (int player, int buildType, int newPhase, funcref<TemplateArmySetup> armyFunc ) {
+    int origPhase = AIGetUserInt(player, c_ldNextArmyPhase);
+    int origDuration = AIGetUserInt(player, c_ldNextArmyDuration);
+    int origEndTime = AIGetUserInt(player, c_nextArmyTime);
+    int origStartTime = 0;
+    fixed origTimeElapsed = 0.0;
+    fixed percentElapsed = 0.0;
+    fixed percentRemaining = 0.0;
+    int newDuration;
+    int newEndTime;
+    int armyCount;
+
+    if (newPhase == origPhase) {
+        // switching due to player request
+        origStartTime = origEndTime - origDuration;
+        origTimeElapsed = AIGetTime() - IntToFixed(origStartTime);
+        if (origTimeElapsed > origDuration - 1) {
+            origTimeElapsed = origDuration - 1;
+        }
+        percentElapsed = origTimeElapsed / IntToFixed(origDuration);
+        percentRemaining = 1.0 - percentElapsed;
+        if (percentRemaining < 0.01) {
+            percentRemaining = 0.01;
+        }
+
+        AIScaleCurrentStockArmy(player, percentElapsed / percentRemaining, 0, c_ldMaxArmyStockSize-1);
+    } else {
+        // switching to next phase
+        AIClearStockArmy(player);
+    }
+
+    // add new army stock
+    newDuration = armyFunc(player, buildType);
+    if (newDuration < 60) {
+        ErrorMeleeScript(player, "AISetupNextArmy bogus duration?");
+        newDuration = 60;
+    }
+
+    if (newPhase == origPhase) {
+        // switching due to player request
+        if (newDuration < origDuration) {
+            newDuration = FixedToInt(IntToFixed(newDuration) * percentRemaining);
+            newDuration += FixedToInt(IntToFixed(origDuration) * percentElapsed);
+        }
+
+        newEndTime = origStartTime + newDuration;
+        
+        AIScaleCurrentStockArmy(player, percentRemaining, 0, c_ldMaxArmyStockSize-1);
+    } else {
+        // switching to next phase
+        newEndTime = FixedToInt(AIGetTime()) + newDuration;
+    }
+
+    // set wave values
+    AISetUserInt(player, c_ldNextArmyPhase, newPhase);
+    AISetUserInt(player, c_ldNextArmyDuration, newDuration);
+    AISetUserInt(player, c_nextArmyTime, newEndTime);
+
+    // set training delay values
+    AIForceTrainingDelay(player, AIGetWorkerDelay(player), AIGetArmyDelay(player, newDuration, newPhase), AIGetDefenseDelay(player));
+}
+
+//--------------------------------------------------------------------------------------------------
+//  AILDStockWorkers
+//--------------------------------------------------------------------------------------------------
+void AILDStockWorkers (int player, int count, string worker) {
+    int econMin = AIGetMinPeonCount(player, c_townMax);
+    int econMax = AIGetMaxPeonCount(player, c_townMax);
+
+    if (econMin > count) {
+        count = econMin;
+    } 
+    else if (econMax < count) {
+        count = econMax;
+    }
+
+    AISetStockUnitNext( player, count, worker, c_stockAlways );
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranBasicEconomy
+//--------------------------------------------------------------------------------------------------
+void TerranBasicEconomy (int player, int tier, int minWorkers) {
+    int econMin = AIGetMinPeonCount(player, c_townMax);
+    if (minWorkers > econMin) {
+        minWorkers = econMin;
+    }
+
+    AIDefaultEconomy(player, c_TB_CommandCenter_Alias, c_TB_Refinery, c_TB_SupplyDepot, c_TU_SCV, minWorkers, c_stockAlways);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranBasicExpansion
+//--------------------------------------------------------------------------------------------------
+void TerranBasicExpansion (int player, int tier, int minerals, int gas) {
+    AIDefaultExpansion(player, c_TB_CommandCenter, minerals, gas, c_expandDefault);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranGeneralBuild
+//--------------------------------------------------------------------------------------------------
+void TerranGeneralBuild (int player, int tier) {
+    if (tier >= c_ldPhaseMid) {
+        if (PlayerBeaconIsSet(player, c_beaconDetect)) {
+            AISetStock( player, 1, c_TU_Raven );
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranMacroExpand
+//--------------------------------------------------------------------------------------------------
+bool TerranMacroExpand (int player) {
+    fixed defenseEval = 0;
+
+    if (AITechCount(player, c_TU_SCV, c_techCountQueuedOrBetter) < 14) {
+        return false;
+    }
+    if (AITechCount(player, c_TB_CommandCenter_Alias, c_techCountQueuedOrBetter) >= 2) {
+        return false;
+    }
+    
+    defenseEval = AISelfDefenseThreatEval(c_dtRealSelfThreat, player);
+    if (defenseEval >= 120) {
+        // don't expand if currently under attack
+        return false;
+    }
+
+    if (!AIIsExpandingOrHasExpanded(player)) {
+        if (!AIHasNearbyOpenExpansion(player)) {
+            return false;
+        }
+        if (!AIHasRes(player,300,0)) {
+            AIEnableStock(player);
+            return true;
+        }
+
+        // we should try to expand
+        AIExpand(player, AIGetTownLocation(player, c_townMain), c_TB_CommandCenter);
+    }
+
+    // currently expanding see if we need to save minerals
+    if (!AIHasRes(player,500,0)) {
+        AIEnableStock(player);
+        return true;
+    }
+    return false; // already saved enough, we're allowed to continure the stock
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranAtEachTown
+//--------------------------------------------------------------------------------------------------
+void TerranAtEachTown (int player, int tier) {
+    int i = 0;
+    int town;
+
+    while (i < c_townMax) {
+        town = i;
+        i = i + 1;
+
+        if (AIGetTownState(player, town) != c_townStateEstablished) {
+            continue;
+        }
+
+        if (AIGetBuildingCountInTown(player, town, c_TB_CommandCenter_Alias, c_techCountCompleteOnly) < 1) {
+            continue;
+        }
+
+        if (AIGetBuildingCountInTown(player, town, c_TB_MissileTurret, c_techCountCompleteOnly) < 2) {
+            AISetStockEx(player, town, 2, c_TB_MissileTurret, c_makeResourceDefense | c_nearDropoff, 0);
+            continue;
+        }
+        if (AIGetBuildingCountInTown(player, town, c_TB_Bunker, c_techCountCompleteOnly) < 1) {
+            AISetStockEx(player, town, 1, c_TB_Bunker, c_makeResourceDefense | c_nearDropoff, 0);
+            continue;
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  TerranTechUp
+//--------------------------------------------------------------------------------------------------
+void TerranTechUp (int player, int tier) {
+    int diff = AIPlayerDifficulty(player);
+
+    if (diff < c_skirMedium) {
+        // don't build extra buildings below medium
+        return;
+    }
+
+    AISetStock( player, 2, c_TB_Refinery );
+    AISetStock( player, 1, c_TB_Barracks );
+    AISetStock( player, 1, c_TB_BarracksTechLab );
+    AISetStock( player, 1, c_TB_EngineeringBay );
+
+    if (tier >= c_ldPhaseMid) {
+        TerranAtEachTown(player, tier);
+        AISetStock( player, 1, c_TB_Factory );
+        AISetStock( player, 1, c_TB_FactoryTechLab );
+        AISetStock( player, 1, c_TB_SensorTower );
+        AISetStock( player, 1, c_TB_Armory );
+        AISetStock( player, 1, c_TB_Starport );
+        AISetStock( player, 1, c_TB_StarportTechLab );
+        AISetStock( player, 3, c_TB_Barracks );
+        AISetStock( player, 2, c_TB_BarracksTechLab );
+        AISetStock( player, 1, c_TB_BarracksReactor );
+
+        if (tier >= c_ldPhaseLate) {
+            AISetStock( player, 1, c_TB_GhostAcademy );
+            AISetStock( player, 1, c_TB_FusionCore );
+            AISetStock( player, 2, c_TB_EngineeringBay );
+            AISetStock( player, 2, c_TB_Armory );
+            AISetStock( player, 2, c_TB_Factory );
+            AISetStock( player, 1, c_TB_FactoryReactor );
+            AISetStock( player, 2, c_TB_Starport );
+            AISetStock( player, 1, c_TB_StarportReactor );
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergBasicEconomy
+//--------------------------------------------------------------------------------------------------
+void ZergBasicEconomy (int player, int tier, int minWorkers) {
+    int econMin = AIGetMinPeonCount(player, c_townMax);
+    if (minWorkers > econMin) {
+        minWorkers = econMin;
+    }
+
+    AIDefaultEconomy(player, c_ZB_Hatchery_Alias, c_ZB_Extractor, c_ZU_Overlord, c_ZU_Drone, minWorkers, c_stockAlways);
+    AISetStock( player, 1, c_ZU_Queen );
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergBasicExpansion
+//--------------------------------------------------------------------------------------------------
+void ZergBasicExpansion (int player, int tier, int minerals, int gas) {
+    AIDefaultExpansion(player, c_ZB_Hatchery, minerals, gas, c_expandDefault);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergGeneralBuild
+//--------------------------------------------------------------------------------------------------
+void ZergGeneralBuild (int player, int tier) {
+    if (tier >= c_ldPhaseMid) {
+        if (PlayerBeaconIsSet(player, c_beaconDetect)) {
+            AISetStock( player, 1, c_ZU_Overseer );
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMacroExpand
+//--------------------------------------------------------------------------------------------------
+bool ZergMacroExpand (int player) {
+    fixed defenseEval = 0;
+
+    if (AITechCount(player, c_ZU_Drone, c_techCountQueuedOrBetter) < 13) {
+        return false;
+    }
+    if (AITechCount(player, c_ZB_Hatchery_Alias, c_techCountQueuedOrBetter) >= 2) {
+        return false;
+    }
+    
+    defenseEval = AISelfDefenseThreatEval(c_dtRealSelfThreat, player);
+    if (defenseEval >= 120) {
+        // don't expand if currently under attack
+        return false;
+    }
+
+    if (!AIIsExpandingOrHasExpanded(player)) {
+        if (!AIHasNearbyOpenExpansion(player)) {
+            return false;
+        }
+        if (!AIHasRes(player,200,0)) {
+            AIEnableStock(player);
+            return true;
+        }
+
+        // we should try to expand
+        AIExpand(player, AIGetTownLocation(player, c_townMain), c_ZB_Hatchery);
+    }
+
+    // currently expanding see if we need to save minerals
+    if (!AIHasRes(player,400,0)) {
+        AIEnableStock(player);
+        return true;
+    }
+    return false; // already saved enough, we're allowed to continure the stock
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergAtEachTown
+//--------------------------------------------------------------------------------------------------
+void ZergAtEachTown (int player, int tier) {
+    int i = 0;
+    int town;
+    int numTowns = 0;
+
+    while (i < c_townMax) {
+        town = i;
+        i = i + 1;
+
+        if (AIGetTownState(player, town) != c_townStateEstablished) {
+            continue;
+        }
+
+        if (AIGetBuildingCountInTown(player, town, c_ZB_Hatchery_Alias, c_techCountCompleteOnly) < 1) {
+            continue;
+        }
+
+        numTowns += 1;
+
+        if (AIGetBuildingCountInTown(player, town, c_ZB_SporeCrawler, c_techCountCompleteOnly) < 2) {
+            AISetStockEx(player, town, 2, c_ZB_SporeCrawler, c_makeResourceDefense | c_nearDropoff, 0);
+            continue;
+        }
+        if (AIGetBuildingCountInTown(player, town, c_ZB_SpineCrawler, c_techCountCompleteOnly) < 2) {
+            AISetStockEx(player, town, 2, c_ZB_SpineCrawler, c_makeResourceDefense | c_nearDropoff, 0);
+            continue;
+        }
+    }
+
+    AISetStockUnitNext( player, numTowns+1, c_ZU_Queen, c_stockAlways );
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergTechUp
+//--------------------------------------------------------------------------------------------------
+void ZergTechUp (int player, int tier) {
+    int diff = AIPlayerDifficulty(player);
+
+    if (diff < c_skirMedium) {
+        // don't build extra buildings below medium
+        return;
+    }
+
+    AISetStock( player, 2, c_ZB_Extractor );
+    AISetStock( player, 1, c_ZB_SpawningPool );
+    AISetStock( player, 1, c_ZB_RoachWarren );
+    AISetStock( player, 1, c_ZB_BanelingNest );
+    AISetStock( player, 1, c_ZB_EvolutionChamber );
+
+    if (tier >= c_ldPhaseMid) {
+        ZergAtEachTown(player, tier);
+        AISetStock( player, 1, c_ZB_HydraliskDen );
+        AISetStock( player, 1, c_ZB_InfestationPit );
+        AISetStock( player, 1, c_ZB_Spire_Alias );
+        AISetStock( player, 2, c_ZB_EvolutionChamber );
+
+        if (tier >= c_ldPhaseLate) {
+            AISetStock( player, 1, c_ZB_UltraliskCavern );
+            AISetStock( player, 1, c_ZB_GreaterSpire );
+            AISetStock( player, 2, c_ZB_Spire_Alias );
+            
+            if (diff > c_skirMedium) {
+                // only make a macro hatch above medium
+                AISetStock( player, 2, c_ZB_Hatchery_Alias );
+            }
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossBasicEconomy
+//--------------------------------------------------------------------------------------------------
+void ProtossBasicEconomy (int player, int tier, int minWorkers) {
+    int econMin = AIGetMinPeonCount(player, c_townMax);
+    if (minWorkers > econMin) {
+        minWorkers = econMin;
+    }
+
+    AIDefaultEconomy(player, c_PB_Nexus, c_PB_Assimilator, c_PB_Pylon, c_PU_Probe, minWorkers, c_stockAlways);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossBasicExpansion
+//--------------------------------------------------------------------------------------------------
+void ProtossBasicExpansion (int player, int tier, int minerals, int gas) {
+    AIDefaultExpansion(player, c_PB_Nexus, minerals, gas, c_expandDefault);
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossGeneralBuild
+//--------------------------------------------------------------------------------------------------
+void ProtossGeneralBuild (int player, int tier) {
+    if (tier >= c_ldPhaseMid) {
+        if (PlayerBeaconIsSet(player, c_beaconDetect)) {
+            AISetStock( player, 1, c_PU_Observer );
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossMacroExpand
+//--------------------------------------------------------------------------------------------------
+bool ProtossMacroExpand (int player) {
+    fixed defenseEval = 0;
+
+    if (AITechCount(player, c_PU_Probe, c_techCountQueuedOrBetter) < 14) {
+        return false;
+    }
+    if (AITechCount(player, c_PB_Nexus, c_techCountQueuedOrBetter) >= 2) {
+        return false;
+    }
+    
+    defenseEval = AISelfDefenseThreatEval(c_dtRealSelfThreat, player);
+    if (defenseEval >= 120) {
+        // don't expand if currently under attack
+        return false;
+    }
+
+    if (!AIIsExpandingOrHasExpanded(player)) {
+        if (!AIHasNearbyOpenExpansion(player)) {
+            return false;
+        }
+        if (!AIHasRes(player,300,0)) {
+            AIEnableStock(player);
+            return true;
+        }
+
+        // we should try to expand
+        AIExpand(player, AIGetTownLocation(player, c_townMain), c_PB_Nexus);
+    }
+
+    // currently expanding see if we need to save minerals
+    if (!AIHasRes(player,500,0)) {
+        AIEnableStock(player);
+        return true;
+    }
+    return false; // already saved enough, we're allowed to continure the stock
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossAtEachTown
+//--------------------------------------------------------------------------------------------------
+void ProtossAtEachTown (int player, int tier) {
+    int i = 0;
+    int town;
+
+    while (i < c_townMax) {
+        town = i;
+        i = i + 1;
+
+        if (AIGetTownState(player, town) != c_townStateEstablished) {
+            continue;
+        }
+
+        if (AIGetBuildingCountInTown(player, town, c_PB_Nexus, c_techCountCompleteOnly) < 1) {
+            continue;
+        }
+
+        // make 2 pylons in each town
+        if (AIGetBuildingCountInTown(player, town, c_PB_Pylon, c_techCountCompleteOnly) < 2) {
+            AISetStockEx(player, town, 1, c_PB_Pylon, c_makeExpanPower, 0);
+            AISetStockEx(player, town, 2, c_PB_Pylon, c_makeResourceDefense | c_nearDropoff, 0);
+            continue;
+        }
+
+        if (AIGetBuildingCountInTown(player, town, c_PB_PhotonCannon, c_techCountCompleteOnly) < 2) {
+            AISetStockEx(player, town, 2, c_PB_PhotonCannon, c_makeResourceDefense | c_nearDropoff, 0);
+            continue;
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ProtossTechUp
+//--------------------------------------------------------------------------------------------------
+void ProtossTechUp (int player, int tier) {
+    int diff = AIPlayerDifficulty(player);
+
+    if (diff < c_skirMedium) {
+        // don't build extra buildings below medium
+        return;
+    }
+
+    AISetStock( player, 2, c_PB_Assimilator );
+    AISetStock( player, 1, c_PB_Gateway );
+    AISetStock( player, 1, c_PB_CyberneticsCore );
+    AISetStock( player, 1, c_PB_Forge );
+
+    if (tier >= c_ldPhaseMid) {
+        ProtossAtEachTown(player, tier);
+        AISetStock( player, 1, c_PB_RoboticsFacility );
+        AISetStock( player, 1, c_PB_Stargate );
+        AISetStock( player, 1, c_PB_TwilightCouncil );
+        AISetStock( player, 3, c_PB_Gateway );
+        AISetStock( player, 2, c_PB_Forge );
+
+        if (tier >= c_ldPhaseLate) {
+            AISetStock( player, 1, c_PB_TemplarArchives );
+            AISetStock( player, 1, c_PB_RoboticsBay );
+            AISetStock( player, 1, c_PB_DarkShrine );
+            AISetStock( player, 1, c_PB_FleetBeacon );
+            AISetStock( player, 2, c_PB_RoboticsFacility );
+            AISetStock( player, 2, c_PB_Stargate );
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
+// Obsolete/Unused below this point, keeping these for reference / future reuse
+//--------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
+//
+//static void AISharedStockLogic (int player) {
+//    AIEnableStock(player);  
+//}
+//
+////--------------------------------------------------------------------------------------------------
+//static bool AISharedLogic (int player) {
+//    bool activateNextWave;
+//
+//    if (AIGetNumWorkers(player) >= 8) {
+//        if (AIGetTime() > 30 && AIHasHumanAlly(player)) {
+//            AISetFlag(player, e_flagsScouting, true);
+//        }
+//        if (AIGetTime() > 300) {
+//            AISetFlag(player, e_flagsScouting, true);
+//        }
+//    }
+//
+//    if (AIGetCoopFlag(player, c_coopWaveAttacker)) {
+//        if (AIGetTime() > 330) {
+//            if (AIState(player, e_attackState) == e_attackState_Wait) {
+//                AISetAttackState(player, e_attackState_Attack);
+//            }
+//        }
+//
+//        activateNextWave = true;
+//        if (AIState(player, e_attackState) == e_attackState_Wait) {
+//            activateNextWave = false; // wait for the AI to activate
+//        }
+//        if (AIWaveUnitCount(AIWaveGet(player, c_waveAttack)) > 0) {
+//            activateNextWave = false;
+//        }
+//        else if (AIWaveUnitCount(AIWaveGet(player, c_waveMain)) < 8) {
+//            activateNextWave = false;
+//        }
+//
+//        if (activateNextWave) {
+//            AIWaveMerge(player, c_waveMain, c_waveAttack);
+//        }
+//    }
+//
+//    //// TODO only in coop mode
+//    //if (AIHasStock(player) == false) {
+//    //    if (AIGetInternalTrainQueueCount(player) == 0) {
+//    //        // no army left to be made, switch to the next state
+//    //        // *********** return here, don't put logic below this ***********
+//    //        return true;
+//    //    }
+//    //}
+//
+//    return false;
+//}
+//
+////==================================================================================================
+////  OPEN
+////==================================================================================================
+//
+////--------------------------------------------------------------------------------------------------
+////  AISharedStateLogic
+////--------------------------------------------------------------------------------------------------
+//static void AISharedStateLogic (int player, int state1, int state2) {
+//    AIWaveMerge(player, c_waveMain, c_waveAttack);
+//    AISetAttackState(player, e_attackState_Attack);
+//    AISetMainState(player, state1, state2);
+//    AIClearStockArmy(player);
+//}
+//
+////--------------------------------------------------------------------------------------------------
+////  AIEnableStockOpen
+////--------------------------------------------------------------------------------------------------
+//bool AIEnableStockOpen (int player, string peonType, int time, bool veryEasy, int nextState1, int nextState2) {
+//    bool nextState = false;
+//
+//    AISharedStockLogic(player);
+//
+//    nextState = AISharedLogic(player);
+//
+//    if (!nextState && AIGetTime() < time) {
+//        return true;
+//    }
+//    AISharedStateLogic(player, nextState1, nextState2);
+//    return false;
+//}
+//
+////==================================================================================================
+////  MID A
+////==================================================================================================
+//
+////--------------------------------------------------------------------------------------------------
+////  AIGasHarvest
+////--------------------------------------------------------------------------------------------------
+//static int GasHarvest (int player, int town, int onGas) {
+//    int send;
+//    
+//    if (onGas < 1) {
+//        return onGas;
+//    }
+//    send = AIGetHarvestableGasNumSpots(player, town) * 3;
+//    if (send < 1) {
+//        return onGas;
+//    }
+//    if (send > onGas) {
+//        send = onGas;
+//    }
+//    AISetGasPeonCountOverride(player, town, send);
+//    return onGas - send;
+//}
+//
+//void AIGasHarvest (int player, string peonType) {
+//    int onGas = (PlayerGetPropertyInt(player, c_playerPropMinerals)
+//               - PlayerGetPropertyInt(player, c_playerPropVespene)) / 100;
+//
+//    AISetGasPeonCountOverride(player, c_townMain, c_defaultGasPeonCount);
+//    AISetGasPeonCountOverride(player, c_townTwo, c_defaultGasPeonCount);
+//    GasHarvest(player, c_townTwo, GasHarvest(player, c_townMain, onGas));
+//}
+//
+////--------------------------------------------------------------------------------------------------
+////  AIEnableStockMidA
+////--------------------------------------------------------------------------------------------------
+//bool AIEnableStockMidA (int player, string peonType, int count, bool veryEasy, int time, int nextState1, int nextState2) {
+//    bool nextState = false;
+//
+//    AISharedStockLogic(player);
+//    AIGasHarvest(player, peonType);
+//
+//    nextState = AISharedLogic(player);
+//
+//    if (!nextState && AIGetTime() < time) {
+//        return true;
+//    }
+//    AISharedStateLogic(player, nextState1, nextState2);
+//    return false;
+//}
+//
+////==================================================================================================
+////  MID B
+////==================================================================================================
+//
+////--------------------------------------------------------------------------------------------------
+////  AIEnableStockMidB
+////--------------------------------------------------------------------------------------------------
+//bool AIEnableStockMidB (int player, string peonType, int count, bool veryEasy, int time, int nextState1, int nextState2) {
+//    bool nextState = false;
+//
+//    AISharedStockLogic(player);
+//    AIGasHarvest(player, peonType);
+//
+//    nextState = AISharedLogic(player);
+//
+//    if (!nextState && AIGetTime() < time) {
+//        return true;
+//    }
+//    AISharedStateLogic(player, nextState1, nextState2);
+//    AISetFlag(player, e_flagsScouting, true);
+//    AISetFlag(player, e_flagsClearObs, true);
+//    return false;
+//}
+//
+////==================================================================================================
+////  LATE
+////==================================================================================================
+//
+////--------------------------------------------------------------------------------------------------
+////  AIEnableStockLate
+////--------------------------------------------------------------------------------------------------
+//bool AIEnableStockLate (int player, string peonType, int count, int offset, int time) {
+//    fixed tm = AIGetTime() - offset;
+//
+//    AISharedStockLogic(player);
+//    AIGasHarvest(player, peonType);
+//    
+//    AISharedLogic(player);
+//
+//    if ((tm < 0) || (tm % time > 5)) {
+//        return true;
+//    }
+//
+//    AIWaveMerge(player, c_waveMain, c_waveAttack);
+//    AISetAttackState(player, e_attackState_Attack);
+//    AIClearStockArmy(player);
+//    return false;
+//}

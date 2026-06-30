@@ -1,0 +1,72 @@
+include "TriggerLibs/natives"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Liberty
+//--------------------------------------------------------------------------------------------------
+// Preset Declarations
+
+// Constants
+const int libLbty_gv_c_PINGMAXCOUNT = 3;
+const fixed libLbty_gv_c_PINGRESETTIME = 2.0;
+const fixed libLbty_gv_c_PINGSUPPRESSIONTIME = 0.25;
+const fixed libLbty_gv_c_PINGLOCKOUTTIME = 5.0;
+
+// Structures
+struct libLbty_gs_AutoRevealerData {
+    revealer[64] lv_revealers;
+    region[64] lv_triggeringRegions;
+    int[64] lv_triggeringPlayers;
+    int lv_count;
+};
+
+// Variable Declarations
+timer[17] libLbty_gv_pingResetTimer;
+timer[17] libLbty_gv_pingSuppressionTimer;
+timer[17] libLbty_gv_pingLockoutTimer;
+int[17] libLbty_gv_pingRecentCount;
+playergroup libLbty_gv_pingValidPlayers;
+int libLbty_gv_pingPanelMinimapButton;
+playergroup libLbty_gv_meleeSurrender_PlayersSurrendering;
+playergroup[17] libLbty_gv_meleeSurrender_PlayersAnswered;
+playergroup libLbty_gv_meleeSurrender_PlayersTried;
+int[33] libLbty_gv_meleeSurrender_Dialog;
+int[33] libLbty_gv_meleeSurrender_BtnYes;
+int[33] libLbty_gv_meleeSurrender_BtnNo;
+int[33] libLbty_gv_meleeSurrender_Title;
+int libLbty_gv_meleeSurrender_FlashingPlayer;
+unit libLbty_gv_transportUnit_Param;
+point libLbty_gv_transportTargetPoint_Param;
+point libLbty_gv_transportDespawnPoint_Param;
+libLbty_gs_AutoRevealerData libLbty_gv_autoRevealers;
+
+// Function Declarations
+void libLbty_gf_PingPlay (int lp_pingType, int lp_player, point lp_pingLocation, int lp_gameUser, string lp_pingTargetType, point lp_pingTargetPosition, int lp_pingTargetOwner);
+void libLbty_gf_PingPlayUnit (string lp_pingTargetType, point lp_pingTargetPosition, int lp_pingTargetOwner, int lp_player, int lp_gameUser);
+void libLbty_gf_PingBeaconAdd (string lp_beaconEffect, point lp_location, int lp_player);
+void libLbty_gf_PingMinimapButtonUpdate ();
+void libLbty_gf_EnableDisablePingPanel (bool lp_enableDisable, playergroup lp_players);
+void libLbty_gf_MeleeSurrender_AIWantToSurrender (int lp_player);
+void libLbty_gf_MeleeSurrender_UpdateDialogs ();
+point libLbty_gf_ValidatedPoint (point lp_point);
+void libLbty_gf_PlayAnnouncerNumberSound (int lp_number, playergroup lp_players, fixed lp_volume);
+void libLbty_gf_PlayTransmissionCueSound (playergroup lp_playerGroup);
+void libLbty_gf_SetAllSoundChannelVolumesStandardTiming (int lp_mode, playergroup lp_players);
+void libLbty_gf_OrderWorkerstoGatherNearbyResources (region lp_region, int lp_player);
+void libLbty_gf_OrderTransporttoUnloadAllthenDespawn (unit lp_transport, point lp_targetPoint, point lp_despawnPoint);
+void libLbty_gf_AutoRevealRegion (region lp_visibilityRegion, region lp_triggeringRegion, int lp_player);
+
+// Trigger Declarations
+trigger libLbty_gt_PingUsed;
+trigger libLbty_gt_PingResetTimerExprires;
+trigger libLbty_gt_PingPanelAutoDisable;
+trigger libLbty_gt_MeleeSurrender_Surrender;
+trigger libLbty_gt_MeleeSurrender_SurrenderClickedButton;
+trigger libLbty_gt_MeleeSurrender_FlashDialog;
+trigger libLbty_gt_TransportController;
+trigger libLbty_gt_Confetti;
+trigger libLbty_gt_ConfettiAutoDisable;
+trigger libLbty_gt_AutoRevealRegionController;
+
+// Library Initialization
+void libLbty_InitVariables ();
+

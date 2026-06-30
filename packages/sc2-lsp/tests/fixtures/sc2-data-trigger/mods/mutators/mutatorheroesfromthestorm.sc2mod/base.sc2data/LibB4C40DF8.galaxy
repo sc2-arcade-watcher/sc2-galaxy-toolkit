@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "LibB4C40DF8_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: HeroesfromtheStorm
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libB4C40DF8_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool libB4C40DF8_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_EnableDisableMutator(true, "HeroesFromTheStorm");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libB4C40DF8_gt_Initialization_Init () {
+    libB4C40DF8_gt_Initialization = TriggerCreate("libB4C40DF8_gt_Initialization_Func");
+    TriggerAddEventMapInit(libB4C40DF8_gt_Initialization);
+}
+
+void libB4C40DF8_InitTriggers () {
+    libB4C40DF8_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libB4C40DF8_InitLib_completed = false;
+
+void libB4C40DF8_InitLib () {
+    if (libB4C40DF8_InitLib_completed) {
+        return;
+    }
+
+    libB4C40DF8_InitLib_completed = true;
+
+    libB4C40DF8_InitLibraries();
+    libB4C40DF8_InitTriggers();
+}
+

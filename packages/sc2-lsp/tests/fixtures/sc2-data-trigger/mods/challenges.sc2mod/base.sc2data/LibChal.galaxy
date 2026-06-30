@@ -1,0 +1,2129 @@
+include "TriggerLibs/NativeLib"
+
+include "LibChal_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Challenges
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libChal_InitLibraries () {
+    libNtve_InitVariables();
+}
+
+// Variable Initialization
+bool libChal_InitVariables_completed = false;
+
+void libChal_InitVariables () {
+    int init_i;
+
+    if (libChal_InitVariables_completed) {
+        return;
+    }
+
+    libChal_InitVariables_completed = true;
+
+    libChal_gv_finalCountdownDIALOG = c_invalidDialogId;
+    libChal_gv_cHL_VictoryPanelDlg = c_invalidDialogId;
+    libChal_gv_cHL_VictoryPanelBorder = c_invalidDialogControlId;
+    libChal_gv_cHL_VictoryPanelBlackMask = c_invalidDialogControlId;
+    libChal_gv_cHL_VictoryPanelGradient = c_invalidDialogControlId;
+    libChal_gv_cHL_VictoryPanelInnerLine = c_invalidDialogControlId;
+    libChal_gv_cHL_VictoryPanelTitleGlowImg = c_invalidDialogControlId;
+    libChal_gv_cHL_VictoryPanelTitleLabel = c_invalidDialogControlId;
+    libChal_gv_cHL_VictoryPanelSubTitleLabel = c_invalidDialogControlId;
+    libChal_gv_cHL_VictoryPanelScoreBG = c_invalidDialogControlId;
+    libChal_gv_cHL_VictoryPanelScoreLabel = c_invalidDialogControlId;
+    libChal_gv_cHL_VictoryPanelContinueBtn = c_invalidDialogControlId;
+    libChal_gv_cHL_VictoryPanelRetryBtn = c_invalidDialogControlId;
+    libChal_gv_cHL_VPWavePanelBGImage = c_invalidDialogControlId;
+    libChal_gv_cHL_VPWavePanelTitleLabel = c_invalidDialogControlId;
+    for (init_i = 0; init_i <= 10; init_i += 1) {
+        libChal_gv_cHL_VPWavePanelWaveBGImage[init_i] = c_invalidDialogControlId;
+    }
+    for (init_i = 0; init_i <= 10; init_i += 1) {
+        libChal_gv_cHL_VPWavePanelWaveLabel[init_i] = c_invalidDialogControlId;
+    }
+    for (init_i = 0; init_i <= 10; init_i += 1) {
+        libChal_gv_cHL_VPWavePanelWaveButton[init_i] = c_invalidDialogControlId;
+    }
+    libChal_gv_cHL_VPAchievePanelBGImage = c_invalidDialogControlId;
+    for (init_i = 0; init_i <= 10; init_i += 1) {
+        libChal_gv_cHL_VPAchievePanelAchievements[init_i] = c_invalidDialogControlId;
+    }
+    for (init_i = 0; init_i <= 10; init_i += 1) {
+        libChal_gv_cHL_DefeatPanelWaveResult[init_i] = libChal_ge_CHL_DefeatPanelWaveResult_HaventTried;
+    }
+    libChal_gv_cHL_DefeatPanelDlg = c_invalidDialogId;
+    libChal_gv_cHL_DefeatPanelBorder = c_invalidDialogControlId;
+    libChal_gv_cHL_DefeatPanelBlackMask = c_invalidDialogControlId;
+    libChal_gv_cHL_DefeatPanelGradient = c_invalidDialogControlId;
+    libChal_gv_cHL_DefeatPanelInnerLine = c_invalidDialogControlId;
+    libChal_gv_cHL_DefeatPanelTitleGlowImg = c_invalidDialogControlId;
+    libChal_gv_cHL_DefeatPanelTitleLabel = c_invalidDialogControlId;
+    libChal_gv_cHL_DefeatPanelSubTitleLabel = c_invalidDialogControlId;
+    libChal_gv_cHL_DefeatPanelSplitImg = c_invalidDialogControlId;
+    libChal_gv_cHL_DefeatPanelContinueBtn = c_invalidDialogControlId;
+    libChal_gv_cHL_DefeatPanelRetryBtn = c_invalidDialogControlId;
+    libChal_gv_cHL_DPWavePanelBGImage = c_invalidDialogControlId;
+    for (init_i = 0; init_i <= 10; init_i += 1) {
+        libChal_gv_cHL_DPWavePanelWaveBGImage[init_i] = c_invalidDialogControlId;
+    }
+    for (init_i = 0; init_i <= 10; init_i += 1) {
+        libChal_gv_cHL_DPWavePanelWaveLabel[init_i] = c_invalidDialogControlId;
+    }
+    for (init_i = 0; init_i <= 10; init_i += 1) {
+        libChal_gv_cHL_DPWavePanelWaveButton[init_i] = c_invalidDialogControlId;
+    }
+    libChal_gv_cHL_WSPanelDlg = c_invalidDialogId;
+    libChal_gv_cHL_WSPanelBorder = c_invalidDialogControlId;
+    libChal_gv_cHL_WSPanelBlackMask = c_invalidDialogControlId;
+    libChal_gv_cHL_WSPanelGradient = c_invalidDialogControlId;
+    libChal_gv_cHL_WSPanelInnerLine = c_invalidDialogControlId;
+    libChal_gv_cHL_WSPanelOverlay = c_invalidDialogControlId;
+    libChal_gv_cHL_WSPanelTitleGlowImg = c_invalidDialogControlId;
+    libChal_gv_cHL_WSPanelTitleLabel = c_invalidDialogControlId;
+    libChal_gv_cHL_WSPanelSubTitleLabel = c_invalidDialogControlId;
+    libChal_gv_cHL_WSPanelScoreLabel1 = c_invalidDialogControlId;
+    libChal_gv_cHL_WSPanelScoreLabel2 = c_invalidDialogControlId;
+    libChal_gv_cHL_WSPanelSplitImg = c_invalidDialogControlId;
+    libChal_gv_cHL_WSPanelContinueBtn = c_invalidDialogControlId;
+    libChal_gv_cHL_CurrentType = libChal_ge_ChallengeType_RushDefense;
+    for (init_i = 0; init_i <= 20; init_i += 1) {
+        libChal_gv_cHL_ChallengeName[init_i] = "";
+    }
+}
+
+// Presets
+// Functions
+void libChal_gf_ShowRacingStart () {
+    // Variable Declarations
+    int lv_racingStartDIALOG;
+    int lv_racingStartTEXT;
+
+    // Variable Initialization
+    lv_racingStartDIALOG = c_invalidDialogId;
+    lv_racingStartTEXT = c_invalidDialogControlId;
+
+    // Implementation
+    DialogCreate(500, 400, c_anchorCenter, 0, 0, false);
+    lv_racingStartDIALOG = DialogLastCreated();
+    DialogSetImageVisible(lv_racingStartDIALOG, false);
+    DialogControlCreate(lv_racingStartDIALOG, c_triggerControlTypeLabel);
+    lv_racingStartTEXT = DialogControlLastCreated();
+    DialogControlSetFullDialog(lv_racingStartTEXT, PlayerGroupAll(), true);
+    DialogSetVisible(lv_racingStartDIALOG, PlayerGroupAll(), true);
+    libNtve_gf_SetDialogItemStyle(lv_racingStartTEXT, "ChallengeGo", PlayerGroupAll());
+    libNtve_gf_SetDialogItemText(lv_racingStartTEXT, StringExternal("Param/Value/lib_Chal_F31D31BA"), PlayerGroupAll());
+    SoundPlay(SoundLink("UI_ChallengeCountdown", 0), PlayerGroupAll(), 100.0, 0.0);
+    Wait(1.5, c_timeGame);
+    libNtve_gf_SetDialogItemStyle(lv_racingStartTEXT, "ChallengeGo", PlayerGroupAll());
+    libNtve_gf_SetDialogItemText(lv_racingStartTEXT, StringExternal("Param/Value/lib_Chal_99EC9A89"), PlayerGroupAll());
+    SoundPlay(SoundLink("UI_ChallengeCountdown", 0), PlayerGroupAll(), 100.0, 0.0);
+    Wait(1.5, c_timeGame);
+    libNtve_gf_SetDialogItemStyle(lv_racingStartTEXT, "ChallengeGo", PlayerGroupAll());
+    libNtve_gf_SetDialogItemText(lv_racingStartTEXT, StringExternal("Param/Value/lib_Chal_4ED83AFC"), PlayerGroupAll());
+    SoundPlay(SoundLink("UI_ChallengeCountdown", 0), PlayerGroupAll(), 100.0, 0.0);
+    Wait(1.5, c_timeGame);
+    libNtve_gf_SetDialogItemStyle(lv_racingStartTEXT, "ChallengeGo", PlayerGroupAll());
+    libNtve_gf_SetDialogItemText(lv_racingStartTEXT, StringExternal("Param/Value/lib_Chal_09DB5BAB"), PlayerGroupAll());
+    SoundPlay(SoundLink("UI_ChallengeCountdown", 0), PlayerGroupAll(), 100.0, 0.0);
+    Wait(1.5, c_timeGame);
+    DialogSetVisible(lv_racingStartDIALOG, PlayerGroupAll(), false);
+}
+
+void libChal_gf_ShowRacingStartCustomDelay (fixed lp_delayTime) {
+    // Variable Declarations
+    int lv_racingStartDIALOG;
+    int lv_racingStartTEXT;
+
+    // Variable Initialization
+    lv_racingStartDIALOG = c_invalidDialogId;
+    lv_racingStartTEXT = c_invalidDialogControlId;
+
+    // Implementation
+    DialogCreate(500, 400, c_anchorCenter, 0, 0, false);
+    lv_racingStartDIALOG = DialogLastCreated();
+    DialogSetImageVisible(lv_racingStartDIALOG, false);
+    DialogControlCreate(lv_racingStartDIALOG, c_triggerControlTypeLabel);
+    lv_racingStartTEXT = DialogControlLastCreated();
+    DialogControlSetFullDialog(lv_racingStartTEXT, PlayerGroupAll(), true);
+    DialogSetVisible(lv_racingStartDIALOG, PlayerGroupAll(), true);
+    libNtve_gf_SetDialogItemStyle(lv_racingStartTEXT, "ChallengeGo", PlayerGroupAll());
+    libNtve_gf_SetDialogItemText(lv_racingStartTEXT, StringExternal("Param/Value/lib_Chal_7B1BDA66"), PlayerGroupAll());
+    SoundPlay(SoundLink("UI_ChallengeCountdown", 0), PlayerGroupAll(), 100.0, 0.0);
+    Wait(lp_delayTime, c_timeGame);
+    libNtve_gf_SetDialogItemStyle(lv_racingStartTEXT, "ChallengeGo", PlayerGroupAll());
+    libNtve_gf_SetDialogItemText(lv_racingStartTEXT, StringExternal("Param/Value/lib_Chal_6F7E2EB9"), PlayerGroupAll());
+    SoundPlay(SoundLink("UI_ChallengeCountdown", 0), PlayerGroupAll(), 100.0, 0.0);
+    Wait(lp_delayTime, c_timeGame);
+    libNtve_gf_SetDialogItemStyle(lv_racingStartTEXT, "ChallengeGo", PlayerGroupAll());
+    libNtve_gf_SetDialogItemText(lv_racingStartTEXT, StringExternal("Param/Value/lib_Chal_32C9A574"), PlayerGroupAll());
+    SoundPlay(SoundLink("UI_ChallengeCountdown", 0), PlayerGroupAll(), 100.0, 0.0);
+    Wait(lp_delayTime, c_timeGame);
+    libNtve_gf_SetDialogItemStyle(lv_racingStartTEXT, "ChallengeGo", PlayerGroupAll());
+    libNtve_gf_SetDialogItemText(lv_racingStartTEXT, StringExternal("Param/Value/lib_Chal_F6EBBD66"), PlayerGroupAll());
+    SoundPlay(SoundLink("UI_ChallengeCountdown", 0), PlayerGroupAll(), 100.0, 0.0);
+    Wait(lp_delayTime, c_timeGame);
+    DialogSetVisible(lv_racingStartDIALOG, PlayerGroupAll(), false);
+}
+
+trigger auto_libChal_gf_ShowFinalCountdown_Trigger = null;
+int auto_libChal_gf_ShowFinalCountdown_lp_countdownStart;
+
+void libChal_gf_ShowFinalCountdown (int lp_countdownStart) {
+    auto_libChal_gf_ShowFinalCountdown_lp_countdownStart = lp_countdownStart;
+
+    if (auto_libChal_gf_ShowFinalCountdown_Trigger == null) {
+        auto_libChal_gf_ShowFinalCountdown_Trigger = TriggerCreate("auto_libChal_gf_ShowFinalCountdown_TriggerFunc");
+    }
+
+    TriggerExecute(auto_libChal_gf_ShowFinalCountdown_Trigger, false, false);
+}
+
+bool auto_libChal_gf_ShowFinalCountdown_TriggerFunc (bool testConds, bool runActions) {
+    int lp_countdownStart = auto_libChal_gf_ShowFinalCountdown_lp_countdownStart;
+
+    int auto76D1783C_ae;
+    int auto76D1783C_ai;
+
+    // Variable Declarations
+    int lv_i;
+    int lv_finalCountdownTEXT;
+
+    // Variable Initialization
+    lv_finalCountdownTEXT = c_invalidDialogControlId;
+
+    // Implementation
+    DialogCreate(500, 400, c_anchorBottom, 0, 200, false);
+    libChal_gv_finalCountdownDIALOG = DialogLastCreated();
+    DialogSetImageVisible(libChal_gv_finalCountdownDIALOG, false);
+    DialogControlCreate(libChal_gv_finalCountdownDIALOG, c_triggerControlTypeLabel);
+    lv_finalCountdownTEXT = DialogControlLastCreated();
+    DialogControlSetFullDialog(lv_finalCountdownTEXT, PlayerGroupAll(), true);
+    DialogSetVisible(libChal_gv_finalCountdownDIALOG, PlayerGroupAll(), true);
+    auto76D1783C_ae = 0;
+    auto76D1783C_ai = -1;
+    lv_i = lp_countdownStart;
+    for ( ; ( (auto76D1783C_ai >= 0 && lv_i <= auto76D1783C_ae) || (auto76D1783C_ai <= 0 && lv_i >= auto76D1783C_ae) ) ; lv_i += auto76D1783C_ai ) {
+        if ((libChal_gv_challengeStopped == false)) {
+            if ((lv_i == 0)) {
+                DialogSetVisible(libChal_gv_finalCountdownDIALOG, PlayerGroupAll(), false);
+            }
+            else {
+                if ((lv_i <= 3)) {
+                    libNtve_gf_SetDialogItemStyle(lv_finalCountdownTEXT, "ChallengeReady", PlayerGroupAll());
+                }
+                else {
+                    if ((lv_i <= 5)) {
+                        libNtve_gf_SetDialogItemStyle(lv_finalCountdownTEXT, "ChallengeReady", PlayerGroupAll());
+                    }
+                    else {
+                        libNtve_gf_SetDialogItemStyle(lv_finalCountdownTEXT, "ChallengeReady", PlayerGroupAll());
+                    }
+                }
+            }
+            libNtve_gf_SetDialogItemText(lv_finalCountdownTEXT, IntToText(lv_i), PlayerGroupAll());
+            SoundPlay(SoundLink("UI_ChallengeCountdown", 0), PlayerGroupAll(), 100.0, 0.0);
+            Wait(1.0, c_timeGame);
+        }
+        else {
+            DialogDestroy(libChal_gv_finalCountdownDIALOG);
+            break;
+        }
+    }
+    return true;
+}
+
+trigger auto_libChal_gf_HideFinalCountdown_Trigger = null;
+
+void libChal_gf_HideFinalCountdown () {
+    if (auto_libChal_gf_HideFinalCountdown_Trigger == null) {
+        auto_libChal_gf_HideFinalCountdown_Trigger = TriggerCreate("auto_libChal_gf_HideFinalCountdown_TriggerFunc");
+    }
+
+    TriggerExecute(auto_libChal_gf_HideFinalCountdown_Trigger, false, false);
+}
+
+bool auto_libChal_gf_HideFinalCountdown_TriggerFunc (bool testConds, bool runActions) {
+    // Implementation
+    DialogSetVisible(libChal_gv_finalCountdownDIALOG, PlayerGroupAll(), false);
+    return true;
+}
+
+void libChal_gf_ChallengeScoreWindow (text lp_unitsText, int lp_finalScore, int lp_rankScore) {
+    // Implementation
+    BoardCreate(1, 1, StringToText(""), Color(100.00, 100.00, 100.00));
+    BoardSetState(BoardLastCreated(), PlayerGroupAll(), c_boardStateShowTitle, false);
+    BoardSetState(BoardLastCreated(), PlayerGroupAll(), c_boardStateShowHeader, false);
+    BoardItemSetText(BoardLastCreated(), 1, 1, (lp_unitsText + IntToText(lp_finalScore) + StringExternal("Param/Value/lib_Chal_0AE8E228") + IntToText(lp_rankScore)));
+}
+
+void libChal_gf_ChallengeScoreWindowwithRounds (text lp_round1Text, text lp_round2Text, text lp_round3Text, text lp_totalLossesText, int lp_round1Losses, int lp_round2Losses, int lp_round3Losses, int lp_totalLosses) {
+    // Implementation
+    BoardCreate(1, 4, StringToText(""), Color(100.00, 100.00, 100.00));
+    BoardSetState(BoardLastCreated(), PlayerGroupAll(), c_boardStateShowTitle, false);
+    BoardSetState(BoardLastCreated(), PlayerGroupAll(), c_boardStateShowHeader, false);
+    BoardItemSetText(BoardLastCreated(), 1, 1, (lp_round1Text + IntToText(lp_round1Losses)));
+    BoardItemSetText(BoardLastCreated(), 1, 2, (lp_round2Text + IntToText(lp_round2Losses)));
+    BoardItemSetText(BoardLastCreated(), 1, 3, (lp_round3Text + IntToText(lp_round3Losses)));
+    BoardItemSetText(BoardLastCreated(), 1, 4, (lp_totalLossesText + IntToText(lp_totalLosses)));
+}
+
+void libChal_gf_ChallengeReadyButton (int lp_screenButtonID, int lp_player, trigger lp_runTrigger) {
+    string autoB3A9F369_val;
+
+    // Implementation
+    libNtve_gf_DisplayScreenButton(lp_screenButtonID, StringExternal("Param/Value/lib_Chal_577A6474"), 350, 114, c_anchorRight, 10, -280, lp_runTrigger);
+    autoB3A9F369_val = PlayerRace(lp_player);
+    if (autoB3A9F369_val == "Prot") {
+        libNtve_gf_SetDialogItemImage(libNtve_gf_ScreenButton(lp_screenButtonID), "Assets\\Textures\\ui_mission_hackingbuttonglow_normalpressed_protoss.dds", PlayerGroupAll());
+        libNtve_gf_SetDialogItemStyle(libNtve_gf_ScreenButton(lp_screenButtonID), "ChallengeReadyButtonProtoss", PlayerGroupAll());
+        libNtve_gf_SetScreenButtonBorderImage(lp_screenButtonID, "Assets\\Textures\\ui_mission_hackingbuttonglow_normalpressed_protoss.dds", "Assets\\Textures\\ui_mission_hackingbuttonglow_normaloverpressedover_protoss.dds", c_triggerImageTypeEndCap);
+        libNtve_gf_SetScreenButtonFlashingBorderImage(lp_screenButtonID, "Assets\\Textures\\ui_mission_hackingbuttonglow_animr_protoss.dds", "Assets\\Textures\\ui_mission_hackingbuttonglow_normaloverpressedover_protoss.dds", c_triggerImageTypeEndCap);
+        libNtve_gf_FlashScreenButton(lp_screenButtonID, 3.0, ColorWithAlpha(16.08, 16.08, 99.61, 74.90), ColorWithAlpha(0.00, 0.00, 0.00, 0.00));
+    }
+    else if (autoB3A9F369_val == "Terr") {
+        libNtve_gf_SetDialogItemImage(libNtve_gf_ScreenButton(lp_screenButtonID), "Assets\\Textures\\ui_mission_hackingbuttonglow_normalpressed.dds", PlayerGroupAll());
+        libNtve_gf_SetDialogItemStyle(libNtve_gf_ScreenButton(lp_screenButtonID), "ChallengeReadyButtonTerran", PlayerGroupAll());
+        libNtve_gf_SetScreenButtonBorderImage(lp_screenButtonID, "Assets\\Textures\\ui_mission_hackingbuttonglow_normalpressed.dds", "Assets\\Textures\\ui_mission_hackingbuttonglow_normaloverpressedover.dds", c_triggerImageTypeEndCap);
+        libNtve_gf_SetScreenButtonFlashingBorderImage(lp_screenButtonID, "Assets\\Textures\\ui_mission_hackingbuttonglow_anim.dds", "Assets\\Textures\\ui_mission_hackingbuttonglow_normaloverpressedover.dds", c_triggerImageTypeEndCap);
+        libNtve_gf_FlashScreenButton(lp_screenButtonID, 3.0, ColorWithAlpha(0.00, 68.24, 0.00, 74.51), ColorWithAlpha(0.00, 0.00, 0.00, 0.00));
+    }
+    else if (autoB3A9F369_val == "Zerg") {
+        libNtve_gf_SetDialogItemImage(libNtve_gf_ScreenButton(lp_screenButtonID), "Assets\\Textures\\ui_mission_hackingbuttonglow_normalpressed_zerg.dds", PlayerGroupAll());
+        libNtve_gf_SetDialogItemStyle(libNtve_gf_ScreenButton(lp_screenButtonID), "ChallengeReadyButtonZerg", PlayerGroupAll());
+        libNtve_gf_SetScreenButtonBorderImage(lp_screenButtonID, "Assets\\Textures\\ui_mission_hackingbuttonglow_normalpressed_zerg.dds", "Assets\\Textures\\ui_mission_hackingbuttonglow_normaloverpressedover_zerg.dds", c_triggerImageTypeEndCap);
+        libNtve_gf_SetScreenButtonFlashingBorderImage(lp_screenButtonID, "Assets\\Textures\\ui_mission_hackingbuttonglow_anim_zerg.dds", "Assets\\Textures\\ui_mission_hackingbuttonglow_normaloverpressedover_zerg.dds", c_triggerImageTypeEndCap);
+        libNtve_gf_FlashScreenButton(lp_screenButtonID, 3.0, ColorWithAlpha(99.22, 52.55, 0.78, 74.51), ColorWithAlpha(0.00, 0.00, 0.00, 0.00));
+    }
+    else {
+    }
+}
+
+void libChal_gf_CreateChallengeVictoryPanel (text lp_title, text lp_subTitle, text lp_wavePanelTitle, text lp_scoreText, trigger lp_continueTrigger, trigger lp_retryTrigger) {
+    string auto6378191D_val;
+    string autoFD2FD5D4_val;
+    string auto217B4FDD_val;
+    string auto32A69469_val;
+    string auto913794DC_val;
+    string auto0E1BBD3E_val;
+    string auto7731B3CC_val;
+    string auto33F2F67C_val;
+    string auto62B9521D_val;
+    string auto1AD394E3_val;
+
+    // Variable Declarations
+    int lv_continueBGImg;
+    int lv_retryBGImg;
+    string lv_race;
+
+    // Variable Initialization
+    lv_continueBGImg = c_invalidDialogControlId;
+    lv_retryBGImg = c_invalidDialogControlId;
+
+    // Implementation
+    lv_race = PlayerRace(1);
+    libChal_gv_cHL_VPWavePanelTitle = lp_wavePanelTitle;
+    libChal_gv_cHL_VictoryPanelContinue = lp_continueTrigger;
+    libChal_gv_cHL_VictoryPanelRetry = lp_retryTrigger;
+    libChal_gv_cHL_VictoryPanelWaveCount = 0;
+    libChal_gv_cHL_VictoryPanelAchievementCount = 0;
+    if ((libChal_gv_cHL_VictoryPanelDlg == c_invalidDialogId)) {
+        DialogCreate(libChal_gv_cHLC_VICTORYPANEL_WIDTH, 100, c_anchorCenter, 0, 0, true);
+        libChal_gv_cHL_VictoryPanelDlg = DialogLastCreated();
+        DialogSetImageVisible(DialogLastCreated(), false);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANELTOPBORDER_WIDTH, libChal_gv_cHLC_VICTORYPANELTOPBORDER_HEIGHT);
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        auto6378191D_val = lv_race;
+        if (auto6378191D_val == "Terr") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_resourcesharing_toppart_pattern.dds", PlayerGroupAll());
+        }
+        else if (auto6378191D_val == "Prot") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_resourcesharing_toppart_pattern_protoss.dds", PlayerGroupAll());
+        }
+        else if (auto6378191D_val == "Zerg") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_resourcesharing_toppart_pattern_zerg.dds", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_VICTORYPANELTOPBORDER_Y);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_VictoryPanelBorder = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANEL_WIDTH, 100);
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeHorizontalBorder, PlayerGroupAll());
+        autoFD2FD5D4_val = lv_race;
+        if (autoFD2FD5D4_val == "Terr") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_battlenet_challenge_frame_metal.dds", PlayerGroupAll());
+        }
+        else if (autoFD2FD5D4_val == "Prot") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_battlenet_challenge_frame_metal_protoss.dds", PlayerGroupAll());
+        }
+        else if (autoFD2FD5D4_val == "Zerg") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_battlenet_challenge_frame_metal_zerg.dds", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, 0);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_VictoryPanelBlackMask = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANEL_WIDTH, 11);
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeHorizontalBorder, PlayerGroupAll());
+        libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_blackmask_small.dds", PlayerGroupAll());
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorCenter, 0, -12);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_VictoryPanelGradient = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANEL_WIDTH, 11);
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeHorizontalBorder, PlayerGroupAll());
+        auto217B4FDD_val = lv_race;
+        if (auto217B4FDD_val == "Terr") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_basegradient_small_terran.dds", PlayerGroupAll());
+        }
+        else if (auto217B4FDD_val == "Prot") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_basegradient_protoss.dds", PlayerGroupAll());
+        }
+        else if (auto217B4FDD_val == "Zerg") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_basegradient_zerg.dds", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorCenter, 0, -12);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_VictoryPanelInnerLine = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANEL_WIDTH, 11);
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeHorizontalBorder, PlayerGroupAll());
+        auto32A69469_val = lv_race;
+        if (auto32A69469_val == "Terr") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_big_innerline_terran.dds", PlayerGroupAll());
+        }
+        else if (auto32A69469_val == "Prot") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_big_innerline_protoss.dds", PlayerGroupAll());
+        }
+        else if (auto32A69469_val == "Zerg") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_big_innerline_zerg.dds", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorCenter, 0, -11);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANELSPLIT_WIDTH, libChal_gv_cHLC_VICTORYPANELSPLIT_HEIGHT);
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeEndCap, PlayerGroupAll());
+        auto913794DC_val = lv_race;
+        if (auto913794DC_val == "Terr") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_challenge_contentdevider.dds", PlayerGroupAll());
+        }
+        else if (auto913794DC_val == "Prot") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_challenge_contentdevider_protoss.dds", PlayerGroupAll());
+        }
+        else if (auto913794DC_val == "Zerg") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_challenge_contentdevider_zerg.dds", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_VICTORYPANELSPLIT_Y);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_VictoryPanelTitleGlowImg = DialogControlLastCreated();
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANELGLOW_WIDTH, libChal_gv_cHLC_VICTORYPANELGLOW_HEIGHT);
+        libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_challenge_glow4text.dds", PlayerGroupAll());
+        auto0E1BBD3E_val = lv_race;
+        if (auto0E1BBD3E_val == "Terr") {
+            libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(0.00, 100.00, 4.71), PlayerGroupAll());
+        }
+        else if (auto0E1BBD3E_val == "Prot") {
+            libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(0.00, 42.75, 100.00), PlayerGroupAll());
+        }
+        else if (auto0E1BBD3E_val == "Zerg") {
+            libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(100.00, 56.86, 0.00), PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_VICTORYPANELGLOW_Y);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeLabel);
+        libChal_gv_cHL_VictoryPanelTitleLabel = DialogControlLastCreated();
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANEL_WIDTH, 50);
+        auto7731B3CC_val = lv_race;
+        if (auto7731B3CC_val == "Terr") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryTitle", PlayerGroupAll());
+        }
+        else if (auto7731B3CC_val == "Prot") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryTitleProtoss", PlayerGroupAll());
+        }
+        else if (auto7731B3CC_val == "Zerg") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryTitleZerg", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_VICTORYPANELTITLE_Y);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeLabel);
+        libChal_gv_cHL_VictoryPanelSubTitleLabel = DialogControlLastCreated();
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANEL_WIDTH, 40);
+        auto33F2F67C_val = lv_race;
+        if (auto33F2F67C_val == "Terr") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictorySubtitle", PlayerGroupAll());
+        }
+        else if (auto33F2F67C_val == "Prot") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictorySubtitleProtoss", PlayerGroupAll());
+        }
+        else if (auto33F2F67C_val == "Zerg") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictorySubtitleZerg", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_VICTORYPANELSUBTITLE_Y);
+    }
+    else {
+    }
+    libNtve_gf_SetDialogItemText(libChal_gv_cHL_VictoryPanelTitleLabel, lp_title, PlayerGroupAll());
+    libNtve_gf_SetDialogItemText(libChal_gv_cHL_VictoryPanelSubTitleLabel, lp_subTitle, PlayerGroupAll());
+    libChal_gf_CHL_VPCreateWavePanel();
+    libChal_gf_CHL_VPCreateAchievePanel();
+    if ((libChal_gv_cHL_VictoryPanelScoreBG == c_invalidDialogControlId)) {
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_VictoryPanelScoreBG = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeEndCap, PlayerGroupAll());
+        libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_battlenet_challenge_frame_total.dds", PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANELSCORE_WIDTH, libChal_gv_cHLC_VICTORYPANELSCORE_HEIGHT);
+        auto62B9521D_val = lv_race;
+        if (auto62B9521D_val == "Terr") {
+            libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(14.51, 89.80, 58.82), PlayerGroupAll());
+        }
+        else if (auto62B9521D_val == "Prot") {
+            libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(14.51, 55.29, 89.80), PlayerGroupAll());
+        }
+        else if (auto62B9521D_val == "Zerg") {
+            libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(61.96, 38.82, 14.51), PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, 0);
+    }
+    else {
+    }
+    if ((libChal_gv_cHL_VictoryPanelScoreLabel == c_invalidDialogControlId)) {
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeLabel);
+        libChal_gv_cHL_VictoryPanelScoreLabel = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        auto1AD394E3_val = lv_race;
+        if (auto1AD394E3_val == "Terr") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryScoreText", PlayerGroupAll());
+        }
+        else if (auto1AD394E3_val == "Prot") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryScoreTextProtoss", PlayerGroupAll());
+        }
+        else if (auto1AD394E3_val == "Zerg") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryScoreTextZerg", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANELSCORE_WIDTH, libChal_gv_cHLC_VICTORYPANELSCORE_HEIGHT);
+        DialogControlSetPositionRelative(DialogControlLastCreated(), PlayerGroupAll(), c_anchorLeft, libChal_gv_cHL_VictoryPanelScoreBG, c_anchorLeft, libChal_gv_cHLC_VICTORYPANELWAVEPANELWAVELABEL_OFFSET, 0);
+    }
+    else {
+    }
+    libNtve_gf_SetDialogItemText(libChal_gv_cHL_VictoryPanelScoreLabel, lp_scoreText, PlayerGroupAll());
+    if ((libChal_gv_cHL_VictoryPanelContinueBtn == c_invalidDialogControlId)) {
+        DialogControlCreateFromTemplate(DialogLastCreated(), c_triggerControlTypeButton, "TriggerDialogFrame/TriggerControlRightChallengeButton");
+        libNtve_gf_SetDialogItemHandle(DialogControlLastCreated(), "ChallengeVictoryPanel_ContinueButton", PlayerGroupAll());
+        libChal_gv_cHL_VictoryPanelContinueBtn = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemText(DialogControlLastCreated(), StringExternal("Param/Value/lib_Chal_9D0811FA"), PlayerGroupAll());
+        libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryContinueButton", PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANELCONTINUE_WIDTH, libChal_gv_cHLC_VICTORYPANELCONTINUE_HEIGHT);
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorBottomRight, 5, 30);
+    }
+    else {
+    }
+    if ((libChal_gv_cHL_VictoryPanelRetryBtn == c_invalidDialogControlId)) {
+        DialogControlCreateFromTemplate(DialogLastCreated(), c_triggerControlTypeButton, "TriggerDialogFrame/TriggerControlLeftChallengeButton");
+        libNtve_gf_SetDialogItemHandle(DialogControlLastCreated(), "ChallengeVictoryPanel_RetryButton", PlayerGroupAll());
+        libChal_gv_cHL_VictoryPanelRetryBtn = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemText(DialogControlLastCreated(), StringExternal("Param/Value/lib_Chal_78FF234A"), PlayerGroupAll());
+        libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryContinueButton", PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANELCONTINUE_WIDTH, libChal_gv_cHLC_DEFEATPANELCONTINUE_HEIGHT);
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorBottomLeft, 5, 30);
+    }
+    else {
+    }
+    libChal_gf_CHL_UpdateVictoryPanel();
+}
+
+void libChal_gf_AddWaveToChallengeVictoryPanel (text lp_label, trigger lp_retry_Trigger) {
+    // Implementation
+    if ((libChal_gv_cHL_VictoryPanelWaveCount >= libChal_gv_cHLC_VPWAVEMAXCOUNT)) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, (StringExternal("Param/Value/lib_Chal_07231DC3") + IntToText(libChal_gv_cHLC_VPWAVEMAXCOUNT) + StringExternal("Param/Value/lib_Chal_7C504C55")));
+        return ;
+    }
+    else {
+    }
+    libChal_gv_cHL_VictoryPanelWaveCount += 1;
+    libChal_gv_cHL_VictoryPanelWaveLabel[libChal_gv_cHL_VictoryPanelWaveCount] = lp_label;
+    libChal_gv_cHL_VictoryPanelWaveRetry[libChal_gv_cHL_VictoryPanelWaveCount] = lp_retry_Trigger;
+    libChal_gf_CHL_UpdateVictoryPanel();
+}
+
+void libChal_gf_AddAchievementToChallengeVictoryPanel (string lp_achievement) {
+    // Implementation
+    if ((libChal_gv_cHL_VictoryPanelAchievementCount >= libChal_gv_cHLC_VPACHIEVEMAXCOUNT)) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, (StringExternal("Param/Value/lib_Chal_08087BD9") + IntToText(libChal_gv_cHLC_VPACHIEVEMAXCOUNT) + StringExternal("Param/Value/lib_Chal_715DEA52")));
+        return ;
+    }
+    else {
+    }
+    libChal_gv_cHL_VictoryPanelAchievementCount += 1;
+    libChal_gv_cHL_VictoryPanelAchievements[libChal_gv_cHL_VictoryPanelAchievementCount] = lp_achievement;
+    libChal_gf_CHL_UpdateVictoryPanel();
+}
+
+void libChal_gf_ShowHideChallengeVictoryPanel (bool lp_showHide) {
+    // Implementation
+    if ((libChal_gv_cHL_VictoryPanelDlg != c_invalidDialogId)) {
+        if ((lp_showHide == true)) {
+            TriggerEnable(libChal_gt_CHL_VictoryPanelButtonClicked, true);
+        }
+        else {
+        }
+        DialogSetVisible(libChal_gv_cHL_VictoryPanelDlg, PlayerGroupAll(), lp_showHide);
+    }
+    else {
+    }
+}
+
+void libChal_gf_CHL_UpdateVictoryPanel () {
+    string auto55276C72_val;
+    string autoD1A4CC38_val;
+
+    // Variable Declarations
+    int lv_height;
+    bool lv_showHide;
+    string lv_race;
+
+    // Variable Initialization
+    lv_showHide = true;
+
+    // Implementation
+    lv_race = PlayerRace(1);
+    libChal_gf_CHL_VPUpdateWavePanel();
+    libChal_gf_CHL_VPUpdateAchievePanel();
+    if ((libChal_gv_cHL_VictoryPanelWaveCount > 0)) {
+        DialogControlSetPosition(libChal_gv_cHL_VictoryPanelScoreBG, PlayerGroupAll(), c_anchorTop, 0, (libChal_gv_cHLC_VICTORYPANELWAVEPANEL_Y + (libChal_gv_cHL_VPWavePanelHeight - (libChal_gv_cHLC_VICTORYPANELSCORE_HEIGHT + 14))));
+        DialogControlSetVisible(libChal_gv_cHL_VictoryPanelScoreBG, PlayerGroupAll(), true);
+        autoD1A4CC38_val = lv_race;
+        if (autoD1A4CC38_val == "Terr") {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_VictoryPanelScoreLabel, "ChallengeVictoryScoreText", PlayerGroupAll());
+        }
+        else if (autoD1A4CC38_val == "Prot") {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_VictoryPanelScoreLabel, "ChallengeVictoryScoreTextProtoss", PlayerGroupAll());
+        }
+        else if (autoD1A4CC38_val == "Zerg") {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_VictoryPanelScoreLabel, "ChallengeVictoryScoreTextZerg", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPositionRelative(libChal_gv_cHL_VictoryPanelScoreLabel, PlayerGroupAll(), c_anchorLeft, libChal_gv_cHL_VictoryPanelScoreBG, c_anchorLeft, libChal_gv_cHLC_VICTORYPANELWAVEPANELWAVELABEL_OFFSET, 0);
+        lv_height = (libChal_gv_cHLC_VICTORYPANELWAVEPANEL_Y + libChal_gv_cHL_VPWavePanelHeight + 90);
+    }
+    else {
+        DialogControlSetPosition(libChal_gv_cHL_VictoryPanelScoreBG, PlayerGroupAll(), c_anchorTop, 0, (libChal_gv_cHLC_VICTORYPANELWAVEPANEL_Y - 5));
+        DialogControlSetVisible(libChal_gv_cHL_VictoryPanelScoreBG, PlayerGroupAll(), false);
+        auto55276C72_val = lv_race;
+        if (auto55276C72_val == "Terr") {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_VictoryPanelScoreLabel, "ChallengeVictoryScoreTextNoWave", PlayerGroupAll());
+        }
+        else if (auto55276C72_val == "Prot") {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_VictoryPanelScoreLabel, "ChallengeVictoryScoreTextNoWaveProtoss", PlayerGroupAll());
+        }
+        else if (auto55276C72_val == "Zerg") {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_VictoryPanelScoreLabel, "ChallengeVictoryScoreTextNoWaveZerg", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPositionRelative(libChal_gv_cHL_VictoryPanelScoreLabel, PlayerGroupAll(), c_anchorCenter, libChal_gv_cHL_VictoryPanelScoreBG, c_anchorCenter, 0, 0);
+        lv_height = (libChal_gv_cHLC_VICTORYPANELWAVEPANEL_Y + libChal_gv_cHLC_VICTORYPANELSCORE_HEIGHT + 80);
+    }
+    lv_height += libChal_gv_cHL_VPAchievePanelHeight;
+    if ((libChal_gv_cHL_VictoryPanelWaveCount > 0)) {
+        lv_height += 15;
+    }
+    else {
+        if ((libChal_gv_cHL_VictoryPanelAchievementCount > 0)) {
+            lv_height -= 20;
+        }
+        else {
+        }
+    }
+    DialogControlSetSize(libChal_gv_cHL_VictoryPanelBlackMask, PlayerGroupAll(), (libChal_gv_cHLC_VICTORYPANEL_WIDTH - 70), (lv_height - 105));
+    DialogControlSetSize(libChal_gv_cHL_VictoryPanelGradient, PlayerGroupAll(), (libChal_gv_cHLC_VICTORYPANEL_WIDTH - 70), (lv_height - 105));
+    DialogControlSetSize(libChal_gv_cHL_VictoryPanelInnerLine, PlayerGroupAll(), (libChal_gv_cHLC_VICTORYPANEL_WIDTH - 74), (lv_height - 110));
+    DialogSetSize(libChal_gv_cHL_VictoryPanelDlg, libChal_gv_cHLC_VICTORYPANEL_WIDTH, lv_height);
+    DialogControlSetSize(libChal_gv_cHL_VictoryPanelBorder, PlayerGroupAll(), (libChal_gv_cHLC_VICTORYPANEL_WIDTH - 0), (lv_height - 0));
+    if ((libChal_gv_cHL_VictoryPanelRetry == null)) {
+        lv_showHide = false;
+    }
+    else {
+        lv_showHide = true;
+    }
+    DialogControlSetVisible(libChal_gv_cHL_VictoryPanelRetryBtn, PlayerGroupAll(), lv_showHide);
+}
+
+void libChal_gf_CHL_VPCreateWavePanel () {
+    string autoFC75B999_val;
+    string auto60F38443_val;
+
+    // Variable Declarations
+    string lv_race;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_race = PlayerRace(1);
+    if ((libChal_gv_cHL_VictoryPanelDlg == c_invalidDialogId)) {
+        return ;
+    }
+    else {
+    }
+    if ((libChal_gv_cHL_VPWavePanelBGImage == c_invalidDialogControlId)) {
+        DialogControlCreate(libChal_gv_cHL_VictoryPanelDlg, c_triggerControlTypeImage);
+        libChal_gv_cHL_VPWavePanelBGImage = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeHorizontalBorder, PlayerGroupAll());
+        libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_battlenet_challenge_frame_innerborder.dds", PlayerGroupAll());
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_VICTORYPANELWAVEPANEL_Y);
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANELWAVEPANEL_WIDTH, 100);
+        autoFC75B999_val = lv_race;
+        if (autoFC75B999_val == "Terr") {
+            libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(14.51, 89.80, 58.82), PlayerGroupAll());
+        }
+        else if (autoFC75B999_val == "Prot") {
+            libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(14.51, 55.29, 89.80), PlayerGroupAll());
+        }
+        else if (autoFC75B999_val == "Zerg") {
+            libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(61.96, 38.82, 14.51), PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlCreate(libChal_gv_cHL_VictoryPanelDlg, c_triggerControlTypeLabel);
+        libChal_gv_cHL_VPWavePanelTitleLabel = DialogControlLastCreated();
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANELWAVEPANEL_WIDTH, 40);
+        auto60F38443_val = lv_race;
+        if (auto60F38443_val == "Terr") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryWavePanelTitle", PlayerGroupAll());
+        }
+        else if (auto60F38443_val == "Prot") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryWavePanelTitleProtoss", PlayerGroupAll());
+        }
+        else if (auto60F38443_val == "Zerg") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryWavePanelTitleZerg", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPositionRelative(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, libChal_gv_cHL_VPWavePanelBGImage, c_anchorTop, 0, 4);
+    }
+    else {
+    }
+}
+
+void libChal_gf_CHL_VPUpdateWavePanel () {
+    int autoB4C0CBB6_ae;
+    int autoB4C0CBB6_ai;
+    string auto4D27398A_val;
+    string auto05CEA730_val;
+    int auto47094244_ae;
+    int auto47094244_ai;
+
+    // Variable Declarations
+    int lv_index;
+    int lv_height;
+    string lv_race;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_race = PlayerRace(1);
+    if ((libChal_gv_cHL_VictoryPanelDlg == c_invalidDialogId)) {
+        return ;
+    }
+    else {
+    }
+    libChal_gv_cHL_VPWavePanelHeight = 53;
+    autoB4C0CBB6_ae = libChal_gv_cHL_VictoryPanelWaveCount;
+    autoB4C0CBB6_ai = 1;
+    lv_index = 1;
+    for ( ; ( (autoB4C0CBB6_ai >= 0 && lv_index <= autoB4C0CBB6_ae) || (autoB4C0CBB6_ai <= 0 && lv_index >= autoB4C0CBB6_ae) ) ; lv_index += autoB4C0CBB6_ai ) {
+        if ((libChal_gv_cHL_VPWavePanelWaveBGImage[lv_index] == c_invalidDialogControlId)) {
+            DialogControlCreate(libChal_gv_cHL_VictoryPanelDlg, c_triggerControlTypeImage);
+            libChal_gv_cHL_VPWavePanelWaveBGImage[lv_index] = DialogControlLastCreated();
+            libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeEndCap, PlayerGroupAll());
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_battlenet_challenge_frame_wave.dds", PlayerGroupAll());
+            auto4D27398A_val = lv_race;
+            if (auto4D27398A_val == "Terr") {
+                libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(14.51, 89.80, 58.82), PlayerGroupAll());
+            }
+            else if (auto4D27398A_val == "Prot") {
+                libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(14.51, 55.29, 89.80), PlayerGroupAll());
+            }
+            else if (auto4D27398A_val == "Zerg") {
+                libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(61.96, 38.82, 14.51), PlayerGroupAll());
+            }
+            else {
+            }
+        }
+        else {
+        }
+        DialogControlSetSize(libChal_gv_cHL_VPWavePanelWaveBGImage[lv_index], PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANELWAVEPANELWAVE_WIDTH, libChal_gv_cHLC_VICTORYPANELWAVEPANELWAVE_HEIGHT);
+        DialogControlSetPositionRelative(libChal_gv_cHL_VPWavePanelWaveBGImage[lv_index], PlayerGroupAll(), c_anchorTop, libChal_gv_cHL_VPWavePanelBGImage, c_anchorTop, 0, libChal_gv_cHL_VPWavePanelHeight);
+        if ((libChal_gv_cHL_VPWavePanelWaveButton[lv_index] == c_invalidDialogControlId)) {
+            DialogControlCreate(libChal_gv_cHL_VictoryPanelDlg, c_triggerControlTypeButton);
+            libNtve_gf_SetDialogItemHandle(DialogControlLastCreated(), ("ChallengeVictoryPanel_RetryWaveButton" + IntToString(lv_index)), PlayerGroupAll());
+            libChal_gv_cHL_VPWavePanelWaveButton[lv_index] = DialogControlLastCreated();
+            libNtve_gf_SetDialogItemText(DialogControlLastCreated(), StringExternal("Param/Value/lib_Chal_C6CB6156"), PlayerGroupAll());
+            auto05CEA730_val = lv_race;
+            if (auto05CEA730_val == "Terr") {
+                libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryWaveRetryButton", PlayerGroupAll());
+                libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_options_selectonbutton_normalpressed_terran.dds", PlayerGroupAll());
+                libNtve_gf_SetDialogItemImage2(DialogControlLastCreated(), "Assets\\Textures\\ui_options_selectonbutton_normaloverpressedover_terran.dds", PlayerGroupAll());
+            }
+            else if (auto05CEA730_val == "Prot") {
+                libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryWaveRetryButtonProtoss", PlayerGroupAll());
+                libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_button_generic_normalpressed_protoss.dds", PlayerGroupAll());
+                libNtve_gf_SetDialogItemImage2(DialogControlLastCreated(), "Assets\\Textures\\ui_button_generic_normaloverpressedover_protoss.dds", PlayerGroupAll());
+            }
+            else if (auto05CEA730_val == "Zerg") {
+                libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryWaveRetryButtonZerg", PlayerGroupAll());
+                libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_button_generic_normalpressed_zerg.dds", PlayerGroupAll());
+                libNtve_gf_SetDialogItemImage2(DialogControlLastCreated(), "Assets\\Textures\\ui_button_generic_normaloverpressedover_zerg.dds", PlayerGroupAll());
+            }
+            else {
+            }
+        }
+        else {
+        }
+        DialogControlSetSize(libChal_gv_cHL_VPWavePanelWaveButton[lv_index], PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANELWAVEPANELBUTTON_WIDTH, libChal_gv_cHLC_VICTORYPANELWAVEPANELBUTTON_HEIGHT);
+        DialogControlSetPositionRelative(libChal_gv_cHL_VPWavePanelWaveButton[lv_index], PlayerGroupAll(), c_anchorRight, libChal_gv_cHL_VPWavePanelWaveBGImage[lv_index], c_anchorRight, libChal_gv_cHLC_VICTORYPANELWAVEPANELWAVEBUTTON_OFFSET, 0);
+        if ((libChal_gv_cHL_VictoryPanelWaveRetry[lv_index] != null)) {
+            DialogControlSetVisible(libChal_gv_cHL_VPWavePanelWaveButton[lv_index], PlayerGroupAll(), true);
+        }
+        else {
+            DialogControlSetVisible(libChal_gv_cHL_VPWavePanelWaveButton[lv_index], PlayerGroupAll(), false);
+        }
+        if ((libChal_gv_cHL_VPWavePanelWaveLabel[lv_index] == c_invalidDialogControlId)) {
+            DialogControlCreate(libChal_gv_cHL_VictoryPanelDlg, c_triggerControlTypeLabel);
+            libChal_gv_cHL_VPWavePanelWaveLabel[lv_index] = DialogControlLastCreated();
+            libNtve_gf_SetDialogItemText(DialogControlLastCreated(), libChal_gv_cHL_VictoryPanelWaveLabel[lv_index], PlayerGroupAll());
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryWaveLabel", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetSize(libChal_gv_cHL_VPWavePanelWaveLabel[lv_index], PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANELWAVEPANELWAVE_WIDTH, libChal_gv_cHLC_VICTORYPANELWAVEPANELWAVE_HEIGHT);
+        DialogControlSetPositionRelative(libChal_gv_cHL_VPWavePanelWaveLabel[lv_index], PlayerGroupAll(), c_anchorLeft, libChal_gv_cHL_VPWavePanelWaveBGImage[lv_index], c_anchorLeft, libChal_gv_cHLC_VICTORYPANELWAVEPANELWAVELABEL_OFFSET, 0);
+        libChal_gv_cHL_VPWavePanelHeight += 52;
+    }
+    if ((libChal_gv_cHL_VictoryPanelWaveCount > 0)) {
+        libNtve_gf_SetDialogItemText(libChal_gv_cHL_VPWavePanelTitleLabel, libChal_gv_cHL_VPWavePanelTitle, PlayerGroupAll());
+        libChal_gv_cHL_VPWavePanelHeight += (libChal_gv_cHLC_VICTORYPANELSCORE_HEIGHT + 14);
+        DialogControlSetSize(libChal_gv_cHL_VPWavePanelBGImage, PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANELWAVEPANEL_WIDTH, libChal_gv_cHL_VPWavePanelHeight);
+        DialogControlSetPosition(libChal_gv_cHL_VPWavePanelBGImage, PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_VICTORYPANELWAVEPANEL_Y);
+        DialogControlSetVisible(libChal_gv_cHL_VPWavePanelBGImage, PlayerGroupAll(), true);
+        DialogControlSetVisible(libChal_gv_cHL_VPWavePanelTitleLabel, PlayerGroupAll(), true);
+    }
+    else {
+        libChal_gv_cHL_VPWavePanelHeight = 0;
+        DialogControlSetVisible(libChal_gv_cHL_VPWavePanelBGImage, PlayerGroupAll(), false);
+        DialogControlSetVisible(libChal_gv_cHL_VPWavePanelTitleLabel, PlayerGroupAll(), false);
+    }
+    auto47094244_ae = libChal_gv_cHLC_VPWAVEMAXCOUNT;
+    auto47094244_ai = 1;
+    lv_index = (libChal_gv_cHL_VictoryPanelWaveCount + 1);
+    for ( ; ( (auto47094244_ai >= 0 && lv_index <= auto47094244_ae) || (auto47094244_ai <= 0 && lv_index >= auto47094244_ae) ) ; lv_index += auto47094244_ai ) {
+        if ((libChal_gv_cHL_VPWavePanelWaveBGImage[lv_index] != c_invalidDialogControlId)) {
+            DialogControlDestroy(libChal_gv_cHL_VPWavePanelWaveBGImage[lv_index]);
+            libChal_gv_cHL_VPWavePanelWaveBGImage[lv_index] = c_invalidDialogControlId;
+        }
+        else {
+        }
+        if ((libChal_gv_cHL_VPWavePanelWaveButton[lv_index] != c_invalidDialogControlId)) {
+            DialogControlDestroy(libChal_gv_cHL_VPWavePanelWaveButton[lv_index]);
+            libChal_gv_cHL_VPWavePanelWaveButton[lv_index] = c_invalidDialogControlId;
+        }
+        else {
+        }
+        if ((libChal_gv_cHL_VPWavePanelWaveLabel[lv_index] != c_invalidDialogControlId)) {
+            DialogControlDestroy(libChal_gv_cHL_VPWavePanelWaveLabel[lv_index]);
+            libChal_gv_cHL_VPWavePanelWaveLabel[lv_index] = c_invalidDialogControlId;
+        }
+        else {
+        }
+    }
+}
+
+void libChal_gf_CHL_VPCreateAchievePanel () {
+    string auto16217EA6_val;
+
+    // Variable Declarations
+    string lv_race;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_race = PlayerRace(1);
+    if ((libChal_gv_cHL_VictoryPanelDlg == c_invalidDialogId)) {
+        return ;
+    }
+    else {
+    }
+    if ((libChal_gv_cHL_VPAchievePanelBGImage == c_invalidDialogControlId)) {
+        DialogControlCreate(libChal_gv_cHL_VictoryPanelDlg, c_triggerControlTypeImage);
+        libChal_gv_cHL_VPAchievePanelBGImage = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeHorizontalBorder, PlayerGroupAll());
+        libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_battlenet_challenge_frame_innerborder.dds", PlayerGroupAll());
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, 0);
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANELACHIEVEPANELITEM_WIDTH, 100);
+        auto16217EA6_val = lv_race;
+        if (auto16217EA6_val == "Terr") {
+            libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(14.51, 89.80, 58.82), PlayerGroupAll());
+        }
+        else if (auto16217EA6_val == "Prot") {
+            libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(14.51, 55.29, 89.80), PlayerGroupAll());
+        }
+        else if (auto16217EA6_val == "Zerg") {
+            libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(61.96, 38.82, 14.51), PlayerGroupAll());
+        }
+        else {
+        }
+    }
+    else {
+    }
+}
+
+void libChal_gf_CHL_VPUpdateAchievePanel () {
+    int auto7954D13F_ae;
+    int auto7954D13F_ai;
+    int autoF01A8C8E_ae;
+    int autoF01A8C8E_ai;
+
+    // Variable Declarations
+    int lv_index;
+    int lv_height;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((libChal_gv_cHL_VictoryPanelDlg == c_invalidDialogId)) {
+        return ;
+    }
+    else {
+    }
+    libChal_gv_cHL_VPAchievePanelHeight = 15;
+    auto7954D13F_ae = libChal_gv_cHL_VictoryPanelAchievementCount;
+    auto7954D13F_ai = 1;
+    lv_index = 1;
+    for ( ; ( (auto7954D13F_ai >= 0 && lv_index <= auto7954D13F_ae) || (auto7954D13F_ai <= 0 && lv_index >= auto7954D13F_ae) ) ; lv_index += auto7954D13F_ai ) {
+        if ((libChal_gv_cHL_VPAchievePanelAchievements[lv_index] == c_invalidDialogControlId)) {
+            DialogControlCreate(libChal_gv_cHL_VictoryPanelDlg, c_triggerControlTypeAchievement);
+            libChal_gv_cHL_VPAchievePanelAchievements[lv_index] = DialogControlLastCreated();
+            DialogControlSetSize(libChal_gv_cHL_VPAchievePanelAchievements[lv_index], PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANELACHIEVEPANELITEM_WIDTH, libChal_gv_cHLC_VICTORYPANELACHIEVEPANELITEM_HEIGHT);
+        }
+        else {
+        }
+        libNtve_gf_SetDialogItemAchievement(libChal_gv_cHL_VPAchievePanelAchievements[lv_index], libChal_gv_cHL_VictoryPanelAchievements[lv_index], PlayerGroupAll());
+        DialogControlSetPositionRelative(libChal_gv_cHL_VPAchievePanelAchievements[lv_index], PlayerGroupAll(), c_anchorTop, libChal_gv_cHL_VPAchievePanelBGImage, c_anchorTop, 0, libChal_gv_cHL_VPAchievePanelHeight);
+        libChal_gv_cHL_VPAchievePanelHeight += (libChal_gv_cHLC_VICTORYPANELACHIEVEPANELITEM_HEIGHT + 0);
+    }
+    libChal_gv_cHL_VPAchievePanelHeight += 15;
+    if ((libChal_gv_cHL_VictoryPanelAchievementCount > 0)) {
+        DialogControlSetSize(libChal_gv_cHL_VPAchievePanelBGImage, PlayerGroupAll(), libChal_gv_cHLC_VICTORYPANELACHIEVEPANELITEM_WIDTH, libChal_gv_cHL_VPAchievePanelHeight);
+        if ((libChal_gv_cHL_VictoryPanelWaveCount > 0)) {
+            DialogControlSetPosition(libChal_gv_cHL_VPAchievePanelBGImage, PlayerGroupAll(), c_anchorTop, 0, (libChal_gv_cHLC_VICTORYPANELWAVEPANEL_Y + libChal_gv_cHL_VPWavePanelHeight + 20));
+            libChal_gv_cHL_VPAchievePanelHeight += 20;
+        }
+        else {
+            DialogControlSetPosition(libChal_gv_cHL_VPAchievePanelBGImage, PlayerGroupAll(), c_anchorTop, 0, (libChal_gv_cHLC_VICTORYPANELWAVEPANEL_Y + 30));
+            libChal_gv_cHL_VPAchievePanelHeight += 30;
+        }
+        DialogControlSetVisible(libChal_gv_cHL_VPAchievePanelBGImage, PlayerGroupAll(), true);
+    }
+    else {
+        libChal_gv_cHL_VPAchievePanelHeight = 0;
+        DialogControlSetVisible(libChal_gv_cHL_VPAchievePanelBGImage, PlayerGroupAll(), false);
+    }
+    autoF01A8C8E_ae = libChal_gv_cHLC_VPACHIEVEMAXCOUNT;
+    autoF01A8C8E_ai = 1;
+    lv_index = (libChal_gv_cHL_VictoryPanelAchievementCount + 1);
+    for ( ; ( (autoF01A8C8E_ai >= 0 && lv_index <= autoF01A8C8E_ae) || (autoF01A8C8E_ai <= 0 && lv_index >= autoF01A8C8E_ae) ) ; lv_index += autoF01A8C8E_ai ) {
+        if ((libChal_gv_cHL_VPAchievePanelAchievements[lv_index] != c_invalidDialogControlId)) {
+            DialogControlDestroy(libChal_gv_cHL_VPAchievePanelAchievements[lv_index]);
+            libChal_gv_cHL_VPAchievePanelAchievements[lv_index] = c_invalidDialogControlId;
+        }
+        else {
+        }
+    }
+}
+
+void libChal_gf_CreateChallengeDefeatPanel (text lp_title, text lp_subTitle, trigger lp_continueTrigger, trigger lp_retryTrigger) {
+    string auto3D785BDF_val;
+    string auto38365CD9_val;
+    string auto3CD566C6_val;
+    string auto871760FF_val;
+    string auto98B70C69_val;
+    string autoE4D11368_val;
+
+    // Variable Declarations
+    int lv_continueBGImg;
+    int lv_retryBGImg;
+    string lv_race;
+
+    // Variable Initialization
+    lv_continueBGImg = c_invalidDialogControlId;
+    lv_retryBGImg = c_invalidDialogControlId;
+
+    // Implementation
+    lv_race = PlayerRace(1);
+    libChal_gv_cHL_DefeatPanelContinue = lp_continueTrigger;
+    libChal_gv_cHL_DefeatPanelRetry = lp_retryTrigger;
+    libChal_gv_cHL_DefeatPanelWaveCount = 0;
+    if ((libChal_gv_cHL_DefeatPanelDlg == c_invalidDialogId)) {
+        DialogCreate(libChal_gv_cHLC_DEFEATPANEL_WIDTH, 100, c_anchorCenter, 0, -100, true);
+        libChal_gv_cHL_DefeatPanelDlg = DialogLastCreated();
+        DialogSetImageVisible(DialogLastCreated(), false);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANELTOPBORDER_WIDTH, libChal_gv_cHLC_DEFEATPANELTOPBORDER_HEIGHT);
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        auto3D785BDF_val = lv_race;
+        if (auto3D785BDF_val == "Terr") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_resourcesharing_toppart_pattern.dds", PlayerGroupAll());
+        }
+        else if (auto3D785BDF_val == "Prot") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_resourcesharing_toppart_pattern_protoss.dds", PlayerGroupAll());
+        }
+        else if (auto3D785BDF_val == "Zerg") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_resourcesharing_toppart_pattern_zerg.dds", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_DEFEATPANELTOPBORDER_Y);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_DefeatPanelBorder = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANEL_WIDTH, 100);
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeHorizontalBorder, PlayerGroupAll());
+        auto38365CD9_val = lv_race;
+        if (auto38365CD9_val == "Terr") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_battlenet_challenge_frame_metal.dds", PlayerGroupAll());
+        }
+        else if (auto38365CD9_val == "Prot") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_battlenet_challenge_frame_metal_protoss.dds", PlayerGroupAll());
+        }
+        else if (auto38365CD9_val == "Zerg") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_battlenet_challenge_frame_metal_zerg.dds", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, 0);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_DefeatPanelBlackMask = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANEL_WIDTH, 11);
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeHorizontalBorder, PlayerGroupAll());
+        libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_blackmask.dds", PlayerGroupAll());
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorCenter, 0, -12);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_DefeatPanelGradient = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANEL_WIDTH, 11);
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeHorizontalBorder, PlayerGroupAll());
+        auto3CD566C6_val = lv_race;
+        if (auto3CD566C6_val == "Terr") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_basegradient_small_terran.dds", PlayerGroupAll());
+        }
+        else if (auto3CD566C6_val == "Prot") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_basegradient_protoss.dds", PlayerGroupAll());
+        }
+        else if (auto3CD566C6_val == "Zerg") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_basegradient_zerg.dds", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorCenter, 0, -12);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_DefeatPanelInnerLine = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANEL_WIDTH, 11);
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeHorizontalBorder, PlayerGroupAll());
+        auto871760FF_val = lv_race;
+        if (auto871760FF_val == "Terr") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_big_innerline_terran.dds", PlayerGroupAll());
+        }
+        else if (auto871760FF_val == "Prot") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_big_innerline_protoss.dds", PlayerGroupAll());
+        }
+        else if (auto871760FF_val == "Zerg") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_big_innerline_zerg.dds", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorCenter, 0, -11);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_DefeatPanelSplitImg = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANELSPLIT_WIDTH, libChal_gv_cHLC_DEFEATPANELSPLIT_HEIGHT);
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeEndCap, PlayerGroupAll());
+        auto98B70C69_val = lv_race;
+        if (auto98B70C69_val == "Terr") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_challenge_contentdevider.dds", PlayerGroupAll());
+        }
+        else if (auto98B70C69_val == "Prot") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_challenge_contentdevider_protoss.dds", PlayerGroupAll());
+        }
+        else if (auto98B70C69_val == "Zerg") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_challenge_contentdevider_zerg.dds", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_DEFEATPANELSPLIT_Y_NOWAVE);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_DefeatPanelTitleGlowImg = DialogControlLastCreated();
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANELGLOW_WIDTH, libChal_gv_cHLC_DEFEATPANELGLOW_HEIGHT);
+        libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_challenge_glow4text.dds", PlayerGroupAll());
+        libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(99.22, 0.00, 0.78), PlayerGroupAll());
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_DEFEATPANELGLOW_Y);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeLabel);
+        libChal_gv_cHL_DefeatPanelTitleLabel = DialogControlLastCreated();
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANEL_WIDTH, 50);
+        libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeDefeatTitle", PlayerGroupAll());
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_DEFEATPANELTITLE_Y);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeLabel);
+        libChal_gv_cHL_DefeatPanelSubTitleLabel = DialogControlLastCreated();
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANEL_WIDTH, 40);
+        autoE4D11368_val = lv_race;
+        if (autoE4D11368_val == "Terr") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictorySubtitle", PlayerGroupAll());
+        }
+        else if (autoE4D11368_val == "Prot") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictorySubtitleProtoss", PlayerGroupAll());
+        }
+        else if (autoE4D11368_val == "Zerg") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictorySubtitleZerg", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_DEFEATPANELSUBTITLE_Y);
+    }
+    else {
+    }
+    libNtve_gf_SetDialogItemText(libChal_gv_cHL_DefeatPanelTitleLabel, lp_title, PlayerGroupAll());
+    libNtve_gf_SetDialogItemText(libChal_gv_cHL_DefeatPanelSubTitleLabel, lp_subTitle, PlayerGroupAll());
+    libChal_gf_CHL_DPCreateWavePanel();
+    if ((libChal_gv_cHL_DefeatPanelContinueBtn == c_invalidDialogControlId)) {
+        DialogControlCreateFromTemplate(DialogLastCreated(), c_triggerControlTypeButton, "TriggerDialogFrame/TriggerControlRightChallengeButton");
+        libNtve_gf_SetDialogItemHandle(DialogControlLastCreated(), "ChallengeDefeatPanel_QuitButton", PlayerGroupAll());
+        libChal_gv_cHL_DefeatPanelContinueBtn = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemText(DialogControlLastCreated(), StringExternal("Param/Value/lib_Chal_762EBAEE"), PlayerGroupAll());
+        libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryContinueButton", PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANELCONTINUE_WIDTH, libChal_gv_cHLC_DEFEATPANELCONTINUE_HEIGHT);
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorBottomRight, 5, 30);
+    }
+    else {
+    }
+    if ((libChal_gv_cHL_DefeatPanelRetryBtn == c_invalidDialogControlId)) {
+        DialogControlCreateFromTemplate(DialogLastCreated(), c_triggerControlTypeButton, "TriggerDialogFrame/TriggerControlLeftChallengeButton");
+        libNtve_gf_SetDialogItemHandle(DialogControlLastCreated(), "ChallengeDefeatPanel_RetryButton", PlayerGroupAll());
+        libChal_gv_cHL_DefeatPanelRetryBtn = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemText(DialogControlLastCreated(), StringExternal("Param/Value/lib_Chal_4E9864BD"), PlayerGroupAll());
+        libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryContinueButton", PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANELCONTINUE_WIDTH, libChal_gv_cHLC_DEFEATPANELCONTINUE_HEIGHT);
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorBottomLeft, 5, 30);
+    }
+    else {
+    }
+    libChal_gf_CHL_UpdateDefeatPanel();
+}
+
+void libChal_gf_AddWaveToChallengeDefeatPanel (text lp_label, int lp_result, trigger lp_retry_Trigger) {
+    // Implementation
+    if ((libChal_gv_cHL_DefeatPanelWaveCount >= libChal_gv_cHLC_DPWAVEMAXCOUNT)) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, (StringExternal("Param/Value/lib_Chal_23BE0ECB") + IntToText(libChal_gv_cHLC_DPWAVEMAXCOUNT) + StringExternal("Param/Value/lib_Chal_7BBC99A6")));
+        return ;
+    }
+    else {
+    }
+    libChal_gv_cHL_DefeatPanelWaveCount += 1;
+    libChal_gv_cHL_DefeatPanelWaveLabel[libChal_gv_cHL_DefeatPanelWaveCount] = lp_label;
+    libChal_gv_cHL_DefeatPanelWaveRetry[libChal_gv_cHL_DefeatPanelWaveCount] = lp_retry_Trigger;
+    libChal_gv_cHL_DefeatPanelWaveResult[libChal_gv_cHL_DefeatPanelWaveCount] = lp_result;
+    libChal_gf_CHL_UpdateDefeatPanel();
+}
+
+void libChal_gf_ShowHideChallengeDefeatPanel (bool lp_showHide) {
+    // Implementation
+    if ((libChal_gv_cHL_DefeatPanelDlg != c_invalidDialogId)) {
+        if ((lp_showHide == true)) {
+            TriggerEnable(libChal_gt_CHL_DefeatPanelButtonClicked, true);
+        }
+        else {
+        }
+        DialogSetVisible(libChal_gv_cHL_DefeatPanelDlg, PlayerGroupAll(), lp_showHide);
+    }
+    else {
+    }
+}
+
+void libChal_gf_CHL_UpdateDefeatPanel () {
+    string auto1D0282F0_val;
+    string autoFEA6E0A7_val;
+
+    // Variable Declarations
+    bool lv_showHide;
+    int lv_height;
+    string lv_race;
+
+    // Variable Initialization
+    lv_showHide = true;
+
+    // Implementation
+    lv_race = PlayerRace(1);
+    libChal_gf_CHL_DPUpdateWavePanel();
+    if ((libChal_gv_cHL_DefeatPanelWaveCount > 0)) {
+        autoFEA6E0A7_val = lv_race;
+        if (autoFEA6E0A7_val == "Terr") {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_VictoryPanelScoreLabel, "ChallengeVictorySubtitle", PlayerGroupAll());
+        }
+        else if (autoFEA6E0A7_val == "Prot") {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_VictoryPanelScoreLabel, "ChallengeVictorySubtitleProtoss", PlayerGroupAll());
+        }
+        else if (autoFEA6E0A7_val == "Zerg") {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_VictoryPanelScoreLabel, "ChallengeVictorySubtitleZerg", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(libChal_gv_cHL_DefeatPanelSubTitleLabel, PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_DEFEATPANELSUBTITLE_Y);
+        DialogControlSetPosition(libChal_gv_cHL_DefeatPanelSplitImg, PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_DEFEATPANELSPLIT_Y);
+        lv_height = (libChal_gv_cHLC_DEFEATPANELWAVEPANEL_Y + libChal_gv_cHL_DPWavePanelHeight + 110);
+    }
+    else {
+        auto1D0282F0_val = lv_race;
+        if (auto1D0282F0_val == "Terr") {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_VictoryPanelScoreLabel, "ChallengeVictoryScoreTextNoWave", PlayerGroupAll());
+        }
+        else if (auto1D0282F0_val == "Prot") {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_VictoryPanelScoreLabel, "ChallengeVictoryScoreTextNoWaveProtoss", PlayerGroupAll());
+        }
+        else if (auto1D0282F0_val == "Zerg") {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_VictoryPanelScoreLabel, "ChallengeVictoryScoreTextNoWaveZerg", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(libChal_gv_cHL_DefeatPanelSubTitleLabel, PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_DEFEATPANELSUBTITLE_Y_NOWAVE);
+        DialogControlSetPosition(libChal_gv_cHL_DefeatPanelSplitImg, PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_DEFEATPANELSPLIT_Y_NOWAVE);
+        lv_height = (libChal_gv_cHLC_DEFEATPANELWAVEPANEL_Y + 110);
+    }
+    DialogControlSetSize(libChal_gv_cHL_DefeatPanelBlackMask, PlayerGroupAll(), (libChal_gv_cHLC_DEFEATPANEL_WIDTH - 70), (lv_height - 105));
+    DialogControlSetSize(libChal_gv_cHL_DefeatPanelGradient, PlayerGroupAll(), (libChal_gv_cHLC_DEFEATPANEL_WIDTH - 70), (lv_height - 105));
+    DialogControlSetSize(libChal_gv_cHL_DefeatPanelInnerLine, PlayerGroupAll(), (libChal_gv_cHLC_DEFEATPANEL_WIDTH - 74), (lv_height - 110));
+    DialogSetSize(libChal_gv_cHL_DefeatPanelDlg, libChal_gv_cHLC_DEFEATPANEL_WIDTH, lv_height);
+    DialogControlSetSize(libChal_gv_cHL_DefeatPanelBorder, PlayerGroupAll(), (libChal_gv_cHLC_DEFEATPANEL_WIDTH - 0), (lv_height - 0));
+    if ((libChal_gv_cHL_DefeatPanelRetry == null)) {
+        lv_showHide = false;
+    }
+    else {
+        lv_showHide = true;
+    }
+    DialogControlSetVisible(libChal_gv_cHL_DefeatPanelRetryBtn, PlayerGroupAll(), lv_showHide);
+}
+
+void libChal_gf_CHL_DPCreateWavePanel () {
+    string auto19F8BF32_val;
+
+    // Variable Declarations
+    string lv_race;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_race = PlayerRace(1);
+    if ((libChal_gv_cHL_DefeatPanelDlg == c_invalidDialogId)) {
+        return ;
+    }
+    else {
+    }
+    if ((libChal_gv_cHL_DPWavePanelBGImage == c_invalidDialogControlId)) {
+        DialogControlCreate(libChal_gv_cHL_DefeatPanelDlg, c_triggerControlTypeImage);
+        libChal_gv_cHL_DPWavePanelBGImage = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeHorizontalBorder, PlayerGroupAll());
+        libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_battlenet_challenge_frame_innerborder.dds", PlayerGroupAll());
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_DEFEATPANELWAVEPANEL_Y);
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANELWAVEPANEL_WIDTH, 100);
+        auto19F8BF32_val = lv_race;
+        if (auto19F8BF32_val == "Terr") {
+            libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(14.51, 89.80, 58.82), PlayerGroupAll());
+        }
+        else if (auto19F8BF32_val == "Prot") {
+            libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(14.51, 55.29, 89.80), PlayerGroupAll());
+        }
+        else if (auto19F8BF32_val == "Zerg") {
+            libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(61.96, 38.82, 14.51), PlayerGroupAll());
+        }
+        else {
+        }
+    }
+    else {
+    }
+}
+
+void libChal_gf_CHL_DPUpdateWavePanel () {
+    int autoA8BF4374_ae;
+    int autoA8BF4374_ai;
+    string auto0B574E6F_val;
+    string auto274D507E_val;
+    int autoCF9B609E_val;
+    int autoEE6EEB39_val;
+    int auto69BAFB09_ae;
+    int auto69BAFB09_ai;
+
+    // Variable Declarations
+    int lv_index;
+    int lv_height;
+    string lv_race;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_race = PlayerRace(1);
+    if ((libChal_gv_cHL_DefeatPanelDlg == c_invalidDialogId)) {
+        return ;
+    }
+    else {
+    }
+    libChal_gv_cHL_DPWavePanelHeight = 12;
+    autoA8BF4374_ae = libChal_gv_cHL_DefeatPanelWaveCount;
+    autoA8BF4374_ai = 1;
+    lv_index = 1;
+    for ( ; ( (autoA8BF4374_ai >= 0 && lv_index <= autoA8BF4374_ae) || (autoA8BF4374_ai <= 0 && lv_index >= autoA8BF4374_ae) ) ; lv_index += autoA8BF4374_ai ) {
+        if ((libChal_gv_cHL_DPWavePanelWaveBGImage[lv_index] == c_invalidDialogControlId)) {
+            DialogControlCreate(libChal_gv_cHL_DefeatPanelDlg, c_triggerControlTypeImage);
+            libChal_gv_cHL_DPWavePanelWaveBGImage[lv_index] = DialogControlLastCreated();
+            libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeEndCap, PlayerGroupAll());
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_battlenet_challenge_frame_wave.dds", PlayerGroupAll());
+            auto0B574E6F_val = lv_race;
+            if (auto0B574E6F_val == "Terr") {
+                libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(14.51, 89.80, 58.82), PlayerGroupAll());
+            }
+            else if (auto0B574E6F_val == "Prot") {
+                libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(14.51, 55.29, 89.80), PlayerGroupAll());
+            }
+            else if (auto0B574E6F_val == "Zerg") {
+                libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), Color(61.96, 38.82, 14.51), PlayerGroupAll());
+            }
+            else {
+            }
+        }
+        else {
+        }
+        DialogControlSetSize(libChal_gv_cHL_DPWavePanelWaveBGImage[lv_index], PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANELWAVEPANELWAVE_WIDTH, libChal_gv_cHLC_DEFEATPANELWAVEPANELWAVE_HEIGHT);
+        DialogControlSetPositionRelative(libChal_gv_cHL_DPWavePanelWaveBGImage[lv_index], PlayerGroupAll(), c_anchorTop, libChal_gv_cHL_DPWavePanelBGImage, c_anchorTop, 0, libChal_gv_cHL_DPWavePanelHeight);
+        if ((libChal_gv_cHL_DPWavePanelWaveButton[lv_index] == c_invalidDialogControlId)) {
+            DialogControlCreate(libChal_gv_cHL_DefeatPanelDlg, c_triggerControlTypeButton);
+            libNtve_gf_SetDialogItemHandle(DialogControlLastCreated(), ("ChallengeDefeatPanel_RetryWaveButton" + IntToString(lv_index)), PlayerGroupAll());
+            libChal_gv_cHL_DPWavePanelWaveButton[lv_index] = DialogControlLastCreated();
+            libNtve_gf_SetDialogItemText(DialogControlLastCreated(), StringExternal("Param/Value/lib_Chal_2B4914B7"), PlayerGroupAll());
+            auto274D507E_val = lv_race;
+            if (auto274D507E_val == "Terr") {
+                libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryWaveRetryButton", PlayerGroupAll());
+                libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_options_selectonbutton_normalpressed_terran.dds", PlayerGroupAll());
+                libNtve_gf_SetDialogItemImage2(DialogControlLastCreated(), "Assets\\Textures\\ui_options_selectonbutton_normaloverpressedover_terran.dds", PlayerGroupAll());
+            }
+            else if (auto274D507E_val == "Prot") {
+                libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryWaveRetryButtonProtoss", PlayerGroupAll());
+                libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_button_generic_normalpressed_protoss.dds", PlayerGroupAll());
+                libNtve_gf_SetDialogItemImage2(DialogControlLastCreated(), "Assets\\Textures\\ui_button_generic_normaloverpressedover_protoss.dds", PlayerGroupAll());
+            }
+            else if (auto274D507E_val == "Zerg") {
+                libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryWaveRetryButtonZerg", PlayerGroupAll());
+                libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_button_generic_normalpressed_zerg.dds", PlayerGroupAll());
+                libNtve_gf_SetDialogItemImage2(DialogControlLastCreated(), "Assets\\Textures\\ui_button_generic_normaloverpressedover_zerg.dds", PlayerGroupAll());
+            }
+            else {
+            }
+        }
+        else {
+        }
+        autoCF9B609E_val = libChal_gv_cHL_DefeatPanelWaveResult[lv_index];
+        if (autoCF9B609E_val == libChal_ge_CHL_DefeatPanelWaveResult_Survived) {
+            DialogControlSetVisible(libChal_gv_cHL_DPWavePanelWaveButton[lv_index], PlayerGroupAll(), false);
+        }
+        else if (autoCF9B609E_val == libChal_ge_CHL_DefeatPanelWaveResult_Failed) {
+            DialogControlSetVisible(libChal_gv_cHL_DPWavePanelWaveButton[lv_index], PlayerGroupAll(), true);
+            DialogControlSetEnabled(libChal_gv_cHL_DPWavePanelWaveButton[lv_index], PlayerGroupAll(), true);
+        }
+        else if (autoCF9B609E_val == libChal_ge_CHL_DefeatPanelWaveResult_HaventTried) {
+            DialogControlSetVisible(libChal_gv_cHL_DPWavePanelWaveButton[lv_index], PlayerGroupAll(), false);
+        }
+        else {
+        }
+        DialogControlSetSize(libChal_gv_cHL_DPWavePanelWaveButton[lv_index], PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANELWAVEPANELBUTTON_WIDTH, libChal_gv_cHLC_DEFEATPANELWAVEPANELBUTTON_HEIGHT);
+        DialogControlSetPositionRelative(libChal_gv_cHL_DPWavePanelWaveButton[lv_index], PlayerGroupAll(), c_anchorRight, libChal_gv_cHL_DPWavePanelWaveBGImage[lv_index], c_anchorRight, libChal_gv_cHLC_DEFEATPANELWAVEPANELWAVEBUTTON_OFFSET, 0);
+        if ((libChal_gv_cHL_DPWavePanelWaveLabel[lv_index] == c_invalidDialogControlId)) {
+            DialogControlCreate(libChal_gv_cHL_DefeatPanelDlg, c_triggerControlTypeLabel);
+            libChal_gv_cHL_DPWavePanelWaveLabel[lv_index] = DialogControlLastCreated();
+        }
+        else {
+        }
+        libNtve_gf_SetDialogItemText(libChal_gv_cHL_DPWavePanelWaveLabel[lv_index], libChal_gv_cHL_DefeatPanelWaveLabel[lv_index], PlayerGroupAll());
+        autoEE6EEB39_val = libChal_gv_cHL_DefeatPanelWaveResult[lv_index];
+        if (autoEE6EEB39_val == libChal_ge_CHL_DefeatPanelWaveResult_Survived) {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_DPWavePanelWaveLabel[lv_index], "ChallengeDefeatWaveLabel", PlayerGroupAll());
+            DialogControlSetEnabled(libChal_gv_cHL_DPWavePanelWaveLabel[lv_index], PlayerGroupAll(), true);
+        }
+        else if (autoEE6EEB39_val == libChal_ge_CHL_DefeatPanelWaveResult_Failed) {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_DPWavePanelWaveLabel[lv_index], "ChallengeDefeatWaveLabelFailed", PlayerGroupAll());
+            DialogControlSetEnabled(libChal_gv_cHL_DPWavePanelWaveLabel[lv_index], PlayerGroupAll(), true);
+        }
+        else if (autoEE6EEB39_val == libChal_ge_CHL_DefeatPanelWaveResult_HaventTried) {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_DPWavePanelWaveLabel[lv_index], "ChallengeDefeatWaveLabel", PlayerGroupAll());
+            DialogControlSetEnabled(libChal_gv_cHL_DPWavePanelWaveLabel[lv_index], PlayerGroupAll(), false);
+        }
+        else {
+        }
+        DialogControlSetSize(libChal_gv_cHL_DPWavePanelWaveLabel[lv_index], PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANELWAVEPANELWAVE_WIDTH, libChal_gv_cHLC_DEFEATPANELWAVEPANELWAVE_HEIGHT);
+        DialogControlSetPositionRelative(libChal_gv_cHL_DPWavePanelWaveLabel[lv_index], PlayerGroupAll(), c_anchorLeft, libChal_gv_cHL_DPWavePanelWaveBGImage[lv_index], c_anchorLeft, libChal_gv_cHLC_DEFEATPANELWAVEPANELWAVELABEL_OFFSET, 0);
+        libChal_gv_cHL_DPWavePanelHeight += 52;
+    }
+    if ((libChal_gv_cHL_DefeatPanelWaveCount > 0)) {
+        libChal_gv_cHL_DPWavePanelHeight += 12;
+        DialogControlSetSize(libChal_gv_cHL_DPWavePanelBGImage, PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANELWAVEPANEL_WIDTH, libChal_gv_cHL_DPWavePanelHeight);
+        DialogControlSetPosition(libChal_gv_cHL_DPWavePanelBGImage, PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_DEFEATPANELWAVEPANEL_Y);
+        DialogControlSetVisible(libChal_gv_cHL_DPWavePanelBGImage, PlayerGroupAll(), true);
+    }
+    else {
+        libChal_gv_cHL_DPWavePanelHeight = 0;
+        DialogControlSetVisible(libChal_gv_cHL_DPWavePanelBGImage, PlayerGroupAll(), false);
+    }
+    auto69BAFB09_ae = libChal_gv_cHLC_DPWAVEMAXCOUNT;
+    auto69BAFB09_ai = 1;
+    lv_index = (libChal_gv_cHL_DefeatPanelWaveCount + 1);
+    for ( ; ( (auto69BAFB09_ai >= 0 && lv_index <= auto69BAFB09_ae) || (auto69BAFB09_ai <= 0 && lv_index >= auto69BAFB09_ae) ) ; lv_index += auto69BAFB09_ai ) {
+        if ((libChal_gv_cHL_DPWavePanelWaveBGImage[lv_index] != c_invalidDialogControlId)) {
+            DialogControlDestroy(libChal_gv_cHL_DPWavePanelWaveBGImage[lv_index]);
+            libChal_gv_cHL_DPWavePanelWaveBGImage[lv_index] = c_invalidDialogControlId;
+        }
+        else {
+        }
+        if ((libChal_gv_cHL_DPWavePanelWaveButton[lv_index] != c_invalidDialogControlId)) {
+            DialogControlDestroy(libChal_gv_cHL_DPWavePanelWaveButton[lv_index]);
+            libChal_gv_cHL_DPWavePanelWaveButton[lv_index] = c_invalidDialogControlId;
+        }
+        else {
+        }
+        if ((libChal_gv_cHL_DPWavePanelWaveLabel[lv_index] != c_invalidDialogControlId)) {
+            DialogControlDestroy(libChal_gv_cHL_DPWavePanelWaveLabel[lv_index]);
+            libChal_gv_cHL_DPWavePanelWaveLabel[lv_index] = c_invalidDialogControlId;
+        }
+        else {
+        }
+    }
+}
+
+void libChal_gf_CreateChallengeWaveSuccessPanel (int lp_successFailure, text lp_title, text lp_subTitle, text lp_scoreText1, text lp_scoreText2, trigger lp_continueTrigger) {
+    string autoC63A6FDD_val;
+    string autoBA8E3509_val;
+    string auto95EF4DEA_val;
+    string auto6DDF4128_val;
+    string auto0CD037A6_val;
+    string autoFFAC92F4_val;
+    string autoF0FDDD71_val;
+    string auto4B3C3BA4_val;
+    string auto44418AB0_val;
+    string auto3E637E06_val;
+
+    // Variable Declarations
+    int lv_continueBGImg;
+    int lv_retryBGImg;
+    string lv_race;
+
+    // Variable Initialization
+    lv_continueBGImg = c_invalidDialogControlId;
+    lv_retryBGImg = c_invalidDialogControlId;
+
+    // Implementation
+    lv_race = PlayerRace(1);
+    libChal_gv_cHL_WSPanelScore2Text = lp_scoreText2;
+    libChal_gv_cHL_WSPanelContinue = lp_continueTrigger;
+    if ((libChal_gv_cHL_WSPanelDlg == c_invalidDialogId)) {
+        DialogCreate(libChal_gv_cHLC_WSPANEL_WIDTH, 100, c_anchorCenter, 0, -100, true);
+        libChal_gv_cHL_WSPanelDlg = DialogLastCreated();
+        DialogSetImageVisible(DialogLastCreated(), false);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_WSPANELTOPBORDER_WIDTH, libChal_gv_cHLC_WSPANELTOPBORDER_HEIGHT);
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        autoC63A6FDD_val = lv_race;
+        if (autoC63A6FDD_val == "Terr") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_resourcesharing_toppart_pattern.dds", PlayerGroupAll());
+        }
+        else if (autoC63A6FDD_val == "Prot") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_resourcesharing_toppart_pattern_protoss.dds", PlayerGroupAll());
+        }
+        else if (autoC63A6FDD_val == "Zerg") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_resourcesharing_toppart_pattern_zerg.dds", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_WSPANELTOPBORDER_Y);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_WSPanelBorder = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_WSPANEL_WIDTH, 100);
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeHorizontalBorder, PlayerGroupAll());
+        autoBA8E3509_val = lv_race;
+        if (autoBA8E3509_val == "Terr") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_battlenet_challenge_frame_metal.dds", PlayerGroupAll());
+        }
+        else if (autoBA8E3509_val == "Prot") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_battlenet_challenge_frame_metal_protoss.dds", PlayerGroupAll());
+        }
+        else if (autoBA8E3509_val == "Zerg") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_battlenet_challenge_frame_metal_zerg.dds", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, 0);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_WSPanelBlackMask = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_WSPANEL_WIDTH, 11);
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeHorizontalBorder, PlayerGroupAll());
+        libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_blackmask.dds", PlayerGroupAll());
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorCenter, 0, -12);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_WSPanelGradient = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_WSPANEL_WIDTH, 11);
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeHorizontalBorder, PlayerGroupAll());
+        auto95EF4DEA_val = lv_race;
+        if (auto95EF4DEA_val == "Terr") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_basegradient_small_terran.dds", PlayerGroupAll());
+        }
+        else if (auto95EF4DEA_val == "Prot") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_basegradient_protoss.dds", PlayerGroupAll());
+        }
+        else if (auto95EF4DEA_val == "Zerg") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_basegradient_zerg.dds", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorCenter, 0, -12);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_WSPanelOverlay = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_WSPANEL_WIDTH, 11);
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeHorizontalBorder, PlayerGroupAll());
+        libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_battlenet_challenge_frame_blackoverlay.dds", PlayerGroupAll());
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, (libChal_gv_cHLC_WSPANELSPLIT_Y + 4));
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_WSPanelInnerLine = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemImageType2(DialogControlLastCreated(), true, PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_WSPANEL_WIDTH, 11);
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeHorizontalBorder, PlayerGroupAll());
+        auto6DDF4128_val = lv_race;
+        if (auto6DDF4128_val == "Terr") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_big_innerline_terran.dds", PlayerGroupAll());
+        }
+        else if (auto6DDF4128_val == "Prot") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_big_innerline_protoss.dds", PlayerGroupAll());
+        }
+        else if (auto6DDF4128_val == "Zerg") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_frame_big_innerline_zerg.dds", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorCenter, 0, -11);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_WSPanelSplitImg = DialogControlLastCreated();
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_WSPANELSPLIT_WIDTH, libChal_gv_cHLC_WSPANELSPLIT_HEIGHT);
+        libNtve_gf_SetDialogItemImageType(DialogControlLastCreated(), c_triggerImageTypeEndCap, PlayerGroupAll());
+        auto0CD037A6_val = lv_race;
+        if (auto0CD037A6_val == "Terr") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_challenge_contentdevider.dds", PlayerGroupAll());
+        }
+        else if (auto0CD037A6_val == "Prot") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_challenge_contentdevider_protoss.dds", PlayerGroupAll());
+        }
+        else if (auto0CD037A6_val == "Zerg") {
+            libNtve_gf_SetDialogItemImage(DialogControlLastCreated(), "Assets\\Textures\\ui_ingame_challenge_contentdevider_zerg.dds", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_WSPANELSPLIT_Y);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeImage);
+        libChal_gv_cHL_WSPanelTitleGlowImg = DialogControlLastCreated();
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_WSPANELGLOW_Y);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeLabel);
+        libChal_gv_cHL_WSPanelTitleLabel = DialogControlLastCreated();
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_WSPANEL_WIDTH, 50);
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_WSPANELTITLE_Y);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeLabel);
+        libChal_gv_cHL_WSPanelSubTitleLabel = DialogControlLastCreated();
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_WSPANEL_WIDTH, 40);
+        autoFFAC92F4_val = lv_race;
+        if (autoFFAC92F4_val == "Terr") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeWaveSuccessSubtitle", PlayerGroupAll());
+        }
+        else if (autoFFAC92F4_val == "Prot") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeWaveSuccessSubtitleProtoss", PlayerGroupAll());
+        }
+        else if (autoFFAC92F4_val == "Zerg") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeWaveSuccessSubtitleZerg", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, libChal_gv_cHLC_WSPANELSUBTITLE_Y);
+        DialogControlFadeTransparency(DialogControlLastCreated(), PlayerGroupAll(), 0.0, 50.0);
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeLabel);
+        libChal_gv_cHL_WSPanelScoreLabel1 = DialogControlLastCreated();
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_WSPANEL_WIDTH, 40);
+        autoF0FDDD71_val = lv_race;
+        if (autoF0FDDD71_val == "Terr") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeWaveSuccessScore", PlayerGroupAll());
+        }
+        else if (autoF0FDDD71_val == "Prot") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeWaveSuccessScoreProtoss", PlayerGroupAll());
+        }
+        else if (autoF0FDDD71_val == "Zerg") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeWaveSuccessScoreZerg", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, (libChal_gv_cHLC_WSPANELSPLIT_Y + 22));
+        DialogControlCreate(DialogLastCreated(), c_triggerControlTypeLabel);
+        libChal_gv_cHL_WSPanelScoreLabel2 = DialogControlLastCreated();
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_WSPANEL_WIDTH, 40);
+        auto4B3C3BA4_val = lv_race;
+        if (auto4B3C3BA4_val == "Terr") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeWaveSuccessScore", PlayerGroupAll());
+        }
+        else if (auto4B3C3BA4_val == "Prot") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeWaveSuccessScoreProtoss", PlayerGroupAll());
+        }
+        else if (auto4B3C3BA4_val == "Zerg") {
+            libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeWaveSuccessScoreZerg", PlayerGroupAll());
+        }
+        else {
+        }
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorTop, 0, (libChal_gv_cHLC_WSPANELSPLIT_Y + 56));
+    }
+    else {
+    }
+    if ((lp_successFailure == libChal_ge_SuccessFailure_Success)) {
+        DialogControlSetSize(libChal_gv_cHL_WSPanelTitleGlowImg, PlayerGroupAll(), libChal_gv_cHLC_WSPANELGLOW_WIDTH, libChal_gv_cHLC_WSPANELGLOW_HEIGHT);
+        libNtve_gf_SetDialogItemImage(libChal_gv_cHL_WSPanelTitleGlowImg, "Assets\\Textures\\ui_ingame_challenge_glow4text.dds", PlayerGroupAll());
+        auto44418AB0_val = lv_race;
+        if (auto44418AB0_val == "Terr") {
+            libNtve_gf_SetDialogItemColor(libChal_gv_cHL_WSPanelTitleGlowImg, Color(0.00, 100.00, 4.71), PlayerGroupAll());
+        }
+        else if (auto44418AB0_val == "Prot") {
+            libNtve_gf_SetDialogItemColor(libChal_gv_cHL_WSPanelTitleGlowImg, Color(0.00, 42.75, 100.00), PlayerGroupAll());
+        }
+        else if (auto44418AB0_val == "Zerg") {
+            libNtve_gf_SetDialogItemColor(libChal_gv_cHL_WSPanelTitleGlowImg, Color(100.00, 56.86, 0.00), PlayerGroupAll());
+        }
+        else {
+        }
+    }
+    else {
+        DialogControlSetSize(libChal_gv_cHL_WSPanelTitleGlowImg, PlayerGroupAll(), libChal_gv_cHLC_DEFEATPANELGLOW_WIDTH, libChal_gv_cHLC_DEFEATPANELGLOW_HEIGHT);
+        libNtve_gf_SetDialogItemImage(libChal_gv_cHL_WSPanelTitleGlowImg, "Assets\\Textures\\ui_ingame_challenge_glow4text.dds", PlayerGroupAll());
+        libNtve_gf_SetDialogItemColor(libChal_gv_cHL_WSPanelTitleGlowImg, Color(99.22, 0.00, 0.78), PlayerGroupAll());
+    }
+    if ((lp_successFailure == libChal_ge_SuccessFailure_Success)) {
+        auto3E637E06_val = lv_race;
+        if (auto3E637E06_val == "Terr") {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_WSPanelTitleLabel, "ChallengeVictoryTitle", PlayerGroupAll());
+        }
+        else if (auto3E637E06_val == "Prot") {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_WSPanelTitleLabel, "ChallengeVictoryTitleProtoss", PlayerGroupAll());
+        }
+        else if (auto3E637E06_val == "Zerg") {
+            libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_WSPanelTitleLabel, "ChallengeVictoryTitleZerg", PlayerGroupAll());
+        }
+        else {
+        }
+    }
+    else {
+        libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_WSPanelTitleLabel, "ChallengeDefeatTitle", PlayerGroupAll());
+    }
+    libNtve_gf_SetDialogItemText(libChal_gv_cHL_WSPanelTitleLabel, lp_title, PlayerGroupAll());
+    libNtve_gf_SetDialogItemText(libChal_gv_cHL_WSPanelSubTitleLabel, lp_subTitle, PlayerGroupAll());
+    libNtve_gf_SetDialogItemText(libChal_gv_cHL_WSPanelScoreLabel1, lp_scoreText1, PlayerGroupAll());
+    if ((lp_scoreText2 != null)) {
+        libNtve_gf_SetDialogItemText(libChal_gv_cHL_WSPanelScoreLabel2, lp_scoreText2, PlayerGroupAll());
+    }
+    else {
+    }
+    if ((libChal_gv_cHL_WSPanelContinueBtn == c_invalidDialogControlId)) {
+        DialogControlCreateFromTemplate(DialogLastCreated(), c_triggerControlTypeButton, "TriggerDialogFrame/TriggerControlRightChallengeButton");
+        libNtve_gf_SetDialogItemHandle(DialogControlLastCreated(), "ChallengeWaveSuccessPanel_ContinueButton", PlayerGroupAll());
+        libChal_gv_cHL_WSPanelContinueBtn = DialogControlLastCreated();
+        libNtve_gf_SetDialogItemText(DialogControlLastCreated(), StringExternal("Param/Value/lib_Chal_E7F4604E"), PlayerGroupAll());
+        libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "ChallengeVictoryContinueButton", PlayerGroupAll());
+        DialogControlSetSize(DialogControlLastCreated(), PlayerGroupAll(), libChal_gv_cHLC_WSPANELCONTINUE_WIDTH, libChal_gv_cHLC_WSPANELCONTINUE_HEIGHT);
+        DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorBottomRight, 5, 30);
+    }
+    else {
+    }
+    libChal_gf_CHL_UpdateWSPanel();
+}
+
+void libChal_gf_ShowHideChallengeWaveSuccessPanel (bool lp_showHide) {
+    // Implementation
+    if ((libChal_gv_cHL_WSPanelDlg != c_invalidDialogId)) {
+        if ((lp_showHide == true)) {
+            TriggerEnable(libChal_gt_CHL_WSPanelContinue, true);
+        }
+        else {
+        }
+        DialogSetVisible(libChal_gv_cHL_WSPanelDlg, PlayerGroupAll(), lp_showHide);
+    }
+    else {
+    }
+}
+
+void libChal_gf_CHL_UpdateWSPanel () {
+    string auto02BA79A9_val;
+
+    // Variable Declarations
+    int lv_height;
+    string lv_race;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_race = PlayerRace(1);
+    auto02BA79A9_val = lv_race;
+    if (auto02BA79A9_val == "Terr") {
+        libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_WSPanelSubTitleLabel, "ChallengeVictoryScoreTextNoWave", PlayerGroupAll());
+    }
+    else if (auto02BA79A9_val == "Prot") {
+        libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_WSPanelSubTitleLabel, "ChallengeVictoryScoreTextNoWaveProtoss", PlayerGroupAll());
+    }
+    else if (auto02BA79A9_val == "Zerg") {
+        libNtve_gf_SetDialogItemStyle(libChal_gv_cHL_WSPanelSubTitleLabel, "ChallengeVictoryScoreTextNoWaveZerg", PlayerGroupAll());
+    }
+    else {
+    }
+    lv_height = (libChal_gv_cHLC_WSPANELSPLIT_Y + 160);
+    if ((libChal_gv_cHL_WSPanelScore2Text != null)) {
+        DialogControlSetVisible(libChal_gv_cHL_WSPanelScoreLabel2, PlayerGroupAll(), true);
+        lv_height += 40;
+    }
+    else {
+        DialogControlSetVisible(libChal_gv_cHL_WSPanelScoreLabel2, PlayerGroupAll(), false);
+    }
+    DialogControlSetSize(libChal_gv_cHL_WSPanelBlackMask, PlayerGroupAll(), (libChal_gv_cHLC_WSPANEL_WIDTH - 70), (lv_height - 105));
+    DialogControlSetSize(libChal_gv_cHL_WSPanelGradient, PlayerGroupAll(), (libChal_gv_cHLC_WSPANEL_WIDTH - 70), (lv_height - 105));
+    DialogControlSetSize(libChal_gv_cHL_WSPanelOverlay, PlayerGroupAll(), (libChal_gv_cHLC_WSPANEL_WIDTH - 74), (lv_height - (libChal_gv_cHLC_WSPANELSPLIT_Y + 70)));
+    DialogControlSetSize(libChal_gv_cHL_WSPanelInnerLine, PlayerGroupAll(), (libChal_gv_cHLC_WSPANEL_WIDTH - 74), (lv_height - 110));
+    DialogControlSetSize(libChal_gv_cHL_WSPanelBorder, PlayerGroupAll(), (libChal_gv_cHLC_WSPANEL_WIDTH - 0), (lv_height - 0));
+    DialogSetSize(libChal_gv_cHL_WSPanelDlg, libChal_gv_cHLC_WSPANEL_WIDTH, lv_height);
+}
+
+void libChal_gf_DisplayChallengeMessage (playergroup lp_toPlayerGroup, int lp_messageType, text lp_message, int lp_formatOrNot) {
+    int autoBB9B28CB_val;
+
+    // Implementation
+    if ((lp_formatOrNot == libChal_ge_CampaignMessageFormatNotFormat_FormatMessage)) {
+        autoBB9B28CB_val = lp_messageType;
+        if (autoBB9B28CB_val == libChal_ge_CampaignMessageType_Hint) {
+            UIDisplayMessage(lp_toPlayerGroup, c_messageAreaSubtitle, (StringExternal("Param/Value/lib_Chal_2CC2D4DE") + lp_message));
+            SoundPlay(SoundLink("TUIHint", 0), lp_toPlayerGroup, 100.0, 0.0);
+        }
+        else if (autoBB9B28CB_val == libChal_ge_CampaignMessageType_SimpleHint) {
+            UIDisplayMessage(lp_toPlayerGroup, c_messageAreaSubtitle, (StringToText("") + lp_message));
+            SoundPlay(SoundLink("TUIHint", 0), lp_toPlayerGroup, 100.0, 0.0);
+        }
+        else if (autoBB9B28CB_val == libChal_ge_CampaignMessageType_Secret) {
+            UIDisplayMessage(lp_toPlayerGroup, c_messageAreaSubtitle, (StringExternal("Param/Value/lib_Chal_208FD95A") + lp_message));
+            SoundPlay(SoundLink("TUISecret", 0), lp_toPlayerGroup, 100.0, 0.0);
+        }
+        else if (autoBB9B28CB_val == libChal_ge_CampaignMessageType_Score) {
+            UIDisplayMessage(lp_toPlayerGroup, c_messageAreaSubtitle, (StringExternal("Param/Value/lib_Chal_BEC60200") + lp_message));
+            SoundPlay(SoundLink("TUISecret", 0), lp_toPlayerGroup, 100.0, 0.0);
+        }
+        else if (autoBB9B28CB_val == libChal_ge_CampaignMessageType_NewUnitAcquired) {
+            UIDisplayMessage(lp_toPlayerGroup, c_messageAreaSubtitle, (StringExternal("Param/Value/lib_Chal_3BC1FC8D") + lp_message));
+            SoundPlay(SoundLink("TUINewUnitAcquired", 0), lp_toPlayerGroup, 100.0, 0.0);
+        }
+        else if (autoBB9B28CB_val == libChal_ge_CampaignMessageType_NewUnitAvailable) {
+            UIDisplayMessage(lp_toPlayerGroup, c_messageAreaSubtitle, (StringExternal("Param/Value/lib_Chal_6829A25D") + lp_message));
+            SoundPlay(SoundLink("TUINewUnitAvailable", 0), lp_toPlayerGroup, 100.0, 0.0);
+        }
+        else if (autoBB9B28CB_val == libChal_ge_CampaignMessageType_NewTechAvailable) {
+            UIDisplayMessage(lp_toPlayerGroup, c_messageAreaSubtitle, (StringExternal("Param/Value/lib_Chal_6E5BFD42") + lp_message));
+            SoundPlay(SoundLink("TUINewTechAvailable", 0), lp_toPlayerGroup, 100.0, 0.0);
+        }
+        else if (autoBB9B28CB_val == libChal_ge_CampaignMessageType_Warning) {
+            UIDisplayMessage(lp_toPlayerGroup, c_messageAreaSubtitle, (StringExternal("Param/Value/lib_Chal_73BB317A") + lp_message));
+            SoundPlay(SoundLink("TUIWarning", 0), lp_toPlayerGroup, 100.0, 0.0);
+        }
+        else if (autoBB9B28CB_val == libChal_ge_CampaignMessageType_ChallengeFailed) {
+            UIDisplayMessage(lp_toPlayerGroup, c_messageAreaSubtitle, (StringExternal("Param/Value/lib_Chal_419B443A") + lp_message));
+            SoundPlay(SoundLink("TUIWarning", 0), lp_toPlayerGroup, 100.0, 0.0);
+        }
+        else if (autoBB9B28CB_val == libChal_ge_CampaignMessageType_ChallengeFailed2) {
+            UIDisplayMessage(lp_toPlayerGroup, c_messageAreaSubtitle, (StringExternal("Param/Value/lib_Chal_E106837D") + lp_message));
+            SoundPlay(SoundLink("TUIWarning", 0), lp_toPlayerGroup, 100.0, 0.0);
+        }
+        else {
+        }
+    }
+    else {
+        UIDisplayMessage(lp_toPlayerGroup, c_messageAreaSubtitle, lp_message);
+    }
+}
+
+text libChal_gf_CHL_FormatSoreText (int lp_score, int lp_scoreType) {
+    int autoA5E8EC1A_val;
+
+    // Variable Declarations
+    int lv_h;
+    int lv_m;
+    int lv_s;
+    text lv_result;
+
+    // Variable Initialization
+    lv_result = StringToText("");
+
+    // Implementation
+    autoA5E8EC1A_val = lp_scoreType;
+    if (autoA5E8EC1A_val == libChal_ge_ChallengeScoreType_Count) {
+        return IntToText(lp_score);
+    }
+    else if (autoA5E8EC1A_val == libChal_ge_ChallengeScoreType_Timeseconds) {
+        return FormatDuration(lp_score);
+    }
+    else {
+    }
+    return IntToText(lp_score);
+}
+
+int libChal_gf_ChallengeScore () {
+    // Implementation
+    return libChal_gv_cHL_Score;
+}
+
+void libChal_gf_CHL_UpdateChallengeScore () {
+    // Variable Declarations
+    int lv_score;
+    int lv_scorePrev;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_score = libChal_gf_ChallengeScore();
+    lv_scorePrev = libChal_gf_ChallengeScoreFromBank(libChal_gv_cHL_CurrentType);
+    if ((lv_score <= lv_scorePrev)) {
+        return ;
+    }
+    else {
+    }
+    libChal_gf_SaveChallengeData();
+    if (true) {
+        return ;
+    }
+    else {
+    }
+}
+
+int libChal_gf_ChallengeAwardFromBank (int lp_challengeType) {
+    // Implementation
+    libChal_gf_CHL_InitChallengeBank();
+    if ((BankExists(libChal_gv_cHLC_BANKNAME, 1) == true) && (libChal_gv_cHL_DefaultChallengeBank != null)) {
+        return BankValueGetAsInt(libChal_gv_cHL_DefaultChallengeBank, libChal_gf_ChallengeName(lp_challengeType), libChal_gv_cHLC_KEYAWARD);
+    }
+    else {
+    }
+    return -1;
+}
+
+int libChal_gf_ChallengeScoreFromBank (int lp_challengeType) {
+    // Variable Declarations
+    int lv_score;
+
+    // Variable Initialization
+    lv_score = -1;
+
+    // Implementation
+    lv_score = UIGetChallengeHighScore(1, libChal_gf_ChallengeName(lp_challengeType));
+    return lv_score;
+}
+
+void libChal_gf_SaveChallengeAwardToBank (int lp_challengeType, int lp_award) {
+    // Implementation
+    libChal_gf_CHL_InitChallengeBank();
+    if ((libChal_gv_cHL_DefaultChallengeBank != null)) {
+        BankValueSetFromInt(libChal_gv_cHL_DefaultChallengeBank, libChal_gf_ChallengeName(lp_challengeType), libChal_gv_cHLC_KEYAWARD, (lp_award));
+        BankSave(libChal_gv_cHL_DefaultChallengeBank);
+    }
+    else {
+    }
+}
+
+void libChal_gf_SaveChallengeScoreToBank (int lp_challengeType, int lp_score) {
+    // Implementation
+    UISetChallengeHighScore(PlayerGroupSingle(1), libChal_gf_ChallengeName(lp_challengeType), lp_score);
+}
+
+void libChal_gf_LoadChallengeData (int lp_type) {
+    // Implementation
+    libChal_gf_CHL_InitChallengeData();
+    AchievementPanelSetCategory(PlayerGroupAll(), "Challenge_TerranCombat_Basic");
+    libChal_gv_cHL_CurrentType = lp_type;
+}
+
+void libChal_gf_SaveChallengeData () {
+    // Variable Declarations
+    int lv_score;
+    int lv_scorePrev;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_score = libChal_gf_ChallengeScore();
+    lv_scorePrev = libChal_gf_ChallengeScoreFromBank(libChal_gv_cHL_CurrentType);
+    if ((lv_score > lv_scorePrev)) {
+        libChal_gf_SaveChallengeScoreToBank(libChal_gv_cHL_CurrentType, lv_score);
+        UISetChallengeHighScore(PlayerGroupSingle(1), libChal_gv_cHL_ChallengeName[(libChal_gv_cHL_CurrentType)], lv_score);
+    }
+    else {
+    }
+}
+
+void libChal_gf_CHL_InitChallengeBank () {
+    // Implementation
+    if ((libChal_gv_cHL_DefaultChallengeBank != null)) {
+        return ;
+    }
+    else {
+    }
+    BankLoad(libChal_gv_cHLC_BANKNAME, 1);
+    libChal_gv_cHL_DefaultChallengeBank = BankLastCreated();
+}
+
+void libChal_gf_CHL_InitChallengeData () {
+    // Implementation
+    libChal_gv_cHL_ChallengeName[(libChal_ge_ChallengeType_AdvancedCommand)] = "AdvancedCommand";
+    libChal_gv_cHL_ChallengeName[(libChal_ge_ChallengeType_Economy)] = "Economy";
+    libChal_gv_cHL_ChallengeName[(libChal_ge_ChallengeType_TerranCovertOps)] = "TerranCovertOps";
+    libChal_gv_cHL_ChallengeName[(libChal_ge_ChallengeType_TerranCombat)] = "TerranCombat";
+    libChal_gv_cHL_ChallengeName[(libChal_ge_ChallengeType_ProtossPsionics)] = "ProtossPsionics";
+    libChal_gv_cHL_ChallengeName[(libChal_ge_ChallengeType_ProtossCombat)] = "ProtossCombat";
+    libChal_gv_cHL_ChallengeName[(libChal_ge_ChallengeType_ZergInfestation)] = "ZergInfestation";
+    libChal_gv_cHL_ChallengeName[(libChal_ge_ChallengeType_ZergCombat)] = "ZergCombat";
+    libChal_gv_cHL_ChallengeName[(libChal_ge_ChallengeType_RushDefense)] = "RushDefense";
+}
+
+string libChal_gf_ChallengeName (int lp_challenge) {
+    // Implementation
+    return libChal_gv_cHL_ChallengeName[(lp_challenge)];
+}
+
+int libChal_gf_CurrentChallengeType () {
+    // Implementation
+    return libChal_gv_cHL_CurrentType;
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: CHL_VictoryPanelButtonClicked
+//--------------------------------------------------------------------------------------------------
+bool libChal_gt_CHL_VictoryPanelButtonClicked_Func (bool testConds, bool runActions) {
+    int auto52C62EFE_val;
+    int autoAA12CB0D_ae;
+    int autoAA12CB0D_ai;
+
+    // Variable Declarations
+    int lv_index;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((DialogControlGetDialog(EventDialogControl()) == libChal_gv_cHL_VictoryPanelDlg))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    auto52C62EFE_val = EventDialogControl();
+    if (auto52C62EFE_val == libChal_gv_cHL_VictoryPanelContinueBtn) {
+        if ((libChal_gv_cHL_VictoryPanelContinue != null)) {
+            TriggerExecute(libChal_gv_cHL_VictoryPanelContinue, true, false);
+        }
+        else {
+        }
+    }
+    else if (auto52C62EFE_val == libChal_gv_cHL_VictoryPanelRetryBtn) {
+        if ((libChal_gv_cHL_VictoryPanelRetry != null)) {
+            TriggerExecute(libChal_gv_cHL_VictoryPanelRetry, true, false);
+        }
+        else {
+        }
+    }
+    else {
+        autoAA12CB0D_ae = libChal_gv_cHL_VictoryPanelWaveCount;
+        autoAA12CB0D_ai = 1;
+        lv_index = 1;
+        for ( ; ( (autoAA12CB0D_ai >= 0 && lv_index <= autoAA12CB0D_ae) || (autoAA12CB0D_ai <= 0 && lv_index >= autoAA12CB0D_ae) ) ; lv_index += autoAA12CB0D_ai ) {
+            if ((EventDialogControl() == libChal_gv_cHL_VPWavePanelWaveButton[lv_index])) {
+                TriggerExecute(libChal_gv_cHL_VictoryPanelWaveRetry[lv_index], true, false);
+                return true;
+            }
+            else {
+            }
+        }
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libChal_gt_CHL_VictoryPanelButtonClicked_Init () {
+    libChal_gt_CHL_VictoryPanelButtonClicked = TriggerCreate("libChal_gt_CHL_VictoryPanelButtonClicked_Func");
+    TriggerAddEventDialogControl(libChal_gt_CHL_VictoryPanelButtonClicked, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: CHL_DefeatPanelButtonClicked
+//--------------------------------------------------------------------------------------------------
+bool libChal_gt_CHL_DefeatPanelButtonClicked_Func (bool testConds, bool runActions) {
+    int auto76D1315F_val;
+    int auto45993D15_ae;
+    int auto45993D15_ai;
+
+    // Variable Declarations
+    int lv_index;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((DialogControlGetDialog(EventDialogControl()) == libChal_gv_cHL_DefeatPanelDlg))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    auto76D1315F_val = EventDialogControl();
+    if (auto76D1315F_val == libChal_gv_cHL_DefeatPanelContinueBtn) {
+        if ((libChal_gv_cHL_DefeatPanelContinue != null)) {
+            TriggerExecute(libChal_gv_cHL_DefeatPanelContinue, true, false);
+        }
+        else {
+        }
+    }
+    else if (auto76D1315F_val == libChal_gv_cHL_DefeatPanelRetryBtn) {
+        if ((libChal_gv_cHL_DefeatPanelRetry != null)) {
+            TriggerExecute(libChal_gv_cHL_DefeatPanelRetry, true, false);
+        }
+        else {
+        }
+    }
+    else {
+        auto45993D15_ae = libChal_gv_cHL_DefeatPanelWaveCount;
+        auto45993D15_ai = 1;
+        lv_index = 1;
+        for ( ; ( (auto45993D15_ai >= 0 && lv_index <= auto45993D15_ae) || (auto45993D15_ai <= 0 && lv_index >= auto45993D15_ae) ) ; lv_index += auto45993D15_ai ) {
+            if ((EventDialogControl() == libChal_gv_cHL_DPWavePanelWaveButton[lv_index])) {
+                TriggerExecute(libChal_gv_cHL_DefeatPanelWaveRetry[lv_index], true, false);
+                return true;
+            }
+            else {
+            }
+        }
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libChal_gt_CHL_DefeatPanelButtonClicked_Init () {
+    libChal_gt_CHL_DefeatPanelButtonClicked = TriggerCreate("libChal_gt_CHL_DefeatPanelButtonClicked_Func");
+    TriggerAddEventDialogControl(libChal_gt_CHL_DefeatPanelButtonClicked, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: CHL_WSPanelContinue
+//--------------------------------------------------------------------------------------------------
+bool libChal_gt_CHL_WSPanelContinue_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((EventDialogControl() == libChal_gv_cHL_WSPanelContinueBtn))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    if ((libChal_gv_cHL_WSPanelContinue != null)) {
+        TriggerExecute(libChal_gv_cHL_WSPanelContinue, true, false);
+    }
+    else {
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libChal_gt_CHL_WSPanelContinue_Init () {
+    libChal_gt_CHL_WSPanelContinue = TriggerCreate("libChal_gt_CHL_WSPanelContinue_Func");
+    TriggerAddEventDialogControl(libChal_gt_CHL_WSPanelContinue, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
+}
+
+void libChal_InitTriggers () {
+    libChal_gt_CHL_VictoryPanelButtonClicked_Init();
+    libChal_gt_CHL_DefeatPanelButtonClicked_Init();
+    libChal_gt_CHL_WSPanelContinue_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libChal_InitLib_completed = false;
+
+void libChal_InitLib () {
+    if (libChal_InitLib_completed) {
+        return;
+    }
+
+    libChal_InitLib_completed = true;
+
+    libChal_InitLibraries();
+    libChal_InitVariables();
+    libChal_InitTriggers();
+}
+

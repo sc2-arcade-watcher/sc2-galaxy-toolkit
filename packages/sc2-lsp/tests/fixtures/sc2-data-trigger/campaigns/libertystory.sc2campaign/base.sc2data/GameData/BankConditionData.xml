@@ -1,0 +1,2395 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <!-- ======================================================================================= -->
+    <!-- TCampaign Defaults -->
+    <!-- ======================================================================================= -->
+    <CBankConditionCompareValueCount default="1" id="TCampaignCompareValueCount">
+        <Bank value="TCampaign"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCompareValueInteger default="1" id="TCampaignCompareValueInteger">
+        <Bank value="TCampaign"/>
+        <Compare value="GT"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueString default="1" id="TCampaignCompareValueString">
+        <Bank value="TCampaign"/>
+    </CBankConditionCompareValueString>
+    <CBankConditionCompareValueSum default="1" id="TCampaignCompareValueSum">
+        <Bank value="TCampaign"/>
+    </CBankConditionCompareValueSum>
+    <CBankConditionCombine id="AdjutantPortraitUsed">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTRaynor01Available"/>
+        <CombineArray value="TCampaignTRaynor03Available"/>
+        <CombineArray value="TCampaignTValerian02BAvailable"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="AdjutantPortraitUsedNext">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTRaynor02AvailableNext"/>
+        <CombineArray value="TCampaignTValerian02BAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="CharacterLocationStatus_HansonInLab_Equal_0_Immediate">
+        <CombineArray value="CharacterLocationStatus_HansonInLab_Equal_1_Immediate"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="CharacterLocationStatus_HansonInLab_Equal_0_Queued">
+        <CombineArray value="CharacterLocationStatus_HansonInLab_Equal_1_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="CharacterLocationStatus_HansonInLab_Equal_1_Immediate">
+        <CombineArray value="TCampaignInTStory01"/>
+        <CombineArray value="TCampaignTHanson01Complete"/>
+        <CombineArray value="TCampaignTHanson03NotComplete"/>
+        <CombineArray value="TCampaignLastMissionNotTHanson01"/>
+        <CombineArray value="TCampaignLastMissionNotTHanson02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="CharacterLocationStatus_HansonInLab_Equal_1_Queued">
+        <CombineArray value="TCampaignTHanson01Complete"/>
+        <CombineArray value="TCampaignTHanson03NotComplete"/>
+        <CombineArray value="TCampaignNotInHansonMission"/>
+        <CombineArray value="TCampaignInMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="CharacterLocationStatus_TychusInCantina">
+        <CombineArray value="TCampaignLastMissionTRaynor03"/>
+        <CombineArray value="TCampaignLastMissionTHorner04"/>
+        <CombineArray value="TCampaignLastMissionTTychus03"/>
+        <CombineArray value="TCampaignLastMissionTTychus04"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="CharacterLocationStatus_TychusInCantina_Equal_0_Immediate">
+        <CombineArray value="CharacterLocationStatus_TychusInCantina"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="CharacterLocationStatus_TychusInCantina_Equal_0_Queued">
+        <CombineArray value="CharacterLocationStatus_TychusInCantina_Queued"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="CharacterLocationStatus_TychusInCantina_Queued">
+        <CombineArray value="TCampaignNotInTRaynor03"/>
+        <CombineArray value="TCampaignNotInTHorner04"/>
+        <CombineArray value="TCampaignNotInTTychus03"/>
+        <CombineArray value="TCampaignNotInTTychus04"/>
+        <CombineArray value="TCampaignInMission"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="DebriefRoomChange_DebriefRoomChange01_Equal_0_Immediate">
+        <CombineArray value="TCampaignTRaynor01Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="DebriefRoomChange_DebriefRoomChange01_Equal_0_Queued">
+        <CombineArray value="TCampaignTRaynor01Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="DebriefRoomChange_DebriefRoomChange01_Equal_1_Immediate">
+        <CombineArray value="TCampaignTRaynor01Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="DebriefRoomChange_DebriefRoomChange01_Equal_1_Queued">
+        <CombineArray value="TCampaignTRaynor01Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCurrentMap id="FALSE">
+        <Map value="false"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="Hotspots_LabConsole_Equal_0_Immediate">
+        <CombineArray value="TCampaignLabOpen"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Hotspots_LabConsole_Equal_0_Queued">
+        <CombineArray value="TCampaignLabOpenNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="LabResearchUnlocked_Any_Immediate">
+        <CombineArray value="TCampaignLabOpen"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="LabResearchUnlocked_Any_Queued">
+        <CombineArray value="TCampaign4MissionsCompleted"/>
+        <CombineArray value="TCampaignInMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompletedCount_Equal_1_Queued">
+        <CombineArray value="TCampaignInTRaynor01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompletedCount_Equal_2_Queued">
+        <CombineArray value="TCampaignInTRaynor02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompletedCount_Equal_7_Queued">
+        <CombineArray value="TCampaign6MissionsCompleted"/>
+        <CombineArray value="TCampaignInMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueCount id="MissionCompletedCount_Immediate">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Compare value="Eq"/>
+        <Value value="7"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCombine id="MissionLast_TRaynor01_Immediate">
+        <CombineArray value="TCampaignLastMissionTRaynor01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TRaynor02_Immediate">
+        <CombineArray value="TCampaignLastMissionTRaynor02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TRaynor03_Immediate">
+        <CombineArray value="TCampaignLastMissionTRaynor03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THanson01_Immediate">
+        <CombineArray value="TCampaignLastMissionTHanson01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THanson02_Immediate">
+        <CombineArray value="TCampaignLastMissionTHanson02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THanson03A_Immediate">
+        <CombineArray value="TCampaignLastMissionTHanson03A"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THanson03B_Immediate">
+        <CombineArray value="TCampaignLastMissionTHanson03B"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTosh01_Immediate">
+        <CombineArray value="TCampaignLastMissionTTosh01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTosh02_Immediate">
+        <CombineArray value="TCampaignLastMissionTTosh02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTosh03A_Immediate">
+        <CombineArray value="TCampaignLastMissionTTosh03A"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTosh03B_Immediate">
+        <CombineArray value="TCampaignLastMissionTTosh03B"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THorner01_Immediate">
+        <CombineArray value="TCampaignLastMissionTHorner01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THorner02_Immediate">
+        <CombineArray value="TCampaignLastMissionTHorner02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THorner03_Immediate">
+        <CombineArray value="TCampaignLastMissionTHorner03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THorner04_Immediate">
+        <CombineArray value="TCampaignLastMissionTHorner04"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THorner05S_Immediate">
+        <CombineArray value="TCampaignLastMissionTHorner05S"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTychus01_Immediate">
+        <CombineArray value="TCampaignLastMissionTTychus01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTychus02_Immediate">
+        <CombineArray value="TCampaignLastMissionTTychus02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTychus03_Immediate">
+        <CombineArray value="TCampaignLastMissionTTychus03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTychus04_Immediate">
+        <CombineArray value="TCampaignLastMissionTTychus04"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTychus05_Immediate">
+        <CombineArray value="TCampaignLastMissionTTychus05"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TZeratul01_Immediate">
+        <CombineArray value="TCampaignLastMissionTZeratul01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TZeratul02_Immediate">
+        <CombineArray value="TCampaignLastMissionTZeratul02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TZeratul03_Immediate">
+        <CombineArray value="TCampaignLastMissionTZeratul03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TZeratul04_Immediate">
+        <CombineArray value="TCampaignLastMissionTZeratul04"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TValerian01_Immediate">
+        <CombineArray value="TCampaignLastMissionTValerian01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TValerian02A_Immediate">
+        <CombineArray value="TCampaignLastMissionTValerian02A"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TValerian02B_Immediate">
+        <CombineArray value="TCampaignLastMissionTValerian02B"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TValerian03_Immediate">
+        <CombineArray value="TCampaignLastMissionTValerian03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TRaynor02_Queued">
+        <CombineArray value="TCampaignInTRaynor02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TRaynor03_Queued">
+        <CombineArray value="TCampaignInTRaynor03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THanson01_Queued">
+        <CombineArray value="TCampaignInTHanson01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THanson02_Queued">
+        <CombineArray value="TCampaignInTHanson02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THanson03A_Queued">
+        <CombineArray value="TCampaignInTHanson03A"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THanson03B_Queued">
+        <CombineArray value="TCampaignInTHanson03B"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTosh01_Queued">
+        <CombineArray value="TCampaignInTTosh01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTosh02_Queued">
+        <CombineArray value="TCampaignInTTosh02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTosh03A_Queued">
+        <CombineArray value="TCampaignInTTosh03A"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTosh03B_Queued">
+        <CombineArray value="TCampaignInTTosh03B"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THorner01_Queued">
+        <CombineArray value="TCampaignInTHorner01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THorner02_Queued">
+        <CombineArray value="TCampaignInTHorner02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THorner03_Queued">
+        <CombineArray value="TCampaignInTHorner03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THorner04_Queued">
+        <CombineArray value="TCampaignInTHorner04"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_THorner05S_Queued">
+        <CombineArray value="TCampaignInTHorner05S"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTychus01_Queued">
+        <CombineArray value="TCampaignInTTychus01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTychus02_Queued">
+        <CombineArray value="TCampaignInTTychus02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTychus03_Queued">
+        <CombineArray value="TCampaignInTTychus03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTychus04_Queued">
+        <CombineArray value="TCampaignInTTychus04"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TTychus05_Queued">
+        <CombineArray value="TCampaignInTTychus05"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TZeratul01_Queued">
+        <CombineArray value="TCampaignInTZeratul01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TZeratul02_Queued">
+        <CombineArray value="TCampaignInTZeratul02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TZeratul03_Queued">
+        <CombineArray value="TCampaignInTZeratul03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TZeratul04_Queued">
+        <CombineArray value="TCampaignInTZeratul04"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TValerian01_Queued">
+        <CombineArray value="TCampaignInTValerian01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TValerian02A_Queued">
+        <CombineArray value="TCampaignInTValerian02A"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TValerian02B_Queued">
+        <CombineArray value="TCampaignInTValerian02B"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TValerian03_Queued">
+        <CombineArray value="TCampaignInTValerian03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionLast_TRaynor01_Queued">
+        <CombineArray value="TCampaignInTRaynor01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TRaynor01_Immediate">
+        <CombineArray value="TCampaignTRaynor01Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TRaynor02_Immediate">
+        <CombineArray value="TCampaignTRaynor02Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TRaynor03_Immediate">
+        <CombineArray value="TCampaignTRaynor03Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THanson01_Immediate">
+        <CombineArray value="TCampaignTHanson01Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THanson02_Immediate">
+        <CombineArray value="TCampaignTHanson02Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THanson03A_Immediate">
+        <CombineArray value="TCampaignTHanson03AAvailable"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THanson03B_Immediate">
+        <CombineArray value="TCampaignTHanson03BAvailable"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTosh01_Immediate">
+        <CombineArray value="TCampaignTTosh01Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTosh02_Immediate">
+        <CombineArray value="TCampaignTTosh02Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTosh03A_Immediate">
+        <CombineArray value="TCampaignTTosh03AAvailable"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTosh03B_Immediate">
+        <CombineArray value="TCampaignTTosh03BAvailable"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THorner01_Immediate">
+        <CombineArray value="TCampaignTHorner01Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THorner02_Immediate">
+        <CombineArray value="TCampaignTHorner02Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THorner03_Immediate">
+        <CombineArray value="TCampaignTHorner03Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THorner04_Immediate">
+        <CombineArray value="TCampaignTHorner04Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THorner05S_Immediate">
+        <CombineArray value="TCampaignTHorner05SAvailable"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTychus01_Immediate">
+        <CombineArray value="TCampaignTTychus01Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTychus02_Immediate">
+        <CombineArray value="TCampaignTTychus02Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTychus03_Immediate">
+        <CombineArray value="TCampaignTTychus03Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTychus04_Immediate">
+        <CombineArray value="TCampaignTTychus04Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTychus05_Immediate">
+        <CombineArray value="TCampaignTTychus05Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TZeratul01_Immediate">
+        <CombineArray value="TCampaignTZeratul01Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TZeratul02_Immediate">
+        <CombineArray value="TCampaignTZeratul02Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TZeratul03_Immediate">
+        <CombineArray value="TCampaignTZeratul03Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TZeratul04_Immediate">
+        <CombineArray value="TCampaignTZeratul04Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TValerian01_Immediate">
+        <CombineArray value="TCampaignTValerian01Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TValerian02A_Immediate">
+        <CombineArray value="TCampaignTValerian02AAvailable"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TValerian02B_Immediate">
+        <CombineArray value="TCampaignTValerian02BAvailable"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TValerian03_Immediate">
+        <CombineArray value="TCampaignTValerian03Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TRaynor02_Queued">
+        <CombineArray value="TCampaignTRaynor02AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TRaynor03_Queued">
+        <CombineArray value="TCampaignTRaynor03AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THanson01_Queued">
+        <CombineArray value="TCampaignTHanson01AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THanson02_Queued">
+        <CombineArray value="TCampaignTHanson02AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THanson03A_Queued">
+        <CombineArray value="TCampaignTHanson03AAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THanson03B_Queued">
+        <CombineArray value="TCampaignTHanson03BAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTosh01_Queued">
+        <CombineArray value="TCampaignTTosh01AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTosh02_Queued">
+        <CombineArray value="TCampaignTTosh02AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTosh03A_Queued">
+        <CombineArray value="TCampaignTTosh03AAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTosh03B_Queued">
+        <CombineArray value="TCampaignTTosh03BAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THorner01_Queued">
+        <CombineArray value="TCampaignTHorner01AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THorner02_Queued">
+        <CombineArray value="TCampaignTHorner02AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THorner03_Queued">
+        <CombineArray value="TCampaignTHorner03AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THorner04_Queued">
+        <CombineArray value="TCampaignTHorner04AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_THorner05S_Queued">
+        <CombineArray value="TCampaignTHorner05SAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTychus01_Queued">
+        <CombineArray value="TCampaignTTychus01AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTychus02_Queued">
+        <CombineArray value="TCampaignTTychus02AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTychus03_Queued">
+        <CombineArray value="TCampaignTTychus03AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTychus04_Queued">
+        <CombineArray value="TCampaignTTychus04AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TTychus05_Queued">
+        <CombineArray value="TCampaignTTychus05AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TZeratul01_Queued">
+        <CombineArray value="TCampaignTZeratul01AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TZeratul02_Queued">
+        <CombineArray value="TCampaignTZeratul02AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TZeratul03_Queued">
+        <CombineArray value="TCampaignTZeratul03AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TZeratul04_Queued">
+        <CombineArray value="TCampaignTZeratul04AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TValerian01_Queued">
+        <CombineArray value="TCampaignTValerian01AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TValerian02A_Queued">
+        <CombineArray value="TCampaignTValerian02AAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TValerian02B_Queued">
+        <CombineArray value="TCampaignTValerian02BAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionPitch_TValerian03_Queued">
+        <CombineArray value="TCampaignTValerian03AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TRaynor01_Immediate">
+        <CombineArray value="TCampaignTRaynor01Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TRaynor02_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TRaynor03_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_THanson01_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="4"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_THanson02_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="5"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_THanson03A_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="6"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_THanson03B_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="7"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TTosh01_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="8"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TTosh02_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="9"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TTosh03A_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="10"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TTosh03B_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="11"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_THorner01_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="12"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_THorner02_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="13"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_THorner03_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="14"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_THorner04_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="15"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_THorner05S_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="16"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TTychus01_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="17"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TTychus02_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="18"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TTychus03_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="19"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TTychus04_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="20"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TTychus05_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="21"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TZeratul01_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="22"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TZeratul02_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="23"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TZeratul03_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="24"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TZeratul04_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="25"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TValerian02A_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="27"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TValerian02B_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="28"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionAvailable_TValerian03_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="29"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="MissionAvailable_TRaynor02_Queued">
+        <CombineArray value="TCampaignTRaynor02AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TRaynor03_Queued">
+        <CombineArray value="TCampaignTRaynor03AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_THanson01_Queued">
+        <CombineArray value="TCampaignTHanson01AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_THanson02_Queued">
+        <CombineArray value="TCampaignTHanson02AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_THanson03A_Queued">
+        <CombineArray value="TCampaignTHanson03AAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_THanson03B_Queued">
+        <CombineArray value="TCampaignTHanson03BAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TTosh01_Queued">
+        <CombineArray value="TCampaignTTosh01AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TTosh02_Queued">
+        <CombineArray value="TCampaignTTosh02AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TTosh03A_Queued">
+        <CombineArray value="TCampaignTTosh03AAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TTosh03B_Queued">
+        <CombineArray value="TCampaignTTosh03BAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_THorner01_Queued">
+        <CombineArray value="TCampaignTHorner01AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_THorner02_Queued">
+        <CombineArray value="TCampaignTHorner02AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_THorner03_Queued">
+        <CombineArray value="TCampaignTHorner03AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_THorner04_Queued">
+        <CombineArray value="TCampaignTHorner04AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_THorner05S_Queued">
+        <CombineArray value="TCampaignTHorner05SAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TTychus01_Queued">
+        <CombineArray value="TCampaignTTychus01AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TTychus02_Queued">
+        <CombineArray value="TCampaignTTychus02AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TTychus03_Queued">
+        <CombineArray value="TCampaignTTychus03AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TTychus04_Queued">
+        <CombineArray value="TCampaignTTychus04AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TTychus05_Queued">
+        <CombineArray value="TCampaignTTychus05AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TZeratul01_Queued">
+        <CombineArray value="TCampaignTZeratul01AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TZeratul02_Queued">
+        <CombineArray value="TCampaignTZeratul02AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TZeratul03_Queued">
+        <CombineArray value="TCampaignTZeratul03AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TZeratul04_Queued">
+        <CombineArray value="TCampaignTZeratul04AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TValerian01_Queued">
+        <CombineArray value="TCampaignTValerian01AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TValerian02A_Queued">
+        <CombineArray value="TCampaignTValerian02AAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TValerian02B_Queued">
+        <CombineArray value="TCampaignTValerian02BAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionAvailable_TValerian03_Queued">
+        <CombineArray value="TCampaignTValerian03AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TRaynor01_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TRaynor02_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TRaynor03_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_THanson01_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="4"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_THanson02_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="5"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_THanson03A_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="6"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_THanson03B_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="7"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TTosh01_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="8"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TTosh02_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="9"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TTosh03A_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="10"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TTosh03B_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="11"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_THorner01_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="12"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_THorner02_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="13"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_THorner03_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="14"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_THorner04_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="15"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_THorner05S_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="16"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TTychus01_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="17"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TTychus02_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="18"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TTychus03_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="19"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TTychus04_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="20"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TTychus05_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="21"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TZeratul01_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="22"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TZeratul02_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="23"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TZeratul03_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="24"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TZeratul04_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="25"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TValerian02A_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="27"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TValerian02B_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="28"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="MissionCompleted_TValerian03_Immediate" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="29"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="MissionCompleted_TRaynor01_Queued">
+        <CombineArray value="TCampaignInTRaynor01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TRaynor02_Queued">
+        <CombineArray value="TCampaignInTRaynor02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TRaynor03_Queued">
+        <CombineArray value="TCampaignInTRaynor03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_THanson01_Queued">
+        <CombineArray value="TCampaignInTHanson01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_THanson02_Queued">
+        <CombineArray value="TCampaignInTHanson02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_THanson03A_Queued">
+        <CombineArray value="TCampaignInTHanson03A"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_THanson03B_Queued">
+        <CombineArray value="TCampaignInTHanson03B"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TTosh01_Queued">
+        <CombineArray value="TCampaignInTTosh01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TTosh02_Queued">
+        <CombineArray value="TCampaignInTTosh02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TTosh03A_Queued">
+        <CombineArray value="TCampaignInTTosh03A"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TTosh03B_Queued">
+        <CombineArray value="TCampaignInTTosh03B"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_THorner01_Queued">
+        <CombineArray value="TCampaignInTHorner01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_THorner02_Queued">
+        <CombineArray value="TCampaignInTHorner02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_THorner03_Queued">
+        <CombineArray value="TCampaignInTHorner03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_THorner04_Queued">
+        <CombineArray value="TCampaignInTHorner04"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_THorner05S_Queued">
+        <CombineArray value="TCampaignInTHorner05S"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TTychus01_Queued">
+        <CombineArray value="TCampaignInTTychus01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TTychus02_Queued">
+        <CombineArray value="TCampaignInTTychus02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TTychus03_Queued">
+        <CombineArray value="TCampaignInTTychus03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TTychus04_Queued">
+        <CombineArray value="TCampaignInTTychus04"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TTychus05_Queued">
+        <CombineArray value="TCampaignInTTychus05"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TZeratul01_Queued">
+        <CombineArray value="TCampaignInTZeratul01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TZeratul02_Queued">
+        <CombineArray value="TCampaignInTZeratul02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TZeratul03_Queued">
+        <CombineArray value="TCampaignInTZeratul03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TZeratul04_Queued">
+        <CombineArray value="TCampaignInTZeratul04"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TValerian01_Queued">
+        <CombineArray value="TCampaignInTValerian01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TValerian02A_Queued">
+        <CombineArray value="TCampaignInTValerian02A"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TValerian02B_Queued">
+        <CombineArray value="TCampaignInTValerian02B"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="MissionCompleted_TValerian03_Queued">
+        <CombineArray value="TCampaignInTValerian03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="StoryState_LabOpened_Immediate">
+        <CombineArray value="TCampaignLabOpen"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="StoryState_LabOpened_Queued">
+        <CombineArray value="TCampaign4MissionsCompleted"/>
+        <CombineArray value="TCampaignInMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="StoryState_LabVisited_Immediate">
+        <CombineArray value="TCampaignLabOpen"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="StoryState_LabVisited_Queued">
+        <CombineArray value="TCampaign4MissionsCompleted"/>
+        <CombineArray value="TCampaignInMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueCount id="TCampaign10MissionsCompleted">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Compare value="Eq"/>
+        <Value value="10"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCompareValueCount id="TCampaign12MissionsCompleted">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Compare value="Eq"/>
+        <Value value="12"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCompareValueCount id="TCampaign13MissionsCompleted">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Compare value="Eq"/>
+        <Value value="13"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCompareValueCount id="TCampaign11MissionsCompleted">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Compare value="Eq"/>
+        <Value value="11"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCompareValueCount id="TCampaign6MissionsCompleted">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Compare value="Eq"/>
+        <Value value="6"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCombine id="TCampaignArmoryIntroNotPlayed">
+        <CombineArray value="TCampaignArmoryIntroPlayed"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="TCampaignArmoryIntroPlayed" parent="TCampaignCompareValueInteger">
+        <Section value="StoryState"/>
+        <Key value="StoryState|ArmoryIntroDone"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueCount id="TCampaignAtLeast10MissionsCompleted">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Value value="10"/>
+        <Compare value="GE"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCompareValueCount id="TCampaignAtLeast4MissionsCompleted">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Value value="4"/>
+        <Compare value="GE"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCompareValueInteger id="TCampaignBansheeMercNotPurchased" parent="TCampaignCompareValueInteger">
+        <Section value="MercStatus"/>
+        <Key value="7"/>
+        <Compare value="NE"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignBansheeMercPurchased" parent="TCampaignCompareValueInteger">
+        <Section value="MercStatus"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignBattlecruiserMercNotPurchased" parent="TCampaignCompareValueInteger">
+        <Section value="MercStatus"/>
+        <Key value="8"/>
+        <Compare value="NE"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignBattlecruiserMercPurchased" parent="TCampaignCompareValueInteger">
+        <Section value="MercStatus"/>
+        <Key value="8"/>
+        <Compare value="Eq"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="TCampaignBridgeCommunicatorActive"/>
+    <CBankConditionCombine id="TCampaignBridgeSceneAvailable">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTosh03AAvailable"/>
+        <CombineArray value="TCampaignTHanson03Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignBridgeSceneAvailableNext">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTosh03AAvailableNext"/>
+        <CombineArray value="TCampaignTHanson03AAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignCantinaOpenNext">
+        <CombineArray value="TCampaignInMission"/>
+        <CombineArray value="TCampaignTRaynor03Complete"/>
+        <CombineArray value="TCampaignNotInTValerian01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignCantinaOrArmoryIntroAvailable">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignCantinaOpen"/>
+        <CombineArray value="TCampaignArmoryIntroNotPlayed"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignCharSetRequired">
+        <CombineArray value="TCampaignValerianMissionAvailable"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignCharSetRequiredNext">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignValerianMissionAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="TCampaignFirebatMercNotPurchased" parent="TCampaignCompareValueInteger">
+        <Section value="MercStatus"/>
+        <Key value="2"/>
+        <Compare value="NE"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignFirebatMercPurchased" parent="TCampaignCompareValueInteger">
+        <Section value="MercStatus"/>
+        <Key value="2"/>
+        <Compare value="Eq"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignGoliathMercNotPurchased" parent="TCampaignCompareValueInteger">
+        <Section value="MercStatus"/>
+        <Key value="4"/>
+        <Compare value="NE"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignGoliathMercPurchased" parent="TCampaignCompareValueInteger">
+        <Section value="MercStatus"/>
+        <Key value="4"/>
+        <Compare value="Eq"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="TCampaignHansonInLab">
+        <CombineArray value="TCampaignInTStory01"/>
+        <CombineArray value="TCampaignTHanson01Complete"/>
+        <CombineArray value="TCampaignTHanson03NotComplete"/>
+        <CombineArray value="TCampaignLastMissionNotTHanson01"/>
+        <CombineArray value="TCampaignLastMissionNotTHanson02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignHansonInLabNext">
+        <CombineArray value="TCampaignTHanson01Complete"/>
+        <CombineArray value="TCampaignTHanson03NotComplete"/>
+        <CombineArray value="TCampaignNotInHansonMission"/>
+        <CombineArray value="TCampaignInMission"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignHansonMissionAvailable">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTHanson01Available"/>
+        <CombineArray value="TCampaignTHanson02Available"/>
+        <CombineArray value="TCampaignTHanson03Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignHyperionLoadImgNext">
+        <CombineArray value="TCampaignTValerian01NotComplete"/>
+        <CombineArray value="TCampaignTRaynor03Complete"/>
+        <CombineArray value="TCampaignInMission"/>
+        <CombineArray value="TCampaignNotInTZeratul01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignInTHanson01or02">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignInTHanson01"/>
+        <CombineArray value="TCampaignInTHanson02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignInTRaynor02Or03">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignInTRaynor02"/>
+        <CombineArray value="TCampaignInTRaynor03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignInTTosh03">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignInTTosh03A"/>
+        <CombineArray value="TCampaignInTTosh03B"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignInTTychus04or05">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignInTTychus04"/>
+        <CombineArray value="TCampaignInTTychus05"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignInTTychus05OrTZeratul04">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignInTZeratul04"/>
+        <CombineArray value="TCampaignInTTychus05"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignLabNotOpen">
+        <CombineArray value="TCampaignLabOpen"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignLabOpenNext">
+        <CombineArray value="TCampaignInMission"/>
+        <CombineArray value="TCampaignAtLeast4MissionsCompleted"/>
+        <CombineArray value="TCampaignNotInTValerian01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignLastMissionHanson01or02">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignLastMissionTHanson01"/>
+        <CombineArray value="TCampaignLastMissionTHanson02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignLastMissionNotTHanson01">
+        <CombineArray value="TCampaignLastMissionTHanson01"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignLastMissionNotTHanson02">
+        <CombineArray value="TCampaignLastMissionTHanson02"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignLastMissionNotTTosh01">
+        <CombineArray value="TCampaignLastMissionTTosh01"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignLastMissionTTosh03">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignLastMissionTTosh03A"/>
+        <CombineArray value="TCampaignLastMissionTTosh03B"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignLastMissionTValerian02">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignLastMissionTValerian02A"/>
+        <CombineArray value="TCampaignLastMissionTValerian02B"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="TCampaignMarauderMercNotPurchased" parent="TCampaignCompareValueInteger">
+        <Section value="MercStatus"/>
+        <Key value="3"/>
+        <Compare value="NE"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignMarauderMercPurchased" parent="TCampaignCompareValueInteger">
+        <Section value="MercStatus"/>
+        <Key value="3"/>
+        <Compare value="Eq"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="TCampaignNotInHansonMission">
+        <CombineArray value="TCampaignInTHanson01"/>
+        <CombineArray value="TCampaignInTHanson02"/>
+        <CombineArray value="TCampaignInTHanson03"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignNotInTHanson03">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignInTHorner03"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignNotInTHorner04">
+        <CombineArray value="TCampaignInTHorner04"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignNotInTRaynor03">
+        <CombineArray value="TCampaignInTRaynor03"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignNotInTTosh03B">
+        <CombineArray value="TCampaignInTTosh03B"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignNotInTTychus03">
+        <CombineArray value="TCampaignInTTychus03"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignNotInTTychus04">
+        <CombineArray value="TCampaignInTTychus04"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignNotInTValerian01">
+        <CombineArray value="TCampaignInTValerian01"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignNotInTZeratul01">
+        <CombineArray value="TCampaignInTZeratul01"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignOnHyperionNext">
+        <CombineArray value="TCampaignTValerian01NotComplete"/>
+        <CombineArray value="TCampaignTRaynor02Complete"/>
+        <CombineArray value="TCampaignInMission"/>
+        <CombineArray value="TCampaignNotInTValerian01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignSwannPortraitUsed">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTosh02Available"/>
+        <CombineArray value="TCampaignTHanson03AAvailable"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignSwannPortraitUsedNext">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTosh02AvailableNext"/>
+        <CombineArray value="TCampaignTHanson03AAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHanson03AAvailableOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTHanson03AAvailable"/>
+        <CombineArray value="TCampaignTHanson03AComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHanson03BAvailableOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTHanson03BAvailable"/>
+        <CombineArray value="TCampaignTHanson03BComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHanson03InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTHanson03AInOrComplete"/>
+        <CombineArray value="TCampaignTHanson03BInOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHorner01AvailableOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTHorner01Available"/>
+        <CombineArray value="TCampaignTHorner01Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHorner02AvailableOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTHorner02Available"/>
+        <CombineArray value="TCampaignTHorner02Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHorner03AvailableOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTHorner03Complete"/>
+        <CombineArray value="TCampaignTHorner03Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHorner04AvailableOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTHorner04Available"/>
+        <CombineArray value="TCampaignTHorner04Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHorner04NotComplete">
+        <CombineArray value="TCampaignTHorner04Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTosh03AAvailableOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTosh03AAvailable"/>
+        <CombineArray value="TCampaignTTosh03AComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTosh03BAvailableOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTosh03BAvailable"/>
+        <CombineArray value="TCampaignTTosh03BComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTosh03Complete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTosh03AComplete"/>
+        <CombineArray value="TCampaignTTosh03BComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTosh03InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTosh03AInOrComplete"/>
+        <CombineArray value="TCampaignTTosh03BInOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTychus02AvailableOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTychus02Available"/>
+        <CombineArray value="TCampaignTTychus02Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTychus03AvailableOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTychus03Available"/>
+        <CombineArray value="TCampaignTTychus03Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTychus04AvailableOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTychus04Available"/>
+        <CombineArray value="TCampaignTTychus04Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTychus04or05Available">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTychus04Available"/>
+        <CombineArray value="TCampaignTTychus05Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTychus04or05AvailableNext">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTychus04AvailableNext"/>
+        <CombineArray value="TCampaignTTychus05AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTychus05AvailableOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTychus05Available"/>
+        <CombineArray value="TCampaignTTychus05Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTychus05OrTZeratul04Available">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTychus05Available"/>
+        <CombineArray value="TCampaignTZeratul04Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTValerian01NotComplete">
+        <CombineArray value="TCampaignTValerian01Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTValerian02InOrComplete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTValerian02AInOrComplete"/>
+        <CombineArray value="TCampaignTValerian02BInOrComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="TCampaignTankMercNotPurchased" parent="TCampaignCompareValueInteger">
+        <Section value="MercStatus"/>
+        <Key value="5"/>
+        <Compare value="NE"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTankMercPurchased" parent="TCampaignCompareValueInteger">
+        <Section value="MercStatus"/>
+        <Key value="5"/>
+        <Compare value="Eq"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignThorImmortalityPurchased" parent="TCampaignCompareValueInteger">
+        <Section value="TechStatus"/>
+        <Key value="44"/>
+        <Compare value="Eq"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="TCampaignToshInCantina">
+        <CombineArray value="TCampaignTTosh01Complete"/>
+        <CombineArray value="TCampaignTTosh03BNotComplete"/>
+        <CombineArray value="TCampaignLastMissionNotTTosh01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignToshInCantinaNext">
+        <CombineArray value="TCampaignTTosh01Complete"/>
+        <CombineArray value="TCampaignInMission"/>
+        <CombineArray value="TCampaignNotInTTosh03B"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignToshPortraitUsed">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTosh01Available"/>
+        <CombineArray value="TCampaignTTosh03AAvailable"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignToshPortraitUsedNext">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTosh01AvailableNext"/>
+        <CombineArray value="TCampaignTTosh03AAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTychusInCantina">
+        <CombineArray value="TCampaignLastMissionTRaynor03"/>
+        <CombineArray value="TCampaignLastMissionTHorner04"/>
+        <CombineArray value="TCampaignLastMissionTTychus03"/>
+        <CombineArray value="TCampaignLastMissionTTychus04"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTychusInCantinaNext">
+        <CombineArray value="TCampaignNotInTRaynor03"/>
+        <CombineArray value="TCampaignNotInTHorner04"/>
+        <CombineArray value="TCampaignNotInTTychus03"/>
+        <CombineArray value="TCampaignNotInTTychus04"/>
+        <CombineArray value="TCampaignInMission"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTychusMissionAvailable">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTychus01Available"/>
+        <CombineArray value="TCampaignTTychus02Available"/>
+        <CombineArray value="TCampaignTTychus03Available"/>
+        <CombineArray value="TCampaignTTychus04Available"/>
+        <CombineArray value="TCampaignTTychus05Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTychusNotInCantina">
+        <CombineArray value="TCampaignTychusInCantina"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTychusOnBridgeNext">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignInTRaynor03"/>
+        <CombineArray value="TCampaignInTHorner04"/>
+        <CombineArray value="TCampaignInTTychus03"/>
+        <CombineArray value="TCampaignInTTychus04"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignUsesTerranDropPod">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignInTHanson02"/>
+        <CombineArray value="TCampaignInTRaynor01"/>
+        <CombineArray value="TCampaignInTTosh03A"/>
+        <CombineArray value="TCampaignInTTosh03B"/>
+        <CombineArray value="TCampaignInTValerian01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignUsesTerranDropPodNext">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTHanson02Available"/>
+        <CombineArray value="TCampaignTRaynor01Available"/>
+        <CombineArray value="TCampaignTTosh03AAvailable"/>
+        <CombineArray value="TCampaignTTosh03BAvailable"/>
+        <CombineArray value="TCampaignTValerian01Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignUsesZergDropPod">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignInTHanson01"/>
+        <CombineArray value="TCampaignInTRaynor03"/>
+        <CombineArray value="TCampaignInTTychus01"/>
+        <CombineArray value="TCampaignInTTychus03"/>
+        <CombineArray value="TCampaignInTValerian01"/>
+        <CombineArray value="TCampaignInTValerian03"/>
+        <CombineArray value="TCampaignInTZeratul04"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignUsesZergDropPodNext">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTHanson01Available"/>
+        <CombineArray value="TCampaignTRaynor03Available"/>
+        <CombineArray value="TCampaignTTychus01Available"/>
+        <CombineArray value="TCampaignTTychus03Available"/>
+        <CombineArray value="TCampaignTValerian01Available"/>
+        <CombineArray value="TCampaignTValerian03Available"/>
+        <CombineArray value="TCampaignTZeratul04Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignValerianPortraitUsed">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTValerian01Available"/>
+        <CombineArray value="TCampaignTTychus05Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignValerianPortraitUsedNext">
+        <CombineArray value="TCampaignInTTychus04or05"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="TCampaignVikingMercNotPurchased" parent="TCampaignCompareValueInteger">
+        <Section value="MercStatus"/>
+        <Key value="6"/>
+        <Compare value="NE"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignVikingMercPurchased" parent="TCampaignCompareValueInteger">
+        <Section value="MercStatus"/>
+        <Key value="6"/>
+        <Compare value="Eq"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="TCampaignZeratul01To03Available">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTZeratul01Available"/>
+        <CombineArray value="TCampaignTZeratul02Available"/>
+        <CombineArray value="TCampaignTZeratul03Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignZeratul01To03AvailableNext">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTZeratul01AvailableNext"/>
+        <CombineArray value="TCampaignTZeratul02AvailableNext"/>
+        <CombineArray value="TCampaignTZeratul03AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignZeratulMissionAvailable">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTZeratul01Available"/>
+        <CombineArray value="TCampaignTZeratul02Available"/>
+        <CombineArray value="TCampaignTZeratul03Available"/>
+        <CombineArray value="TCampaignTZeratul04Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTychusMissionAvailableNext">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTychus01AvailableNext"/>
+        <CombineArray value="TCampaignTTychus02AvailableNext"/>
+        <CombineArray value="TCampaignTTychus03AvailableNext"/>
+        <CombineArray value="TCampaignTTychus04AvailableNext"/>
+        <CombineArray value="TCampaignTTychus05AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignToshMissionAvailable">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTosh01Available"/>
+        <CombineArray value="TCampaignTTosh02Available"/>
+        <CombineArray value="TCampaignTTosh03AAvailable"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignToshMissionAvailableNext">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTTosh01AvailableNext"/>
+        <CombineArray value="TCampaignTTosh02AvailableNext"/>
+        <CombineArray value="TCampaignTTosh03AAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignHornerMissionAvailable">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTHorner01Available"/>
+        <CombineArray value="TCampaignTHorner02Available"/>
+        <CombineArray value="TCampaignTHorner03Available"/>
+        <CombineArray value="TCampaignTHorner04Available"/>
+        <CombineArray value="TCampaignTHorner05SAvailable"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignHansonMissionAvailableNext">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTHanson01AvailableNext"/>
+        <CombineArray value="TCampaignTHanson02AvailableNext"/>
+        <CombineArray value="TCampaignTHanson03AAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignHornerMissionAvailableNext">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTHorner01AvailableNext"/>
+        <CombineArray value="TCampaignTHorner02AvailableNext"/>
+        <CombineArray value="TCampaignTHorner03AvailableNext"/>
+        <CombineArray value="TCampaignTHorner04AvailableNext"/>
+        <CombineArray value="TCampaignTHorner05SAvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTRaynor02AvailableNext">
+        <CombineArray value="TCampaignInTRaynor01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTRaynor03AvailableNext">
+        <CombineArray value="TCampaignInTRaynor02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHanson01AvailableNext">
+        <CombineArray value="TCampaignInTRaynor03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHanson02AvailableNext">
+        <CombineArray value="TCampaignInTHanson01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHanson03AAvailableNext">
+        <CombineArray value="TCampaignInMission"/>
+        <CombineArray value="TCampaignTHanson03AvailableNextA"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHanson03BAvailableNext">
+        <CombineArray value="TCampaignInMission"/>
+        <CombineArray value="TCampaignTHanson03AvailableNextA"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTosh01AvailableNext">
+        <CombineArray value="TCampaignInMission"/>
+        <CombineArray value="TCampaign3MissionsCompleted"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTosh02AvailableNext">
+        <CombineArray value="TCampaignInTTosh01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTosh03AAvailableNext">
+        <CombineArray value="TCampaignInTStory01"/>
+        <CombineArray value="TCampaignTTosh03AvailableNextA"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTosh03AvailableNextA">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignAtLeast12MissionsCompleted"/>
+        <CombineArray value="TCampaignTTosh03AvailableNextB"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHanson03AvailableNextA">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignAtLeast11MissionsCompleted"/>
+        <CombineArray value="TCampaignTHanson03AvailableNextB"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="TCampaignTTosh03AvailableNextB" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="9"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHanson03AvailableNextB" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="5"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="TCampaignTTosh03BAvailableNext">
+        <CombineArray value="TCampaignInTStory01"/>
+        <CombineArray value="TCampaignTTosh03AvailableNextA"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHorner01AvailableNext">
+        <CombineArray value="TCampaignInMission"/>
+        <CombineArray value="TCampaign7MissionsCompleted"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHorner02AvailableNext">
+        <CombineArray value="TCampaignInTHorner01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHorner03AvailableNext">
+        <CombineArray value="TCampaignInTHorner02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHorner04AvailableNext">
+        <CombineArray value="TCampaignInTHorner03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHorner05SAvailableNext">
+        <CombineArray value="TCampaignInTHorner04"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTychus01AvailableNext">
+        <CombineArray value="TCampaignInTRaynor03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTychus02AvailableNext">
+        <CombineArray value="TCampaignInMission"/>
+        <CombineArray value="TCampaign7MissionsCompleted"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTychus03AvailableNext">
+        <CombineArray value="TCampaignInMission"/>
+        <CombineArray value="TCampaign10MissionsCompleted"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTychus04AvailableNext">
+        <CombineArray value="TCampaignInMission"/>
+        <CombineArray value="TCampaign13MissionsCompleted"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTychus05AvailableNext">
+        <CombineArray value="TCampaignInTTychus04"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTZeratul01AvailableNext">
+        <CombineArray value="TCampaignInTTychus02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTZeratul02AvailableNext">
+        <CombineArray value="TCampaignInTZeratul01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTZeratul03AvailableNext">
+        <CombineArray value="TCampaignInTZeratul02"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTZeratul04AvailableNext">
+        <CombineArray value="TCampaignInTZeratul03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTValerian01AvailableNext">
+        <CombineArray value="TCampaignInTTychus05"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTValerian02AAvailableNext">
+        <CombineArray value="TCampaignInTValerian01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTValerian02BAvailableNext">
+        <CombineArray value="TCampaignInTValerian01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTValerian03AvailableNext">
+        <CombineArray value="TCampaignInTValerian02"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueCount id="TCampaign7MissionsCompleted">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Compare value="Eq"/>
+        <Value value="7"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCompareValueCount id="TCampaignAtLeast11MissionsCompleted">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Value value="11"/>
+        <Compare value="GE"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCompareValueCount id="TCampaignAtLeast6MissionsCompleted">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Value value="6"/>
+        <Compare value="GE"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCompareValueCount id="TCampaign4MissionsCompleted">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Compare value="Eq"/>
+        <Value value="4"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCompareValueCount id="TCampaignAtLeast5MissionsCompleted">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Value value="5"/>
+        <Compare value="GE"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCompareValueCount id="TCampaignAtLeast9MissionsCompleted">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Value value="9"/>
+        <Compare value="GE"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCompareValueCount id="TCampaignAtLeast12MissionsCompleted">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Value value="12"/>
+        <Compare value="GE"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCompareValueCount id="TCampaignAtLeast8MissionsCompleted">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Value value="8"/>
+        <Compare value="GE"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCompareValueCount id="TCampaignCantinaOpen">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Compare value="GE"/>
+        <Value value="4"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCompareValueCount id="TCampaign3MissionsCompleted">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Compare value="Eq"/>
+        <Value value="3"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCurrentMap id="TCampaignInTHanson01">
+        <Map value="THanson01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTRaynor01">
+        <Map value="TRaynor01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="TCampaignInTValerian02">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignInTValerian02A"/>
+        <CombineArray value="TCampaignInTValerian02B"/>
+    </CBankConditionCombine>
+    <CBankConditionCurrentMap id="TCampaignInTZeratul01">
+        <Map value="TZeratul01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTHorner04">
+        <Map value="THorner04"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTHorner05S">
+        <Map value="THorner05S"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTRaynor02">
+        <Map value="TRaynor02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTTosh03B">
+        <Map value="TTosh03B"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTTychus04">
+        <Map value="TTychus04"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTTychus05">
+        <Map value="TTychus05"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTValerian03">
+        <Map value="TValerian03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTValerian02A">
+        <Map value="TValerian02A"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTValerian02B">
+        <Map value="TValerian02B"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTZeratul02">
+        <Map value="TZeratul02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTZeratul03">
+        <Map value="TZeratul03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTZeratul04">
+        <Map value="TZeratul04"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCompareValueCount id="TCampaignLabOpen">
+        <Bank value="TCampaign"/>
+        <Section value="MissionCompletedAge"/>
+        <Compare value="GE"/>
+        <Value value="5"/>
+    </CBankConditionCompareValueCount>
+    <CBankConditionCombine id="TCampaignInMission">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignInTStory01"/>
+        <CombineArray value="TCampaignInTArcade"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCurrentMap id="TCampaignInTHanson02">
+        <Map value="THanson02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTHorner01">
+        <Map value="THorner01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTHanson03A">
+        <Map value="THanson03A"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTHanson03B">
+        <Map value="THanson03B"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTArcade">
+        <Map value="TArcade"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTTosh02">
+        <Map value="TTosh02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTTosh03A">
+        <Map value="TTosh03A"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTTychus01">
+        <Map value="TTychus01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTHorner02">
+        <Map value="THorner02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTHorner03">
+        <Map value="THorner03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTTosh01">
+        <Map value="TTosh01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTTychus02">
+        <Map value="TTychus02"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTTychus03">
+        <Map value="TTychus03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTValerian01">
+        <Map value="TValerian01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="TCampaignInTHanson03">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignInTHanson03A"/>
+        <CombineArray value="TCampaignInTHanson03B"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignLastHasNoBG">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignLastMissionTValerian01"/>
+        <CombineArray value="TCampaignLastMissionTHanson02"/>
+        <CombineArray value="TCampaignLastMissionTHanson03"/>
+        <CombineArray value="TCampaignLastMissionTHorner01"/>
+        <CombineArray value="TCampaignLastMissionTHorner02"/>
+        <CombineArray value="TCampaignLastMissionTHorner03"/>
+        <CombineArray value="TCampaignLastMissionTTychus01"/>
+        <CombineArray value="TCampaignLastMissionTTychus02"/>
+        <CombineArray value="TCampaignLastMissionTTychus03"/>
+        <CombineArray value="TCampaignLastMissionTTosh01"/>
+        <CombineArray value="TCampaignLastMissionTTosh02"/>
+        <CombineArray value="TCampaignLastMissionTTosh03A"/>
+        <CombineArray value="TCampaignLastMissionTValerian02"/>
+        <CombineArray value="TCampaignLastMissionTValerian03"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <!--Key (7) is Last Successful Mission.  Value (1) is TRaynor01.-->
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTRaynor01" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTRaynor02" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTRaynor03" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTHanson01" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="4"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTHanson02" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="5"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTHanson03A" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="6"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTHanson03B" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="7"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTTosh01" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="8"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTTosh02" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="9"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTTosh03A" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="10"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTTosh03B" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="11"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTHorner01" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="12"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTHorner02" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="13"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTHorner03" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="14"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTHorner04" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="15"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTHorner05S" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="16"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTTychus01" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="17"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTTychus02" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="18"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTTychus03" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="19"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTTychus04" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="20"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTTychus05" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="21"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTZeratul01" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="22"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTZeratul02" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="23"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTZeratul03" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="24"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTZeratul04" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="25"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTValerian01" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="26"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTValerian02A" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="27"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTValerian02B" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="28"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignLastMissionTValerian03" parent="TCampaignCompareValueInteger">
+        <Section value="StoryStage"/>
+        <Key value="7"/>
+        <Compare value="Eq"/>
+        <Value value="29"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="TCampaignNOTOnChar">
+        <CombineArray value="TCampaignTValerian01NotComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignOnHyperion">
+        <CombineArray value="TCampaignTValerian01Complete"/>
+        <CombineArray value="TCampaignOnMarSara"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <!-- ======================================================================================= -->
+    <!-- TCampaign Instances -->
+    <!-- ======================================================================================= -->
+    <CBankConditionCompareValueInteger id="TCampaignOnMarSara" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="3"/>
+        <Compare value="LE"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="TCampaignPlanetHasNoBG">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignInTValerian01"/>
+        <CombineArray value="TCampaignInTHanson02"/>
+        <CombineArray value="TCampaignInTHanson03"/>
+        <CombineArray value="TCampaignInTHorner01"/>
+        <CombineArray value="TCampaignInTHorner02"/>
+        <CombineArray value="TCampaignInTHorner03"/>
+        <CombineArray value="TCampaignInTTychus01"/>
+        <CombineArray value="TCampaignInTTychus02"/>
+        <CombineArray value="TCampaignInTTychus03"/>
+        <CombineArray value="TCampaignInTTosh01"/>
+        <CombineArray value="TCampaignInTTosh02"/>
+        <CombineArray value="TCampaignInTTosh03A"/>
+        <CombineArray value="TCampaignInTValerian02"/>
+        <CombineArray value="TCampaignInTValerian03"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignLastMissionTHanson03">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignLastMissionTHanson03A"/>
+        <CombineArray value="TCampaignLastMissionTHanson03B"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignNOTOnMarSara">
+        <CombineArray value="TCampaignOnMarSara"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCurrentMap id="TCampaignInTStory01">
+        <Map value="TStory01"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCurrentMap id="TCampaignInTRaynor03">
+        <Map value="TRaynor03"/>
+    </CBankConditionCurrentMap>
+    <CBankConditionCombine id="TCampaignTHanson03Complete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTHanson03AComplete"/>
+        <CombineArray value="TCampaignTHanson03BComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHanson03NotComplete">
+        <CombineArray value="TCampaignTHanson03Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="TCampaignTRaynor01Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="1"/>
+        <Compare value="Eq"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="TCampaignTValerian02NotComplete">
+        <CombineArray value="TCampaignTValerian02Complete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTosh03BNotComplete">
+        <CombineArray value="TCampaignTTosh03BComplete"/>
+        <Negate value="1"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="TCampaignTRaynor01Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="1"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTValerian01Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="26"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTRaynor02Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTRaynor03Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHanson01Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="4"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHanson02Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="5"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHanson03AComplete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="6"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHanson03BComplete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="7"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTosh01Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="8"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTosh02Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="9"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTosh03AComplete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="10"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTosh03BComplete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="11"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHorner01Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="12"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHorner02Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="13"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHorner03Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="14"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHorner04Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="15"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHorner05SComplete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="16"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTychus01Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="17"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTychus02Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="18"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTychus03Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="19"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTychus04Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="20"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTychus05Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="21"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="TCampaignTValerian02Complete">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTValerian02AComplete"/>
+        <CombineArray value="TCampaignTValerian02BComplete"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="TCampaignTZeratul01Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="22"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTZeratul02Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="23"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTZeratul03Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="24"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTZeratul04Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="25"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTValerian01Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="26"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTValerian02AComplete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="27"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTValerian02BComplete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="28"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTValerian03Complete" parent="TCampaignCompareValueInteger">
+        <Section value="MissionCompletedAge"/>
+        <Key value="29"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTRaynor02Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="2"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTRaynor03Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="3"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHanson01Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="4"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHanson02Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="5"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHanson03AAvailable" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="6"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHanson03BAvailable" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="7"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTosh01Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="8"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTosh02Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="9"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTosh03AAvailable" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="10"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTosh03BAvailable" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="11"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHorner01Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="12"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHorner02Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="13"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHorner03Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="14"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHorner04Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="15"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTHorner05SAvailable" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="16"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTychus01Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="17"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTychus02Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="18"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTychus03Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="19"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTychus04Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="20"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTTychus05Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="21"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="TCampaignTValerian02Available">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTValerian02AAvailable"/>
+        <CombineArray value="TCampaignTValerian02BAvailable"/>
+    </CBankConditionCombine>
+    <CBankConditionCompareValueInteger id="TCampaignTZeratul01Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="22"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTZeratul02Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="23"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTZeratul03Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="24"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTZeratul04Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="25"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTValerian02AAvailable" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="27"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTValerian02BAvailable" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="28"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCompareValueInteger id="TCampaignTValerian03Available" parent="TCampaignCompareValueInteger">
+        <Section value="MissionAvailableAge"/>
+        <Key value="29"/>
+    </CBankConditionCompareValueInteger>
+    <CBankConditionCombine id="TCampaignTHanson03Available">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTHanson03AAvailable"/>
+        <CombineArray value="TCampaignTHanson03BAvailable"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignValerianMissionAvailable">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTValerian01Available"/>
+        <CombineArray value="TCampaignTValerian02AAvailable"/>
+        <CombineArray value="TCampaignTValerian03Available"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignZeratulMissionAvailableNext">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTZeratul01AvailableNext"/>
+        <CombineArray value="TCampaignTZeratul02AvailableNext"/>
+        <CombineArray value="TCampaignTZeratul03AvailableNext"/>
+        <CombineArray value="TCampaignTZeratul04AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignValerianMissionAvailableNext">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignTValerian01AvailableNext"/>
+        <CombineArray value="TCampaignTValerian02AAvailableNext"/>
+        <CombineArray value="TCampaignTValerian03AvailableNext"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHanson01InOrComplete">
+        <CombineArray value="TCampaignTHanson01Complete"/>
+        <CombineArray value="TCampaignInTHanson01"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHanson02InOrComplete">
+        <CombineArray value="TCampaignTHanson02Complete"/>
+        <CombineArray value="TCampaignInTHanson02"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHanson03AInOrComplete">
+        <CombineArray value="TCampaignTHanson03AComplete"/>
+        <CombineArray value="TCampaignInTHanson03A"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHanson03BInOrComplete">
+        <CombineArray value="TCampaignTHanson03BComplete"/>
+        <CombineArray value="TCampaignInTHanson03B"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTosh01InOrComplete">
+        <CombineArray value="TCampaignTTosh01Complete"/>
+        <CombineArray value="TCampaignInTTosh01"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTosh02InOrComplete">
+        <CombineArray value="TCampaignTTosh02Complete"/>
+        <CombineArray value="TCampaignInTTosh02"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTosh03AInOrComplete">
+        <CombineArray value="TCampaignTTosh03AComplete"/>
+        <CombineArray value="TCampaignInTTosh03A"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTosh03BInOrComplete">
+        <CombineArray value="TCampaignTTosh03BComplete"/>
+        <CombineArray value="TCampaignInTTosh03B"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHorner01InOrComplete">
+        <CombineArray value="TCampaignTHorner01Complete"/>
+        <CombineArray value="TCampaignInTHorner01"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHorner02InOrComplete">
+        <CombineArray value="TCampaignTHorner02Complete"/>
+        <CombineArray value="TCampaignInTHorner02"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHorner03InOrComplete">
+        <CombineArray value="TCampaignTHorner03Complete"/>
+        <CombineArray value="TCampaignInTHorner03"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHorner04InOrComplete">
+        <CombineArray value="TCampaignTHorner04Complete"/>
+        <CombineArray value="TCampaignInTHorner04"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTHorner05SInOrComplete">
+        <CombineArray value="TCampaignTHorner05SComplete"/>
+        <CombineArray value="TCampaignInTHorner05S"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTychus01InOrComplete">
+        <CombineArray value="TCampaignTTychus01Complete"/>
+        <CombineArray value="TCampaignInTTychus01"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTychus02InOrComplete">
+        <CombineArray value="TCampaignTTychus02Complete"/>
+        <CombineArray value="TCampaignInTTychus02"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTychus03InOrComplete">
+        <CombineArray value="TCampaignTTychus03Complete"/>
+        <CombineArray value="TCampaignInTTychus03"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTychus04InOrComplete">
+        <CombineArray value="TCampaignTTychus04Complete"/>
+        <CombineArray value="TCampaignInTTychus04"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTTychus05InOrComplete">
+        <CombineArray value="TCampaignTTychus05Complete"/>
+        <CombineArray value="TCampaignInTTychus05"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTZeratul01InOrComplete">
+        <CombineArray value="TCampaignTZeratul01Complete"/>
+        <CombineArray value="TCampaignInTZeratul01"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTZeratul02InOrComplete">
+        <CombineArray value="TCampaignTZeratul02Complete"/>
+        <CombineArray value="TCampaignInTZeratul02"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTZeratul03InOrComplete">
+        <CombineArray value="TCampaignTZeratul03Complete"/>
+        <CombineArray value="TCampaignInTZeratul03"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTZeratul04InOrComplete">
+        <CombineArray value="TCampaignTZeratul04Complete"/>
+        <CombineArray value="TCampaignInTZeratul04"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTValerian01InOrComplete">
+        <CombineArray value="TCampaignTValerian01Complete"/>
+        <CombineArray value="TCampaignInTValerian01"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTValerian02AInOrComplete">
+        <CombineArray value="TCampaignTValerian02AComplete"/>
+        <CombineArray value="TCampaignInTValerian02A"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTValerian02BInOrComplete">
+        <CombineArray value="TCampaignTValerian02BComplete"/>
+        <CombineArray value="TCampaignInTValerian02B"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="TCampaignTValerian03InOrComplete">
+        <CombineArray value="TCampaignTValerian03Complete"/>
+        <CombineArray value="TCampaignInTValerian03"/>
+        <Type value="Or"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="WritingCustomStates_ToshTalkToCount">
+        <CombineArray value="TCampaignTTosh01Complete"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="WritingCustomStates_Tosh_TalkTo_Count_GreaterEqual_3_Queued">
+        <CombineArray value="TCampaignInTTosh01"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Z2or3_LastMission_Immediate">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignLastMissionTZeratul02"/>
+        <CombineArray value="TCampaignLastMissionTZeratul03"/>
+    </CBankConditionCombine>
+    <CBankConditionCombine id="Z2or3_LastMission_Queued">
+        <Type value="Or"/>
+        <CombineArray value="TCampaignInTZeratul02"/>
+    </CBankConditionCombine>
+</Catalog>

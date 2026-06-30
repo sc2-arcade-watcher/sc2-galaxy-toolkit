@@ -1,0 +1,3323 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CPreloadAsset default="1" id="PCampaignPreloadImage">
+        <Flags index="MapCampaign" value="1"/>
+        <File value="Assets\Textures\##id##.dds"/>
+    </CPreloadAsset>
+    <CPreloadScene default="1" id="PCampaignPreloadScene">
+        <Flags index="MapCampaign" value="1"/>
+        <File value="Cutscenes\##id##.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadAsset default="1" id="PCampaignPreloadAsset">
+        <Flags index="MapCampaign" value="1"/>
+    </CPreloadAsset>
+    <CPreloadModel default="1" id="PCampaignPreloadModel">
+        <Flags index="MapCampaign" value="1"/>
+    </CPreloadModel>
+    <CPreloadSound default="1" id="PCampaignPreloadSound">
+        <Flags index="MapCampaign" value="1"/>
+    </CPreloadSound>
+    <CPreloadUnit default="1" id="PCampaignPreloadUnit">
+        <Flags index="MapCampaign" value="1"/>
+    </CPreloadUnit>
+    <CPreloadConversation default="1" id="PCampaignPreloadConversation">
+        <Flags index="MapCampaign" value="1"/>
+    </CPreloadConversation>
+    <CPreloadAsset id="Aiur_CityBuilding_Temple_Destroyed_02" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\Doodads\Aiur_CityBuilding_Temple_Destroyed\Aiur_CityBuilding_Temple_Destroyed_02.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="Aiur_CityBuilding_Temple_Destroyed_01" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\Doodads\Aiur_CityBuilding_Temple_Destroyed\Aiur_CityBuilding_Temple_Destroyed_01.m3"/>
+    </CPreloadAsset>
+    <CPreloadScene id="Cutscene_Moebius01Debrief" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="OnMoebius"/>
+        <NormalConditions value="LastSuccessfulMissionPMoebius01"/>
+        <QueuedConditions value="InPMoebius01"/>
+        <File value="Cutscenes\Cutscene_Moebius02Debrief.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadSound id="CS_Foley_ArtanisHandDown" parent="PCampaignPreloadSound">
+        <NormalConditions value="KorhalAvailableOrOnKorhal"/>
+        <QueuedConditions value="InMissionLeadingToKorhal01"/>
+    </CPreloadSound>
+    <CPreloadSound id="CS_AiurUnlock_ME">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="AiurBAvailableOrOnAiurB"/>
+        <QueuedConditions value="InMissionLeadingToPAiur04"/>
+        <Flags index="MapCampaign" value="1"/>
+    </CPreloadSound>
+    <CPreloadScene id="Convo_UlnarUnlock" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PUlnar01Available"/>
+        <QueuedConditions value="InMissionLeadingToUlnar01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadConversation id="Conversation_AiurUnlock">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="AiurBAvailableOrOnAiurB"/>
+        <QueuedConditions value="InMissionLeadingToPAiur04"/>
+        <Link value="pCutscene_AiurUnlock"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="Convo_PostMoebius01">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="OnMoebius"/>
+        <NormalConditions value="LastSuccessfulMissionPMoebius01"/>
+        <QueuedConditions value="InPMoebius01"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pCutscene_Shadow02Post"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="Cutscene_Purifier01Post" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier01Completed"/>
+        <QueuedConditions value="InPPurifier01"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pCutscene_Purifier01Post"/>
+    </CPreloadConversation>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_07" parent="PCampaignPreloadModel">
+        <NormalConditions value="AiurBAvailableOrOnAiurB"/>
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="InMissionLeadingToPAiur04"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets07"/>
+    </CPreloadModel>
+    <CPreloadScene id="UI_ShipUpgradeFinalArc" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="AiurBAvailableOrOnAiurB"/>
+        <QueuedConditions value="MissionsCompletedEQ15"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_ShipUpgrade.SC2Cutscene"/>
+        <Filter value="FinalArc CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_ShipUpgradeKorhal" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="KorhalAvailableOrOnKorhal"/>
+        <QueuedConditions value="InMissionLeadingToKorhal01"/>
+        <QueuedConditions value="PKorhal01NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_ShipUpgrade.SC2Cutscene"/>
+        <Filter value="Korhal Episode2 Std CoreStage1 CoreStage2 CoreStage3 Artanis Smith"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_ShipUpgradeMoebius" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="LastSuccessfulMissionPMoebius01"/>
+        <QueuedConditions value="PMoebius01Available"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_ShipUpgrade.SC2Cutscene"/>
+        <Filter value="Moebius CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_ShipUpgradePurifierA" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PurifierAAvailableOrOnPurifierA"/>
+        <QueuedConditions value="InMissionLeadingToPurifier01"/>
+        <QueuedConditions value="PurifierAArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_ShipUpgrade.SC2Cutscene"/>
+        <Filter value="PurifierA CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_ShipUpgradePurifierB" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PurifierBAvailableOrOnPurifierB"/>
+        <QueuedConditions value="InMissionLeadingToPurifier02"/>
+        <QueuedConditions value="PurifierBArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_ShipUpgrade.SC2Cutscene"/>
+        <Filter value="PurifierB CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_ShipUpgradeShakuras" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="ShakurasAvailableOrOnShakuras"/>
+        <QueuedConditions value="InMissionLeadingToPShakuras01OrInPShakuras02"/>
+        <QueuedConditions value="ShakurasArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_ShipUpgrade.SC2Cutscene"/>
+        <Filter value="Shakuras CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_ShipUpgradeTaldarim" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="TaldarimAvailableOrOnTaldarim"/>
+        <QueuedConditions value="InMissionLeadingToTaldarim01"/>
+        <QueuedConditions value="TaldarimArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_ShipUpgrade.SC2Cutscene"/>
+        <Filter value="Taldarim CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_ShipUpgradeRoomUlnar" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="UlnarAvailableOrOnUlnar"/>
+        <QueuedConditions value="InMissionLeadingToUlnar01"/>
+        <QueuedConditions value="UlnarArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_ShipUpgrade.SC2Cutscene"/>
+        <Filter value="Ulnar CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteUlnar03" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PUlnar03Available"/>
+        <QueuedConditions value="InPUlnar02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadAsset id="amonportrait_static" parent="PCampaignPreloadImage">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur04Complete"/>
+        <NormalConditions value="PAiur05NotComplete"/>
+        <QueuedConditions value="InPAiur04"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadSound id="cs_purifier01debrief_51mix_v2_me" parent="PCampaignPreloadSound">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier01Completed"/>
+        <QueuedConditions value="InPPurifier01"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="CS_Purifier01Debrief_ME"/>
+    </CPreloadSound>
+    <CPreloadAsset id="LotV_ArmyUpgradeUI" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="InStorymode"/>
+        <File value="UI\Layout\Custom\LotV_ArmyUpgradeUI.SC2Layout"/>
+    </CPreloadAsset>
+    <CPreloadConversation id="PC_pDebrief_Aiur02_Convo" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <Link value="pCutscene_Aiur02Post"/>
+    </CPreloadConversation>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_01" parent="PCampaignPreloadModel">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="ShakurasAvailableOrOnShakuras"/>
+        <QueuedConditions value="InMissionLeadingToShakuras01"/>
+        <QueuedConditions value="InMission"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_02" parent="PCampaignPreloadModel">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PurifierAAvailableOrOnPurifierA"/>
+        <QueuedConditions value="InMissionLeadingToPurifier01"/>
+        <QueuedConditions value="InMission"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_02_MasterArchive" parent="PCampaignPreloadModel">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets02"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_03" parent="PCampaignPreloadModel">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="UlnarAvailableOrOnUlnar"/>
+        <QueuedConditions value="InMissionLeadingToUlnar01"/>
+        <QueuedConditions value="InMission"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_04" parent="PCampaignPreloadModel">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="UlnarAvailableOrOnUlnar"/>
+        <QueuedConditions value="InPUlnar01"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets04"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Tech_00" parent="PCampaignPreloadModel">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission_Tech00"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_00" parent="PCampaignPreloadModel">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="KorhalAvailableOrOnKorhal"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets00"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Tech_01" parent="PCampaignPreloadModel">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission_Tech01"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2StarMapUIMission" parent="PCampaignPreloadModel">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission"/>
+    </CPreloadModel>
+    <CPreloadModel id="Spectre" parent="PCampaignPreloadModel">
+        <NormalConditions value="PKorhal01Available"/>
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="InMissionLeadingToKorhal01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="UI_ArmyRoom_FactionButton_Nerazim" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="UI_ArmyRoom_FactionButton_Purifier" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="UI_ArmyRoom_FactionButton_Taldarim" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="UI_ArmyRoom_Table" parent="PCampaignPreloadModel">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+    </CPreloadModel>
+    <CPreloadAsset id="Zealot_NoCords_Placement" parent="PCampaignPreloadAsset">
+        <NormalConditions value="PAiur03InOrComplete"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\Units\Protoss\Zealot_NoCords_Placement\Zealot_NoCords_Placement.m3"/>
+    </CPreloadAsset>
+    <CPreloadSound id="CS_Foley_ArtanisHandToChest" parent="PCampaignPreloadSound">
+        <NormalConditions value="KorhalAvailableOrOnKorhal"/>
+        <QueuedConditions value="InMissionLeadingToKorhal01"/>
+    </CPreloadSound>
+    <CPreloadSound id="cs_moebius02debrief_51mix_v5_me" parent="PCampaignPreloadSound">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="OnMoebius"/>
+        <NormalConditions value="LastSuccessfulMissionPMoebius01"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="CS_Moebius02Debrief_ME"/>
+    </CPreloadSound>
+    <CPreloadConversation id="pTutorial_Army">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+    </CPreloadConversation>
+    <CPreloadSound id="sm_missionlaunch_bees">
+        <NormalConditions value="PAiur03Completed"/>
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+        <QueuedConditions value="InMission"/>
+        <Link value="SM_MissionLaunch_Bees"/>
+    </CPreloadSound>
+    <CPreloadSound id="sm_missionlaunch_explosion_v2">
+        <NormalConditions value="PAiur03Completed"/>
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+        <QueuedConditions value="InMission"/>
+        <Link value="SM_MissionLaunch_Explosion"/>
+    </CPreloadSound>
+    <CPreloadSound id="sm_missionlaunch_telemetry_v2">
+        <NormalConditions value="PAiur03Completed"/>
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+        <QueuedConditions value="InMission"/>
+        <Link value="SM_MissionLaunch_Telemetry"/>
+    </CPreloadSound>
+    <CPreloadAsset id="smx2_ambientcubemap_armyroom_default" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur01InOrCompleteOrOnEpilogue"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SMX1_ZerusParts_07" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\StoryModeSets\Zerg\SMX1_ZerusParts\SMX1_ZerusParts_07.m3"/>
+    </CPreloadAsset>
+    <CPreloadScene id="Ambient_ArmyRoom_Colossus" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier02Completed"/>
+        <QueuedConditions value="InPPurifier02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Ambient_ArmyRoom_Stalkers" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Ambient_ArmyRoom_VoidRays" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PTaldarim01Completed"/>
+        <QueuedConditions value="InPTaldarim01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Ambient_ArmyRoom_Zealots" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Ambient_Bridge_Probes" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Ambient_Shakuras02Post" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PShakuras02Completed"/>
+        <NormalConditions value="OnShakuras"/>
+        <QueuedConditions value="InPShakuras02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_ArmyRoom_Shakuras01_Pre" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="ShakurasAvailableOrOnShakuras"/>
+        <QueuedConditions value="InMissionLeadingToShakuras01"/>
+        <QueuedConditions value="PShakuras01NotCompleted"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_Bridge_Aiur04_Pre" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur04Available"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="MissionsCompletedEQ15"/>
+        <Filter value="ConversationView"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_ArmyRoom_Aiur04_Pre" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur04Available"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="MissionsCompletedEQ15"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_ArmyRoom_Aiur05_Pre" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur05Available"/>
+        <QueuedConditions value="InPAiur04"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_ArmyRoom_Aiur06_Pre" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur06Available"/>
+        <QueuedConditions value="InPAiur05"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_ArmyRoom_Moebius" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="LastSuccessfulMissionPMoebius01"/>
+        <QueuedConditions value="PMoebius01Available"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_ArmyRoom_Purifier01" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PurifierAAvailableOrOnPurifierA"/>
+        <QueuedConditions value="InMissionLeadingToPurifier01"/>
+        <QueuedConditions value="PurifierAArcNotComplete"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_ArmyRoom_Shakuras02_Post" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PShakuras02Completed"/>
+        <NormalConditions value="OnShakuras"/>
+        <QueuedConditions value="InPShakuras02"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_ArmyRoom_Taldarim" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="TaldarimAvailableOrOnTaldarim"/>
+        <QueuedConditions value="InMissionLeadingToTaldarim01"/>
+        <QueuedConditions value="TaldarimArcNotComplete"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_ArmyRoom_Ulnar" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="UlnarAvailableOrOnUlnar"/>
+        <QueuedConditions value="InMissionLeadingToUlnar01"/>
+        <QueuedConditions value="UlnarArcNotComplete"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_Bridge_Aiur05_Pre" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur05Available"/>
+        <QueuedConditions value="InPAiur04"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_Bridge_Aiur06_Pre" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur06Available"/>
+        <QueuedConditions value="InPAiur05"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_Bridge_Korhal01_Post" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01Completed"/>
+        <NormalConditions value="OnKorhal"/>
+        <QueuedConditions value="InPKorhal01"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_Bridge_Moebius01_Post" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="OnMoebius"/>
+        <NormalConditions value="LastSuccessfulMissionPMoebius01"/>
+        <QueuedConditions value="InPMoebius01"/>
+        <File value="Cutscenes\Backgrounds_Bridge_Shadow02 _Post.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_Bridge_Shadow02_Post" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PMoebius01Completed"/>
+        <QueuedConditions value="InPMoebius01"/>
+        <Flags index="Instantiate" value="0"/>
+        <Filter value="ConversationView"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_Bridge_Purifier01_Pre" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PPurifier01Available"/>
+        <QueuedConditions value="InPKorhal02OrPShakuras02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_Bridge_Purifier03_Post" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier03Completed"/>
+        <NormalConditions value="OnPurifierB"/>
+        <QueuedConditions value="InPPurifier03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_Bridge_Purifier01_Post" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier01Completed"/>
+        <QueuedConditions value="InPKorhal01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_Bridge_Korhal01_Pre" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01Available"/>
+        <QueuedConditions value="InMissionLeadingToKorhal01"/>
+        <QueuedConditions value="PKorhal01NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+        <Filter value="Episode4 Std Korhal Episode1 UIView"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_Bridge_Purifier02_Post" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier02Completed"/>
+        <NormalConditions value="PurifierBAvailableOrOnPurifierB"/>
+        <QueuedConditions value="InPPurifier02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_Bridge_Purifier02_Pre" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier02Available"/>
+        <QueuedConditions value="InMissionLeadingToPurifier02"/>
+        <QueuedConditions value="PPurifier02NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_Bridge_Shakuras01_Pre" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="ShakurasAvailableOrOnShakuras"/>
+        <QueuedConditions value="InMissionLeadingToShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+        <Filter value="Episode4 Std Shakuras Episode1 UIView"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_Bridge_Shakuras02_Post" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PShakuras02Completed"/>
+        <NormalConditions value="ShakurasAvailableOrOnShakuras"/>
+        <QueuedConditions value="InPShakuras02"/>
+        <Flags index="Instantiate" value="0"/>
+        <Filter value="UIView"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_Bridge_Taldarim" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="TaldarimAvailableOrOnTaldarim"/>
+        <QueuedConditions value="InMissionLeadingToTaldarim01"/>
+        <QueuedConditions value="TaldarimArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\Backgrounds_Bridge_TalDarim.SC2Cutscene"/>
+        <Filter value="ConversationView"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_Bridge_Ulnar" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="UlnarAvailableOrOnUlnar"/>
+        <QueuedConditions value="InMissionLeadingToUlnar01"/>
+        <QueuedConditions value="UlnarArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Filter value="ConversationView"/>
+    </CPreloadScene>
+    <CPreloadScene id="Ambient_ArmyRoom_Carrier" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PMoebius01Completed"/>
+        <QueuedConditions value="InPMoebius01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_BridgeKorhal" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="KorhalAvailableOrOnKorhal"/>
+        <QueuedConditions value="InMissionLeadingToPKorhal01OrInPKorhal02"/>
+        <QueuedConditions value="PKorhal01NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_Bridge.SC2Cutscene"/>
+        <Filter value="Episode4 Std Korhal Episode1 Artanis Smith Comm"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_BridgeShakuras" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="ShakurasAvailableOrOnShakuras"/>
+        <QueuedConditions value="InMissionLeadingToPShakuras01OrInPShakuras02"/>
+        <QueuedConditions value="ShakurasArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_Bridge.SC2Cutscene"/>
+        <Filter value="Shakuras"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_BridgePurifierA" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PurifierAAvailableOrOnPurifierA"/>
+        <QueuedConditions value="InMissionLeadingToPurifier01"/>
+        <QueuedConditions value="PurifierAArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_Bridge.SC2Cutscene"/>
+        <Filter value="PurifierA"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_BridgePurifierB" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PurifierBAvailableOrOnPurifierB"/>
+        <QueuedConditions value="InMissionLeadingToPurifier02"/>
+        <QueuedConditions value="PurifierBArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_Bridge.SC2Cutscene"/>
+        <Filter value="PurifierB"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_BridgeUlnar" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="UlnarAvailableOrOnUlnar"/>
+        <QueuedConditions value="InMissionLeadingToUlnar01"/>
+        <QueuedConditions value="UlnarArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_Bridge.SC2Cutscene"/>
+        <Filter value="Ulnar"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_BridgeTaldarim" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="TaldarimAvailableOrOnTaldarim"/>
+        <QueuedConditions value="InMissionLeadingToTaldarim01"/>
+        <QueuedConditions value="TaldarimArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_Bridge.SC2Cutscene"/>
+        <Filter value="Taldarim"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_BridgeFinalArc" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="AiurBAvailableOrOnAiurB"/>
+        <QueuedConditions value="MissionsCompletedEQ15"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_Bridge.SC2Cutscene"/>
+        <Filter value="FinalArc"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_BridgeMoebius" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="LastSuccessfulMissionPMoebius01"/>
+        <QueuedConditions value="PMoebius01Available"/>
+        <Flags index="Instantiate" value="0"/>
+        <Filter value="Moebius"/>
+        <File value="Cutscenes\UIView_Bridge.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_BridgePylon" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+        <Filter value="Pylon"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_ArmyRoomKorhal" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="KorhalAvailableOrOnKorhal"/>
+        <QueuedConditions value="InMissionLeadingToKorhal01"/>
+        <QueuedConditions value="PKorhal01NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_ArmyRoom.SC2Cutscene"/>
+        <Filter value="Korhal"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_ArmyRoomShakuras" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="ShakurasAvailableOrOnShakuras"/>
+        <QueuedConditions value="InMissionLeadingToPShakuras01OrInPShakuras02"/>
+        <QueuedConditions value="ShakurasArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_ArmyRoom.SC2Cutscene"/>
+        <Filter value="Shakuras"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_ArmyRoomPurifierA" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PurifierAAvailableOrOnPurifierA"/>
+        <QueuedConditions value="InMissionLeadingToPurifier01"/>
+        <QueuedConditions value="PurifierAArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_ArmyRoom.SC2Cutscene"/>
+        <Filter value="PurifierA"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_ArmyRoomPurifierB" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PurifierBAvailableOrOnPurifierB"/>
+        <QueuedConditions value="InMissionLeadingToPurifier02"/>
+        <QueuedConditions value="PurifierBArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_ArmyRoom.SC2Cutscene"/>
+        <Filter value="PuriferB"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_ArmyRoomUlnar" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="UlnarAvailableOrOnUlnar"/>
+        <QueuedConditions value="InMissionLeadingToUlnar01"/>
+        <QueuedConditions value="UlnarArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_ArmyRoom.SC2Cutscene"/>
+        <Filter value="Ulnar"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_ArmyRoomTaldarim" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="TaldarimAvailableOrOnTaldarim"/>
+        <QueuedConditions value="InMissionLeadingToTaldarim01"/>
+        <QueuedConditions value="TaldarimArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_ArmyRoom.SC2Cutscene"/>
+        <Filter value="Taldarim"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_ArmyRoomFinalArc" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="AiurBAvailableOrOnAiurB"/>
+        <QueuedConditions value="MissionsCompletedEQ15"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_ArmyRoom.SC2Cutscene"/>
+        <Filter value="FinalArc"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_ArmyRoomMoebius" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="LastSuccessfulMissionPMoebius01"/>
+        <QueuedConditions value="PMoebius01Available"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_ArmyRoom.SC2Cutscene"/>
+        <Filter value="Moebius"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_MissionLaunchKorhal" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <NormalConditions value="KorhalAvailableOrOnKorhal"/>
+        <QueuedConditions value="FALSE"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_MissionLaunch.SC2Cutscene"/>
+        <Filter value="Korhal"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_MissionLaunchShakuras" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <NormalConditions value="ShakurasAvailableOrOnShakuras"/>
+        <QueuedConditions value="FALSE"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_MissionLaunch.SC2Cutscene"/>
+        <Filter value="Shakuras"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_MissionLaunchShakuras_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_MissionLaunch.SC2Cutscene"/>
+        <Filter value="Shakuras"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_MissionLaunchQueuedKorhalOrShakuras" parent="PCampaignPreloadScene">
+        <NormalConditions value="FALSE"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_MissionLaunch.SC2Cutscene"/>
+        <Filter value="Korhal Shakuras"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_MissionLaunchPurifier01" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PurifierAAvailableOrOnPurifierA"/>
+        <QueuedConditions value="InMissionLeadingToPurifier01"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_MissionLaunch.SC2Cutscene"/>
+        <Filter value="Purifier01"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_MissionLaunchPurifier02" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PurifierBAvailableOrOnPurifierB"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="InMissionLeadingToPurifier02"/>
+        <QueuedConditions value="PPurifier02NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_MissionLaunch.SC2Cutscene"/>
+        <Filter value="Purifier02"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_MissionLaunchPurifier03" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PurifierBAvailableOrOnPurifierB"/>
+        <QueuedConditions value="InPPurifier02"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_MissionLaunch.SC2Cutscene"/>
+        <Filter value="Std PurifierB Episode2 Artanis Purifier03"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignettePurifier01" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PurifierAAvailableOrOnPurifierA"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="InPKorhal02OrPShakuras02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignettePurifier02" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PurifierBAvailableOrOnPurifierB"/>
+        <QueuedConditions value="InPUlnar03OrInPMoebius01OrInPTaldarim02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignettePurifier03" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PurifierBAvailableOrOnPurifierB"/>
+        <QueuedConditions value="InPPurifier02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_MissionLaunchUlnar" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="UlnarAvailableOrOnUlnar"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="InMissionLeadingToUlnar01"/>
+        <QueuedConditions value="PUlnar03NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_MissionLaunch.SC2Cutscene"/>
+        <Filter value="UlnarA"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_MissionLaunchAiur" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="AiurBAvailableOrOnAiurB"/>
+        <QueuedConditions value="InMissionLeadingToPAiur04"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_MissionLaunch.SC2Cutscene"/>
+        <Filter value="FinalArc"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_MissionLaunchTaldarim" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="TaldarimAvailableOrOnTaldarim"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PUlnar03InOrComplete"/>
+        <QueuedConditions value="PTaldarim02NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_MissionLaunch.SC2Cutscene"/>
+        <Filter value="Taldarim"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_MissionLaunchMoebius" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="MoebiusAvailableOrOnMoebius"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="InMissionLeadingToMoebius01"/>
+        <QueuedConditions value="PMoebius01NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_MissionLaunch.SC2Cutscene"/>
+        <Filter value="Moebius01"/>
+    </CPreloadScene>
+    <CPreloadModel id="UI_SOA_ButtonActivate" parent="PCampaignPreloadModel">
+        <NormalConditions value="PAiur01InOrCompleteOrOnEpilogue"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadScene id="UI_VignetteKorhal01" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="KorhalAvailableOrOnKorhal"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteKorhal02" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="KorhalAvailableOrOnKorhal"/>
+        <QueuedConditions value="InPKorhal01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteMoebius01" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="MoebiusAvailableOrOnMoebius"/>
+        <QueuedConditions value="InMissionLeadingToMoebius01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteShakuras01" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="ShakurasAvailableOrOnShakuras"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteShakuras02" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="ShakurasAvailableOrOnShakuras"/>
+        <QueuedConditions value="InPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteTaldarim01" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="TaldarimAvailableOrOnTaldarim"/>
+        <QueuedConditions value="InMissionLeadingToTaldarim01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteTaldarim02" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="TaldarimAvailableOrOnTaldarim"/>
+        <QueuedConditions value="InPTaldarim01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteUlnar01" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="UlnarAvailableOrOnUlnar"/>
+        <QueuedConditions value="InMissionLeadingToUlnar01"/>
+        <QueuedConditions value="MissionsCompletedEQ07"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteUlnar02" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="UlnarAvailableOrOnUlnar"/>
+        <QueuedConditions value="InPUlnar01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteDanceTerran" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteAiur02" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur01CompleteOrPAiur02Available"/>
+        <NormalConditions value="PAiur02NotComplete"/>
+        <QueuedConditions value="InPAiur01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteAiur03" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur02CompleteOrPAiur03Available"/>
+        <NormalConditions value="PAiur03NotComplete"/>
+        <QueuedConditions value="InPAiur02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteAiur04" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur04Available"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="MissionsCompletedEQ15"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteAiur05" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur04Complete"/>
+        <NormalConditions value="PAiur05NotComplete"/>
+        <QueuedConditions value="InPAiur04"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteAiur06" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur05Complete"/>
+        <NormalConditions value="PAiur06NotComplete"/>
+        <QueuedConditions value="InPAiur05"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteDanceFriendly" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteDanceNone" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteDanceProtoss" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteDanceZerg" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Convo_Communicator_Korhal" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="KorhalAvailableOrOnKorhal"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="KorhalAvailableOrOnKorhal"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Convo_Communicator_Shakuras" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PShakuras01Available"/>
+        <QueuedConditions value="InMissionLeadingToShakuras01"/>
+        <QueuedConditions value="PShakuras01NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Convo_Rohana_Ulnar" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PUlnar03Available"/>
+        <QueuedConditions value="InPUlnar02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Backgrounds_ArmyRoom_Korhal01_Pre" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="KorhalAvailableOrOnKorhal"/>
+        <QueuedConditions value="InMissionLeadingToKorhal01"/>
+        <QueuedConditions value="PKorhal01NotCompleted"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Aiur02Debrief" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur02InOrComplete"/>
+        <NormalConditions value="PAiur03NotComplete"/>
+        <QueuedConditions value="InPAiur02"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Aiur04Briefing" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur04Available"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="MissionsCompletedEQ16"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Aiur05Briefing" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur05Available"/>
+        <QueuedConditions value="InPAiur04"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Aiur06Briefing" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur05Complete"/>
+        <QueuedConditions value="InPAiur05"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_AiurComplete" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03CompleteOrInProgress"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_AiurUnlock" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="AiurBAvailableOrOnAiurB"/>
+        <QueuedConditions value="InMissionLeadingToPAiur04"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_CoreIntro" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Aiur01Debrief" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPAiur01orLastMissionisPAiur01"/>
+        <QueuedConditions value="InPAiur01"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_CoreUlnar03Post" parent="PCampaignPreloadScene">
+        <NormalConditions value="PUlnar03Completed"/>
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="InPUlnar03"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Korhal01Debrief" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PKorhal01Completed"/>
+        <NormalConditions value="PKorhal02Available"/>
+        <QueuedConditions value="InPKorhal01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Epilogue01Arrival" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="LastSuccessfulMissionPUlnar03"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="InPUlnar03"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Epilogue01Post" parent="PCampaignPreloadScene">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <QueuedConditions value="SC2Epilogue01Available"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Korhal02Debrief" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PKorhal02Completed"/>
+        <NormalConditions value="PPurifier01AvailableOrPShakuras01Available"/>
+        <QueuedConditions value="InPKorhal02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_KorhalArrival" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PKorhal01Available"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="InMissionLeadingToKorhal01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_MissionAiur06Intro" parent="PCampaignPreloadScene">
+        <NormalConditions value="InMission"/>
+        <NormalConditions value="PAiur06Available"/>
+        <QueuedConditions value="InStorymode"/>
+        <QueuedConditions value="PAiur06Available"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Purifier01Debrief" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier01Completed"/>
+        <NormalConditions value="PurifierAAvailableOrOnPurifierA"/>
+        <QueuedConditions value="InMissionLeadingToPurifier01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Purifier02Intro" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPPurifier02"/>
+        <QueuedConditions value="InStorymode"/>
+        <QueuedConditions value="PPurifier02Available"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_MissionEpilogue01Start" parent="PCampaignPreloadScene">
+        <NormalConditions value="InMission"/>
+        <NormalConditions value="InSC2Epilogue01"/>
+        <QueuedConditions value="InStorymode"/>
+        <QueuedConditions value="SC2Epilogue01Available"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_MissionPurifier03End" parent="PCampaignPreloadScene">
+        <NormalConditions value="InMission"/>
+        <NormalConditions value="InPPurifier03"/>
+        <QueuedConditions value="InStorymode"/>
+        <QueuedConditions value="PPurifier03Available"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_MissionUlnar03End" parent="PCampaignPreloadScene">
+        <NormalConditions value="InMission"/>
+        <NormalConditions value="InPUlnar03"/>
+        <QueuedConditions value="InStorymode"/>
+        <QueuedConditions value="PUlnar03Available"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_MoebiusArrival" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PMoebius01Available"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="InPPurifier03orInPTaldarim02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_ProtossStinger" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPAiur06"/>
+        <QueuedConditions value="PAiur06Available"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Purifier03Debriefing" parent="PCampaignPreloadScene">
+        <NormalConditions value="OnPurifierB"/>
+        <NormalConditions value="PPurifier03Completed"/>
+        <QueuedConditions value="InPPurifier03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_PurifierArc2Arrival" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier02Available"/>
+        <QueuedConditions value="PPurifier02NotCompleted"/>
+        <QueuedConditions value="InMissionLeadingToPurifier02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_PurifierArrival" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier01Available"/>
+        <QueuedConditions value="PPurifier01NotCompleted"/>
+        <QueuedConditions value="InPKorhal02OrPShakuras02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_RohanaIntro" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="LastSuccessfulMissionPAiur03OrMissionsCompletedEQ04"/>
+        <QueuedConditions value="InPAiur03OrInPKorhal01OrInPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Shakuras01Debrief" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="OnShakuras"/>
+        <NormalConditions value="LastSuccessfulMissionPShakuras01"/>
+        <QueuedConditions value="InPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Shakuras02Before" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PShakuras02Available"/>
+        <QueuedConditions value="InPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_ShakurasArrival" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PShakuras01Available"/>
+        <QueuedConditions value="InMissionLeadingToShakuras01"/>
+        <QueuedConditions value="PShakuras01NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Taldarim02Before" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PTaldarim02Available"/>
+        <QueuedConditions value="InPTaldarim01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Taldarim03Debrief" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="OnTaldarim"/>
+        <NormalConditions value="LastSuccessfulMissionPTaldarim02"/>
+        <QueuedConditions value="InPTaldarim02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_TaldarimArrival" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PTaldarim01Available"/>
+        <QueuedConditions value="InMissionLeadingToTaldarim01"/>
+        <QueuedConditions value="TaldarimArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Ulnar02Debrief" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PUlnar03Available"/>
+        <QueuedConditions value="InPUlnar02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Ulnar03Debrief" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="LastSuccessfulMissionPUlnar03"/>
+        <QueuedConditions value="InPUlnar03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_UlnarArrival" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PUlnar01Available"/>
+        <QueuedConditions value="InMissionLeadingToUlnar01"/>
+        <QueuedConditions value="MissionsCompletedEQ07"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadSound id="KerriganVoid_Yes00" parent="PCampaignPreloadSound">
+        <NormalConditions value="InPUlnar02"/>
+        <QueuedConditions value="PUlnar02Available"/>
+        <Link value="KerriganVoid_Yes"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadSound>
+    <CPreloadScene id="Cutscene_UlnarComplete" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="LastSuccessfulMissionPUlnar03"/>
+        <QueuedConditions value="InPUlnar03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_UlnarUnlock" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="MissionsCompletedEQ08"/>
+        <QueuedConditions value="InMissionLeadingToUlnar01"/>
+        <QueuedConditions value="MissionsCompletedEQ07"/>
+    </CPreloadScene>
+    <CPreloadUnit id="HybridProtoss" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPAiur03"/>
+        <QueuedConditions value="PAiur02Completed"/>
+        <Link value="HybridGeneral"/>
+    </CPreloadUnit>
+    <CPreloadAsset id="LotV_GameUnitFrame" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="InStorymode"/>
+        <File value="UI\Layout\Custom\LotV_GameUnitFrame.SC2Layout"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="LotV_GameUI" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="InStorymode"/>
+        <File value="UI\Layout\Custom\LotV_GameUI.SC2Layout"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="LotV_SoAMissionUIPanel" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="InStorymode"/>
+        <File value="UI\Layout\Custom\LotV_SoAMissionUIPanel.SC2Layout"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="LotV_ResourcePanel" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="InStorymode"/>
+        <File value="UI\Layout\Custom\LotV_ResourcePanel.SC2Layout"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="LotV_TalDarim02" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPTaldarim02OrOnEpilogue"/>
+        <QueuedConditions value="PTaldarim02AvailableOrOnEpilogue"/>
+        <File value="UI\Layout\LotV_TalDarim02.SC2Layout"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadConversation id="PC_pDebrief_Aiur01_Convo" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPAiur01orLastMissionisPAiur01"/>
+        <QueuedConditions value="InPAiur01"/>
+        <Link value="pCutscene_Aiur01Post"/>
+    </CPreloadConversation>
+    <CPreloadAsset id="DescIndex" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPTaldarim02OrOnEpilogue"/>
+        <QueuedConditions value="PTaldarim02AvailableOrOnEpilogue"/>
+        <File value="UI\Layout\DescIndex.SC2Layout"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SMX2_Aiur02_FogEmbers" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\StoryModeSets\Protoss\SMX2_Aiur02_FogEmbers\SMX2_Aiur02_FogEmbers.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SMX2_Aiur_Tree" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\StoryModeSets\Protoss\SMX2_Aiur_Tree\SMX2_Aiur_Tree.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SMX2_Aiur02Debrief_DarkTemplar_Death" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\StoryModeSets\Protoss\SMX2_Aiur02Debrief_DarkTemplar_Death\SMX2_Aiur02Debrief_DarkTemplar_Death.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SMX1_MutaliskT1" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur01orLastMissionisPAiur01"/>
+        <QueuedConditions value="InPAiur01"/>
+        <File value="Assets\StoryModeCharacters\Zerg\SMX1_MutaliskT1\SMX1_MutaliskT1.m3"/>
+    </CPreloadAsset>
+    <CPreloadUnit id="SMX2Artanis" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03CompleteOrInProgress"/>
+        <Link value="SMX2ProtossArtanis"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_Karax_T1_NoMechBraids" parent="PCampaignPreloadUnit">
+        <NormalConditions value="PAiur01InOrComplete"/>
+        <QueuedConditions value="InPAiur01"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2ProtossSmithNoMechBraids"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2Karax" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03CompleteOrInProgress"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2ProtossSmith"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2Fenix" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PPurifier01Completed"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2ProtossFenixMech"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2Alarak" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PUlnar02Complete"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PUlnar01Completed"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2ProtossAlarak"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_Carrier" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur04Available"/>
+        <QueuedConditions value="InMissionLeadingToPAiur04"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2ProtossCarrier"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2Rohana" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur01InOrComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2ProtossRohana"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2Vorazun" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PShakuras01AvailableOrPShakuras01Complete"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PShakuras01Completed"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2ProtossVorazun"/>
+    </CPreloadUnit>
+    <CPreloadAsset id="Aiur_CityBuilding_Temple_Destroyed_03" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\Doodads\Aiur_CityBuilding_Temple_Destroyed\Aiur_CityBuilding_Temple_Destroyed_03.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SMX2_Aiur02_GroundFog" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\StoryModeSets\Protoss\SMX2_Aiur02_GroundFog\SMX2_Aiur02_GroundFog.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SMX2_Aiur_ZergBlood" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\StoryModeSets\Protoss\SMX2_Aiur_ZergBlood\SMX2_Aiur_ZergBlood.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SMX2_Aiur_ZergBlood_B" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\StoryModeSets\Protoss\SMX2_Aiur_ZergBlood_B\SMX2_Aiur_ZergBlood_B.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SMX2_Aiur_ZergBlood_C" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\StoryModeSets\Protoss\SMX2_Aiur_ZergBlood_C\SMX2_Aiur_ZergBlood_C.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SMX2_Aiur_ZergBlood_D" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\StoryModeSets\Protoss\SMX2_Aiur_ZergBlood_D\SMX2_Aiur_ZergBlood_D.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SMX2_Aiur_ZergBlood_E" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\StoryModeSets\Protoss\SMX2_Aiur_ZergBlood_E\SMX2_Aiur_ZergBlood_E.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="Aiur_Pyramid_Tower_Large_Abandoned_02" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\Doodads\Aiur_Pyramid_Tower_Large_Abandoned\Aiur_Pyramid_Tower_Large_Abandoned_02.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ZurvanTentacleImpact" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\Effects\Zerg\ZurvanTentacleImpact\ZurvanTentacleImpact.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SM_Char_Cinematic_Skyparallax" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\StoryModeSkyboxes\SM_Char_Cinematic_Skyparallax\SM_Char_Cinematic_Skyparallax.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SMX2_DarkTemplarGuard_00" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\StoryModeCharacters\Protoss\SMX2_DarkTemplarGuard\SMX2_DarkTemplarGuard_00.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SMX2_DarkTemplarGuard_01" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\StoryModeCharacters\Protoss\SMX2_DarkTemplarGuard\SMX2_DarkTemplarGuard_01.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SMX1_HydraliskT1" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <File value="Assets\StoryModeCharacters\Zerg\SMX1_HydraliskT1\SMX1_HydraliskT1.m3"/>
+    </CPreloadAsset>
+    <CPreloadModel id="SMX2_Bridge_Stars" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadAsset id="SOA_GroundTargetCursor" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InMission"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="PAiur03Completed"/>
+        <File value="Assets\Effects\Protoss\SOA_GroundTargetCursor\SOA_GroundTargetCursor.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SOA_Calldown_UI" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InMission"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="PAiur03Completed"/>
+        <File value="Assets\UI\Protoss\SOA_Calldown_UI\SOA_Calldown_UI.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SOA_SolarLance" parent="PCampaignPreloadAsset">
+        <NormalConditions value="HasSolarLanceSelected"/>
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="HasSolarLanceSelected"/>
+        <File value="Assets\Effects\Protoss\SOA_SolarLance\SOA_SolarLance.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SOA_SolarLance_Trail" parent="PCampaignPreloadAsset">
+        <NormalConditions value="HasSolarLanceSelected"/>
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="HasSolarLanceSelected"/>
+        <File value="Assets\Effects\Protoss\SOA_SolarLance_Trail\SOA_SolarLance_Trail_00.m3"/>
+    </CPreloadAsset>
+    <CPreloadConversation id="Tutorial_Ship" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <QueuedConditions value="PKorhal01AndPShakuras01NotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadScene id="UI_ArmyUnits" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+        <Filter value="Zealot Stalker Immortal Sentry DarkTemplar Phoenix HighTemplar Colossus Carrier VoidRay AiurFaction NerazimFaction PurifierFaction TaldarimFaction"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_ArmyUnits_CategoryIcons" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="InMission"/>
+    </CPreloadScene>
+    <CPreloadSound id="UI_TerranPing" parent="PCampaignPreloadSound">
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="InStorymode"/>
+    </CPreloadSound>
+    <CPreloadAsset id="Shadow_MarineEX2" parent="PCampaignPreloadImage">
+        <NormalConditions value="InPKorhal01OrPKorhal01Completed"/>
+        <QueuedConditions value="PKorhal01Available"/>
+        <File value="Assets\Units\Terran\Shadow_MarineEX2\Shadow_MarineEX2.m3"/>
+    </CPreloadAsset>
+    <CPreloadScene id="UI_SoAMission" parent="PCampaignPreloadScene">
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="InStorymode"/>
+        <Filter value="Glow1 Glow2 Glow3 Glow 4 GlowMajor Available1 Available2 Available3 Available4"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_SoAMission_Glass" parent="PCampaignPreloadScene">
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="InStorymode"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_SoAMissionEnergy" parent="PCampaignPreloadScene">
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="InStorymode"/>
+    </CPreloadScene>
+    <CPreloadModel id="FlashUnitSelection_Protoss">
+        <NormalConditions value="PAiur01InOrCompleteOrOnEpilogue"/>
+        <Link value="FlashRescueSelection"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="BriefingUnitSelectProtossLarge">
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="InStorymode"/>
+    </CPreloadModel>
+    <CPreloadAsset id="cursorinteractiveactivate" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="InMission"/>
+        <File value="Assets\Textures\cursor-interactive-activate.dds"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="cursorinteractivelook" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="InMission"/>
+        <File value="Assets\Textures\cursor-interactive-look.dds"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="cutsceneinteractivetalk" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="InMission"/>
+        <File value="Assets\Textures\cursor-interactive-talk.dds"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="icongasprotossnobg" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur01InOrComplete"/>
+        <File value="Assets\Textures\icon-gas-protoss-nobg.dds"/>
+    </CPreloadAsset>
+    <CPreloadScene id="MissionAmb_Aiur02_ZergIntro1" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPAiur02OrPAiur02Available"/>
+        <QueuedConditions value="InPStory01"/>
+        <QueuedConditions value="PAiur02NotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadConversation id="Ambient_TaldarimHero" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PUlnar02Complete"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PUlnar01Completed"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pAmbient_ProtossAI" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PPurifier01Completed"/>
+        <QueuedConditions value="InPPurifier01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pAmbient_Smith" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03CompleteOrInProgress"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pAmbient_Preserver" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03CompleteOrInProgress"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pAmbient_DTLeader" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PShakuras01AvailableOrPShakuras01Complete"/>
+        <QueuedConditions value="InMissionLeadingToShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pAmbientDrone_Smith" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pAmbientGreeting_TaldarimHero" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PUlnar02Complete"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PUlnar01Completed"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pAmbientGreeting_ProtossAI" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PPurifier01Completed"/>
+        <QueuedConditions value="InPPurifier01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pAmbientGreeting_Smith" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03CompleteOrInProgress"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pAmbientGreeting_Preserver" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03CompleteOrInProgress"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pAmbientGreeting_DTLeader" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PShakuras01AvailableOrPShakuras01Complete"/>
+        <QueuedConditions value="InMissionLeadingToShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadSound id="pMission_Shakuras01_Smith_162" parent="PCampaignPreloadSound">
+        <NormalConditions value="PAiur02Completed"/>
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="PAiur02Completed"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadSound>
+    <CPreloadConversation id="pPitch_Aiur02" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPAiur01orLastMissionisPAiur01"/>
+        <QueuedConditions value="InPAiur01"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Aiur03" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Aiur02_MasterArchive" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Link value="pPitch_Aiur02"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Aiur03_MasterArchive" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Link value="pPitch_Aiur03"/>
+    </CPreloadConversation>
+    <CPreloadSound id="cs_aiur02debrief_51mix_v3a_me">
+        <NormalConditions value="InPAiur02orLastMissionisPAiur02"/>
+        <QueuedConditions value="InPAiur02"/>
+        <Flags index="Instantiate" value="0"/>
+        <Flags index="MapCampaign" value="1"/>
+        <Link value="CS_Aiur02Debrief_ME"/>
+    </CPreloadSound>
+    <CPreloadConversation id="pPitch_Aiur04" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="MissionsCompletedEQ16"/>
+        <QueuedConditions value="MissionsCompletedEQ15"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Aiur04_MasterArchive" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Aiur04"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Aiur05" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur05Available"/>
+        <QueuedConditions value="InPAiur04"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Aiur05_MasterArchive" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Aiur05"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Aiur06" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur06Available"/>
+        <QueuedConditions value="InPAiur05"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Aiur06_MasterArchive" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Aiur06"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Alpha01" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PMoebius01Available"/>
+        <QueuedConditions value="InMissionLeadingToMoebius01"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Alpha02"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Alpha02" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PMoebius02Available"/>
+        <QueuedConditions value="InPMoebius01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Alpha02_MasterArchive" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Alpha02"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Korhal01" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PKorhal01Available"/>
+        <QueuedConditions value="InMissionLeadingToKorhal01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Korhal02" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PKorhal02Available"/>
+        <QueuedConditions value="InPKorhal01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Korhal01_MasterArchive" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Korhal01"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Korhal02_MasterArchive" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Korhal02"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Purifier02" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier02Available"/>
+        <QueuedConditions value="InMissionLeadingToPurifier02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Purifier03" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier03Available"/>
+        <QueuedConditions value="InPPurifier02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Taldarim01" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PTaldarim01Available"/>
+        <QueuedConditions value="InMissionLeadingToTaldarim01"/>
+        <QueuedConditions value="TaldarimArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Shakuras01" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PShakuras01Available"/>
+        <QueuedConditions value="InMissionLeadingToShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Shakuras02" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PShakuras02Available"/>
+        <QueuedConditions value="InPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Shakuras01_MasterArchive" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Shakuras01"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Shakuras02_MasterArchive" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Shakuras02"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Purifier01" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier01Available"/>
+        <QueuedConditions value="InMissionLeadingToPurifier01"/>
+        <QueuedConditions value="MissionsCompletedGE04"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Purifier01_MasterArchive" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Purifier01"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Purifier02_MasterArchive" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Purifier02"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Purifier03_MasterArchive" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Purifier03"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Taldarim02" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="TaldarimAvailableOrOnTaldarim"/>
+        <QueuedConditions value="InMissionLeadingToTaldarim01"/>
+        <QueuedConditions value="TaldarimArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Taldarim02_MasterArchives" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Taldarim02"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Taldarim01_MasterArchives" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Taldarim01"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Ulnar01" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PUlnar01Available"/>
+        <QueuedConditions value="InMissionLeadingToUlnar01"/>
+        <QueuedConditions value="MissionsCompletedEQ07"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Ulnar02" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="UlnarAvailableOrOnUlnar"/>
+        <QueuedConditions value="InPUlnar01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Ulnar03" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PUlnar03Available"/>
+        <QueuedConditions value="InPUlnar02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Ulnar01_MasterArchive" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Ulnar01"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Ulnar02_MasterArchive" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Ulnar02"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Ulnar03_MasterArchive" parent="PCampaignPreloadConversation">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Ulnar03"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPrompt_SolarCoreUse" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="MissionsCompletedGE04"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="MissionsCompletedGE03"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPrompt_SolarCoreVisit" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="MissionsCompletedGE04"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="MissionsCompletedGE03"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPrompt_WarCouncilVisit" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPrompt_WarCouncilUse" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pResponse_Artanis" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03CompleteOrInProgress"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pResponse_DTLeader" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PShakuras01AvailableOrPShakuras01Complete"/>
+        <QueuedConditions value="InMissionLeadingToShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pResponse_Preserver" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03CompleteOrInProgress"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pResponse_ProtossAI" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PPurifier01Completed"/>
+        <QueuedConditions value="InPPurifier01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pResponse_Smith" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03CompleteOrInProgress"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pResponse_TaldarimHero" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PUlnar02Complete"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PUlnar01Completed"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pTravel_Aiur" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur04Available"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="MissionsCompletedEQ16"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pTravel_Korhal" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PKorhal01Available"/>
+        <QueuedConditions value="InMissionLeadingToKorhal01"/>
+        <QueuedConditions value="PKorhal01NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pTravel_Purifier02" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier02Available"/>
+        <QueuedConditions value="InMissionLeadingToPurifier02"/>
+        <QueuedConditions value="PPurifier02NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pTravel_Shakuras" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PShakuras01Available"/>
+        <QueuedConditions value="InMissionLeadingToShakuras01"/>
+        <QueuedConditions value="PShakuras01NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pTravel_Purifier01" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier01Available"/>
+        <QueuedConditions value="InMissionLeadingToPurifier01"/>
+        <QueuedConditions value="PPurifier01NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pTravel_Shadow" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PMoebius01Available"/>
+        <QueuedConditions value="InMissionLeadingToMoebius01"/>
+        <QueuedConditions value="PMoebius01NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pTravel_Taldarim" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PTaldarim01Available"/>
+        <QueuedConditions value="InMissionLeadingToTaldarim01"/>
+        <QueuedConditions value="TaldarimArcNotComplete"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pTravel_Ulnar" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PUlnar01Available"/>
+        <QueuedConditions value="InMissionLeadingToUlnar01"/>
+        <QueuedConditions value="UlnarArcNotComplete"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pTutorial_Gameplay" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="InStorymode"/>
+    </CPreloadConversation>
+    <CPreloadAsset id="smx2_ambientcubemap_aiur1_debrief" parent="PCampaignPreloadImage">
+        <NormalConditions value="InPAiur01orLastMissionisPAiur01"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_armyupgrade_factionaiur_categoryicon" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_zealot_aiur" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_zealot_aiur.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_zealot_nerazim" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_zealot_nerazim.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_stalker_aiur" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_stalker_aiur.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_stalker_nerazim" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_stalker_nerazim.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_zealot_purifiers" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_zealot_purifiers.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_stalker_purifiers" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_stalker_purifiers.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_immortal_aiur" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PKorhal02Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PKorhal02InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_immortal_aiur.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_immortal_nerazim" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PKorhal02Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PKorhal02InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_immortal_nerazim.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_immortal_taldarim" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PKorhal02Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PKorhal02InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_immortal_taldarim.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_sentry_aiur" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PPurifier01InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_sentry_aiur.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_sentry_purifiers" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PPurifier01InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_sentry_purifiers.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_sentry_taldarim" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PPurifier01InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_sentry_taldarim.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_darktemplar_aiur" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PShakuras01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PShakuras01InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_darktemplar_aiur.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_darktemplar_nerazim" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PShakuras01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PShakuras01InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_darktemplar_nerazim.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_darktemplar_taldarim" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PShakuras01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PShakuras01InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_darktemplar_taldarim.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_phoenix_aiur" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PUlnar01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PUlnar01InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_phoenix_aiur.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_phoenix_purifier" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PUlnar01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PUlnar01InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_phoenix_purifiers.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_phoenix_nerazim" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PUlnar01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PUlnar01InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_phoenix_nerazim.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_hightemplar_aiur" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PUlnar03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PUlnar03InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_hightemplar_aiur.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_hightemplar_nerazim" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PUlnar03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PUlnar03InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_hightemplar_nerazim.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_hightemplar_taldarim" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PUlnar03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PUlnar03InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_hightemplar_taldarim.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_colossus_aiur" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier02Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PPurifier02InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_colossus_aiur.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_colossus_nerazim" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier02Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PPurifier02InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_colossus_purifiers.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_colossus_taldarim" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PPurifier02Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PPurifier02InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_colossus_taldarim.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_carrier_aiur" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PMoebius01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PMoebius01InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_carrier_aiur.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_carrier_purifiers" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PMoebius01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PMoebius01InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_carrier_purifiers.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_carrier_taldarim" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PMoebius01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PMoebius01InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_carrier_taldarim.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_voidray_aiur" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PTaldarim01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PTaldarim01InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_voidray_aiur.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_voidray_nerazim" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PTaldarim01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PTaldarim01InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_voidray_nerazim.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="warcouncil_voidray_taldarim" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PTaldarim01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PTaldarim01InOrComplete"/>
+        <File value="Assets\Textures\warcouncil_voidray_taldarim.ogv"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_armyupgrade_factionnerazim_categoryicon" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_armyupgrade_factiontaldarim_categoryicon" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+        <File value="Assets\Textures\sc2_ui_ingame_storymode_panel_faction_taldarim_categoryicon.dds"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_armyupgrade_factionpurifier_categoryicon" parent="PCampaignPreloadImage">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03InOrComplete"/>
+        <File value="Assets\Textures\sc2_ui_ingame_storymode_panel_faction_purifier_categoryicon.dds"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="soa_solarbombardment_beam" parent="PCampaignPreloadAsset">
+        <NormalConditions value="HasSolarBombardmentSelected"/>
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="HasSolarBombardmentUnlocked"/>
+        <File value="Assets\Effects\Protoss\SOA_SolarBombardment_Beam\SOA_SolarBombardment_Beam.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="soa_timefreeze" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InMission"/>
+        <NormalConditions value="HasTimeFreezeSelected"/>
+        <QueuedConditions value="HasTimeFreezeUnlocked"/>
+        <File value="Assets\Effects\Protoss\SOA_TimeFreeze\SOA_TimeFreeze.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_temp_victorybackground" parent="PCampaignPreloadImage">
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="InStorymode"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_ingame_objectivesmasktwoherovoid" parent="PCampaignPreloadImage">
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="InStorymode"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_menubar_background" parent="PCampaignPreloadImage">
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="InStorymode"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_tipicon_storyarchives" parent="PCampaignPreloadImage">
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="InStorymode"/>
+        <File value="Assets\Textures\ui_tipicon_story-archives.dds"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="cruiser_diffuse_01" parent="PCampaignPreloadImage">
+        <NormalConditions value="InPKorhal02"/>
+        <QueuedConditions value="PKorhal02Available"/>
+        <QueuedConditions value="InStorymode"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="cruiser_diffuse_02" parent="PCampaignPreloadImage">
+        <NormalConditions value="InPKorhal02"/>
+        <QueuedConditions value="PKorhal02Available"/>
+        <QueuedConditions value="InStorymode"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="cruiser_diffuse_04" parent="PCampaignPreloadImage">
+        <NormalConditions value="InPKorhal02"/>
+        <QueuedConditions value="PKorhal02Available"/>
+        <QueuedConditions value="InStorymode"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="cruiser_diffuse_03" parent="PCampaignPreloadImage">
+        <NormalConditions value="InPKorhal02OrPKorhal02Available"/>
+        <QueuedConditions value="InPKorhal01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_mission_soa_frame_ability_alert_arrowempty">
+        <NormalConditions value="InMission"/>
+        <QueuedConditions value="InStorymode"/>
+        <File value="Assets\Textures\ui_void_mission_soa_frame_ability_alert_arrowempty.dds"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="zergdroppodex1" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPShakuras02"/>
+        <QueuedConditions value="PShakuras02Available"/>
+        <File value="Assets\Effects\Zerg\ZergDropPodEx1\ZergDropPodEx1.m3"/>
+    </CPreloadAsset>
+    <CPreloadModel id="SMX2_ShipRoom_Hologram_04" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_ShipRoom_Hologram04"/>
+    </CPreloadModel>
+    <CPreloadModel id="smx2_aiur03_starforgesmoke" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_Aiur03_StarforgeSmoke"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_ShipRoom_03" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_ShipRoomSet03"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_ShipRoom_Displacement_00" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_ShipRoom_Displacement00"/>
+    </CPreloadModel>
+    <CPreloadSound id="bg_sm_flyby_l-c-r_01">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01Available"/>
+        <QueuedConditions value="InMissionLeadingToKorhal01"/>
+        <QueuedConditions value="PKorhal01NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+        <Flags index="MapCampaign" value="1"/>
+        <Link value="SM_BG_Viking_FlyBy_Lft_Rt"/>
+    </CPreloadSound>
+    <CPreloadSound id="sm_armyroom_carrier_close01">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur04Available"/>
+        <QueuedConditions value="InMissionLeadingToPAiur04"/>
+        <Flags index="Instantiate" value="0"/>
+        <Flags index="MapCampaign" value="1"/>
+        <Link value="SM_ArmyRoom_Carrier_Close"/>
+    </CPreloadSound>
+    <CPreloadModel id="SMX2_Vorazun_Communication_Room" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PShakuras01AvailableOrPShakuras01Complete"/>
+        <QueuedConditions value="InMissionLeadingToShakuras01"/>
+        <QueuedConditions value="PShakuras01NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_XelNaga_Artifact_Powerup" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal02Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PKorhal02AvailableOrPKorhal02Completed"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_XelNaga_Artifact_Powerup_Close" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal02Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PKorhal02AvailableOrPKorhal02Completed"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_XelNaga_Artifact_Possessed_Close" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PMoebius01Completed"/>
+        <QueuedConditions value="InPMoebius01OrPMoebius01Completed"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_Carrier_SmallLensFlare.m3" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur04Available"/>
+        <QueuedConditions value="InMissionLeadingToPAiur04"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_Carrier_SmallLensFlare"/>
+    </CPreloadModel>
+    <CPreloadScene id="Backgrounds_ArmyRoom_Purifier02" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PurifierBAvailableOrOnPurifierB"/>
+        <QueuedConditions value="InMissionLeadingToPurifier02"/>
+        <QueuedConditions value="PurifierBArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadConversation id="pResponse_Keystone" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal02Completed"/>
+        <QueuedConditions value="InPKorhal02"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="Response_Keystone"/>
+    </CPreloadConversation>
+    <CPreloadScene id="Mission_Ulnar_Vision_01" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPUlnar02"/>
+        <QueuedConditions value="PUlnar02Available"/>
+        <QueuedConditions value="InPStory01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Mission_Ulnar_Vision_02" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPUlnar02"/>
+        <QueuedConditions value="PUlnar02Available"/>
+        <QueuedConditions value="InPStory01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Mission_Ulnar_Vision_03" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPUlnar02"/>
+        <QueuedConditions value="PUlnar02Available"/>
+        <QueuedConditions value="InPStory01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadUnit id="SMX2_Bridge00" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_Bridge01" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_ArmyRoomSet01" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_ShipRoomSet01" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="MissionsCompletedEQ04"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_Bridge_Communicator" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_Bridge03" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_Bridge04" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_Bridge05" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_Bridge06" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_Bridge08" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_Bridge09" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_ArmyRoomSet00" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_ArmyRoomSet04" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_ArmyRoomSet02" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_ArmyRoomSet03" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_ArmyRoomSet05" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_PossessedStasisChamber" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_ShipRoomSet00" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="MissionsCompletedEQ04"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_ShipRoomSet02" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="MissionsCompletedEQ04"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_ShipRoomSet_Wings" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="MissionsCompletedEQ04"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_ShipRoom_Hologram00" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="MissionsCompletedEQ04"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_ShipRoom_Hologram02" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="MissionsCompletedEQ04"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_ShipRoom_Hologram03" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="MissionsCompletedEQ04"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadUnit id="SMX2_ShipRoom_Hologram04" parent="PCampaignPreloadUnit">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="MissionsCompletedEQ04"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadUnit>
+    <CPreloadAsset id="PlanetViewKorhalEX1" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="KorhalAvailableOrOnKorhal"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="KorhalAvailableOrOnKorhal"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Assets\UI\Starmap\PlanetViews\PlanetViewKorhalEX1\PlanetViewKorhalEX1.m3"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="sm_hyperionexteriorlow" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="KorhalAvailableOrOnKorhal"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="KorhalAvailableOrOnKorhal"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Assets\StoryModeSets\Terran\SM_HyperionExteriorLow\SM_HyperionExteriorLow.m3"/>
+    </CPreloadAsset>
+    <CPreloadModel id="SwannPortrait" parent="PCampaignPreloadModel">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="KorhalAvailableOrOnKorhal"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="KorhalAvailableOrOnKorhal"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadScene id="Conversations_ArmyRoom" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Conversations_Bridge" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Conversations_ShipRoom" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <QueuedConditions value="PKorhal01AndPShakuras01NotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Convo_CommunicatorCutscene" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\Convo_Communicator.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadModel id="UI_ArmyRoom_FactionButton" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadConversation id="pConvo_TaldarimHero" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PUlnar02Complete"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PUlnar01Completed"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pConvo_ProtossAI" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PPurifier01Completed"/>
+        <QueuedConditions value="InPPurifier01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pConvo_Smith" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03CompleteOrInProgress"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="Convo_Preserver" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03CompleteOrInProgress"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pConvo_Preserver"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pConvo_DTLeader" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PShakuras01AvailableOrPShakuras01Complete"/>
+        <QueuedConditions value="InMissionLeadingToShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="Convo_CommunicatorConversation" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <QueuedConditions value="InMission"/>
+        <QueuedConditions value="PAiur03CompleteOrInProgress"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="Convo_Communicator"/>
+    </CPreloadConversation>
+    <CPreloadScene id="UI_StarmapAiur03" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PAiur03Completed"/>
+        <NormalConditions value="PKorhal01Available"/>
+        <NormalConditions value="PShakuras01Available"/>
+        <QueuedConditions value="InPAiur03"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_Starmap.SC2Cutscene"/>
+        <Filter value="TwoPlanets StarmapShakuras StarmapKorhal"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_StarmapKorhal02" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal02Completed"/>
+        <NormalConditions value="OnKorhal"/>
+        <QueuedConditions value="InPKorhal02"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_Starmap.SC2Cutscene"/>
+        <Filter value="TwoPlanets StarmapPurifierA StarmapShakuras Korhal StarmapUlnar"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_StarmapShakuras02" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PShakuras02Completed"/>
+        <NormalConditions value="OnShakuras"/>
+        <QueuedConditions value="InPShakuras02"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_Starmap.SC2Cutscene"/>
+        <Filter value="TwoPlanets StarmapPurifierA StarmapKorhal Shakuras StarmapUlnar"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_StarmapPurifier01" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PPurifier01Completed"/>
+        <NormalConditions value="OnPurifierA"/>
+        <QueuedConditions value="InPPurifier01"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_Starmap.SC2Cutscene"/>
+        <Filter value="PurifierA Episode2 Std StarmapUlnar StarmapKorhal StarmapShakuras"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_StarmapUlnar03" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PUlnar03Completed"/>
+        <NormalConditions value="OnUlnar"/>
+        <QueuedConditions value="InPUlnar03"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_Starmap.SC2Cutscene"/>
+        <Filter value="Episode4 Std Ulnar TwoPlanets StarmapTaldarim StarmapPurifierB"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_StarmapPurifier03" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PPurifier03Completed"/>
+        <NormalConditions value="OnPurifierB"/>
+        <QueuedConditions value="InPPurifier03"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_Starmap.SC2Cutscene"/>
+        <Filter value="PurifierB Episode3 Std TwoPlanets StarmapMoebius StarmapTaldarim StarmapFinalArc"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_StarmapTaldarim02" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PTaldarim02Completed"/>
+        <NormalConditions value="OnTaldarim"/>
+        <QueuedConditions value="InPTaldarim02"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_Starmap.SC2Cutscene"/>
+        <Filter value="Std Taldarim Episode3 TwoPlanets StarmapPurifierB StarmapMoebius StarmapFinalArc"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_StarmapMoebius01" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PMoebius01Completed"/>
+        <NormalConditions value="OnMoebius"/>
+        <QueuedConditions value="InPMoebius01"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_Starmap.SC2Cutscene"/>
+        <Filter value="Moebius Episode2 Std StarmapTaldarim StarmapPurifierB StarmapFinalArc"/>
+    </CPreloadScene>
+    <CPreloadModel id="SMX2_SolarCore_UI_Spear_Hologram" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_SolarCore_UI_BG" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_SolarCore_UI_Cockpit" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_SolarCore_UI_Spear_Hologram_Cockpit" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_SolarCore_UI_Spear_Hologram_Core" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_SolarCore_UI_Core" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_SolarCore_UI_Spear_Hologram_SmallWeapon" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_SolarCore_UI_SmallWeapon" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_SolarCore_UI_Spear_Hologram_BigWeapon" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_SolarCore_UI_BigWeapon" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_SolarCore_UI_Spear_Hologram_BackFloaters" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_SolarCore_UI_BackFloaters" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_SolarCore_UI_SmallCore" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_SolarCore_UI_Spear_Hologram_SmallCore" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadAsset id="ui_void_spearofadun_icon_check" parent="PCampaignPreloadImage">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="t2_ui_bg_01" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Assets\Sounds\T2_UI_BG_01.wav"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="t5_ui_bg_01" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="PKorhal01OrShakuras01Completed"/>
+        <QueuedConditions value="InPKorhal01OrPShakuras01"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Assets\Sounds\T5_UI_BG_01.wav"/>
+    </CPreloadAsset>
+    <CPreloadModel id="SMX2_Cybros" parent="PCampaignPreloadModel">
+        <NormalConditions value="OnPurifierB"/>
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="PurifierBAvailableOrOnPurifierB"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadScene id="Mission_SoACalldown_OrbitalStrikeKorhal" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPKorhal01"/>
+        <QueuedConditions value="PKorhal01Available"/>
+        <QueuedConditions value="InPStory01"/>
+        <Filter value="Korhal"/>
+        <File value="Cutscenes\Mission_SoACalldown_OrbitalStrike.SC2Cutscene"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Mission_SoACalldown_OrbitalStrikeShakuras" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPShakuras01"/>
+        <QueuedConditions value="PShakuras01Available"/>
+        <QueuedConditions value="InPStory01"/>
+        <Filter value="Shakuras"/>
+        <File value="Cutscenes\Mission_SoACalldown_OrbitalStrike.SC2Cutscene"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Dev_Lighting_ArmyRoom" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur01InOrComplete"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Dev_Lighting_Bridge" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur01InOrComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Filter value="Korhal Shakuras"/>
+    </CPreloadScene>
+    <CPreloadScene id="Dev_Lighting_ShipRoom" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur01InOrComplete"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadScene>
+    <CPreloadScene id="Dev_Lighting_ShipRoom_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\Dev_Lighting_ShipRoom.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadAsset id="goliath_diffuse_00" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03CompletedOrOnEpilogue"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="goliath_diffuse_01" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03CompletedOrOnEpilogue"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="goliath_diffuse_02" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03CompletedOrOnEpilogue"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="goliath_diffuse_03" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03CompletedOrOnEpilogue"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="goliath_specular_00" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03CompletedOrOnEpilogue"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="goliath_specular_01" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03CompletedOrOnEpilogue"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="goliath_specular_03" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03CompletedOrOnEpilogue"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="goliath_specular_02" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03CompletedOrOnEpilogue"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_archive_unity" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03Completed"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_archive_protoss01" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03Completed"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_archive_aiur01debrief" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03Completed"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_archive_protoss02" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03Completed"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_archive_aiur02debrief" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03Completed"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_archive_auircomplete" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03Completed"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_archive_protoss03" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03Completed"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_archive_protoss04" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03Completed"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_archive_protoss05" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03Completed"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_05" parent="PCampaignPreloadModel">
+        <NormalConditions value="PurifierBAvailableOrOnPurifierB"/>
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="InPPurifier03"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets05"/>
+    </CPreloadModel>
+    <CPreloadAsset id="ui_void_archive_protoss06" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03Completed"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_archive_auirunlock" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur03Completed"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_06" parent="PCampaignPreloadModel">
+        <NormalConditions value="PurifierBAvailableOrOnPurifierB"/>
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="InPPurifier02"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets06"/>
+    </CPreloadModel>
+    <CPreloadModel id="Purifier_Small_Energy_Generator" parent="PCampaignPreloadModel">
+        <NormalConditions value="PurifierBAvailableOrOnPurifierB"/>
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="InPPurifier02"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="PowerConductorLock"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_08" parent="PCampaignPreloadModel">
+        <NormalConditions value="MoebiusAvailableOrOnMoebius"/>
+        <NormalConditions value="InStorymode"/>
+        <QueuedConditions value="InPPurifier03orInPTaldarim02"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets08"/>
+    </CPreloadModel>
+    <CPreloadSound id="cs_purifier03debriefing_5.1mix_v3_me" parent="PCampaignPreloadSound">
+        <NormalConditions value="OnPurifierB"/>
+        <NormalConditions value="PPurifier03Completed"/>
+        <QueuedConditions value="InPPurifier03"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="CS_Purifier03Debriefing_ME"/>
+    </CPreloadSound>
+    <CPreloadSound id="pCutscene_Purifier03Post_Artanis_036" parent="PCampaignPreloadSound">
+        <NormalConditions value="OnPurifierB"/>
+        <NormalConditions value="PPurifier03Completed"/>
+        <QueuedConditions value="InPPurifier03"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadSound>
+    <CPreloadConversation id="pPitch_Epilogue01" parent="PCampaignPreloadConversation">
+        <NormalConditions value="SC2Epilogue01Available"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Epilogue02" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadConversation id="pPitch_Epilogue03" parent="PCampaignPreloadConversation">
+        <NormalConditions value="InSC2Epilogue02"/>
+        <QueuedConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadConversation>
+    <CPreloadAsset id="ui_ingame_lotv_objective_checkbox_terr" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_ingame_lotv_objective_checkmark" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur01InOrComplete"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_ingame_lotv_objective_checkbox" parent="PCampaignPreloadImage">
+        <NormalConditions value="PAiur01InOrComplete"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_ingame_lotv_objective_checkmark_terr" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadModel id="PlanetViewGalaxy" parent="PCampaignPreloadModel">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_UI_Screens_Loading_Epilogue02" parent="PCampaignPreloadModel">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadAsset id="ui_helptips_divider_terr" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_hots_hero_healthbar_green" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_kerrigan_bossbar" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_hots_hero_healthbar_green_levelbox" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_hots_bossbar_progressbar_green" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_ingame_lotv_herounitframe_terr" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_ingame_lotv_objectivebarframe_terr" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_mission_tipframeflash_terr" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_void_mission_tipframe_terr" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_ingame_lotv_timerpanel_frame_terr" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_ingame_lotv_progressbarfill_terr" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_ingame_lotv_progressbarframe_terr" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadModel id="BriefingUnitSelectZergGreen" parent="PCampaignPreloadModel">
+        <NormalConditions value="InSC2Epilogue02"/>
+        <QueuedConditions value="InSC2Epilogue01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadModel>
+    <CPreloadAsset id="epilogue5_marsara_bar" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue03"/>
+        <QueuedConditions value="InSC2Epilogue02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="epilogue3_terrandominion" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue03"/>
+        <QueuedConditions value="InSC2Epilogue02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="epilogue2_taldarim" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue03"/>
+        <QueuedConditions value="InSC2Epilogue02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="epilogue4_lifereturns" parent="PCampaignPreloadImage">
+        <NormalConditions value="InSC2Epilogue03"/>
+        <QueuedConditions value="InSC2Epilogue02"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="SMX1_KerriganInfested" parent="PCampaignPreloadAsset">
+        <NormalConditions value="PAiur01InOrComplete"/>
+        <File value="LocalizedData\Facial\SMX1_KerriganInfested.fxa"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_frame_big_innerline_terran" parent="PCampaignPreloadImage">
+        <NormalConditions value="OnEpilogue"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_frame_basegradient_zerg" parent="PCampaignPreloadImage">
+        <NormalConditions value="OnEpilogue"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadAsset id="ui_button_generic_normalpressed_zerg" parent="PCampaignPreloadImage">
+        <NormalConditions value="OnEpilogue"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadAsset>
+    <CPreloadScene id="UIView_ShipRoomFinalArc" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="AiurBAvailableOrOnAiurB"/>
+        <QueuedConditions value="MissionsCompletedEQ15"/>
+        <QueuedConditions value="InMission"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_ShipRoom.SC2Cutscene"/>
+        <Filter value="FinalArc CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_ShipRoomKorhal" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="KorhalAvailableOrOnKorhal"/>
+        <QueuedConditions value="InMissionLeadingToKorhal01"/>
+        <QueuedConditions value="PKorhal01NotCompleted"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_ShipRoom.SC2Cutscene"/>
+        <Filter value="Korhal Episode2 Std CoreStage1 CoreStage2 CoreStage3 Artanis Smith"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_ShipRoomMoebius" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="LastSuccessfulMissionPMoebius01"/>
+        <QueuedConditions value="PMoebius01Available"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_ShipRoom.SC2Cutscene"/>
+        <Filter value="Moebius CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_ShipRoomPurifierA" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PurifierAAvailableOrOnPurifierA"/>
+        <QueuedConditions value="InMissionLeadingToPurifier01"/>
+        <QueuedConditions value="PurifierAArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_ShipRoom.SC2Cutscene"/>
+        <Filter value="PurifierA CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_ShipRoomPurifierB" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PurifierBAvailableOrOnPurifierB"/>
+        <QueuedConditions value="InMissionLeadingToPurifier02"/>
+        <QueuedConditions value="PurifierBArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_ShipRoom.SC2Cutscene"/>
+        <Filter value="PurifierB CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_ShipRoomShakuras" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="ShakurasAvailableOrOnShakuras"/>
+        <QueuedConditions value="InMissionLeadingToPShakuras01OrInPShakuras02"/>
+        <QueuedConditions value="ShakurasArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_ShipRoom.SC2Cutscene"/>
+        <Filter value="Shakuras CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_ShipRoomTaldarim" parent="PCampaignPreloadScene">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="TaldarimAvailableOrOnTaldarim"/>
+        <QueuedConditions value="InMissionLeadingToTaldarim01"/>
+        <QueuedConditions value="TaldarimArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_ShipRoom.SC2Cutscene"/>
+        <Filter value="Taldarim CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UIView_ShipRoomUlnar" parent="PCampaignPreloadScene">
+        <NormalConditions value="InPStory01"/>
+        <NormalConditions value="UlnarAvailableOrOnUlnar"/>
+        <QueuedConditions value="InMissionLeadingToUlnar01"/>
+        <QueuedConditions value="UlnarArcNotComplete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UIView_ShipRoom.SC2Cutscene"/>
+        <Filter value="Ulnar CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadAsset id="AmonDarkEx2Portrait" parent="PCampaignPreloadAsset">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="PAiur05Available"/>
+        <QueuedConditions value="InPAiur04"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Assets\Portraits\Protoss\AmonDarkEx2Portrait\AmonDarkEx2Portrait.m3"/>
+    </CPreloadAsset>
+    <CPreloadSound id="pPitch_Ulnar02_DTLeader_002" parent="PCampaignPreloadSound">
+        <NormalConditions value="InStorymode"/>
+        <NormalConditions value="UlnarAvailableOrOnUlnar"/>
+        <QueuedConditions value="InPUlnar01"/>
+        <Flags index="Instantiate" value="0"/>
+    </CPreloadSound>
+    <CPreloadModel id="darkvoidray_warpin" parent="PCampaignPreloadModel">
+        <NormalConditions value="InPTaldarim02"/>
+        <QueuedConditions value="PTaldarim02Available"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="DarkVoidRayWarpIn"/>
+    </CPreloadModel>
+    <CPreloadModel id="kerriganswarmegg">
+        <NormalConditions value="PAiur01InOrCompleteOrOnEpilogue"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="ZagaraReviveCocoon"/>
+    </CPreloadModel>
+    <CPreloadModel id="KerriganSwarmEggDeath">
+        <NormalConditions value="PAiur01InOrCompleteOrOnEpilogue"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="ZagaraReviveCocoonDeath"/>
+    </CPreloadModel>
+    <CPreloadSound id="pMission_Aiur01_SelendisVoid_001_MasterArchive" parent="PCampaignPreloadSound">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="pPitch_Aiur01_SelendisVoid_001"/>
+    </CPreloadSound>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_00_MasterArchive" parent="PCampaignPreloadModel">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets00"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_01_MasterArchive" parent="PCampaignPreloadModel">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets01"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_03_MasterArchive" parent="PCampaignPreloadModel">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets03"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_04_MasterArchive" parent="PCampaignPreloadModel">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets04"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_05_MasterArchive" parent="PCampaignPreloadModel">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets05"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_06_MasterArchive" parent="PCampaignPreloadModel">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets06"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_07_MasterArchive" parent="PCampaignPreloadModel">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets07"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Planets_08_MasterArchive" parent="PCampaignPreloadModel">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission_Planets08"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_StarMap_UI_Mission_Tech_02_MasterArchive" parent="PCampaignPreloadModel">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_StarMap_UI_Mission_Tech02"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_Background_Ulnar_Clouds_MasterArchive" parent="PCampaignPreloadModel">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_Background_Ulnar_Clouds"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_Purifier02_Nebula_MasterArchive" parent="PCampaignPreloadModel">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_Purifier02_Nebula"/>
+    </CPreloadModel>
+    <CPreloadModel id="SMX2_Slayn_Nebula_MasterArchive" parent="PCampaignPreloadModel">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <Link value="SMX2_Slayn_Nebula"/>
+    </CPreloadModel>
+    <CPreloadScene id="Cutscene_Aiur02Debrief_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <File value="Cutscenes\Cutscene_Aiur02Debrief.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Aiur01Debrief_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <File value="Cutscenes\Cutscene_Aiur01Debrief.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteKorhal01_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_VignetteKorhal01.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteKorhal02_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_VignetteKorhal02.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteShakuras01_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_VignetteShakuras01.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteShakuras02_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_VignetteShakuras02.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignettePurifier01_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_VignettePurifier01.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteUlnar01_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_VignetteUlnar01.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteUlnar02_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_VignetteUlnar02.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteUlnar03_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_VignetteUlnar03.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignettePurifier02_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_VignettePurifier02.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignettePurifier03_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_VignettePurifier03.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteMoebius01_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_VignetteMoebius01.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteTaldarim01_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_VignetteTaldarim01.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteTaldarim02_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_VignetteTaldarim02.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteAiur04_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_VignetteAiur04.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteAiur05_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_VignetteAiur05.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_VignetteAiur06_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_VignetteAiur06.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Shakuras02Before_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\Cutscene_Shakuras02Before.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="Cutscene_Aiur05Briefing_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <File value="Cutscenes\Cutscene_Aiur05Briefing.SC2Cutscene"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_ShipUpgradeFinalArc_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_ShipUpgrade.SC2Cutscene"/>
+        <Filter value="FinalArc CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_ShipUpgradeKorhal_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_ShipUpgrade.SC2Cutscene"/>
+        <Filter value="Korhal Episode2 Std CoreStage1 CoreStage2 CoreStage3 Artanis Smith"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_ShipUpgradeMoebius_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_ShipUpgrade.SC2Cutscene"/>
+        <Filter value="Moebius CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_ShipUpgradePurifierA_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_ShipUpgrade.SC2Cutscene"/>
+        <Filter value="PurifierA CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_ShipUpgradePurifierB_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_ShipUpgrade.SC2Cutscene"/>
+        <Filter value="PurifierB CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_ShipUpgradeRoomUlnar_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_ShipUpgrade.SC2Cutscene"/>
+        <Filter value="Ulnar CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_ShipUpgradeShakuras_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_ShipUpgrade.SC2Cutscene"/>
+        <Filter value="Shakuras CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_ShipUpgradeTaldarim_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <Flags index="Instantiate" value="0"/>
+        <File value="Cutscenes\UI_ShipUpgrade.SC2Cutscene"/>
+        <Filter value="Taldarim CoreStage1 CoreStage2 CoreStage3"/>
+    </CPreloadScene>
+    <CPreloadScene id="UI_ShipUpgradeCore_Glass_MasterArchive" parent="PCampaignPreloadScene">
+        <NormalConditions value="PAiur06Complete"/>
+        <File value="Cutscenes\UI_ShipUpgradeCore_Glass.SC2Cutscene"/>
+    </CPreloadScene>
+</Catalog>

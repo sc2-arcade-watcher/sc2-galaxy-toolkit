@@ -1,0 +1,3036 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CEffectSet id="FighterHangerRecall">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectSet>
+    <CEffectEnumMagazine id="KillMagazine">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <EffectInternal value="KillTargetDeathNormal"/>
+        <EffectExternal value="KillTargetDeathNormal"/>
+    </CEffectEnumMagazine>
+    <CEffectApplyBehavior id="NovaHyperionJumpOutroDelay">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectRemoveBehavior id="NovaStoneDeathPreventRB">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <BehaviorLink value="NovaStoneDeathPrevent"/>
+    </CEffectRemoveBehavior>
+    <CEffectSet id="NovaStoneDeathPreventSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="NovaStoneStunMoniterRB"/>
+        <EffectArray value="NovaStoneDeathPreventRB"/>
+        <EffectArray value="NovaStoneIncapacitated"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="NovaStoneIncapacitated">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+    </CEffectApplyBehavior>
+    <CEffectRemoveBehavior id="NovaStoneStunMoniterRB">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <BehaviorLink value="NovaStoneStunMoniter"/>
+    </CEffectRemoveBehavior>
+    <CEffectDamage id="NovaXThosFighterAGDamage" parent="DU_WEAP_MISSILE">
+        <EditorCategories value="Race:Terran"/>
+        <Amount value="10"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="NovaXThosFighterAGLM">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactEffect value="NovaXThosFighterAGDamage"/>
+        <AmmoUnit value="NovaXThosFighterAGAttack"/>
+        <ValidatorArray index="0" value="IsNotDryDockedGorgon"/>
+    </CEffectLaunchMissile>
+    <CEffectApplyBehavior id="NovaXThosFighterHeight">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectRemoveBehavior id="NovaXThosFighterHeightRB">
+        <EditorCategories value="Race:Terran"/>
+        <BehaviorLink value="NovaXThosFighterHeight"/>
+    </CEffectRemoveBehavior>
+    <CEffectSet id="NovaXThosFighterHeightStartSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="NovaXThosFighterHeight"/>
+        <EffectArray value="NovaXThosFighterHeightTransation"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="NovaXThosFighterHeightTransation">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectLaunchMissile id="NovaXanthosAssaultGunLM">
+        <ValidatorArray index="0" value="IsDryDockedGorgon"/>
+        <EditorCategories value="Race:Terran"/>
+        <ImpactEffect value="NovaXanthosAssaultGunDamage"/>
+        <AmmoUnit value="NovaXanthosAssaultGun"/>
+    </CEffectLaunchMissile>
+    <CEffectEnumArea id="AllPurposeLaserBattery2Search">
+        <EditorCategories value="Race:Terran"/>
+        <AreaArray Radius="6" Effect="AllPurposeLaserBattery2SetA"/>
+        <AreaArray Radius="6" Effect="AllPurposeLaserBattery2Set"/>
+        <MaxCount value="1"/>
+        <SearchFilters value="Visible;Self,Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectEnumArea>
+    <CEffectEnumArea id="AllPurposeLaserBattery3Search">
+        <EditorCategories value="Race:Terran"/>
+        <AreaArray Radius="6" Effect="AllPurposeLaserBattery3SetA"/>
+        <AreaArray Radius="6" Effect="AllPurposeLaserBattery3Set"/>
+        <MaxCount value="1"/>
+        <SearchFilters value="Visible;Self,Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectEnumArea>
+    <CEffectEnumArea id="AllPurposeLaserBattery4Search">
+        <EditorCategories value="Race:Terran"/>
+        <AreaArray Radius="6" Effect="AllPurposeLaserBattery4SetA"/>
+        <AreaArray Radius="6" Effect="AllPurposeLaserBattery4Set"/>
+        <MaxCount value="1"/>
+        <SearchFilters value="Visible;Self,Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectEnumArea>
+    <CEffectSet id="AllPurposeLaserBattery1Set">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="ATSLaserBatteryLM"/>
+        <EffectArray value="AllPurposeLaserBatteryTarget1"/>
+    </CEffectSet>
+    <CEffectSet id="AllPurposeLaserBattery2SetA">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="ATSLaserBatteryLM"/>
+        <EffectArray value="AllPurposeLaserBatteryTarget2"/>
+        <ValidatorArray value="AllPurposeLaserBatteryTarget2"/>
+    </CEffectSet>
+    <CEffectSet id="AllPurposeLaserBattery2Set">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="ATSLaserBatteryLM"/>
+        <EffectArray value="AllPurposeLaserBatteryTarget2"/>
+        <ValidatorArray value="NoAllPurposeLaserBatteryTarget1"/>
+        <ValidatorArray value="NoAllPurposeLaserBatteryTarget3"/>
+        <ValidatorArray value="NoAllPurposeLaserBatteryTarget4"/>
+    </CEffectSet>
+    <CEffectSet id="AllPurposeLaserBattery3SetA">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="ATSLaserBatteryLM"/>
+        <EffectArray value="AllPurposeLaserBatteryTarget3"/>
+        <ValidatorArray value="AllPurposeLaserBatteryTarget3"/>
+    </CEffectSet>
+    <CEffectSet id="AllPurposeLaserBattery3Set">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="ATSLaserBatteryLM"/>
+        <EffectArray value="AllPurposeLaserBatteryTarget3"/>
+        <ValidatorArray value="NoAllPurposeLaserBatteryTarget1"/>
+        <ValidatorArray value="NoAllPurposeLaserBatteryTarget2"/>
+        <ValidatorArray value="NoAllPurposeLaserBatteryTarget4"/>
+    </CEffectSet>
+    <CEffectSet id="AllPurposeLaserBattery4SetA">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="ATSLaserBatteryLM"/>
+        <EffectArray value="AllPurposeLaserBatteryTarget4"/>
+        <ValidatorArray value="AllPurposeLaserBatteryTarget4"/>
+    </CEffectSet>
+    <CEffectSet id="AllPurposeLaserBattery4Set">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="ATSLaserBatteryLM"/>
+        <EffectArray value="AllPurposeLaserBatteryTarget4"/>
+        <ValidatorArray value="NoAllPurposeLaserBatteryTarget1"/>
+        <ValidatorArray value="NoAllPurposeLaserBatteryTarget2"/>
+        <ValidatorArray value="NoAllPurposeLaserBatteryTarget3"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="AllPurposeLaserBatteryTarget1">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="AllPurposeLaserBatteryTarget2">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="AllPurposeLaserBatteryTarget3">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="AllPurposeLaserBatteryTarget4">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="NovaCombatLaser" parent="DU_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <Amount value="12"/>
+        <Death value="Fire"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="NovaCrashingDebrisDeathSearchCP">
+        <EditorCategories value="Race:Terran"/>
+        <ExpireDelay value="2"/>
+        <ExpireEffect value="NovaCrashingDebrisDeathSearchDamage"/>
+    </CEffectCreatePersistent>
+    <CEffectDamage id="NovaCrashingDebrisDeathSearchDamage">
+        <EditorCategories value="Race:Terran"/>
+        <Amount value="100"/>
+        <Death value="Squish"/>
+        <AreaArray Radius="2" Fraction="1"/>
+        <SearchFilters value="Ground;User1,Missile,Dead,Hidden,Invulnerable,MapBoss"/>
+    </CEffectDamage>
+    <CEffectDamage id="NovaExplodingMachineryDamage">
+        <EditorCategories value="Race:Terran"/>
+        <Death value="Blast"/>
+        <AreaArray Radius="2.3" Fraction="1"/>
+        <SearchFilters value="Ground;User1,Missile,Dead,Hidden,Invulnerable,MapBoss"/>
+        <Amount value="30"/>
+        <Random value="40"/>
+    </CEffectDamage>
+    <CEffectApplyBehavior id="NovaEMPStoneDecloak">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectLaunchMissile id="NovaEMPStoneLaunchMissile">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <ImpactEffect value="NovaEMPStoneSearch"/>
+        <AmmoUnit value="DOMEMPMissile"/>
+    </CEffectLaunchMissile>
+    <CEffectEnumArea id="NovaEMPStoneSearch">
+        <EditorCategories value="Race:Terran"/>
+        <LaunchLocation Value="TargetPoint"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <SearchFilters value="-;Self,Player,Ally,Missile,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="1.5" Effect="NovaEMPStoneSet"/>
+    </CEffectEnumArea>
+    <CEffectSet id="NovaEMPStoneSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="NovaEMPStoneDamage"/>
+        <EffectArray value="NovaEMPStoneDecoyDamage"/>
+        <EffectArray value="NovaEMPStoneDecloak"/>
+    </CEffectSet>
+    <CEffectDamage id="NovaEMPStoneDamage">
+        <EditorCategories value="Race:Terran"/>
+        <ResponseFlags index="Acquire" value="1"/>
+        <ResponseFlags index="Flee" value="1"/>
+        <ShieldBonus value="100"/>
+        <Flags index="Notification" value="1"/>
+        <SearchFlags index="CallForHelp" value="1"/>
+    </CEffectDamage>
+    <CEffectDamage id="NovaEMPStoneDecoyDamage">
+        <ValidatorArray value="IsNovaHoloDecoy"/>
+        <EditorCategories value="Race:Terran"/>
+        <ResponseFlags index="Acquire" value="1"/>
+        <ResponseFlags index="Flee" value="1"/>
+        <Flags index="Kill" value="1"/>
+        <Flags index="Notification" value="1"/>
+        <SearchFlags index="CallForHelp" value="1"/>
+    </CEffectDamage>
+    <CEffectDamage id="FungalGrowthDamage">
+        <Amount value="1.875"/>
+    </CEffectDamage>
+    <CEffectSet id="HellbatLeapImpactSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="HellbatLeapStunSearch"/>
+        <EffectArray value="HellbatLeapRemove"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="HellbatLeapStun">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectEnumArea id="HellbatLeapStunSearch">
+        <EditorCategories value="Race:Terran"/>
+        <LaunchLocation Value="CasterUnit"/>
+        <ImpactLocation Value="CasterUnit"/>
+        <SearchFilters value="Ground;Player,Ally,Neutral,Structure,Heroic,Missile,Stasis,Dead,Hidden,Invulnerable,Unstoppable"/>
+        <AreaArray Radius="0.75" Effect="HellbatLeapStun"/>
+        <SearchFlags index="ExtendByUnitRadius" value="1"/>
+    </CEffectEnumArea>
+    <CEffectCreatePersistent id="HeroNukePersistent">
+        <PeriodCount value="2"/>
+        <PeriodicPeriodArray value="1"/>
+        <ExpireDelay value="2.5"/>
+    </CEffectCreatePersistent>
+    <CEffectDamage id="LiberatorAGDamage">
+        <AttributeBonus index="Armored" value="20"/>
+        <Amount value="35"/>
+        <!--AttributeBonus index="Light" value="15"/-->
+    </CEffectDamage>
+    <CEffectSet id="MagrailMunitionsGoliath">
+        <ValidatorArray value="AirUnitFilter"/>
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="MagrailMunitionsSet"/>
+    </CEffectSet>
+    <CEffectDamage id="NovaDominationStoneBehaviorDamage" parent="WizSpellDamage">
+        <EditorCategories value="Race:Terran"/>
+        <Amount value="150"/>
+    </CEffectDamage>
+    <CEffectSet id="NovaDominationStoneBehaviorFinalSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="NovaDominationStoneBehaviorDamage"/>
+        <EffectArray value="NovaReleaseMinion"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="NovaExplodingMachineryDamageCP">
+        <EditorCategories value="Race:Terran"/>
+        <InitialEffect value="NovaExplodingMachineryDamage"/>
+        <PeriodCount value="3"/>
+        <PeriodicEffectArray value="NovaExplodingMachineryDamage"/>
+        <PeriodicPeriodArray value="0.5"/>
+        <PeriodicPeriodArray value="0.5"/>
+        <PeriodicPeriodArray value="2.69"/>
+    </CEffectCreatePersistent>
+    <CEffectSet id="NovaSnipeStone">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="NovaStoneRailgunSnipe"/>
+        <EffectArray value="NovaStoneRailgunSnipeBeam"/>
+    </CEffectSet>
+    <CEffectLaunchMissile id="NovaStoneRailgunSnipe">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactEffect value="NovaSnipeStoneDamage"/>
+    </CEffectLaunchMissile>
+    <CEffectModifyUnit id="NovaStoneRailgunSnipeBeam">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectModifyUnit>
+    <CEffectModifyUnit id="NovaXanthosLegTurretLookAt">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactUnit Value="Caster"/>
+        <ModifyTurret Turret="NovaXThosPartTurretLeg">
+            <Target Value="TargetUnit"/>
+            <Flags index="Tracking" value="1"/>
+        </ModifyTurret>
+    </CEffectModifyUnit>
+    <CEffectApplyBehavior id="NovaXanthosRepairModeExitDelay">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectIssueOrder id="NovaXanthosTurretUncover">
+        <EditorCategories value="Race:Terran"/>
+        <Abil value="NovaXThosToggleExposed"/>
+        <AbilCmdIndex value="1"/>
+        <Player Value="Caster"/>
+    </CEffectIssueOrder>
+    <CEffectApplyBehavior id="PersonalDefensiveMatrix">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="DOMGhostPersonalDefensiveMatrixSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="DOMGhostPersonalDefensiveMatrixMU"/>
+        <EffectArray value="DOMGhostPersonalDefensiveMatrix"/>
+    </CEffectSet>
+    <CEffectModifyUnit id="DOMGhostPersonalDefensiveMatrixMU">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactUnit Value="Caster"/>
+        <VitalArray index="Shields" ChangeFraction="1"/>
+    </CEffectModifyUnit>
+    <CEffectApplyBehavior id="DOMGhostPersonalDefensiveMatrix">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+    </CEffectApplyBehavior>
+    <CEffectModifyUnit id="NovaStoneDefensiveMatrixMU">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactUnit Value="Caster"/>
+        <VitalArray index="Shields" ChangeFraction="1"/>
+    </CEffectModifyUnit>
+    <CEffectModifyUnit id="PersonalDefensiveMatrixMU">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactUnit Value="Caster"/>
+        <VitalArray index="Shields" ChangeFraction="1"/>
+    </CEffectModifyUnit>
+    <CEffectSet id="NovaStoneDefensiveMatrixSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="NovaStoneDefensiveMatrixMU"/>
+        <EffectArray value="NovaStoneDefensiveMatrix"/>
+    </CEffectSet>
+    <CEffectSet id="PersonalDefensiveMatrixSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="PersonalDefensiveMatrixMU"/>
+        <EffectArray value="PersonalDefensiveMatrix"/>
+    </CEffectSet>
+    <CEffectDamage id="P38ScytheGuassPistol">
+        <AttributeBonus index="Light" value="4"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="Nova02ScannerSweepInitialDelay">
+        <EditorCategories value="Race:Terran"/>
+        <InitialDelay value="2.5"/>
+        <ExpireEffect value="Nova02ScannerSweepReveal"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="Nova02ScannerSweepReveal">
+        <EditorCategories value="Race:Terran"/>
+        <RevealRadius value="9"/>
+        <RevealFlags index="Unfog" value="1"/>
+        <RevealFlags index="Detect" value="1"/>
+        <ExpireDelay value="15"/>
+    </CEffectCreatePersistent>
+    <CEffectDestroyPersistent id="Nova02ScannerSweepRevealDestroy">
+        <Effect value="Nova02ScannerSweepReveal"/>
+        <Count value="1"/>
+        <Radius value="500"/>
+        <WhichLocation Value="TargetPoint"/>
+    </CEffectDestroyPersistent>
+    <CEffectIssueOrder id="FlowingTerrazineNodeDeathPrevent">
+        <EditorCategories value=""/>
+        <WhichUnit Value="Caster"/>
+        <Abil value="ChangeNodetoFlowing"/>
+    </CEffectIssueOrder>
+    <CEffectIssueOrder id="MorphTerrazineUnsealedtoDepleted">
+        <EditorCategories value=""/>
+        <WhichUnit Value="Caster"/>
+        <Abil value="ChangeNodetoCapped"/>
+    </CEffectIssueOrder>
+    <CEffectModifyUnit id="RailGunTurretLaunchDummy">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactUnit Value="Caster"/>
+    </CEffectModifyUnit>
+    <CEffectDamage id="RavagerCorrosiveBileDamage">
+        <Amount value="50"/>
+    </CEffectDamage>
+    <CEffectCancelOrder id="RemoveMoveOrder">
+        <AbilCmd value="move,Move"/>
+    </CEffectCancelOrder>
+    <CEffectCreateHealer id="Repair">
+        <ValidatorArray value="Unrepairable"/>
+    </CEffectCreateHealer>
+    <CEffectDamage id="ScientistScaredFleeDummyDamage">
+        <EditorCategories value="Race:Terran"/>
+        <ResponseFlags index="Flee" value="1"/>
+        <Flags index="Notification" value="1"/>
+    </CEffectDamage>
+    <CEffectEnumArea id="ScientistScaredSearch">
+        <EditorCategories value="Race:Terran"/>
+        <SearchFilters value="Visible;Player,Ally,Neutral,Structure,Missile,Destructible,Hidden,Benign"/>
+        <AreaArray Radius="7" Effect="ScientistScaredSearchImpact"/>
+        <MinCount value="1"/>
+        <MaxCount value="1"/>
+    </CEffectEnumArea>
+    <CEffectSet id="ScientistScaredSearchImpact">
+        <ValidatorArray value="TargetNotHarmless"/>
+        <EditorCategories value="Race:Terran"/>
+    </CEffectSet>
+    <CEffectDamage id="ScoutAirU">
+        <AttributeBonus index="Armored" value="7"/>
+        <Amount value="7"/>
+    </CEffectDamage>
+    <CEffectDamage id="ScoutGround">
+        <AttributeBonus index="Light" value="0"/>
+        <Amount value="8"/>
+    </CEffectDamage>
+    <CEffectApplyBehavior id="NovaRavenSeekerMissileApplyBehavior">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Effect="SeekerMissileLaunchMissile"/>
+        <Behavior value="SeekerMissile"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="NovaRavenSeekerMissileDamage">
+        <EditorCategories value="Race:Terran"/>
+        <AINotifyFlags index="HurtEnemy" value="1"/>
+        <ResponseFlags index="Acquire" value="1"/>
+        <ResponseFlags index="Flee" value="1"/>
+        <Visibility value="Visible"/>
+        <Flags index="Notification" value="1"/>
+        <Amount value="75"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="NovaRavenSeekerMissileLaunchCP">
+        <EditorCategories value="Race:Terran"/>
+        <WhichLocation Value="SourceUnit"/>
+        <ExpireEffect value="NovaRavenSeekerMissileSuicideSet"/>
+        <PeriodCount value="10"/>
+        <PeriodicPeriodArray value="0.1"/>
+    </CEffectCreatePersistent>
+    <CEffectLaunchMissile id="NovaRavenSeekerMissileLaunchMissile">
+        <EditorCategories value="Race:Terran"/>
+        <LaunchEffect value="NovaRavenSeekerMissileLaunchSet"/>
+        <ImpactEffect value="NovaRavenSeekerMissileDamage"/>
+        <AmmoUnit value="HunterSeekerWeapon"/>
+        <Movers Link="NovaRavenSeekerMissile"/>
+    </CEffectLaunchMissile>
+    <CEffectSet id="NovaRavenSeekerMissileLaunchSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="NovaRavenSeekerMissileLaunchCP"/>
+        <EffectArray value="NovaRavenSeekerMissileLaunchTintCP"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="NovaRavenSeekerMissileLaunchTintCP">
+        <EditorCategories value="Race:Terran"/>
+        <WhichLocation Value="SourceUnit"/>
+        <PeriodCount value="250"/>
+        <PeriodicValidator value="SourceNotDead"/>
+        <PeriodicEffectArray value="NovaRavenSeekerMissileApplyBehavior"/>
+        <PeriodicPeriodArray value="0.1"/>
+    </CEffectCreatePersistent>
+    <CEffectDamage id="NovaRavenSeekerMissileSuicide">
+        <ValidatorArray value="NovaRavenSeekerMissileMaxLaunchRange"/>
+        <EditorCategories value="Race:Terran"/>
+        <ImpactLocation Value="SourceUnit"/>
+        <Flags index="Kill" value="1"/>
+    </CEffectDamage>
+    <CEffectSet id="NovaRavenSeekerMissileSuicideSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="NovaRavenSeekerMissileSuicide"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="SkyHookLift">
+        <EditorCategories value=""/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="NovaSnipeStoneDamage" parent="DU_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactLocation Value="TargetUnit"/>
+        <ArmorReduction value="0"/>
+        <Kind value="Spell"/>
+        <Amount value="125"/>
+        <Death value="Silentkill"/>
+    </CEffectDamage>
+    <CEffectCreateUnit id="SpawnSpiderMine">
+        <SpawnUnit value="SpiderMineBurrowed"/>
+    </CEffectCreateUnit>
+    <CEffectCreatePersistent id="SwarmGrenadeCP">
+        <EditorCategories value="Race:Zerg"/>
+        <PeriodicPeriodArray value="0.5"/>
+        <PeriodCount value="19"/>
+        <InitialEffect value="SwarmGrenadeSearch"/>
+        <PeriodicEffectArray value="SwarmGrenadeSearch"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumTransport id="SwarmGrenadeIterateTransport">
+        <ValidatorArray value="IsBunker"/>
+        <EditorCategories value="Race:Zerg"/>
+        <Effect value="SwarmGrenadeApplyBehavior"/>
+    </CEffectEnumTransport>
+    <CEffectSet id="SwarmGrenadeSet">
+        <EditorCategories value="Race:Zerg"/>
+        <EffectArray value="SwarmGrenadeApplyBehavior"/>
+        <EffectArray value="SwarmGrenadeIterateTransport"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="SwarmGrenadeApplyBehavior">
+        <EditorCategories value="Race:Zerg"/>
+        <Behavior value="SwarmGrenade"/>
+    </CEffectApplyBehavior>
+    <CEffectEnumArea id="SwarmGrenadeSearch">
+        <EditorCategories value="Race:Zerg"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <SearchFilters value="Ground;Self,Player,Ally,Neutral,Missile,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="3" Effect="SwarmGrenadeSet"/>
+    </CEffectEnumArea>
+    <CEffectDamage id="HoverHellbatDamage">
+        <EditorCategories value="Race:Terran"/>
+        <ResponseFlags index="Acquire" value="1"/>
+        <ResponseFlags index="Flee" value="1"/>
+        <AttributeBonus index="Light" value="12"/>
+        <ArmorReduction value="1"/>
+        <Flags index="Notification" value="1"/>
+        <Kind value="Ranged"/>
+        <KindSplash value="Ranged"/>
+        <Amount value="18"/>
+        <Death value="Fire"/>
+        <SearchFlags index="CallForHelp" value="1"/>
+    </CEffectDamage>
+    <CEffectEnumArea id="HoverHellbatSearch">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactLocation Value="TargetUnit"/>
+        <SearchFilters value="Ground;Self,Player,Ally,Missile,Dead,Hidden,Invulnerable"/>
+        <AreaArray Arc="45" Radius="2" Effect="HoverHellbatDamage"/>
+        <SearchFlags index="CenterAtLaunch" value="1"/>
+        <SearchFlags index="ExtendByUnitRadius" value="1"/>
+        <SearchFlags index="OffsetByUnitRadius" value="1"/>
+    </CEffectEnumArea>
+    <CEffectCreatePersistent id="HoverInfernalFlameThrowerCP">
+        <EditorCategories value="Race:Terran"/>
+        <WhichLocation Value="SourcePoint"/>
+        <InitialEffect value="HoverInfernalFlameThrower"/>
+        <PeriodCount value="25"/>
+        <PeriodicEffectArray value="HoverInfernalFlameThrowerSearch"/>
+        <PeriodicOffsetArray value="0,-0.25,0"/>
+        <PeriodicOffsetArray value="0,-0.5,0"/>
+        <PeriodicOffsetArray value="0,-0.75,0"/>
+        <PeriodicOffsetArray value="0,-1,0"/>
+        <PeriodicOffsetArray value="0,-1.25,0"/>
+        <PeriodicOffsetArray value="0,-1.5,0"/>
+        <PeriodicOffsetArray value="0,-1.75,0"/>
+        <PeriodicOffsetArray value="0,-2,0"/>
+        <PeriodicOffsetArray value="0,-2.25,0"/>
+        <PeriodicOffsetArray value="0,-2.5,0"/>
+        <PeriodicOffsetArray value="0,-2.75,0"/>
+        <PeriodicOffsetArray value="0,-3,0"/>
+        <PeriodicOffsetArray value="0,-3.25,0"/>
+        <PeriodicOffsetArray value="0,-3.5,0"/>
+        <PeriodicOffsetArray value="0,-3.75,0"/>
+        <PeriodicOffsetArray value="0,-4,0"/>
+        <PeriodicOffsetArray value="0,-4.25,0"/>
+        <PeriodicOffsetArray value="0,-4.5,0"/>
+        <PeriodicOffsetArray value="0,-4.75,0"/>
+        <PeriodicOffsetArray value="0,-5,0"/>
+        <PeriodicOffsetArray value="0,-5.25,0"/>
+        <PeriodicOffsetArray value="0,-5.5,0"/>
+        <PeriodicOffsetArray value="0,-5.75,0"/>
+        <PeriodicOffsetArray value="0,-6,0"/>
+        <PeriodicOffsetArray value="0,-6.5,0"/>
+        <PeriodicPeriodArray value="0"/>
+    </CEffectCreatePersistent>
+    <CEffectDamage id="HoverInfernalFlameThrower" parent="DU_WEAP">
+        <ValidatorArray value="noMarkers"/>
+        <EditorCategories value="Race:Terran"/>
+        <AttributeBonus index="Light" value="6"/>
+        <Kind value="Ranged"/>
+        <KindSplash value="Splash"/>
+        <Amount value="8"/>
+        <Death value="Fire"/>
+    </CEffectDamage>
+    <CEffectEnumArea id="HoverInfernalFlameThrowerSearch">
+        <EditorCategories value="Race:Terran"/>
+        <ExcludeArray Value="Target"/>
+        <IncludeArray Effect="HoverInfernalFlameThrowerCP" Value="Target"/>
+        <SearchFilters value="Ground;Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="0.15" Effect="HoverInfernalFlameThrower"/>
+        <SearchFlags index="CallForHelp" value="1"/>
+    </CEffectEnumArea>
+    <CEffectCreateUnit id="SiegeTankSiegedJumpJetCreatePlaceholder">
+        <SpawnEffect value="SiegeTankJumpJetCreateCP"/>
+        <SpawnUnit value="SiegeTankSiegedJumpJetPlaceholder"/>
+        <SpawnRange value="0"/>
+        <WhichLocation Value="TargetPoint"/>
+        <CreateFlags index="Birth" value="0"/>
+        <CreateFlags index="ProvideFood" value="0"/>
+        <CreateFlags index="SetFacing" value="1"/>
+        <CreateFlags index="UseFood" value="0"/>
+    </CEffectCreateUnit>
+    <CEffectCreateUnit id="SiegeTankJumpJetCreatePlaceholder">
+        <SpawnEffect value="SiegeTankJumpJetCreateCP"/>
+        <SpawnUnit value="SiegeTankJumpJetPlaceholder"/>
+        <SpawnRange value="0"/>
+        <WhichLocation Value="TargetPoint"/>
+        <CreateFlags index="Birth" value="0"/>
+        <CreateFlags index="ProvideFood" value="0"/>
+        <CreateFlags index="SetFacing" value="1"/>
+        <CreateFlags index="UseFood" value="0"/>
+    </CEffectCreateUnit>
+    <CEffectCreatePersistent id="SiegeTankJumpJetCreateCP">
+        <Flags index="Channeled" value="1"/>
+        <InitialEffect value="SiegeTankJumpJetCreateTimeOutAB"/>
+        <PeriodCount value="1"/>
+        <PeriodicValidator value="NotDead"/>
+        <PeriodicEffectArray value="SiegeTankJumpJetLM"/>
+        <PeriodicPeriodArray value="0"/>
+    </CEffectCreatePersistent>
+    <CEffectApplyBehavior id="SiegeTankJumpJetCreateTimeOutAB">
+        <EditorCategories value="Race:Zerg"/>
+        <WhichUnit Effect="SiegeTankJumpJetCreateCP" Value="TargetOuter"/>
+        <Behavior value="SiegeTankJumpJetCreateTimeOut"/>
+        <Count value="5"/>
+    </CEffectApplyBehavior>
+    <CEffectLaunchMissile id="SiegeTankJumpJetLM">
+        <DeathType value="Unknown"/>
+        <LaunchLocation Value="CasterUnit"/>
+        <ImpactLocation Value="TargetUnitOrPoint"/>
+        <ImpactEffect value="RemoveSiegeTankJumpJetPlaceholderSet"/>
+        <FinishEffect value="RemoveSiegeTankJumpJetPlaceholderSet"/>
+        <Movers Link="SiegeTankJumpJet"/>
+        <Flags index="ValidateWeapon" value="0"/>
+    </CEffectLaunchMissile>
+    <CEffectSet id="RemoveSiegeTankJumpJetPlaceholderSet">
+        <EffectArray value="RemoveSiegeTankJumpJetPlaceholder"/>
+    </CEffectSet>
+    <CEffectDamage id="RemoveSiegeTankJumpJetPlaceholder">
+        <ImpactLocation Value="TargetUnit"/>
+        <Flags index="Kill" value="1"/>
+        <Flags index="NoKillCredit" value="1"/>
+        <Death value="Remove"/>
+        <Visibility value="Hidden"/>
+    </CEffectDamage>
+    <CEffectCreateUnit id="HellbatLeap">
+        <EditorCategories value="Race:Zerg"/>
+        <SpawnEffect value="HellbatLeapSet"/>
+        <!--SpawnUnit value="HellbatPlaceholder"/-->
+        <SpawnUnit value="Hellbat"/>
+        <SpawnRange value="1"/>
+        <SpawnOffset value="0,-1"/>
+        <CreateFlags index="UseFood" value="0"/>
+        <ValidatorArray value="ChargeMinTriggerDistance"/>
+        <ValidatorArray value="HasVision"/>
+        <ValidatorArray value="HellbatChargeMaxDistance"/>
+    </CEffectCreateUnit>
+    <CEffectSet id="HellbatLeapSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="HellbatLeapSwitch"/>
+        <EffectArray value="MakePrecursor"/>
+        <EffectArray value="TempTimeout"/>
+    </CEffectSet>
+    <CEffectSwitch id="HellbatLeapSwitch">
+        <EditorCategories value="Race:Zerg"/>
+        <CaseArray Validator="TargetIsPathable" Effect="HellbatLeapLM"/>
+        <CaseDefault value="HellbatLeapRemove"/>
+        <TargetLocationType value="UnitOrPoint"/>
+    </CEffectSwitch>
+    <CEffectDamage id="HellbatLeapRemove">
+        <ImpactLocation Value="TargetUnit"/>
+        <Flags index="Kill" value="1"/>
+        <Death value="Remove"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="HellbatLeapLM">
+        <EditorCategories value="Race:Terran"/>
+        <LaunchLocation Value="CasterUnit"/>
+        <FinishEffect value="HellbatLeapImpactSet"/>
+        <Movers Link="HellbatChargeMissile"/>
+        <DeathType value="Unknown"/>
+    </CEffectLaunchMissile>
+    <CEffectDamage id="CycloneWeaponDamage">
+        <Amount value="20"/>
+        <ArmorReduction value="0"/>
+        <Kind value="Spell"/>
+    </CEffectDamage>
+    <CEffectDamage id="CycloneAirWeaponDamage" parent="DU_WEAP_MISSILE">
+        <EditorCategories value="Race:Terran"/>
+        <Amount value="20"/>
+        <Death value="Blast"/>
+        <ArmorReduction value="0"/>
+        <Kind value="Spell"/>
+    </CEffectDamage>
+    <CEffectEnumArea id="LiberatorTargetMorphSearchArea">
+        <SearchFilters value="Ground,Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AINotifyFlags index="HurtEnemy" value="0"/>
+        <AINotifyFlags index="MajorDanger" value="0"/>
+    </CEffectEnumArea>
+    <CEffectIssueOrder id="GunTurretBurrowOrder">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <Abil value="GunTurretBurrow"/>
+        <CmdFlags index="Preempt" value="1"/>
+    </CEffectIssueOrder>
+    <CEffectDamage id="GunTurret" parent="DU_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <Kind value="Ranged"/>
+        <Amount value="6"/>
+    </CEffectDamage>
+    <CEffectIssueOrder id="FlameTurretBurrowOrder">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <Player Value="Caster"/>
+        <Abil value="FlameTurretSCWUnderground"/>
+        <CmdFlags index="Preempt" value="1"/>
+    </CEffectIssueOrder>
+    <!-- Flame turrets, some of these effects can be re-used, some cannot -->
+    <!-- These can be re-used-->
+    <CEffectApplyBehavior id="FlameTurretTargetSuicideAB">
+        <Behavior value="FlameTurretTargetSuicide"/>
+    </CEffectApplyBehavior>
+    <CEffectTeleport id="FlameTurretTargetDistanceWarp">
+        <EditorCategories value="Race:Protoss"/>
+        <ClearQueuedOrders value="0"/>
+        <PlacementAround Value="CasterUnit"/>
+        <Range value="1.5"/>
+        <SourceLocation Value="TargetUnit"/>
+        <ValidatorArray value="FlameTurretTargetDistanceWarpCheck"/>
+    </CEffectTeleport>
+    <CEffectModifyUnit id="FlameTurretInitTurretLook">
+        <ImpactUnit Value="Caster"/>
+        <ModifyTurret Turret="FlameTurret">
+            <Target Value="TargetOuterUnit"/>
+            <Flags index="Tracking" value="1"/>
+        </ModifyTurret>
+    </CEffectModifyUnit>
+    <CEffectApplyBehavior id="FlameTurretInitAB">
+        <WhichUnit Value="Caster"/>
+        <Behavior value="FlameTurretTargetTrackingBehavior"/>
+    </CEffectApplyBehavior>
+    <CEffectEnumArea id="FlameTurretFireSearch">
+        <ImpactLocation Value="TargetPoint"/>
+        <SearchFilters value="Ground;Self,Structure,Missile,Item,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray RectangleWidth="1.5" RectangleHeight="16" Effect="FlameTurretFireDamage"/>
+        <LaunchLocation Value="CasterPoint"/>
+    </CEffectEnumArea>
+    <CEffectDamage id="FlameTurretFireDamage" parent="DU_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <Kind value="Ranged"/>
+        <Amount value="20"/>
+    </CEffectDamage>
+    <CEffectSet id="FlameTurretSharedSet"/>
+    <CEffectCreatePersistent id="FlameTurretFire">
+        <WhichLocation Value="CasterPoint"/>
+        <PeriodCount value="1"/>
+        <PeriodicEffectArray value="FlameTurretFireSearch"/>
+        <PeriodicPeriodArray value="0"/>
+        <PeriodicOffsetArray value="0,-0.1,0"/>
+        <OffsetVectorEndLocation Effect="FlameTurretInitAB" Value="TargetOuterUnit"/>
+    </CEffectCreatePersistent>
+    <!-- these need copies -->
+    <!-- Slow, Clockwise -->
+    <CEffectCreateUnit id="FlameTurretSCWInit">
+        <SpawnEffect value="FlameTurretSCWInitSet"/>
+        <SpawnUnit value="FlameTurretTarget"/>
+        <WhichLocation Value="CasterUnit"/>
+        <CreateFlags index="Birth" value="0"/>
+        <CreateFlags index="ProvideFood" value="0"/>
+        <CreateFlags index="UseFood" value="0"/>
+        <SpawnRange value="4"/>
+        <SpawnOffset value="0,1"/>
+    </CEffectCreateUnit>
+    <CEffectSet id="FlameTurretSCWInitSet">
+        <EffectArray value="FlameTurretSharedSet"/>
+        <EffectArray value="FlameTurretSCWInitKinetic"/>
+        <EffectArray value="FlameTurretInitTurretLook"/>
+        <EffectArray value="FlameTurretInitAB"/>
+        <EffectArray value="FlameTurretSCWTargetDistanceWarpCP"/>
+        <EffectArray value="FlameTurretTargetSuicideAB"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="FlameTurretSCWTargetDistanceWarpCP">
+        <EditorCategories value="Race:Protoss"/>
+        <Flags index="PersistUntilDestroyed" value="1"/>
+        <WhichLocation Value="TargetOuterUnit"/>
+        <TimeScaleSource Value="Caster"/>
+        <PeriodicEffectArray value="FlameTurretSCWTargetDistanceWarpSet"/>
+        <PeriodicPeriodArray value="1"/>
+    </CEffectCreatePersistent>
+    <CEffectSet id="FlameTurretSCWTargetDistanceWarpSet">
+        <EffectArray value="FlameTurretSCWRemoveKinetic"/>
+        <EffectArray value="FlameTurretTargetDistanceWarp"/>
+        <EffectArray value="FlameTurretSCWInitKinetic"/>
+        <ValidatorArray value="FlameTurretTargetDistanceWarpCheck"/>
+    </CEffectSet>
+    <CEffectRemoveKinetic id="FlameTurretSCWRemoveKinetic">
+        <ImpactUnit Value="TargetOuter"/>
+        <KineticLink value="FlameTurretRotateSCW"/>
+    </CEffectRemoveKinetic>
+    <CEffectApplyKinetic id="FlameTurretSCWInitKinetic">
+        <ImpactUnit Value="TargetOuter"/>
+        <Kinetic value="FlameTurretRotateSCW"/>
+    </CEffectApplyKinetic>
+    <!-- Slow, Counter Clockwise -->
+    <CEffectCreateUnit id="FlameTurretSCCWInit">
+        <SpawnEffect value="FlameTurretSCCWInitSet"/>
+        <SpawnUnit value="FlameTurretTarget"/>
+        <WhichLocation Value="CasterUnit"/>
+        <CreateFlags index="Birth" value="0"/>
+        <CreateFlags index="ProvideFood" value="0"/>
+        <CreateFlags index="UseFood" value="0"/>
+        <SpawnRange value="4"/>
+        <SpawnOffset value="0,1"/>
+    </CEffectCreateUnit>
+    <CEffectSet id="FlameTurretSCCWInitSet">
+        <EffectArray value="FlameTurretSharedSet"/>
+        <EffectArray value="FlameTurretSCCWInitKinetic"/>
+        <EffectArray value="FlameTurretInitTurretLook"/>
+        <EffectArray value="FlameTurretInitAB"/>
+        <EffectArray value="FlameTurretSCCWTargetDistanceWarpCP"/>
+        <EffectArray value="FlameTurretTargetSuicideAB"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="FlameTurretSCCWTargetDistanceWarpCP">
+        <EditorCategories value="Race:Protoss"/>
+        <Flags index="PersistUntilDestroyed" value="1"/>
+        <WhichLocation Value="TargetOuterUnit"/>
+        <TimeScaleSource Value="Caster"/>
+        <PeriodicEffectArray value="FlameTurretSCCWTargetDistanceWarpSet"/>
+        <PeriodicPeriodArray value="1"/>
+    </CEffectCreatePersistent>
+    <CEffectSet id="FlameTurretSCCWTargetDistanceWarpSet">
+        <EffectArray value="FlameTurretSCCWRemoveKinetic"/>
+        <EffectArray value="FlameTurretTargetDistanceWarp"/>
+        <EffectArray value="FlameTurretSCCWInitKinetic"/>
+        <ValidatorArray value="FlameTurretTargetDistanceWarpCheck"/>
+    </CEffectSet>
+    <CEffectRemoveKinetic id="FlameTurretSCCWRemoveKinetic">
+        <ImpactUnit Value="TargetOuter"/>
+        <KineticLink value="FlameTurretRotateSCCW"/>
+    </CEffectRemoveKinetic>
+    <CEffectApplyKinetic id="FlameTurretSCCWInitKinetic">
+        <ImpactUnit Value="TargetOuter"/>
+        <Kinetic value="FlameTurretRotateSCCW"/>
+    </CEffectApplyKinetic>
+    <!-- Fast, Clockwise -->
+    <CEffectCreateUnit id="FlameTurretFCWInit">
+        <SpawnEffect value="FlameTurretFCWInitSet"/>
+        <SpawnUnit value="FlameTurretTarget"/>
+        <WhichLocation Value="CasterUnit"/>
+        <CreateFlags index="Birth" value="0"/>
+        <CreateFlags index="ProvideFood" value="0"/>
+        <CreateFlags index="UseFood" value="0"/>
+        <SpawnRange value="4"/>
+        <SpawnOffset value="0,1"/>
+    </CEffectCreateUnit>
+    <CEffectSet id="FlameTurretFCWInitSet">
+        <EffectArray value="FlameTurretSharedSet"/>
+        <EffectArray value="FlameTurretFCWInitKinetic"/>
+        <EffectArray value="FlameTurretInitTurretLook"/>
+        <EffectArray value="FlameTurretInitAB"/>
+        <EffectArray value="FlameTurretFCWTargetDistanceWarpCP"/>
+        <EffectArray value="FlameTurretTargetSuicideAB"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="FlameTurretFCWTargetDistanceWarpCP">
+        <EditorCategories value="Race:Protoss"/>
+        <Flags index="PersistUntilDestroyed" value="1"/>
+        <WhichLocation Value="TargetOuterUnit"/>
+        <TimeScaleSource Value="Caster"/>
+        <PeriodicEffectArray value="FlameTurretFCWTargetDistanceWarpSet"/>
+        <PeriodicPeriodArray value="1"/>
+    </CEffectCreatePersistent>
+    <CEffectSet id="FlameTurretFCWTargetDistanceWarpSet">
+        <EffectArray value="FlameTurretFCWRemoveKinetic"/>
+        <EffectArray value="FlameTurretTargetDistanceWarp"/>
+        <EffectArray value="FlameTurretFCWInitKinetic"/>
+        <ValidatorArray value="FlameTurretTargetDistanceWarpCheck"/>
+    </CEffectSet>
+    <CEffectRemoveKinetic id="FlameTurretFCWRemoveKinetic">
+        <ImpactUnit Value="TargetOuter"/>
+        <KineticLink value="FlameTurretRotateFCW"/>
+    </CEffectRemoveKinetic>
+    <CEffectApplyKinetic id="FlameTurretFCWInitKinetic">
+        <ImpactUnit Value="TargetOuter"/>
+        <Kinetic value="FlameTurretRotateFCW"/>
+    </CEffectApplyKinetic>
+    <!-- Slow, Counter Clockwise -->
+    <CEffectCreateUnit id="FlameTurretFCCWInit">
+        <SpawnEffect value="FlameTurretFCCWInitSet"/>
+        <SpawnUnit value="FlameTurretTarget"/>
+        <WhichLocation Value="CasterUnit"/>
+        <CreateFlags index="Birth" value="0"/>
+        <CreateFlags index="ProvideFood" value="0"/>
+        <CreateFlags index="UseFood" value="0"/>
+        <SpawnRange value="4"/>
+        <SpawnOffset value="0,1"/>
+    </CEffectCreateUnit>
+    <CEffectSet id="FlameTurretFCCWInitSet">
+        <EffectArray value="FlameTurretSharedSet"/>
+        <EffectArray value="FlameTurretFCCWInitKinetic"/>
+        <EffectArray value="FlameTurretInitTurretLook"/>
+        <EffectArray value="FlameTurretInitAB"/>
+        <EffectArray value="FlameTurretFCCWTargetDistanceWarpCP"/>
+        <EffectArray value="FlameTurretTargetSuicideAB"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="FlameTurretFCCWTargetDistanceWarpCP">
+        <EditorCategories value="Race:Protoss"/>
+        <Flags index="PersistUntilDestroyed" value="1"/>
+        <WhichLocation Value="TargetOuterUnit"/>
+        <TimeScaleSource Value="Caster"/>
+        <PeriodicEffectArray value="FlameTurretFCCWTargetDistanceWarpSet"/>
+        <PeriodicPeriodArray value="1"/>
+    </CEffectCreatePersistent>
+    <CEffectSet id="FlameTurretFCCWTargetDistanceWarpSet">
+        <EffectArray value="FlameTurretFCCWRemoveKinetic"/>
+        <EffectArray value="FlameTurretTargetDistanceWarp"/>
+        <EffectArray value="FlameTurretFCCWInitKinetic"/>
+        <ValidatorArray value="FlameTurretTargetDistanceWarpCheck"/>
+    </CEffectSet>
+    <CEffectRemoveKinetic id="FlameTurretFCCWRemoveKinetic">
+        <ImpactUnit Value="TargetOuter"/>
+        <KineticLink value="FlameTurretRotateFCCW"/>
+    </CEffectRemoveKinetic>
+    <CEffectApplyKinetic id="FlameTurretFCCWInitKinetic">
+        <ImpactUnit Value="TargetOuter"/>
+        <Kinetic value="FlameTurretRotateFCCW"/>
+    </CEffectApplyKinetic>
+    <!-- End flame turret -->
+    <CEffectCreateHealer id="MedivacHeal">
+        <ValidatorArray value="NotDisintegrating"/>
+    </CEffectCreateHealer>
+    <CEffectApplyBehavior id="SiegeTankMorphDisableDummyWeaponAB">
+        <Behavior value="SiegeTankDummyWeaponDisable"/>
+        <WhichUnit Value="Caster"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="SiegeTankUnloadDelayAB">
+        <ValidatorArray index="0" value="SiegeTankLoadTargetIsSiegedTank"/>
+        <EditorCategories value="Race:Terran"/>
+        <Behavior value="SiegeTankUnloadDelay"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="SiegeTankUnmorphDisableDummyWeaponAB">
+        <WhichUnit Value="Caster"/>
+        <Behavior value="SiegeTankUnmorphDummyWeaponDisable"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="SuperStimpackMarine">
+        <EditorCategories value="Race:Terran"/>
+        <Behavior value="SuperStim"/>
+        <WhichUnit Value="Source"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="SuperStimpackMarineSet">
+        <EditorCategories value="Race:Zerg"/>
+        <EffectArray value="SuperStimpackMarine"/>
+        <EffectArray value="SuperStimpackMarineSetMU"/>
+    </CEffectSet>
+    <CEffectModifyUnit id="SuperStimpackMarineSetMU">
+        <EditorCategories value="Race:Zerg"/>
+        <VitalArray index="Life" Change="30"/>
+        <ImpactUnit Value="Source"/>
+    </CEffectModifyUnit>
+    <CEffectApplyBehavior id="SuperStimpackMarauderHellbat">
+        <EditorCategories value="Race:Terran"/>
+        <Behavior value="SuperStim"/>
+        <WhichUnit Value="Source"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="SuperStimpackMarauderHellbatSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="SuperStimpackMarauderHellbat"/>
+        <EffectArray value="SuperStimpackMarauderHellbatSetMU"/>
+    </CEffectSet>
+    <CEffectModifyUnit id="SuperStimpackMarauderHellbatSetMU">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactUnit Value="Source"/>
+        <VitalArray index="Life" Change="60"/>
+    </CEffectModifyUnit>
+    <CEffectApplyBehavior id="SuperStimpackReaper">
+        <EditorCategories value="Race:Terran"/>
+        <Behavior value="SuperStim"/>
+        <WhichUnit Value="Source"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="SuperStimpackReaperSet">
+        <EditorCategories value="Race:Zerg"/>
+        <EffectArray value="SuperStimpackReaper"/>
+        <EffectArray value="SuperStimpackReaperSetMU"/>
+    </CEffectSet>
+    <CEffectModifyUnit id="SuperStimpackReaperSetMU">
+        <EditorCategories value="Race:Zerg"/>
+        <VitalArray index="Life" Change="30"/>
+        <ImpactUnit Value="Source"/>
+    </CEffectModifyUnit>
+    <CEffectCreatePersistent id="GarrisonWatchCP">
+        <WhichLocation Value="CasterUnit"/>
+        <PeriodicEffectArray value="GarrisonWatchSearchCP"/>
+        <PeriodicOffsetArray value="0,-0.5,0"/>
+        <PeriodicPeriodArray value="0"/>
+        <PeriodCount value="1"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="GarrisonWatchSearchCP">
+        <PeriodicEffectArray value="GarrisonWatchSearch"/>
+        <PeriodicValidator value="GarrisonWatchValidators"/>
+        <PeriodicPeriodArray value="0.4"/>
+        <Flags index="PersistUntilDestroyed" value="1"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="GarrisonWatchSearch">
+        <SearchFilters value="-;Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <AreaArray>
+            <Arc value="90"/>
+            <MaxCount value="1"/>
+            <Radius value="10"/>
+            <FacingAdjustment value="0.9997"/>
+            <Effect value="GarrisonAdjustFacing"/>
+        </AreaArray>
+        <SearchFlags index="CenterAtLaunch" value="1"/>
+        <TargetSorts>
+            <SortArray value="TSDistanceToTarget"/>
+        </TargetSorts>
+    </CEffectEnumArea>
+    <CEffectCreatePersistent id="GarrisonWatchGroundCP">
+        <WhichLocation Value="CasterUnit"/>
+        <PeriodicEffectArray value="GarrisonWatchGroundSearchCP"/>
+        <PeriodicOffsetArray value="0,-0.5,0"/>
+        <PeriodicPeriodArray value="0"/>
+        <PeriodCount value="1"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="GarrisonWatchGroundSearchCP">
+        <PeriodicEffectArray value="GarrisonWatchGroundSearch"/>
+        <PeriodicValidator value="GarrisonWatchValidators"/>
+        <PeriodicPeriodArray value="0.4"/>
+        <Flags index="PersistUntilDestroyed" value="1"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="GarrisonWatchGroundSearch">
+        <SearchFilters value="Ground;Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <AreaArray>
+            <Arc value="90"/>
+            <MaxCount value="1"/>
+            <Radius value="10"/>
+            <FacingAdjustment value="0.9997"/>
+            <Effect value="GarrisonAdjustFacing"/>
+        </AreaArray>
+        <SearchFlags index="CenterAtLaunch" value="1"/>
+        <TargetSorts>
+            <SortArray value="TSDistanceToTarget"/>
+        </TargetSorts>
+    </CEffectEnumArea>
+    <CEffectModifyUnit id="GarrisonAdjustFacing">
+        <ImpactUnit Value="Caster"/>
+        <FacingLocation Value="TargetUnit"/>
+        <FacingType value="LookAt"/>
+    </CEffectModifyUnit>
+    <CEffectDamage id="Separatist" parent="DU_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <Kind value="Ranged"/>
+        <Amount value="6"/>
+    </CEffectDamage>
+    <CEffectDamage id="MannedTurret" parent="DU_WEAP_MISSILE">
+        <EditorCategories value="Race:Terran"/>
+        <Amount value="16"/>
+    </CEffectDamage>
+    <CEffectModifyUnit id="ReaperReplenishMines">
+        <Cost Abil="ReaperSpiderMines,Execute" ChargeCountUse="-1"/>
+    </CEffectModifyUnit>
+    <CEffectSet id="SpawnReaperSpiderMineSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="SpawnSpiderMine"/>
+        <EffectArray value="ReplenishReaperSpiderMine"/>
+        <TargetLocationType value="UnitOrPoint"/>
+    </CEffectSet>
+    <CEffectModifyUnit id="ReplenishReaperSpiderMine">
+        <ImpactUnit Value="Source"/>
+        <Cost Abil="MakeReaperSpiderMines,Specialize1" ChargeCountUse="-1"/>
+    </CEffectModifyUnit>
+    <CEffectDamage id="DOMSnipeDamage">
+        <EditorCategories value="Race:Terran"/>
+        <ResponseFlags index="Acquire" value="1"/>
+        <ResponseFlags index="Flee" value="1"/>
+        <ImpactLocation Value="TargetUnit"/>
+        <Flags index="Notification" value="1"/>
+        <Amount value="60"/>
+        <Death value="Silentkill"/>
+        <SearchFlags index="CallForHelp" value="1"/>
+        <SearchFlags index="OffsetByUnitRadius" value="1"/>
+        <SearchFlags index="OffsetAreaByAngle" value="1"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="DOMSnipeCreatePersistent">
+        <EditorCategories value="Race:Terran"/>
+        <WhichLocation Value="TargetUnit"/>
+        <Flags index="Channeled" value="1"/>
+        <InitialEffect value="DOMSnipeCombatBeamDummy"/>
+        <ExpireEffect value="DOMSnipeDamageSet"/>
+        <FinalEffect value="DOMSnipeCombatRB"/>
+        <PeriodCount value="1"/>
+        <PeriodicPeriodArray value="1"/>
+        <PeriodicValidator value="TargetNotDead"/>
+    </CEffectCreatePersistent>
+    <CEffectApplyBehavior id="DOMSnipeCombatBeamDummy">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+    </CEffectApplyBehavior>
+    <CEffectRemoveBehavior id="DOMSnipeCombatRB">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <BehaviorLink value="DOMSnipeCombatBeamDummy"/>
+    </CEffectRemoveBehavior>
+    <CEffectSet id="DOMSnipeDamageSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="DOMSnipeDamage"/>
+        <EffectArray value="DOMSnipeCombatRB"/>
+    </CEffectSet>
+    <CEffectLaunchMissile id="NovaVulturePulseGrenadesLaunchMissile">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <ImpactEffect value="NovaVulturePulseGrenadesDamage"/>
+        <AmmoUnit value="NovaVulturePulseGrenadesWeapon"/>
+        <ValidatorArray index="0" value="HasVision"/>
+    </CEffectLaunchMissile>
+    <CEffectDamage id="NovaVulturePulseGrenadesDamage">
+        <EditorCategories value="Race:Terran"/>
+        <ResponseFlags index="Acquire" value="1"/>
+        <ResponseFlags index="Flee" value="1"/>
+        <Amount value="100"/>
+        <AreaArray Radius="2.5" Fraction="1"/>
+        <SearchFilters value="-;Self,Player,Ally,Missile,Stasis,Dead,Invulnerable"/>
+    </CEffectDamage>
+    <CEffectSet id="NovaVultureWeaponCanisterRifle">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="NovaVultureWeaponCanisterRifleDamage"/>
+        <EffectArray value="NovaVultureAnimationControllerEnableAB"/>
+    </CEffectSet>
+    <CEffectDamage id="NovaVultureWeaponCanisterRifleDamage" parent="DU_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <Kind value="Ranged"/>
+        <Amount value="30"/>
+    </CEffectDamage>
+    <CEffectApplyBehavior id="NovaVultureAnimationControllerEnableAB">
+        <WhichUnit Value="Caster"/>
+        <Behavior value="NovaVultureAnimationControllerEnable"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="NovaVultureAnimationController"/>
+    <CEffectSet id="C10CanisterRifleVulture">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="C10CanisterRifleVultureDamage"/>
+        <EffectArray value="GhostVultureAnimationControllerEnableAB"/>
+    </CEffectSet>
+    <CEffectDamage id="C10CanisterRifleVultureDamage" parent="DU_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <Kind value="Ranged"/>
+        <Amount value="10"/>
+        <AttributeBonus index="Light" value="10"/>
+    </CEffectDamage>
+    <CEffectApplyBehavior id="GhostVultureAnimationControllerEnableAB">
+        <WhichUnit Value="Caster"/>
+        <Behavior value="GhostVultureAnimationControllerEnable"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="GhostVultureAnimationController"/>
+    <CEffectDamage id="SnipeVultureDamage" parent="DU_WEAP">
+        <ImpactLocation Value="TargetUnit"/>
+        <EditorCategories value="Race:Terran"/>
+        <Kind value="Spell"/>
+        <Amount value="25"/>
+        <AttributeBonus index="Psionic" value="25"/>
+        <Death value="Silentkill"/>
+        <ArmorReduction value="0"/>
+    </CEffectDamage>
+    <CEffectEnumArea id="SkyTankMissileBarrageSearch">
+        <EditorCategories value="Race:Terran"/>
+        <LaunchLocation Value="TargetPoint"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <AreaArray Radius="1.5" Effect="SkyTankMissileBarrageDamage"/>
+        <SearchFilters value="Ground;Hidden,Invulnerable"/>
+    </CEffectEnumArea>
+    <CEffectDamage id="SkyTankMissileBarrageDamage" parent="DU_WEAP">
+        <ImpactLocation Value="TargetUnit"/>
+        <EditorCategories value="Race:Terran"/>
+        <Amount value="50"/>
+        <ArmorReduction value="0"/>
+        <ValidatorArray value="IsGroundUnit"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="SkyTankMissileBarrageCP">
+        <FinalEffect value="SkyTankMissileBarrageLM"/>
+        <PeriodCount value="1"/>
+        <PeriodicPeriodArray value="1"/>
+    </CEffectCreatePersistent>
+    <CEffectLaunchMissile id="SkyTankMissileBarrageLM">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactEffect value="SkyTankMissileBarrageSearch"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <AmmoUnit value="SkyTankMissileBarrageMissile"/>
+    </CEffectLaunchMissile>
+    <CEffectCreatePersistent id="SkyTankLaserBeamCP">
+        <WhichLocation Value="CasterPoint"/>
+        <PeriodCount value="1"/>
+        <PeriodicEffectArray value="SkyTankLaserBeamSearch"/>
+        <PeriodicOffsetArray value="0,-18,0"/>
+        <PeriodicPeriodArray value="0"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="SkyTankLaserBeamSearch">
+        <EditorCategories value="Race:Terran"/>
+        <AreaArray RectangleWidth="2.5" RectangleHeight="32" Effect="SkyTankLaserBeamDamage"/>
+        <SearchFilters value="Ground;Hidden,Invulnerable"/>
+    </CEffectEnumArea>
+    <CEffectDamage id="SkyTankLaserBeamDamage" parent="DU_WEAP">
+        <ImpactLocation Value="TargetUnit"/>
+        <EditorCategories value="Race:Terran"/>
+        <Amount value="100"/>
+        <ArmorReduction value="0"/>
+        <ValidatorArray value="IsGroundUnit"/>
+    </CEffectDamage>
+    <CEffectCreateUnit id="AutoTurretDOMRelease">
+        <EditorCategories value="Race:Terran"/>
+        <WhichLocation Value="TargetPoint"/>
+        <SpawnEffect value="AutoTurretReleaseLaunch"/>
+        <SpawnUnit value="AutoTurret"/>
+        <SpawnRange value="3"/>
+    </CEffectCreateUnit>
+    <CEffectSet id="FX_DOM_CeilingDebris_Concrete">
+        <TargetLocationType value="Point"/>
+    </CEffectSet>
+    <CEffectSet id="FX_DOM_CeilingDebris_Beams">
+        <TargetLocationType value="Point"/>
+    </CEffectSet>
+    <CEffectSet id="FX_DOM_Explosion_Large">
+        <TargetLocationType value="Point"/>
+    </CEffectSet>
+    <CEffectSet id="FX_DOM_Explosion_Medium">
+        <TargetLocationType value="Point"/>
+    </CEffectSet>
+    <CEffectSet id="FX_DOM_Explosion_Small">
+        <TargetLocationType value="Point"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="DetectorCone9">
+        <WhichLocation Value="CasterPoint"/>
+        <PeriodCount value="1"/>
+        <PeriodicEffectArray value="DetectorCone9Search"/>
+        <PeriodicOffsetArray value="0,-0.2,0"/>
+        <PeriodicPeriodArray value="0"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="DetectorCone9Search">
+        <SearchFilters value="Cloaked;Self,Player,Ally,Neutral,Missile,Dead,Hidden"/>
+        <LaunchLocation Value="CasterUnit"/>
+        <AreaArray Arc="59.9963" Radius="9" Effect="DetectorCone9AB"/>
+        <SearchFlags index="CenterAtLaunch" value="1"/>
+    </CEffectEnumArea>
+    <CEffectApplyBehavior id="DetectorCone9AB">
+        <Behavior value="DetectorConeDetected"/>
+        <ValidatorArray value="Cloaked"/>
+        <ValidatorArray value="CasterNotStunned"/>
+    </CEffectApplyBehavior>
+    <!-- Slow, Clockwise -->
+    <CEffectCreateUnit id="RotatingTurretSCWInit">
+        <SpawnEffect value="RotatingTurretSCWInitSet"/>
+        <SpawnUnit value="RotatingTurretTarget"/>
+        <WhichLocation Value="CasterUnit"/>
+        <CreateFlags index="Birth" value="0"/>
+        <CreateFlags index="ProvideFood" value="0"/>
+        <CreateFlags index="UseFood" value="0"/>
+        <SpawnRange value="4"/>
+        <SpawnOffset value="0,1"/>
+    </CEffectCreateUnit>
+    <CEffectSet id="RotatingTurretSCWInitSet">
+        <EffectArray value="RotatingTurretSharedSet"/>
+        <EffectArray value="RotatingTurretSCWInitKinetic"/>
+        <EffectArray value="RotatingTurretInitTurretLook"/>
+        <EffectArray value="RotatingTurretInitAB"/>
+        <EffectArray value="RotatingTurretSCWTargetDistanceWarpCP"/>
+        <EffectArray value="RotatingTurretTargetSuicideAB"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="RotatingTurretSCWTargetDistanceWarpCP">
+        <EditorCategories value="Race:Protoss"/>
+        <Flags index="PersistUntilDestroyed" value="1"/>
+        <WhichLocation Value="TargetOuterUnit"/>
+        <TimeScaleSource Value="Caster"/>
+        <PeriodicEffectArray value="RotatingTurretSCWTargetDistanceWarpSet"/>
+        <PeriodicPeriodArray value="1"/>
+    </CEffectCreatePersistent>
+    <CEffectSet id="RotatingTurretSCWTargetDistanceWarpSet">
+        <EffectArray value="RotatingTurretSCWRemoveKinetic"/>
+        <EffectArray value="RotatingTurretTargetDistanceWarp"/>
+        <EffectArray value="RotatingTurretSCWInitKinetic"/>
+        <ValidatorArray value="RotatingTurretTargetDistanceWarpCheck"/>
+    </CEffectSet>
+    <CEffectRemoveKinetic id="RotatingTurretSCWRemoveKinetic">
+        <ImpactUnit Value="TargetOuter"/>
+        <KineticLink value="RotatingTurretRotateSCW"/>
+    </CEffectRemoveKinetic>
+    <CEffectApplyKinetic id="RotatingTurretSCWInitKinetic">
+        <ImpactUnit Value="TargetOuter"/>
+        <Kinetic value="RotatingTurretRotateSCW"/>
+        <ValidatorArray value="CasterISRotatingTurretPassiveSCW"/>
+    </CEffectApplyKinetic>
+    <CEffectCreateUnit id="RotatingTurretSCCWInit">
+        <SpawnEffect value="RotatingTurretSCCWInitSet"/>
+        <SpawnUnit value="RotatingTurretTarget"/>
+        <WhichLocation Value="CasterUnit"/>
+        <CreateFlags index="Birth" value="0"/>
+        <CreateFlags index="ProvideFood" value="0"/>
+        <CreateFlags index="UseFood" value="0"/>
+        <SpawnRange value="4"/>
+        <SpawnOffset value="0,1"/>
+    </CEffectCreateUnit>
+    <CEffectSet id="RotatingTurretSCCWInitSet">
+        <EffectArray value="RotatingTurretSharedSet"/>
+        <EffectArray value="RotatingTurretSCCWInitKinetic"/>
+        <EffectArray value="RotatingTurretInitTurretLook"/>
+        <EffectArray value="RotatingTurretInitAB"/>
+        <EffectArray value="RotatingTurretSCCWTargetDistanceWarpCP"/>
+        <EffectArray value="RotatingTurretTargetSuicideAB"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="RotatingTurretSCCWTargetDistanceWarpCP">
+        <EditorCategories value="Race:Protoss"/>
+        <Flags index="PersistUntilDestroyed" value="1"/>
+        <WhichLocation Value="TargetOuterUnit"/>
+        <TimeScaleSource Value="Caster"/>
+        <PeriodicEffectArray value="RotatingTurretSCCWTargetDistanceWarpSet"/>
+        <PeriodicPeriodArray value="1"/>
+    </CEffectCreatePersistent>
+    <CEffectSet id="RotatingTurretSCCWTargetDistanceWarpSet">
+        <EffectArray value="RotatingTurretSCCWRemoveKinetic"/>
+        <EffectArray value="RotatingTurretTargetDistanceWarp"/>
+        <EffectArray value="RotatingTurretSCCWInitKinetic"/>
+        <ValidatorArray value="RotatingTurretTargetDistanceWarpCheck"/>
+    </CEffectSet>
+    <CEffectRemoveKinetic id="RotatingTurretSCCWRemoveKinetic">
+        <ImpactUnit Value="TargetOuter"/>
+        <KineticLink value="RotatingTurretRotateSCCW"/>
+    </CEffectRemoveKinetic>
+    <CEffectApplyKinetic id="RotatingTurretSCCWInitKinetic">
+        <ImpactUnit Value="TargetOuter"/>
+        <Kinetic value="RotatingTurretRotateSCCW"/>
+    </CEffectApplyKinetic>
+    <CEffectApplyBehavior id="RotatingTurretTargetSuicideAB">
+        <Behavior value="RotatingTurretTargetSuicide"/>
+    </CEffectApplyBehavior>
+    <CEffectTeleport id="RotatingTurretTargetDistanceWarp">
+        <EditorCategories value="Race:Protoss"/>
+        <ClearQueuedOrders value="0"/>
+        <PlacementAround Value="CasterUnit"/>
+        <Range value="1.5"/>
+        <SourceLocation Value="TargetUnit"/>
+        <ValidatorArray value="RotatingTurretTargetDistanceWarpCheck"/>
+    </CEffectTeleport>
+    <CEffectModifyUnit id="RotatingTurretInitTurretLook">
+        <ImpactUnit Value="Caster"/>
+        <ModifyTurret Turret="RotatingTurretDetectorPassive">
+            <Target Value="TargetOuterUnit"/>
+            <Flags index="Tracking" value="1"/>
+        </ModifyTurret>
+    </CEffectModifyUnit>
+    <CEffectSet id="RotatingTurretSharedSet"/>
+    <CEffectApplyBehavior id="RotatingTurretInitAB">
+        <WhichUnit Value="Caster"/>
+        <Behavior value="RotatingTurretTargetTrackingBehavior"/>
+    </CEffectApplyBehavior>
+    <CEffectEnumArea id="RotatingTurretDetectorSearch">
+        <ImpactLocation Value="TargetPoint"/>
+        <SearchFilters value="-;Self,Player,Ally,Neutral,Missile,Dead,Hidden"/>
+        <AreaArray Arc="59.9963" Radius="9" Effect="DetectorCone9AB"/>
+        <LaunchLocation Value="CasterPoint"/>
+        <SearchFlags index="CenterAtLaunch" value="1"/>
+    </CEffectEnumArea>
+    <CEffectIssueOrder id="RotatingTurretActiveMorphIssueOrder">
+        <EditorCategories value=""/>
+        <WhichUnit Value="Caster"/>
+        <Abil value="RotatingTurretActiveSCW"/>
+    </CEffectIssueOrder>
+    <CEffectIssueOrder id="RotatingTurretPassiveMorphIssueOrder">
+        <EditorCategories value=""/>
+        <WhichUnit Value="Caster"/>
+        <Abil value="RotatingTurretPassiveSCW"/>
+    </CEffectIssueOrder>
+    <CEffectCreatePersistent id="RotatingTurretActiveMorphIssueOrderCP">
+        <WhichLocation Value="CasterUnit"/>
+        <PeriodCount value="1"/>
+        <PeriodicEffectArray value="RotatingTurretActiveMorphIssueOrder"/>
+        <PeriodicPeriodArray value="1"/>
+        <FinalEffect value="RotatingTurretActiveMorphIssueOrder"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="RotatingTurretDetection">
+        <WhichLocation Value="CasterPoint"/>
+        <PeriodCount value="1"/>
+        <PeriodicEffectArray value="RotatingTurretSet"/>
+        <PeriodicPeriodArray value="0"/>
+        <PeriodicOffsetArray value="0,-0.1,0"/>
+        <OffsetVectorEndLocation Effect="RotatingTurretInitAB" Value="TargetOuterUnit"/>
+    </CEffectCreatePersistent>
+    <CEffectSet id="RotatingTurretSet">
+        <EffectArray value="RotatingTurretDetectorSearch"/>
+        <EffectArray value="RotatingTurretAddKineticSet"/>
+    </CEffectSet>
+    <CEffectSet id="RotatingTurretAddKineticSet">
+        <ValidatorArray value="CasterNotDeadAndCasterNotStunned"/>
+        <EffectArray value="RotatingTurretSCCWAddKinetic"/>
+        <EffectArray value="RotatingTurretSCWAddKinetic"/>
+    </CEffectSet>
+    <CEffectApplyKinetic id="RotatingTurretSCCWAddKinetic">
+        <ImpactUnit Effect="RotatingTurretInitAB" Value="TargetOuter"/>
+        <Kinetic value="RotatingTurretRotateSCCW"/>
+        <ValidatorArray value="CasterISRotatingTurretPassiveSCCW"/>
+    </CEffectApplyKinetic>
+    <CEffectApplyKinetic id="RotatingTurretSCWAddKinetic">
+        <ImpactUnit Effect="RotatingTurretInitAB" Value="TargetOuter"/>
+        <Kinetic value="RotatingTurretRotateSCW"/>
+        <ValidatorArray value="CasterISRotatingTurretPassiveSCW"/>
+    </CEffectApplyKinetic>
+    <CEffectSet id="RotatingTurretActive">
+        <EffectArray value="RotatingTurretActiveDamage"/>
+        <!--EffectArray value="RotatingTurretActiveAB"/-->
+    </CEffectSet>
+    <CEffectApplyBehavior id="RotatingTurretActiveAB">
+        <WhichUnit Value="Caster"/>
+        <!--Behavior value="RotatingTurretActive"/-->
+    </CEffectApplyBehavior>
+    <CEffectDamage id="RotatingTurretActiveDamage" parent="DU_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <Kind value="Ranged"/>
+        <Amount value="6"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="NovaShipLM">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactEffect value="NovaShipDamage"/>
+    </CEffectLaunchMissile>
+    <CEffectDamage id="NovaShipDamage" parent="DU_WEAP_MISSILE">
+        <EditorCategories value="Race:Terran"/>
+        <Visibility value="Visible"/>
+        <Amount value="10"/>
+        <Death value="Fire"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="NovaShipFiring">
+        <WhichLocation Value="CasterUnit"/>
+        <Flags index="RandomOffset" value="1"/>
+        <PeriodCount value="1"/>
+        <PeriodicEffectArray value="NovaShipFiringLM"/>
+        <PeriodicOffsetArray value="0,-15,-1"/>
+        <PeriodicOffsetArray value="0,-15,-0.5"/>
+        <PeriodicOffsetArray value="0,-15,0"/>
+        <PeriodicOffsetArray value="0,-15,0.5"/>
+        <PeriodicOffsetArray value="0,-15,1"/>
+        <PeriodicPeriodArray value="0"/>
+    </CEffectCreatePersistent>
+    <CEffectLaunchMissile id="NovaShipFiringLM">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactEffect value="NovaShipFiringImpactDummy"/>
+        <ImpactLocation Value="TargetPoint"/>
+    </CEffectLaunchMissile>
+    <CEffectDamage id="NovaShipFiringImpactDummy" parent="DU_WEAP_MISSILE"/>
+    <CEffectLaunchMissile id="DOMEMPLaunchMissile">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <ImpactEffect value="DOMEMPSearch"/>
+        <AmmoUnit value="DOMEMPMissile"/>
+    </CEffectLaunchMissile>
+    <CEffectEnumArea id="DOMEMPSearch">
+        <EditorCategories value="Race:Terran"/>
+        <LaunchLocation Value="TargetPoint"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <SearchFilters value="-;Hidden,Invulnerable"/>
+        <AreaArray Radius="1.5" Effect="DOMEMPSet"/>
+    </CEffectEnumArea>
+    <CEffectSet id="DOMEMPSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="EMPDamage"/>
+        <EffectArray value="EMPNovaHoloDecoyDamage"/>
+        <EffectArray value="DOMEMPApplyDecloakBehavior"/>
+        <EffectArray value="DOMEMPMorphOrder"/>
+    </CEffectSet>
+    <CEffectDamage id="EMPNovaHoloDecoyDamage">
+        <EditorCategories value="Race:Terran"/>
+        <ResponseFlags index="Acquire" value="1"/>
+        <ResponseFlags index="Flee" value="1"/>
+        <Flags index="Kill" value="1"/>
+        <Flags index="Notification" value="1"/>
+        <SearchFlags index="CallForHelp" value="1"/>
+        <ValidatorArray value="IsNovaHoloDecoy"/>
+    </CEffectDamage>
+    <CEffectIssueOrder id="DOMEMPMorphOrder">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <Abil value="GhostDetetorConeExit"/>
+    </CEffectIssueOrder>
+    <CEffectApplyBehavior id="DOMEMPApplyDecloakBehavior">
+        <EditorCategories value="Race:Terran"/>
+        <Behavior value="DOMEMPDecloak"/>
+    </CEffectApplyBehavior>
+    <CEffectLaunchMissile id="GiantEMPLaunchMissile">
+        <ValidatorArray index="0" removed="1"/>
+        <EditorCategories value="Race:Terran"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <ImpactEffect value="GiantEMPSearch"/>
+        <AmmoUnit value="GiantEMPMissile"/>
+    </CEffectLaunchMissile>
+    <CEffectEnumArea id="GiantEMPSearch">
+        <SearchFilters value="-;Hidden,Invulnerable"/>
+        <AreaArray Radius="3" Effect="GiantEMPSet"/>
+        <EditorCategories value="Race:Terran"/>
+        <LaunchLocation Value="TargetPoint"/>
+        <ImpactLocation Value="TargetPoint"/>
+    </CEffectEnumArea>
+    <CEffectSet id="GiantEMPSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="GiantEMPDamage"/>
+        <EffectArray value="GiantEMPModifyUnit"/>
+        <EffectArray value="GiantEMPApplyDecloakBehavior"/>
+    </CEffectSet>
+    <CEffectDamage id="GiantEMPDamage">
+        <EditorCategories value="Race:Terran"/>
+        <ResponseFlags index="Acquire" value="1"/>
+        <ResponseFlags index="Flee" value="1"/>
+        <Flags index="Notification" value="1"/>
+        <SearchFlags index="CallForHelp" value="1"/>
+    </CEffectDamage>
+    <CEffectModifyUnit id="GiantEMPModifyUnit">
+        <ValidatorArray value="empUTargetFilters"/>
+        <EditorCategories value="Race:Terran"/>
+        <VitalArray index="Shields" ChangeFraction="-1"/>
+        <VitalArray index="Energy" ChangeFraction="-1"/>
+    </CEffectModifyUnit>
+    <CEffectApplyBehavior id="GiantEMPApplyDecloakBehavior">
+        <EditorCategories value="Race:Terran"/>
+        <Behavior value="GiantEMPDecloak"/>
+    </CEffectApplyBehavior>
+    <CEffectCreatePersistent id="DeploySpiderMinesPersistent">
+        <InitialOffset value="0,1,0"/>
+        <PeriodCount value="3"/>
+        <PeriodicEffectArray value="DeploySpiderMinesCreateUnit"/>
+        <PeriodicEffectArray value="DeploySpiderMinesCreateUnit"/>
+        <PeriodicEffectArray value="DeploySpiderMinesCreateUnit"/>
+        <PeriodicOffsetArray value="1.2,0.5,0"/>
+        <PeriodicOffsetArray value="0,0,0"/>
+        <PeriodicOffsetArray value="-1.2,0.5,0"/>
+        <PeriodicPeriodArray value="0.1"/>
+        <PeriodicPeriodArray value="0.1"/>
+        <PeriodicPeriodArray value="0.1"/>
+    </CEffectCreatePersistent>
+    <CEffectCreateUnit id="DeploySpiderMinesCreateUnit">
+        <WhichLocation Value="TargetPoint"/>
+        <SpawnEffect value="DeploySpiderMinesLaunchStartSet"/>
+        <SpawnUnit value="SpiderMineBurrowed"/>
+        <SpawnRange value="3"/>
+    </CEffectCreateUnit>
+    <CEffectSet id="DeploySpiderMinesLaunchStartSet">
+        <EffectArray value="DeploySpiderMinesLaunchMissile"/>
+        <EffectArray value="KillsToCaster"/>
+        <EffectArray value="MakePrecursor"/>
+    </CEffectSet>
+    <CEffectLaunchMissile id="DeploySpiderMinesLaunchMissile">
+        <FinishEffect value="RemovePrecursor"/>
+        <AmmoUnit value="DeploySpiderMinesMissile"/>
+        <LaunchLocation Value="CasterUnit"/>
+    </CEffectLaunchMissile>
+    <CEffectApplyBehavior id="SpiderMineBurrowAdd">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <Behavior value="VultureSpiderMineBurrowFirst"/>
+        <ValidatorArray index="0" value="CasterIsAttacking"/>
+    </CEffectApplyBehavior>
+    <CEffectIssueOrder id="SpiderMineAttackOrder">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <Abil value="attack"/>
+        <Target Value="TargetPoint"/>
+    </CEffectIssueOrder>
+    <CEffectEnumArea id="SpiderMineSearch">
+        <EditorCategories value="Race:Terran"/>
+        <SearchFilters value="-;Self,Player,Ally,Neutral,Air,Missile,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="5" Effect="SpiderMineAttackOrder"/>
+    </CEffectEnumArea>
+    <CEffectSet id="SpiderMineAttackOrderSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="SpiderMineAttackOrder"/>
+        <EffectArray value="SpiderMineBurrowAdd"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="SpiderMineBurrowInitialAdd">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <Behavior value="VultureSpiderMineBurrowFirst"/>
+    </CEffectApplyBehavior>
+    <CEffectEnumArea id="SkyTankKnockbackSearch">
+        <EditorCategories value="Race:Zerg"/>
+        <ImpactLocation Value="CasterPoint"/>
+        <SearchFilters value="-;Self,Player,Ally,Neutral,Missile,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="1" Effect="SkyTankKnockbackSearchSet"/>
+    </CEffectEnumArea>
+    <CEffectSet id="SkyTankKnockbackSearchSet">
+        <EffectArray value="SkyTankKnockbackTargetAB"/>
+        <EffectArray value="SkyTankKnockbackApplyForce"/>
+    </CEffectSet>
+    <CEffectApplyForce id="SkyTankKnockbackApplyForce">
+        <Amount value="0.25"/>
+    </CEffectApplyForce>
+    <CEffectApplyBehavior id="SkyTankKnockbackTargetAB">
+        <Behavior value="SkyTankKnockbackTarget"/>
+    </CEffectApplyBehavior>
+    <CEffectCreatePersistent id="SkyTankLookAtStart">
+        <WhichLocation Value="TargetUnit"/>
+        <PeriodCount value="65535"/>
+        <PeriodicEffectArray value="SkyTankLookAtMU"/>
+        <PeriodicPeriodArray value="0.0625"/>
+    </CEffectCreatePersistent>
+    <CEffectModifyUnit id="SkyTankLookAtMU">
+        <ImpactUnit Value="Caster"/>
+        <FacingLocation Value="TargetUnit"/>
+        <FacingType value="LookAt"/>
+    </CEffectModifyUnit>
+    <CEffectDestroyPersistent id="SkyTankLookAtStop">
+        <Effect value="SkyTankLookAtStart"/>
+        <Count value="1"/>
+        <Radius value="1"/>
+        <WhichLocation Value="TargetUnit"/>
+    </CEffectDestroyPersistent>
+    <CEffectDamage id="RotatingTurretAuto" parent="DU_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <Kind value="Ranged"/>
+        <Amount value="6"/>
+    </CEffectDamage>
+    <CEffectCreateUnit id="RotatingTurretAutoInit">
+        <SpawnEffect value="RotatingTurretAutoInitSet"/>
+        <SpawnUnit value="RotatingTurretAutoTarget"/>
+        <WhichLocation Value="CasterUnit"/>
+        <CreateFlags index="Birth" value="0"/>
+        <CreateFlags index="ProvideFood" value="0"/>
+        <CreateFlags index="UseFood" value="0"/>
+        <SpawnRange value="4"/>
+        <SpawnOffset value="0,-1"/>
+    </CEffectCreateUnit>
+    <CEffectSet id="RotatingTurretAutoInitSet">
+        <EffectArray value="RotatingTurretAutoCasterTurretRotatingAB"/>
+        <EffectArray value="RotatingTurretAutoInitTurretLook"/>
+        <EffectArray value="RotatingTurretAutoInitAB"/>
+        <EffectArray value="RotatingTurretTargetSuicideAB"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="RotatingTurretAutoCasterTurretRotatingAB">
+        <WhichUnit Value="Caster"/>
+        <Behavior value="RotatingTurretAutoCasterTurretRotating"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="RotatingTurretAutoTargetDistanceWarpSet">
+        <EffectArray value="RotatingTurretAutoRemoveKinetic"/>
+        <EffectArray value="RotatingTurretAutoTargetDistanceWarp"/>
+        <EffectArray value="RotatingTurretAutoInitKinetic"/>
+        <ValidatorArray value="RotatingTurretAutoTargetDistanceWarpCheck"/>
+    </CEffectSet>
+    <CEffectRemoveKinetic id="RotatingTurretAutoRemoveKinetic">
+        <ImpactUnit Effect="RotatingTurretAutoInitSet" Value="TargetOuter"/>
+        <KineticLink value="RotatingTurretRotateSCW"/>
+    </CEffectRemoveKinetic>
+    <CEffectApplyKinetic id="RotatingTurretAutoInitKinetic">
+        <ImpactUnit Effect="RotatingTurretAutoInitSet" Value="TargetOuter"/>
+        <Kinetic value="RotatingTurretRotateSCW"/>
+    </CEffectApplyKinetic>
+    <CEffectIssueOrder id="RotatingTurretAutoTargetDistanceWarp">
+        <EditorCategories value=""/>
+        <WhichUnit Effect="RotatingTurretAutoInitSet" Value="TargetOuter"/>
+        <Player Value="Caster"/>
+        <Abil value="move"/>
+        <Target Value="CasterUnit"/>
+    </CEffectIssueOrder>
+    <CEffectApplyBehavior id="RotatingTurretAutoInitAB">
+        <WhichUnit Value="Caster"/>
+        <Behavior value="RotatingTurretAutoTargetTrackingBehavior"/>
+    </CEffectApplyBehavior>
+    <CEffectModifyUnit id="RotatingTurretAutoInitTurretLook">
+        <ImpactUnit Value="Caster"/>
+        <ModifyTurret Turret="RotatingTurretAuto">
+            <Target Value="TargetOuterUnit"/>
+            <Flags index="Tracking" value="1"/>
+        </ModifyTurret>
+    </CEffectModifyUnit>
+    <CEffectCreatePersistent id="RotatingTurretAutoDetection">
+        <WhichLocation Value="CasterPoint"/>
+        <PeriodCount value="1"/>
+        <PeriodicEffectArray value="RotatingTurretAutoDetectorSearch"/>
+        <PeriodicPeriodArray value="0"/>
+        <PeriodicOffsetArray value="0,-0.1,0"/>
+        <OffsetVectorEndLocation Effect="RotatingTurretAutoInitAB" Value="TargetOuterUnit"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="RotatingTurretAutoDetectorSearch">
+        <ImpactLocation Value="TargetPoint"/>
+        <SearchFilters value="-;Self,Player,Ally,Neutral,Missile,Dead,Hidden"/>
+        <AreaArray>
+            <Arc value="59.9963"/>
+            <MaxCount value="1"/>
+            <Radius value="9"/>
+            <Effect value="RotatingTurretAutoFoundTargetSet"/>
+        </AreaArray>
+        <LaunchLocation Value="CasterPoint"/>
+        <SearchFlags index="CenterAtLaunch" value="1"/>
+    </CEffectEnumArea>
+    <CEffectSet id="RotatingTurretAutoFoundTargetSet">
+        <EffectArray value="RotatingTurretAutoCasterTurretRotatingRB"/>
+        <EffectArray value="RotatingTurretAutoCasterChasingAB"/>
+        <EffectArray value="RotatingTurretAuto2ndIssueChaseOrder"/>
+    </CEffectSet>
+    <CEffectRemoveBehavior id="RotatingTurretAutoCasterTurretRotatingRB">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <BehaviorLink value="RotatingTurretAutoCasterTurretRotating"/>
+    </CEffectRemoveBehavior>
+    <CEffectApplyBehavior id="RotatingTurretAutoCasterChasingAB">
+        <WhichUnit Value="Caster"/>
+        <Behavior value="RotatingTurretAutoTargetActiveChasing"/>
+    </CEffectApplyBehavior>
+    <CEffectIssueOrder id="RotatingTurretAuto2ndIssueChaseOrder">
+        <EditorCategories value=""/>
+        <WhichUnit Effect="RotatingTurretAutoInitSet" Value="TargetOuter"/>
+        <Player Value="Caster"/>
+        <Abil value="move"/>
+        <Target Value="TargetPoint"/>
+    </CEffectIssueOrder>
+    <CEffectApplyBehavior id="RotatingTurretAutoWeaponActiveAB">
+        <WhichUnit Value="Caster"/>
+        <Behavior value="RotatingTurretAutoWeapon"/>
+        <ValidatorArray value="RotatingTurretAutoWeaponActiveCheck"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="TempestDamage">
+        <Amount value="30"/>
+    </CEffectDamage>
+    <CEffectDamage id="TempestPurifierDamage">
+        <Amount value="30"/>
+    </CEffectDamage>
+    <CEffectEnumArea id="VultureLaidMineExplodeSearch">
+        <EditorCategories value=""/>
+        <SearchFilters value="Ground;Player,Ally,Structure,Missile,Destructible,Stasis,Dead,Hidden,Invulnerable,Benign"/>
+        <AreaArray Radius="0.25" Effect="VultureLaidMineExplodeSet"/>
+    </CEffectEnumArea>
+    <CEffectCreatePersistent id="VulturePathInfernalFlameThrowerCP">
+        <EditorCategories value="Race:Terran"/>
+        <InitialEffect value="InfernalFlameThrower"/>
+        <PeriodCount value="12"/>
+        <WhichLocation Value="SourcePoint"/>
+        <PeriodicEffectArray value="InfernalFlameThrowerE"/>
+        <PeriodicOffsetArray value="0,-0.25,0"/>
+        <PeriodicOffsetArray value="0,-0.5,0"/>
+        <PeriodicOffsetArray value="0,-0.75,0"/>
+        <PeriodicOffsetArray value="0,-1,0"/>
+        <PeriodicOffsetArray value="0,-1.25,0"/>
+        <PeriodicOffsetArray value="0,-1.5,0"/>
+        <PeriodicOffsetArray value="0,-1.75,0"/>
+        <PeriodicOffsetArray value="0,-2,0"/>
+        <PeriodicOffsetArray value="0,-2.25,0"/>
+        <PeriodicOffsetArray value="0,-2.5,0"/>
+        <PeriodicOffsetArray value="0,-2.75,0"/>
+        <PeriodicOffsetArray value="0,-3,0"/>
+        <!--PeriodicOffsetArray value="0,-3.25,0"/>
+        <PeriodicOffsetArray value="0,-3.5,0"/>
+        <PeriodicOffsetArray value="0,-3.75,0"/>
+        <PeriodicOffsetArray value="0,-4,0"/>
+        <PeriodicOffsetArray value="0,-4.25,0"/>
+        <PeriodicOffsetArray value="0,-4.5,0"/>
+        <PeriodicOffsetArray value="0,-4.75,0"/>
+        <PeriodicOffsetArray value="0,-5,0"/>
+        <PeriodicOffsetArray value="0,-5.25,0"/>
+        <PeriodicOffsetArray value="0,-5.5,0"/>
+        <PeriodicOffsetArray value="0,-5.75,0"/>
+        <PeriodicOffsetArray value="0,-6,0"/>
+        <PeriodicOffsetArray value="0,-6.5,0"/-->
+        <PeriodicPeriodArray value="0"/>
+    </CEffectCreatePersistent>
+    <CEffectCreateUnit id="VultureLayMine">
+        <SpawnUnit value="VultureLaidMine"/>
+    </CEffectCreateUnit>
+    <CEffectSet id="VultureLaidMineExplodeSet">
+        <EditorCategories value=""/>
+        <EffectArray value="VultureLaidMineExplode"/>
+        <EffectArray value="VultureLaidMineRB"/>
+    </CEffectSet>
+    <CEffectDamage id="VultureLaidMineExplode" parent="DU_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <Kind value="Splash"/>
+        <Amount value="50"/>
+    </CEffectDamage>
+    <CEffectRemoveBehavior id="VultureLaidMineRB">
+        <WhichUnit Value="Caster"/>
+        <BehaviorLink value="VultureLaidMine"/>
+    </CEffectRemoveBehavior>
+    <CEffectCreatePersistent id="BansheeBombingRunInitialCP">
+        <EditorCategories value="Race:Terran"/>
+        <PeriodCount value="1"/>
+        <PeriodicEffectArray value="BansheeBombingRunLMCPOne"/>
+        <!--PeriodicEffectArray value="BansheeBombingRunLMCPTwo"/>
+        <PeriodicEffectArray value="BansheeBombingRunLMCPThree"/-->
+        <!--PeriodicOffsetArray value="0,2,0"/-->
+        <PeriodicOffsetArray value="0,0,0"/>
+        <!--PeriodicOffsetArray value="0,-2,0"/-->
+        <!--PeriodicPeriodArray value="0"/>
+        <PeriodicPeriodArray value="0"/>
+        <PeriodicPeriodArray value="0"/-->
+        <PeriodicValidator value="CasterNotDead"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="BansheeBombingRunLMCP">
+        <FinalEffect value="BansheeBombingRunLM"/>
+        <PeriodCount value="1"/>
+        <PeriodicPeriodArray value="1"/>
+        <PeriodicValidator value="CasterNotDead"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="BansheeBombingRunLMCPOne">
+        <PeriodCount value="1"/>
+        <PeriodicPeriodArray value="0"/>
+        <PeriodicValidator value="CasterNotDead"/>
+        <ExpireEffect value="BansheeBombingRunLMCP"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="BansheeBombingRunLMCPTwo">
+        <ExpireEffect value="BansheeBombingRunLMCP"/>
+        <PeriodCount value="1"/>
+        <PeriodicPeriodArray value="1"/>
+        <PeriodicValidator value="CasterNotDead"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="BansheeBombingRunLMCPThree">
+        <ExpireEffect value="BansheeBombingRunLMCP"/>
+        <PeriodCount value="1"/>
+        <PeriodicPeriodArray value="2"/>
+        <PeriodicValidator value="CasterNotDead"/>
+    </CEffectCreatePersistent>
+    <CEffectLaunchMissile id="BansheeBombingRunLM">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactEffect value="BansheeBombingRunSearch"/>
+        <Movers Link="BacklashRocketsLMWeapon"/>
+        <ImpactLocation Value="TargetPoint"/>
+    </CEffectLaunchMissile>
+    <CEffectEnumArea id="BansheeBombingRunSearch">
+        <EditorCategories value="Race:Terran"/>
+        <LaunchLocation Value="TargetPoint"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <AreaArray Radius="1.5" Effect="BansheeBombingRunDamage"/>
+        <SearchFilters value="Ground;Hidden,Invulnerable"/>
+    </CEffectEnumArea>
+    <CEffectDamage id="BansheeBombingRunDamage" parent="DU_WEAP">
+        <ImpactLocation Value="TargetUnit"/>
+        <EditorCategories value="Race:Terran"/>
+        <Amount value="50"/>
+        <ArmorReduction value="0"/>
+        <ValidatorArray value="IsGroundUnit"/>
+    </CEffectDamage>
+    <CEffectSet id="StoneLowHPSet">
+        <EditorCategories value="Race:Zerg"/>
+        <EffectArray value="StoneLowHP"/>
+        <EffectArray value="StoneLowHPB"/>
+        <EffectArray value="StoneInvulnerableAB"/>
+    </CEffectSet>
+    <CEffectModifyUnit id="StoneLowHP">
+        <EditorCategories value="Race:Zerg"/>
+        <VitalArray index="Life" ChangeFraction="1"/>
+        <ImpactUnit Value="Caster"/>
+    </CEffectModifyUnit>
+    <CEffectModifyUnit id="StoneLowHPB">
+        <EditorCategories value="Race:Zerg"/>
+        <VitalArray index="Life" ChangeFraction="-0.99"/>
+        <ImpactUnit Value="Caster"/>
+    </CEffectModifyUnit>
+    <CEffectApplyBehavior id="StoneInvulnerableAB">
+        <Behavior value="StoneInvulnerable"/>
+        <WhichUnit Value="Source"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="VultureSectionCollisionDamage">
+        <Kind value="Splash"/>
+        <Amount value="20"/>
+    </CEffectDamage>
+    <CEffectSet id="NovaVultureWeaponCanisterRifleSnipePrep">
+        <EffectArray value="NovaVultureWeaponCanisterRifleSnipePrepTurretLook"/>
+        <EffectArray value="NovaVultureWeaponCanisterRifleSnipePrepTurretLookClear"/>
+    </CEffectSet>
+    <CEffectModifyUnit id="NovaVultureWeaponCanisterRifleSnipePrepTurretLook">
+        <ImpactUnit Value="Caster"/>
+        <ModifyTurret Turret="NovaVultureRotateTurret">
+            <Target Value="TargetUnit"/>
+        </ModifyTurret>
+    </CEffectModifyUnit>
+    <CEffectModifyUnit id="NovaVultureWeaponCanisterRifleSnipePrepTurretLookClear">
+        <ImpactUnit Value="Caster"/>
+        <ModifyTurret Action="ClearTarget" Turret="NovaVultureRotateTurret">
+            <Target Value="TargetUnit"/>
+        </ModifyTurret>
+    </CEffectModifyUnit>
+    <CEffectApplyBehavior id="ArtanisResurgenceStunAB">
+        <DebugTrace value="1"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="NovaMothershipDisableAttack">
+        <EditorCategories value="Race:Protoss"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="DisableAttackRBSet">
+        <EditorCategories value="Race:Protoss"/>
+        <EffectArray value="DisableAttackRB"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="NovaMothershipInvulnerabilityShield">
+        <EditorCategories value="Race:Protoss"/>
+    </CEffectApplyBehavior>
+    <CEffectModifyUnit id="HercDamageImmunityDummy">
+        <EditorCategories value=""/>
+    </CEffectModifyUnit>
+    <CEffectCreatePersistent id="LockOnAirCP">
+        <PeriodicPeriodArray index="0" value="0.5"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="LockOnCP">
+        <PeriodicPeriodArray index="0" value="0.5"/>
+    </CEffectCreatePersistent>
+    <CEffectModifyUnit id="LockOnResetCooldown">
+        <Cost index="0" Abil="LockOn,Execute" CooldownOperation="Set" CooldownTimeUse="20"/>
+    </CEffectModifyUnit>
+    <CEffectEnumMagazine id="NovaMothershipHangarClear">
+        <EditorCategories value="Race:Protoss"/>
+        <EffectExternal value="SuicideRemoveTargetNoShield"/>
+    </CEffectEnumMagazine>
+    <CEffectApplyBehavior id="NovaMothershipHide">
+        <EditorCategories value="Race:Protoss"/>
+    </CEffectApplyBehavior>
+    <CEffectRemoveBehavior id="NovaMothershipHideRB">
+        <ValidatorArray index="0" removed="1"/>
+        <EditorCategories value="Race:Protoss"/>
+        <BehaviorLink value="NovaMothershipHide"/>
+    </CEffectRemoveBehavior>
+    <CEffectRemoveBehavior id="DisableAttackRB">
+        <ValidatorArray index="0" removed="1"/>
+        <EditorCategories value="Race:Protoss"/>
+        <BehaviorLink value="NovaMothershipDisableAttack"/>
+    </CEffectRemoveBehavior>
+    <CEffectSet id="NovaMothershipHideRBSet">
+        <EditorCategories value="Race:Protoss"/>
+        <EffectArray value="NovaMothershipHideRB"/>
+        <EffectArray value="NovaMothershipWarpInInvulnerable"/>
+        <EffectArray value="NovaMothershipTurretDisabler"/>
+        <EffectArray value="NovaMothershipDisableAttack"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="NovaMothershipTurretDisabler">
+        <EditorCategories value="Race:Protoss"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="NovaMothershipWarpInInvulnerable">
+        <EditorCategories value="Race:Protoss"/>
+    </CEffectApplyBehavior>
+    <CEffectEnumArea id="OracleSearchlightRevealSearch">
+        <SearchFilters value="-;Self,Player,Ally,Missile,Destructible,Stasis,Dead,Hidden,Invulnerable"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <AreaArray Radius="5.5" Effect="OracleSearchlightRevealedAB"/>
+    </CEffectEnumArea>
+    <CEffectApplyBehavior id="OracleSearchlightRevealerAB">
+        <Behavior value="OracleSearchlightRevealer"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="OracleSearchlightRevealedAB">
+        <Behavior value="OracleSearchlightRevealed"/>
+    </CEffectApplyBehavior>
+    <CEffectCreateUnit id="OracleSearchlightCU">
+        <WhichLocation Value="TargetPoint"/>
+        <SpawnUnit value="OracleSearchlightUnit"/>
+        <SpawnEffect value="OracleSearchlightTimedLifeAB"/>
+    </CEffectCreateUnit>
+    <CEffectApplyBehavior id="OracleSearchlightTimedLifeAB">
+        <Behavior value="OracleSearchlightTimedLife"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="NovaMothershipMassRecallPrepare">
+        <EditorCategories value=""/>
+        <EffectArray value="NovaMothershipMassRecallSearch"/>
+        <TargetLocationType value="Point"/>
+    </CEffectSet>
+    <CEffectEnumArea id="NovaMothershipMassRecallSearch">
+        <EditorCategories value="Race:Protoss"/>
+        <ImpactLocation Value="CasterPoint"/>
+        <SearchFilters value="-;Ally,Neutral,Enemy,Structure,Missile,Item,Dead,Hidden"/>
+        <AreaArray Radius="6.5" Effect="NovaMothershipMassRecallApplyBehavior"/>
+        <MinCount value="1"/>
+        <SearchFlags index="ExtendByUnitRadius" value="1"/>
+    </CEffectEnumArea>
+    <CEffectApplyBehavior id="NovaMothershipMassRecallApplyBehavior">
+        <ValidatorArray index="0" value="NotLarvaEgg"/>
+        <ValidatorArray value="NotLarva"/>
+        <ValidatorArray value="NotAbducted"/>
+        <ValidatorArray value="NotReleasedInterceptor"/>
+        <Behavior value="NovaMothershipRecalling"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="NovaMothershipMassRecallPostBehavior">
+        <ValidatorArray index="0" value=""/>
+        <EditorCategories value="Race:Protoss"/>
+        <Behavior value="NovaMothershipRecalled"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="NovaMothershipMassRecallSet">
+        <ValidatorArray value="NotLarvaEgg"/>
+        <ValidatorArray value="NotLarva"/>
+        <EffectArray value="NovaMothershipMassRecallTeleport"/>
+        <EffectArray value="NovaMothershipMassRecallPostBehavior"/>
+    </CEffectSet>
+    <CEffectTeleport id="NovaMothershipMassRecallTeleport">
+        <EditorCategories value="Race:Protoss"/>
+        <PlacementArc value="360"/>
+        <PlacementAround Effect="NovaMothershipMassRecallSearch"/>
+        <PlacementRange value="15"/>
+        <SourceLocation Effect="NovaMothershipMassRecallSearch" Value="CasterPoint"/>
+        <TargetLocation Effect="NovaMothershipMassRecallSearch" Value="TargetPoint"/>
+        <TeleportFlags index="TestCliff" value="1"/>
+        <TeleportFlags index="TestFog" value="0"/>
+    </CEffectTeleport>
+    <CEffectCreateUnit id="HealingDroneReleaseCreateUnit">
+        <EditorCategories value="Race:Terran"/>
+        <WhichLocation Value="TargetPoint"/>
+        <SpawnEffect value="HealingDroneReleaseSet"/>
+        <SpawnUnit value="HealingDrone"/>
+    </CEffectCreateUnit>
+    <CEffectSet id="HealingDroneReleaseSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="HealingDroneTimedLife"/>
+        <EffectArray value="HealingDroneReleaseLaunchMissile"/>
+        <EffectArray value="MakePrecursor"/>
+    </CEffectSet>
+    <CEffectLaunchMissile id="HealingDroneReleaseLaunchMissile">
+        <EditorCategories value="Race:Terran"/>
+        <LaunchLocation Value="CasterUnit"/>
+        <FinishEffect value="RemovePrecursor"/>
+        <AmmoUnit value="HealingDroneReleaseWeapon"/>
+        <PlaceholderUnit value="HealingDrone"/>
+    </CEffectLaunchMissile>
+    <CEffectApplyBehavior id="HealingDroneTimedLife">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectCreateHealer id="HealingDroneHeal">
+        <ValidatorArray value="noMarkers"/>
+        <ValidatorArray value="NotWarpingIn"/>
+        <ValidatorArray value="HiddenCompareAB"/>
+        <ValidatorArray value="HiddenCompareBA"/>
+        <ValidatorArray value="NotSpineCrawlerUprooted"/>
+        <ValidatorArray value="NotSporeCrawlerUprooted"/>
+        <ValidatorArray value="NotVortexd"/>
+        <ValidatorArray value="NotUncommandable"/>
+        <ValidatorArray value="SourceNotHidden"/>
+        <EditorCategories value="Race:Terran"/>
+        <DrainVital value="Energy"/>
+        <RechargeVitalRate value="14"/>
+    </CEffectCreateHealer>
+    <CEffectCreatePersistent id="RailGunTurretSearchCP">
+        <EditorCategories value="Race:Terran"/>
+        <WhichLocation Value="SourcePoint"/>
+        <PeriodCount value="1"/>
+        <PeriodicEffectArray value="RailGunTurretSearch"/>
+        <PeriodicOffsetArray value="0,-6.8,0"/>
+        <PeriodicPeriodArray value="0"/>
+        <InitialEffect value="RailGunTurretLaunchDummy"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="RailGunTurretSearch">
+        <EditorCategories value="Race:Terran"/>
+        <SearchFilters value="Ground;Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray RectangleWidth="0.3" RectangleHeight="6.8" Effect="RailGunTurretDamage"/>
+        <ExcludeArray Value="Target"/>
+        <SearchFlags index="CallForHelp" value="1"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <IncludeArray Effect="RailGunTurretSearchCP" Value="Target"/>
+        <AreaRelativeOffset value="0,3.2"/>
+    </CEffectEnumArea>
+    <CEffectDamage id="RailGunTurretDamage" parent="DU_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <Kind value="Ranged"/>
+        <KindSplash value="Splash"/>
+        <Amount value="30"/>
+        <ValidatorArray value="noMarkers"/>
+    </CEffectDamage>
+    <CEffectCreateUnit id="RailGunTurretRelease">
+        <EditorCategories value="Race:Terran"/>
+        <SpawnEffect value="RailGunTurretSet"/>
+        <SpawnUnit value="RailGunTurret"/>
+        <SpawnRange value="0"/>
+        <WhichLocation Value="TargetPoint"/>
+    </CEffectCreateUnit>
+    <CEffectSet id="RailGunTurretSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="RailGunTurretTimedLife"/>
+        <EffectArray value="RailGunTurretReleaseLaunch"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="RailGunTurretTimedLife">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="RailGunTurretReleaseLaunch">
+        <EffectArray value="RailGunTurretReleaseLM"/>
+        <EffectArray value="MakePrecursor"/>
+        <EditorCategories value="Race:Terran"/>
+    </CEffectSet>
+    <CEffectLaunchMissile id="RailGunTurretReleaseLM">
+        <EditorCategories value="Race:Terran"/>
+        <LaunchLocation Value="CasterUnit"/>
+        <FinishEffect value="RemovePrecursor"/>
+        <AmmoUnit value="RailGunTurretReleaseWeapon"/>
+        <PlaceholderUnit value="RailGunTurret"/>
+    </CEffectLaunchMissile>
+    <CEffectSet id="SOAMothershipLineAttackV2CasterImpactDummy"/>
+    <CEffectSet id="SOAMothershipLineAttackV2CasterPreviewImpactDummy"/>
+    <CEffectLaunchMissile id="SOAMothershipLineAttackV2CasterPreview">
+        <ValidatorArray index="0" value="CasterNotDead"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <LaunchEffect value="SOAMothershipLineAttackV2PreviewCP"/>
+        <ImpactEffect value="SOAMothershipLineAttackV2CasterPreviewImpactDummy"/>
+        <Flags index="2D" value="1"/>
+        <AmmoUnit value="InvisiblePreviewerMissile"/>
+    </CEffectLaunchMissile>
+    <CEffectLaunchMissile id="SOAMothershipLineAttackV2Caster">
+        <ValidatorArray index="0" value="CasterNotDead"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <LaunchEffect value="SOAMothershipLineAttackV2Scan"/>
+        <ImpactEffect value="SOAMothershipLineAttackV2CasterImpactDummy"/>
+        <Flags index="2D" value="1"/>
+        <AmmoUnit value="SOAMothershipLineAttackV2Weapon"/>
+    </CEffectLaunchMissile>
+    <CEffectDamage id="SOAMothershipLineAttackV2Damage">
+        <ValidatorArray value="noMarkers"/>
+        <EditorCategories value="Race:Protoss"/>
+        <Flags index="Notification" value="1"/>
+        <Amount value="200"/>
+        <Death value="Fire"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="SOAMothershipLineAttackV2Initial">
+        <WhichLocation Value="CasterPoint"/>
+        <!--InitialEffect value="SOAMothershipLineAttackV2CasterPreview"/-->
+        <InitialOffset value="0,-10,0"/>
+        <ExpireDelay value="2"/>
+        <ExpireEffect value="SOAMothershipLineAttackV2Caster"/>
+        <ExpireOffset value="0,-10,0"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="SOAMothershipLineAttackV2Scan">
+        <EditorCategories value="Race:Protoss"/>
+        <Marker>
+            <MatchFlags index="Id" value="1"/>
+        </Marker>
+        <WhichLocation Value="SourceUnit"/>
+        <TimeScaleSource Value="Caster"/>
+        <PeriodCount value="30"/>
+        <PeriodicEffectArray value="SOAMothershipLineAttackV2Search"/>
+        <PeriodicPeriodArray value="0.0625"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="SOAMothershipLineAttackV2Search">
+        <EditorCategories value="Race:Protoss"/>
+        <SearchFilters value="-;Self,Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="1" Effect="SOAMothershipLineAttackV2Damage"/>
+        <RevealerParams Duration="1" ShapeExpansion="0.5">
+            <RevealFlags index="Unfog" value="1"/>
+        </RevealerParams>
+    </CEffectEnumArea>
+    <CEffectCreatePersistent id="NovaMothershipInterceptorLaunchPersistent">
+        <EditorCategories value="Race:Protoss"/>
+        <WhichLocation Value="TargetUnit"/>
+        <TimeScaleSource Value="Caster"/>
+        <Flags index="Channeled" value="1"/>
+        <PeriodCount value="8"/>
+        <PeriodicValidator value="CasterNotDead"/>
+        <PeriodicEffectArray value="CarrierInterceptor"/>
+        <PeriodicPeriodArray value="0.125"/>
+    </CEffectCreatePersistent>
+    <CEffectSet id="SOAMothershipv4BeamSet">
+        <EffectArray value="NovaMothershipInterceptorLaunchPersistent"/>
+    </CEffectSet>
+    <CEffectDamage id="SuicideRemoveTargetNoShield">
+        <Marker Link="Effect/SuicideRemove"/>
+        <ImpactLocation Value="TargetUnit"/>
+        <Flags index="Kill" value="1"/>
+        <Flags index="NoVitalAbsorbShields" value="1"/>
+        <Death value="Remove"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="OracleRevelationV2InitialDelay">
+        <EditorCategories value="Race:Protoss"/>
+        <Flags index="Channeled" value="1"/>
+        <InitialDelay value="3"/>
+        <ExpireEffect value="OracleDelayRevelationSearch"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="OracleDelayRevelationSearch">
+        <EditorCategories value="Race:Protoss"/>
+        <SearchFilters value="-;Self,Player,Ally,Missile,Destructible,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="6" Effect="DelayRevelationSet"/>
+        <ImpactLocation Value="TargetPoint"/>
+    </CEffectEnumArea>
+    <CEffectSet id="DelayRevelationSet">
+        <EditorCategories value=""/>
+        <EffectArray value="OracleDelayRevelationApplyBehavior"/>
+        <EffectArray value="RevelationPersistent"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="OracleDelayRevelationApplyBehavior">
+        <EditorCategories value="Race:Protoss"/>
+        <Behavior value="OracleRevelationV2"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="PickupNovaZergDNA">
+        <EditorCategories value=""/>
+        <EffectArray value="PickupNovaZergDNAMU"/>
+        <EffectArray value="PickupRemoveDelayDeath"/>
+    </CEffectSet>
+    <CEffectModifyPlayer id="PickupNovaZergDNAMU">
+        <EditorCategories value=""/>
+    </CEffectModifyPlayer>
+    <CEffectApplyBehavior id="SuppressAttack1s"/>
+    <CEffectEnumArea id="TaldarimDeathFleetBeamSearch">
+        <SearchFilters value="-;Self,Player,Ally,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="5" Effect="TaldarimDeathFleetBeamDamage"/>
+        <SearchFlags index="CallForHelp" value="1"/>
+    </CEffectEnumArea>
+    <CEffectDamage id="TaldarimDeathFleetBeamDamage">
+        <Flags index="Notification" value="1"/>
+        <Kind value="Splash"/>
+        <Amount value="100"/>
+        <Death value="Fire"/>
+        <SearchFlags index="CallForHelp" value="1"/>
+        <ResponseFlags index="Flee" value="1"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="NovaXThosBroadsideCannonLM">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactEffect value="NovaXThosBroadsideCannonU"/>
+    </CEffectLaunchMissile>
+    <CEffectSet id="NovaAlarmBotEMP">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="NovaAlarmBotEMPSearch"/>
+        <EffectArray value="Suicide"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="NovaAlarmBotEMPCP">
+        <EditorCategories value="Race:Terran"/>
+        <WhichLocation Value="CasterUnit"/>
+        <InitialEffect value="NovaAlarmBotEMPSearch"/>
+        <ExpireEffect value="Suicide"/>
+    </CEffectCreatePersistent>
+    <CEffectDamage id="NovaAlarmBotEMPDamage" parent="DU_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <Kind value="Spell"/>
+        <Amount value="100"/>
+        <Death value="Blast"/>
+    </CEffectDamage>
+    <CEffectSet id="NovaAlarmBotEMPSearchSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="DOMEMPSet"/>
+        <EffectArray value="NovaAlarmBotEMPDamage"/>
+        <EffectArray value="EMPNovaHoloDecoyDamage"/>
+    </CEffectSet>
+    <CEffectEnumArea id="NovaAlarmBotEMPSearch">
+        <EditorCategories value="Race:Terran"/>
+        <LaunchLocation Value="CasterUnit"/>
+        <ImpactLocation Value="CasterUnit"/>
+        <SearchFilters value="-;Player,Ally,Neutral,Hidden,Invulnerable"/>
+        <AreaArray Radius="4" Effect="NovaAlarmBotEMPSearchSet"/>
+    </CEffectEnumArea>
+    <CEffectTeleport id="NovaArmorBlinkSuitBlinkStone">
+        <ValidatorArray value="CasterNotFungalGrowthed"/>
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <ClearQueuedOrders value="0"/>
+        <PlacementAround Value="CasterUnit"/>
+        <PlacementRange value="8"/>
+        <Range value="8"/>
+        <TargetLocation Value="TargetPoint"/>
+        <TeleportFlags index="TestCliff" value="1"/>
+        <TeleportEffect value="NovaArmorBlinkSuitBlinkCloaked"/>
+    </CEffectTeleport>
+    <CEffectLaunchMissile id="NovaBattlecruiserMachineGunLM">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactEffect value="NovaBattlecruiserMachineGun"/>
+        <AmmoUnit value="NovaBattlecruiserMachineGunMissile"/>
+    </CEffectLaunchMissile>
+    <CEffectEnumArea id="NovaBattlecruiserMachineGunSearch">
+        <EditorCategories value="Race:Terran"/>
+        <SearchFilters value="Visible;Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <TargetSorts>
+            <SortArray value="TSRandom"/>
+        </TargetSorts>
+        <AreaArray Radius="6" Effect="NovaBattlecruiserMachineGunLM"/>
+        <SearchFlags index="ExtendByUnitRadius" value="1"/>
+        <MaxCount value="1"/>
+    </CEffectEnumArea>
+    <CEffectModifyUnit id="NovaCreateTripWireSearchImpactMU">
+        <EditorCategories value="Race:Terran"/>
+        <VitalArray index="Energy" Change="-50"/>
+    </CEffectModifyUnit>
+    <CEffectApplyBehavior id="NovaGadgetFlashBangGrenadeTripmineApplyBehaviorSelf">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <Behavior value="FlashBangGrenadeNovaTripWire"/>
+    </CEffectApplyBehavior>
+    <CEffectLaunchMissile id="NovaHyperionATALM">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactEffect value="NovaHyperionATADamage"/>
+        <AmmoUnit value="NovaHyperionATALaserBattery"/>
+    </CEffectLaunchMissile>
+    <CEffectDamage id="NovaXThosBroadsideCannonU" parent="DU_WEAP_MISSILE">
+        <EditorCategories value="Race:Terran"/>
+        <Visibility value="Visible"/>
+        <Amount value="6"/>
+    </CEffectDamage>
+    <CEffectDamage id="NovaHyperionATADamage" parent="DU_WEAP_MISSILE">
+        <EditorCategories value="Race:Terran"/>
+        <Visibility value="Visible"/>
+        <Amount value="12"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="NovaXThosBroadsideCannonAGLM">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactEffect value="NovaXThosBroadsideCannonAGU"/>
+    </CEffectLaunchMissile>
+    <CEffectLaunchMissile id="NovaHyperionATSLM">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactEffect value="NovaHyperionATSDamage"/>
+        <AmmoUnit value="NovaHyperionATSLaserBattery"/>
+    </CEffectLaunchMissile>
+    <CEffectDamage id="NovaXThosBroadsideCannonAGU" parent="DU_WEAP_MISSILE">
+        <EditorCategories value="Race:Terran"/>
+        <Visibility value="Visible"/>
+        <Amount value="8"/>
+        <Death value="Fire"/>
+    </CEffectDamage>
+    <CEffectDamage id="NovaHyperionATSDamage" parent="DU_WEAP_MISSILE">
+        <EditorCategories value="Race:Terran"/>
+        <Visibility value="Visible"/>
+        <Amount value="16"/>
+        <Death value="Fire"/>
+    </CEffectDamage>
+    <CEffectDamage id="NovaBattlecruiserMachineGun" parent="DU_WEAP_MISSILE">
+        <EditorCategories value="Race:Terran"/>
+        <Visibility value="Visible"/>
+        <Amount value="8"/>
+        <Death value="Fire"/>
+    </CEffectDamage>
+    <CEffectDamage id="NovaXThosSiegeTurretBlast" parent="CrucioShockCannonBlast">
+        <Name value="Effect/Name/NovaXThosSiegeTurretBlast"/>
+    </CEffectDamage>
+    <CEffectDamage id="NovaXThosSiegeTurretDirected" parent="CrucioShockCannonDirected">
+        <Name value="Effect/Name/NovaXThosSiegeTurretDirected"/>
+    </CEffectDamage>
+    <CEffectDamage id="NovaXThosSiegeTurretDummy" parent="DU_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <AttributeBonus index="Armored" value="15"/>
+        <Kind value="Splash"/>
+        <KindSplash value="Splash"/>
+        <Amount value="35"/>
+        <Death value="Blast"/>
+    </CEffectDamage>
+    <CEffectApplyBehavior id="NovaHyperionJumpIntroDelay">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectIssueOrder id="NovaHyperionJumpOutOrder">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <Abil value="NovaHyperionJump"/>
+        <Player Value="Caster"/>
+    </CEffectIssueOrder>
+    <CEffectCreateUnit id="NovaLaunchAlarmBot">
+        <EditorCategories value="Race:Terran"/>
+        <SpawnEffect value="NovaSonarDroneCreationSet"/>
+        <SpawnUnit value="NovaAlarmBot"/>
+    </CEffectCreateUnit>
+    <CEffectEnumArea id="NovaAlarmBotAuraSearch">
+        <EditorCategories value="Race:Terran"/>
+        <AreaArray Radius="4" Effect="NovaSonarPingSearchImpact"/>
+        <SearchFilters value="Cloaked;Self,Player,Ally,Neutral,Missile,Stasis,Dead,Hidden"/>
+    </CEffectEnumArea>
+    <!--CEffectModifyUnit id="NovaAlarmAuraSearchImpact">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectModifyUnit-->
+    <CEffectApplyBehavior id="NovaTripWireStartupDelay">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+    </CEffectApplyBehavior>
+    <CEffectCreatePersistent id="NovaCreateTripWireMediumInitial">
+        <EditorCategories value="Race:Terran"/>
+        <OffsetVectorStartLocation Value="CasterUnit"/>
+        <InitialOffset value="0,-10,0"/>
+        <InitialEffect value="NovaCreateTripWireMedium"/>
+        <WhichLocation Value="CasterPoint"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="NovaCreateTripWireMedium">
+        <EditorCategories value="Race:Terran"/>
+        <OffsetVectorStartLocation Value="CasterUnit"/>
+        <Flags index="Channeled" value="1"/>
+        <Flags index="PersistUntilDestroyed" value="1"/>
+        <InitialOffset value="0,10,0"/>
+        <PeriodicEffectArray value="NovaCreateTripWireMediumSearch"/>
+        <PeriodicPeriodArray value="0.0625"/>
+        <InitialEffect value="NovaTripWireStartupDelay"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="NovaCreateTripWireMediumSearch">
+        <EditorCategories value="Race:Terran"/>
+        <LaunchLocation Value="CasterUnit"/>
+        <ImpactLocation Value="CasterUnit"/>
+        <SearchFilters value="Ground;Self"/>
+        <AreaArray RectangleWidth="0.5" RectangleHeight="10" Effect="NovaCreateTripWireSearchImpact"/>
+        <SearchFlags index="SameCliff" value="1"/>
+        <AreaRelativeOffset value="0,-5"/>
+    </CEffectEnumArea>
+    <CEffectCreatePersistent id="NovaCreateTripWireSmallInitial">
+        <EditorCategories value="Race:Terran"/>
+        <InitialEffect value="NovaCreateTripWireSmall"/>
+        <InitialOffset value="0,-5,0"/>
+        <WhichLocation Value="CasterPoint"/>
+        <OffsetVectorStartLocation Value="CasterUnit"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="NovaCreateTripWireSmall">
+        <EditorCategories value="Race:Terran"/>
+        <Flags index="Channeled" value="1"/>
+        <Flags index="PersistUntilDestroyed" value="1"/>
+        <PeriodicEffectArray value="NovaCreateTripWireSmallSearch"/>
+        <PeriodicPeriodArray value="0.0625"/>
+        <InitialEffect value="NovaTripWireStartupDelay"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="NovaCreateTripWireSmallSearch">
+        <EditorCategories value="Race:Terran"/>
+        <LaunchLocation Value="CasterUnit"/>
+        <ImpactLocation Value="CasterUnit"/>
+        <SearchFilters value="Ground;Self"/>
+        <AreaArray RectangleWidth="0.5" RectangleHeight="5" Effect="NovaCreateTripWireSearchImpact"/>
+        <SearchFlags index="SameCliff" value="1"/>
+        <AreaRelativeOffset value="0,-2.5"/>
+    </CEffectEnumArea>
+    <CEffectSet id="NovaCreateTripWireSearchImpact">
+        <ValidatorArray value="NovaTripWireNotFlashbanged"/>
+        <ValidatorArray value="NovaTripWireNotStartingUp"/>
+        <ValidatorArray value="NotHallucinationTarget"/>
+        <ValidatorArray value="NotHaveNovaHolographicDecoy"/>
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="NovaGadgetFlashBangGrenadeTripmineApplyBehaviorSelf"/>
+        <EffectArray value="NovaCreateTripWireSearchImpactMU"/>
+        <EffectArray value="NovaTripWireStun"/>
+        <EffectArray value="NovaSuppressCloak"/>
+    </CEffectSet>
+    <CEffectDamage id="NovaGaussRifle" parent="DU_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <Kind value="Ranged"/>
+        <Amount value="6"/>
+    </CEffectDamage>
+    <CEffectModifyUnit id="HeightAdd2">
+        <EditorCategories value="Race:Terran"/>
+        <Height value="2"/>
+        <HeightTime value="1"/>
+    </CEffectModifyUnit>
+    <CEffectDamage id="KillCreatedNovaSonarDrone">
+        <EditorCategories value="Race:Terran"/>
+        <Flags index="Kill" value="1"/>
+        <Flags index="NoKillCredit" value="1"/>
+        <ImpactLocation Effect="NovaSonarDroneCreationSet" Value="TargetUnit"/>
+    </CEffectDamage>
+    <CEffectCreateUnit id="LaunchSonarDrone">
+        <EditorCategories value="Race:Terran"/>
+        <SpawnUnit value="NovaSonarDrone"/>
+        <SpawnEffect value="NovaSonarDroneCreationSet"/>
+    </CEffectCreateUnit>
+    <CEffectDamage id="NovaXThosSiegeTurretMaelstromRounds" parent="DU_WEAP">
+        <ValidatorArray value="HasMaelstromRounds"/>
+        <EditorCategories value="Race:Terran"/>
+        <ArmorReduction value="0"/>
+        <Kind value="Ranged"/>
+        <Amount value="40"/>
+        <Death value="Blast"/>
+    </CEffectDamage>
+    <CEffectApplyBehavior id="NovaSonarDroneController">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+    </CEffectApplyBehavior>
+    <CEffectRemoveBehavior id="NovaSonarDroneControllerRB">
+        <EditorCategories value="Race:Terran"/>
+        <BehaviorLink value="NovaSonarDroneController"/>
+        <WhichUnit Value="Caster"/>
+    </CEffectRemoveBehavior>
+    <CEffectSet id="NovaSonarDroneCreationSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="NovaSonarDroneControllerRB"/>
+        <EffectArray value="NovaSonarDroneController"/>
+        <EffectArray value="NovaSonarDroneSubject"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="NovaSonarDroneSubject">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectCreatePersistent id="NovaSonarPing">
+        <EditorCategories value="Race:Terran"/>
+        <Flags index="Channeled" value="1"/>
+        <InitialEffect value="NovaSonarPingSearch"/>
+        <PeriodCount value="56"/>
+        <PeriodicEffectArray value="NovaSonarPingSearchSet"/>
+        <PeriodicPeriodArray value="0.0625"/>
+        <PeriodicValidator value="CasterNotStunned"/>
+    </CEffectCreatePersistent>
+    <CEffectApplyBehavior id="NovaSonarPingAlerted">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="NovaSonarPingSearchSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="NovaSonarPingSearch"/>
+        <!--EffectArray value="SightIncreasement"/-->
+    </CEffectSet>
+    <CEffectEnumArea id="NovaSonarPingSearch">
+        <EditorCategories value="Race:Terran"/>
+        <AreaArray Radius="1" RadiusBonus="0.125" Effect="NovaSonarPingSearchImpact"/>
+        <SearchFilters value="Cloaked;Self,Player,Ally,Neutral,Missile,Stasis,Dead,Hidden"/>
+    </CEffectEnumArea>
+    <CEffectSet id="NovaSonarPingSearchImpact">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="NovaSonarPingDetected"/>
+        <EffectArray value="SonarPingSearchImpactMU"/>
+        <EffectArray value="NovaSonarPingAlerted"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="NovaStoneDefensiveMatrix">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+    </CEffectApplyBehavior>
+    <CEffectCreatePersistent id="NovaStoneTargetEnemy">
+        <EditorCategories value="Race:Terran"/>
+        <Flags index="Channeled" value="1"/>
+        <Flags index="PersistUntilDestroyed" value="1"/>
+        <WhichLocation Value="TargetUnit"/>
+        <PeriodicValidator value="NovaStoneTargetEnemyValidator"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="NovaStoneTargetEMP">
+        <EditorCategories value="Race:Terran"/>
+        <Flags index="Channeled" value="1"/>
+        <Flags index="PersistUntilDestroyed" value="1"/>
+    </CEffectCreatePersistent>
+    <CEffectApplyBehavior id="NovaSuppressCloak">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="NovaTripWireStun">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="NovaXanthosLaserFireDamage" parent="DU_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <Kind value="Ranged"/>
+        <Amount value="300"/>
+        <Death value="Fire"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="NovaXanthosLaserFire">
+        <EditorCategories value="Race:Terran"/>
+        <WhichLocation Value="CasterUnit"/>
+        <OffsetVectorStartLocation Value="SourcePoint"/>
+        <OffsetFacingFallback Value="CasterUnit"/>
+        <PeriodCount value="1"/>
+        <PeriodicEffectArray value="NovaXanthosLaserFireSearch"/>
+        <PeriodicOffsetArray value="0,-5,0"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="NovaXanthosLaserFireSearch" parent="EA_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <LaunchLocation Value="CasterUnit"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <SearchFilters value="-;Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray RectangleWidth="3" RectangleHeight="10" Effect="NovaXanthosLaserFireDamage"/>
+        <SearchFlags index="OffsetByUnitRadius" value="1"/>
+    </CEffectEnumArea>
+    <CEffectSet id="NovaXanthosLaserChargeOnly">
+        <EditorCategories value="Race:Terran"/>
+        <TargetLocationType value="Point"/>
+    </CEffectSet>
+    <CEffectDamage id="NovaXanthosCruiserGroundDamage" parent="DU_WEAP_MISSILE">
+        <EditorCategories value="Race:Terran"/>
+        <Amount value="6"/>
+        <Death value="Fire"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="NovaXanthosCruiserGroundLaunchMissile">
+        <ValidatorArray value="noMarkers"/>
+        <EditorCategories value="Race:Terran"/>
+        <Marker Link="NovaXanthosCruiserGround">
+            <MatchFlags index="Link" value="1"/>
+        </Marker>
+        <ImpactEffect value="NovaXanthosCruiserGroundDamage"/>
+        <AmmoUnit value="NovaXanthosCruiserMissile"/>
+    </CEffectLaunchMissile>
+    <CEffectApplyBehavior id="NovaGunTurretCloakFieldEffect">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectEnumArea id="NovaGunTurretCloakFieldSearch">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactLocation Value="CasterUnit"/>
+        <SearchFilters value="-;Self,Neutral,Enemy,Missile,Dead,Hidden"/>
+        <AreaArray Radius="11" Effect="NovaGunTurretCloakFieldEffect"/>
+        <SearchFlags index="ExtendByUnitRadius" value="1"/>
+    </CEffectEnumArea>
+    <CEffectDamage id="NovaXanthosCruiserAirDamage" parent="DU_WEAP_MISSILE">
+        <EditorCategories value="Race:Terran"/>
+        <Amount value="8"/>
+        <Death value="Fire"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="NovaXanthosCruiserAirLaunchMissile">
+        <ValidatorArray value="noMarkers"/>
+        <EditorCategories value="Race:Terran"/>
+        <Marker Link="NovaXanthosCruiserAir">
+            <MatchFlags index="Link" value="1"/>
+        </Marker>
+        <ImpactEffect value="NovaXanthosCruiserAirDamage"/>
+        <AmmoUnit value="NovaXanthosCruiserMissile"/>
+    </CEffectLaunchMissile>
+    <!--Map Wide Sonar Experimental-->
+    <CEffectApplyBehavior id="MapWideSonarDetected">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectEnumArea id="MapWideSonarSearch">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactLocation Value="SourceUnit"/>
+        <SearchFilters value="-;Missile,Dead,Hidden,Invulnerable"/>
+        <AreaArray RectangleWidth="500" RectangleHeight="8" Effect="MapWideSonarDetected"/>
+    </CEffectEnumArea>
+    <CEffectDamage id="OfficersPistol" parent="P38ScytheGuassPistol">
+        <Name value="Effect/Name/OfficersPistol"/>
+    </CEffectDamage>
+    <CEffectDamage id="NovaXThosFighterDamage" parent="DU_WEAP_MISSILE">
+        <EditorCategories value="Race:Terran"/>
+        <Amount value="10"/>
+        <AttributeBonus index="Armored" value="10"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="NovaXThosFighterLM">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactEffect value="NovaXThosFighterDamage"/>
+        <AmmoUnit value="NovaXThosFighterWeapon"/>
+        <ValidatorArray index="0" value="IsNotDryDockedGorgon"/>
+    </CEffectLaunchMissile>
+    <CEffectUseMagazine id="XanthosFighterWeaponUM">
+        <EditorCategories value="Race:Protoss"/>
+        <ValidatorArray value="IsNotDryDockedGorgon"/>
+    </CEffectUseMagazine>
+    <!--Map Wide Sonar Experimental End-->
+    <CEffectApplyBehavior id="SensorDroneLockOnInitialAB">
+        <EditorCategories value="Race:Terran"/>
+        <Behavior value="SensorDroneLockOn"/>
+        <Flags index="UseDuration" value="1"/>
+        <Duration value="1"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="SensorDroneLockOnFireSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="SensorDroneLockedOnAB"/>
+        <EffectArray value="SensorDroneLockOnAB"/>
+        <EffectArray value="SensorDroneLockOnCP"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="SensorDroneLockedOnAB">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <Behavior value="SensorDroneLockedOn"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="SensorDroneLockOnAB">
+        <EditorCategories value="Race:Terran"/>
+        <Behavior value="SensorDroneLockOn"/>
+    </CEffectApplyBehavior>
+    <CEffectCreatePersistent id="SensorDroneLockOnCP">
+        <EditorCategories value="Race:Terran"/>
+        <WhichLocation Value="TargetUnit"/>
+        <FinalEffect value="SensorDroneLockOnClearSet"/>
+        <PeriodCount value="65535"/>
+        <PeriodicValidator value="SensorDroneLockOnPeriodicValidators"/>
+        <PeriodicEffectArray value="SensorDroneLaunchMissile"/>
+        <PeriodicPeriodArray value="1"/>
+        <RevealRadius value="2"/>
+    </CEffectCreatePersistent>
+    <CEffectLaunchMissile id="SensorDroneLaunchMissile">
+        <EditorCategories value="Race:Terran"/>
+        <LaunchLocation Value="CasterUnit"/>
+        <ImpactEffect value="SensorDroneMissileSet"/>
+        <AmmoUnit value="SensorDroneMissile"/>
+        <Movers Link="MissileDefault"/>
+    </CEffectLaunchMissile>
+    <CEffectDamage id="SensorDroneMissileDamage" parent="DU_WEAP_MISSILE">
+        <EditorCategories value="Race:Terran"/>
+        <Amount value="18"/>
+        <Death value="Blast"/>
+    </CEffectDamage>
+    <CEffectApplyBehavior id="SensorDroneMissileSlowAB">
+        <ValidatorArray index="0" value="PunisherGrenadesSlowTargetFilters"/>
+        <ValidatorArray value="NotStructure"/>
+        <ValidatorArray value="NotFrenzied"/>
+        <EditorCategories value="Race:Terran"/>
+        <Behavior value="Slow"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="SensorDroneMissileSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="SensorDroneMissileSlowAB"/>
+        <EffectArray value="SensorDroneMissileDamage"/>
+    </CEffectSet>
+    <CEffectRemoveBehavior id="SensorDroneLockOnRB">
+        <EditorCategories value="Race:Terran"/>
+        <BehaviorLink value="SensorDroneLockOn"/>
+        <Count value="1"/>
+    </CEffectRemoveBehavior>
+    <CEffectSet id="SensorDroneLockOnClearSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="SensorDroneLockOnDisableRB"/>
+        <EffectArray value="SensorDroneLockOnRB"/>
+    </CEffectSet>
+    <CEffectRemoveBehavior id="SensorDroneLockOnDisableRB">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <BehaviorLink value="SensorDroneLockedOn"/>
+    </CEffectRemoveBehavior>
+    <CEffectCreatePersistent id="SensorAlternateDroneMissileCP">
+        <FinalEffect value="SensorAlternateDroneMissileSearch"/>
+        <PeriodCount value="1"/>
+        <PeriodicPeriodArray value="1.75"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="SensorAlternateDroneMissileSearch">
+        <EditorCategories value="Race:Terran"/>
+        <LaunchLocation Value="TargetPoint"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <AreaArray Radius="1.1" Effect="SensorAlternateDroneMissileAB"/>
+        <SearchFilters value="Ground;Hidden,Invulnerable"/>
+    </CEffectEnumArea>
+    <CEffectApplyBehavior id="SensorAlternateDroneMissileAB">
+        <EditorCategories value="Race:Terran"/>
+        <Behavior value="SensorDroneMissile"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="NovaXanthosCruiserYamatoDamage">
+        <EditorCategories value="Race:Terran"/>
+        <ResponseFlags index="Flee" value="1"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <Flags index="Notification" value="1"/>
+        <Amount value="400"/>
+        <Death value="Blast"/>
+        <AreaArray Radius="3" Fraction="1"/>
+        <SearchFilters value="-;Player,Ally,Neutral,Missile,Item,Stasis,Dead,Hidden"/>
+        <SearchFlags index="CallForHelp" value="1"/>
+        <SearchFlags index="ExtendByUnitRadius" value="1"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="NovaXanthosCruiserYamatoLaunchMissile">
+        <ValidatorArray index="0" removed="1"/>
+        <EditorCategories value="Race:Terran"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <ImpactEffect value="NovaXanthosCruiserYamatoDamage"/>
+        <AmmoUnit value="HyperionYamatoSpecialWeapon"/>
+    </CEffectLaunchMissile>
+    <CEffectCreatePersistent id="NovaXanthosCruiserYamatoPersistent">
+        <EditorCategories value="Race:Terran"/>
+        <ExpireDelay value="3"/>
+        <ExpireEffect value="NovaXanthosCruiserYamatoLaunchMissile"/>
+    </CEffectCreatePersistent>
+    <CEffectApplyBehavior id="SensorDroneCloakField">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectEnumArea id="SensorDroneCloakFieldSearch">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactLocation Value="CasterUnit"/>
+        <SearchFilters value="-;Self,Neutral,Enemy,Missile,Dead,Hidden"/>
+        <AreaArray Radius="6" Effect="SensorDroneCloakField"/>
+        <SearchFlags index="ExtendByUnitRadius" value="1"/>
+    </CEffectEnumArea>
+    <CEffectSet id="NovaXThosSiegeTurret">
+        <EffectArray value="NovaXThosSiegeTurretDirected"/>
+        <EffectArray value="NovaXThosSiegeTurretBlast"/>
+        <EffectArray value="NovaXThosSiegeTurretMaelstromRounds"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="SightIncreasement">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="NovaSonarPingDetected">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectApplyBehavior>
+    <CEffectModifyUnit id="SonarPingSearchImpactMU">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectModifyUnit>
+    <CEffectDamage id="SuicideCaster">
+        <ImpactLocation Value="CasterUnit"/>
+        <Flags index="Kill" value="1"/>
+        <Flags index="NoKillCredit" value="1"/>
+    </CEffectDamage>
+    <CEffectApplyBehavior id="SuperStimpackStone">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+    </CEffectApplyBehavior>
+    <CEffectModifyUnit id="XanthosTurnSideYamatoTurn">
+        <ImpactUnit Value="Caster"/>
+        <ModifyTurret Turret="NovaXThosPartTurret200" AimCompleteEffect="NovaXanthosCruiserSideYamatoLM">
+            <Target Value="TargetUnit"/>
+            <Flags index="Tracking" value="1"/>
+            <Flags index="ClearTargetOnAimComplete" value="1"/>
+        </ModifyTurret>
+    </CEffectModifyUnit>
+    <CEffectLaunchMissile id="NovaXanthosCruiserSideYamatoLM">
+        <ValidatorArray index="0" value="YamatoTargetFilters"/>
+        <ValidatorArray value="IsNotWarpBubble"/>
+        <ValidatorArray value="YamatoTargetFilters"/>
+        <EditorCategories value="Race:Terran"/>
+        <ImpactEffect value="NovaXanthosCruiserSideYamatoLM2"/>
+        <AmmoUnit value="NovaXanthosYamatoWeapon"/>
+    </CEffectLaunchMissile>
+    <CEffectDamage id="NovaXanthosCruiserSideYamatoLM2">
+        <EditorCategories value="Race:Terran"/>
+        <ResponseFlags index="Acquire" value="1"/>
+        <ResponseFlags index="Flee" value="1"/>
+        <Visibility value="Visible"/>
+        <Flags index="Notification" value="1"/>
+        <Amount value="300"/>
+        <Death value="Blast"/>
+        <SearchFlags index="CallForHelp" value="1"/>
+    </CEffectDamage>
+    <CEffectDamage id="NovaXanthosAssaultGunDamage" parent="DU_WEAP">
+        <Kind value="Ranged"/>
+        <Amount value="8"/>
+    </CEffectDamage>
+    <CEffectSet id="NovaXanthosFlameTurretSet">
+        <EffectArray value="NovaXanthosFlameTurretDamage"/>
+        <EffectArray value="NovaXanthosFlameThrowerBurningAB"/>
+        <ValidatorArray value="IsNotDryDockedGorgon"/>
+    </CEffectSet>
+    <CEffectDamage id="NovaXanthosFlameTurretDamage" parent="DU_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <Visibility value="Visible"/>
+        <AttributeBonus index="Light" value="4"/>
+        <Amount value="4"/>
+        <Death value="Fire"/>
+        <Kind value="Ranged"/>
+        <KindSplash value="Splash"/>
+        <SearchFilters value="-;Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="0.093" Fraction="1"/>
+        <AreaArray Radius="0.4" Fraction="0.5"/>
+        <AreaArray Radius="0.8" Fraction="0.25"/>
+        <ExcludeArray Value="Outer"/>
+        <ExcludeArray Value="Target"/>
+        <SearchFlags index="OffsetByUnitRadius" value="0"/>
+    </CEffectDamage>
+    <CEffectApplyBehavior id="NovaXanthosFlameThrowerBurningAB">
+        <EditorCategories value="Race:Terran"/>
+        <Behavior value="NovaXanthosFlameThrowerBurning"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="NovaXanthosFlameThrowerBurningDamage">
+        <EditorCategories value="Race:Terran"/>
+        <Amount value="0.125"/>
+        <Death value="Fire"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="NovaXanthosRailGunTurretPersistent">
+        <EditorCategories value="Race:Terran"/>
+        <ExpireEffect value="NovaXanthosRailGunTurretLM"/>
+        <WhichLocation Value="TargetUnit"/>
+        <PeriodCount value="1"/>
+        <PeriodicPeriodArray value="1.5"/>
+    </CEffectCreatePersistent>
+    <CEffectLaunchMissile id="NovaXanthosRailGunTurretLM">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactEffect value="NovaXanthosRailGunTurretSet"/>
+        <AmmoUnit value="LiberatorAGMissile"/>
+        <ValidatorArray index="0" value="IsNotDryDockedGorgon"/>
+    </CEffectLaunchMissile>
+    <CEffectSet id="NovaXanthosRailGunTurretSet">
+        <EffectArray value="NovaXanthosRailGunTurretDamage"/>
+        <EffectArray value="NovaXanthosRailGunTurretVulnerabilityAB"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="NovaXanthosRailGunTurretVulnerabilityAB">
+        <EditorCategories value="Race:Terran"/>
+        <Behavior value="NovaXanthosRailGunTurretVulnerability"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="NovaXanthosRailGunTurretDamage" parent="DU_WEAP">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactLocation Value="TargetUnit"/>
+        <Kind value="Ranged"/>
+        <Amount value="50"/>
+        <AttributeBonus index="Armored" value="50"/>
+        <ArmorReduction value="0"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="NovaXanthosAATurretLM">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactEffect value="NovaXanthosAATurretDamage"/>
+        <AmmoUnit value="NovaXanthosAATurretMissile"/>
+    </CEffectLaunchMissile>
+    <CEffectDamage id="NovaXanthosAATurretDamage" parent="DU_WEAP_MISSILE">
+        <EditorCategories value="Race:Terran"/>
+        <Amount value="15"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="NovaXanthosDeathLaserInitial">
+        <WhichLocation Value="CasterPoint"/>
+        <Flags index="Channeled" value="1"/>
+        <InitialOffset value="0,-15,0"/>
+        <ExpireDelay value="8"/>
+        <ExpireEffect value="NovaXanthosDeathLaserCaster"/>
+        <ExpireOffset value="0,-15,0"/>
+    </CEffectCreatePersistent>
+    <CEffectLaunchMissile id="NovaXanthosDeathLaserCaster">
+        <ValidatorArray index="0" value="CasterNotDead"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <LaunchEffect value="NovaXanthosDeathLaserScan"/>
+        <ImpactEffect value="NovaXanthosDeathLaserCasterImpactDummy"/>
+        <Flags index="2D" value="1"/>
+        <Flags index="Channeled" value="1"/>
+        <AmmoUnit value="NovaXanthosDeathLaserAttackMissile"/>
+    </CEffectLaunchMissile>
+    <CEffectSet id="NovaXanthosDeathLaserCasterImpactDummy"/>
+    <CEffectCreatePersistent id="NovaXanthosDeathLaserScan">
+        <Marker>
+            <MatchFlags index="Id" value="1"/>
+        </Marker>
+        <WhichLocation Value="SourceUnit"/>
+        <TimeScaleSource Value="Caster"/>
+        <PeriodCount value="40"/>
+        <PeriodicEffectArray value="NovaXanthosDeathLaserSearch"/>
+        <PeriodicPeriodArray value="0.0625"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="NovaXanthosDeathLaserSearch">
+        <SearchFilters value="-;Self,Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="2.5" Effect="NovaXanthosDeathLaserDamage"/>
+        <RevealerParams Duration="1" ShapeExpansion="0.5">
+            <RevealFlags index="Unfog" value="1"/>
+        </RevealerParams>
+    </CEffectEnumArea>
+    <CEffectDamage id="NovaXanthosDeathLaserDamage">
+        <ValidatorArray value="noMarkers"/>
+        <EditorCategories value="Race:Protoss"/>
+        <Flags index="Notification" value="1"/>
+        <Amount value="300"/>
+        <Death value="Fire"/>
+        <LaunchLocation Value="CasterUnit"/>
+        <SearchFlags index="OffsetAreaByAngle" value="1"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="NovaXanthosNukeLauncherPersistent">
+        <InitialDelay value="8.75"/>
+        <ExpireEffect value="NukeDetonate"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="NovaXanthosRailGunTurretSearch">
+        <EditorCategories value="Race:Terran"/>
+        <SearchFilters value="Visible;Self,Player,Ally,Missile,Item,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray>
+            <Arc value="149.9963"/>
+            <MaxCount value="1"/>
+            <Radius value="12"/>
+            <Effect value="NovaXanthosRailGunTurretPriority1"/>
+        </AreaArray>
+        <AreaArray>
+            <Arc value="149.9963"/>
+            <MaxCount value="1"/>
+            <Radius value="12"/>
+            <Effect value="NovaXanthosRailGunTurretPriority2"/>
+        </AreaArray>
+        <MaxCount value="1"/>
+        <ValidatorArray value="IsNotDryDockedGorgon"/>
+        <LaunchLocation Value="CasterUnit"/>
+        <ImpactLocation Value="CasterUnit"/>
+        <IncludeArray Value="Target"/>
+        <SearchFlags index="ExtendByUnitRadius" value="1"/>
+    </CEffectEnumArea>
+    <CEffectSet id="NovaXanthosRailGunTurretPriority1">
+        <EffectArray value="NovaXanthosRailGunTurretPersistent"/>
+        <ValidatorArray value="NovaXanthosRailGunTurretPriority1"/>
+        <ValidatorArray value="TargetNotUntargetable"/>
+        <ValidatorArray value="NotNovaHero"/>
+        <ValidatorArray value="NotInvulnerable"/>
+    </CEffectSet>
+    <CEffectSet id="NovaXanthosRailGunTurretPriority2">
+        <EffectArray value="NovaXanthosRailGunTurretPersistent"/>
+        <ValidatorArray value="NovaXanthosRailGunTurretPriority2"/>
+        <ValidatorArray value="TargetNotUntargetable"/>
+    </CEffectSet>
+    <CEffectCreateUnit id="NovaXanthosJumpCreatePrecursor">
+        <WhichLocation Value="TargetPoint"/>
+        <CreateFlags index="PlacementIgnoreBlockers" value="1"/>
+        <CreateFlags index="Precursor" value="1"/>
+        <CreateFlags index="ProvideFood" value="0"/>
+        <CreateFlags index="SetFacing" value="1"/>
+        <CreateFlags index="TechComplete" value="0"/>
+        <CreateFlags index="UseFood" value="0"/>
+        <SpawnEffect value="NovaXanthosJumpSet"/>
+        <SpawnUnit value="NovaXanthosAssault"/>
+        <!--SpawnRange value="0.1"/-->
+    </CEffectCreateUnit>
+    <CEffectSet id="NovaXanthosJumpSet">
+        <EffectArray value="MakePrescursor"/>
+        <EffectArray value="NovaXanthosJumpLM"/>
+    </CEffectSet>
+    <CEffectLaunchMissile id="NovaXanthosJumpLM">
+        <LaunchLocation Value="CasterUnit"/>
+        <Movers Link="NovaXanthosJump"/>
+        <DeathType value="Unknown"/>
+        <FinishEffect value="KillRemove"/>
+        <Flags index="Channeled" value="1"/>
+        <!--ImpactEffect value="KillRemove"/-->
+    </CEffectLaunchMissile>
+    <CEffectIssueOrder id="NovaXanthosTurretFatalOrder">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <Abil value="NovaXThosToggleExposed"/>
+        <Player Value="Caster"/>
+    </CEffectIssueOrder>
+    <CEffectSet id="NovaXanthosTurretFatalSet">
+        <EditorCategories value="Race:Terran"/>
+        <EffectArray value="NovaXanthosTurretFatalOrder"/>
+        <EffectArray value="KillMagazine"/>
+    </CEffectSet>
+    <CEffectLaunchMissile id="NovaGadgetFlashBangGrenadeLaunchMissile">
+        <ImpactEffect value="NovaGadgetFlashBangGrenadeSearchSet"/>
+    </CEffectLaunchMissile>
+    <CEffectSet id="NovaGadgetFlashBangGrenadeSearchSet">
+        <EffectArray value="NovaGadgetFlashBangGrenadeSearch"/>
+        <EffectArray value="NovaGadgetFlashBangGrenadeTripmineSearch"/>
+        <TargetLocationType value="Point"/>
+    </CEffectSet>
+    <CEffectEnumArea id="NovaGadgetFlashBangGrenadeTripmineSearch">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <SearchFilters value="Structure,Invulnerable;Self,Player,Ally,Neutral,Massive,Missile,Destructible,Item,Stasis,Dead,Hidden,Unstoppable"/>
+        <AreaArray Radius="3" Effect="NovaGadgetFlashBangGrenadeTripmineApplyBehavior"/>
+    </CEffectEnumArea>
+    <CEffectApplyBehavior id="NovaGadgetFlashBangGrenadeTripmineApplyBehavior">
+        <EditorCategories value="Race:Terran"/>
+        <ValidatorArray index="0" value="IsNovaTripWire"/>
+        <Behavior value="FlashBangGrenadeNovaTripWire"/>
+    </CEffectApplyBehavior>
+    <CEffectModifyUnit id="FlashBangGrenadeNovaTripWireRestartWarning">
+        <EditorCategories value="Race:Terran"/>
+    </CEffectModifyUnit>
+    <CEffectEnumArea id="NovaXanthosRepairModeSearch">
+        <EditorCategories value="Race:Terran"/>
+        <AreaArray Radius="4" Effect="NovaXanthosRepairModeAB"/>
+    </CEffectEnumArea>
+    <CEffectApplyBehavior id="NovaXanthosRepairModeAB">
+        <EditorCategories value="Race:Terran"/>
+        <ValidatorArray index="0" value="TargetIsNovaXanthosTurret"/>
+        <Behavior value="NovaXanthosRepair"/>
+    </CEffectApplyBehavior>
+    <CEffectEnumArea id="NovaXanthosTravelModeSearch">
+        <EditorCategories value="Race:Terran"/>
+        <AreaArray Radius="4" Effect="NovaXanthosTravelModeAB"/>
+    </CEffectEnumArea>
+    <CEffectApplyBehavior id="NovaXanthosTravelModeAB">
+        <EditorCategories value="Race:Terran"/>
+        <ValidatorArray index="0" value="TargetIsNovaXanthosTurret"/>
+        <ValidatorArray value="TargetHasNovaXanthosTurretUncovered"/>
+        <Behavior value="NovaXanthosTurretTravel"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="NovaHyperionTimedLifeApplyBehavior">
+        <EditorCategories value="Race:Terran"/>
+        <WhichUnit Value="Caster"/>
+        <Behavior value="NovaHyperionTimedLife"/>
+    </CEffectApplyBehavior>
+    <CEffectCreatePersistent id="NovaXanthosRocketBarrage">
+        <EditorCategories value="Race:Terran"/>
+        <PeriodicOffsetArray value="6,0,0"/>
+        <PeriodicOffsetArray value="-6,0,0"/>
+        <PeriodicOffsetArray value="-4.854,-3.5266,0"/>
+        <PeriodicOffsetArray value="-1.854,-5.7062,0"/>
+        <PeriodicOffsetArray value="1.854,-5.7062,0"/>
+        <PeriodicOffsetArray value="4.854,-3.5266,0"/>
+        <PeriodicOffsetArray value="-1.5,-2.5981,0"/>
+        <PeriodicOffsetArray value="1.5,-2.5981,0"/>
+        <PeriodicOffsetArray value="3,0,0"/>
+        <PeriodicOffsetArray value="1.5,2.5981,0"/>
+        <PeriodicOffsetArray value="-1.5,2.5981,0"/>
+        <PeriodicOffsetArray value="-3,0,0"/>
+        <PeriodicOffsetArray value="0,0,0"/>
+        <Flags index="RandomOffset" value="1"/>
+        <PeriodicEffectArray value="NovaXanthosRocketBarrageIndicator"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="NovaXanthosRocketBarrageIndicatorCP">
+        <EditorCategories value="Race:Terran"/>
+        <PeriodicOffsetArray value="0,0,0"/>
+        <PeriodicOffsetArray value="0,1,0"/>
+        <PeriodicOffsetArray value="0,-1,0"/>
+        <PeriodicOffsetArray value="1,1,0"/>
+        <PeriodicOffsetArray value="1,0,0"/>
+        <PeriodicOffsetArray value="1,-1,0"/>
+        <PeriodicOffsetArray value="-1,0,0"/>
+        <PeriodicOffsetArray value="-1,1,0"/>
+        <PeriodicOffsetArray value="-1,-1,0"/>
+        <PeriodCount value="1"/>
+        <Flags index="RandomOffset" value="1"/>
+        <PeriodicEffectArray value="NovaXanthosRocketBarrageIndicator"/>
+        <OffsetRandMode value="RandomNoRepeat"/>
+        <ValidatorArray value="IsNotDryDockedGorgon"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="NovaXanthosRocketBarrageIndicator">
+        <EditorCategories value="Race:Terran"/>
+        <PeriodCount value="1"/>
+        <InitialEffect value="NovaXanthosRocketBarrageLM"/>
+        <PeriodicPeriodArray value="3"/>
+    </CEffectCreatePersistent>
+    <CEffectLaunchMissile id="NovaXanthosRocketBarrageLM">
+        <EditorCategories value="Race:Terran"/>
+        <ImpactEffect value="NovaXanthosRocketBarrageSearch"/>
+        <AmmoUnit value="NovaXanthosRocketBarrageMissile"/>
+        <LaunchLocation Value="CasterUnit"/>
+        <ImpactLocation Value="TargetPoint"/>
+    </CEffectLaunchMissile>
+    <CEffectEnumArea id="NovaXanthosRocketBarrageSearch">
+        <SearchFilters value="-;Self,Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="2" Effect="NovaXanthosRocketBarrageDamage"/>
+        <Marker>
+            <MatchFlags index="Link" value="1"/>
+            <MatchFlags index="CasterUnit" value="1"/>
+        </Marker>
+    </CEffectEnumArea>
+    <CEffectEnumArea id="NovaXanthosRocketBarrageTargetSearch">
+        <SearchFilters value="-;Self,Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="6" Effect="NovaXanthosRocketBarrageIndicatorCP"/>
+        <MinCount value="1"/>
+        <MaxCount value="4"/>
+    </CEffectEnumArea>
+    <CEffectDamage id="NovaXanthosRocketBarrageDamage">
+        <ValidatorArray value="noMarkers"/>
+        <Flags index="Notification" value="1"/>
+        <Amount value="200"/>
+        <Death value="Blast"/>
+    </CEffectDamage>
+    <CEffectSet id="NovaXanthosDummyWeaponEffect"/>
+</Catalog>

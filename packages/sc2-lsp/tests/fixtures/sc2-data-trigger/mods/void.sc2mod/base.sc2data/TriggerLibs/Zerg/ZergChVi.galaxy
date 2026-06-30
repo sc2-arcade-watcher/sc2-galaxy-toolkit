@@ -1,0 +1,90 @@
+//==================================================================================================
+//  Zerg Melee Cheater-Vision
+//==================================================================================================
+
+// uses the very hard builds, but cheats vision to make better counters and stop cheese
+
+//--------------------------------------------------------------------------------------------------
+//  ZergOpenChVi
+//--------------------------------------------------------------------------------------------------
+void ZergOpenChVi (int player) {
+    bool done = false;
+    int buildIndex;
+
+    AIEarlyDefenseScouting(player);
+
+    // see if we need to switch builds
+    UpdateHDZergOpening(player);
+
+    buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (buildIndex == e_hdBuildIndex_ZOpenRush_6Pool)                     { done = ZergOpenRush6PoolVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenRush_10Pool)               { done = ZergOpenRush10PoolVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenTiming_LingBane)           { done = ZergOpenTimingLingBaneVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenTiming_Roach)              { done = ZergOpenTimingRoachVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenTiming_LingRoach)          { done = ZergOpenTimingLingRoachVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenPowerMacro_QuickExpGnd)    { done = ZergOpenPowerMacroQuickExpGndVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenPowerMacro_DefenseExpGnd)  { done = ZergOpenPowerMacroDefenseExpGndVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenAir_OneBaseMuta)           { done = ZergOpenAirOneBaseMutaVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenAir_OneBaseDrop)           { done = ZergOpenAirOneBaseDropVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZOpenAir_QuickExpandAir)        { done = ZergOpenAirQuickExpandAirVyHd(player); }
+    else { ErrorMeleeScript(player, "Invalid Open BuildIndex ZergChVi"); }
+
+    if (done) {
+        ZergHDInitMid(player); // Transition to MidGame
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergMidChVi
+//--------------------------------------------------------------------------------------------------
+void ZergMidChVi (int player) {
+    bool done = false;
+    int buildIndex;
+    
+    // enable scouting as appropriate
+    if (AIGetUserInt(player, c_numGroundStartLocs) > 0) {
+        AIScoutingEnable(player, 15, c_ZU_Drone);
+        AIEarlyDefenseScouting(player);
+    }
+    else {
+        AIScoutingEnable(player, 1, c_ZU_Zergling);
+    }
+
+    // see if we need to switch builds
+    UpdateHDZergMidGame(player);
+    
+    buildIndex = AIGetUserInt(player, c_currentBuildIndex);
+    if (buildIndex == e_hdBuildIndex_ZMidRushTiming_LingBaneRoach)        { done = ZergMidRushTimingLingBaneRoachVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidRushTiming_DefensiveExpand) { done = ZergMidRushTimingDefensiveExpandVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidPower_PureMuta)             { done = ZergMidPowerPureMutaVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidPower_LingBaneMuta)         { done = ZergMidPowerLingBaneMutaVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidPower_FoodCapRoach)         { done = ZergMidPowerFoodCapRoachVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidPower_RoachInfestor)        { done = ZergMidPowerRoachInfestorVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidPower_RoachHydra)           { done = ZergMidPowerRoachHydraVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidPower_RoachRavager)         { done = ZergMidPowerRoachRavagerVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidPower_SwarmHost)            { done = ZergMidPowerSwarmHostVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidPower_HydraLurker)          { done = ZergMidPowerHydraLurkerVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidMacro_RoachHydra)           { done = ZergMidMacroRoachHydraVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidMacro_RoachInfestor)        { done = ZergMidMacroRoachInfestorVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidMacro_HydraLurker)          { done = ZergMidMacroHydraLurkerVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidMacro_Ultralisk)            { done = ZergMidMacroUltraliskVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidMacro_Broodlord)            { done = ZergMidMacroBroodlordVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidAir_OneBaseMuta)            { done = ZergMidAirOneBaseMutaVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidAir_OneBaseDrop)            { done = ZergMidAirOneBaseDropVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidAir_ExpansionMuta)          { done = ZergMidAirExpansionMutaVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidAir_ExpansionMixedAir)      { done = ZergMidAirExpansionMixedAirVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidAir_ExpansionDrop)          { done = ZergMidAirExpansionDropVyHd(player); }
+    else if (buildIndex == e_hdBuildIndex_ZMidAir_Macro)                  { done = ZergMidAirMacroVyHd(player); }
+    else { ErrorMeleeScript(player, "Invalid Mid BuildIndex ZergChVi"); }
+
+    if (done) {
+        ZergHDInitLate(player); // Transition to LateGame
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+//  ZergLateChVi
+//--------------------------------------------------------------------------------------------------
+void ZergLateChVi (int player) {
+    ZergLateVyHd(player);
+}

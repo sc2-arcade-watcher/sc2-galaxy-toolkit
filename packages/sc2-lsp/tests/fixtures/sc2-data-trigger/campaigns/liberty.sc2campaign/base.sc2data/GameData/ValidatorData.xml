@@ -1,0 +1,833 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CValidatorCombine id="FortifiedAndShrike">
+        <Type value="And"/>
+        <CombineArray value="HasFortifiedCarapace"/>
+        <CombineArray value="HasShrikeTurret"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="FortifiedNoShrike">
+        <Type value="And"/>
+        <CombineArray value="HasFortifiedCarapace"/>
+        <CombineArray value="NoShrikeTurret"/>
+    </CValidatorCombine>
+    <CValidatorPlayerRequirement id="HasFortifiedCarapace">
+        <Find value="1"/>
+        <Value value="FortifiedCarapace"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="HasShrikeTurret">
+        <Find value="1"/>
+        <Value value="ShrikeTurretResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="NoShrikeTurret">
+        <Find value="1"/>
+        <Value value="ShrikeTurretNotResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="NoFortifiedCarapace">
+        <Find value="1"/>
+        <Value value="NotFortifiedCarapace"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareBehaviorCount id="IsKillSquad">
+        <WhichUnit Value="Source"/>
+        <Value value="1"/>
+        <Behavior value="KillSquad"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="IsVespeneGeyser">
+        <Value value="VespeneGeyser"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsXelNagaPrison">
+        <Value value="XelNagaPrison"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsXelNagaPrisonHeight2">
+        <Value value="XelNagaPrisonHeight2"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsXelNagaPrisonHeight2North">
+        <Value value="XelNagaPrisonNorthHeight2"/>
+    </CValidatorUnitType>
+    <CValidatorUnitCompareBehaviorCount id="MohandarDoubleDamage">
+        <WhichUnit Value="Caster"/>
+        <Value value="1"/>
+        <Behavior value="MohandarDoubleDamage"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitFilters id="NotHeroic">
+        <Filters value="-;Heroic"/>
+    </CValidatorUnitFilters>
+    <CValidatorCombine id="LaserDrillTargetFilters">
+        <ResultFailed value="CantTargetThatUnit,Error/CannotTargetResources"/>
+        <Type value="And"/>
+        <CombineArray value="IsVespeneGeyser"/>
+        <CombineArray value="Minerals"/>
+        <Negate value="1"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="NotMohandarQuadAndNotMohandarDoubleDamage">
+        <Type value="And"/>
+        <CombineArray value="NotMohandarDoubleDamage"/>
+        <CombineArray value="NotMohandarQuadDamage"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="MohandarQuadDamage">
+        <WhichUnit Value="Caster"/>
+        <Value value="1"/>
+        <Behavior value="MohandarQuadDamage"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorCombine id="MohandarQuadOrMohandarDoubleDamage">
+        <CombineArray value="MohandarQuadDamage"/>
+        <CombineArray value="MohandarDoubleDamage"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="NotMohandarQuadDamage">
+        <WhichUnit Value="Caster"/>
+        <Compare value="NE"/>
+        <Value value="1"/>
+        <Behavior value="MohandarQuadDamage"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="NotMohandarDoubleDamage">
+        <WhichUnit Value="Caster"/>
+        <Compare value="NE"/>
+        <Value value="1"/>
+        <Behavior value="MohandarDoubleDamage"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="NotOdinWreckage">
+        <ResultFailed value="CantTargetThatUnit"/>
+        <Find value="0"/>
+        <Value value="OdinWreckage"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="NotThorWreckage">
+        <ResultFailed value="CantTargetThatUnit"/>
+        <Find value="0"/>
+        <Value value="ThorWreckage"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="HiveMindEmulatorTargetFilters">
+        <ResultFailed value="OKPlaceholder"/>
+        <Type value="And"/>
+        <CombineArray value="NotLarva"/>
+        <CombineArray value="NotLarvaEgg"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="MissileTurretUpgradedNoConstruction">
+        <Type value="And"/>
+        <CombineArray value="MissileTurretUpgraded"/>
+        <CombineArray value="IsNotConstructing"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="OrbitalRelayUpgradedAndNotUnderConstruction">
+        <Type value="And"/>
+        <CombineArray value="OrbitalRelayUpgraded"/>
+        <CombineArray value="IsNotConstructing"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="ArtifactReady"/>
+    <CValidatorUnitCompareBehaviorCount id="AtLeastOneHealBeamBusy">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="1"/>
+        <Behavior value="MedivacHealBeamBusy"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareResourceContents id="AutoHarvesterFinish">
+        <Compare value="GT"/>
+        <WhichUnit Value="Caster"/>
+        <Behavior value="AutomaticHarvestableVespene"/>
+    </CValidatorUnitCompareResourceContents>
+    <CValidatorPlayerRequirement id="AutoHarvesterHarvest">
+        <Value value="DontHaveCommandCenter"/>
+        <WhichPlayer Value="Caster"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="D8ClusterBombsResearched">
+        <Find value="1"/>
+        <Value value="HaveD8ClusterBomb"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorCombine id="CommandCenterReactorPurchasedAndNotUnderConstruction">
+        <Type value="And"/>
+        <CombineArray value="CommandCenterReactorPurchased"/>
+        <CombineArray value="IsNotConstructing"/>
+    </CValidatorCombine>
+    <CValidatorPlayerRequirement id="CommandCenterReactorPurchased">
+        <Find value="1"/>
+        <Value value="CommandCenterReactorResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareBehaviorCount id="EnergyNovaCharging">
+        <Compare value="GT"/>
+        <Behavior value="ArtifactRecharging"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerRequirement id="GhostPermanentCloakNotPurchased">
+        <Find value="1"/>
+        <Value value="GhostPermanentCloak"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="HasMicroFiltering">
+        <Find value="1"/>
+        <Value value="HaveMicroFiltering"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareBehaviorCount id="HealBeamAvailable">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LT"/>
+        <Value value="2"/>
+        <Behavior value="MedivacHealBeamBusy"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorCombine id="HealScanPeriodicCombine">
+        <Type value="And"/>
+        <CombineArray value="CasterHasEnergy"/>
+        <CombineArray value="AtLeastOneHealBeamBusy"/>
+    </CValidatorCombine>
+    <CValidatorLocationCompareRange id="LeviathanTargetInRange">
+        <WhichLocation Value="TargetUnit"/>
+        <Compare value="LE"/>
+        <Range value="14"/>
+    </CValidatorLocationCompareRange>
+    <CValidatorUnitOrderQueue id="MedivacIsHealing">
+        <AbilLink value="MedivacDoubleBeamHeal"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorPlayerRequirement id="Has250mmStrikeCannons">
+        <Find value="1"/>
+        <Value value="UseTechReactor"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitOrderQueue id="NotStopping">
+        <AbilLink value="stop"/>
+        <Find value="0"/>
+    </CValidatorUnitOrderQueue>
+    <CValidatorCombine id="ShrikeNoFortified">
+        <Type value="And"/>
+        <CombineArray value="NoFortifiedCarapace"/>
+        <CombineArray value="HasShrikeTurret"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareChargeUsed id="SpiderMineUsed">
+        <Compare value="GT"/>
+        <Location value="Unit"/>
+        <ChargeLink value="Abil/VultureSpiderMines"/>
+        <ResultFailed value="Error,VultureMineMax"/>
+    </CValidatorUnitCompareChargeUsed>
+    <CValidatorCombine id="TechReactorIsDetached">
+        <Type value="And"/>
+        <CombineArray value="IsTechReactor"/>
+        <CombineArray value="IsNotConstructing"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="IsTechReactor">
+        <Value value="TechReactor"/>
+    </CValidatorUnitType>
+    <CValidatorPlayerRequirement id="OrbitalRelayUpgraded">
+        <ResultNoPlayer value="Error"/>
+        <Find value="1"/>
+        <Value value="HaveOrbitalRelay"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareBehaviorCount id="SS_StrongPowerup1">
+        <WhichUnit Value="Caster"/>
+        <Value value="1"/>
+        <Behavior value="SS_PowerUpStrong"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="SS_FighterHasDronePowerup2">
+        <WhichUnit Value="Source"/>
+        <Value value="1"/>
+        <Behavior value="SS_PowerUpHealth2"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="SS_FighterHasDronePowerup1">
+        <WhichUnit Value="Source"/>
+        <Value value="1"/>
+        <Behavior value="SS_PowerUpHealth1"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorCombine id="SS_FighterHasEitherDrone">
+        <CombineArray value="SS_FighterHasDronePowerup1"/>
+        <CombineArray value="SS_FighterHasDronePowerup2"/>
+    </CValidatorCombine>
+    <CValidatorPlayerRequirement id="DontHave250mmCannons">
+        <Find value="1"/>
+        <Value value="DontHave250mmCannons"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="DontHave250mmCannonsHaveCellularReactors">
+        <Find value="1"/>
+        <Value value="DontHave250mmCannonsHaveCellularReactors"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="MissileTurretUpgraded">
+        <ResultNoPlayer value="Error"/>
+        <Find value="1"/>
+        <Value value="HaveReinforcedSuperstructure"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareBehaviorCount id="SS_DiagonalPowerup2">
+        <WhichUnit Value="Caster"/>
+        <Value value="1"/>
+        <Behavior value="SS_PowerUpDiagonal2"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerRequirement id="HaveAutoHarvester">
+        <Find value="1"/>
+        <Value value="AutoHarvesterResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareBehaviorCount id="SS_FighterHasNoStrongPowerup">
+        <WhichUnit Value="Caster"/>
+        <Behavior value="SS_PowerUpStrong"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="SS_StrongPowerup2">
+        <WhichUnit Value="Caster"/>
+        <Value value="2"/>
+        <Behavior value="SS_PowerUpStrong"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="TargetNotBeingHealed">
+        <Behavior value="MedivacTargetBeingHealed"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorCombine id="HealPeriodicCombine">
+        <Type value="And"/>
+        <CombineArray value="CasterHasEnergy"/>
+        <CombineArray value="MedivacIsHealing"/>
+        <CombineArray value="LifeGTZero"/>
+        <CombineArray value="NotMaxHP"/>
+        <CombineArray value="HealTargetInRange"/>
+        <CombineArray value="NotHidden"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareMarkerCount id="NoMedivacMarkers">
+        <ResultFailed value="AlreadyTargeted"/>
+        <WhichUnit Effect="MedivacHeal"/>
+    </CValidatorUnitCompareMarkerCount>
+    <CValidatorUnitCompareBehaviorCount id="SS_DiagonalPowerup1">
+        <WhichUnit Value="Caster"/>
+        <Value value="1"/>
+        <Behavior value="SS_PowerUpDiagonal1"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitFilters id="UnitIsBiological">
+        <Filters value="Biological;-"/>
+    </CValidatorUnitFilters>
+    <CValidatorCombine id="XelNagaCrystalValidators">
+        <CombineArray value="IsXelNagaPrison"/>
+        <CombineArray value="IsXelNagaPrisonHeight2North"/>
+        <CombineArray value="IsXelNagaPrisonHeight2"/>
+    </CValidatorCombine>
+    <CValidatorPlayerRequirement id="spectrePermanentCloakNotPurchased">
+        <Find value="1"/>
+        <Value value="SpectrePermanentCloak"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorCombine id="LeviathanPeriodicAttackValidator">
+        <Type value="And"/>
+        <CombineArray value="TentacleTargetFilters"/>
+        <CombineArray value="LeviathanTargetInRange"/>
+    </CValidatorCombine>
+    <CValidatorLocationCompareRange id="HealTargetInRange">
+        <WhichLocation Value="TargetUnit"/>
+        <Compare value="LE"/>
+        <Range value="4"/>
+    </CValidatorLocationCompareRange>
+    <CValidatorPlayerRequirement id="HasShapedBlast">
+        <Find value="1"/>
+        <Value value="UseShapedBlast"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="HasMaelstromRounds">
+        <Find value="1"/>
+        <Value value="UseMaelstromRounds"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="HasCerberusMines">
+        <Find value="1"/>
+        <Value value="UseCerberusMines"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="HasHellionInfernalPreIgniter">
+        <Find value="1"/>
+        <Value value="UseHellionInfernalPreIgniter"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="HasTwinLinkedFlameThrowers">
+        <Find value="1"/>
+        <Value value="UseTwinLinkedFlameThrowers"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="NoShapedBlast">
+        <Find value="1"/>
+        <Value value="NoShapedBlast"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareBehaviorCount id="NotBeingAttackedByTentacle">
+        <Behavior value="BeingAttackedByTentacle"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="NotDroneBurrowed">
+        <Value value="DroneBurrowed"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="NotDrone">
+        <Value value="Drone"/>
+    </CValidatorUnitType>
+    <CValidatorPlayerRequirement id="RazorWireResearched">
+        <ResultNoPlayer value="Error"/>
+        <Find value="1"/>
+        <Value value="RazorwireResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="RapidDeploymentPurchased">
+        <Find value="1"/>
+        <Value value="RapidDeploymentResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorCombine id="MedivacUpgrade">
+        <CombineArray value="RapidDeploymentPurchased"/>
+        <CombineArray value="ExpandedHullPurchased"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="CasterIsWounded">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="1"/>
+        <Behavior value="Wounded"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerRequirement id="JuggernautPlatingPurchased">
+        <ResultNoPlayer value="Error"/>
+        <Find value="1"/>
+        <Value value="JuggernautPlatingResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareField id="CanHaveShields">
+        <Compare value="GE"/>
+        <Field value="ShieldsMax"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareField>
+    <CValidatorUnitCompareField id="CanHaveEnergy">
+        <Compare value="GE"/>
+        <Field value="EnergyMax"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareField>
+    <CValidatorCombine id="CanHaveShieldsOrEnergy">
+        <CombineArray value="CanHaveEnergy"/>
+        <CombineArray value="CanHaveShields"/>
+    </CValidatorCombine>
+    <CValidatorPlayerRequirement id="DutchTurretLimit">
+        <WhichPlayer Value="Target"/>
+        <Find value="1"/>
+        <Value value="DutchTurretLimit"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitFilters id="EnemyTarget">
+        <Filters value="-;Self,Player,Ally,Neutral"/>
+    </CValidatorUnitFilters>
+    <CValidatorCombine id="FirebatUpgraded">
+        <CombineArray value="JuggernautPlatingPurchased"/>
+        <CombineArray value="BearclawNozzlesPurchased"/>
+    </CValidatorCombine>
+    <CValidatorUnitFilters id="FriendlyOrNeutralTarget">
+        <Filters value="-;Self,Enemy"/>
+    </CValidatorUnitFilters>
+    <CValidatorPlayerRequirement id="HALORocketsResearched">
+        <Find value="1"/>
+        <Value value="HALORocketsResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="IsDarkProtossResearched">
+        <Value value="UseDarkProtoss"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareBehaviorCount id="NoAEHealInhibitor">
+        <Behavior value="AEHealInhibitor"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="NoPsytrousOxide">
+        <Behavior value="PsytrousOxide"/>
+        <WhichUnit Value="Caster"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareOrderCount id="NotAttacking">
+        <WhichUnit Value="Target"/>
+        <AbilLink value="attack"/>
+    </CValidatorUnitCompareOrderCount>
+    <CValidatorUnitCompareBehaviorCount id="NotKnockedDown">
+        <Behavior value="QueenKnockdown"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareVital id="NotMaxEnergy">
+        <ResultFailed value="TooMuchEnergy"/>
+        <Compare value="LT"/>
+        <Type value="Fraction"/>
+        <Value value="1"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorCombine id="NotMaxEnergyOrNotMaxHP">
+        <CombineArray value="NotMaxEnergy"/>
+        <CombineArray value="NotMaxHP"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="NotSpiderMine">
+        <ResultFailed value="CantTargetThatUnit"/>
+        <Value value="SpiderMine"/>
+        <Find value="0"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="NotNukePack">
+        <Value value="NukePack"/>
+        <Find value="0"/>
+    </CValidatorUnitType>
+    <CValidatorUnitCompareBehaviorCount id="HasZergGenericDeath">
+        <Value value="1"/>
+        <Behavior value="ZergGenericDeath"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="NotOmegalisk">
+        <Value value="Omegalisk"/>
+        <Find value="0"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="NotSpiderMineBurrowed">
+        <ResultFailed value="CantTargetThatUnit"/>
+        <Value value="SpiderMineBurrowed"/>
+        <Find value="0"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="NotTrain">
+        <Type value="And"/>
+        <CombineArray value="NotTrainCaboose"/>
+        <CombineArray value="NotTrainCar"/>
+        <CombineArray value="NotTrainEngine"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="NotTrainEngine">
+        <Value value="TarsonisEngine"/>
+        <Find value="0"/>
+    </CValidatorUnitType>
+    <CValidatorUnitCompareSpeed id="NotMoving"/>
+    <CValidatorUnitType id="IsVulture">
+        <Value value="Vulture"/>
+    </CValidatorUnitType>
+    <CValidatorUnitFilters id="IsCloaked">
+        <Filters value="Cloaked;-"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitType id="NotTrainCar">
+        <Value value="FreightCar"/>
+        <Find value="0"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="NotTrainCaboose">
+        <Value value="Caboose"/>
+        <Find value="0"/>
+    </CValidatorUnitType>
+    <CValidatorUnitCompareBehaviorCount id="OdinRepairing">
+        <ResultFailed value="NotWhileOccupied"/>
+        <WhichUnit Value="Caster"/>
+        <Behavior value="AutomatedRepair"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="PsiShockHasEnoughCharges">
+        <WhichUnit Value="Source"/>
+        <Compare value="GT"/>
+        <Behavior value="PsiShockChargeCount"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="DoesNotHaveControllerBehavior">
+        <Behavior value="PsionicShockwaveBehaviorController"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="NotSolarCollector">
+        <Find value="0"/>
+        <Value value="SolarCollector"/>
+    </CValidatorUnitType>
+    <CValidatorUnitCompareBehaviorCount id="QueenShockwaveEggCount">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LT"/>
+        <Value value="5"/>
+        <Behavior value="QueenShockwaveEggCount"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerRequirement id="ExpandedHullPurchased">
+        <Find value="1"/>
+        <Value value="ExpandedHullResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitType id="RequiresColonist">
+        <Value value="Colonist"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="RequiresColonistFemale">
+        <Value value="ColonistFemale"/>
+    </CValidatorUnitType>
+    <CValidatorPlayerRequirement id="SCVUpgraded">
+        <ResultNoPlayer value="Error"/>
+        <Find value="1"/>
+        <Value value="HaveFusionWelder"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareBehaviorCount id="SS_LightningProjectorOn">
+        <Value value="1"/>
+        <Behavior value="SS_LightningProjector"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerRequirement id="StabilizerMedPacksPurchased">
+        <Find value="1"/>
+        <Value value="StabilizerMedPacksResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="ClusterWarheadsPurchased">
+        <Find value="1"/>
+        <Value value="ClusterWarheadsResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="ProjectileAcceleratorsPurchased">
+        <Find value="1"/>
+        <Value value="ProjectileAcceleratorsPurchased"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareBehaviorCount id="ChainLightningHasEnoughCharges">
+        <WhichUnit Value="Source"/>
+        <Compare value="GT"/>
+        <Behavior value="ChainLightningChargeCount"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="DiamondbackNotAttacking">
+        <Behavior value="BurstCapacitorsAttacking"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="DiamondbackCharged">
+        <WhichUnit Value="Caster"/>
+        <Value value="1"/>
+        <Behavior value="BurstCapacitorsDamageBuff"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerRequirement id="NapalmFuelTanksPurchased">
+        <Find value="1"/>
+        <Value value="NapalmFuelTanksResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="CrossSpectrumDampenersResearched">
+        <Find value="1"/>
+        <Value value="CrossSpectrumDampenersResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareBehaviorCount id="IsWarbotB">
+        <WhichUnit Value="Source"/>
+        <Value value="1"/>
+        <Behavior value="WarbotB"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="IsWarbotC">
+        <WhichUnit Value="Source"/>
+        <Value value="1"/>
+        <Behavior value="WarbotC"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerRequirement id="AuxilaryMedBotsPurchased">
+        <Find value="1"/>
+        <Value value="AuxiliaryMedBotsResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareBehaviorCount id="StetmannHasntHealedRecently">
+        <Behavior value="UsedHealRecently"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareDamageTakenTime id="StetmannOutOfCombat">
+        <Compare value="GE"/>
+        <Value value="6"/>
+    </CValidatorUnitCompareDamageTakenTime>
+    <CValidatorUnitCompareBehaviorCount id="TargetNotIncapacitated">
+        <Behavior value="Incapacitated"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="TentacleANotBusy">
+        <WhichUnit Value="Caster"/>
+        <Behavior value="TentacleABusy"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitFilters id="TentacleTargetFilters">
+        <Filters value="Ground,Visible;Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitCompareBehaviorCount id="TentacleBNotBusy">
+        <WhichUnit Value="Caster"/>
+        <Behavior value="TentacleBBusy"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="TentacleCNotBusy">
+        <WhichUnit Value="Caster"/>
+        <Behavior value="TentacleCBusy"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="TentacleDNotBusy">
+        <WhichUnit Value="Caster"/>
+        <Behavior value="TentacleDBusy"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="TychusIsStimmed">
+        <WhichUnit Value="Caster"/>
+        <Value value="1"/>
+        <Behavior value="TychusCommandoStimPack"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="TargetIsSpecialObject">
+        <Behavior value="SpecialObject"/>
+        <Compare value="GT"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerRequirement id="ViralPlasmaPurchased">
+        <Find value="1"/>
+        <Value value="ViralPlasmaResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="FireSuppressionSystemsPurchased">
+        <WhichPlayer Value="Source"/>
+        <Value value="FireSuppressionSystemsNotResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="BurstCapacitorsPurchased">
+        <Find value="1"/>
+        <Value value="BurstCapacitorsResearched"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorPlayerRequirement id="BearclawNozzlesPurchased">
+        <Value value="BearclawNozzlesResearched"/>
+        <ResultNoPlayer value="Error"/>
+        <Find value="1"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareVital id="NotMaxHP">
+        <ResultFailed value="TooMuchLife"/>
+        <Compare value="LT"/>
+        <Value value="1"/>
+        <Type value="Fraction"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitType id="RequiresDrNarud">
+        <Value value="DrNarud"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="RequiresCivilianFemale">
+        <Value value="CivilianFemale"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="RequiresCivilianAll">
+        <CombineArray value="RequiresCivilian"/>
+        <CombineArray value="RequiresCivilianFemale"/>
+        <CombineArray value="RequiresColonist"/>
+        <CombineArray value="RequiresColonistFemale"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="RequiresCivilian">
+        <Value value="Civilian"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="NotRemoteDetonationCharge">
+        <Find value="0"/>
+        <Value value="RemoteDetonationCharge"/>
+    </CValidatorUnitType>
+    <CValidatorUnitFilters id="LockdownTargetFilters">
+        <Filters value="Mechanical,Visible;Self,Structure,Destructible,Stasis,Dead,Hidden,Invulnerable"/>
+    </CValidatorUnitFilters>
+    <CValidatorCombine id="Lockdown">
+        <ResultFailed value="CantLockdown"/>
+        <Type value="And"/>
+        <CombineArray value="LockdownTargetFilters"/>
+        <CombineArray value="NotMothership"/>
+        <CombineArray value="NotTrain"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="SpectreLockdown">
+        <ResultFailed value="CantLockdown"/>
+        <Type value="And"/>
+        <CombineArray value="LockdownTargetFilters"/>
+        <CombineArray value="NotMothership"/>
+        <CombineArray value="NotTrain"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="Domination">
+        <Type value="And"/>
+        <CombineArray value="NotDead"/>
+        <CombineArray value="CasterNotDead"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="MindSiphon">
+        <Type value="And"/>
+        <CombineArray value="NotDead"/>
+        <CombineArray value="CasterNotDead"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="ColonyInfestationTargetValidatorHut">
+        <Value value="InfestableHut"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="ColonyInfestationTargetValidatorDome">
+        <Value value="InfestableBiodome"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="ColonyInfestationTargetValidator">
+        <CombineArray value="ColonyInfestationTargetValidatorDome"/>
+        <CombineArray value="ColonyInfestationTargetValidatorHut"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="ColonyInfestationPeriodic">
+        <Type value="And"/>
+        <CombineArray value="NotDead"/>
+        <CombineArray value="CasterNotDead"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareField id="IsGroundUnit">
+        <Field value="PlaneArray[0]"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareField>
+    <CValidatorLocationPlacement id="CentaurSwarmPlacementCheck">
+        <Unit value="CentaurSwarmEgg"/>
+        <Range value="1"/>
+    </CValidatorLocationPlacement>
+    <CValidatorUnitFilters id="PsiRiftUTargetFilters">
+        <Filters value="-;Structure,Missile,Destructible,Stasis,Dead,Hidden,Invulnerable"/>
+    </CValidatorUnitFilters>
+    <CValidatorPlayerRequirement id="NoDarkProtoss">
+        <Value value="UseDarkProtoss"/>
+        <Find value="1"/>
+        <ResultNoPlayer value="Error"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitCompareBehaviorCount id="IsNotKillerPhantasm">
+        <Compare value="NE"/>
+        <Value value="1"/>
+        <Behavior value="KillerPhantasm"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="IsKillerPhantasm">
+        <Value value="1"/>
+        <Behavior value="KillerPhantasm"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitFilters id="KillKillerPhantasmTargetFilters">
+        <Filters value="Hallucination;-"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitCompareBehaviorCount id="IsDarkProtoss">
+        <Behavior value="DarkProtoss"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="IsDestructibleGateDiagonalBLUR">
+        <Value value="DestructibleGateDiagonalBLUR"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsDestructibleGateDiagonalULBR">
+        <Value value="DestructibleGateDiagonalULBR"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsHoldingPen">
+        <Value value="HoldingPen"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsCastanarDestructibleDebris">
+        <Value value="CastanarDestructibleDebris"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="RaynorD8Targets">
+        <CombineArray value="IsDestructibleGateDiagonalBLUR"/>
+        <CombineArray value="IsDestructibleGateDiagonalULBR"/>
+        <CombineArray value="IsHoldingPen"/>
+        <CombineArray value="IsCastanarDestructibleDebris"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="DarkProtossIsConstructing">
+        <Type value="And"/>
+        <CombineArray value="NoDarkProtoss"/>
+        <CombineArray value="IsConstructing"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="DarkProtossIsNotConstructing">
+        <Type value="And"/>
+        <CombineArray value="NoDarkProtoss"/>
+        <CombineArray value="IsNotConstructing"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="IsInfestedTerranCampaign">
+        <Value value="InfestedTerranCampaign"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsInfestedTerranCampaignBurrowed">
+        <Value value="InfestedTerranCampaignBurrowed"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsInfestedCivilian">
+        <Value value="InfestedCivilian"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsInfestedCivilianBurrowed">
+        <Value value="InfestedCivilianBurrowed"/>
+    </CValidatorUnitType>
+    <!-- used to stop both the behaviors and the CP if either grabbing or grabbed unit is dead-->
+    <CValidatorCombine id="TestHeroGrabNotDeadCheck">
+        <Type value="And"/>
+        <CombineArray value="GrabCasterNotDead"/>
+        <CombineArray value="TestHeroGrabTargetNotDead"/>
+    </CValidatorCombine>
+    <CValidatorUnitFilters id="TestHeroGrabTargetNotDead">
+        <Filters value="-;Dead"/>
+        <WhichUnit Effect="TestHeroGrabStartSet"/>
+    </CValidatorUnitFilters>
+    <CValidatorLocationEnumArea id="TestHeroThrowEnemiesNearby">
+        <AreaArray Compare="GT" Count="0" Radius="10"/>
+        <SearchFilters value="Visible;Self,Player,Ally,Missile,Item,Stasis,Dead,Hidden"/>
+        <ExcludeArray Effect="TestHeroGrabStartSet" Value="Target"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorUnitCompareBehaviorCount id="TestHeroThrowReadyCheckCaster">
+        <WhichUnit Value="Caster"/>
+        <Value value="1"/>
+        <Behavior value="TestHeroThrowReady"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="TestHeroThrowReadyCheckTarget">
+        <Value value="1"/>
+        <Behavior value="TestHeroThrowTarget"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <!--
+    
+    Infested Marine Campaign Burrow/Unburrow
+    
+    -->
+    <CValidatorUnitCompareAttackPriority id="ThreatensInfestedTerranCampaign" parent="ThreatensUnit" unitLink="InfestedTerranCampaign"/>
+    <CValidatorCombine id="TacticalBurrowInfestedTerranCampaignThreatTest" parent="TacticalBurrowThreatTest" unitLink="InfestedTerranCampaign"/>
+    <CValidatorLocationEnumArea id="TacticalBurrowInfestedTerranCampaignThreatSearchEmpty" parent="TacticalBurrowThreatSearchEmpty" unitLink="InfestedTerranCampaign"/>
+    <CValidatorCombine id="TacticalBurrowInfestedTerranCampaignCampaignNoHostilesBullyBurrow" parent="TacticalBurrowCampaignNoHostilesBullyBurrow" unitLink="InfestedTerranCampaignBurrowed"/>
+    <CValidatorCombine id="TacticalBurrowInfestedTerranCampaignCampaignBullyUnburrow" parent="TacticalBurrowCampaignBullyUnburrow" unitLink="InfestedTerranCampaign"/>
+    <CValidatorUnitType id="TacticalBurrowInfestedTerranCampaignBullyTest" parent="TacticalBurrowBullyTest" unitLink="InfestedTerranCampaign"/>
+    <CValidatorUnitType id="TacticalBurrowInfestedTerranCampaignBurrowedBullyTest" parent="TacticalBurrowBullyTest" unitLink="InfestedTerranCampaignBurrowed"/>
+    <CValidatorFunction id="TacticalBurrowInfestedTerranCampaignDown" parent="TacticalBurrowSharedDown" maxVitals="30" minVitals="10" unitLink="InfestedTerranCampaign"/>
+    <CValidatorFunction id="TacticalBurrowInfestedTerranCampaignUp" parent="TacticalBurrowSharedUp" maxVitals="40" unitLink="InfestedTerranCampaign"/>
+    <!--
+    
+    Infested Civilian Burrow/Unburrow
+    
+    -->
+    <CValidatorUnitCompareAttackPriority id="ThreatensInfestedCivilian" parent="ThreatensUnit" unitLink="InfestedCivilian"/>
+    <CValidatorCombine id="TacticalBurrowInfestedCivilianThreatTest" parent="TacticalBurrowThreatTest" unitLink="InfestedCivilian"/>
+    <CValidatorLocationEnumArea id="TacticalBurrowInfestedCivilianThreatSearchEmpty" parent="TacticalBurrowThreatSearchEmpty" unitLink="InfestedCivilian"/>
+    <CValidatorCombine id="TacticalBurrowInfestedCivilianCampaignNoHostilesBullyBurrow" parent="TacticalBurrowCampaignNoHostilesBullyBurrow" unitLink="InfestedCivilianBurrowed"/>
+    <CValidatorCombine id="TacticalBurrowInfestedCivilianCampaignBullyUnburrow" parent="TacticalBurrowCampaignBullyUnburrow" unitLink="InfestedCivilian"/>
+    <CValidatorUnitType id="TacticalBurrowInfestedCivilianBullyTest" parent="TacticalBurrowBullyTest" unitLink="InfestedCivilian"/>
+    <CValidatorUnitType id="TacticalBurrowInfestedCivilianBurrowedBullyTest" parent="TacticalBurrowBullyTest" unitLink="InfestedCivilianBurrowed"/>
+    <CValidatorFunction id="TacticalBurrowInfestedCivilianDown" parent="TacticalBurrowSharedDown" maxVitals="30" minVitals="10" unitLink="InfestedCivilian"/>
+    <CValidatorFunction id="TacticalBurrowInfestedCivilianUp" parent="TacticalBurrowSharedUp" maxVitals="40" unitLink="InfestedCivilian"/>
+    <!--
+    
+    Infested Abomination Burrow/Unburrow
+    
+    -->
+    <CValidatorCombine id="TacticalBurrowInfestedAbominationUp">
+        <Negate value="1"/>
+        <CombineArray value="TacticalBurrowHostileSearchEmpty"/>
+    </CValidatorCombine>
+    <!--
+    
+    Hybrid Blink AI
+    
+    -->
+    <CValidatorLocationEnumArea id="HybridBlinkHostileSearch" parent="HostileSearch">
+        <Count value="4"/>
+        <AreaArray Radius="5"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorFunction id="HybridBlinkChaseTest">
+        <Line Failure="HybridBlinkTargetAttacking"/>
+        <Line Failure="HybridBlinkTargetClose"/>
+    </CValidatorFunction>
+    <CValidatorUnitCompareOrderCount id="HybridBlinkTargetAttacking">
+        <WhichUnit Value="Target"/>
+        <AbilLink value="attack"/>
+    </CValidatorUnitCompareOrderCount>
+    <CValidatorLocationCompareRange id="HybridBlinkTargetClose">
+        <Compare value="LT"/>
+        <Range value="2.5"/>
+        <WhichLocation Value="TargetUnitOrPoint"/>
+    </CValidatorLocationCompareRange>
+    <CValidatorLocationCompareRange id="HybridBlinkAttackRange">
+        <Compare value="GT"/>
+        <Range value="4"/>
+        <WhichLocation Value="TargetUnitOrPoint"/>
+    </CValidatorLocationCompareRange>
+</Catalog>

@@ -1,0 +1,120 @@
+include "TriggerLibs/NativeLib"
+
+include "TriggerLibs/VoidLib_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Void
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libLotv_InitLibraries () {
+    libNtve_InitVariables();
+}
+
+// Functions
+int libLotv_gf_DifficultyValueInt2 (int lp_casual, int lp_normal, int lp_hard, int lp_brutal) {
+    // Automatic Variable Declarations
+    int auto699E8437_val;
+
+    // Implementation
+    auto699E8437_val = PlayerDifficulty(1);
+    if (auto699E8437_val == 1) {
+        return lp_casual;
+    }
+    else if (auto699E8437_val == 2) {
+        return lp_normal;
+    }
+    else if (auto699E8437_val == 3) {
+        return lp_hard;
+    }
+    else if (auto699E8437_val == 4) {
+        return lp_brutal;
+    }
+    else {
+        return lp_normal;
+    }
+}
+
+fixed libLotv_gf_DifficultyValueFixed2 (fixed lp_casual, fixed lp_normal, fixed lp_hard, fixed lp_brutal) {
+    // Automatic Variable Declarations
+    int autoB6E409FF_val;
+
+    // Implementation
+    autoB6E409FF_val = PlayerDifficulty(1);
+    if (autoB6E409FF_val == 1) {
+        return lp_casual;
+    }
+    else if (autoB6E409FF_val == 2) {
+        return lp_normal;
+    }
+    else if (autoB6E409FF_val == 3) {
+        return lp_hard;
+    }
+    else if (autoB6E409FF_val == 4) {
+        return lp_brutal;
+    }
+    else {
+        return lp_normal;
+    }
+}
+
+string libLotv_gf_DifficultyValueVoidUnitType (string lp_casual, string lp_normal, string lp_hard, string lp_brutal) {
+    // Automatic Variable Declarations
+    int auto47796009_val;
+
+    // Implementation
+    auto47796009_val = PlayerDifficulty(1);
+    if (auto47796009_val == 1) {
+        return lp_casual;
+    }
+    else if (auto47796009_val == 2) {
+        return lp_normal;
+    }
+    else if (auto47796009_val == 3) {
+        return lp_hard;
+    }
+    else if (auto47796009_val == 4) {
+        return lp_brutal;
+    }
+    else {
+        return lp_normal;
+    }
+}
+
+bool libLotv_gf_DifficultyValueVoidBoolean (bool lp_casual, bool lp_normal, bool lp_hard, bool lp_brutal) {
+    // Automatic Variable Declarations
+    int autoE9C7E56E_val;
+
+    // Implementation
+    autoE9C7E56E_val = PlayerDifficulty(1);
+    if (autoE9C7E56E_val == 1) {
+        return lp_casual;
+    }
+    else if (autoE9C7E56E_val == 2) {
+        return lp_normal;
+    }
+    else if (autoE9C7E56E_val == 3) {
+        return lp_hard;
+    }
+    else if (autoE9C7E56E_val == 4) {
+        return lp_brutal;
+    }
+    else {
+        return lp_normal;
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libLotv_InitLib_completed = false;
+
+void libLotv_InitLib () {
+    if (libLotv_InitLib_completed) {
+        return;
+    }
+
+    libLotv_InitLib_completed = true;
+
+    libLotv_InitLibraries();
+}
+

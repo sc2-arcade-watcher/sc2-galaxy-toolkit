@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib5BDBCC00_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib5BDBCC00_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib5BDBCC00_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(30);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib5BDBCC00_gt_Initialization_Init () {
+    lib5BDBCC00_gt_Initialization = TriggerCreate("lib5BDBCC00_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib5BDBCC00_gt_Initialization);
+}
+
+void lib5BDBCC00_InitTriggers () {
+    lib5BDBCC00_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib5BDBCC00_InitLib_completed = false;
+
+void lib5BDBCC00_InitLib () {
+    if (lib5BDBCC00_InitLib_completed) {
+        return;
+    }
+
+    lib5BDBCC00_InitLib_completed = true;
+
+    lib5BDBCC00_InitLibraries();
+    lib5BDBCC00_InitTriggers();
+}
+

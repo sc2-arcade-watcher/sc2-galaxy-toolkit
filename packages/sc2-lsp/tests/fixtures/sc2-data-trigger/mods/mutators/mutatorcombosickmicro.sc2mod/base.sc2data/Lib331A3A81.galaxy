@@ -1,0 +1,54 @@
+include "TriggerLibs/NativeLib"
+include "LibCOMU"
+
+include "Lib331A3A81_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Weekly Challenge
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib331A3A81_InitLibraries () {
+    libNtve_InitVariables();
+    libCOMU_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib331A3A81_gt_Initialization_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMU_gf_SetMutatorWeeklyChallengeOn(34);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib331A3A81_gt_Initialization_Init () {
+    lib331A3A81_gt_Initialization = TriggerCreate("lib331A3A81_gt_Initialization_Func");
+    TriggerAddEventMapInit(lib331A3A81_gt_Initialization);
+}
+
+void lib331A3A81_InitTriggers () {
+    lib331A3A81_gt_Initialization_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib331A3A81_InitLib_completed = false;
+
+void lib331A3A81_InitLib () {
+    if (lib331A3A81_InitLib_completed) {
+        return;
+    }
+
+    lib331A3A81_InitLib_completed = true;
+
+    lib331A3A81_InitLibraries();
+    lib331A3A81_InitTriggers();
+}
+

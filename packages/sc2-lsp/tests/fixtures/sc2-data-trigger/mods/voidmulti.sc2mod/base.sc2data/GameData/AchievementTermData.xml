@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CAchievementTermCombine id="Combat_Mechanic_KillTransport">
+        <ChildTable value="Combat_Mechanic_KillTransport_TransportOverlord"/>
+    </CAchievementTermCombine>
+    <CAchievementTermUnitDeath id="Combat_Mechanic_KillTransport_TransportOverlord">
+        <Flags index="Notify" value="0"/>
+        <Quantity value="1"/>
+        <Unit value="OverlordTransport"/>
+        <ValidatorArray value="IsTransportFull"/>
+        <ValidatorArray value="TargetIsEnemy"/>
+    </CAchievementTermUnitDeath>
+    <!--=========================================================================================-->
+    <CAchievementTermCombine id="Combat_Spells_PhasePrism">
+        <ChildTable value="Combat_Spells_PhasePrism_Adept"/>
+    </CAchievementTermCombine>
+    <CAchievementTermAbilUse id="Combat_Spells_PhasePrism_DarkTemplar">
+        <ValidatorArray index="0" value="IsPoweredByWarpPrismSet"/>
+    </CAchievementTermAbilUse>
+    <CAchievementTermAbilUse id="Combat_Spells_PhasePrism_HighTemplar">
+        <ValidatorArray index="0" value="IsPoweredByWarpPrismSet"/>
+    </CAchievementTermAbilUse>
+    <CAchievementTermAbilUse id="Combat_Spells_PhasePrism_Sentry">
+        <ValidatorArray index="0" value="IsPoweredByWarpPrismSet"/>
+    </CAchievementTermAbilUse>
+    <CAchievementTermAbilUse id="Combat_Spells_PhasePrism_Stalker">
+        <ValidatorArray index="0" value="IsPoweredByWarpPrismSet"/>
+    </CAchievementTermAbilUse>
+    <CAchievementTermAbilUse id="Combat_Spells_PhasePrism_Zealot">
+        <ValidatorArray index="0" value="IsPoweredByWarpPrismSet"/>
+    </CAchievementTermAbilUse>
+    <CAchievementTermEffectKilled id="Combat_Spells_Snipe">
+        <Effect value="ChannelSnipeInitialSet"/>
+    </CAchievementTermEffectKilled>
+    <CAchievementTermAbilUse id="Combat_Spells_PhasePrism_Adept">
+        <Flags index="Notify" value="0"/>
+        <AbilCmd value="WarpGateTrain,Train7"/>
+        <ValidatorArray value="IsPoweredByWarpPrismSet"/>
+    </CAchievementTermAbilUse>
+</Catalog>

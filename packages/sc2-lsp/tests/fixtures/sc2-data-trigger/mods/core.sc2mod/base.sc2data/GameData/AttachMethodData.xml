@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CAttachMethod default="1"/>
+    <CAttachMethodFilter default="1"/>
+    <CAttachMethodPattern default="1">
+        <Multiplier value="1"/>
+    </CAttachMethodPattern>
+    <CAttachMethodProximity default="1">
+        <RequestCount value="1"/>
+        <Location Value="CasterUnitOrPoint"/>
+    </CAttachMethodProximity>
+    <CAttachMethodRandom default="1">
+        <RequestCount value="1"/>
+        <Distribution value="Exponential"/>
+    </CAttachMethodRandom>
+    <CAttachMethodReduction default="1">
+        <RequestCount value="1"/>
+    </CAttachMethodReduction>
+    <CAttachMethodAttachType id="AMAttachesWithKeywords"/>
+    <CAttachMethodAttachType id="AMAttachesWithoutKeywords">
+        <AttachType value="NoKeywords"/>
+    </CAttachMethodAttachType>
+    <CAttachMethodFilter id="AMFilterCustomA">
+        <Keys Keyword="CustomA"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterDamage">
+        <Keys Keyword="Damage"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterBodySquibs">
+        <Keys Keyword="Damage"/>
+    </CAttachMethodFilter>
+    <CAttachMethodIncoming id="AMIncoming"/>
+    <CAttachMethodReduction id="AMReductionForBodySquibs">
+        <RequestCount value="3"/>
+        <PassChanceEach value="70.000000"/>
+    </CAttachMethodReduction>
+    <CAttachMethodReduction id="AMReductionForBodySquibsHeavy">
+        <RequestCount value="1000"/>
+        <PassChanceEach value="70.000000"/>
+    </CAttachMethodReduction>
+    <CAttachMethodReduction id="AMReductionForBodySquibsReduced">
+        <RequestCount value="2"/>
+        <PassChanceEach value="50.000000"/>
+    </CAttachMethodReduction>
+    <CAttachMethodReduction id="AMReductionForBloodGroundSpew">
+        <PassChanceFull value="50.000000"/>
+    </CAttachMethodReduction>
+    <CAttachMethodNodeOccupancy2 id="AMNodeOccupancyDeathBlood">
+        <Targets value="BloodSquibDeathRagdoll"/>
+        <Targets value="BloodSquibDeathRagdollLarge"/>
+        <Logic value="RequireNone"/>
+    </CAttachMethodNodeOccupancy2>
+    <!--                                                                                         -->
+    <!-- The Basics ============================================================================ -->
+    <!--                                                                                         -->
+    <CAttachMethodArcTest id="AMArcTestWeapon">
+        <Tests index="Weapon" value="1"/>
+        <Tests index="ActionAcquisition" value="1"/>
+        <Type value="Preference"/>
+    </CAttachMethodArcTest>
+    <CAttachMethodBestMatch id="AMBestMatchWeapon">
+        <Keys value="Weapon"/>
+    </CAttachMethodBestMatch>
+    <!-- Typically used in conjunction with a NodeOccupancy attach method. -->
+    <CAttachMethodFilter id="AMFilterCenter">
+        <Keys Keyword="Center"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterTarget">
+        <Keys Keyword="Target"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterTargetHeavy">
+        <Keys Keyword="Target"/>
+        <Keys Keyword="Heavy"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterTargetLight">
+        <Keys Keyword="Target"/>
+        <Keys Keyword="Light"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterTargetMedium">
+        <Keys Keyword="Target"/>
+        <Keys Keyword="Medium"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterTargetShield">
+        <Keys Keyword="Target"/>
+        <Keys Keyword="Shield"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterTargetVolumes">
+        <Keys Keyword="Target"/>
+        <AttachType value="Volume"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterTargetOrDamage">
+        <Logic value="OR"/>
+        <Keys Keyword="Target"/>
+        <Keys Keyword="Damage"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterHead">
+        <Keys Keyword="Head"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterWeapon">
+        <Keys Keyword="Weapon"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterWeapon00">
+        <Keys Keyword="Weapon" Index="0"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterWeapon01">
+        <Keys Keyword="Weapon" Index="1"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterWeapon02">
+        <Keys Keyword="Weapon" Index="2"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterWeapon03">
+        <Keys Keyword="Weapon" Index="3"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterHardpoint">
+        <Keys Keyword="Hardpoint"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterHardpoint01">
+        <Keys Keyword="Hardpoint" Index="1"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterHardpoint02">
+        <Keys Keyword="Hardpoint" Index="2"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterHardpointLeft">
+        <Keys Keyword="Hardpoint"/>
+        <Keys Keyword="Left"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterHardpointRight">
+        <Keys Keyword="Hardpoint"/>
+        <Keys Keyword="Right"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterWeaponBottom">
+        <Keys Keyword="Weapon"/>
+        <Keys Keyword="Bottom"/>
+    </CAttachMethodFilter>
+    <!-- Weapon sets out to 5. -->
+    <CAttachMethodFilter id="AMFilterWeaponSetA0">
+        <Keys Keyword="Weapon"/>
+        <Keys Keyword="SetA" Index="0"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterWeaponSetA1">
+        <Keys Keyword="Weapon"/>
+        <Keys Keyword="SetA" Index="1"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterWeaponSetA2">
+        <Keys Keyword="Weapon"/>
+        <Keys Keyword="SetA" Index="2"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterWeaponSetA3">
+        <Keys Keyword="Weapon"/>
+        <Keys Keyword="SetA" Index="3"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterWeaponSetA4">
+        <Keys Keyword="Weapon"/>
+        <Keys Keyword="SetA" Index="4"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterWeaponLeft">
+        <Keys Keyword="Weapon"/>
+        <Keys Keyword="Left"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterWeaponRight">
+        <Keys Keyword="Weapon"/>
+        <Keys Keyword="Right"/>
+    </CAttachMethodFilter>
+    <!-- Air and ground weapon sets. -->
+    <CAttachMethodFilter id="AMFilterWeaponAir">
+        <Keys Keyword="Weapon"/>
+        <Keys Keyword="Air"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterWeaponGround">
+        <Keys Keyword="Weapon"/>
+        <Keys Keyword="Ground"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMPreferGround">
+        <Keys Keyword="Ground"/>
+        <FilterType value="Preference"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterUpgradeArmor">
+        <Keys Keyword="Upgrade"/>
+        <Keys Keyword="Armor"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterUpgradeEngine">
+        <Keys Keyword="Upgrade"/>
+        <Keys Keyword="Engine"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterUpgradeEngineBottom">
+        <Keys Keyword="Upgrade"/>
+        <Keys Keyword="Engine"/>
+        <Keys Keyword="Bottom"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterUpgradeEngineLeft">
+        <Keys Keyword="Upgrade"/>
+        <Keys Keyword="Engine"/>
+        <Keys Keyword="Left"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterUpgradeEngineRight">
+        <Keys Keyword="Upgrade"/>
+        <Keys Keyword="Engine"/>
+        <Keys Keyword="Right"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterUpgradeWeapon">
+        <Keys Keyword="Upgrade"/>
+        <Keys Keyword="Weapon"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterUpgradeWeaponBottom">
+        <Keys Keyword="Upgrade"/>
+        <Keys Keyword="Weapon"/>
+        <Keys Keyword="Bottom"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterUpgradeWeaponLeft">
+        <Keys Keyword="Upgrade"/>
+        <Keys Keyword="Weapon"/>
+        <Keys Keyword="Left"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterUpgradeWeaponRight">
+        <Keys Keyword="Upgrade"/>
+        <Keys Keyword="Weapon"/>
+        <Keys Keyword="Right"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterTargetSetA0">
+        <Keys Keyword="Target"/>
+        <Keys Keyword="SetA" Index="0"/>
+    </CAttachMethodFilter>
+    <CAttachMethodFilter id="AMFilterTargetSetB0">
+        <Keys Keyword="Target"/>
+        <Keys Keyword="SetB" Index="0"/>
+    </CAttachMethodFilter>
+    <!-- Basic proximity stuff. -->
+    <CAttachMethodProximity id="AMClosestToCaster"/>
+    <CAttachMethodProximity id="AMClosestToOuter">
+        <Location Value="OuterUnitOrPoint"/>
+    </CAttachMethodProximity>
+    <CAttachMethodProximity id="AMClosestToTarget">
+        <Location Value="TargetUnitOrPoint"/>
+    </CAttachMethodProximity>
+    <CAttachMethodProximity id="AMClosest2ToTarget">
+        <RequestCount value="2"/>
+        <Location Value="TargetUnitOrPoint"/>
+    </CAttachMethodProximity>
+    <!-- Various striping types. -->
+    <CAttachMethodPattern id="AMPatternRollingStripe">
+        <Keyword value="Weapon"/>
+        <Driver value="::RollingIndex"/>
+    </CAttachMethodPattern>
+    <CAttachMethodVolumesRequery id="AMVolumesRequery"/>
+    <CAttachMethodVolumesTargets id="AMVolumesTargets"/>
+    <CAttachMethodVolumesWeightedPick id="AMVolumesWeightedPick">
+        <VolumeFactor value="1.000000"/>
+        <ProximityFactorNear value="3.000000"/>
+        <ProximityFactorFar value="1.000000"/>
+    </CAttachMethodVolumesWeightedPick>
+    <!--                                                                                         -->
+    <!-- System ================================================================================ -->
+    <!--                                                                                         -->
+    <CAttachMethodNodeOccupancy id="AMNodeOccupancyNoSpam">
+        <Logic value="RequireNone"/>
+    </CAttachMethodNodeOccupancy>
+    <CAttachMethodNumericField id="AMNumericFieldRadiusShield"/>
+    <CAttachMethodProximity id="AMProximityAll">
+        <RequestCount value="0"/>
+        <SortResults value="1"/>
+    </CAttachMethodProximity>
+    <CAttachMethodProximity id="AMProximityTargetAll">
+        <RequestCount value="0"/>
+        <SortResults value="1"/>
+        <Location Value="TargetUnitOrPoint"/>
+    </CAttachMethodProximity>
+    <CAttachMethodProximity id="AMProximityTarget">
+        <Location Value="TargetUnitOrPoint"/>
+    </CAttachMethodProximity>
+    <CAttachMethodRandom id="AMRandom">
+        <ExponentialMean value="0.333300"/>
+    </CAttachMethodRandom>
+    <CAttachMethodRandom id="AMRandomExpTight">
+        <ExponentialMean value="0.100000"/>
+    </CAttachMethodRandom>
+    <CAttachMethodRandom id="AMRandomUniform">
+        <Distribution value="Uniform"/>
+    </CAttachMethodRandom>
+    <CAttachMethodRandom id="AMRandomUniformAll">
+        <RequestCount value="4294967295"/>
+        <Distribution value="Uniform"/>
+    </CAttachMethodRandom>
+    <CAttachMethodReduction id="AMReduction"/>
+    <CAttachMethodReduction id="AMReductionQtr">
+        <ReductionType value="Percentage"/>
+        <RequestPercentage value="0.250000"/>
+    </CAttachMethodReduction>
+    <CAttachMethodReduction id="AMReductionFire">
+        <ReductionType value="Percentage"/>
+        <RequestCount value="2"/>
+        <RequestPercentage value="0.250000"/>
+    </CAttachMethodReduction>
+    <!--                                                                                         -->
+    <!-- Custom ================================================================================ -->
+    <!--                                                                                         -->
+    <!-- Terran ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!--                                                                                         -->
+    <CAttachMethodNodeOccupancy id="AMNodeOccupancyTerranFlames">
+        <Targets value="Assets\Effects\Terran\TerranBuildingFireLarge\TerranBuildingFireLarge.m3"/>
+        <Targets value="Assets\Effects\Terran\TerranBuildingSmokeLarge\TerranBuildingSmokeLarge.m3"/>
+        <Targets value="Assets\Effects\Terran\TerranBuildingSmokeMedium\TerranBuildingSmokeMedium.m3"/>
+    </CAttachMethodNodeOccupancy>
+    <CAttachMethodPattern id="AMPatternBanshee">
+        <Keyword value="Weapon"/>
+        <Driver value="BacklashRocketsLM"/>
+    </CAttachMethodPattern>
+    <CAttachMethodPattern id="AMPatternMarauder">
+        <Keyword value="Weapon"/>
+        <Driver value="PunisherGrenadesLM"/>
+        <Base value="::RollingIndex"/>
+    </CAttachMethodPattern>
+    <CAttachMethodPattern id="AMPatternMissileTurret">
+        <Keyword value="SetA"/>
+        <Base value="::RollingIndex"/>
+        <Multiplier value="2"/>
+        <Driver value="LongboltMissileLM"/>
+    </CAttachMethodPattern>
+    <CAttachMethodPattern id="AMPatternThor">
+        <Keyword value="Weapon"/>
+        <Driver value="ThorsHammerDamage"/>
+    </CAttachMethodPattern>
+    <CAttachMethodPattern id="AMPatternThorAA">
+        <Keyword value="Weapon"/>
+        <Driver value="JavelinMissileLaunchersLM"/>
+    </CAttachMethodPattern>
+    <CAttachMethodPattern id="AMPatternReaper">
+        <Keyword value="Weapon"/>
+        <Driver value="P38ScytheGuassPistol"/>
+    </CAttachMethodPattern>
+    <CAttachMethodPortAllocator id="AMPortAllocatorBunker">
+        <PortLimit value="3"/>
+    </CAttachMethodPortAllocator>
+    <CAttachMethodFilter id="AMFilterVikingFighter">
+        <Logic value="OR"/>
+        <Keys Keyword="Weapon" Index="10"/>
+        <Keys Keyword="Weapon" Index="14"/>
+    </CAttachMethodFilter>
+    <CAttachMethodPattern id="AMPatternVikingFighter">
+        <Keyword value="Weapon"/>
+        <Driver value="LanzerTorpedoesLM"/>
+    </CAttachMethodPattern>
+    <!--                                                                                         -->
+    <!-- Protoss ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!--                                                                                         -->
+    <CAttachMethodPattern id="AMPatternMothershipBeam">
+        <Keyword value="Weapon"/>
+        <Base value="::RollingIndex"/>
+        <Driver value="MothershipBeamDummy"/>
+    </CAttachMethodPattern>
+</Catalog>

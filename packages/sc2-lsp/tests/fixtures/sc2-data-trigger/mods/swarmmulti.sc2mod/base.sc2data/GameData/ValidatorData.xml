@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CValidatorCombine id="BunkerIsNotEmpty">
+        <Type value="And"/>
+        <CombineArray value="HasCargo"/>
+        <CombineArray value="IsNotConstructing"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="DontDamageOwnedWidowMines">
+        <CombineArray value="IsWidowMineOrWidowMineBurrowed"/>
+        <CombineArray value="OwnedBySelf"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="HasEnvision">
+        <Value value="1"/>
+        <Behavior value="LightofAiur"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerRequirement id="HaveMedivacUpgradeDisplay">
+        <WhichPlayer Value="Caster"/>
+        <Value value="LearnMedivacEnergyUpgradeDisplay"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorCombine id="IsCollapsibleTower">
+        <CombineArray value="IsCoolingTower"/>
+        <CombineArray value="IsRockTower"/>
+        <CombineArray value="IsCoolingTowerDiagonal"/>
+        <CombineArray value="IsRockTowerDiagonal"/>
+        <CombineArray value="IsCoolingTowerRampLeft"/>
+        <CombineArray value="IsRockTowerRampLeft"/>
+        <CombineArray value="IsCoolingTowerRampRight"/>
+        <CombineArray value="IsRockTowerRampRight"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="IsCoolingTower">
+        <Value value="CollapsibleTerranTower"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsCoolingTowerDiagonal">
+        <Value value="CollapsibleTerranTowerDiagonal"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsCoolingTowerRampLeft">
+        <Value value="CollapsibleTerranTowerRampLeft"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsCoolingTowerRampRight">
+        <Value value="CollapsibleTerranTowerRampRight"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="IsMothershipCoreAndHasPurifyNexus">
+        <CombineArray value="IsMothershipCore"/>
+        <CombineArray value="HasMothershipCorePurifyNexus"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="IsNotRecallingCombine">
+        <ResultFailed value="Error,Error/CantTargetRecalling"/>
+        <Type value="And"/>
+        <CombineArray value="IsNotRecallingMothershipCore"/>
+        <CombineArray value="IsNotRecallingMothership"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="IsNotRecallingMothership">
+        <Behavior value="MothershipRecalling"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="IsNotRecallingMothershipCore">
+        <Behavior value="MothershipCoreRecalling"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="IsRockTower">
+        <Value value="CollapsibleRockTower"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsRockTowerDiagonal">
+        <Value value="CollapsibleRockTowerDiagonal"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsRockTowerRampLeft">
+        <Value value="CollapsibleRockTowerRampLeft"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsRockTowerRampRight">
+        <Value value="CollapsibleRockTowerRampRight"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsSwarmHost">
+        <Value value="SwarmHostMP"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsSwarmHostBurrowed">
+        <Value value="SwarmHostBurrowedMP"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="NotDeadorCloakedorBuried">
+        <CombineArray value="NotDead"/>
+        <CombineArray value="NotCloaked"/>
+        <CombineArray value="IsNotBuried"/>
+    </CValidatorCombine>
+    <CValidatorLocationCompareRange id="SeekerMissileMaxLaunchRange">
+        <WhichLocation Effect="SeekerMissileLaunchMissile"/>
+        <Compare value="GE"/>
+        <Range value="13"/>
+        <Value Value="SourceUnit"/>
+    </CValidatorLocationCompareRange>
+    <CValidatorUnitFilters id="SeekerMissileTargetNotDead">
+        <WhichUnit Effect="SeekerMissileLaunchMissile"/>
+        <Filters value="-;Dead"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitFilters id="SeekerMissileTargetNotHidden">
+        <Filters value="-;Hidden"/>
+        <WhichUnit Effect="SeekerMissileLaunchMissile"/>
+    </CValidatorUnitFilters>
+    <CValidatorCombine id="SeekerMissileValidators">
+        <Type value="And"/>
+        <CombineArray value="SeekerMissileMaxLaunchRange"/>
+        <!--CombineArray value="SeekerMissileTargetNotDead"/>
+        <CombineArray value="SeekerMissileTargetNotHidden"/-->
+    </CValidatorCombine>
+    <CValidatorCombine id="TornadoMissileImmortalInvalid">
+        <CombineArray value="IsImmortal"/>
+        <CombineArray value="ShieldEqualsZero"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="TornadoMissileImmortalValid">
+        <CombineArray value="IsImmortal"/>
+        <CombineArray value="ShieldGZero"/>
+    </CValidatorCombine>
+    <CValidatorUnitFilters id="PulsarBeamTargetFilters">
+        <Filters value="-;Player,Ally"/>
+    </CValidatorUnitFilters>
+    <CValidatorUnitCompareVital id="PulsarCasterMinEnergy">
+        <Compare value="GE"/>
+        <Value value="0.1"/>
+        <Vital value="Energy"/>
+        <WhichUnit Value="Caster"/>
+        <ResultFailed value="Error,Error/PulsarRequiresMoreEnergy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorPlayerRequirement id="HaveMedivacUpgrade">
+        <Value value="LearnMedivacEnergyUpgrade"/>
+        <WhichPlayer Value="Caster"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorUnitDetected id="IsDetected">
+        <WhichPlayer Value="Caster"/>
+    </CValidatorUnitDetected>
+    <CValidatorCombine id="OracleHasEnergyAndNotDead">
+        <Type value="And"/>
+        <CombineArray value="OracleHasEnergy"/>
+        <CombineArray value="NotDead"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareVital id="OracleHasEnergy">
+        <WhichUnit Value="Caster"/>
+        <ResultFailed value="NotEnoughEnergy"/>
+        <Compare value="GE"/>
+        <Value value="0.1"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareBehaviorCount id="HasVoidRaySwarmDamageBoost">
+        <WhichUnit Value="Source"/>
+        <Value value="1"/>
+        <Behavior value="VoidRaySwarmDamageBoost"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="NotRevealed">
+        <Value value="1"/>
+        <Behavior value="OracleRevelation"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerRequirement id="HaveFlyingLocusts">
+        <Find value="1"/>
+        <Value value="HaveFlyingLocusts"/>
+    </CValidatorPlayerRequirement>
+</Catalog>

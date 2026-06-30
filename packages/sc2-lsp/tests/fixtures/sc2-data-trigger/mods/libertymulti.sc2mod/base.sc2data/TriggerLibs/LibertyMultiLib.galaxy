@@ -1,0 +1,55 @@
+include "TriggerLibs/NativeLib"
+include "TriggerLibs/LibertyLib"
+
+include "TriggerLibs/LibertyMultiLib_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Liberty Multi
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libLbMp_InitLibraries () {
+    libNtve_InitVariables();
+    libLbty_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: PingPanelInitialize
+//--------------------------------------------------------------------------------------------------
+bool libLbMp_gt_PingPanelInitialize_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libLbty_gf_EnableDisablePingPanel(true, PlayerGroupAll());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libLbMp_gt_PingPanelInitialize_Init () {
+    libLbMp_gt_PingPanelInitialize = TriggerCreate("libLbMp_gt_PingPanelInitialize_Func");
+    TriggerAddEventMapInit(libLbMp_gt_PingPanelInitialize);
+}
+
+void libLbMp_InitTriggers () {
+    libLbMp_gt_PingPanelInitialize_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libLbMp_InitLib_completed = false;
+
+void libLbMp_InitLib () {
+    if (libLbMp_InitLib_completed) {
+        return;
+    }
+
+    libLbMp_InitLib_completed = true;
+
+    libLbMp_InitLibraries();
+    libLbMp_InitTriggers();
+}
+
