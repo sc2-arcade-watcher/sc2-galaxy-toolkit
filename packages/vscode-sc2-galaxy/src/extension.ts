@@ -35,19 +35,19 @@ function createProgressNotification(params?: ProgressReportParams) {
 }
 
 function activateGalaxyClient(context: vs.ExtensionContext) {
-    const serverModule = context.asAbsolutePath(path.join('node_modules', 'plaxtony', 'lib', 'src', 'service', 'lsp-run.js'));
+    const serverModule = context.asAbsolutePath(path.join('node_modules', 'sc2-lsp', 'lib', 'src', 'run.js'));
 
     const envSvc = Object.assign({}, process.env);
-    envSvc.PLAXTONY_LOG_LEVEL = vs.workspace.getConfiguration('sc2galaxy.trace').get('service');
+    envSvc.SC2MOD_LOG_LEVEL = vs.workspace.getConfiguration('sc2galaxy.trace').get('service');
 
     const serverOptions: lspc.ServerOptions = {
         run: {
-            module: serverModule, transport: lspc.TransportKind.ipc, options: {
+            module: serverModule, transport: lspc.TransportKind.stdio, options: {
                 env: envSvc,
             }
         },
         debug: {
-            module: serverModule, transport: lspc.TransportKind.ipc, options: {
+            module: serverModule, transport: lspc.TransportKind.stdio, options: {
                 execArgv: ['--nolazy', '--inspect=6009'],
                 env: Object.assign(envSvc, { PLAXTONY_DEBUG: 1 }),
             }
