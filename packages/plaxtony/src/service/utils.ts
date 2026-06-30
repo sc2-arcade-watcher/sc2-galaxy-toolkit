@@ -1,6 +1,6 @@
 import * as path from 'path';
-import * as gt from '../compiler/types.js';
-import { isToken, forEachChild } from '../compiler/utils.js';
+import * as gt from 'sc2-galaxy-lang';
+import { isToken, forEachChild } from 'sc2-galaxy-lang';
 
 export function getNodeChildren(node: gt.Node): gt.Node[] {
     let children: gt.Node[] = [];
@@ -162,7 +162,7 @@ export function getAdjacentToken(position: number, sourceFile: gt.SourceFile) {
     return null;
 }
 
-export { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition, getNodeRange } from '../compiler/utils.js';
+export { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition, getNodeRange } from 'sc2-galaxy-lang';
 
 // github.com/bevacqua/fuzzysearch
 export function fuzzysearch (needle: string, haystack: string) {

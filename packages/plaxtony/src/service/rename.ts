@@ -1,10 +1,9 @@
 import { AbstractProvider } from './provider.js';
-import * as gt from '../compiler/types.js';
+import * as gt from 'sc2-galaxy-lang';
 import * as lsp from 'vscode-languageserver';
 import { ReferencesProvider } from './references.js';
-import { TypeChecker } from '../compiler/checker.js';
+import { TypeChecker, getSourceFileOfNode } from 'sc2-galaxy-lang';
 import { getPositionOfLineAndCharacter, getAdjacentIdentfier, getLineAndCharacterOfPosition } from './utils.js';
-import { getSourceFileOfNode } from '../compiler/utils.js';
 
 function deepEqual(x: any, y: any): boolean {
     const ok = Object.keys, tx = typeof x, ty = typeof y;

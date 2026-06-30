@@ -1,5 +1,4 @@
-import { SourceFile, Diagnostic } from './../src/compiler/types.js';
-import { Parser } from '../src/compiler/parser.js';
+import { SourceFile, Diagnostic, Parser } from 'sc2-galaxy-lang';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { Store, S2WorkspaceWatcher, createTextDocumentFromFs, openSourceFilesInLocation } from '../src/service/store.js';
 import { SC2Workspace } from '../src/sc2mod/archive.js';

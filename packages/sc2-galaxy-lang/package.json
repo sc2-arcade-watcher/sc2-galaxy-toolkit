@@ -1,0 +1,27 @@
+{
+    "name": "sc2-galaxy-lang",
+    "version": "1.0.0",
+    "description": "SC2 Galaxy Script compiler: parser, binder, type checker",
+    "license": "MIT",
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./lib/src/index.d.ts",
+            "default": "./lib/src/index.js"
+        }
+    },
+    "engines": { "node": ">=22.0.0" },
+    "scripts": {
+        "clean": "rm -rf lib/",
+        "build": "tsc",
+        "build:watch": "tsc --watch"
+    },
+    "dependencies": {
+        "vscode-languageserver": "6.2.0-next.2",
+        "vscode-uri": "^3.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "catalog:",
+        "typescript": "catalog:"
+    }
+}

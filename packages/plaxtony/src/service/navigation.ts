@@ -1,5 +1,4 @@
-import { SourceFile, NamedDeclaration, Node, SyntaxKind } from '../compiler/types.js';
-import { forEachChild } from '../compiler/utils.js';
+import { SourceFile, NamedDeclaration, Node, SyntaxKind, forEachChild } from 'sc2-galaxy-lang';
 import { fuzzysearch } from './utils.js';
 import { AbstractProvider } from './provider.js';
 

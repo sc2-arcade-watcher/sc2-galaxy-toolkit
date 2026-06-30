@@ -1,7 +1,6 @@
-import * as gt from '../compiler/types.js';
-import { TypeChecker } from '../compiler/checker.js';
+import * as gt from 'sc2-galaxy-lang';
+import { TypeChecker, getSourceFileOfNode, isNamedDeclarationKind } from 'sc2-galaxy-lang';
 import { AbstractProvider } from './provider.js';
-import { getSourceFileOfNode, isNamedDeclarationKind } from '../compiler/utils.js';
 import { getTokenAtPosition, getLineAndCharacterOfPosition, getNodeRange } from './utils.js';
 import * as lsp from 'vscode-languageserver';
 

@@ -1,9 +1,8 @@
 import { AbstractProvider } from './provider.js';
-import * as gt from '../compiler/types.js';
+import * as gt from 'sc2-galaxy-lang';
 import * as lsp from 'vscode-languageserver';
-import { forEachChild } from '../compiler/utils.js';
+import { forEachChild, TypeChecker } from 'sc2-galaxy-lang';
 import { getPositionOfLineAndCharacter, getAdjacentIdentfier, getLineAndCharacterOfPosition } from './utils.js';
-import { TypeChecker } from '../compiler/checker.js';
 import { URI } from 'vscode-uri';
 
 export interface ReferencesConfig {

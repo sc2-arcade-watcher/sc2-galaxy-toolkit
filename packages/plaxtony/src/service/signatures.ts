@@ -1,9 +1,6 @@
-import * as gt from '../compiler/types.js';
+import * as gt from 'sc2-galaxy-lang';
 import * as lsp from 'vscode-languageserver';
-import { SyntaxKind, Symbol, Node, SourceFile, CallExpression, Identifier, FunctionDeclaration, Expression } from '../compiler/types.js';
-import { findAncestor, getSourceFileOfNode } from '../compiler/utils.js';
-import { Printer } from '../compiler/printer.js';
-import { TypeChecker } from '../compiler/checker.js';
+import { SyntaxKind, Symbol, Node, SourceFile, CallExpression, Identifier, FunctionDeclaration, Expression, findAncestor, getSourceFileOfNode, Printer, TypeChecker } from 'sc2-galaxy-lang';
 import { AbstractProvider } from './provider.js';
 import { getTokenAtPosition } from './utils.js';
 import { getDocumentationOfSymbol } from './s2meta.js';

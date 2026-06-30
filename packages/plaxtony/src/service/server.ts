@@ -1,6 +1,7 @@
 import * as lsp from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import * as Types from '../compiler/types.js';
+import * as Types from 'sc2-galaxy-lang';
+import { findAncestor } from 'sc2-galaxy-lang';
 import * as util from 'util';
 import * as path from 'path';
 import * as fs from 'node:fs';
@@ -9,7 +10,6 @@ import * as fsp from 'node:fs/promises';
 async function pathExists(p: string): Promise<boolean> {
     return fsp.access(p).then(() => true, () => false);
 }
-import { findAncestor } from '../compiler/utils.js';
 import { Store, createTextDocumentFromFs, createTextDocumentFromUri } from './store.js';
 import { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition, getNodeRange, osNormalizePath } from './utils.js';
 import { AbstractProvider, createProvider } from './provider.js';

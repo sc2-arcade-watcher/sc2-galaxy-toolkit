@@ -1,11 +1,7 @@
-import * as gt from '../compiler/types.js';
-import { SyntaxKind, Symbol, Node, SourceFile, FunctionDeclaration, NamedDeclaration, VariableDeclaration } from '../compiler/types.js';
-import { TypeChecker } from '../compiler/checker.js';
+import * as gt from 'sc2-galaxy-lang';
+import { SyntaxKind, Symbol, Node, SourceFile, FunctionDeclaration, NamedDeclaration, VariableDeclaration, TypeChecker, tokenToString, findAncestor, isToken, isPartOfExpression, isKeywordKind, Printer } from 'sc2-galaxy-lang';
 import { AbstractProvider } from './provider.js';
-import { tokenToString } from '../compiler/scanner.js';
-import { findAncestor, isToken, isPartOfExpression, isKeywordKind } from '../compiler/utils.js';
 import { getTokenAtPosition, findPrecedingToken, fuzzysearch, getAdjacentToken, getLineAndCharacterOfPosition } from './utils.js';
-import { Printer } from '../compiler/printer.js';
 import * as lsp from 'vscode-languageserver';
 import { getDocumentationOfSymbol } from './s2meta.js';
 import * as trig from '../sc2mod/trigger.js';

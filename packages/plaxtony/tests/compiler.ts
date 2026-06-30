@@ -1,5 +1,4 @@
-import { Parser } from '../src/compiler/parser.js';
-import { bindSourceFile } from '../src/compiler/binder.js';
+import { Parser, bindSourceFile } from 'sc2-galaxy-lang';
 import { mockupStoreDocument, mockupStore, mockupSourceFile, mockupTextDocument } from './helpers.js';
 import { assert } from 'chai';
 import * as path from 'path';

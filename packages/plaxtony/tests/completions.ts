@@ -1,7 +1,7 @@
 import 'mocha';
 import { assert } from 'chai';
 import * as path from 'path';
-import * as gt from '../src/compiler/types.js';
+import * as gt from 'sc2-galaxy-lang';
 import { mockupStoreFromDirectory, fixtureFilePath, mapStoreFilesByBasename, mockupStoreDocument } from './helpers.js';
 import { createProvider } from '../src/service/provider.js';
 import { Store } from '../src/service/store.js';

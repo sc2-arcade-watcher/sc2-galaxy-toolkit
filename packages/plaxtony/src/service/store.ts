@@ -1,9 +1,6 @@
-import * as gt from '../compiler/types.js';
-import { SyntaxKind, SourceFile, Node, Symbol, SymbolTable } from '../compiler/types.js';
-import { getSourceFileOfNode } from '../compiler/utils.js';
-import { Parser } from '../compiler/parser.js';
+import * as gt from 'sc2-galaxy-lang';
+import { SyntaxKind, SourceFile, Node, Symbol, SymbolTable, getSourceFileOfNode, Parser, bindSourceFile, unbindSourceFile, TypeChecker } from 'sc2-galaxy-lang';
 import { S2WorkspaceMetadata } from './s2meta.js';
-import { bindSourceFile, unbindSourceFile } from '../compiler/binder.js';
 import { findSC2ArchiveDirectories, isSC2Archive, SC2Archive, SC2Workspace, openArchiveWorkspace, S2QualifiedFile } from '../sc2mod/archive.js';
 import * as lsp from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
@@ -12,7 +9,6 @@ import * as fs from 'node:fs';
 import * as fsp from 'node:fs/promises';
 import glob from 'fast-glob';
 import { URI } from 'vscode-uri';
-import { TypeChecker } from '../compiler/checker.js';
 import { DataCatalogConfig, MetadataConfig } from './server.js';
 
 export function createTextDocument(uri: string, text: string) {

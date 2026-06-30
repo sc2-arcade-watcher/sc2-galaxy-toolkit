@@ -7,7 +7,7 @@ import { SignaturesProvider } from '../src/service/signatures.js';
 import { HoverProvider } from '../src/service/hover.js';
 import { ReferencesProvider } from '../src/service/references.js';
 import { getPositionOfLineAndCharacter, findPrecedingToken } from '../src/service/utils.js';
-import * as gt from '../src/compiler/types.js';
+import * as gt from 'sc2-galaxy-lang';
 import { mockupSourceFile, mockupTextDocument, mockupStore, mockupStoreFromDirectory } from './helpers.js';
 import * as lsp from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';

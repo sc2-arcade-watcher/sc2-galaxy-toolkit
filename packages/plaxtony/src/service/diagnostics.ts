@@ -1,9 +1,7 @@
 import * as lsp from 'vscode-languageserver';
-import * as gt from '../compiler/types.js';
+import * as gt from 'sc2-galaxy-lang';
 import { AbstractProvider } from './provider.js';
-import { Diagnostic, DiagnosticCategory } from '../compiler/types.js';
-import { TypeChecker } from '../compiler/checker.js';
-import { unbindSourceFile } from '../compiler/binder.js';
+import { Diagnostic, DiagnosticCategory, TypeChecker, unbindSourceFile } from 'sc2-galaxy-lang';
 import { getLineAndCharacterOfPosition } from './utils.js';
 import { logger } from '../common.js';
 import { URI } from 'vscode-uri';

@@ -1,5 +1,5 @@
-import * as gt from '../compiler/types.js';
-import { getSourceFileOfNode } from '../compiler/utils.js';
+import * as gt from 'sc2-galaxy-lang';
+import { getSourceFileOfNode } from 'sc2-galaxy-lang';
 import { Store } from './store.js';
 import * as trig from '../sc2mod/trigger.js';
 import * as cat from '../sc2mod/datacatalog.js';
