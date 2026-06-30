@@ -1,9 +1,13 @@
-import * as fs from 'fs-extra';
+import * as fsp from 'node:fs/promises';
 import * as path from 'path';
 import { createRegistryFromDir, DefinitionMap } from '../schema/registry.js';
 import { getMdFilenameOfType, defTypeToMdFile, writeMdFile, readMdFile } from '../schema/localization.js';
 import * as sch from '../schema/base.js';
 import { dlog, globify } from '../common.js';
+
+async function pathExists(p: string): Promise<boolean> {
+    return fsp.access(p).then(() => true, () => false);
+}
 
 function getRelativeFilenameForType(cType: sch.AbstractModel) {
     return path.join('doc', getMdFilenameOfType(cType));
@@ -15,21 +19,21 @@ async function updateDocOfType(sDir: string, cType: sch.AbstractModel, dryRun = 
 
     const updatedContent = writeMdFile(mdFile);
     let currentContent = '';
-    if (await fs.pathExists(fullFilename)) {
-        currentContent = await fs.readFile(fullFilename, 'utf8');
+    if (await pathExists(fullFilename)) {
+        currentContent = await fsp.readFile(fullFilename, 'utf8');
     }
     else {
         if (dryRun) {
             return true;
         }
-        await fs.ensureFile(fullFilename);
+        await fsp.mkdir(path.dirname(fullFilename), { recursive: true });
     }
 
     if (currentContent.trim() !== updatedContent.trim()) {
         if (dryRun) {
             return true;
         }
-        await fs.writeFile(fullFilename, updatedContent);
+        await fsp.writeFile(fullFilename, updatedContent);
         return true;
     }
     else {
@@ -70,7 +74,7 @@ async function updateDocFiles(sDir: string, dryRun: boolean) {
 
     for (const item of existingDocs) {
         if (!dryRun) {
-            await fs.remove(path.join(sDir, item));
+            await fsp.rm(path.join(sDir, item), { force: true });
         }
         console.log(`[REMOVED] ${item}`);
     }

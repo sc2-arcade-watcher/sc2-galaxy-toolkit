@@ -1,4 +1,4 @@
-import * as fs from 'fs-extra';
+import * as fsp from 'node:fs/promises';
 
 interface HookupEntry {
     type: string;
@@ -11,8 +11,8 @@ interface Hookup {
 }
 
 async function applyHookups(srcList: string, srcFrmType: string) {
-    const hookups: Hookup[] = await fs.readJSON(srcList);
-    let frmTypeXML = await fs.readFile(srcFrmType, 'utf8');
+    const hookups: Hookup[] = JSON.parse(await fsp.readFile(srcList, 'utf8'));
+    let frmTypeXML = await fsp.readFile(srcFrmType, 'utf8');
 
     function appendChunk(currentHookup: Hookup) {
         const frameName = currentHookup.fclass.substr(1);

@@ -8,7 +8,8 @@ import { findSC2ArchiveDirectories, isSC2Archive, SC2Archive, SC2Workspace, open
 import * as lsp from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as path from 'path';
-import * as fs from 'fs-extra';
+import * as fs from 'node:fs';
+import * as fsp from 'node:fs/promises';
 import glob from 'fast-glob';
 import { URI } from 'vscode-uri';
 import { TypeChecker } from '../compiler/checker.js';
@@ -26,7 +27,7 @@ export function createTextDocumentFromFs(filepath: string) {
 export async function readDocumentFile(fsPath: string) {
     return createTextDocument(
         URI.file(fsPath).toString(),
-        await fs.readFile(fsPath, 'utf8')
+        await fsp.readFile(fsPath, 'utf8')
     );
 }
 
@@ -112,10 +113,6 @@ export class S2WorkspaceWatcher extends WorkspaceWatcher {
     }
 }
 
-export interface IStoreSymbols {
-    resolveGlobalSymbol(name: string): gt.Symbol | undefined;
-}
-
 export interface SourceFileS2Meta {
     file: S2QualifiedFile;
     docName: string;
@@ -125,7 +122,7 @@ export interface QualifiedSourceFile extends SourceFile {
     s2meta?: SourceFileS2Meta;
 }
 
-export class Store implements IStoreSymbols {
+export class Store implements gt.ITypeCheckerHost {
     protected parser: Parser;
     public rootPath?: string;
     public documents = new Map<string, QualifiedSourceFile>();

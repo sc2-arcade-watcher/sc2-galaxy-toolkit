@@ -1,4 +1,4 @@
-import * as fs from 'fs-extra';
+import * as fs from 'node:fs';
 import * as path from 'path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'child_process';
@@ -44,6 +44,6 @@ export const mochaGlobalTeardown = async () => {
     if (!fs.existsSync(cspath)) {
         generateSchemaCache(['--pretty', '--skip-if-exists']);
     }
-    return (<any>global)._cachedSchema = createRegistry(fs.readJSONSync(cspath));
+    return (<any>global)._cachedSchema = createRegistry(JSON.parse(fs.readFileSync(cspath, 'utf8')));
 }
 // console.log('bootstrap done');

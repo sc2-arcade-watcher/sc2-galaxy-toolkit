@@ -781,3 +781,24 @@ export interface Diagnostic {
 
     toString(): string;
 }
+
+// ── Interfaces for decoupling compiler from service layer ──
+
+export interface IStoreSymbols {
+    resolveGlobalSymbol(name: string): Symbol | undefined;
+}
+
+export interface ITypeCheckerHostArchive {
+    name: string;
+    directory: string;
+}
+
+export interface ITypeCheckerHostWorkspace {
+    allArchives: ITypeCheckerHostArchive[];
+}
+
+export interface ITypeCheckerHost extends IStoreSymbols {
+    documents: Map<string, SourceFile>;
+    qualifiedDocuments: Map<string, Map<string, SourceFile>>;
+    s2workspace?: ITypeCheckerHostWorkspace;
+}

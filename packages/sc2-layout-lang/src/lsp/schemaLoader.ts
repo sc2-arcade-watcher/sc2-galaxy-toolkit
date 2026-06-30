@@ -1,7 +1,27 @@
 import { readSchemaDataDir, createRegistry, createRegistryFromDir } from '../schema/registry.js';
 import * as request from 'request-promise-native';
-import * as fs from 'fs-extra';
+import * as fsp from 'node:fs/promises';
 import * as path from 'path';
+
+async function pathExists(p: string): Promise<boolean> {
+    return fsp.access(p).then(() => true, () => false);
+}
+
+async function ensureDir(dir: string): Promise<void> {
+    await fsp.mkdir(dir, { recursive: true });
+}
+
+async function readJSON(filepath: string): Promise<any> {
+    return JSON.parse(await fsp.readFile(filepath, 'utf8'));
+}
+
+async function writeJSON(filepath: string, data: any): Promise<void> {
+    await fsp.writeFile(filepath, JSON.stringify(data));
+}
+
+async function remove(p: string): Promise<void> {
+    await fsp.rm(p, { recursive: true, force: true });
+}
 import extractZip from 'extract-zip';
 import { promisify } from 'util';
 import { S2LServer } from './server.js';
@@ -112,13 +132,13 @@ export class SchemaLoader {
     }
 
     protected async readSmState() {
-        if (await fs.pathExists(this.schStateSrc)) {
-            return await fs.readJSON(this.schStateSrc) as SchemaState;
+        if (await pathExists(this.schStateSrc)) {
+            return await readJSON(this.schStateSrc) as SchemaState;
         }
     }
 
     protected async storeSmState(smState: SchemaState) {
-        await fs.writeJSON(this.schStateSrc, smState);
+        await writeJSON(this.schStateSrc, smState);
     }
 
     @logIt({ resDump: true })
@@ -173,18 +193,18 @@ export class SchemaLoader {
         let zipOutDir = this.tmpPath;
 
         logger.info(`Clearing tmp..`);
-        await fs.remove(this.tmpPath);
-        await fs.ensureDir(this.tmpPath);
+        await remove(this.tmpPath);
+        await ensureDir(this.tmpPath);
 
         logger.info(`Downloading zipball of ${commitSha}`);
-        await fs.ensureFile(zipSrc);
+        await ensureDir(path.dirname(zipSrc));
         const payload: Buffer = await request.get(`https://api.github.com/repos/${schemaGithubRepo}/zipball/${commitSha}`, {
             headers: {
                 'User-Agent': 'nodejs request'
             },
             encoding: null,
         });
-        await fs.writeFile(zipSrc, payload);
+        await fsp.writeFile(zipSrc, payload);
 
         logger.info(`Extracting zip..`);
         await extractZipAsync(zipSrc, {
@@ -195,17 +215,17 @@ export class SchemaLoader {
             }
         });
         logger.info(`All files extracted`);
-        await fs.remove(zipSrc);
+        await remove(zipSrc);
         zipOutDir = path.join(zipOutDir, `${schemaGithubRepo.replace('/', '-')}-${shortHash}`);
 
         logger.info(`Reading from dir..`);
         const sData = await readSchemaDataDir(path.join(zipOutDir, 'sc2layout'));
-        await fs.remove(zipOutDir);
+        await remove(zipOutDir);
 
         logger.info(`Caching..`);
         const cacheFilename = `sch-bundle-v${version.join('.')}-${shortHash}.json`;
-        await fs.ensureDir(this.cachePath);
-        await fs.writeJSON(path.join(this.cachePath, cacheFilename), sData);
+        await ensureDir(this.cachePath);
+        await writeJSON(path.join(this.cachePath, cacheFilename), sData);
 
         return {
             shortHash: shortHash,
@@ -340,7 +360,7 @@ export class SchemaLoader {
             let smState = await this.readSmState();
             logger.info('[SchemaLoader] state', smState);
 
-            if (smState && (smState.cacheFilename === void 0 || !(await fs.pathExists(path.join(this.cachePath, smState.cacheFilename)))) ) {
+            if (smState && (smState.cacheFilename === void 0 || !(await pathExists(path.join(this.cachePath, smState.cacheFilename)))) ) {
                 logger.warn(`Cached file no longer exists`, smState.cacheFilename);
                 smState = void 0;
                 await this.cleanupState();
@@ -375,12 +395,12 @@ export class SchemaLoader {
             }
 
             logger.info(`Loading from`, path.join(this.cachePath, smState.cacheFilename));
-            return createRegistry(await fs.readJSON(path.join(this.cachePath, smState.cacheFilename)));
+            return createRegistry(await readJSON(path.join(this.cachePath, smState.cacheFilename)));
         }
     }
 
     async cleanupState() {
         if (!this.isUsingLocalSchema) return;
-        (await fs.pathExists(this.schStateSrc)) && (await fs.remove(this.schStateSrc));
+        (await pathExists(this.schStateSrc)) && (await remove(this.schStateSrc));
     }
 }

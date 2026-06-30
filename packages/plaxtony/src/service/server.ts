@@ -3,7 +3,12 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as Types from '../compiler/types.js';
 import * as util from 'util';
 import * as path from 'path';
-import * as fs from 'fs-extra';
+import * as fs from 'node:fs';
+import * as fsp from 'node:fs/promises';
+
+async function pathExists(p: string): Promise<boolean> {
+    return fsp.access(p).then(() => true, () => false);
+}
 import { findAncestor } from '../compiler/utils.js';
 import { Store, createTextDocumentFromFs, createTextDocumentFromUri } from './store.js';
 import { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition, getNodeRange, osNormalizePath } from './utils.js';
@@ -258,7 +263,7 @@ export class Server {
 
             if (this.config.archivePath) {
                 if (path.isAbsolute(this.config.archivePath)) {
-                    if ((await fs.pathExists(archivePath))) {
+                    if ((await pathExists(archivePath))) {
                         archivePath = this.config.archivePath;
                     }
                     else {
@@ -269,9 +274,9 @@ export class Server {
                     const archiveOsNormalPath = osNormalizePath(this.config.archivePath);
                     const candidates = (await Promise.all(projFolders.map(async (x) => {
                         const testedPath = path.join(URI.parse(x.uri).fsPath, archiveOsNormalPath);
-                        const exists = await fs.pathExists(testedPath);
+                        const exists = await pathExists(testedPath);
                         if (exists) {
-                            return await fs.realpath(testedPath)
+                            return await fsp.realpath(testedPath)
                         }
                     }))).filter(x => typeof x === 'string');
                     if (candidates.length) {
@@ -335,7 +340,7 @@ export class Server {
             else if (projFolders.length) {
                 for (const wsFolder of projFolders) {
                     const resolvedDataPath = path.join(URI.parse(wsFolder.uri).fsPath, this.config.dataPath);
-                    if (await fs.pathExists(resolvedDataPath)) {
+                    if (await pathExists(resolvedDataPath)) {
                         modSources.push(resolvedDataPath);
                     }
                 }

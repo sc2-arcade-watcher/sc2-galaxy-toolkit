@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
+import * as fsp from 'node:fs/promises';
 import * as sch from './base.js';
 import { readSchemaModel, sraw, SRawEntries } from './reader.js';
 import { readMdStorage, MdFileStorage, getMdFilenameOfType, mdContentToDef } from './localization.js';
@@ -684,7 +684,7 @@ export function createDefaultSchemaFileProvider(schDir: string): sch.SchemaFileP
         if (!path.join(schDir, filename).startsWith(schDir)) {
             throw new Error(`Attempting to read file "${filename}" outside designated directory ${schDir}`);
         }
-        return fs.readFile(path.join(schDir, filename), 'utf8');
+        return fsp.readFile(path.join(schDir, filename), 'utf8');
     }
 
     function listDir(pattern: string) {

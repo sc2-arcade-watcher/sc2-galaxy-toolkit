@@ -2,13 +2,10 @@ import * as lsp from 'vscode-languageserver';
 import * as path from 'path';
 import { URI } from 'vscode-uri';
 import * as gt from './types.js';
-import { isComplexTypeKind } from '../compiler/utils.js';
-import { isDeclarationKind, forEachChild, isPartOfExpression, isRightSideOfPropertyAccess, findAncestor, createDiagnosticForNode, isAssignmentOperator, isComparisonOperator, isReferenceKeywordKind, findAncestorByKind } from './utils.js';
-import { Store, QualifiedSourceFile } from '../service/store.js';
+import { isComplexTypeKind, isDeclarationKind, isPartOfExpression, isRightSideOfPropertyAccess, findAncestor, createDiagnosticForNode, isAssignmentOperator, isComparisonOperator, isReferenceKeywordKind, findAncestorByKind, getLineAndCharacterOfPosition } from './utils.js';
 import { tokenToString } from './scanner.js';
 import { Printer } from './printer.js';
 import { declareSymbol, unbindSourceFile } from './binder.js';
-import { getLineAndCharacterOfPosition } from '../service/utils.js';
 
 let nextSymbolId = 1;
 let nextNodeId = 1;
@@ -679,16 +676,16 @@ function generateComplexTypes() {
 }
 
 export class TypeChecker {
-    private store: Store;
+    private host: gt.ITypeCheckerHost;
     private nodeLinks: gt.NodeLinks[] = [];
     private diagnostics = new Map<string, gt.Diagnostic[]>();
     private currentSymbolContainer: gt.Symbol = null;
     private currentSymbolReferences = new Map<gt.Symbol, Set<gt.Identifier>>();
     private currentDocuments = new Map<string, gt.SourceFile>();
 
-    constructor(store: Store) {
-        this.store = store;
-        this.currentDocuments = this.store.documents;
+    constructor(host: gt.ITypeCheckerHost) {
+        this.host = host;
+        this.currentDocuments = this.host.documents;
     }
 
     private report(location: gt.Node, msg: string, category: gt.DiagnosticCategory = gt.DiagnosticCategory.Error, tags?: lsp.DiagnosticTag[]): void {
@@ -888,7 +885,7 @@ export class TypeChecker {
     public checkSourceFile(sourceFile: gt.SourceFile, bindSymbols = false) {
         this.clear();
         this.diagnostics.set(sourceFile.fileName, []);
-        this.currentDocuments = this.store.documents;
+        this.currentDocuments = this.host.documents;
         if (bindSymbols) {
             unbindSourceFile(sourceFile, { resolveGlobalSymbol: this.resolveGlobalSymbol.bind(this) });
             this.currentSymbolContainer = declareSymbol(sourceFile, { resolveGlobalSymbol: this.resolveGlobalSymbol.bind(this) }, null);
@@ -924,8 +921,8 @@ export class TypeChecker {
         this.clear();
         this.currentDocuments = new Map<string, gt.SourceFile>();
 
-        if (this.store.s2workspace) {
-            const coreMod = this.store.s2workspace.allArchives.find((archive) => archive.name === 'mods/core.sc2mod');
+        if (this.host.s2workspace) {
+            const coreMod = this.host.s2workspace.allArchives.find((archive) => archive.name === 'mods/core.sc2mod');
             if (coreMod) {
                 const corePath = path.join(coreMod.directory, 'base.sc2data', 'TriggerLibs');
                 const nativeScripts = [
@@ -933,7 +930,7 @@ export class TypeChecker {
                     path.join(corePath, 'natives.galaxy'),
                 ];
                 for (const fpath of nativeScripts) {
-                    const qFile = this.store.documents.get(URI.file(fpath).toString());
+                    const qFile = this.host.documents.get(URI.file(fpath).toString());
                     if (qFile) {
                         this.checkSourceFileRecursivelyWorker(qFile);
                     }
@@ -948,7 +945,7 @@ export class TypeChecker {
         return {
             success: Array.from(this.diagnostics.values()).findIndex((value, index) => value.length > 0) === -1,
             diagnostics: this.diagnostics,
-            sourceFiles: <Map<string, QualifiedSourceFile>>this.currentDocuments,
+            sourceFiles: this.currentDocuments,
         };
     }
 
@@ -1105,7 +1102,7 @@ export class TypeChecker {
         else {
             path = path.replace(/\.galaxy$/, '');
         }
-        const qsMap = this.store.qualifiedDocuments.get(path);
+        const qsMap = this.host.qualifiedDocuments.get(path);
         if (!qsMap) {
             this.report(node.path, `Given filename couldn't be matched`);
             return;

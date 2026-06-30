@@ -497,6 +497,33 @@ export function createFileDiagnostic(file: gt.SourceFile, start: number, length:
     };
 }
 
+export function getPositionOfLineAndCharacter(sourceFile: gt.SourceFile, line: number, character: number): number {
+    return sourceFile.lineMap[line] + character;
+}
+
+export function getLineAndCharacterOfPosition(sourceFile: gt.SourceFile, pos: number): lsp.Position {
+    let loc = {line: 0, character: 0};
+    for (let i = 0; i < sourceFile.lineMap.length; i++) {
+        if (sourceFile.lineMap[i] <= pos) {
+            loc = {
+                line: i,
+                character: pos - sourceFile.lineMap[i],
+            }
+            continue;
+        }
+        break;
+    }
+    return loc;
+}
+
+export function getNodeRange(node: gt.Node): lsp.Range {
+    const sourceFile = getSourceFileOfNode(node);
+    return {
+        start: getLineAndCharacterOfPosition(sourceFile, node.pos),
+        end: getLineAndCharacterOfPosition(sourceFile, node.end),
+    };
+}
+
 export function createDiagnosticForNode(node: gt.Node, category: gt.DiagnosticCategory, msg: string, tags?: lsp.DiagnosticTag[]): gt.Diagnostic {
     const d = <gt.Diagnostic>{
         file: getSourceFileOfNode(node),

@@ -1,7 +1,6 @@
 import * as path from 'path';
 import * as gt from '../compiler/types.js';
-import { isToken, forEachChild, getSourceFileOfNode } from '../compiler/utils.js';
-import * as lsp from 'vscode-languageserver';
+import { isToken, forEachChild } from '../compiler/utils.js';
 
 export function getNodeChildren(node: gt.Node): gt.Node[] {
     let children: gt.Node[] = [];
@@ -163,32 +162,7 @@ export function getAdjacentToken(position: number, sourceFile: gt.SourceFile) {
     return null;
 }
 
-export function getPositionOfLineAndCharacter(sourceFile: gt.SourceFile, line: number, character: number): number {
-    return sourceFile.lineMap[line] + character;
-}
-
-export function getLineAndCharacterOfPosition(sourceFile: gt.SourceFile, pos: number): lsp.Position {
-    let loc = {line: 0, character: 0};
-    for (let i = 0; i < sourceFile.lineMap.length; i++) {
-        if (sourceFile.lineMap[i] <= pos) {
-            loc = {
-                line: i,
-                character: pos - sourceFile.lineMap[i],
-            }
-            continue;
-        }
-        break;
-    }
-    return loc;
-}
-
-export function getNodeRange(node: gt.Node): lsp.Range {
-    const sourceFile = getSourceFileOfNode(node);
-    return {
-        start: getLineAndCharacterOfPosition(sourceFile, node.pos),
-        end: getLineAndCharacterOfPosition(sourceFile, node.end),
-    };
-}
+export { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition, getNodeRange } from '../compiler/utils.js';
 
 // github.com/bevacqua/fuzzysearch
 export function fuzzysearch (needle: string, haystack: string) {

@@ -1,7 +1,8 @@
 import * as lsp from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { URI } from 'vscode-uri';
-import * as fs from 'fs-extra';
+import * as fs from 'node:fs';
+import * as fsp from 'node:fs/promises';
 import * as util from 'util';
 import * as path from 'path';
 import * as xml from 'xml2js';
@@ -355,11 +356,11 @@ export class SC2Archive {
     }
 
     public async hasFile(filename: string) {
-        return fs.pathExists(path.join(this.directory, filename));
+        return fsp.access(path.join(this.directory, filename)).then(() => true, () => false);
     }
 
     public async readFile(filename: string) {
-        return fs.readFile(path.join(this.directory, filename), 'utf8');
+        return fsp.readFile(path.join(this.directory, filename), 'utf8');
     }
 
     public relativePath(uri: lsp.DocumentUri) {

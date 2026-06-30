@@ -2,7 +2,7 @@ import { Parser } from './parser.js';
 import * as gt from './types.js';
 import { SyntaxKind, SourceFile, Node, Symbol, SymbolTable, NamedDeclaration } from './types.js';
 import { forEachChild, isNamedDeclarationKind, isDeclarationKind, isContainerKind, getSourceFileOfNode } from './utils.js';
-import { IStoreSymbols } from '../service/store.js';
+import { IStoreSymbols } from './types.js';
 // import { SignatureMeta, TypeChecker } from './checker.js';
 
 export function getDeclarationName(node: Node): string {
