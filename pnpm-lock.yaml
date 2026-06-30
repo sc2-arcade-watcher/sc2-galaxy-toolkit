@@ -32,12 +32,12 @@ importers:
       fast-glob:
         specifier: ^3.2.11
         version: 3.3.3
-      fs-extra:
-        specifier: ^8.1.0
-        version: 8.1.0
       sax:
         specifier: ^1.2.4
         version: 1.6.0
+      sc2-mod:
+        specifier: workspace:*
+        version: link:../sc2-mod
       vscode-languageserver:
         specifier: 6.2.0-next.2
         version: 6.2.0-next.2
@@ -57,9 +57,6 @@ importers:
       '@types/chai':
         specifier: ^4.3.0
         version: 4.3.20
-      '@types/fs-extra':
-        specifier: ^8.0.0
-        version: 8.1.5
       '@types/mocha':
         specifier: ^10
         version: 10.0.10
@@ -150,6 +147,31 @@ importers:
         version: 6.0.3
 
   packages/sc2-layout-schema: {}
+
+  packages/sc2-mod:
+    dependencies:
+      fast-glob:
+        specifier: ^3.3.0
+        version: 3.3.3
+      vscode-uri:
+        specifier: ^3.0.0
+        version: 3.1.0
+      winston:
+        specifier: ^3.0.0
+        version: 3.19.0
+      xml2js:
+        specifier: ^0.4.19
+        version: 0.4.23
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.20.0
+      '@types/xml2js':
+        specifier: ^0.4.2
+        version: 0.4.14
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
 
   packages/sc2-xml:
     devDependencies:
@@ -411,9 +433,6 @@ packages:
 
   '@types/fs-extra@7.0.0':
     resolution: {integrity: sha512-ndoMMbGyuToTy4qB6Lex/inR98nPiNHacsgMPvy+zqMLgSxbt8VtWpDArpGp69h1fEDQHn1KB+9DWD++wgbwYA==}
-
-  '@types/fs-extra@8.1.5':
-    resolution: {integrity: sha512-0dzKcwO+S8s2kuF5Z9oUWatQJj5Uq/iqphEtE3GQJVRRYm/tD1LglU2UnXi2A8jLq5umkGouOXOR9y0n613ZwQ==}
 
   '@types/mocha@10.0.10':
     resolution: {integrity: sha512-xPyYSz1cMPnJQhl0CLMH68j3gprKZaTjG3s5Vi+fDgx+uhG9NOXwbVt52eFS8ECyXhyKcjDLCBEqBExKuiZb7Q==}
@@ -1733,10 +1752,6 @@ snapshots:
   '@types/extract-zip@1.6.2': {}
 
   '@types/fs-extra@7.0.0':
-    dependencies:
-      '@types/node': 22.20.0
-
-  '@types/fs-extra@8.1.5':
     dependencies:
       '@types/node': 22.20.0
 

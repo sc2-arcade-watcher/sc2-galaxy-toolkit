@@ -1,0 +1,30 @@
+{
+    "name": "sc2-mod",
+    "version": "1.0.0",
+    "description": "SC2 mod archive system: workspace, archive discovery, and dependency resolution",
+    "license": "MIT",
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./lib/src/index.d.ts",
+            "default": "./lib/src/index.js"
+        }
+    },
+    "engines": { "node": ">=22.0.0" },
+    "scripts": {
+        "clean": "rm -rf lib/",
+        "build": "tsc",
+        "build:watch": "tsc --watch"
+    },
+    "dependencies": {
+        "fast-glob": "^3.3.0",
+        "vscode-uri": "^3.0.0",
+        "winston": "^3.0.0",
+        "xml2js": "^0.4.19"
+    },
+    "devDependencies": {
+        "@types/node": "catalog:",
+        "@types/xml2js": "^0.4.2",
+        "typescript": "catalog:"
+    }
+}
