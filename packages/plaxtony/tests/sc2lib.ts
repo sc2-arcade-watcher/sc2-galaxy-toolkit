@@ -212,7 +212,15 @@ describe('SC2Mod', () => {
         it('store', async () => {
             const archive = new SC2Archive('sc2-map.SC2Map', path.resolve('tests/fixtures/sc2-map.SC2Map'));
             const cstore = new cat.CatalogStore();
-            const tdoc = await SC2Workspace.documentFromFile(archive, 'Base.SC2Data/GameData/UnitData.xml');
+            const { TextDocument } = await import('vscode-languageserver-textdocument');
+            const { URI } = await import('vscode-uri');
+            const fsp = await import('node:fs/promises');
+            const filename = 'Base.SC2Data/GameData/UnitData.xml';
+            const tdoc = TextDocument.create(
+                URI.file(path.join(archive.directory, filename)).toString(),
+                'xml', 0,
+                await fsp.readFile(path.join(archive.directory, filename), 'utf8')
+            );
             cstore.update(tdoc, archive);
             assert.equal(cstore.docCount, 1);
         });

@@ -35,9 +35,18 @@ importers:
       sax:
         specifier: ^1.2.4
         version: 1.6.0
+      sc2-data:
+        specifier: workspace:*
+        version: link:../sc2-data
       sc2-mod:
         specifier: workspace:*
         version: link:../sc2-mod
+      sc2-text:
+        specifier: workspace:*
+        version: link:../sc2-text
+      sc2-trigger:
+        specifier: workspace:*
+        version: link:../sc2-trigger
       vscode-languageserver:
         specifier: 6.2.0-next.2
         version: 6.2.0-next.2
@@ -81,6 +90,25 @@ importers:
       typescript-eslint:
         specifier: ^8
         version: 8.62.0(eslint@8.57.1)(typescript@6.0.3)
+
+  packages/sc2-data:
+    dependencies:
+      sc2-mod:
+        specifier: workspace:*
+        version: link:../sc2-mod
+      vscode-languageserver-textdocument:
+        specifier: ^1.0.4
+        version: 1.0.12
+      vscode-uri:
+        specifier: ^3.0.0
+        version: 3.1.0
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.20.0
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
 
   packages/sc2-layout-lang:
     dependencies:
@@ -159,6 +187,38 @@ importers:
       winston:
         specifier: ^3.0.0
         version: 3.19.0
+      xml2js:
+        specifier: ^0.4.19
+        version: 0.4.23
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.20.0
+      '@types/xml2js':
+        specifier: ^0.4.2
+        version: 0.4.14
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+
+  packages/sc2-text:
+    dependencies:
+      sc2-mod:
+        specifier: workspace:*
+        version: link:../sc2-mod
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.20.0
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+
+  packages/sc2-trigger:
+    dependencies:
+      sc2-mod:
+        specifier: workspace:*
+        version: link:../sc2-mod
       xml2js:
         specifier: ^0.4.19
         version: 0.4.23

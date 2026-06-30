@@ -1,0 +1,26 @@
+{
+    "name": "sc2-text",
+    "version": "1.0.0",
+    "description": "SC2 localization and GameStrings parsing",
+    "license": "MIT",
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./lib/src/index.d.ts",
+            "default": "./lib/src/index.js"
+        }
+    },
+    "engines": { "node": ">=22.0.0" },
+    "scripts": {
+        "clean": "rm -rf lib/",
+        "build": "tsc",
+        "build:watch": "tsc --watch"
+    },
+    "dependencies": {
+        "sc2-mod": "workspace:*"
+    },
+    "devDependencies": {
+        "@types/node": "catalog:",
+        "typescript": "catalog:"
+    }
+}
