@@ -1,5 +1,5 @@
 import * as vs from 'vscode';
-import * as lspc from 'vscode-languageclient';
+import * as lspc from 'vscode-languageclient/node';
 
 interface S2WorkspaceStatusParams {
     s2ArchiveWsCount: number;

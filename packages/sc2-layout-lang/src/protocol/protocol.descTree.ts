@@ -1,5 +1,5 @@
 import * as lsp from 'vscode-languageserver';
-import { RequestType, NotificationType } from 'vscode-jsonrpc';
+import { RequestType, NotificationType } from 'vscode-languageserver';
 import { TextDocumentIdentifier } from 'vscode-languageserver';
 
 export enum DTNodeKind {
@@ -59,7 +59,7 @@ export interface WorkspaceOverviewResult {
 }
 
 export namespace WorkspaceOverviewRequest {
-    export const type = new RequestType<WorkspaceOverviewParams, WorkspaceOverviewResult, void, void>('descTree/workspaceOverview');
+    export const type = new RequestType<WorkspaceOverviewParams, WorkspaceOverviewResult, void>('descTree/workspaceOverview');
 }
 
 // ===
@@ -74,7 +74,7 @@ export interface WorkspaceChangeParams {
 }
 
 export namespace WorkspaceChangeNotification {
-    export const type = new NotificationType<WorkspaceChangeParams, void>('descTree/workspaceChange');
+    export const type = new NotificationType<WorkspaceChangeParams>('descTree/workspaceChange');
 }
 
 // ===
@@ -84,7 +84,7 @@ export interface LayoutElementParams {
 }
 
 export namespace LayoutElementRequest {
-    export const type = new RequestType<LayoutElementParams, DTElementWithChildren[], void, void>('descTree/layoutElement');
+    export const type = new RequestType<LayoutElementParams, DTElementWithChildren[], void>('descTree/layoutElement');
 }
 
 // ===
@@ -94,7 +94,7 @@ export type FetchNodeParams = lsp.TextDocumentPositionParams;
 export type FetchNodeResult = DTLayout | DTElement | null;
 
 export namespace FetchNodeRequest {
-    export const type = new RequestType<FetchNodeParams, FetchNodeResult, void, void>('descTree/fetchNode');
+    export const type = new RequestType<FetchNodeParams, FetchNodeResult, void>('descTree/fetchNode');
 }
 
 // ===
@@ -114,5 +114,5 @@ export interface ElementViewDataSection {
 export type ElementViewDataResult = ElementViewDataSection | undefined;
 
 export namespace ElementViewDataRequest {
-    export const type = new RequestType<ElementViewDataParams, ElementViewDataResult, void, void>('descTree/elementViewData');
+    export const type = new RequestType<ElementViewDataParams, ElementViewDataResult, void>('descTree/elementViewData');
 }

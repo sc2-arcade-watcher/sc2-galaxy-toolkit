@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as vs from 'vscode';
-import * as lspc from 'vscode-languageclient';
+import * as lspc from 'vscode-languageclient/node';
 import { TreeViewProvider } from './layout/dtree.js';
 import { WorkspaceSetupChecker } from './layout/workspace.js';
 
@@ -88,7 +88,8 @@ function activateGalaxyClient(context: vs.ExtensionContext) {
         }
     });
 
-    context.subscriptions.push(client.start());
+    context.subscriptions.push(client);
+    client.start();
 
     const myContentProvider = new (class implements vs.TextDocumentContentProvider {
         fcontent = new Map<string, string>();
@@ -209,8 +210,8 @@ async function activateLayoutClient(context: vs.ExtensionContext) {
     };
 
     const client = new lspc.LanguageClient('sc2layout', 'SC2Layout', serverOptions, clientOptions);
-    context.subscriptions.push(client.start());
-    await client.onReady();
+    context.subscriptions.push(client);
+    await client.start();
 
     const wsChecker = new WorkspaceSetupChecker(client);
     context.subscriptions.push(wsChecker.install());

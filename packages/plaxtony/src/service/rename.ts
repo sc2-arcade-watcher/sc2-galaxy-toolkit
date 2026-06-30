@@ -76,7 +76,7 @@ export class RenameProvider extends AbstractProvider {
         // const sourceFile = this.store.documents.get(params.textDocument.uri);
         const result = this.getTokenAt(params);
         if (!result) {
-            return new lsp.ResponseError<undefined>(lsp.ErrorCodes.RequestCancelled, 'Not an identifier');
+            return new lsp.ResponseError<undefined>(lsp.LSPErrorCodes.RequestCancelled, 'Not an identifier');
         }
 
         for (const decl of result.symbol.declarations) {
@@ -87,7 +87,7 @@ export class RenameProvider extends AbstractProvider {
                 // (!this.store.s2workspace && !this.store.openDocuments.has(declSourceFile.fileName))
             ) {
                 return new lsp.ResponseError<undefined>(
-                    lsp.ErrorCodes.RequestCancelled,
+                    lsp.LSPErrorCodes.RequestCancelled,
                     `Cannot rename identifier from built-in dependency: ${sfMeta.s2meta.file.archive.name}`
                 );
             }
@@ -120,14 +120,14 @@ export class RenameProvider extends AbstractProvider {
         }
 
         if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(params.newName)) {
-            return new lsp.ResponseError<undefined>(lsp.ErrorCodes.RequestCancelled, 'Invalid name');
+            return new lsp.ResponseError<undefined>(lsp.LSPErrorCodes.RequestCancelled, 'Invalid name');
         }
 
         if (
             this.recentRequest.symbol.parent &&
             this.recentRequest.symbol.parent.members.has(params.newName)
         ) {
-            return new lsp.ResponseError<undefined>(lsp.ErrorCodes.RequestCancelled, 'Name already in use');
+            return new lsp.ResponseError<undefined>(lsp.LSPErrorCodes.RequestCancelled, 'Name already in use');
         }
 
         if (this.recentRequest.locations) {

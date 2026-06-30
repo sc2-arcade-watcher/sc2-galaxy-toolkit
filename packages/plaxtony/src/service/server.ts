@@ -1,4 +1,4 @@
-import * as lsp from 'vscode-languageserver';
+import * as lsp from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as Types from 'sc2-galaxy-lang';
 import { findAncestor } from 'sc2-galaxy-lang';
@@ -133,7 +133,7 @@ interface InitializeParams extends lsp.InitializeParams {
 }
 
 export class Server {
-    public connection: lsp.IConnection;
+    public connection: lsp.Connection;
     private store: Store = new Store();
     private diagnosticsProvider: DiagnosticsProvider;
     private navigationProvider: NavigationProvider;
@@ -143,7 +143,10 @@ export class Server {
     private hoverProvider: HoverProvider;
     private referenceProvider: ReferencesProvider;
     private renameProvider: RenameProvider;
-    private documents = new lsp.TextDocuments(TextDocument);
+    private documents = new lsp.TextDocuments<TextDocument>({
+        create: TextDocument.create,
+        update: (document, changes, version) => TextDocument.update(document, changes, version),
+    });
     private initParams: InitializeParams;
     private indexing = false;
     private ready = false;
@@ -155,7 +158,7 @@ export class Server {
     }
 
     public createConnection() {
-        this.connection = lsp.createConnection();
+        this.connection = lsp.createConnection(lsp.ProposedFeatures.all);
 
         this.diagnosticsProvider = this.createProvider(DiagnosticsProvider);
         this.navigationProvider = this.createProvider(NavigationProvider);

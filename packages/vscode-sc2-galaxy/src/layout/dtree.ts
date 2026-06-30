@@ -1,5 +1,5 @@
 import * as vs from 'vscode';
-import * as lspc from 'vscode-languageclient';
+import * as lspc from 'vscode-languageclient/node';
 import { getThemeIcon } from '../extension.js';
 import { DTNodeKind, type DTArchive, type DTLayout, type DTElement, type FetchNodeParams, type FetchNodeResult, type DTElementWithChildren, type LayoutElementParams, type WorkspaceChangeParams, type WorkspaceOverviewResult, type ElementViewDataSection } from 'sc2-layout-lang/protocol/descTree';
 

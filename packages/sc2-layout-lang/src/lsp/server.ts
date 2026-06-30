@@ -1,5 +1,6 @@
 import * as path from 'path';
-import * as lsp from 'vscode-languageserver';
+import * as lsp from 'vscode-languageserver/node';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import { URI } from 'vscode-uri';
 import { logIt, logger } from '../logger.js';
 import { S2LConfig } from './config.js';
@@ -162,7 +163,10 @@ export interface LangService {
 }
 
 export class S2LServer implements ErrorReporter, LangService {
-    protected documents = new lsp.TextDocuments();
+    protected documents = new lsp.TextDocuments<TextDocument>({
+        create: TextDocument.create,
+        update: (document, changes, version) => TextDocument.update(document, changes, version),
+    });
     protected documentUpdateRequests = new Map<string, DocumentUpdateRequest>();
     protected schemaLoader: SchemaLoader;
     protected progress = installProgressReporter(this);
@@ -199,7 +203,7 @@ export class S2LServer implements ErrorReporter, LangService {
         }
     }
 
-    constructor(public readonly conn: lsp.IConnection) {
+    constructor(public readonly conn: lsp.Connection) {
         if (!conn) return;
 
         this.documents.listen(this.conn);
@@ -497,7 +501,7 @@ export class S2LServer implements ErrorReporter, LangService {
                     },
                 },
                 textDocumentSync: {
-                    change: this.documents.syncKind,
+                    change: lsp.TextDocumentSyncKind.Incremental,
                     openClose: true,
                 },
                 documentSymbolProvider: true,
@@ -574,7 +578,7 @@ export class S2LServer implements ErrorReporter, LangService {
     @logIt({ level: 'verbose', profiling: false, argsDump: ev => {
         return { uri: ev.document.uri, ver: ev.document.version };
     }})
-    protected onDidChangeContent(ev: lsp.TextDocumentChangeEvent) {
+    protected onDidChangeContent(ev: lsp.TextDocumentChangeEvent<TextDocument>) {
         if (!(this.state & ServiceStateFlags.StepFilesDone)) {
             logger.verbose('Busy..');
             return;
@@ -583,7 +587,7 @@ export class S2LServer implements ErrorReporter, LangService {
     }
 
     @logIt({ level: 'debug', profiling: false, argsDump: ev => ev.document.uri })
-    private async onDidOpen(ev: lsp.TextDocumentChangeEvent) {
+    private async onDidOpen(ev: lsp.TextDocumentChangeEvent<TextDocument>) {
         if (!(this.state & ServiceStateFlags.StepFilesDone)) {
             logger.verbose('Busy..');
             return;
@@ -593,7 +597,7 @@ export class S2LServer implements ErrorReporter, LangService {
     }
 
     @logIt({ level: 'verbose', profiling: false, argsDump: ev => ev.document.uri })
-    private onDidClose(ev: lsp.TextDocumentChangeEvent) {
+    private onDidClose(ev: lsp.TextDocumentChangeEvent<TextDocument>) {
         if (!this.store.s2ws.matchFileWorkspace(URI.parse(ev.document.uri))) {
             this.store.removeDocument(ev.document.uri);
             logger.verbose('removed from store', ev.document.uri);
@@ -605,7 +609,7 @@ export class S2LServer implements ErrorReporter, LangService {
     }
 
     @logIt({ level: 'debug', profiling: false, argsDump: ev => ev.document.uri })
-    private async onDidSave(ev: lsp.TextDocumentChangeEvent) {
+    private async onDidSave(ev: lsp.TextDocumentChangeEvent<TextDocument>) {
         await this.syncDocument(ev.document);
         await this.postDiagnostics(ev.document);
     }
