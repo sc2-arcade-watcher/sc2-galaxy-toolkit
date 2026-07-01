@@ -1,5 +1,4 @@
-import { assert } from 'chai';
-import 'mocha';
+import { assert } from 'vitest';
 import { buildStoreFromDir, tlog } from '../helpers.js';
 import { Store } from '../../src/index/store.js';
 import { XRay } from '../../src/index/xray.js';
@@ -10,7 +9,7 @@ describe('xray', function () {
     let store: Store;
     let xray: XRay;
 
-    before(async function () {
+    beforeAll(async function () {
         store = await buildStoreFromDir('xray');
         xray = new XRay(store);
     });
@@ -18,7 +17,7 @@ describe('xray', function () {
     describe('determineTargetFrameNode', function () {
         let xDoc: XMLDocument;
 
-        before(function () {
+        beforeAll(function () {
             xDoc = <XMLDocument>Array.from(store.index.rootNs.get('XR_Anim').xDecls)[0];
         });
 

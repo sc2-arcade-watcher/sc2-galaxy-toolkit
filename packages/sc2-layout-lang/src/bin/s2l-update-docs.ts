@@ -48,9 +48,8 @@ async function updateDocFiles(sDir: string, dryRun: boolean) {
 
     const schemaRegistry = await createRegistryFromDir(sDir);
 
-    const existingDocs = new Set(await globify(`doc/@(${sch.ModelKind.SimpleType}|${sch.ModelKind.ComplexType})/**/*.md`, {
+    const existingDocs = new Set(await globify(`doc/{${sch.ModelKind.SimpleType},${sch.ModelKind.ComplexType}}/**/*.md`, {
         cwd: sDir,
-        nodir: true,
     }));
 
     for (const cKind in schemaRegistry.catalog) {

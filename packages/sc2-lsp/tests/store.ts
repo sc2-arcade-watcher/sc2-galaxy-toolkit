@@ -1,15 +1,15 @@
 import * as path from 'path';
-import { assert } from 'chai';
+import { assert } from 'vitest';
 import { URI as Uri } from 'vscode-uri';
 import { Store } from '../src/galaxy/store.js';
 import { getDocumentationOfSymbol } from '../src/galaxy/s2meta.js';
 import { mockupStoreFromS2Workspace } from './helpers.js';
 
 describe('Store', () => {
-    context('S2Workspace', async () => {
+    describe('S2Workspace', async () => {
         let store: Store;
 
-        before(async () => {
+        beforeAll(async () => {
             store = await mockupStoreFromS2Workspace(
                 path.join('tests', 'fixtures', 'sc2-map.SC2Map'),
                 [path.join('tests', 'fixtures', 'sc2-data-trigger')]

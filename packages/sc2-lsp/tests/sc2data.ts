@@ -1,5 +1,4 @@
-import 'mocha';
-import { assert } from 'chai';
+import { assert } from 'vitest';
 import * as path from 'path';
 import { SC2Archive } from 'sc2-mod';
 import { SC2Workspace, openArchiveWorkspace } from '../src/galaxy/workspace.js';
@@ -13,7 +12,7 @@ describe('SC2Metadata', function () {
     let s2work: SC2Workspace;
     let s2meta: S2WorkspaceMetadata;
 
-    before(async () => {
+    beforeAll(async () => {
         const sources = [
             path.resolve(path.join(resourcesPath, 'sc2-data-trigger')),
         ];

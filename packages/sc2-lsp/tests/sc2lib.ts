@@ -1,7 +1,6 @@
-import 'mocha';
 import * as path from 'path';
 import * as fs from 'fs';
-import { assert } from 'chai';
+import { assert } from 'vitest';
 import { findSC2ArchiveDirectories, SC2Archive, resolveArchiveDependencyList } from 'sc2-mod';
 import { SC2Workspace, openArchiveWorkspace } from '../src/galaxy/workspace.js';
 import * as trig from 'sc2-trigger';
@@ -34,10 +33,10 @@ describe('SC2Mod', () => {
         });
     });
 
-    context('Archive', () => {
+    describe('Archive', () => {
         // let s2archive: SC2Archive;
 
-        // before(async () => {
+        // beforeAll(async () => {
         //     s2archive = new SC2Archive('mods/core.sc2mod', path.resolve(path.join(resourcesPath, 'mods', 'core.sc2mod')));
         // });
 
@@ -76,7 +75,7 @@ describe('SC2Mod', () => {
         });
     });
 
-    context('Workspace', () => {
+    describe('Workspace', () => {
         let s2work: SC2Workspace;
         const sources = [
             path.resolve(path.join(resourcesPath)),
@@ -84,7 +83,7 @@ describe('SC2Mod', () => {
         const dir = path.resolve(path.join('tests', 'fixtures', 'sc2-map.SC2Map'));
         const rootArchive = new SC2Archive(path.basename(dir), dir);
 
-        before(async () => {
+        beforeAll(async () => {
             s2work = await openArchiveWorkspace(rootArchive, sources);
         });
 
@@ -127,7 +126,7 @@ describe('SC2Mod', () => {
         const trigStore = new trig.TriggerStore();
         let ntveLib: trig.Library;
 
-        before(async () => {
+        beforeAll(async () => {
             const reader = new trig.XMLReader(trigStore);
             ntveLib = await reader.loadLibrary(fs.readFileSync(path.join(resourcesPath, 'mods', 'core.sc2mod/base.sc2data/TriggerLibs/NativeLib.TriggerLib'), 'utf8'));
         });
@@ -148,11 +147,11 @@ describe('SC2Mod', () => {
             assert.notEqual(<any>(ntveLib.findElementById('00000102', trig.ParamDef)), <any>(ntveLib.findElementById('00000102', trig.Param)))
         }),
 
-        context('FunctionDef', () => {
+        describe('FunctionDef', () => {
             let el: trig.FunctionDef;
             let params: trig.ParamDef[];
 
-            before(() => {
+            beforeAll(() => {
                 el = ntveLib.findElementByName('UnitCreate') as trig.FunctionDef;
                 assert.isDefined(el)
                 params = el.getParameters();
@@ -173,7 +172,7 @@ describe('SC2Mod', () => {
                 assert.equal(params[5].name, 'angle');
             });
 
-            context('parameters type', () => {
+            describe('parameters type', () => {
                 it('should fetch primitive', () => {
                     assert.equal(params[0].type.type, 'int');
                 })
@@ -251,7 +250,7 @@ describe('SC2Mod', () => {
     describe('Localization', () => {
         const enus = new loc.LocalizationFile();
 
-        before(() => {
+        beforeAll(() => {
             enus.readFromFile(path.join(resourcesPath, 'mods', 'core.sc2mod/enus.sc2data/LocalizedData/TriggerStrings.txt'));
         });
 

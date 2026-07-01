@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as util from 'util';
-import { glob, GlobOptions } from 'glob';
+import glob from 'fast-glob';
+import type { Options as GlobOptions } from 'fast-glob';
 import { CharacterCodes } from 'sc2-xml';
 
 export const readFileAsync = util.promisify(fs.readFile);
@@ -79,8 +80,12 @@ export function fuzzysearch (needle: string, haystack: string) {
     return true;
 }
 
-export function globify(pattern: string, opts?: GlobOptions) {
-    return glob(pattern, { ...opts, ...{ withFileTypes: false } });
+export function globify(pattern: string, opts: GlobOptions = {}) {
+    return glob(pattern, {
+        ...opts,
+        caseSensitiveMatch: false,
+        onlyFiles: true,
+    });
 }
 
 export function dlog(o: any, opts: util.InspectOptions = {}) {

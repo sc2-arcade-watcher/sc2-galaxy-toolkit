@@ -1,5 +1,4 @@
-import { assert } from 'chai';
-import 'mocha';
+import { assert } from 'vitest';
 import { buildStore, getSchema, tlog } from '../helpers.js';
 import { FrameNode, UINavigator, UIBuilder, AnimationNode } from '../../src/index/hierarchy.js';
 import { ExpressionParser } from '../../src/parser/expressions.js';

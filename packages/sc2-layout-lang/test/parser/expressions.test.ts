@@ -1,5 +1,4 @@
-import { assert } from 'chai';
-import 'mocha';
+import { assert } from 'vitest';
 import { ExpressionParser, PropertyBindExpr, PathSelector, SelHandleKind } from '../../src/parser/expressions.js';
 
 describe('expression pass', function () {
@@ -7,7 +6,7 @@ describe('expression pass', function () {
 
     describe('path', function () {
         it('$this/$ancestor[@name=m]', function () {
-            const psel = exParser.parsePathSelector(this.test.title);
+            const psel = exParser.parsePathSelector('$this/$ancestor[@name=m]');
             assert.lengthOf(psel.diagnostics, 0);
             assert.lengthOf(psel.path, 2);
             assert.equal(psel.path[0].selKind, SelHandleKind.This);
@@ -17,7 +16,7 @@ describe('expression pass', function () {
         });
 
         it('$GameUI/$parent', function () {
-            const psel = exParser.parsePathSelector(this.test.title);
+            const psel = exParser.parsePathSelector('$GameUI/$parent');
             assert.lengthOf(psel.diagnostics, 0, (() => psel.diagnostics.map(x => `${x.message}`))().join('\n'));
             assert.lengthOf(psel.path, 2);
             assert.deepEqual({ pos: psel.path[0].name.pos, end: psel.path[0].name.end }, { pos: 1, end: 7 });
@@ -25,7 +24,7 @@ describe('expression pass', function () {
         })
 
         it('$GameUI//$parent', function () {
-            const psel = exParser.parsePathSelector(this.test.title);
+            const psel = exParser.parsePathSelector('$GameUI//$parent');
             assert.lengthOf(psel.diagnostics, 0, (() => psel.diagnostics.map(x => `${x.message}`))().join('\n'));
             assert.lengthOf(psel.path, 2);
             assert.deepEqual({ pos: psel.path[0].name.pos, end: psel.path[0].name.end }, { pos: 1, end: 7 });
@@ -33,7 +32,7 @@ describe('expression pass', function () {
         })
 
         it('$ancestor[@name=NHbrConstruct@AntiGround|stuff]', function () {
-            const psel = exParser.parsePathSelector(this.test.title);
+            const psel = exParser.parsePathSelector('$ancestor[@name=NHbrConstruct@AntiGround|stuff]');
             assert.lengthOf(psel.diagnostics, 0, (() => psel.diagnostics.map(x => `${x.message}`))().join('\n'));
             assert.lengthOf(psel.path, 1);
             assert.deepEqual(psel.path[0].name.name, 'ancestor');
@@ -51,7 +50,7 @@ describe('expression pass', function () {
         });
 
         it('{el//@prop}', function () {
-            propBind = exParser.parsePropertyBind(this.test.title);
+            propBind = exParser.parsePropertyBind('{el//@prop}');
             assert.lengthOf(propBind.diagnostics, 0);
             assert.lengthOf(propBind.path, 1);
             assert.equal(propBind.property.name, 'prop');
@@ -98,12 +97,12 @@ describe('expression fail', function () {
         });
 
         it('$ancestor[name=GameUI]', function () {
-            const psel = exParser.parsePathSelector(this.test.title);
+            const psel = exParser.parsePathSelector('$ancestor[name=GameUI]');
             assert.isAtLeast(psel.diagnostics.length, 1);
         });
 
         it('$ancestor[@NotAValidAncestorParam=GameUI]', function () {
-            const psel = exParser.parsePathSelector(this.test.title);
+            const psel = exParser.parsePathSelector('$ancestor[@NotAValidAncestorParam=GameUI]');
             assert.isAtLeast(psel.diagnostics.length, 1);
         });
     });

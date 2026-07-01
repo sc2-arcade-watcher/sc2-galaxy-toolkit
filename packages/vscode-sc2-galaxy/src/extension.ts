@@ -35,7 +35,7 @@ function createProgressNotification(params?: ProgressReportParams) {
 }
 
 function activateGalaxyClient(context: vs.ExtensionContext) {
-    const serverModule = context.asAbsolutePath(path.join('node_modules', 'sc2-lsp', 'lib', 'src', 'run.js'));
+    const serverModule = context.asAbsolutePath(path.join('node_modules', 'sc2-lsp', 'dist', 'sc2-lsp.mjs'));
 
     const envSvc = Object.assign({}, process.env);
     envSvc.SC2MOD_LOG_LEVEL = vs.workspace.getConfiguration('sc2galaxy.trace').get('service');

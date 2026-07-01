@@ -1,9 +1,8 @@
 import { Parser, bindSourceFile } from 'sc2-galaxy-lang';
 import { mockupStoreDocument, mockupStore, mockupSourceFile, mockupTextDocument } from './helpers.js';
-import { assert } from 'chai';
+import { assert } from 'vitest';
 import * as path from 'path';
 import * as fs from 'fs';
-import 'mocha';
 
 describe('Compiler', () => {
     describe('Parser', () => {

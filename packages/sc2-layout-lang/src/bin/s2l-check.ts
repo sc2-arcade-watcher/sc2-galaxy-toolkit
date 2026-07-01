@@ -1,12 +1,11 @@
 import * as util from 'util';
 import * as path from 'path';
-import * as glob from 'glob';
+import glob from 'fast-glob';
 import { languageExt, DiagnosticReport, XMLDocument, DiagnosticCategory } from '../types.js';
 import { createTextDocumentFromFs } from '../index/store.js';
 import { buildStore, mockupProvider } from '../../test/helpers.js';
 import { DiagnosticsProvider, formatDiagnosticTotal } from '../lsp/providers/diagnostics.js';
 import * as s2 from '../index/s2mod.js';
-import { URI } from 'vscode-uri';
 import '../../test/bootstrap.js';
 
 async function checkFiles(fpaths: string[]) {
@@ -16,7 +15,7 @@ async function checkFiles(fpaths: string[]) {
     for (const wsFolder of fpaths) {
         for (const fsPath of (await s2.findArchiveDirectories(wsFolder))) {
             let name = path.basename(fsPath);
-            wsArchives.push(new s2.Archive(name, URI.file(fsPath)));
+            wsArchives.push(new s2.Archive(name, fsPath));
         }
     }
     store.presetArchives(...wsArchives);
@@ -24,8 +23,8 @@ async function checkFiles(fpaths: string[]) {
     fpaths = fpaths.map(p => path.resolve(p));
     let files: string[] = [];
     for (const fp of fpaths) {
-        files = files.concat(glob.sync(path.join(fp, `**/*.${languageExt}`), {
-            nocase: true,
+        files = files.concat(await glob(path.join(fp, `**/*.${languageExt}`), {
+            caseSensitiveMatch: false,
         }));
     }
 

@@ -1,58 +1,57 @@
 {
-    "name": "sc2-layout-lang",
-    "version": "1.1.0",
-    "description": "SC2 Layout language analysis and LSP server",
-    "license": "MIT",
-    "type": "module",
-    "exports": {
-        ".": {
-            "types": "./lib/src/index.d.ts",
-            "default": "./lib/src/index.js"
-        },
-        "./protocol/descTree": {
-            "types": "./lib/src/protocol/protocol.descTree.d.ts",
-            "default": "./lib/src/protocol/protocol.descTree.js"
-        },
-        "./bin/s2l-lsp": {
-            "types": "./lib/src/bin/s2l-lsp.d.ts",
-            "default": "./lib/src/bin/s2l-lsp.js"
-        }
+  "name": "sc2-layout-lang",
+  "version": "1.1.0",
+  "description": "SC2 Layout language analysis and LSP server",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./lib/src/index.d.ts",
+      "default": "./lib/src/index.js"
     },
-    "bin": {
-        "s2l-lsp": "./lib/src/bin/s2l-lsp.js",
-        "s2l-check": "./lib/src/bin/s2l-check.js"
+    "./protocol/descTree": {
+      "types": "./lib/src/protocol/protocol.descTree.d.ts",
+      "default": "./lib/src/protocol/protocol.descTree.js"
     },
-    "engines": {
-        "node": ">=22.0.0"
-    },
-    "scripts": {
-        "clean": "rm -rf lib/",
-        "build": "tsc",
-        "build:watch": "tsc --watch",
-        "test": "node --enable-source-maps ./node_modules/.bin/mocha --config .mocharc.cjs"
-    },
-    "dependencies": {
-        "extract-zip": "^1.6.7",
-        "fs-extra": "^8.0.1",
-        "glob": "^11",
-        "request": "^2.88.0",
-        "request-promise-native": "^1.0.7",
-        "sc2-xml": "workspace:*",
-        "vscode-languageserver": "^10.0.1",
-        "vscode-languageserver-textdocument": "^1.0.13",
-        "vscode-uri": "^3.0.0",
-        "winston": "^3.2.1",
-        "xml-js": "^1.6.11"
-    },
-    "devDependencies": {
-        "@types/chai": "^4.1.4",
-        "@types/extract-zip": "^1.6.2",
-        "@types/fs-extra": "^7.0.0",
-        "@types/mocha": "^10",
-        "@types/node": "catalog:",
-        "@types/request-promise-native": "^1.0.16",
-        "chai": "^4.1.2",
-        "mocha": "^10",
-        "typescript": "catalog:"
+    "./bin/s2l-lsp": {
+      "types": "./lib/src/bin/s2l-lsp.d.ts",
+      "default": "./lib/src/bin/s2l-lsp.js"
     }
+  },
+  "bin": {
+    "s2l-lsp": "./lib/src/bin/s2l-lsp.js",
+    "s2l-check": "./lib/src/bin/s2l-check.js"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "clean": "rm -rf lib/",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "test": "vitest run",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "extract-zip": "^1.6.7",
+    "fs-extra": "^8.0.1",
+    "fast-glob": "^3.3.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7",
+    "sc2-mod": "workspace:*",
+    "sc2-xml": "workspace:*",
+    "vscode-languageserver": "^10.0.1",
+    "vscode-languageserver-textdocument": "^1.0.13",
+    "vscode-uri": "^3.0.0",
+    "winston": "^3.2.1",
+    "xml-js": "^1.6.11"
+  },
+  "devDependencies": {
+    "@types/extract-zip": "^1.6.2",
+    "@types/fs-extra": "^7.0.0",
+    "@types/node": "catalog:",
+    "@types/request-promise-native": "^1.0.16",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
 }

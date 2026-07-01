@@ -1,7 +1,6 @@
-import * as fs from 'fs';
 import * as path from 'path';
-import { glob } from 'glob';
-import { readFileAsync, globify, readDirAsync } from '../common.js';
+import { SC2Archive, findSC2ArchiveDirectories, isSC2Archive } from 'sc2-mod';
+import { readFileAsync } from '../common.js';
 import { URI } from 'vscode-uri';
 import { logger } from '../logger.js';
 
@@ -12,12 +11,17 @@ type KeyStringMap = Map<string, string>;
 async function *readKeyStringsFile(filename: string) {
     const reKeyString = /^\n?([^\/][^=\s]*)=(.+)$/gm;
     let content = await readFileAsync(filename, 'utf8');
-    content = content.replace(/^\uFEFF/, ''); // remove UTF8 BOM
+    content = content.replace(/^﻿/, ''); // remove UTF8 BOM
 
     let result: RegExpExecArray;
     while (result = reKeyString.exec(content)) {
         yield [result[1], result[2]];
     }
+}
+
+async function resolveFilename(archive: Archive, fname: string): Promise<string | undefined> {
+    const r = await archive.findFiles(fname);
+    return r.length ? path.join(archive.directory, r[0]) : void 0;
 }
 
 // ===
@@ -52,7 +56,7 @@ export class StringFile {
     async reload(archive: Archive) {
         const sm = new Map<string, string>();
         for (const fpath of this.relativePaths) {
-            const fname = await archive.resolveFilename(fpath);
+            const fname = await resolveFilename(archive, fpath);
             if (!fname) continue;
             for await (const [ikey, ival] of readKeyStringsFile(fname)) {
                 sm.set(ikey, ival);
@@ -187,7 +191,7 @@ export class FontStyleComponent {
     async reload(archive: Archive) {
         this.delete(archive);
 
-        const fname = await archive.resolveFilename('base.SC2Data/UI/FontStyles.SC2Style');
+        const fname = await resolveFilename(archive, 'base.SC2Data/UI/FontStyles.SC2Style');
         if (!fname) return;
 
         for await (const [dkind, name] of readStyleFile(fname)) {
@@ -231,44 +235,18 @@ export class FontStyleComponent {
 
 // ===
 
-export const S2ArchiveExts = ['SC2Mod', 'SC2Map', 'SC2Campaign', 'SC2Interface'];
-export const S2ArchiveExtsStr = S2ArchiveExts.join('|');
-const reIsS2Archive = new RegExp(`^\\.(${S2ArchiveExtsStr})$`, 'i');
+export { findSC2ArchiveDirectories as findArchiveDirectories, isSC2Archive as isS2Archive };
 
-export function isS2Archive(fsPath: string) {
-    return reIsS2Archive.exec(path.extname(fsPath));
-}
+export class Archive extends SC2Archive {
+    readonly native: boolean;
 
-export async function findArchiveDirectories(fsPath: string, opts: { exclude?: string | string[] } = {}) {
-    if (isS2Archive(fsPath)) {
-        return [path.resolve(fsPath)];
-    }
-    const folders = (await globify(`**/*.+(${S2ArchiveExtsStr})/`, {
-        cwd: fsPath,
-        absolute: true,
-        nocase: true,
-        ignore: opts.exclude,
-    })).sort((a, b) => {
-        return path.extname(a).toLowerCase() === '.sc2map' ? 1 : -1;
-    });
-    return folders;
-}
-
-function findSC2File(directory: string, pattern: string) {
-    return glob(path.join(pattern), {nocase: true, absolute: true, realpath: true, nodir: true, cwd: directory});
-}
-
-export class Archive {
-    constructor(public readonly name: string, public readonly uri: URI, public readonly native: boolean = false) {
+    constructor(name: string, directory: string, native: boolean = false) {
+        super(name, directory);
+        this.native = native;
     }
 
-    public async findFiles(pattern: string) {
-        return await findSC2File(this.uri.fsPath, pattern);
-    }
-
-    public async resolveFilename(fname: string) {
-        const r = await this.findFiles(fname);
-        return r.length ? r[0] : void 0;
+    get uri(): URI {
+        return URI.file(this.directory);
     }
 }
 
@@ -327,9 +305,7 @@ export class Workspace {
 
     matchFileWorkspace(uri: URI) {
         for (const sa of this.archives.values()) {
-            // add separator at the end of archivePath, so it doesn't pickup temp files created by sc2edit:
-            // /\.(sc2map|sc2mod)\.(temp|orig)/
-            if (uri.fsPath.toString().startsWith(sa.uri.fsPath.toString() + path.sep)) {
+            if (uri.fsPath.toString().startsWith(sa.directory + path.sep)) {
                 return sa;
             }
         }

@@ -364,8 +364,8 @@ export class S2LServer implements ErrorReporter, LangService {
         if (typeof this.cfg.builtinMods === 'object') {
             for (const [mod, enabled] of objventries(this.cfg.builtinMods)) {
                 if (!enabled) continue;
-                const uri = URI.file(path.resolve(this.cfg.dataPath ? this.cfg.dataPath : this.initOptions.defaultDataPath, <string>mod));
-                archives.push(new s2.Archive(<string>mod, uri, true));
+                const dir = path.resolve(this.cfg.dataPath ? this.cfg.dataPath : this.initOptions.defaultDataPath, <string>mod);
+                archives.push(new s2.Archive(<string>mod, dir, true));
             }
         }
 
@@ -387,14 +387,14 @@ export class S2LServer implements ErrorReporter, LangService {
                     if (name !== wsFolder.name) {
                         name = `${wsFolder.name}/${path.basename(fsPath)}`;
                     }
-                    wsArchives.push(new s2.Archive(name, URI.file(fsPath)));
+                    wsArchives.push(new s2.Archive(name, fsPath));
                 }
             }
 
             // -
             if (wsArchives.length) {
                 logger.info('s2mods found in workspace:', wsArchives.map(item => {
-                    return {name: item.name, fsPath: item.uri.fsPath};
+                    return {name: item.name, fsPath: item.directory};
                 }));
             }
             else {
@@ -474,9 +474,7 @@ export class S2LServer implements ErrorReporter, LangService {
         const r = await globify(`**/*.${languageExt}`, {
             cwd: uri.fsPath,
             absolute: true,
-            nodir: true,
-            nocase: true,
-            ignore: opts.exclude,
+            ignore: opts.exclude as string[],
         });
         return r;
     }

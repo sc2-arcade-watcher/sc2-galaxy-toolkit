@@ -1,5 +1,4 @@
-import { assert } from 'chai';
-import 'mocha';
+import { assert } from 'vitest';
 import { fuzzysearch } from '../../src/common.js';
 
 describe('common', function () {

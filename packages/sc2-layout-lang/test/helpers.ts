@@ -45,7 +45,7 @@ export async function buildStoreFromDir(srcDir: string) {
     if (!path.isAbsolute(srcDir)) {
         srcDir = getFixturePath(srcDir);
     }
-    for (const fname of await globify(`**/*.${languageExt}`, {cwd: srcDir, absolute: true, nodir: true})) {
+    for (const fname of await globify(`**/*.${languageExt}`, {cwd: srcDir, absolute: true})) {
         const uri = URI.file(fname);
         store.updateDocument(uri.toString(), await readFileAsync(fname, 'utf8'));
     }

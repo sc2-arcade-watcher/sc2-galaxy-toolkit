@@ -1,5 +1,4 @@
-import { assert } from 'chai';
-import 'mocha';
+import { assert } from 'vitest';
 import * as fsp from 'node:fs/promises';
 import * as path from 'path';
 import { getFixturePath } from '../helpers.js';

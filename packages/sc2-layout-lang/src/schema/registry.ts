@@ -690,7 +690,6 @@ export function createDefaultSchemaFileProvider(schDir: string): sch.SchemaFileP
     function listDir(pattern: string) {
         return globify(pattern, {
             cwd: schDir,
-            nodir: true,
         });
     }
 

@@ -1,7 +1,6 @@
-import 'mocha';
 import * as lsp from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { assert } from 'chai';
+import { assert } from 'vitest';
 import { DefinitionProvider } from '../../src/galaxy/definitions.js';
 import { mockupTextDocument, mockupStore, fixtureFilePath, dump } from '../helpers.js';
 import { createProvider } from '../../src/galaxy/provider.js';
@@ -15,7 +14,7 @@ describe('Service Definition', () => {
     const store = mockupStore(headerDoc, refsDoc);
     const defProvider = createProvider(DefinitionProvider, store);
 
-    before(async () => {
+    beforeAll(async () => {
         await store.updateS2Workspace(new SC2Workspace(
             new SC2Archive('definition', fixtureFilePath('service', 'definition'))
         ));

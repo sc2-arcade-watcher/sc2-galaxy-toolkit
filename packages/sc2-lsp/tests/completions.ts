@@ -1,5 +1,4 @@
-import 'mocha';
-import { assert } from 'chai';
+import { assert } from 'vitest';
 import * as path from 'path';
 import * as gt from 'sc2-galaxy-lang';
 import { mockupStoreFromDirectory, fixtureFilePath, mapStoreFilesByBasename, mockupStoreDocument } from './helpers.js';
@@ -22,7 +21,7 @@ describe('Completions', () => {
         let complProvider: CompletionsProvider;
         let docsMap: Map<string, gt.SourceFile>;
 
-        before(async () => {
+        beforeAll(async () => {
             store = await mockupStoreFromDirectory(fixtureFilePath('service', 'completion', 'static'));
             complProvider = createProvider(CompletionsProvider, store);
             docsMap = mapStoreFilesByBasename(store);

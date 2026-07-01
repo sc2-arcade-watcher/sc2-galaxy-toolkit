@@ -1,5 +1,4 @@
-import { assert } from 'chai';
-import 'mocha';
+import { assert } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
 import { buildStore, getFixturePath } from '../helpers.js';

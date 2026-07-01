@@ -11,9 +11,8 @@ import * as gt from 'sc2-galaxy-lang';
 import { mockupSourceFile, mockupTextDocument, mockupStore, mockupStoreFromDirectory } from './helpers.js';
 import * as lsp from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { assert } from 'chai';
+import { assert } from 'vitest';
 import * as path from 'path';
-import 'mocha';
 
 describe('Service', () => {
     describe('Utils', () => {
@@ -214,7 +213,7 @@ describe('Service', () => {
             assert.equal(signature.signatures[0].label, 'string name_me(int id)');
         });
 
-        context('should provide signature help when cursor at: ', () => {
+        describe('should provide signature help when cursor at: ', () => {
             it('end of binary expr, before ")"', () => {
                 assert.lengthOf(signaturesProvider.getSignatureAt(docSignature.uri, 137).signatures, 1);
             })

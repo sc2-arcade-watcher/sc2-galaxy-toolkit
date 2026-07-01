@@ -166,8 +166,8 @@ export { getPositionOfLineAndCharacter, getLineAndCharacterOfPosition, getNodeRa
 
 // github.com/bevacqua/fuzzysearch
 export function fuzzysearch (needle: string, haystack: string) {
-    var hlen = haystack.length;
-    var nlen = needle.length;
+    let hlen = haystack.length;
+    let nlen = needle.length;
     if (nlen > hlen) {
         return false;
     }

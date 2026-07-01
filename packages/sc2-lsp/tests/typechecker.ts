@@ -1,7 +1,6 @@
-import 'mocha';
 import * as fs from 'fs';
 import * as path from 'path';
-import { assert } from 'chai';
+import { assert } from 'vitest';
 import * as tc from 'sc2-galaxy-lang';
 import { TypeChecker } from 'sc2-galaxy-lang';
 import { mockupStoreDocument, mockupStore, mockupSourceFile, mockupTextDocument, mockupStoreFromDirectory, dump } from './helpers.js';
@@ -26,11 +25,11 @@ describe('Checker', () => {
         const store = mockupStore();
         const checker = new TypeChecker(store);
 
-        context('typedef', () => {
+        describe('typedef', () => {
             let type: gt.Type;
             let sourceFile: gt.SourceFile;
 
-            before(() => {
+            beforeAll(() => {
                 const document = mockupTextDocument('type_checker', 'typedef.galaxy');
                 store.updateDocument(document);
                 sourceFile = store.documents.get(document.uri);
@@ -76,11 +75,11 @@ describe('Checker', () => {
             });
         });
 
-        context('arrayref', () => {
+        describe('arrayref', () => {
             let type: gt.Type;
             let sourceFile: gt.SourceFile;
 
-            before(() => {
+            beforeAll(() => {
                 const document = mockupTextDocument('type_checker', 'arrayref.galaxy');
                 store.updateDocument(document);
                 sourceFile = store.documents.get(document.uri);
